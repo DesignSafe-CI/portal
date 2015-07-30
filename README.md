@@ -25,5 +25,5 @@
 4. Start container
 
    ```
-   $ docker run -it --rm -v $(pwd):/portal designsafe-ci/portal
+   $ docker run -it --rm -v $(pwd):/portal -p 8000:8000 designsafe-ci/portal
    ```
