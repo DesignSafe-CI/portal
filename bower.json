@@ -1,0 +1,14 @@
+{
+  "name": "designsafe-ci-portal",
+  "version": "0.0.0",
+  "authors": [
+    "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>"
+  ],
+  "description": "DesignSafe-CI Portal",
+  "license": "MIT",
+  "homepage": "designsafe-ci.org",
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "jquery": "~2.1.4"
+  }
+}

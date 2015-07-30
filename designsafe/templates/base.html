@@ -1,0 +1,28 @@
+{% load cms_tags staticfiles sekizai_tags menu_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="description" content="{{ site.description }}">
+      <link rel="icon" href="{% static "images/favicon.ico" %}">
+      <link rel="canonical" href="{{request.get_full_path}}">
+
+      <!-- styles -->
+      <link rel="stylesheet" href="{% static 'vendor/bootstrap/dist/css/bootstrap.min.css' %}">
+      {% render_block "css" %}
+  </head>
+  <body>
+    {% cms_toolbar %}
+
+    {% block content %}{% endblock %}
+
+    <!-- scripts -->
+    <script type="text/javascript" src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    {% render_block "js" %}
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

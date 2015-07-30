@@ -1,0 +1,37 @@
+Django==1.8.3
+django-bootstrap3==6.1.0
+django-classy-tags==0.6.2
+django-cms==3.1.2
+django-filer==0.9.12
+django-impersonate==0.9.1
+django-reversion==1.8.7
+django-sekizai==0.8.2
+Django-Select2==4.3.1
+django-termsandconditions==0.1.4
+django-treebeard==3.0
+djangocms-admin-style==0.2.7
+djangocms-column==1.5
+djangocms-file==0.1
+djangocms-flash==0.2.0
+djangocms-googlemap==0.3
+djangocms-inherit==0.1
+djangocms-link==1.6.2
+djangocms-picture==0.1
+djangocms-style==1.5
+djangocms-teaser==0.1
+djangocms-text-ckeditor==2.5.3
+djangocms-video==0.1
+html5lib==0.999
+MySQL-python==1.2.5
+Pillow==2.9.0
+ply==3.6
+pytz==2015.4
+requests==2.7.0
+rt==1.0.8
+six==1.9.0
+slimit==0.8.1
+virtualenv==13.0.1
+wheel==0.24.0
+
+# other
+-e git+https://github.com/jrief/djangocms-cascade.git@173731aa6f14b403c4f9a3b4e5626337a92f2320#egg=djangocms_cascade-master
