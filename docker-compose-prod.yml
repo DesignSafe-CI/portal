@@ -1,0 +1,25 @@
+data:
+  image: buildpack-deps:trusty
+  volumes:
+    - /var/www/designsafe-ci.org/media
+    - /var/www/designsafe-ci.org/static
+
+django:
+  build: .
+  env_file: designsafe.env
+  volumes_from:
+    - data
+
+nginx:
+  image: nginx
+  volumes:
+    - ./conf/nginx-tls.conf:/etc/nginx/nginx.conf
+    - ./certs:/etc/ssl/designsafe-ci.org
+    - ./conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
+  volumes_from:
+    - data
+  links:
+    - django:django
+  ports:
+    - 80:80
+    - 443:443

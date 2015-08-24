@@ -1,3 +1,13 @@
+# ignore the populated environment file so as not to commit secrets!
+designsafe.env
+certs/
+
+####
+#
+# Below is the Github-provided python .gitignore file
+#
+####
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
