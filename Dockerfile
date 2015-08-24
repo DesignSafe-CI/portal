@@ -4,7 +4,7 @@ MAINTAINER Matthew R Hanlon <mrhanlon@tacc.utexas.edu>
 
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["supervisord", "-n"]
 
 RUN apt-get update && \
     apt-get install -y python python-dev gettext supervisor && \
@@ -16,5 +16,7 @@ COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
 COPY . /portal
+
+RUN ln -s /portal/conf/supervisor.conf /etc/supervisor/conf.d/uwsgi.conf
 
 WORKDIR /portal
