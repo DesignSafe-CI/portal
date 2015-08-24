@@ -13,13 +13,10 @@ django:
 nginx:
   image: nginx
   volumes:
-    - ./conf/nginx-prod.conf:/etc/nginx/nginx.conf
-    - ./certs:/etc/ssl/designsafe-ci.org
-    - ./conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
+    - ./conf/nginx.conf:/etc/nginx/nginx.conf
   volumes_from:
     - data
   links:
     - django:django
   ports:
     - 80:80
-    - 443:443
