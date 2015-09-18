@@ -1,0 +1,164 @@
+.container {
+  background-image:url(../images/Map-BG.jpg);
+  background-repeat:repeat-x;
+  width:100%;
+  margin-top:0em;
+  padding: 1.5em 10%;
+}
+
+.container .jumbotron {
+  border-radius: 0;
+}
+
+.navline {
+  background-color: #ccc;
+  padding: 0.08em;
+  margin-bottom:0em;
+    border-radius: 0;
+}
+
+h1 {
+  font-size:38px;
+  color:#000;
+  text-transform:uppercase;
+  font-weight:bold;
+}
+
+.h1blue {
+  color:#136ac9;
+}
+
+.h1green {
+  color:#6caa39;
+}
+
+.h1line {
+  margin-top:-35px;
+}
+
+h2 {
+  font-size:24px;
+  color:#000;
+  text-transform:uppercase;
+}
+
+h3 {
+  font-size: 18px;
+  color:#4d4e4e;
+}
+
+h4 {
+  font-size: 16px;
+  color:#4d4e4e;
+  text-align:center;
+  margin-top:0px;
+}
+
+.workflow {
+  border:#136ac9 solid 2px;
+  padding: 10px;
+  margin:0px 0px 40px 0px;
+}
+
+.buttonlinks {
+  background: url(../images/button.jpg) 3px 1px no-repeat;
+  height: 74px;
+  width: auto;
+  text-align: center;
+  padding: 7px;
+  margin: auto;
+}
+
+.buttonlinks a:link, .buttonlinks a:visited, .buttonlinks a:active {
+  font-size: 1.6em;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.buttonlinks a:hover {
+  font-size: 1.6em;
+  color: #cccccc;
+  text-decoration: none;
+}
+
+table {
+  width:100%;
+}
+
+table, th, td {
+  border:#000 1px solid;
+}
+
+
+td {
+    padding: 5px;
+}
+
+#logos {
+  text-align:justify;
+    font-size: 0.1px; /* IE 9/10 fix */
+  margin-left:0px;
+  padding-left:0px;
+}
+
+
+#logos li {
+  display:inline-block;
+}
+
+#logos:after {
+  content: '';
+  width: 100%; /* Ensures justification for single lines */
+  display: inline-block;
+}
+
+.logo {
+  margin-top:17px;
+  margin-left:7px;
+  padding:0px;
+  height:35px;
+}
+
+.nsflogo {
+  margin-top:10px;
+  padding:0px;
+  height:45px;
+}
+
+
+.blueline {
+  clear: both;
+  margin: .7em 0 .7em 0;
+  padding: 0;
+  color: #136ac9;
+  background-color: #136ac9;
+  width: 100%;
+  border: 0;
+  height: 1px;
+}
+
+.bottomless {
+  margin-bottom:0px;
+  padding-bottom:0px;
+}
+
+.topless {
+  margin-top:0px;
+  padding-top:0px;
+}
+
+@media (max-width: 767px) {
+  .banner .wordmark {
+    clear: both;
+    margin-left: 0;
+    border-left: 0;
+  }
+
+  .banner .wordmark h1 {
+    font-size: 1.2em;
+  }
+
+  .banner .wordmark h2 {
+    font-size: 0.9em;
+  }
+}

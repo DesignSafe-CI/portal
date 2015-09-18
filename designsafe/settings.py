@@ -66,12 +66,13 @@ INSTALLED_APPS = (
     'impersonate',
 
     # custom
-    'designsafe.apps.tas',
+    'tas',
+    'meetings',
     # 'designsafe.apps.cilogon',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.tas.backends.TASBackend',
+    'tas.backends.TASBackend',
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -181,3 +182,55 @@ MIGRATION_MODULES = {
     'djangocms_teaser': 'djangocms_teaser.migrations_django',
     'djangocms_video': 'djangocms_video.migrations_django',
 }
+
+#####
+#
+# Logger config
+#
+#####
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'designsafe': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'meetings': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'tas': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('SMTP_HOST', 'localhost')
+EMAIL_PORT = os.environ.get('SMTP_PORT', 25)
+EMAIL_HOST_USER = os.environ.get('SMTP_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = 'admin@designsafe-ci.org'
+MEETING_REQUEST_EMAIL = 'mrhanlon@tacc.utexas.edu'

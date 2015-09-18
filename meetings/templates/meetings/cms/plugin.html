@@ -1,0 +1,9 @@
+{% load bootstrap3 %}
+
+<form method="post" action="{% url 'meetings:meeting_request' %}">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  <div class="actions">
+    <button type="submit" class="btn btn-primary">Submit request</button>
+  </div>
+</form>

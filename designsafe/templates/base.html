@@ -7,21 +7,23 @@
       <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
       <meta name="viewport" content="width=device-width">
       <meta name="description" content="{{ site.description }}">
-      <link rel="icon" href="{% static "images/favicon.ico" %}">
+      <link rel="icon" href="{% static 'favicon.ico' %}">
       <link rel="canonical" href="{{request.get_full_path}}">
 
       <!-- styles -->
       <link rel="stylesheet" href="{% static 'vendor/bootstrap/dist/css/bootstrap.min.css' %}">
+      <link rel="stylesheet" href="{% static 'styles/main.css' %}">
       {% render_block "css" %}
   </head>
   <body>
     {% cms_toolbar %}
 
+    {% include 'includes/messages.html' %}
+
     {% block content %}{% endblock %}
 
     <!-- scripts -->
-    <script type="text/javascript" src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/main.js' %}"></script>
     {% render_block "js" %}
     {% block scripts %}{% endblock %}
   </body>
