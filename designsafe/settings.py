@@ -64,6 +64,16 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
+
+    # custom
+    'designsafe.apps.tas',
+    # 'designsafe.apps.cilogon',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'designsafe.apps.tas.backends.TASBackend',
+    # 'designsafe.apps.cilogon.backends.CILogonBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 MIDDLEWARE_CLASSES = (
