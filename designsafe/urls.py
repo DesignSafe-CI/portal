@@ -20,7 +20,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = patterns('',
+
+    # admin
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/impersonate/', include('impersonate.urls')),
+
+    # apps
     url(r'^meetings/', include('meetings.urls', namespace='meetings')),
+
+    # cms handles everything else
     url(r'^', include('cms.urls')),
+
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
