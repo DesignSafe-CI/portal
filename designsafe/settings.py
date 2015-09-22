@@ -197,6 +197,15 @@ MIGRATION_MODULES = {
 
 #####
 #
+# Bootstrap3 Settings
+#
+#####
+BOOTSTRAP3 = {
+    'required_css_class': 'required',
+}
+
+#####
+#
 # Logger config
 #
 #####
