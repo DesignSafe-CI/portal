@@ -204,6 +204,15 @@ BOOTSTRAP3 = {
     'required_css_class': 'required',
 }
 
+
+#####
+#
+# Django Impersonate
+#
+#####
+IMPERSONATE_REQUIRE_SUPERUSER = True
+
+
 #####
 #
 # Logger config
