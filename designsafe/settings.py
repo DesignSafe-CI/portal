@@ -64,13 +64,13 @@ INSTALLED_APPS = (
     'impersonate',
 
     # custom
-    'tas',
-    'meetings',
+    'designsafe.apps.tas',
+    'designsafe.apps.meetings',
     # 'designsafe.apps.cilogon',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'tas.backends.TASBackend',
+    'designsafe.apps.tas.backends.TASBackend',
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )

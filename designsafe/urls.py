@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
     # apps
-    url(r'^meetings/', include('meetings.urls', namespace='meetings')),
+    url(r'^meetings/', include('designsafe.apps.meetings.urls', namespace='meetings')),
 
     # cms handles everything else
     url(r'^', include('cms.urls')),
