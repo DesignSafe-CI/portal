@@ -192,6 +192,7 @@ MIGRATION_MODULES = {
     'djangocms_picture': 'djangocms_picture.migrations_django',
     'djangocms_teaser': 'djangocms_teaser.migrations_django',
     'djangocms_video': 'djangocms_video.migrations_django',
+    'djangocms_style': 'djangocms_style.migrations_django',
 }
 
 #####
