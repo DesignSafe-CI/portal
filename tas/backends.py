@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
-from pytas.pytas import client as TASClient
+from pytas.http import TASClient
 import logging
 import re
 
