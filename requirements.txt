@@ -7,7 +7,7 @@ django-impersonate==0.9.1
 django-reversion==1.8.7
 django-sekizai==0.8.2
 Django-Select2==4.3.1
-django-termsandconditions==0.1.4
+django-termsandconditions==0.1.5
 django-treebeard==3.0
 djangocms-admin-style==0.2.7
 djangocms-cascade==0.6.1
