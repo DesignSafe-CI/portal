@@ -297,6 +297,9 @@ MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe
 ###
 # Pipeline
 #
+PIPELINE_CSS_COMPRESSOR = None
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
+
 PIPELINE_CSS = {
     'vendor': {
         'source_filenames': (
