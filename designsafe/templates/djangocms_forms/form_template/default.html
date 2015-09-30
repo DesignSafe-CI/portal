@@ -12,20 +12,29 @@
     <form action="{{ form.submission_url }}" method="POST" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
       <div class="form-errors" style="display:none;"></div>
       {% for field in form.visible_fields %}
-        <div class="form-group {{ field|input_class }} {{ field.css_classes }}{% if field|is_honeypot %} visuallyhidden{% endif %}">
-                    <div class="field-errors" style="display:none;"></div>
+        <div class="field-wrapper form-group {{ field|input_class }} {{ field.css_classes }}{% if field|is_honeypot %} visuallyhidden{% endif %}">
+
           {% if field|is_checkbox %}
-            {{ field }}
+            <div class="checkbox">
+              {{ field }}
+              <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+            </div>
           {% endif %}
-          <label for="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
+
           {% if not field|is_checkbox %}
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
             {{ field }}
           {% endif %}
+
           {% if field.help_text %}
-            <div id="help-text-{{ field.auto_id }}" class="help-text">{{ field.help_text|safe }}</div>
+            <div id="help-text-{{ field.auto_id }}" class="help-block">{{ field.help_text|safe }}</div>
           {% endif %}
+
+          <div class="field-errors text-danger" style="display:none;"></div>
         </div>
       {% endfor %}
       {% csrf_token %}
@@ -33,7 +42,7 @@
         {{ hidden }}
       {% endfor %}
       <div class="button-wrapper submit">
-        <button class="btn btn-primary" type="submit" value="{{ instance.submit_btn_txt }}">{{ instance.submit_btn_txt }}</button>
+        <button class="form-button btn btn-primary" type="submit" value="{{ instance.submit_btn_txt }}">{{ instance.submit_btn_txt }}</button>
       </div>
     </form>
   </div>
