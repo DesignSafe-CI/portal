@@ -322,9 +322,9 @@ PIPELINE_JS = {
         'source_filenames': (
           'vendor/jquery/dist/jquery.js',
           'vendor/bootstrap-ds/js/bootstrap.js',
-          'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
+          'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
         ),
-        'output_filename': 'js/stats.js',
+        'output_filename': 'js/vendor.js',
     },
     'main': {
         'source_filenames': (
