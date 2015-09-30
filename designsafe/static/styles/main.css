@@ -2,6 +2,7 @@ body {
   background-image: url(../images/Map-BG.jpg);
   background-repeat: no-repeat;
   background-size: contain;
+  min-height: 800px;
 }
 
 .site-banner {
