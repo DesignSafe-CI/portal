@@ -27,7 +27,7 @@ djangocms-video==0.1
 html5lib==0.999
 MySQL-python==1.2.5
 Pillow==2.9.0
-ply==3.6
+ply==3.4
 pytz==2015.4
 requests==2.7.0
 rt==1.0.8
