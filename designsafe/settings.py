@@ -56,7 +56,9 @@ INSTALLED_APPS = (
     'djangocms_googlemap',
     'djangocms_picture',
     'djangocms_video',
+    'djangocms_forms',
 
+    'pipeline',
     'filer',
     'reversion',
     'bootstrap3',
@@ -174,6 +176,14 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'designsafe', 'static'),
 )
 
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
+
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
 
@@ -181,7 +191,17 @@ CMS_TEMPLATES = (
     ('cms_page.html', 'Basic Page'),
 )
 
-CMSPLUGIN_CASCADE_PLUGINS = ('cmsplugin_cascade.bootstrap3',)
+CMSPLUGIN_CASCADE_PLUGINS = (
+    'cmsplugin_cascade.bootstrap3',
+    'cmsplugin_cascade.link',
+)
+
+CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
+    'TextPlugin',
+    'FilerImagePlugin',
+    'FormPlugin',
+    'MeetingFormPlugin',
+)
 
 MIGRATION_MODULES = {
     'djangocms_flash': 'djangocms_flash.migrations_django',
@@ -194,6 +214,14 @@ MIGRATION_MODULES = {
     'djangocms_video': 'djangocms_video.migrations_django',
     'djangocms_style': 'djangocms_style.migrations_django',
 }
+
+DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
+DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
+DJANGOCMS_FORMS_TEMPLATES = (
+    ('djangocms_forms/form_template/default.html', 'Default'),
+)
+DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
+DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
 
 #####
 #
@@ -264,4 +292,42 @@ EMAIL_PORT = os.environ.get('SMTP_PORT', 25)
 EMAIL_HOST_USER = os.environ.get('SMTP_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@designsafe-ci.org')
-MEETING_REQUEST_EMAIL = 'mrhanlon@tacc.utexas.edu'
+MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe-ci.org')
+
+
+###
+# Pipeline
+#
+PIPELINE_CSS = {
+    'vendor': {
+        'source_filenames': (
+          'vendor/bootstrap/dist/css/bootstrap.css',
+          'vendor/bootstrap/dist/css/bootstrap-theme.css',
+          'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+        ),
+        'output_filename': 'css/vendor.css',
+    },
+    'main': {
+        'source_filenames': (
+          'styles/main.css',
+        ),
+        'output_filename': 'css/main.css',
+    },
+}
+
+PIPELINE_JS = {
+    'vendor': {
+        'source_filenames': (
+          'vendor/jquery/dist/jquery.js',
+          'vendor/bootstrap/dist/js/bootstrap.js',
+          'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
+        ),
+        'output_filename': 'js/stats.js',
+    },
+    'analytics': {
+        'source_filenames': (
+          'scripts/ga.js',
+        ),
+        'output_filename': 'js/analytics.js',
+    }
+}

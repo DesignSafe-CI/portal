@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     url(r'^meetings/', include('designsafe.apps.meetings.urls', namespace='meetings')),
 
     # cms handles everything else
+    url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

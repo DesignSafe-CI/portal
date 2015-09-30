@@ -1,9 +1,10 @@
 Django<2.0.0
 django-bootstrap3==6.1.0
 django-classy-tags==0.6.2
-django-cms==3.1.2
+django-cms==3.1.3
 django-filer==0.9.12
 django-impersonate==0.9.1
+django-pipeline==1.5.4
 django-reversion==1.8.7
 django-sekizai==0.8.2
 Django-Select2==4.3.1
@@ -14,6 +15,7 @@ djangocms-cascade==0.6.1
 djangocms-column==1.5
 djangocms-file==0.1
 djangocms-flash==0.2.0
+djangocms-forms==0.1.12
 djangocms-googlemap==0.3
 djangocms-inherit==0.1
 djangocms-link==1.6.2
