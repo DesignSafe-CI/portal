@@ -67,7 +67,6 @@ INSTALLED_APPS = (
 
     # custom
     'designsafe.apps.tas',
-    'designsafe.apps.meetings',
     # 'designsafe.apps.cilogon',
 )
 
