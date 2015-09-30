@@ -1,63 +1,82 @@
-.container {
-  background-image:url(../images/Map-BG.jpg);
-  background-repeat:repeat-x;
-  width:100%;
-  margin-top:0em;
-  padding: 1.5em 10%;
+body {
+  background-image: url(../images/Map-BG.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
-.container .jumbotron {
-  border-radius: 0;
+.site-banner {
+  padding-top: 1.5em;
 }
 
-.navline {
-  background-color: #ccc;
-  padding: 0.08em;
-  margin-bottom:0em;
-    border-radius: 0;
+#site-nav {
+  padding-bottom: 1.5em;
 }
 
-h1 {
-  font-size:38px;
-  color:#000;
-  text-transform:uppercase;
-  font-weight:bold;
+#project-nav {
+  float: right;
 }
 
-.h1blue {
-  color:#136ac9;
+.nav a {
+  color: #4a4e4e;
+  font-weight: bold;
+  font-size: 1.2em;
 }
 
-.h1green {
-  color:#6caa39;
+.nav > li > a:hover, .nav > li > a:focus {
+  background-color: inherit;
+  color: #337AB7;
 }
 
-.h1line {
-  margin-top:-35px;
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+  background-color: inherit;
+  color: inherit;
+  border-bottom: .2em solid #337AB7;
 }
 
-h2 {
-  font-size:24px;
-  color:#000;
-  text-transform:uppercase;
+hr {
+  border-width: 0.16em 0 0 0;
+  border-color: #ccc;
 }
 
-h3 {
-  font-size: 18px;
-  color:#4d4e4e;
+h1, h2 {
+  text-transform: uppercase
+}
+
+h3, h4 {
+  color: #4d4e4e;
 }
 
 h4 {
-  font-size: 16px;
-  color:#4d4e4e;
-  text-align:center;
-  margin-top:0px;
+  font-style: italic;
 }
 
-.workflow {
-  border:#136ac9 solid 2px;
-  padding: 10px;
-  margin:0px 0px 40px 0px;
+.headline {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.headline::after {
+  content: "___";
+  color: #333;
+  position: absolute;
+  left: 0;
+  bottom: -0.2em;
+}
+
+.hl-research, .headline-research::after {
+  color: #136ac9;
+}
+
+.hl-ef, .headline-ef::after {
+  color: #ca463e;
+}
+
+.hl-community, .headline-community::after {
+  color: #6caa39;
+}
+
+.hl-learning, .headline-learning::after {
+  color: #a5a4a4;
 }
 
 .buttonlinks {
@@ -81,84 +100,104 @@ h4 {
   text-decoration: none;
 }
 
-table {
-  width:100%;
-}
-
-table, th, td {
-  border:#000 1px solid;
-}
-
-
-td {
-    padding: 5px;
-}
-
 #logos {
-  text-align:justify;
-    font-size: 0.1px; /* IE 9/10 fix */
-  margin-left:0px;
-  padding-left:0px;
+  text-align: center;
 }
-
 
 #logos li {
-  display:inline-block;
-}
-
-#logos:after {
-  content: '';
-  width: 100%; /* Ensures justification for single lines */
   display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.logo {
-  margin-top:17px;
-  margin-left:7px;
-  padding:0px;
-  height:35px;
+.required label:after {
+  content: "(required)";
+  font-weight: 300;
+  font-size: .9em;
+  color: #A94442;
 }
 
-.nsflogo {
-  margin-top:10px;
-  padding:0px;
-  height:45px;
+.error {
+  color: #A94442;
 }
 
-
-.blueline {
-  clear: both;
-  margin: .7em 0 .7em 0;
-  padding: 0;
-  color: #136ac9;
-  background-color: #136ac9;
-  width: 100%;
-  border: 0;
-  height: 1px;
+.box {
+  border: 1px solid #4a4e4e;
 }
 
-.bottomless {
-  margin-bottom:0px;
-  padding-bottom:0px;
+.box-topper {
+  background-size: cover;
+  padding: 5px;
 }
 
-.topless {
-  margin-top:0px;
-  padding-top:0px;
+.box-topper-research {
+  background-image: url('../images/Sub-Nav-Blue.jpg')
 }
 
-@media (max-width: 767px) {
-  .banner .wordmark {
-    clear: both;
-    margin-left: 0;
-    border-left: 0;
-  }
+.box-topper-ef {
+  background-image: url('../images/Sub-Nav-Red.jpg')
+}
 
-  .banner .wordmark h1 {
-    font-size: 1.2em;
-  }
+.box-topper-community {
+  background-image: url('../images/Sub-Nav-Green.jpg')
+}
 
-  .banner .wordmark h2 {
-    font-size: 0.9em;
-  }
+.box-topper-learning {
+  background-image: url('../images/Sub-Nav-Grey.jpg')
+}
+
+.box-content {
+  padding: 10px;
+}
+
+.box-content h4 {
+  font-style: normal;
+  font-weight: bold;
+}
+
+.ds-icon {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  background-size: cover;
+}
+
+.ds-icon-cloud-disk {
+  background-image: url('../images/ds-icons/Icon-Data-Depot.png');
+}
+.ds-icon-desktop-compass {
+  background-image: url('../images/ds-icons/Icon-Disc-Workspace.png');
+}
+.ds-icon-portal-eye {
+  background-image: url('../images/ds-icons/Icon-Recon.png');
+}
+.ds-icon-portal-code {
+  background-image: url('../images/ds-icons/Icon-Dev-port.png');
+}
+.ds-icon-home {
+  background-image: url('../images/ds-icons/Icon-Fac-list.png');
+}
+.ds-icon-desktop-calendar {
+  background-image: url('../images/ds-icons/Icon-Schedule.png');
+}
+.ds-icon-document-bolt {
+  background-image: url('../images/ds-icons/Icon-Rapid.png');
+}
+.ds-icon-group {
+  background-image: url('../images/ds-icons/Icon-Exist-Comm.png');
+}
+.ds-icon-group-add {
+  background-image: url('../images/ds-icons/Icon-New-Comm.png');
+}
+.ds-icon-toolbox {
+  background-image: url('../images/ds-icons/Icon-Comm-tools.png');
+}
+.ds-icon-document-copy {
+  background-image: url('../images/ds-icons/Icon-Train-Resources.png');
+}
+.ds-icon-support {
+  background-image: url('../images/ds-icons/Icon-Use-Support.png');
+}
+.ds-icon-lightbulb {
+  background-image: url('../images/ds-icons/Icon-Students.png');
 }
