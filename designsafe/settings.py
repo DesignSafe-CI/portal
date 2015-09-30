@@ -301,8 +301,8 @@ MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe
 PIPELINE_CSS = {
     'vendor': {
         'source_filenames': (
-          'vendor/bootstrap/dist/css/bootstrap.css',
-          'vendor/bootstrap/dist/css/bootstrap-theme.css',
+          'vendor/bootstrap-ds/css/bootstrap.css',
+          'vendor/bootstrap-ds/css/bootstrap-theme.css',
           'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
         ),
         'output_filename': 'css/vendor.css',
@@ -319,10 +319,16 @@ PIPELINE_JS = {
     'vendor': {
         'source_filenames': (
           'vendor/jquery/dist/jquery.js',
-          'vendor/bootstrap/dist/js/bootstrap.js',
+          'vendor/bootstrap-ds/js/bootstrap.js',
           'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
         ),
         'output_filename': 'js/stats.js',
+    },
+    'main': {
+        'source_filenames': (
+          'scripts/dateinput.js',
+        ),
+        'output_filename': 'js/main.js',
     },
     'analytics': {
         'source_filenames': (
