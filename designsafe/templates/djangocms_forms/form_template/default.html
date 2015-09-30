@@ -1,0 +1,72 @@
+{% load cms_tags  djangocms_forms_tags i18n sekizai_tags staticfiles %}
+<div class="forms" id="{{ instance.form_id }}">
+  {% if instance.title %}
+    <h3 class="title">{{ instance.title }}</h3>
+  {% endif %}
+  {% if instance.description %}
+    <p class="description">
+      {{ instance.description|safe }}
+    </p>
+  {% endif %}
+  <div class="form-wrapper">
+    <form action="{{ form.submission_url }}" method="POST" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+      <div class="form-errors" style="display:none;"></div>
+      {% for field in form.visible_fields %}
+        <div class="form-group {{ field|input_class }} {{ field.css_classes }}{% if field|is_honeypot %} visuallyhidden{% endif %}">
+                    <div class="field-errors" style="display:none;"></div>
+          {% if field|is_checkbox %}
+            {{ field }}
+          {% endif %}
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {% if not field|is_checkbox %}
+            {{ field }}
+          {% endif %}
+          {% if field.help_text %}
+            <div id="help-text-{{ field.auto_id }}" class="help-text">{{ field.help_text|safe }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      {% csrf_token %}
+      {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+      {% endfor %}
+      <div class="button-wrapper submit">
+        <button class="btn btn-primary" type="submit" value="{{ instance.submit_btn_txt }}">{{ instance.submit_btn_txt }}</button>
+      </div>
+    </form>
+  </div>
+  <div class="form-success" style="display: none;">
+    <div class="alert alert-success">
+      {% if instance.post_submit_msg %}
+        <p>{{ instance.post_submit_msg|safe }}</p>
+      {% else %}
+        <h4>{% trans 'Submission successful' %}</h4>
+        <p>{% trans 'Thank You! Your form has been successfully submitted!' %}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% addtoblock "css" %}
+    {% if instance.use_honeypot %}
+        <style type="text/css">
+            .visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+        </style>
+    {% endif %}
+{% endaddtoblock %}
+{% addtoblock "js" %}
+    {% if instance.use_recaptcha %}
+        <script src="//www.google.com/recaptcha/api.js?onload=reCapctchaOnloadCallback&render=explicit" async defer></script>
+    {% endif %}
+  <script src="{% static 'js/djangocms_forms/libs/jquery.form.min.js' %}"></script>
+  <script src="{% static 'js/djangocms_forms/jquery.djangocms-forms.js' %}"></script>
+
+  <script type="application/javascript">
+    $(function() {
+      $('.forms').cmsForms({'reCaptchaSiteKey': '{{ recaptcha_site_key }}'});
+    });
+  </script>
+{% endaddtoblock %}
+
