@@ -25,9 +25,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
-    # apps
-    url(r'^meetings/', include('designsafe.apps.meetings.urls', namespace='meetings')),
-
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),
