@@ -7,19 +7,25 @@ body {
 
 .site-banner {
   padding-top: 1.5em;
+  padding-bottom: 1em;
 }
 
+/*
 .navbar-ds {
-  border-bottom: 2px solid #ccc;
+  background-color: #999;
+  background-image: linear-gradient(to bottom, #aaa 0%, #888 100%);
+  border-color: #888;
 }
 
-.navbar-ds .navbar-brand {
-  color: #4a4e4e;
+.navbar-ds .navbar-brand,
+.navbar-ds .navbar-nav > li > a {
+  color: #eee;
+  text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.25);
 }
 
-.navbar-ds a {
-  color: #4a4e4e;
-  font-weight: bold;
+.navbar-ds .navbar-nav > li > a:hover,
+.navbar-ds .navbar-nav > li > a:focus {
+  color: #337AB7;
 }
 
 .navbar-ds .navbar-toggle {
@@ -30,14 +36,40 @@ body {
 .navbar-ds .navbar-toggle .icon-bar {
   background-color: #4a4e4e;
 }
+*/
+
+.navbar-ds {
+  text-align: center;
+  border-bottom: 2px solid #ccc;
+}
+
+.navbar-ds a {
+  display: inline-block;
+  margin: 1.5em 2.5em;
+  border-bottom: 2px solid transparent;
+}
+
+.navbar-ds a:hover {
+  text-decoration: none;
+}
 
 #project-nav {
   float: right;
+  margin-top: 20px;
 }
 
+.navbar-ds a,
 #project-nav a {
   color: #4a4e4e;
   font-weight: bold;
+  font-size: 1.2em;
+}
+
+@media (max-width: 991px) {
+  .navbar-ds a,
+  #project-nav a {
+    font-size: inherit;
+  }
 }
 
 #project-nav a:hover, #project-nav a:focus {
@@ -95,6 +127,30 @@ h4 {
 
 .hl-learning, .headline-learning::after {
   color: #a5a4a4;
+}
+
+.hover-text {
+  color: inherit;
+}
+
+.hover-text.hl-research:hover, .hover-text.hl-research:focus {
+  color: #136ac9;
+  border-color: #136ac9;
+}
+
+.hover-text.hl-ef:hover, .hover-text.hl-ef:focus {
+  color: #ca463e;
+  border-color: #ca463e;
+}
+
+.hover-text.hl-community:hover, .hover-text.hl-community:focus {
+  color: #6caa39;
+  border-color: #6caa39;
+}
+
+.hover-text.hl-learning:hover, .hover-text.hl-learning:focus {
+  color: #a5a4a4;
+  border-color: #a5a4a4;
 }
 
 .buttonlinks {
@@ -184,7 +240,7 @@ h4 {
   display: inline-block;
   width: 48px;
   height: 48px;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }
