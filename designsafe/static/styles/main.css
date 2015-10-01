@@ -126,6 +126,9 @@ h4 {
   background-color: #fff;
   border: 1px solid #4a4e4e;
   margin-bottom: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
 }
 
 .box-topper {
@@ -151,6 +154,8 @@ h4 {
 
 .box-content {
   padding: 10px;
+  height: 160px;
+  overflow: hidden;
 }
 
 .box-content h4 {
@@ -165,6 +170,16 @@ h4 {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: 50% 50%;
+}
+
+.ds-icon-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.ds-icon-lg {
+  width: 64px;
+  height: 64px;
 }
 
 .ds-icon-cloud-disk {
