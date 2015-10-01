@@ -20,3 +20,5 @@ COPY . /portal
 RUN ln -s /portal/conf/supervisor.conf /etc/supervisor/conf.d/uwsgi.conf
 
 WORKDIR /portal
+
+RUN python manage.py collectstatic --noinput
