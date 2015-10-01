@@ -10,34 +10,6 @@ body {
   padding-bottom: 1em;
 }
 
-/*
-.navbar-ds {
-  background-color: #999;
-  background-image: linear-gradient(to bottom, #aaa 0%, #888 100%);
-  border-color: #888;
-}
-
-.navbar-ds .navbar-brand,
-.navbar-ds .navbar-nav > li > a {
-  color: #eee;
-  text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.25);
-}
-
-.navbar-ds .navbar-nav > li > a:hover,
-.navbar-ds .navbar-nav > li > a:focus {
-  color: #337AB7;
-}
-
-.navbar-ds .navbar-toggle {
-  background-color: white;
-  border-color: #ccc;
-}
-
-.navbar-ds .navbar-toggle .icon-bar {
-  background-color: #4a4e4e;
-}
-*/
-
 .navbar-ds {
   text-align: center;
   border-bottom: 2px solid #ccc;
@@ -45,8 +17,22 @@ body {
 
 .navbar-ds a {
   display: inline-block;
-  margin: 1.5em 2.5em;
+  margin: 1.5em;
   border-bottom: 2px solid transparent;
+}
+
+@media (min-width: 992px) {
+  .navbar-ds a {
+    margin-left: 2.0em;
+    margin-right: 2.0em;
+  }
+}
+
+@media (min-width: 1200px) {
+  .navbar-ds a {
+    margin-left: 3em;
+    margin-right: 3em;
+  }
 }
 
 .navbar-ds a:hover {
