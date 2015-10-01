@@ -9,26 +9,43 @@ body {
   padding-top: 1.5em;
 }
 
-#site-nav {
-  padding-bottom: 1.5em;
+.navbar-ds {
+  border-bottom: 2px solid #ccc;
+}
+
+.navbar-ds .navbar-brand {
+  color: #4a4e4e;
+}
+
+.navbar-ds a {
+  color: #4a4e4e;
+  font-weight: bold;
+}
+
+.navbar-ds .navbar-toggle {
+  background-color: white;
+  border-color: #ccc;
+}
+
+.navbar-ds .navbar-toggle .icon-bar {
+  background-color: #4a4e4e;
 }
 
 #project-nav {
   float: right;
 }
 
-.nav a {
+#project-nav a {
   color: #4a4e4e;
   font-weight: bold;
-  font-size: 1.2em;
 }
 
-.nav > li > a:hover, .nav > li > a:focus {
+#project-nav a:hover, #project-nav a:focus {
   background-color: inherit;
   color: #337AB7;
 }
 
-.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+#project-nav li.active > a, #project-nav li.active > a:hover, #project-nav li.active > a:focus {
   background-color: inherit;
   color: inherit;
   border-bottom: .2em solid #337AB7;
