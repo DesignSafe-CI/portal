@@ -220,7 +220,19 @@ DJANGOCMS_FORMS_TEMPLATES = (
     ('djangocms_forms/form_template/default.html', 'Default'),
 )
 DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
-DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {'__all__': ('form-control', ) }
+DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
+    'text': ('form-control', ),
+    'textarea': ('form-control', ),
+    'email': ('form-control', ),
+    'number': ('form-control', ),
+    'phone': ('form-control', ),
+    'url': ('form-control', ),
+    'select': ('form-control', ),
+    'file': ('form-control', ),
+    'date': ('form-control', ),
+    'time': ('form-control', ),
+    'password': ('form-control', ),
+}
 
 #####
 #

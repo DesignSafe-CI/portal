@@ -15,9 +15,12 @@
         <div class="field-wrapper form-group {{ field|input_class }} {{ field.css_classes }}{% if field|is_honeypot %} visuallyhidden{% endif %}">
 
           {% if field|is_checkbox %}
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
             <div class="checkbox">
-              {{ field }}
               <label for="{{ field.id_for_label }}">
+                {{ field }}
                 {{ field.label }}
               </label>
             </div>

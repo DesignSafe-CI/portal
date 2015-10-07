@@ -169,11 +169,25 @@ h4 {
   margin-right: 10px;
 }
 
-.required label:after {
+label.required:after,
+.required > label:after,
+.required > .checkbox > label:after {
   content: "(required)";
   font-weight: 300;
   font-size: .9em;
   color: #A94442;
+}
+
+.checkboxselectmultiple ul,
+.radioselect ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.checkboxselectmultiple ul li label,
+.radioselect ul li label {
+  font-weight: normal;
+  cursor: pointer;
 }
 
 .error {
