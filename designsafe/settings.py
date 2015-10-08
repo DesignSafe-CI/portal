@@ -351,3 +351,19 @@ PIPELINE_JS = {
         'output_filename': 'js/analytics.js',
     }
 }
+
+###
+# Opbeat Integration
+#
+if os.environ.get('OPBEAT_ORGANIZATION_ID'):
+    INSTALLED_APPS += (
+        'opbeat.contrib.django',
+    )
+    OPBEAT = {
+        'ORGANIZATION_ID': os.environ.get('OPBEAT_ORGANIZATION_ID', ''),
+        'APP_ID': os.environ.get('OPBEAT_APP_ID', ''),
+        'SECRET_TOKEN': os.environ.get('OPBEAT_SECRET_TOKEN', ''),
+    }
+    MIDDLEWARE_CLASSES = (
+        'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
+    ) + MIDDLEWARE_CLASSES
