@@ -32,7 +32,7 @@
     "@line-height-base": "1.428571429",
     "@line-height-computed": "floor((@font-size-base * @line-height-base))",
     "@headings-font-family": "futura-pt, \"Helvetica Neue\", Helvetica, Arial, sans-serif",
-    "@headings-font-weight": "500",
+    "@headings-font-weight": "600",
     "@headings-line-height": "1.05",
     "@headings-color": "inherit",
     "@icon-font-path": "\"../fonts/\"",

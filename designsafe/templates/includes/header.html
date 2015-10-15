@@ -1,16 +1,11 @@
 {% load staticfiles %}
 <header class="container site-banner">
-  <a href="/">
+  <a class="logo" href="/">
     <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
     <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="80" width="300">
   </a>
 
-  <ul id="project-nav" class="nav nav-pills">
-    <li role="presentation" class="{% if request.path == '/about/' %}active{% endif %}">
-      <a href="/about">About</a>
-    </li>
-    <li role="presentation" class="{% if request.path == '/contact/' %}active{% endif %}">
-      <a href="/contact">Contact</a>
-    </li>
-  </ul>
+  <div class="tagline">
+    <h2>A Cloud-based Environment for Research in Natural Hazards Engineering</h2>
+  </div>
 </header>

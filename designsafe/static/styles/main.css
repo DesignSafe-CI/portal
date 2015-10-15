@@ -4,68 +4,95 @@ body {
   background-size: 100% auto;
 }
 
+body.navbar-fixed {
+  padding-top: 60px;
+}
+
 .site-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding-top: 1.5em;
   padding-bottom: 1em;
 }
 
+.site-banner .tagline {
+  font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #136ac9;
+  text-transform: uppercase;
+  flex-grow: 2;
+}
+
+.site-banner .tagline h2 {
+  font-weight: 400;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .site-banner .tagline h2 {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 768px) {
+  .site-banner .tagline {
+    text-align: right;
+  }
+
+  .site-banner .tagline h2 {
+    max-width: 530px;
+    float: right;
+    margin: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-banner {
+    flex-direction: column;
+  }
+
+  .site-banner .tagline {
+    max-width: 530px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 370px) {
+  .site-banner .tagline h2 {
+    font-size: 22px;
+  }
+}
+
 .navbar-ds {
-  text-align: center;
+  font-stretch: condensed;
+  font-family: "HelveticaNeue-CondensedBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #fff;
+  border-top: 1px solid #ccc;
   border-bottom: 2px solid #ccc;
 }
 
-.navbar-ds a {
-  display: inline-block;
-  margin: 1.5em;
-  border-bottom: 2px solid transparent;
-}
-
-@media (min-width: 992px) {
-  .navbar-ds a {
-    margin-left: 2.0em;
-    margin-right: 2.0em;
-  }
-}
-
-@media (min-width: 1200px) {
-  .navbar-ds a {
-    margin-left: 3em;
-    margin-right: 3em;
-  }
-}
-
-.navbar-ds a:hover {
-  text-decoration: none;
-}
-
-#project-nav {
-  float: right;
-  margin-top: 20px;
-}
-
-.navbar-ds a,
-#project-nav a {
-  color: #4a4e4e;
-  font-weight: bold;
+.navbar-ds .navbar-brand,
+.navbar-ds .navbar-nav > li > a {
+  color: #494d4e;
   font-size: 1.2em;
 }
 
-@media (max-width: 991px) {
-  .navbar-ds a,
-  #project-nav a {
-    font-size: inherit;
+.navbar-ds .navbar-nav > li > a:hover,
+.navbar-ds .navbar-nav > li > a:focus {
+
+}
+
+.navbar-ds .navbar-nav > .active > a,
+.navbar-ds .navbar-nav > .active > a:hover,
+.navbar-ds .navbar-nav > .active > a:focus {
+
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .navbar-ds .navbar-nav > li > a {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 1.1em;
   }
-}
-
-#project-nav a:hover, #project-nav a:focus {
-  background-color: inherit;
-  color: #337AB7;
-}
-
-#project-nav li.active > a, #project-nav li.active > a:hover, #project-nav li.active > a:focus {
-  background-color: inherit;
-  color: inherit;
-  border-bottom: .2em solid #337AB7;
 }
 
 hr {

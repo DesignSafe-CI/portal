@@ -317,7 +317,7 @@ PIPELINE_CSS = {
     'vendor': {
         'source_filenames': (
           'vendor/bootstrap-ds/css/bootstrap.css',
-          'vendor/bootstrap-ds/css/bootstrap-theme.css',
+          # 'vendor/bootstrap-ds/css/bootstrap-theme.css',
           'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
         ),
         'output_filename': 'css/vendor.css',
@@ -342,6 +342,7 @@ PIPELINE_JS = {
     'main': {
         'source_filenames': (
           'scripts/dateinput.js',
+          'scripts/navbar.js',
         ),
         'output_filename': 'js/main.js',
     },
