@@ -35,6 +35,7 @@ six==1.9.0
 slimit==0.8.1
 virtualenv==13.0.1
 wheel==0.24.0
+opbeat
 
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.0.0#egg=pytas-v1.0.0
