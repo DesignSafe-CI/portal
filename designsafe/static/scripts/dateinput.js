@@ -1,5 +1,5 @@
 (function(window, $, undefined) {
-  $(':input.dateinput').datepicker({
+  $('.dateinput > :input').datepicker({
     autoclose: true
   });
 })(window, jQuery);
