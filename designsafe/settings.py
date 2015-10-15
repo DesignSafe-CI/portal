@@ -113,6 +113,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
+                'designsafe.context_processors.analytics',
             ],
         },
     },
@@ -344,12 +345,6 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/main.js',
     },
-    'analytics': {
-        'source_filenames': (
-          'scripts/ga.js',
-        ),
-        'output_filename': 'js/analytics.js',
-    }
 }
 
 ###
