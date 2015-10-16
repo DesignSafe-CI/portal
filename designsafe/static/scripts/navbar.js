@@ -22,15 +22,21 @@
     };
   }
 
-  $(window).on('scroll', throttle(function(e) {
+  var supportPageOffset = window.pageXOffset !== undefined;
+  var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
+
+  var fixer = function(e) {
     var h = $('.site-banner').height();
-    if (e.originalEvent.pageY > h) {
+    var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+    if (y > h) {
       $('.navbar-ds').addClass('navbar-fixed-top');
       $('body').addClass('navbar-fixed');
     } else {
       $('.navbar-ds').removeClass('navbar-fixed-top');
       $('body').removeClass('navbar-fixed');
     }
-  }, 100));
+  };
+  $(document).on('scroll', throttle(fixer, 100));
+  fixer();
 
 })(this, jQuery);
