@@ -341,6 +341,7 @@ PIPELINE_JS = {
     },
     'main': {
         'source_filenames': (
+          'scripts/utils.js',
           'scripts/dateinput.js',
           'scripts/navbar.js',
         ),

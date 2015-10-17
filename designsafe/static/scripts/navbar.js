@@ -1,26 +1,4 @@
 (function(window, $, undefined) {
-  function throttle(fn, threshhold, scope) {
-    threshhold || (threshhold = 250);
-    var last,
-        deferTimer;
-    return function () {
-      var context = scope || this;
-
-      var now = +new Date,
-          args = arguments;
-      if (last && now < last + threshhold) {
-        // hold on to it
-        clearTimeout(deferTimer);
-        deferTimer = setTimeout(function () {
-          last = now;
-          fn.apply(context, args);
-        }, threshhold);
-      } else {
-        last = now;
-        fn.apply(context, args);
-      }
-    };
-  }
 
   var supportPageOffset = window.pageXOffset !== undefined;
   var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
@@ -36,7 +14,62 @@
       $('body').removeClass('navbar-fixed');
     }
   };
-  $(document).on('scroll', throttle(fixer, 100));
+  $(document).on('scroll', window.throttle(fixer, 100));
   fixer();
 
-})(this, jQuery);
+  if (window.location.pathname === '/') {
+    var navbar = $('.navbar-ds');
+    var getCurrentSection = function(e) {
+      var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
+      y = y+1;
+      var active = {
+        community: false,
+        research: false,
+        ef: false,
+        learning: false
+      };
+      var pos = {
+        community: $('#community').offset().top,
+        research: $('#research').offset().top,
+        ef: $('#ef').offset().top,
+        learning: $('#learning').offset().top
+      };
+      if (y >= pos.learning) {
+        return 'learning';
+      } else if (y >= pos.ef) {
+        return 'ef';
+      } else if (y >= pos.research) {
+        return 'research';
+      } else if (y >= pos.community) {
+        return 'community';
+      } else {
+        return false;
+      }
+    };
+
+    window.history.replaceState({}, 'current_section', '#');
+
+    var activateSection = function() {
+      var section = getCurrentSection();
+      var state = {};
+      var hash = '#';
+      if (section) {
+        hash = hash + section;
+        state.section = hash;
+      }
+
+      window.history.replaceState(state, 'current_section', hash);
+
+      var activeNav = false;
+      if (hash !== '#') {
+        activeNav = $('a[href="/' + hash + '"]', navbar);
+        activeNav.parent().addClass('active');
+      }
+      $('a', navbar).not(activeNav).parent().removeClass('active');
+    };
+
+    $(document).on('scroll', window.throttle(activateSection, 100));
+    activateSection();
+  }
+
+})(window, jQuery);

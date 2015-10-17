@@ -8,6 +8,10 @@ body.navbar-fixed {
   padding-top: 60px;
 }
 
+.cms-toolbar-expanded .navbar-ds.navbar-fixed-top {
+  top: 29px;
+}
+
 .site-banner {
   display: flex;
   align-items: center;
@@ -64,7 +68,7 @@ body.navbar-fixed {
 
 .navbar-ds {
   font-stretch: condensed;
-  font-family: "HelveticaNeue-CondensedBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: futura-pt, "HelveticaNeue-CondensedBold", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-color: #fff;
   border-top: 1px solid #ccc;
   border-bottom: 2px solid #ccc;
@@ -76,15 +80,50 @@ body.navbar-fixed {
   font-size: 1.2em;
 }
 
-.navbar-ds .navbar-nav > li > a:hover,
-.navbar-ds .navbar-nav > li > a:focus {
+.navbar-ds .navbar-nav > li > a:after {
+  content: '';
+  height: 4px;
+  position: absolute;
+  width: 0;
+  bottom: -1px;
+  left: 50%;
+  background: #a5a4a4;
+  -moz-transition: width 100ms ease-in-out, left 100ms ease-in-out;
+  -o-transition: width 100ms ease-in-out, left 100ms ease-in-out;
+  -webkit-transition: width 100ms ease-in-out, left 100ms ease-in-out;
+  transition: width 100ms ease-in-out, left 100ms ease-in-out;
+}
 
+.navbar-ds .navbar-nav > li > a.hl-community:after {
+  background: #6caa39;
+}
+.navbar-ds .navbar-nav > li > a.hl-research:after {
+  background: #136ac9;
+}
+.navbar-ds .navbar-nav > li > a.hl-ef:after {
+  background: #ca463e;
+}
+.navbar-ds .navbar-nav > li > a.hl-learning:after {
+  background: #a5a4a4;
+}
+
+.navbar-ds .navbar-nav > li > a:hover:after,
+.navbar-ds .navbar-nav > li > a:focus:after {
+  width: 100%;
+  left: 0;
 }
 
 .navbar-ds .navbar-nav > .active > a,
 .navbar-ds .navbar-nav > .active > a:hover,
 .navbar-ds .navbar-nav > .active > a:focus {
+  background: inherit;
+}
 
+.navbar-ds .navbar-nav > .active > a:after,
+.navbar-ds .navbar-nav > .active > a:hover:after,
+.navbar-ds .navbar-nav > .active > a:focus:after {
+  width: 100%;
+  left: 0;
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
