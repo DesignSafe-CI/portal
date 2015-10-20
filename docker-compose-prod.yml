@@ -7,11 +7,17 @@ data:
 django:
   build: .
   env_file: designsafe.env
+  log_driver: syslog
+  log_opt:
+    syslog-tag: django
   volumes_from:
     - data
 
 nginx:
   image: nginx
+  log_driver: syslog
+  log_opt:
+    syslog-tag: nginx
   volumes:
     - ./conf/nginx-prod.conf:/etc/nginx/nginx.conf
     - ./certs:/etc/ssl/designsafe-ci.org

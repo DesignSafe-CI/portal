@@ -6,6 +6,9 @@ data:
 django:
   build: .
   env_file: designsafe.env
+  log_driver: syslog
+  log_opt:
+    syslog-tag: django
   volumes:
     - /var/www/designsafe-ci.org/static
   volumes_from:
@@ -13,6 +16,9 @@ django:
 
 nginx:
   image: nginx
+  log_driver: syslog
+  log_opt:
+    syslog-tag: nginx
   volumes:
     - ./conf/nginx-qa.conf:/etc/nginx/nginx.conf
     - ./certs:/etc/ssl/designsafe-ci.org
