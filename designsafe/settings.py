@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'djangocms_admin_style',
     'djangocms_text_ckeditor',
     'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
 
     'django.contrib.admin',
     'django.contrib.auth',
