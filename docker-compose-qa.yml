@@ -5,6 +5,7 @@ data:
 
 django:
   build: .
+  restart: always
   env_file: designsafe.env
   log_driver: syslog
   log_opt:
@@ -16,6 +17,7 @@ django:
 
 nginx:
   image: nginx
+  restart: always
   log_driver: syslog
   log_opt:
     syslog-tag: nginx
