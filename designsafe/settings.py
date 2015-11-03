@@ -235,6 +235,7 @@ DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
     'time': ('form-control', ),
     'password': ('form-control', ),
 }
+DJANGOCMS_FORMS_DATETIME_FORMAT = '%d-%b-%Y %H:%M'
 
 #####
 #
