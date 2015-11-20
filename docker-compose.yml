@@ -6,3 +6,80 @@ django:
   ports:
     - 8000:8000
   command: python manage.py runserver 0.0.0.0:8000
+
+#fiu-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.lehigh-ef
+#  command: python manage.py runserver 0.0.0.0:8001
+#
+#lehigh-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.lehigh-ef
+#  command: python manage.py runserver 0.0.0.0:8002
+#
+#oregonstate-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.oregonstate-ef
+#  command: python manage.py runserver 0.0.0.0:8003
+#
+#ucdavis-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.ucdavis-ef
+#  command: python manage.py runserver 0.0.0.0:8004
+#
+#ucsd-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.ucsd-ef
+#  command: python manage.py runserver 0.0.0.0:8005
+#
+#ufl-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.ufl-ef
+#  command: python manage.py runserver 0.0.0.0:8006
+#
+#utexas-ef:
+#  build: .
+#  env_file: designsafe.env
+#  volumes:
+#    - .:/portal
+#  ports:
+#    - 8001:8001
+#  environment:
+#    DJANGO_SETTINGS_MODULE: designsafe.sites.utexas-ef
+#  command: python manage.py runserver 0.0.0.0:8007
