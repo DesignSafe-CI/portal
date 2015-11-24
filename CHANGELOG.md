@@ -2,13 +2,9 @@
 
 ## v0.2.0
 
-October 15, 2015
+November 24, 2015
 
-- Redesign section navigation
-- Redesign site tagline
-- Implement basic news app
-- Implement basic events app
-- announce@designsafe-ci.org subscription management
+- Added EF site subdomains
 
 ## v0.1.1
 
