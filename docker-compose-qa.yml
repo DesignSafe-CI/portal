@@ -4,7 +4,7 @@ data:
     - /designsafe/media:/var/www/designsafe-ci.org/media
 
 django:
-  build: .
+  image: designsafe/portal
   restart: always
   env_file: designsafe.env
   log_driver: syslog
@@ -23,7 +23,7 @@ nginx:
     syslog-tag: nginx
   volumes:
     - ./conf/nginx-qa.conf:/etc/nginx/nginx.conf
-    - ./certs:/etc/ssl/designsafe-ci.org
+    - ./certs/main:/etc/ssl/designsafe-ci.org
     - ./conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
   volumes_from:
     - data

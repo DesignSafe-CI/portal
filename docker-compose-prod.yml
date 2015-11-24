@@ -2,15 +2,100 @@ data:
   image: buildpack-deps:trusty
   volumes:
     - /var/www/designsafe-ci.org/media
-    - /var/www/designsafe-ci.org/static
 
 django:
-  build: .
+  image: designsafe/portal
   restart: always
   env_file: designsafe.env
   log_driver: syslog
   log_opt:
-    syslog-tag: django
+    syslog-tag: main
+  volumes:
+    - /var/www/designsafe-ci.org/static
+  volumes_from:
+    - data
+
+fiu_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.fiu_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: fiu_ef
+  volumes_from:
+    - data
+
+lehigh_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.lehigh_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: lehigh_ef
+  volumes_from:
+    - data
+
+oregonstate_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.oregonstate_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: oregonstate_ef
+  volumes_from:
+    - data
+
+ucdavis_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.ucdavis_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: ucdavis_ef
+  volumes_from:
+    - data
+
+ucsd_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.ucsd_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: ucsd_ef
+  volumes_from:
+    - data
+
+ufl_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.ufl_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: ufl_ef
+  volumes_from:
+    - data
+
+utexas_ef:
+  image: designsafe/portal
+  restart: always
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.utexas_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: utexas_ef
   volumes_from:
     - data
 
@@ -22,12 +107,21 @@ nginx:
     syslog-tag: nginx
   volumes:
     - ./conf/nginx-prod.conf:/etc/nginx/nginx.conf
-    - ./certs:/etc/ssl/designsafe-ci.org
+    - ./certs/main:/etc/ssl/designsafe-ci.org
+    - ./certs/ef:/etc/ssl/ef.designsafe-ci.org
     - ./conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
   volumes_from:
     - data
+    - django
   links:
     - django:django
+    - fiu_ef:fiu_ef
+    - lehigh_ef:lehigh_ef
+    - oregonstate_ef:oregonstate_ef
+    - ucdavis_ef:ucdavis_ef
+    - ucsd_ef:ucsd_ef
+    - ufl_ef:ufl_ef
+    - utexas_ef:utexas_ef
   ports:
     - 80:80
     - 443:443
