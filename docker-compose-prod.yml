@@ -1,10 +1,10 @@
 data:
   image: buildpack-deps:trusty
   volumes:
-    - /var/www/designsafe-ci.org/media
+    - /designsafe/media:/var/www/designsafe-ci.org/media
 
 django:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   log_driver: syslog
@@ -16,7 +16,7 @@ django:
     - data
 
 fiu_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -28,7 +28,7 @@ fiu_ef:
     - data
 
 lehigh_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -40,7 +40,7 @@ lehigh_ef:
     - data
 
 oregonstate_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -52,7 +52,7 @@ oregonstate_ef:
     - data
 
 ucdavis_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -64,7 +64,7 @@ ucdavis_ef:
     - data
 
 ucsd_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -76,7 +76,7 @@ ucsd_ef:
     - data
 
 ufl_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -88,7 +88,7 @@ ufl_ef:
     - data
 
 utexas_ef:
-  image: designsafe/portal
+  image: designsafeci/portal
   restart: always
   env_file: designsafe.env
   environment:
@@ -106,10 +106,10 @@ nginx:
   log_opt:
     syslog-tag: nginx
   volumes:
-    - ./conf/nginx-prod.conf:/etc/nginx/nginx.conf
-    - ./certs/main:/etc/ssl/designsafe-ci.org
-    - ./certs/ef:/etc/ssl/ef.designsafe-ci.org
-    - ./conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
+    - /designsafe/certs/main:/etc/ssl/designsafe-ci.org
+    - /designsafe/certs/ef:/etc/ssl/ef.designsafe-ci.org
+    - /designsafe/portal/conf/nginx-prod.conf:/etc/nginx/nginx.conf
+    - /designsafe/portal/conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
   volumes_from:
     - data
     - django
