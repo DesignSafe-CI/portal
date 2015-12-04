@@ -200,6 +200,7 @@ CMSPLUGIN_CASCADE_PLUGINS = (
 
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'TextPlugin',
+    'StylePlugin',
     'FilerImagePlugin',
     'FormPlugin',
     'MeetingFormPlugin',
