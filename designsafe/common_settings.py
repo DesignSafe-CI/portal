@@ -69,6 +69,7 @@ INSTALLED_APPS = (
     # custom
     'designsafe.apps.tas',
     # 'designsafe.apps.cilogon',
+    'designsafe.apps.cms_plugins',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -202,6 +203,7 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'FilerImagePlugin',
     'FormPlugin',
     'MeetingFormPlugin',
+    'ResponsiveEmbedPlugin',
 )
 
 MIGRATION_MODULES = {
