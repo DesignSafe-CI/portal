@@ -68,11 +68,13 @@ INSTALLED_APPS = (
 
     # custom
     'designsafe.apps.tas',
+    'designsafe.apps.api',
+    'designsafe.apps.api.data',
     # 'designsafe.apps.cilogon',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.tas.backends.TASBackend',
+    #'designsafe.apps.tas.backends.TASBackend',
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )

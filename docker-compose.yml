@@ -5,6 +5,9 @@ django:
     - .:/portal
   ports:
     - 8000:8000
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
   command: python manage.py runserver 0.0.0.0:8000
 
 #fiu-ef:

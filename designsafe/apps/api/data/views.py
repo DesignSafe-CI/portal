@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from dsapi.agave.files import *
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 #This should probably use @login_required

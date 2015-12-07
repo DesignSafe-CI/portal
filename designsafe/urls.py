@@ -24,6 +24,9 @@ urlpatterns = patterns('',
     # admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
+    
+    # api urls, just for the samples.
+    url(r'^api/v1/', include('designsafe.apps.api.urls')),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
