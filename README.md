@@ -74,6 +74,27 @@ the Django `settings.py` with `designsafe.apps.{app_name}`.
 
 See the [DesignSafe Styles Reference][7] for style reference and custom CSS documentation.
 
+## Production setup
+
+The production setup registers the container composition as a systemd service.
+
+1. Create a non-root user in the docker group, e.g., portal.
+2. Create the directory `/designsafe` owned by portal
+3. Create `/designsafe/media` for user-uploaded data and `/designsafe/certs`.
+4. Place the main site TLS certificate/key in `/designsafe/certs/www` and the EF site TLS
+   certificate/key in `/designsafe/certs/ef`.
+5. Copy [`docker-compose-prod.yml`](docker-compose-prod.yml) to `/designsafe/docker-compose.yml`.
+6. Copy ['etc/designsafe.service'](etc/designsafe.service) to `/etc/systemd/system/designsafe.service`.
+7. Copy [`designsafe.env.sample`](designsafe.env.sample) to `/designsafe/designsafe.env` and configure
+   as necessary.
+8. Enable and start the service:
+
+   ```
+   $ systemctl enable designsafe
+   $ systemctl start designsafe
+   ```
+
+
 
 [1]: https://docs.docker.com/
 [2]: https://docs.docker.com/compose/
