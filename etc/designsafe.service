@@ -1,0 +1,13 @@
+[Unit]
+Description=DesignSafe Portal
+Requires=docker.service
+After=docker.service
+
+[Service]
+User=portal
+ExecStart=/usr/local/bin/docker-compose -f /designsafe/docker-compose.yml up
+ExecStop=/usr/local/bin/docker-compose stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
