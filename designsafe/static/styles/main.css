@@ -20,20 +20,48 @@ body.navbar-fixed {
   padding-bottom: 1em;
 }
 
+.site-banner .banner-right {
+  flex-grow: 2;
+}
+
+.user-menu {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.user-menu a {
+  font-weight: bold;
+  border: 2px solid #337AB7;
+  text-decoration: none;
+  padding: .1em .5em;
+}
+
+.user-menu a:hover, .user-menu a:focus {
+  border-color: #23527c;
+}
+
 .site-banner .tagline {
   font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #136ac9;
   text-transform: uppercase;
-  flex-grow: 2;
 }
 
 .site-banner .tagline h2 {
   font-weight: 400;
+  font-size: 22px;
+}
+
+.wf-active .site-banner .tagline h2 {
+  font-size: 24px;
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
   .site-banner .tagline h2 {
-    font-size: 22px;
+    font-size: 18px;
+  }
+
+  .wf-active .site-banner .tagline h2 {
+    font-size: 20px;
   }
 }
 

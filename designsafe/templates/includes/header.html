@@ -1,11 +1,24 @@
 {% load staticfiles %}
 <header class="container site-banner">
-  <a class="logo" href="/">
-    <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
-    <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="80" width="300">
-  </a>
+  <div class="banner-left">
+    <a class="logo" href="/">
+      <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
+      <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="80" width="300">
+    </a>
+  </div>
 
-  <div class="tagline">
-    <h2>A Cloud-based Environment for Research in Natural Hazards Engineering</h2>
+  <div class="banner-right">
+    <div class="user-menu">
+      {% if user.is_authenticated %}
+        Welcome, {{ user.first_name }}!&nbsp;
+        <a href="{% url 'designsafe_accounts:index' %}">My account</a>
+      {% else %}
+        <a href="{% url 'designsafe_accounts:login' %}">Log in</a>
+      {% endif %}
+    </div>
+
+    <div class="tagline">
+      <h2>A Cloud-based Environment for Research in Natural Hazards Engineering</h2>
+    </div>
   </div>
 </header>
