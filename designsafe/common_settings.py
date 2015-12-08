@@ -68,6 +68,7 @@ INSTALLED_APPS = (
 
     # custom
     'designsafe.apps.auth',
+    'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
 )
 

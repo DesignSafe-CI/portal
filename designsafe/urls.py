@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
     # auth
+    url(r'^accounts/', include('designsafe.apps.accounts.urls', namespace='designsafe_accounts')),
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
 
     # cms handles everything else
