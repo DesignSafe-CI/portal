@@ -23,7 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
+# SESSIONS
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS_HOST = 'redis'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
@@ -66,6 +69,9 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
 
+    #websockets
+    'ws4redis',
+
     # custom
     'designsafe.apps.tas',
     #apis
@@ -81,6 +87,13 @@ AUTHENTICATION_BACKENDS = (
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+# CACHES = {
+#   'default': {
+#       'BACKEND': 'redis_cache.RedisCache',
+#       'LOCATION': 'redis:6379',
+#   },
+#}
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -119,6 +132,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
+                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
             ],
         },
@@ -369,3 +383,13 @@ if os.environ.get('OPBEAT_ORGANIZATION_ID'):
     MIDDLEWARE_CLASSES = (
         'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
     ) + MIDDLEWARE_CLASSES
+
+##
+# django-websockets-redis
+#
+WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+WEBSOCKET_URL = '/ws/'
+WS4REDIS_CONNECTION = {
+    'host': 'redis',
+}
+WS4REDIS_EXPIRE = 3600

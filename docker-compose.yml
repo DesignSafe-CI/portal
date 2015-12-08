@@ -1,6 +1,11 @@
+redis:
+    image: redis
+
 django:
   build: .
   env_file: designsafe.env
+  links:
+    - redis:redis
   volumes:
     - .:/portal
   ports:

@@ -24,6 +24,11 @@ djangocms-style==1.5
 djangocms-teaser==0.1
 djangocms-text-ckeditor==2.5.3
 djangocms-video==0.1
+# Web socket redis
+django-websocket-redis
+django-redis-sessions
+django-redis-cache
+# end wsr
 html5lib==0.999
 MySQL-python==1.2.5
 Pillow==2.9.0
