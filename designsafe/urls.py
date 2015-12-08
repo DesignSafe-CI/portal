@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
+    # auth
+    url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
+
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),

@@ -67,13 +67,13 @@ INSTALLED_APPS = (
     'impersonate',
 
     # custom
-    'designsafe.apps.tas',
-    # 'designsafe.apps.cilogon',
+    'designsafe.apps.auth',
     'designsafe.apps.cms_plugins',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.tas.backends.TASBackend',
+    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TASBackend',
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -367,3 +367,15 @@ if os.environ.get('OPBEAT_ORGANIZATION_ID'):
     MIDDLEWARE_CLASSES = (
         'opbeat.contrib.django.middleware.OpbeatAPMMiddleware',
     ) + MIDDLEWARE_CLASSES
+
+
+###
+# Agave Integration
+#
+# Agave Tenant Configuration
+AGAVE_TENANT_ID = os.environ.get('AGAVE_TENANT_ID')
+AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
+#
+# Agave Client Configuration
+AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
+AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
