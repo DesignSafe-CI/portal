@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     # api urls, just for the samples.
     url(r'^api/v1/', include('designsafe.apps.api.urls')),
     url(r'^data/', include('designsafe.apps.data.urls')),
+    url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),

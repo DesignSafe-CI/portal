@@ -1,43 +1,50 @@
 /* ds.data controller */
 (function(){
     'use strict';
-    function DataController($scope, dataAPIService){
-        var vm = this;
-        vm.path = 'jcoronel';
-        vm.getList = getList;
-        vm.rootFolder = true;
-        vm.parentPath = '';
-        vm.list = [];
-        vm.loading = true;
-        getList(vm.path);
+    function DataController($rootScope, $scope, dataAPIService){
+        var dataVM = this;
+        dataVM.path = 'jcoronel';
+        dataVM.getList = getList;
+        dataVM.rootFolder = true;
+        dataVM.parentPath = '';
+        dataVM.list = [];
+        dataVM.loading = true;
+        getList(dataVM.path);
 
         function getList(path){
-            vm.loading = true;
-            vm.path = path;
+            broadcastEvent('ds.data:openFolder', path);
+            dataVM.loading = true;
+            dataVM.path = path;
             dataAPIService.getList(path).then(function(d){
-                vm.list = d.data;
-                var pathArr = vm.list[0].href;
+                dataVM.list = d.data;
+                var pathArr = dataVM.list[0].href;
                 pathArr = pathArr.substring(0, path.length);
                 pathArr = pathArr.split('/');
                 if(pathArr.length > 2){
-                    vm.rootFolder = false;
-                    vm.parentPath = '';
+                    dataVM.rootFolder = false;
+                    dataVM.parentPath = '';
                     pathArr.forEach(function(element, index, array){
                         if(index === 0 || index > (array.length - 2)){
                             return;
                         }
-                        vm.parentPath += '/' + element;
+                        dataVM.parentPath += '/' + element;
                     });
                 } else {
-                    vm.rootFolder = true;
-                    vm.parentPath = '';
+                    dataVM.rootFolder = true;
+                    dataVM.parentPath = '';
                 }
-                vm.loading = false;
+                dataVM.loading = false;
             });
+        }
+
+        function broadcastEvent(event, path){
+            var data = {};
+            data.message = 'Path opened: ' + path;
+            $rootScope.$broadcast('ds.data:openFolder', data);
         }
     }
 
     angular.module('ds.data')
     .controller('DataController', 
-        ['$scope', 'dataAPIService', DataController]);
+        ['$rootScope', '$scope', 'dataAPIService', DataController]);
 })();

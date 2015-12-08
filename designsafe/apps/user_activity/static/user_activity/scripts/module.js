@@ -8,5 +8,5 @@
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     }
 
-    angular.module('ds.dataApp', ['ds.api.data', 'ds.data', 'ds.userActivity']).config(config);
+    angular.module('ds.userActivity', []).config(config);
 })();

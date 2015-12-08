@@ -10,11 +10,19 @@
             </div>
         </div>
     <div>
+    <div class="row col-xs-6">
+        <div class="user-activity" ng-controller="UserActivityController as ua">
+            <div ng-include="'/user_activity/template/activity_browser.html'">
+            </div>
+        </div>
+    </div>
 </div>
 
 {% addtoblock "js" %}
     <script src="{% static 'api/data/scripts/module.js' %}"></script>
     <script src="{% static 'api/data/scripts/service.js' %}"></script>
+    <script src="{% static 'user_activity/scripts/module.js' %}"></script>
+    <script src="{% static 'user_activity/scripts/controller.js' %}"></script>
     <script src="{% static 'data/scripts/module.js' %}"></script>
     <script src="{% static 'data/scripts/controller.js' %}"></script>
     <script src="{% static 'data/scripts/app.js' %}"></script>
