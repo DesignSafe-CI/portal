@@ -42,6 +42,12 @@
             data.message = 'Path opened: ' + path;
             $rootScope.$broadcast('ds.data:openFolder', data);
         }
+
+        function init(){
+            $rootScope.$on('ds.wsBus:ds.data:openFolder', function(event, action){
+                getList(action);
+            });
+        }
     }
 
     angular.module('ds.data')
