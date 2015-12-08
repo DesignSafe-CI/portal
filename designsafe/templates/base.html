@@ -30,8 +30,8 @@
     {% javascript 'main' %}
     <script src="//use.typekit.net/tku7ygd.js"></script>
     <script>try{Typekit.load({ async: true });}catch(e){}</script>
-    {% render_block "js" %}
     {% block scripts %}{% endblock %}
+    {% render_block "js" %}
     {% include 'includes/analytics.html' %}
   </body>
 </html>

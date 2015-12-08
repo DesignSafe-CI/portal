@@ -68,8 +68,10 @@ INSTALLED_APPS = (
 
     # custom
     'designsafe.apps.tas',
+    #apis
     'designsafe.apps.api',
     'designsafe.apps.api.data',
+    'designsafe.apps.data',
     # 'designsafe.apps.cilogon',
 )
 

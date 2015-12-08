@@ -1,0 +1,22 @@
+{% extends "base_angular.html" %}
+{% load cms_tags staticfiles sekizai_tags pipeline %}
+{% block content %}
+
+<div class="container" ng-app="ds.dataApp">
+    <h1>Data thingy</h1>
+    <div class="row col-xs-6">
+        <div class="data-browser" ng-controller="DataController as fs">
+            <div ng-include="'/data/template/filesystem.html'">
+            </div>
+        </div>
+    <div>
+</div>
+
+{% addtoblock "js" %}
+    <script src="{% static 'api/data/scripts/module.js' %}"></script>
+    <script src="{% static 'api/data/scripts/service.js' %}"></script>
+    <script src="{% static 'data/scripts/module.js' %}"></script>
+    <script src="{% static 'data/scripts/controller.js' %}"></script>
+    <script src="{% static 'data/scripts/app.js' %}"></script>
+{% endaddtoblock %}
+{% endblock %}
