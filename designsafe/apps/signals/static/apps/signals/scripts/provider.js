@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    function WSBusService(configURL, $rootScope, $cookies){
+    function WSBusService(configURL, $rootScope){
         var ws;
         var service = {
             init: init,
@@ -37,13 +37,13 @@
 
     function WSBusServiceProvider($injector){
         var configURL = '';
-        this.$get = ['$rootScope', '$cookies', wsBusHelper];
+        this.$get = ['$rootScope', wsBusHelper];
 
         this.setUrl = function setUrl(url){
             configURL = url;
         };
-        function wsBusHelper($rootScope, $cookies){
-            return new WSBusService(configURL, $rootScope, $cookies);
+        function wsBusHelper($rootScope){
+            return new WSBusService(configURL, $rootScope);
         }
     }
 
