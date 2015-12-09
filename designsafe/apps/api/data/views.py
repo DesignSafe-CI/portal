@@ -20,6 +20,6 @@ def list_path(request):
     af = AgaveFiles(url, token)
     l = af.list_path(path)
     
-    DataEvent.send_event(session_id = request.session.session_key, event_data = {'path': path, 'callback': 'getList'})
+    DataEvent.send_event(event_data = {'path': path, 'callback': 'getList'})
 
     return HttpResponse(json.dumps(l), content_type="application/json")

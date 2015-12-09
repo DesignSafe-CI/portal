@@ -12,17 +12,14 @@ logger = logging.getLogger(__name__)
 
 @receiver(ds_event)
 def ds_event_callback(sender, **kwargs):
-    session_id = kwargs.get('session_id', '')
     event_type = kwargs.get('event_type', '')
     event_data = kwargs.get('event_data', '')
 
     logger.info('Event received from {0}'.format(sender))
-    logger.info('Session Id: {0}'.format(session_id))
     logger.info('Event Type: {0}'.format(event_type))
     logger.info('Event Data: {0}'.format(event_data))
 
     data = {
-        'sessionId': session_id,
         'eventType': event_type,
         'data': event_data,
         }

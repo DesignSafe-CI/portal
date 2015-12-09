@@ -3,11 +3,17 @@
     function UserActivityController($rootScope, $scope){
         var activityVM = this;
         activityVM.actions = [];
-        
-        $rootScope.$on('ds.data:openFolder', pushAction);
+        init();
+              
+        function init(){                
+            $rootScope.$on('ds.wsBus:default', pushAction);
+        }
 
-        function pushAction(event, action){
-            activityVM.actions.push(action);
+        function pushAction(event, msg){
+            var action = JSON.stringify(msg);
+            if (activityVM.actions[activityVM.actions.length - 1] !== action){
+                activityVM.actions.push(msg);
+            }
         }
     }
 

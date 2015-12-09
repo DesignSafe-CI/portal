@@ -48,7 +48,6 @@
         }
 
         function processMessage(event, msg){
-            console.log('Event msg: ', msg);
             if(msg.eventType !== 'data'){
                 return;
             }

@@ -1,6 +1,6 @@
-<span> User Activity </span>
+<h2> User Activity </h2>
 <ul>
-    <li ng-repeat="a in ua.actions">
-        [[a.message]]
+    <li ng-repeat="a in ua.actions track by $index">
+        [[a]]
     </li>
 </ul>

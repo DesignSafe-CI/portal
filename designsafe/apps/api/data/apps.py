@@ -15,6 +15,6 @@ class DataEvent(object):
     event_type = 'data'
     
     @classmethod
-    def send_event(self, session_id, event_data):
+    def send_event(self, event_data):
         logger.info('sending event...')
-        ds_event.send(sender=self.__class__, session_id = session_id, event_type = self.event_type, event_data = event_data);        
+        ds_event.send(sender=self.__class__, event_type = self.event_type, event_data = event_data);        
