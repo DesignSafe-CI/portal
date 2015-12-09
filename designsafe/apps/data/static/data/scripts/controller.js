@@ -11,8 +11,9 @@
         dataVM.loading = true;
         getList(dataVM.path);
 
+        init();
+
         function getList(path){
-            broadcastEvent('ds.data:openFolder', path);
             dataVM.loading = true;
             dataVM.path = path;
             dataAPIService.getList(path).then(function(d){
@@ -37,17 +38,21 @@
             });
         }
 
-        function broadcastEvent(event, path){
-            var data = {};
-            data.message = 'Path opened: ' + path;
-            $rootScope.$broadcast('ds.data:openFolder', data);
+        function init(){
+            $rootScope.$on('ds.wsBus:default', processMessage);
+
         }
 
-        function init(){
-            $rootScope.$on('ds.wsBus:ds.data:openFolder', function(event, action){
-                getList(action);
-            });
+        function processMessage(event, data){
+            if(data.event !== 'data'){
+                return;
+            }
+            console.log('Event: ', data.data);
+            console.log('eventType: ', dataVM[data.data.eventType]);
+            //dataVM[data.eventType](data.args);
+            //getList(action);
         }
+
     }
 
     angular.module('ds.data')

@@ -2,7 +2,7 @@
     'use strict';
     function filesystem($http, $scope){
         // this should not exists.
-        var token = 'fa868e6e6690606471dcb5c525f8';
+        var token = '992043306e550dea0f2f9cd99b8f081';
         // Alright, alright, alright from now on.
         var service = {
             getList: getList,

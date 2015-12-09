@@ -4,6 +4,9 @@ from dsapi.agave.files import *
 import json
 import logging
 
+from ws4redis.publisher import RedisPublisher
+from ws4redis.redis_store import RedisMessage
+
 logger = logging.getLogger(__name__)
 # Create your views here.
 
@@ -18,4 +21,9 @@ def list_path(request):
     path = request.GET.get('path')
     af = AgaveFiles(url, token)
     l = af.list_path(path)
+
+    redis_publisher = RedisPublisher(facility = 'data', broadcast=True)
+    message = RedisMessage('{{"event": "data", "data":{{"eventType": "getList", "path": "{0}" }} }}'.format(path))
+    redis_publisher.publish_message(message)
+
     return HttpResponse(json.dumps(l), content_type="application/json")
