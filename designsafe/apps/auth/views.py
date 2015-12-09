@@ -58,14 +58,8 @@ def agave_oauth_callback(request):
         token['created'] = int(time.time())
         request.session['agave_token'] = token
 
-        response = requests.get('%s/profiles/v2/me' % tenantBaseUrl, headers={
-            'Authorization': 'Bearer %s' % token['access_token']
-            })
-        agave_user = response.json()
-
         # log user in
-        user = authenticate(backend='agave', username=agave_user['result']['username'],
-                            token=token['access_token'])
+        user = authenticate(backend='agave', token=token['access_token'])
         if user:
             login(request, user)
     else:

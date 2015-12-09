@@ -76,21 +76,19 @@ class AgaveOAuthBackend(ModelBackend):
         user = None
 
         if 'backend' in kwargs and kwargs['backend'] == 'agave':
-            username = kwargs['username']
             token = kwargs['token']
             tenantBaseUrl = getattr(settings, 'AGAVE_TENANT_BASEURL')
 
-            self.logger.info('Attempting login via Agave for user "%s"' % username)
+            self.logger.info('Attempting login via Agave with token "%s"' %
+                token[:8].ljust(len(token), '-'))
 
             response = requests.get('%s/profiles/v2/me' % tenantBaseUrl, headers={
                 'Authorization': 'Bearer %s' % token
                 })
             json_result = response.json()
             if json_result['status'] == 'success':
-                self.logger.info('Login successful for user "%s"' % username)
-
                 agave_user = json_result['result']
-
+                username = agave_user['username']
                 UserModel = get_user_model()
                 try:
                     user = UserModel.objects.get(username=username)
@@ -107,4 +105,5 @@ class AgaveOAuthBackend(ModelBackend):
                         email=agave_user['email']
                         )
 
+                self.logger.info('Login successful for user "%s"' % username)
         return user
