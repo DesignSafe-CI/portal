@@ -1,11 +1,11 @@
 (function(){
     'use strict';
-    function WSBusService(configURL, $rootScope){
+    function WSBusService(configURL, $rootScope, $cookies){
         var ws;
         var service = {
             init: init,
             ws: ws,
-            url: configURL,
+            url: configURL
         };
 
         return service;
@@ -18,7 +18,7 @@
             };
             ws.onmessage = function(e){
                 var res = JSON.parse(e.data);
-                processWSMessage(res.event, res.data);
+                processWSMessage(res);
             };
             ws.onerror = function(e){
                 console.log('WS error: ', e);
@@ -26,26 +26,24 @@
             ws.onclose = function(e){
                 console.log('connection closed');
             };
-            console.log('WSBusController initialized');
+            service.ws = ws;
         }
 
-        function processWSMessage(event, data){
+        function processWSMessage(msg){
             //var rScope = $injector.get('$rootScope');
-            $rootScope.$broadcast('ds.wsBus:default', {event: event, data:data});
+            $rootScope.$broadcast('ds.wsBus:default', msg);
         }
     }
 
     function WSBusServiceProvider($injector){
         var configURL = '';
-        this.$get = ['$rootScope', wsBusHelper];
+        this.$get = ['$rootScope', '$cookies', wsBusHelper];
 
         this.setUrl = function setUrl(url){
-            console.log('setting url', url);
             configURL = url;
         };
-
-        function wsBusHelper($rootScope){
-            return new WSBusService(configURL, $rootScope);
+        function wsBusHelper($rootScope, $cookies){
+            return new WSBusService(configURL, $rootScope, $cookies);
         }
     }
 

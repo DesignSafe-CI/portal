@@ -2,6 +2,9 @@
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 {% block scripts %}
     <script src="{%static 'vendor/angular/angular.min.js' %}"></script>
-    <script src="{%static 'scripts/designsafe/ws-bus/module.js' %}"></script>
-    <script src="{%static 'scripts/designsafe/ws-bus/provider.js' %}"></script>
+    <script src="{%static 'vendor/angular-cookies/angular-cookies.min.js' %}"></script>
+    {% addtoblock "js" %}
+    <script src="{%static 'apps/signals/scripts/module.js' %}"></script>
+    <script src="{%static 'apps/signals/scripts/provider.js' %}"></script>
+    {% endaddtoblock %}
 {% endblock %}

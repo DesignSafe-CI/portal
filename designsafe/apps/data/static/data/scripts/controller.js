@@ -9,11 +9,15 @@
         dataVM.parentPath = '';
         dataVM.list = [];
         dataVM.loading = true;
-        getList(dataVM.path);
+        getList(dataVM.path + '/');
 
         init();
 
         function getList(path){
+            if(path == dataVM.path){
+                return;
+            }
+            console.log('Opening: ', path);
             dataVM.loading = true;
             dataVM.path = path;
             dataAPIService.getList(path).then(function(d){
@@ -43,13 +47,12 @@
 
         }
 
-        function processMessage(event, data){
-            if(data.event !== 'data'){
+        function processMessage(event, msg){
+            console.log('Event msg: ', msg);
+            if(msg.eventType !== 'data'){
                 return;
             }
-            console.log('Event: ', data.data);
-            console.log('eventType: ', dataVM[data.data.eventType]);
-            //dataVM[data.eventType](data.args);
+            dataVM[msg.data.callback](msg.data.path);
             //getList(action);
         }
 

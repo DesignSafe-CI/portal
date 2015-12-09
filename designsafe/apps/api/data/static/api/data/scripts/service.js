@@ -1,8 +1,8 @@
 (function(){
     'use strict';
-    function filesystem($http, $scope){
+    function filesystem($http){
         // this should not exists.
-        var token = '992043306e550dea0f2f9cd99b8f081';
+        var token = '4e2440c811d6f8b24911b30b77e1241';
         // Alright, alright, alright from now on.
         var service = {
             getList: getList,
@@ -14,15 +14,10 @@
                 method: 'GET',
                 url: '/api/v1/data/list-path?token=' + token + '&path=' + path,
             });
-            /*.then(function successCallback(response){
-                return response.data;
-            }, function errorCallback(response){
-                return [];
-            });*/
         }
     }
     angular.module('ds.api.data')
     .factory('dataAPIService', 
-        ['$http', filesystem]);
+        ['$http', 'WSBusService', filesystem]);
 
 })();

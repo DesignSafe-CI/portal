@@ -8,5 +8,5 @@
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     }
 
-    angular.module('ds.api.data', []).config(config);
+    angular.module('ds.api.data', ['ds.wsBus']).config(config);
 })();

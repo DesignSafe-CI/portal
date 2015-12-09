@@ -77,6 +77,10 @@ INSTALLED_APPS = (
     #apis
     'designsafe.apps.api',
     'designsafe.apps.api.data',
+    
+    'designsafe.apps.signals',
+
+    #Designsafe apps
     'designsafe.apps.data',
     'designsafe.apps.user_activity',
     # 'designsafe.apps.cilogon',
