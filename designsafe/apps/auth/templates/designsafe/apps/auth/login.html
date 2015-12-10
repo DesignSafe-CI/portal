@@ -9,7 +9,7 @@
 {% endaddtoblock %}
 
 <div class="container">
-  <h1 class="headline headline-community"><span class="hl-community">Log in</span><br>to DesignSafe-CI</h1>
+  <h1 class="headline headline-community"><span class="hl-community">Log in</span> to DesignSafe-CI</h1>
   <p class="lead">
     Choose an option below to log in to DesignSafe-CI.
   </p>
@@ -25,9 +25,28 @@
         <p>
           <a href="{% url 'designsafe_auth:agave_oauth' %}">Log in using your TACC Account.</a>
         </p>
-        <a href="https://portal.tacc.utexas.edu/account-request">Register for a TACC account</a>
+        <a href="{% url 'designsafe_accounts:register' %}">Register for a TACC account</a>
         &bull;
-        <a href="https://www.tacc.utexas.edu">Visit TACC</a>
+        <a href="https://www.tacc.utexas.edu">TACC Website</a>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="login-option-block corner-ribbon-container">
+        <p>
+          <button class="btn btn-lg btn-default" disabled>
+            <img height="80" alt="InCommon" title="Log in with InCommon" src="{% static 'designsafe/apps/auth/logos/incommon.gif'%}">
+          </button>
+        </p>
+
+        <p>
+          Log in using University or Institution credentials.
+        </p>
+        <a href="http://www.incommon.org/">More information about InCommon Federation</a>
+
+        <div class="corner-ribbon top-left shadow orange">
+          Coming Soon!
+        </div>
       </div>
     </div>
 
@@ -44,26 +63,7 @@
         </p>
         <a href="https://portal.xsede.org/register">Register for an XSEDE account</a>
         &bull;
-        <a href="https://www.xsede.org">Visit XSEDE</a>
-
-        <div class="corner-ribbon top-left shadow orange">
-          Coming Soon!
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-4">
-      <div class="login-option-block corner-ribbon-container">
-        <p>
-          <button class="btn btn-lg btn-default" disabled>
-            <img height="80" alt="InCommon" title="Log in with InCommon" src="{% static 'designsafe/apps/auth/logos/incommon.gif'%}">
-          </button>
-        </p>
-
-        <p>
-          Log in using University or Institution credentials.
-        </p>
-        <a href="https://www.xsede.org">More information about InCommon Federation</a>
+        <a href="https://www.xsede.org">XSEDE Website</a>
 
         <div class="corner-ribbon top-left shadow orange">
           Coming Soon!
