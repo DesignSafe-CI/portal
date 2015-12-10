@@ -387,3 +387,10 @@ label.required:after,
 .ds-icon-lightbulb {
   background-image: url('../images/ds-icons/Icon-Students.png');
 }
+
+/* apply alert-danger style for alert-error */
+.alert-error {
+  background-color: #F2DEDE;
+  border-color: #EBCCD1;
+  color: #A94442;
+}

@@ -13,7 +13,7 @@
         Welcome, {{ user.first_name }}!&nbsp;
         <a href="{% url 'designsafe_accounts:index' %}">My account</a>
       {% else %}
-        <a href="{% url 'designsafe_accounts:login' %}">Log in</a>
+        <a href="{% url 'login' %}">Log in</a>
       {% endif %}
     </div>
 

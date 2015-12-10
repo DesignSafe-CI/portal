@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load staticfiles sekizai_tags %}
+{% block title %}Log in to DesignSafe-CI{% endblock %}
+
+{% block content %}
+
+{% addtoblock 'css' %}
+  <link href="{% static 'designsafe/apps/auth/designsafe_auth.css' %}" rel="stylesheet">
+{% endaddtoblock %}
+
+<div class="container">
+  <h1 class="headline headline-community"><span class="hl-community">Log in</span><br>to DesignSafe-CI</h1>
+  <p class="lead">
+    Choose an option below to log in to DesignSafe-CI.
+  </p>
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="login-option-block">
+        <p>
+          <a href="{% url 'designsafe_auth:agave_oauth' %}" class="btn btn-lg btn-default">
+            <img height="80" alt="TACC" title="Log in with TACC" src="{% static 'designsafe/apps/auth/logos/tacc.svg'%}">
+          </a>
+        </p>
+
+        <p>
+          <a href="{% url 'designsafe_auth:agave_oauth' %}">Log in using your TACC Account.</a>
+        </p>
+        <a href="https://portal.tacc.utexas.edu/account-request">Register for a TACC account</a>
+        &bull;
+        <a href="https://www.tacc.utexas.edu">Visit TACC</a>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="login-option-block corner-ribbon-container">
+        <p>
+          <button class="btn btn-lg btn-default" disabled>
+            <img height="80" alt="XSEDE" title="Log in with XSEDE" src="{% static 'designsafe/apps/auth/logos/xsede.svg'%}">
+          </button>
+        </p>
+
+        <p>
+          Log in using your XSEDE account.
+        </p>
+        <a href="https://portal.xsede.org/register">Register for an XSEDE account</a>
+        &bull;
+        <a href="https://www.xsede.org">Visit XSEDE</a>
+
+        <div class="corner-ribbon top-left shadow orange">
+          Coming Soon!
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="login-option-block corner-ribbon-container">
+        <p>
+          <button class="btn btn-lg btn-default" disabled>
+            <img height="80" alt="InCommon" title="Log in with InCommon" src="{% static 'designsafe/apps/auth/logos/incommon.gif'%}">
+          </button>
+        </p>
+
+        <p>
+          Log in using University or Institution credentials.
+        </p>
+        <a href="https://www.xsede.org">More information about InCommon Federation</a>
+
+        <div class="corner-ribbon top-left shadow orange">
+          Coming Soon!
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="col-md-6 col-md-offset-3">
+      <h2>NEES.org Users</h2>
+      Migrate your NEES.org account to DesignSafe!
+    </div>
+  </div>
+</div>
+{% endblock %}

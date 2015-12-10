@@ -328,6 +328,7 @@ PIPELINE_CSS = {
     'main': {
         'source_filenames': (
           'styles/main.css',
+          'styles/corner-ribbon.css',
         ),
         'output_filename': 'css/main.css',
     },

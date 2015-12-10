@@ -86,7 +86,7 @@ class AgaveOAuthBackend(ModelBackend):
                 'Authorization': 'Bearer %s' % token
                 })
             json_result = response.json()
-            if json_result['status'] == 'success':
+            if 'status' in json_result and json_result['status'] == 'success':
                 agave_user = json_result['result']
                 username = agave_user['username']
                 UserModel = get_user_model()
@@ -106,4 +106,6 @@ class AgaveOAuthBackend(ModelBackend):
                         )
 
                 self.logger.info('Login successful for user "%s"' % username)
+            else:
+                self.logger.info('Agave Authentication failed: %s' % json_result)
         return user
