@@ -26,9 +26,12 @@ urlpatterns = patterns('',
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
     # auth
-    url(r'^accounts/', include('designsafe.apps.accounts.urls', namespace='designsafe_accounts')),
+    url(r'^account/', include('designsafe.apps.accounts.urls',
+        namespace='designsafe_accounts')),
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
     url(r'^login/$', 'designsafe.apps.auth.views.login_options', name='login'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', { 'next_page': '/' },
+        name='logout'),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),

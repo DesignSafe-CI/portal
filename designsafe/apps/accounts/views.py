@@ -6,3 +6,6 @@ def index(request):
 
 def register(request):
     return render(request, 'designsafe/apps/accounts/register.html')
+
+def notifications(request):
+    return render(request, 'designsafe/apps/accounts/notifications.html')
