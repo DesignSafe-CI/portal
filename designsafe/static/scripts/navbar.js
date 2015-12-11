@@ -47,21 +47,24 @@
       }
     };
 
-    window.history.replaceState({}, 'current_section', '#');
+    window.history.replaceState({}, 'current_section', window.location.hash);
 
     var activateSection = function() {
       var section = getCurrentSection();
       var state = {};
-      var hash = '#';
+      var hash = window.location.hash;
+
       if (section) {
-        hash = hash + section;
+        hash = '#' + section;
         state.section = hash;
       }
 
-      window.history.replaceState(state, 'current_section', hash);
+      if (hash.length) {
+        window.history.replaceState(state, 'current_section', hash);
+      }
 
       var activeNav = false;
-      if (hash !== '#') {
+      if (hash.length && hash !== '#') {
         activeNav = $('a[href="/' + hash + '"]', navbar);
         activeNav.parent().addClass('active');
       }
