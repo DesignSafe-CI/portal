@@ -74,10 +74,7 @@ INSTALLED_APPS = (
 
     # custom
     'designsafe.apps.tas',
-    #apis
-    'designsafe.apps.api',
-    'designsafe.apps.api.data',
-    
+    # signals
     'designsafe.apps.signals',
 
     #Designsafe apps

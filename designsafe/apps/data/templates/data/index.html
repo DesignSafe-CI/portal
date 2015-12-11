@@ -19,12 +19,24 @@
 </div>
 
 {% addtoblock "js" %}
-    <script src="{% static 'api/data/scripts/module.js' %}"></script>
-    <script src="{% static 'api/data/scripts/service.js' %}"></script>
+    <script src="{% static 'data/scripts/service/module.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
+    <script src="{% static 'data/scripts/service/service.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
     <script src="{% static 'user_activity/scripts/module.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
     <script src="{% static 'user_activity/scripts/controller.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
     <script src="{% static 'data/scripts/module.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
     <script src="{% static 'data/scripts/controller.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
     <script src="{% static 'data/scripts/app.js' %}"></script>
 {% endaddtoblock %}
 {% endblock %}
