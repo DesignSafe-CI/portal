@@ -22,8 +22,6 @@ class AgaveFiles(Agave):
             path = path[1:]
         asys = AgaveSystems(self.url, self.token)
         ds = asys.get_default()
-        r = super(AgaveFiles, self).send_secure('get', '{0}{1}/{2}',format(self.urls['list'], ds, url))
-        result = r.json()['result']
-
-        listing = [{'format': x['format'], 'name': x['name'], 'href': x['_links']['self']['href'].split(ds['id'])[-1]} for x in result if x['name'] != '.' and x['name'] != '..']
+        r = super(AgaveFiles, self).send_secure('get', '{0}{1}/{2}'.format(self.urls['list'], ds['id'], path))
+        listing = [{'format': x['format'], 'name': x['name'], 'href': x['_links']['self']['href'].split(ds['id'])[-1]} for x in r if x['name'] != '.' and x['name'] != '..']
         return listing

@@ -40,10 +40,12 @@ class Agave(object):
         """
         request = getattr(requests, method)
         hs = self._build_secure_headers()
-        headers = kwargs.get('headers', {})
+        headers = kwargs.setdefault('headers', {})
         headers.update(hs)
+        logger.info('Headers: {0}'.format(kwargs['headers']))
+        logger.info('URL: {0}'.format(url))
         r = request('{0}{1}'.format(self.url, url), **kwargs)
         if r.status_code != 200:
             logger.error('HTTPError: status_code: {0}, reason: {1}, test: {2}'.format(r.status_code, r.reason, r.text))
-        r.rise_for_status()
+        r.raise_for_status()
         return r.json()['result']
