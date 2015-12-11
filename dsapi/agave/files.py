@@ -10,6 +10,9 @@ class AgaveFiles(Agave):
         token -- str, token to use for Authorization.
         """
         Agave.__init__(self, url, token)
+        self.urls = {
+            'list': 'files/v2/listings/system/',
+        }
 
     def __str__(self):
         return 'AgaveFiles : {0} - {1}'.format(self.url, self.token)
@@ -19,8 +22,8 @@ class AgaveFiles(Agave):
             path = path[1:]
         asys = AgaveSystems(self.url, self.token)
         ds = asys.get_default()
-        headers = super(AgaveFiles, self).build_secure_headers()
-        r = requests.get('{0}files/v2/listings/system/{1}/{2}'.format(self.url, ds['id'], path), headers = headers)
+        r = super(AgaveFiles, self).send_secure('get', '{0}{1}/{2}',format(self.urls['list'], ds, url))
         result = r.json()['result']
+
         listing = [{'format': x['format'], 'name': x['name'], 'href': x['_links']['self']['href'].split(ds['id'])[-1]} for x in result if x['name'] != '.' and x['name'] != '..']
         return listing

@@ -9,16 +9,14 @@ class AgaveSystems(Agave):
         token -- str, token to use for Authorization.
         """
         Agave.__init__(self, url, token)
+        self.urls = {
+            'list': 'systems/v2/',
+        }
 
     def __str__(self):
         return 'AgaveSystems : {0} - {1}'.format(self.url, self.token)
 
-    def __list(self):
-        headers = super(AgaveSystems, self).build_secure_headers()
-        r = requests.get('{0}systems/v2/'.format(self.url), headers = headers)
-        return r.json()['result']
-
     def get_default(self):
-        systems = self.__list()
+        systems = super(AgaveSystems, self).send_secure('get', self.urls['list'])
         default = filter(lambda x: x['default'], systems)
         return default[0]

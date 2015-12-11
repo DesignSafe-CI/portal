@@ -2,7 +2,7 @@
     'use strict';
     function filesystem($http){
         // this should not exists.
-        var token = '97cafc5b35d72cde721f34cb502c3646';
+        var token = 'J.R.R. Token';
         // Alright, alright, alright from now on.
         var service = {
             getList: getList,
