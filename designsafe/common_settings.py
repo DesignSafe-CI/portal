@@ -73,7 +73,10 @@ INSTALLED_APPS = (
     'ws4redis',
 
     # custom
-    'designsafe.apps.tas',
+    'designsafe.apps.auth',
+    'designsafe.apps.accounts',
+    'designsafe.apps.cms_plugins',
+
     # signals
     'designsafe.apps.signals',
 
@@ -84,7 +87,8 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    #'designsafe.apps.tas.backends.TASBackend',
+    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TASBackend',
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -219,9 +223,11 @@ CMSPLUGIN_CASCADE_PLUGINS = (
 
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'TextPlugin',
+    'StylePlugin',
     'FilerImagePlugin',
     'FormPlugin',
     'MeetingFormPlugin',
+    'ResponsiveEmbedPlugin',
 )
 
 MIGRATION_MODULES = {
@@ -394,3 +400,14 @@ WS4REDIS_CONNECTION = {
     'host': 'redis',
 }
 WS4REDIS_EXPIRE = 3600
+
+###
+# Agave Integration
+#
+# Agave Tenant Configuration
+AGAVE_TENANT_ID = os.environ.get('AGAVE_TENANT_ID')
+AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
+#
+# Agave Client Configuration
+AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
+AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')

@@ -29,6 +29,10 @@ urlpatterns = patterns('',
     url(r'^data/', include('designsafe.apps.data.urls')),
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
 
+    # auth
+    url(r'^accounts/', include('designsafe.apps.accounts.urls', namespace='designsafe_accounts')),
+    url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
+
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),

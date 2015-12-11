@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.3.0
+
+December 04, 2015
+
+- Add CMS plugin for responsive embed
+
 ## v0.2.0
 
 November 24, 2015
