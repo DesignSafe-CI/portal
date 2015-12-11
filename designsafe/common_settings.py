@@ -320,8 +320,8 @@ PIPELINE_CSS = {
     'vendor': {
         'source_filenames': (
           'vendor/bootstrap-ds/css/bootstrap.css',
-          # 'vendor/bootstrap-ds/css/bootstrap-theme.css',
           'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+          'vendor/font-awesome/css/font-awesome.css',
         ),
         'output_filename': 'css/vendor.css',
     },
