@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
-@receiver(ds_event)
+@receiver(ds_event, dispatch_uid = __name__)
 def ds_event_callback(sender, **kwargs):
     event_type = kwargs.get('event_type', '')
     event_data = kwargs.get('event_data', '')
