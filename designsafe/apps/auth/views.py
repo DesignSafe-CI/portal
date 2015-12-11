@@ -69,11 +69,13 @@ def agave_oauth_callback(request):
         user = authenticate(backend='agave', token=token['access_token'])
         if user:
             login(request, user)
+            messages.success(request, 'Login successful. Welcome back, %s %s!' %
+                (user.first_name, user.last_name))
         else:
             messages.error(request,
                 'Authentication failed. Please try again. If this problem '
                 'persists please submit a support ticket.')
-        return HttpResponseRedirect(reverse('designsafe_auth:login'))
+            return HttpResponseRedirect(reverse('designsafe_auth:login'))
     else:
         if 'error' in request.GET:
             error = request.GET['error']

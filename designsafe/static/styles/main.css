@@ -394,3 +394,14 @@ label.required:after,
   border-color: #EBCCD1;
   color: #A94442;
 }
+
+.callout {
+  padding: 1em;
+  border: 1px solid;
+  margin: 10px 0;
+}
+
+.callout-default {
+  background-color: #eeeeee;
+  border-color: #cccccc;
+}
