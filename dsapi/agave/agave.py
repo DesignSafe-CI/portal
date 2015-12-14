@@ -1,19 +1,7 @@
 import requests
-import logging, traceback
+import dsapi.agave.logs as agave_logging
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-"""
-# Use this if you want to log to a file
-LOG_FILENAME = 'path/to/file/name'
-handler = logging.handlers.TimedRotatingFileHandler(LOG_FILENAME, when='D', interval = 1, backupCount = 5)
-"""
-# Handler to log to std.err
-handler = logging.StreamHandler()
-
-formatter = logging.Formatter('[DJANGO] [%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = agave_logging.get_logger(__name__)
 
 class Agave(object):
     def __init__(self, url, token=None):
@@ -42,10 +30,9 @@ class Agave(object):
         hs = self._build_secure_headers()
         headers = kwargs.setdefault('headers', {})
         headers.update(hs)
-        logger.info('Headers: {0}'.format(kwargs['headers']))
-        logger.info('URL: {0}'.format(url))
         r = request('{0}{1}'.format(self.url, url), **kwargs)
         if r.status_code != 200:
             logger.error('HTTPError: status_code: {0}, reason: {1}, test: {2}'.format(r.status_code, r.reason, r.text))
         r.raise_for_status()
+        logger.info('Result: {0}'.format(r.text))
         return r.json()['result']
