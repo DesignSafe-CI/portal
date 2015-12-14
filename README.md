@@ -31,7 +31,15 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 3. Configure environment variables
 
    Make a copy of [designsafe.env.sample](designsafe.env.sample) and rename it to
-   `designsafe.env`. Configure variables as necessary.
+   `designsafe.env`. Configure variables as necessary. See
+   [designsafe.env.sample](designsafe.env.sample) for details of configuration.
+
+   Required variables:
+
+   - `DJANGO_DEBUG`: should be set to `True` for development
+   - `DJANGO_SECRET`: should be changed for production
+   - `TAS_*`: should be set to enable direct access to `django.contrib.admin`
+   - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
 
 3. Set up local/testing database
 
@@ -63,7 +71,7 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 If you need or want to import data from production see [this wiki page][6] for instructions.
 
-## Developing
+## Developing DesignSafe-CI Portal
 
 ### Apps
 
