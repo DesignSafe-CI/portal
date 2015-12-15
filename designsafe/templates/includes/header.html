@@ -13,8 +13,8 @@
         <span style="vertical-align:middle">Welcome, {{ user.first_name }}!</span>
         <span id="id_user_notify">
           <a href="{% url 'designsafe_accounts:notifications' %}" class="btn btn-link">
-            <i class="fa fa-circle-thin text-muted"></i>
             <span class="sr-only">Notifications</span>
+            <span class="badge badge-default" title="You have no unread notifications">&nbsp;</span>
           </a>
         </span>
         <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>
