@@ -1,9 +1,52 @@
 {% extends "base.html" %}
 
+{% load bootstrap3 sekizai_tags staticfiles %}
+
 {% block title %}Register for a DesignSafe-CI/TACC Account{% endblock %}
 
 {% block content %}
 <div class="container">
+  <h1 class="headline headline-research">Register an Account</h1>
+
+  <p class="lead">
+    DesignSafe-CI uses the TACC Identity Service. To use DesignSafe-CI you need to
+    register for a TACC Account. With a TACC Account you will be able to gain access to
+    many other TACC services in addition to DesignSafe-CI. See the
+    <a href="https://www.tacc.utexas.edu" target="_blank">TACC Website</a> for more
+    information.
+  </p>
+
+  <div class="row">
+    <div class="col-md-5 col-md-push-7">
+      <div class="well well-sm">
+        <h3>
+          Already have an Account? <a href="{% url 'designsafe_auth:login' %}">Log in.</a>
+        </h3>
+        <p>
+          If you already have a TACC account, simply
+          <a href="{% url 'designsafe_auth:agave_oauth' %}">log in</a> with your TACC
+          username and password to access DesignSafe-CI.
+        </p>
+        <p>
+          You may have a TACC account if you have used XSEDE or TeraGrid in the past and
+          had an allocation on a TACC resource.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-7 col-md-pull-5">
+      <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form account_form %}
+        <button class="btn btn-primary" type="submit">Register Account</button>
+        <a class="btn btn-link" href="/">Cancel</a>
+        <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
+      </form>
+    </div>
+  </div>
 
 </div>
+{% addtoblock 'js' %}
+<script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/institution_departments.js' %}"></script>
+<script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/new_institution.js' %}"></script>
+{% endaddtoblock %}
 {% endblock %}
