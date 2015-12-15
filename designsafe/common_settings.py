@@ -381,3 +381,7 @@ AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
 # Agave Client Configuration
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
 AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
+
+AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
+
+AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
