@@ -17,7 +17,18 @@
             <span class="badge badge-default" title="You have no unread notifications">&nbsp;</span>
           </a>
         </span>
-        <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>
+        <div class="btn-group">
+          <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>
+          <button type="button" class="btn btn-link-alt dropdown-toggle"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'logout' %}">Log out</a></li>
+          </ul>
+        </div>
+
       {% else %}
         <a href="{% url 'login' %}" class="btn btn-link-alt">Log in</a>
       {% endif %}

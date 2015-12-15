@@ -393,6 +393,7 @@ label.required:after,
   font-weight: bold;
   border: 2px solid #337AB7;
   text-decoration: none;
+  background: none;
 }
 
 .btn-link-alt:hover,
@@ -400,6 +401,10 @@ label.required:after,
 .btn-link-alt.focus {
   border-color: #23527c;
   color: #23527c;
+}
+
+.btn-link-alt.dropdown-toggle {
+  border-left-width: 1px;
 }
 
 .callout {
