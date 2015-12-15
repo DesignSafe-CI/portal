@@ -5,3 +5,19 @@
   padding: 1em;
   margin-top: 1em;
 }
+
+.provider-logo {
+  max-height: 68px;
+}
+
+@media (min-width: 1200px) {
+  .provider-logo {
+    max-height: 80px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .provider-logo {
+    max-height: 46px;
+  }
+}
