@@ -14,27 +14,12 @@
     Choose an option below to log in to DesignSafe-CI.
   </p>
 
-  <div class="callout callout-default clearfix" style="display:flex;align-items:center">
-    <div style="padding-right:0.5em">
-      <img alt="NEES.org" title="NEES.org logo" src="{% static 'designsafe/apps/auth/logos/nees.png' %}">
-    </div>
-    <div style="flex-grow:2">
-      <h3>Migrate your NEEShub Account</h3>
-      <p>
-        <a href="https://nees.org" target="_blank">NEEShub</a> users can use our account
-        migration wizard to easily migration their NEEShub account to DesignSafe-CI. We
-        will guide you through the steps to create an account, migrate your profile, and
-        retain ownership of your data. Welcome to DesignSafe-CI!
-      </p>
-      <a href="javascript:alert('TODO!');" class="btn btn-default">Migrate your NEEShub account</a>
-    </div>
-  </div>
-
   <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-6">
+
       <div class="login-option-block">
         <p>
-          <a href="{% url 'designsafe_auth:agave_oauth' %}" class="btn btn-lg btn-default img-responsive">
+          <a href="{% url 'designsafe_auth:agave_oauth' %}" class="btn btn-lg btn-primary img-responsive">
             <img class="provider-logo img-responsive" style="width:100% \9;" alt="TACC" title="Log in with TACC" src="{% static 'designsafe/apps/auth/logos/tacc.svg'%}">
           </a>
         </p>
@@ -46,9 +31,7 @@
         &bull;
         <a href="https://www.tacc.utexas.edu">TACC Website</a>
       </div>
-    </div>
 
-    <div class="col-sm-4">
       <div class="login-option-block corner-ribbon-container">
         <p>
           <button class="btn btn-lg btn-default img-responsive" disabled>
@@ -65,9 +48,7 @@
           Coming Soon!
         </div>
       </div>
-    </div>
 
-    <div class="col-sm-4">
       <div class="login-option-block corner-ribbon-container">
         <p>
           <button class="btn btn-lg btn-default img-responsive" disabled>
@@ -87,6 +68,27 @@
         </div>
       </div>
     </div>
+
+    <div class="col-sm-6 col-md-5 col-md-offset-1">
+      <div class="callout callout-default">
+        <p class="lead">NEES Users: Migrate your NEEShub Account</p>
+        <div style="display:flex;">
+          <div style="padding-right:0.5em">
+            <img alt="NEES.org" title="NEES.org logo" src="{% static 'designsafe/apps/auth/logos/nees.png' %}">
+          </div>
+          <div style="flex-grow:2">
+            <p>
+              <a href="https://nees.org" target="_blank">NEEShub</a> users can use our account
+              migration wizard to easily migration their NEEShub account to DesignSafe-CI. We
+              will guide you through the steps to create an account, migrate your profile, and
+              retain ownership of your data. Welcome to DesignSafe-CI!
+            </p>
+          </div>
+        </div>
+        <a href="javascript:alert('TODO!');" class="btn btn-default btn-block">Migrate your NEEShub account</a>
+      </div>
+    </div>
   </div>
+
 </div>
 {% endblock %}
