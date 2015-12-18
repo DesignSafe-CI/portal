@@ -1,42 +1,35 @@
 {% extends "base_angular.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 {% block content %}
-
-<div class="container" ng-app="ds.dataApp">
-    <h1>Data thingy</h1>
-    <div class="row col-xs-6">
-        <div class="data-browser" ng-controller="DataController as fs">
-            <div ng-include="'/data/template/filesystem.html'">
-            </div>
-        </div>
-    </div>
-    <div class="row col-xs-6">
-        <div class="user-activity" ng-controller="UserActivityController as ua">
-            <div ng-include="'/user_activity/template/activity_browser.html'">
-            </div>
-        </div>
-    </div>
+<div data-ng-app="FileManagerApp">
+<angular-filemanager></angular-filemanager>
 </div>
 
-{% addtoblock "js" %}
-    <script src="{% static 'data/scripts/service/module.js' %}"></script>
+{% addtoblock "css" %}
+    <link href="{% static 'vendor/bootswatch-dist/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'designsafe/apps/data/styles/angular-filemanager.css' %}" rel="stylesheet" type="text/css">
 {% endaddtoblock %}
+
 {% addtoblock "js" %}
-    <script src="{% static 'data/scripts/service/service.js' %}"></script>
+    <script src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+    <script src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+    <script src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+    <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
+    <script src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
 {% endaddtoblock %}
+
 {% addtoblock "js" %}
-    <script src="{% static 'user_activity/scripts/module.js' %}"></script>
-{% endaddtoblock %}
-{% addtoblock "js" %}
-    <script src="{% static 'user_activity/scripts/controller.js' %}"></script>
-{% endaddtoblock %}
-{% addtoblock "js" %}
-    <script src="{% static 'data/scripts/module.js' %}"></script>
-{% endaddtoblock %}
-{% addtoblock "js" %}
-    <script src="{% static 'data/scripts/controller.js' %}"></script>
-{% endaddtoblock %}
-{% addtoblock "js" %}
-    <script src="{% static 'data/scripts/app.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/app.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/directives/directives.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/filters/filters.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/providers/config.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/entities/chmod.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/entities/item.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/services/filenavigator.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/services/fileuploader.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/providers/translations.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/controllers/main.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/controllers/selector-controller.js' %}"></script>
+
 {% endaddtoblock %}
 {% endblock %}

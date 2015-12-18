@@ -13,21 +13,39 @@ logger = logging.getLogger(__name__)
 
 @login_required
 @require_http_methods(['GET'])
-def listings(request, system_id, file_path):
+def listings(request, file_path = '/'):
     """
-      Returns a list of files/diretories under a specific path.
+    Returns a list of files/diretories under a specific path.
+    @file_path: String, path to list.
+    returns: array of file objects.
     """
     #TODO: should use @is_ajax.
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     logger.info('token: {0}'.format(access_token))
     url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    path = request.GET.get('path')
+    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 
     a = Agave(api_server = url, token = access_token)
-    l = a.files.list(systemId = system_id, 
-                                    filePath = file_path)
-    
+    l = a.files.list(systemId = filesystem, 
+                     filePath = request.user.username + '/' + file_path)
+    for f in l:
+        f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
+    logger.info('Listing: {0}'.format(json.dumps(l, indent=4))) 
     DataEvent.send_event(event_data = {'path': path, 'callback': 'getList'})
 
     return HttpResponse(json.dumps(l), content_type="application/json")
+
+@login_required
+@require_http_methods(['GET'])
+def download(request, file_path = '/'):
+    """
+    Returns bytes of a specific file
+    @file_path: String, file path to download
+    """
+    pass
+    #TODO: should use @is_ajax
+    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
+    access_token = token.get('access_token', None)
+    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
