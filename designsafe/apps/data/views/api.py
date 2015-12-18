@@ -27,12 +27,12 @@ def listings(request, file_path = '/'):
     filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 
     a = Agave(api_server = url, token = access_token)
-    l = a.files.list(systemId = filesystem, 
+    l = a.files.list(systemId = filesystem,
                      filePath = request.user.username + '/' + file_path)
     for f in l:
         f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
-    logger.info('Listing: {0}'.format(json.dumps(l, indent=4))) 
-    DataEvent.send_event(event_data = {'path': path, 'callback': 'getList'})
+    logger.info('Listing: {0}'.format(json.dumps(l, indent=4)))
+    DataEvent.send_event(event_data = {'path': file_path, 'callback': 'getList'})
 
     return HttpResponse(json.dumps(l), content_type="application/json")
 
