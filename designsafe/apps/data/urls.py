@@ -9,4 +9,5 @@ urlpatterns = patterns('designsafe.apps.data.views.base',
 urlpatterns += patterns('designsafe.apps.data.views.api',
     url(r'^api/listings/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', 'listings', name='listings'),
     url(r'^api/download/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', 'download', name='download'),
+    url(r'^api/meta/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', 'metadata', name='metadata'),
 ) 

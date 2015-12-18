@@ -15,7 +15,7 @@
 
             // agave endpoints
             listUrl: "/data/api/listings/",
-            uploadUrl: "/data/api/upload/",
+            uploadUrl: "/data/api/upload",
             renameUrl: "",
             copyUrl: "",
             removeUrl: "/data/api/",
@@ -26,6 +26,7 @@
             compressUrl: "",
             extractUrl: "",
             permissionsUrl: "/files/v2/pems/",
+            metadataUrl: '/data/api/meta/',
 
             sidebar: true,
             breadcrumb: true,
@@ -33,13 +34,14 @@
                 rename: false,
                 copy: false,
                 edit: false,
-                changePermissions: true,
+                changePermissions: false,
                 compress: false,
                 compressChooseName: false,
                 extract: true,
-                download: true,
+                download: false,
                 preview: false,
-                remove: true
+                remove: false,
+                metadata: true
             },
 
             enablePermissionsRecursive: true,

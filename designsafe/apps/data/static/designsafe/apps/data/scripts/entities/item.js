@@ -378,6 +378,47 @@
             return deferred.promise;
         };
 
+        /*******************************
+            Adding new things like metadata
+        *******************************/
+        Item.prototype.showMetadata = function(){
+            var self = this;
+            var deferred = $q.defer();
+            var path = self.model.fullPath();
+            self.inprocess = true;
+            self.error = '';
+            $http.get(fileManagerConfig.metadataUrl + path).success(function(data) {
+                self.tempModel.metadata = data;
+                self.deferredHandler(data, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
+            })['finally'](function() {
+                self.inprocess = false;
+            });
+            return deferred.promise;
+        };
+
+        Item.prototype.updateMetadata = function(){
+            var self = this;
+            var deferred = $q.defer();
+            var path = self.model.fullPath();
+            self.inprocess = true;
+            self.error = '';
+            var data = {
+                "metadata": self.tempModel.metadata[0]
+            };
+            $http.post(fileManagerConfig.metadataUrl + path,data)
+            .success(function(data){
+                self.deferredHandler(data, deferred);
+            })
+            .error(function(data){
+                self.deferredHandler(data, deferred, $translate.instant('Error saving metadata.'));
+            })['finally'](function(){
+                self.inprocess = false;
+            });
+            return deferred.promise;
+        };
+
         Item.prototype.isFolder = function() {
             return this.model.type === 'dir';
         };
