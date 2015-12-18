@@ -27,7 +27,7 @@
             extractUrl: "",
             permissionsUrl: "/files/v2/pems/",
 
-            sidebar: true,
+            sidebar: false,
             breadcrumb: true,
             allowedActions: {
                 rename: false,
