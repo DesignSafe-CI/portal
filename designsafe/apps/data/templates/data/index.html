@@ -1,12 +1,12 @@
 {% extends "base_angular.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 {% block content %}
-<div data-ng-app="FileManagerApp">
-<angular-filemanager></angular-filemanager>
+<div data-ng-app="FileManagerApp" class="file-manager">
+    <angular-filemanager></angular-filemanager>
 </div>
 
 {% addtoblock "css" %}
-    <link href="{% static 'vendor/bootswatch-dist/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <!-- <link href="{% static 'vendor/bootswatch-dist/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"> -->
     <link href="{% static 'designsafe/apps/data/styles/angular-filemanager.css' %}" rel="stylesheet" type="text/css">
 {% endaddtoblock %}
 

@@ -1,27 +1,22 @@
-body {
-    padding-top: 55px;
-    font-size: 14px;
-}
-
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
 
-.navbar {
+.file-manager .navbar {
     min-height: 32px;
 }
 
-.navbar .navbar-toggle {
+.file-manager .navbar .navbar-toggle {
     padding: 5px 10px;
 }
 
-.navbar .navbar-brand {
+.file-manager .navbar .navbar-brand {
     font-size: inherit;
     height: 55px;
     line-height: 100%;
 }
 
-.navbar .navbar-form {
+.file-manager .navbar .navbar-form {
     border-bottom: none;
     border-top: none;
     box-shadow: none;
@@ -29,31 +24,36 @@ body {
     margin-top: 10px;
 }
 
-.breadcrumb {
+.file-manager .breadcrumb {
     border-radius: 0;
 }
 
-.breadcrumb .btn {
+.file-manager .breadcrumb .btn {
     margin-top:-5px;
 }
 
-.btn.btn-default {
+.file-manager .btn.btn-default {
     color: #444;
     background-color: #FAFAFA;
 }
 
-.btn {
+.file-manager .btn {
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     font-weight: 500;
     letter-spacing: .01em;
     border: none;
 }
 
-*, *:focus {
+.file-manager *, .file-manager *:focus {
     outline: 0!important;
 }
 
-textarea.code {
+.file-manager .main-navigation {
+    background: #fff;
+    border: 1px solid #f5f5f5;
+}
+
+.file-manager textarea.code {
     font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
     font-size:13px;
     min-height: 250px;
@@ -61,7 +61,7 @@ textarea.code {
     color: #000;
 }
 
-.modal .label.error-msg {
+.file-manager .modal .label.error-msg {
     display: block;
     font-size: 12px;
     margin-top: 5px;
@@ -71,58 +71,58 @@ textarea.code {
     text-align: left;
 }
 
-.modal .label.error-msg > span {
+.file-manager .modal .label.error-msg > span {
     white-space: pre-wrap;
 }
 
-.bold {
+.file-manager .bold {
     font-weight: bold;
 }
 
-.mb0 {
+.file-manager .mb0 {
     margin-bottom: 0;
 }
 
-.sub-header {
+.file-manager .sub-header {
     padding-bottom: 10px;
     border-bottom: 1px solid #eee;
 }
 
-.navbar-fixed-top {
+.file-manager .navbar-fixed-top {
     border: 0;
 }
 
-.sidebar {
+.file-manager .sidebar {
     display: none;
 }
 
-.btn-go-back {
+.file-manager .btn-go-back {
     margin-top: -5px;
 }
 
-a:hover {
+.file-manager a:hover {
     text-decoration: none;
 }
 
-.table-modal-condensed {
+.file-manager .table-modal-condensed {
 
 }
 
-.modal .modal-header {
+.file-manager .modal .modal-header {
     padding-bottom:0;
 }
 
-.modal .breadcrumb {
+.file-manager .modal .breadcrumb {
     margin-bottom: 10px;
 }
 
 @media (min-width: 768px) {
-    .main {
+    .file-manager .main {
         padding-right: 0;
         padding-left: 0;
     }
 
-    .sidebar {
+    .file-manager .sidebar {
         position: fixed;
         top: 50px;
         bottom: 0;
@@ -138,90 +138,90 @@ a:hover {
 }
 
 @media (max-width: 768px) {
-    .navbar-form .btn {
+    .file-manager .navbar-form .btn {
         margin-top: 5px;
     }
 }
 
 @media (max-width: 475px) {
-    .table.table-files .btn {
+    .file-manager .table.table-files .btn {
         display: none;
     }
 }
 
-.nav-sidebar {
+.file-manager .nav-sidebar {
     margin-right: -21px;
     margin-bottom: 20px;
     margin-left: -20px;
 }
 
-.nav-sidebar > li > a {
+.file-manager .nav-sidebar > li > a {
     padding-right: 20px;
     padding-left: 20px;
 }
 
-.nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
+.file-manager .nav-sidebar > .active > a,
+.file-manager .nav-sidebar > .active > a:hover,
+.file-manager .nav-sidebar > .active > a:focus {
     color: #fff;
     background-color: #2196F3;
 }
 
-.main {
+.file-manager .main {
     padding: 0;
 }
 
-.main .page-header {
+.file-manager .main .page-header {
     margin-top: 0;
 }
 
-.file-tree ul.nav.nav-sidebar {
+.file-manager .file-tree ul.nav.nav-sidebar {
     margin: 0;
     padding: 0;
     padding-left: 12px;
 }
 
-.file-tree ul.nav.nav-sidebar > li {
+.file-manager .file-tree ul.nav.nav-sidebar > li {
     border-left: 1px solid #ddd;
     padding-left: 4px;
 }
 
-.file-tree ul.nav.nav-sidebar > li > a {
+.file-manager .file-tree ul.nav.nav-sidebar > li > a {
     padding: 2px 2px 2px 4px;
 }
 
-.file-tree ul.nav.nav-sidebar:first-child {
+.file-manager .file-tree ul.nav.nav-sidebar:first-child {
     padding-left: 0;
 }
 
-.file-tree ul.nav.nav-sidebar.file-tree-root > li {
+.file-manager .file-tree ul.nav.nav-sidebar.file-tree-root > li {
     border-left: none;
     padding-left: 0px;
 }
 
-.mr2 {
+.file-manager .mr2 {
     margin-right: 2px;
 }
 
-.mr5 {
+.file-manager .mr5 {
     margin-right: 5px;
 }
 
-.table td {
+.file-manager .table td {
     vertical-align: middle;
 }
 
-#context-menu {
+.file-manager #context-menu {
     position: absolute;
     display: none;
     z-index: 9999;
 }
 
-.iconset {
+.file-manager .iconset {
     padding: 10px;
 }
 
-.col-120 {
+.file-manager .col-120 {
     width: 100px;
     max-height: 100px;
     float: left;
@@ -229,11 +229,11 @@ a:hover {
     margin-right: 9px;
 }
 
-.col-120:last-child {
+.file-manager .col-120:last-child {
     margin-right: 0;
 }
 
-.iconset .thumbnail {
+.file-manager .iconset .thumbnail {
     border-radius: 0;
     overflow: hidden;
     margin: 0;
@@ -242,12 +242,12 @@ a:hover {
     border: none;
 }
 
-.iconset .thumbnail .item-icon {
+.file-manager .iconset .thumbnail .item-icon {
     font-size: 32px;
 }
 
-.modal-fullscreen .modal-dialog,
-.modal-fullscreen .modal-content {
+.file-manager .modal-fullscreen .modal-dialog,
+.file-manager .modal-fullscreen .modal-content {
     bottom: 0;
     left: 0;
     position: absolute;
@@ -255,12 +255,12 @@ a:hover {
     top: 0;
 }
 
-.modal-fullscreen .modal-dialog {
+.file-manager .modal-fullscreen .modal-dialog {
     margin: 0;
     width: 100%;
 }
 
-.modal-fullscreen .modal-content {
+.file-manager .modal-fullscreen .modal-content {
     border: none;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -270,24 +270,24 @@ a:hover {
     box-shadow: inherit;
 }
 
-.modal-fullscreen textarea.code {
+.file-manager .modal-fullscreen textarea.code {
     min-height: 450px;
 }
 
-.animated {
+.file-manager .animated {
     -webkit-animation-duration: .7s;
     animation-duration: .7s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
 
-.modal.animated,
-.animated.fast {
+.file-manager .modal.animated,
+.file-manager .animated.fast {
     -webkit-animation-duration: .2s;
     animation-duration: .2s;
 }
 
-.animated.slow {
+.file-manager .animated.slow {
     -webkit-animation-duration: 1.1s;
     animation-duration: 1.1s;
 }
@@ -336,39 +336,39 @@ a:hover {
     }
 }
 
-.fadeInDown {
+.file-manager .fadeInDown {
     -webkit-animation-name: fadeInDown;
     animation-name: fadeInDown;
 }
 
-.fadeIn {
+.file-manager .fadeIn {
     -webkit-animation-name: fadeIn;
     animation-name: fadeIn;
 }
 
-.mt10 {
+.file-manager .mt10 {
     margin-top: 10px;
 }
 
-.pointer {
+.file-manager .pointer {
     cursor: pointer;
 }
 
-.block {
+.file-manager .block {
     display: block;
 }
 
-.detail-sources {
+.file-manager .detail-sources {
     text-overflow: ellipsis;
     overflow: hidden;
     word-wrap: break-word;
 }
 
-.modal {
+.file-manager .modal {
     word-wrap: break-word;
 }
 
-.ellipsis {
+.file-manager .ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -400,33 +400,33 @@ a:hover {
     background-color:#888;
 }
 
-.dropdown-menu.dropdown-right-click {
+.file-manager .dropdown-menu.dropdown-right-click {
     display:block;
     position:static;
     margin-bottom:5px;
     font-size:1em;
 }
 
-.dropdown-menu.dropdown-right-click>li>a {
+.file-manager .dropdown-menu.dropdown-right-click>li>a {
     padding: 5px 12px;
 }
 
-.dropdown-menu.dropdown-right-click>li>a>i {
+.file-manager .dropdown-menu.dropdown-right-click>li>a>i {
     font-size: .9em;
     margin-right: 1px;
 }
 
-.dropdown-menu.dropdown-right-click .divider {
+.file-manager .dropdown-menu.dropdown-right-click .divider {
     margin: 3px 0;
 }
 
-.spinner-container {
+.file-manager .spinner-container {
     margin: 0 auto;
     text-align: center;
     margin-top: 8%;
 }
 
-.spinner {
+.file-manager .spinner {
   width: 45px;
   height: 45px;
   -webkit-animation: rotator 1.4s linear infinite;
@@ -455,7 +455,7 @@ a:hover {
   }
 }
 
-.path {
+.file-manager .path {
   stroke-dasharray: 187;
   stroke-dashoffset: 0;
   -webkit-transform-origin: center;
@@ -533,16 +533,16 @@ a:hover {
   }
 }
 
-table th > a:hover,
-table th > a:active,
-table th > a:focus {
+.file-manager table th > a:hover,
+.file-manager table th > a:active,
+.file-manager table th > a:focus {
     text-decoration: none;
 }
-.sortorder:after {
+.file-manager .sortorder:after {
     color: #2196f3;
     content: '\25bc';
 }
-.sortorder.reverse:after {
+.file-manager .sortorder.reverse:after {
     color: #2196f3;
     content: '\25b2';
 }
