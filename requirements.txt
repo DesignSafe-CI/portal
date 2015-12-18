@@ -1,3 +1,4 @@
+agavepy
 Django<1.9.0
 django-bootstrap3==6.1.0
 django-classy-tags==0.6.2

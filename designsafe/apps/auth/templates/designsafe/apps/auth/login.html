@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load staticfiles sekizai_tags %}
+{% block title %}Log in to DesignSafe-CI{% endblock %}
+
+{% block content %}
+
+{% addtoblock 'css' %}
+  <link href="{% static 'designsafe/apps/auth/designsafe_auth.css' %}" rel="stylesheet">
+{% endaddtoblock %}
+
+<div class="container">
+  <h1 class="headline headline-community"><span class="hl-community">Log in</span> to DesignSafe-CI</h1>
+  <p class="lead">
+    Choose an option below to log in to DesignSafe-CI.
+  </p>
+
+  <div class="row">
+    <div class="col-sm-6">
+
+      <div class="login-option-block">
+        <p>
+          <a href="{% url 'designsafe_auth:agave_oauth' %}" class="btn btn-lg btn-primary img-responsive">
+            <img class="provider-logo img-responsive" style="width:100% \9;" alt="TACC" title="Log in with TACC" src="{% static 'designsafe/apps/auth/logos/tacc.svg'%}">
+          </a>
+        </p>
+
+        <p>
+          <a href="{% url 'designsafe_auth:agave_oauth' %}">Log in using your TACC Account.</a>
+        </p>
+        <a href="{% url 'designsafe_accounts:register' %}">Register for a TACC account</a>
+        &bull;
+        <a href="https://www.tacc.utexas.edu">TACC Website</a>
+      </div>
+
+      <div class="login-option-block corner-ribbon-container">
+        <p>
+          <button class="btn btn-lg btn-default img-responsive" disabled>
+            <img class="provider-logo img-responsive" alt="InCommon" title="Log in with InCommon" src="{% static 'designsafe/apps/auth/logos/incommon.gif'%}">
+          </button>
+        </p>
+
+        <p>
+          Log in using University or Institution credentials.
+        </p>
+        <a href="http://www.incommon.org/">More information about InCommon Federation</a>
+
+        <div class="corner-ribbon top-left shadow orange">
+          Coming Soon!
+        </div>
+      </div>
+
+      <div class="login-option-block corner-ribbon-container">
+        <p>
+          <button class="btn btn-lg btn-default img-responsive" disabled>
+            <img class="provider-logo img-responsive" style="width:100% \9;" alt="XSEDE" title="Log in with XSEDE" src="{% static 'designsafe/apps/auth/logos/xsede.svg'%}">
+          </button>
+        </p>
+
+        <p>
+          Log in using your XSEDE account.
+        </p>
+        <a href="https://portal.xsede.org/register">Register for an XSEDE account</a>
+        &bull;
+        <a href="https://www.xsede.org">XSEDE Website</a>
+
+        <div class="corner-ribbon top-left shadow orange">
+          Coming Soon!
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-5 col-md-offset-1">
+      <div class="callout callout-default">
+        <p class="lead">NEES Users: Migrate your NEEShub Account</p>
+        <div style="display:flex;">
+          <div style="padding-right:0.5em">
+            <img alt="NEES.org" title="NEES.org logo" src="{% static 'designsafe/apps/auth/logos/nees.png' %}">
+          </div>
+          <div style="flex-grow:2">
+            <p>
+              <a href="https://nees.org" target="_blank">NEEShub</a> users can use our account
+              migration wizard to easily migration their NEEShub account to DesignSafe-CI. We
+              will guide you through the steps to create an account, migrate your profile, and
+              retain ownership of your data. Welcome to DesignSafe-CI!
+            </p>
+          </div>
+        </div>
+        <a href="javascript:alert('TODO!');" class="btn btn-default btn-block">Migrate your NEEShub account</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

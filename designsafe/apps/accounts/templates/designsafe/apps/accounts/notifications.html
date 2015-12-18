@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container">
+<h1 class="headline headline-research">Notifications</h1>
+
+{% if notifications %}
+  <div class="alert alert-warning">
+    <h4>TODO!</h4>
+    <p>
+      Display notifications by category and type, with action links to follow up on each
+      item.
+    </p>
+  </div>
+  <pre>
+    {{notifications}}
+  </pre>
+{% else %}
+  <div class="jumbotron text-center">
+    <i class="fa fa-bell fa-2x text-muted"></i>
+    <h2>No unread notifications.</h2>
+    <p>
+      You have no unread notifications.
+      <a href="{% url 'designsafe_accounts:index' %}#notifications">Click here</a>
+      to manage you notification settings.
+    </p>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

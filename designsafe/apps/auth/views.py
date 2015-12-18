@@ -14,6 +14,12 @@ import time
 
 logger = logging.getLogger(__name__)
 
+def login_options(request):
+    if request.user.is_authenticated():
+        messages.info(request, 'You are already logged in!')
+        return HttpResponseRedirect('/')
+    return render(request, 'designsafe/apps/auth/login.html')
+
 def agave_oauth(request):
     tenantBaseUrl = getattr(settings, 'AGAVE_TENANT_BASEURL')
     clientKey = getattr(settings, 'AGAVE_CLIENT_KEY')
@@ -53,7 +59,8 @@ def agave_oauth_callback(request):
             'code': code,
             'redirect_uri': redirect_uri,
         }
-        response = requests.post('%s/token' % tenantBaseUrl, data=body, auth=(clientKey, clientSec))
+        response = requests.post('%s/token' % tenantBaseUrl, data=body,
+            auth=(clientKey, clientSec))
         token = response.json()
         token['created'] = int(time.time())
         request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = token
@@ -62,11 +69,19 @@ def agave_oauth_callback(request):
         user = authenticate(backend='agave', token=token['access_token'])
         if user:
             login(request, user)
+            messages.success(request, 'Login successful. Welcome back, %s %s!' %
+                (user.first_name, user.last_name))
+        else:
+            messages.error(request,
+                'Authentication failed. Please try again. If this problem '
+                'persists please submit a support ticket.')
+            return HttpResponseRedirect(reverse('designsafe_auth:login'))
     else:
         if 'error' in request.GET:
             error = request.GET['error']
             logger.error('Authorization failed: %s' % error)
 
         messages.error(request, 'Authentication failed')
+        return HttpResponseRedirect(reverse('designsafe_auth:login'))
 
     return HttpResponseRedirect('/')

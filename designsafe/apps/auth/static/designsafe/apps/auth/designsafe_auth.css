@@ -1,0 +1,23 @@
+.login-option-block {
+  text-align: center;
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.provider-logo {
+  max-height: 68px;
+}
+
+@media (min-width: 1200px) {
+  .provider-logo {
+    max-height: 80px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .provider-logo {
+    max-height: 46px;
+  }
+}

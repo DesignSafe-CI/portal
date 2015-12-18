@@ -20,58 +20,52 @@ body.navbar-fixed {
   padding-bottom: 1em;
 }
 
-.site-banner .banner-right {
+.site-banner-right {
   flex-grow: 2;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-menu {
   text-align: right;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
-.user-menu a {
-  font-weight: bold;
-  border: 2px solid #337AB7;
-  text-decoration: none;
-  padding: .1em .5em;
+.user-menu .btn {
+  padding: 2px 8px;
 }
 
-.user-menu a:hover, .user-menu a:focus {
-  border-color: #23527c;
-}
-
-.site-banner .tagline {
-  font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
+.tagline {
   color: #136ac9;
   text-transform: uppercase;
 }
 
-.site-banner .tagline h2 {
-  font-weight: 400;
-  font-size: 22px;
+.wf-active {
+  font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.wf-active .site-banner .tagline h2 {
-  font-size: 24px;
+.tagline h2 {
+  font-weight: 400;
+  font-size: 18px;
+  max-width: 421px;
+}
+
+.wf-active .tagline h2 {
+  font-size: 20px;
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-  .site-banner .tagline h2 {
-    font-size: 18px;
-  }
-
-  .wf-active .site-banner .tagline h2 {
-    font-size: 20px;
+  .site-banner-right {
+    margin-right: -1px
   }
 }
 
 @media (min-width: 768px) {
-  .site-banner .tagline {
+  .tagline {
     text-align: right;
   }
 
-  .site-banner .tagline h2 {
-    max-width: 530px;
+  .tagline h2 {
     float: right;
     margin: 0;
   }
@@ -82,15 +76,14 @@ body.navbar-fixed {
     flex-direction: column;
   }
 
-  .site-banner .tagline {
-    max-width: 530px;
+  .tagline {
     text-align: center;
   }
-}
 
-@media (max-width: 370px) {
-  .site-banner .tagline h2 {
-    font-size: 22px;
+  .user-menu {
+    text-align: center;
+    margin: 0;
+    order: 1;
   }
 }
 
@@ -386,4 +379,41 @@ label.required:after,
 }
 .ds-icon-lightbulb {
   background-image: url('../images/ds-icons/Icon-Students.png');
+}
+
+/* apply alert-danger style for alert-error */
+.alert-error {
+  background-color: #F2DEDE;
+  border-color: #EBCCD1;
+  color: #A94442;
+}
+
+/* btn-link-alt */
+.btn-link-alt {
+  font-weight: bold;
+  border: 2px solid #337AB7;
+  text-decoration: none;
+  background: none;
+}
+
+.btn-link-alt:hover,
+.btn-link-alt:focus,
+.btn-link-alt.focus {
+  border-color: #23527c;
+  color: #23527c;
+}
+
+.btn-link-alt.dropdown-toggle {
+  border-left-width: 1px;
+}
+
+.callout {
+  padding: 1em;
+  border: 1px solid;
+  margin: 20px 0;
+}
+
+.callout-default {
+  background-color: #eeeeee;
+  border-color: #cccccc;
 }
