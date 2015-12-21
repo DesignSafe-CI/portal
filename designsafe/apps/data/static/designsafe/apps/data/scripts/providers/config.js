@@ -38,7 +38,7 @@
                 compress: false,
                 compressChooseName: false,
                 extract: true,
-                download: false,
+                download: true,
                 preview: false,
                 remove: false,
                 metadata: true

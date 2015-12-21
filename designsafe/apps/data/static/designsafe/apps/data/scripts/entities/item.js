@@ -174,16 +174,13 @@
             var self = this;
             var deferred = $q.defer();
             var path = self.model.fullPath();
-            var url = fileManagerConfig.tenantUrl + fileManagerConfig.downloadFileUrl  + fileManagerConfig.user + path;
+            var url = fileManagerConfig.downloadFileUrl + path;
 
             self.requesting = true;
             $http(
               {
                 method: 'GET',
-                url: url,
-                headers: {
-                  'Authorization': 'Bearer ' +  fileManagerConfig.token,
-                }
+                url: url
               }
             ).success(function(data) {
                 if (angular.isObject(data)) {

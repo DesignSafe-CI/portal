@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.views.decorators.http import require_http_methods
 #from dsapi.agave.files import *
 from agavepy.agave import Agave
 from designsafe.apps.data.apps import DataEvent
 import json
 import logging
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +53,16 @@ def download(request, file_path = '/'):
 
     a = Agave(api_server = url, token = access_token)
     logger.info('file_path: ' + file_path)
-    l = a.files.download(systemId = filesystem,
+    f = a.files.list(systemId = filesystem,
                      filePath = request.user.username + '/' + file_path)
 
-    return HttpResponse('{"status":"200", "message":"OK", "data":"File Downloaded"}', content_type="application/json", status=200)
+    download_url = f[0]['_links']['self']['href']
+    content_type = f[0]['mimeType']
+
+    resp = requests.get(download_url, stream=True,
+        headers={'Authorization':'Bearer %s' % access_token})
+
+    return StreamingHttpResponse(resp.content, content_type=content_type, status=200)
 
 @login_required
 @require_http_methods(['GET', 'POST'])
