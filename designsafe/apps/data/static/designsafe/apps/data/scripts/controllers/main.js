@@ -86,6 +86,46 @@
             });
         };
 
+        $scope.showMetadata = function (item) {
+            $scope.temp = item;
+
+            item.showMetadata()
+            .then(function(data){
+                console.log('getMetadata: ', data)
+            })
+            .catch(function(data){
+                console.log('getMetadata: ', data)
+            });
+        };
+
+        $scope.addKeyValueMeta = function (item){
+            var key = item.tempModel.metaForm.key;
+            var value = item.tempModel.metaForm.value;
+            if (item.tempModel.metadata.length > 0){
+                item.tempModel.metadata[0].value[key] = value;
+            } else {
+                var m = {};
+                m.value = {};
+                m.value[key] = value;
+                item.tempModel.metadata.push(m);
+            }
+        };
+
+        $scope.deleteKeyMeta = function(item, key){
+            console.log('item: ', item);
+            console.log('key: ', key);
+            delete item.tempModel.metadata[0].value[key];
+        };
+
+        $scope.updateMetadata = function(item){
+            item.updateMetadata().then(function(){
+                $scope.modal('metadata', true);
+            }).catch(function(err){
+                $scope.modal('metadata', true);
+                console.log('Error saving metadata: ', err);
+            });
+        };
+
         $scope.changePermissions = function(item) {
             item.changePermissions().then(function() {
                 $scope.modal('changepermissions', true);

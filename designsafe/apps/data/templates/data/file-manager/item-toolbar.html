@@ -26,6 +26,9 @@
     <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete" ng-show="config.allowedActions.remove" ng-click="touch(item)" title="[['remove' | translate]]">
         <i class="glyphicon glyphicon-trash"></i>
     </button>
+    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#metadata" ng-show="config.allowedActions.metadata" ng-click="showMetadata(item)" title="[['metadata' | translate]]">
+        <i class="glyphicon glyphicon-tags"></i>
+    </button>
 </div>
 <div ng-show="item.inprocess">
     <button class="btn btn-sm" style="visibility: hidden">&nbsp;</button><span class="label label-warning">[["wait" | translate]] ...</span>

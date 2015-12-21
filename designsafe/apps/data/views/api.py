@@ -29,12 +29,13 @@ def listings(request, file_path = '/'):
     a = Agave(api_server = url, token = access_token)
     l = a.files.list(systemId = filesystem,
                      filePath = request.user.username + '/' + file_path)
+
     for f in l:
         f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
-    logger.info('Listing: {0}'.format(json.dumps(l, indent=4)))
+    logger.info('Listing: {0}'.format(json.dumps(l, indent=4))) 
     DataEvent.send_event(event_data = {'path': file_path, 'callback': 'getList'})
 
-    return HttpResponse(json.dumps(l), content_type="application/json")
+    return HttpResponse(json.dumps(l), content_type="application/json", status=200)
 
 @login_required
 @require_http_methods(['GET'])
@@ -43,9 +44,74 @@ def download(request, file_path = '/'):
     Returns bytes of a specific file
     @file_path: String, file path to download
     """
-    pass
     #TODO: should use @is_ajax
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     url = getattr(settings, 'AGAVE_TENANT_BASEURL')
     filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+
+    a = Agave(api_server = url, token = access_token)
+    logger.info('file_path: ' + file_path)
+    l = a.files.download(systemId = filesystem,
+                     filePath = request.user.username + '/' + file_path)
+
+    return HttpResponse('{"status":"200", "message":"OK", "data":"File Downloaded"}', content_type="application/json", status=200)
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def metadata(request, file_path = '/'):
+    """
+    Gets/sets metadata to a specific file/folder.
+    @file_path: String
+    """
+    #TODO: Should use @is_ajax
+    #TODO: POST verb, too?
+    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
+    access_token = token.get('access_token', None)
+    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+    a = Agave(api_server = url, token = access_token)
+
+    f = a.files.list(systemId = filesystem,
+                filePath = request.user.username + '/' + file_path)
+
+    f = f[0]
+    meta_dict = f['_links'].get('metadata', None)
+    meta_link = meta_dict['href']
+
+    if meta_link is None:
+        return HttpResponse('{"status": 404, "message": "Not Found"}', content_type="application/json", status = 404)
+    
+    meta_q = meta_link.split('?q=')[1]
+    
+    #Let's just get the metadata.
+    if request.method == 'GET':
+        logger.info('Looking for metadata with the query: {0}'.format(meta_q))
+
+        meta = a.meta.listMetadata(q=meta_q)
+        logger.info('Metadata: {0}'.format(meta))
+
+        return HttpResponse(json.dumps(meta), content_type='application/json', status=200)
+
+    else:
+        #The verb is POST so we need to add/update metadata
+        body = json.loads(request.body)
+        meta = body.get('metadata', None)
+        logger.info('Metadata received: {0}'.format(request.body))
+        if meta is None or 'value' not in meta:
+            return HttpResponse('{"status": 500, "message": "No metadata sent."}', content_type="application/json", status = 500)
+
+        if 'uuid' not in meta:
+            meta_uuid = meta_q.split(':')[1]
+            meta_uuid = meta_uuid.replace('"', '').replace('}', '')
+            logger.info('Meta UUID: {0}'.format(meta_uuid))
+            meta = {
+                'name': 'designsafe metadata',
+                'associationIds': [meta_uuid],
+                'value': meta['value']
+            }
+            r = a.meta.addMetadata(body = meta)
+        else:
+            r = a.meta.updateMetadata(uuid = meta['uuid'], body = meta)
+        
+        return HttpResponse('{"status": 200, "message": "OK"}', content_type="application/json")
