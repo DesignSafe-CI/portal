@@ -114,6 +114,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
