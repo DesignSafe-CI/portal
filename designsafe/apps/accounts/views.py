@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from designsafe.apps.accounts import forms
 from pytas.http import TASClient
+from pytas.models import User as TASUser
 import logging
 import json
 
@@ -15,7 +16,9 @@ def index(request):
     The default accounts view. Provides user settings for managing profile,
     authentication, notifications, identities, and applications.
     """
-    return render(request, 'designsafe/apps/accounts/index.html')
+    profile = TASUser(username=request.user.username)
+    context = {'profile': profile}
+    return render(request, 'designsafe/apps/accounts/index.html', context)
 
 def register(request):
     if request.user.is_authenticated():
