@@ -33,6 +33,7 @@ def listings(request, file_path = '/'):
 
     for f in l:
         f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
+
     logger.info('Listing: {0}'.format(json.dumps(l, indent=4)))
     DataEvent.send_event(event_data = {'path': file_path, 'callback': 'getList'})
 
