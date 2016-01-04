@@ -1,0 +1,28 @@
+{% extends "base_angular.html" %}
+{% load cms_tags staticfiles sekizai_tags pipeline %}
+{% block content %}
+
+<div class="container">
+    <h1 class="headline headline-research">
+        <span class="hl hl-research">Workspace</span>
+    </h1>
+</div>
+
+<div class="container" role="main" ng-app="WorkspaceApp">
+  <div ng-controller="ApplicationTrayCtrl" ng-include="'{% url 'ws_get_template' 'application-tray' %}'"></div>
+</div>
+
+{% addtoblock "js" %}
+  <script src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+  <script src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+  <script src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+  <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
+  <script src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+  <script src="{% static 'designsafe/apps/workspace/scripts/app.js' %}"></script>
+  <script src="{% static 'designsafe/apps/workspace/scripts/controllers/application-tray.js' %}"></script>
+{% endaddtoblock %}
+
+{% endblock %}

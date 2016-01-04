@@ -80,8 +80,9 @@ INSTALLED_APPS = (
     # signals
     'designsafe.apps.signals',
 
-    #Designsafe apps
+    # Designsafe apps
     'designsafe.apps.data',
+    'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
     # 'designsafe.apps.cilogon',
 )
