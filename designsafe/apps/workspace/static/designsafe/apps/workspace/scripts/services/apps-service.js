@@ -4,10 +4,16 @@
 
     var service = {};
 
-    service.list = function() {
+    var default_list_opts = {
+      publicOnly: false
+    };
+    service.list = function(opts) {
+      opts = opts || {};
+      var params = _.extend(default_list_opts, opts);
       return $http({
         url: djangoUrl.reverse('designsafe_workspace:call_api', ['apps']),
-        method: 'GET'
+        method: 'GET',
+        params: params
       });
     };
 

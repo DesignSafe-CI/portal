@@ -4,9 +4,7 @@
     ['$scope', '$rootScope', 'Apps', function($scope, $rootScope, Apps) {
 
       $scope.data = {};
-      Apps.list().then(function(response) {
-        $scope.data.apps = response.data;
-      });
+      $scope.data.publicOnly = false;
 
       $scope.$on('close-app', function(e, appId) {
         var app = _.findWhere($scope.data.apps, {'id':appId});
@@ -14,6 +12,13 @@
           app._active = false;
         }
       });
+
+      $scope.refreshApps = function() {
+        Apps.list({publicOnly: $scope.data.publicOnly}).then(function(response) {
+          $scope.data.apps = response.data;
+        });
+      };
+      $scope.refreshApps();
 
       $scope.launchApp = function(app) {
         app._active = true;

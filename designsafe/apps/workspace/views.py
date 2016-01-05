@@ -38,7 +38,11 @@ def call_api(request, service):
         if app_id:
             data = agave.apps.get(appId=app_id)
         else:
-            data = agave.apps.list()
+            publicOnly = request.GET.get('publicOnly')
+            if publicOnly == 'true':
+                data = agave.apps.list(publicOnly='true')
+            else:
+                data = agave.apps.list()
 
     elif service == 'files':
         system_id = request.GET.get('system_id')
