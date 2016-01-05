@@ -244,6 +244,8 @@ MIGRATION_MODULES = {
     'djangocms_style': 'djangocms_style.migrations_django',
 }
 
+LOGIN_URL = '/login/'
+
 DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
 DJANGOCMS_FORMS_TEMPLATES = (
