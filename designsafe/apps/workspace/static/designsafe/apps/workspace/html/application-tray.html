@@ -1,0 +1,7 @@
+<div class="well apps-tray">
+  <div ng-repeat="app in data.apps" class="app" ng-class="{'app-active': app._active}" ng-click="launchApp(app);"
+    uib-tooltip="{{app.shortDescription}}" tooltip-placement="bottom">
+    <span class="app-icon"><i class="fa fa-cube fa-3x"></i></span>
+    <span class="app-title">{{app.label}}</span>
+  </div>
+</div>

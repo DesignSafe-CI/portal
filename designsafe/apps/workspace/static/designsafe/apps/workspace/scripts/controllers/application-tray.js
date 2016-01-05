@@ -1,13 +1,22 @@
-(function(window, angular, $) {
+(function(window, angular, $, _) {
   "use strict";
-  angular.module('WorkspaceApp').controller('ApplicationTrayCtrl', ['$scope', 'Apps', function($scope, Apps) {
+  angular.module('WorkspaceApp').controller('ApplicationTrayCtrl',
+    ['$scope', '$rootScope', 'Apps', function($scope, $rootScope, Apps) {
 
-    $scope.data = {};
-    $scope.data.apps = Apps.list();
+      $scope.data = {};
+      $scope.data.apps = Apps.list();
 
-    $scope.launchApp = function(app) {
-      window.alert('GET ' + app._links.self.href);
-    };
-  }]);
+      $scope.$on('close-app', function(e, appId) {
+        var app = _.findWhere($scope.data.apps, {'id':appId});
+        if (app) {
+          app._active = false;
+        }
+      });
 
-})(window, angular, jQuery);
+      $scope.launchApp = function(app) {
+        app._active = true;
+        $rootScope.$broadcast('launch-app', app.id);
+      };
+    }]);
+
+})(window, angular, jQuery, _);

@@ -1,0 +1,32 @@
+.apps-tray {
+  /*padding: 0.5em;
+  margin-bottom: 1em;
+  background-color: #eee;*/
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 0.5em;
+  box-shadow: 1px 1px 2px rgba(192,192,192,0.1);
+}
+
+.app-active {
+  background-color: #337AB7;
+  color: #fff;
+}
+
+.app-form-wrapper {
+  border: 1px solid #eee;
+  padding: 0.5em;
+  background-color: #fff;
+}

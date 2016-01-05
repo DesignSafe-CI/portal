@@ -1,5 +1,7 @@
 from django.shortcuts import render, render_to_response
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+
 import logging
 import json
 
@@ -13,6 +15,7 @@ from django.http import HttpResponse
 logger = logging.getLogger(__name__)
 
 # Create your views here.
+@login_required
 def index(request):
     context = {}
     token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
@@ -22,7 +25,7 @@ def index(request):
         }
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
-
+@login_required
 def get_template(request, resource):
     """
       Returns a template.
