@@ -1,3 +1,52 @@
-<div class="well">
-
+<h2>
+  Jobs Status
+  <button ng-click="refresh()" class="btn btn-sm btn-default pull-right">
+    <i class="fa fa-refresh" ng-class="{'fa-spin': data.loading}"></i>
+    <span class="sr-only">Refresh</span>
+  </button>
+</h2>
+<div ng-if="!data.jobs" class="alert alert-info">
+  No job history to display.
 </div>
+<div class="jobs-list-wrapper">
+  <ul class="list-group">
+    <li
+      ng-repeat="job in data.jobs"
+      class="list-group-item"
+      ng-class="{
+        'list-group-item-danger': job.status==='FAILED',
+        'list-group-item-success': job.status==='FINISHED'
+      }">
+      <h4>{{job.name}}</h4>
+      <span>{{job.status}}</span>
+      <button class="btn btn-sm btn-default" ng-click="jobDetails(job)"><i class="fa fa-info-circle"></i> More info</button>
+    </li>
+  </ul>
+</div>
+
+<script type="text/ng-template" id="local/job-details-modal.html">
+  <div class="modal-header">
+    <h3 class="modal-title">{{job.name}}</h3>
+  </div>
+  <div class="modal-body">
+    <dl>
+      <dt>Application</dt>
+      <dd>{{job.appId}}</dd>
+
+      <dt>Status</dt>
+      <dd>{{job.status}}</dd>
+
+      <dt>Submitted<dt>
+      <dd>{{job.submitTime | date:'medium'}}</dd>
+
+      <dt>Finished<dt>
+      <dd>{{job.endTime | date:'medium'}}</dd>
+
+      <dt>Output</dt>
+      <dd>agave://{{job.archiveSystem}}/{{job.archivePath}}</dd>
+    </dl>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
+  </div>
+</script>

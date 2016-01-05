@@ -1,7 +1,9 @@
-from agavepy.agave import Agave
+from agavepy.agave import Agave, AgaveException
 from django.shortcuts import render, render_to_response
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import JsonResponse
 
 import logging
 import json
@@ -9,9 +11,6 @@ import json
 import os
 from agavepy.agave import Agave
 from django.http import HttpResponse
-# import dateutil.parser
-# from bson import Binary, Code
-#from bson import dumps
 
 logger = logging.getLogger(__name__)
 
@@ -27,64 +26,47 @@ def index(request):
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
 @login_required
-def get_template(request, resource):
-    """
-      Returns a template.
-    """
-    #TODO: Should be replaced by TemplateView(template='template') or a subclass of that.
-    #TODO: Should use login_required?
-    logger.info('Template requested: {0}.html'.format(resource))
-    templateUrl = 'designsafe/apps/workspace/{0}.html'.format(resource)
-    return render_to_response(templateUrl)
-
-def apps_list(request):
+def call_api(request, service):
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     server = os.environ.get('AGAVE_TENANT_BASEURL')
     agave = Agave(api_server=server, token=access_token)
-    app_list = agave.apps.list()
-    logger.info(app_list)
-    for app in app_list:
-        app['lastModified'] = app['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
 
-    return HttpResponse(json.dumps(app_list), content_type="application/json")
+    response = HttpResponse()
+    if service == 'apps':
+        app_id = request.GET.get('app_id')
+        if app_id:
+            data = agave.apps.get(appId=app_id)
+        else:
+            data = agave.apps.list()
 
-def files_list(request):
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    server = os.environ.get('AGAVE_TENANT_BASEURL')
-    agave = Agave(api_server=server, token=access_token)
-    system_id = os.environ.get('AGAVE_STORAGE_SYSTEM')
-    file_list = agave.files.list(systemId=system_id, filePath='mrojas')
+    elif service == 'files':
+        system_id = request.GET.get('system_id')
+        file_path = request.GET.get('file_path')
+        data = agave.files.list(systemId=system_id, filePath=file_path)
 
-    # serialize dates
-    for file in file_list:
-        file['lastModified'] = file['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
+    elif service == 'jobs':
+        job_id = request.GET.get('job_id')
+        if job_id:
+            data = agave.jobs.get(jobId=job_id)
+        else:
+            if request.method == 'POST':
+                job_post = json.loads(request.body)
+                logger.debug(job_post)
+                try:
+                    data = agave.jobs.submit(body=job_post)
+                except AgaveException as ae:
+                    return HttpResponse(json.dumps(ae.message), status=400,
+                        content_type='application/json')
+                except Exception as e:
+                    return HttpResponse(
+                        json.dumps({'status': 'error', 'message': e.message}), status=400,
+                        content_type='application/json')
+            else:
+                data = agave.jobs.list()
 
-    return HttpResponse(json.dumps(file_list), content_type="application/json")
+    else:
+        return HttpResponse('Unexpected service: %s' % service, status=400)
 
-def jobs_list(request):
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    server = os.environ.get('AGAVE_TENANT_BASEURL')
-    agave = Agave(api_server=server, token=access_token)
-    job_list = agave.jobs.list()
-    for job in job_list:
-        job['endTime'] = job['endTime'].strftime('%Y-%m-%d %H:%M:%S')
-        job['startTime'] = job['startTime'].strftime('%Y-%m-%d %H:%M:%S') if job['startTime'] is not None else ''
-
-    return HttpResponse(json.dumps(job_list), content_type="application/json")
-
-def jobs_details(request):
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    server = os.environ.get('AGAVE_TENANT_BASEURL')
-    agave = Agave(api_server=server, token=access_token)
-    request_data = json.loads(request.body)
-
-    job_details = agave.jobs.get(jobId=request_data['id'])
-    job_details['endTime'] = job_details['endTime'].strftime('%Y-%m-%d %H:%M:%S')
-    job_details['submitTime'] = job_details['submitTime'].strftime('%Y-%m-%d %H:%M:%S')
-    job_details['startTime'] = job_details['startTime'].strftime('%Y-%m-%d %H:%M:%S') if job_details['startTime'] is not None else ''
-
-    return HttpResponse(json.dumps(job_details), content_type="application/json")
+    return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
+        content_type='application/json')

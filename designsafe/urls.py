@@ -27,7 +27,7 @@ urlpatterns = patterns('',
 
     # api urls, just for the samples.
     url(r'^data/', include('designsafe.apps.data.urls')),
-    url(r'^workspace/', include('designsafe.apps.workspace.urls')),
+    url(r'^workspace/', include('designsafe.apps.workspace.urls', namespace='designsafe_workspace')),
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
 
     # auth

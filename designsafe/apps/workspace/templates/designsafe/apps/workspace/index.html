@@ -9,13 +9,13 @@
 </div>
 
 <div class="container" role="main" ng-app="WorkspaceApp">
-  <div ng-controller="ApplicationTrayCtrl" ng-include="'{% static 'designsafe/apps/workspace/html/application-tray.html' %}'"></div>
-  <div class="row">
+  <div class="workspace-panel" ng-controller="ApplicationTrayCtrl" ng-include="'{% static 'designsafe/apps/workspace/html/application-tray.html' %}'"></div>
+  <div class="row row-flex row-flex-wrap">
     <div class="col-md-9">
-      <div ng-controller="ApplicationFormCtrl" ng-include="'{% static 'designsafe/apps/workspace/html/application-form.html' %}'"></div>
+      <div class="workspace-panel" ng-controller="ApplicationFormCtrl" ng-include="'{% static 'designsafe/apps/workspace/html/application-form.html' %}'"></div>
     </div>
     <div class="col-md-3">
-      <div ng-controller="JobsStatusCtrl" ng-include="'{% static 'designsafe/apps/workspace/html/jobs-status.html' %}'"></div>
+      <div class="workspace-panel" ng-controller="JobsStatusCtrl" ng-include="'{% static 'designsafe/apps/workspace/html/jobs-status.html' %}'"></div>
     </div>
   </div>
 </div>
@@ -36,6 +36,7 @@
   <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+  <script type="text/javascript" src="{% static 'djangular/js/django-angular.js' %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
@@ -44,6 +45,7 @@
   <script src="{% static 'designsafe/apps/workspace/scripts/controllers/application-form.js' %}"></script>
   <script src="{% static 'designsafe/apps/workspace/scripts/controllers/jobs-status.js' %}"></script>
   <script src="{% static 'designsafe/apps/workspace/scripts/services/apps-service.js' %}"></script>
+  <script src="{% static 'designsafe/apps/workspace/scripts/services/jobs-service.js' %}"></script>
 {% endaddtoblock %}
 
 {% endblock %}
