@@ -34,6 +34,10 @@ body.navbar-fixed {
   padding-bottom: 1em;
 }
 
+.site-banner-right {
+  flex-grow: 2;
+}
+
 .site-banner .tagline {
   font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #136ac9;
@@ -71,6 +75,11 @@ body.navbar-fixed {
   .site-banner .tagline {
     max-width: 530px;
     text-align: center;
+  }
+
+  .ef-site-title a h1 {
+    text-align: center;
+    margin-bottom: 10px;
   }
 }
 
