@@ -12,6 +12,20 @@ body.navbar-fixed {
   top: 29px;
 }
 
+.ef-site-title a {
+  text-decoration: none;
+  color: #333;
+}
+
+.ef-site-title a:hover {
+  color: #444;
+}
+
+.ef-site-title a h1 {
+  margin: 0;
+  line-height: 0.8;
+}
+
 .site-banner {
   display: flex;
   align-items: center;

@@ -192,6 +192,7 @@ MEDIA_URL = '/media/'
 
 CMS_TEMPLATES = (
     ('cms_page.html', 'Basic Page'),
+    ('ef_cms_page.html', 'EF Site Page'),
 )
 
 CMSPLUGIN_CASCADE_PLUGINS = (
