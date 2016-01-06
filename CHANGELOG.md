@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.4.0
+
+- Custom templates for EF sites
+
 ## v0.3.0
 
 December 04, 2015
