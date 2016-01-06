@@ -3,25 +3,25 @@
         <tr>
             <th>
                 <a href="" ng-click="order('model.name')">
-                    [["name" | translate]]
+                    {{"name" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.name'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
             <th class="hidden-xs">
                 <a href="" ng-click="order('model.size')">
-                    [["size" | translate]]
+                    {{"size" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.size'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
             <th class="hidden-sm hidden-xs">
                 <a href="" ng-click="order('model.date')">
-                    [["date" | translate]]
+                    {{"date" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.date'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
             <!-- <th class="hidden-sm hidden-xs">
                 <a href="" ng-click="order('model.permissions')">
-                    [["permissions" | translate]]
+                    {{"permissions" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.permissions'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th> -->
@@ -40,32 +40,32 @@
         </tr>
         <tr ng-show="!fileNavigator.requesting && fileNavigator.fileList.length < 1 && !fileNavigator.error">
             <td colspan="5">
-                [["no_files_in_folder" | translate]]...
+                {{"no_files_in_folder" | translate}}...
             </td>
         </tr>
         <tr ng-show="!fileNavigator.requesting && fileNavigator.error">
             <td colspan="5">
-                [[ fileNavigator.error ]]
+                {{ fileNavigator.error }}
             </td>
         </tr>
         <!-- <tr ng-repeat="item in fileNavigator.fileList | filter: query | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting> -->
         <tr ng-repeat="item in fileNavigator.fileList | filter: query | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting && item.model.name !== '.'">
             <td ng-right-click="touch(item)">
-                <a href="" ng-click="smartClick(item)" title="[[item.model.name]] ([[item.model.sizeKb()]]kb)">
+                <a href="" ng-click="smartClick(item)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)">
                     <i class="glyphicon glyphicon-folder-close" ng-show="item.model.type === 'dir'"></i>
                     <i class="glyphicon glyphicon-file" ng-show="item.model.type === 'file'"></i>
-                    [[item.model.name | strLimit : 64]]
+                    {{item.model.name | strLimit : 64}}
                 </a>
             </td>
             <td class="hidden-xs">
-                [[item.model.sizeKb()]]kb
+                {{item.model.sizeKb()}}kb
             </td>
             <td class="hidden-sm hidden-xs">
-                <!-- [[item.model.date | formatDate ]] -->
-                [[item.model.date]]
+                <!-- {{item.model.date | formatDate }} -->
+                {{item.model.date}}
             </td>
             <!-- <td class="hidden-sm hidden-xs">
-                [[item.model.perms.toCode(item.model.type === 'dir'?'d':'-')]]
+                {{item.model.perms.toCode(item.model.type === 'dir'?'d':'-')}}
             </td> -->
             <td class="hidden-sm hidden-xs">
                 <div ng-include="config.tplPath + '/item-toolbar.html'"></div>

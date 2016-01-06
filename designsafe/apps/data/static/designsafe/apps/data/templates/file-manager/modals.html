@@ -5,17 +5,17 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">
             <span aria-hidden="true">&times;</span>
-            <span class="sr-only">[["close" | translate]]</span>
+            <span class="sr-only">{{"close" | translate}}</span>
         </button>
-        <h4 class="modal-title">[["confirm" | translate]]</h4>
+        <h4 class="modal-title">{{"confirm" | translate}}</h4>
       </div>
       <div class="modal-body">
-        [['sure_to_delete' | translate]] <b>[[temp.model.name]]</b> ?
+        {{'sure_to_delete' | translate}} <b>{{temp.model.name}}</b> ?
         <div ng-include data-src="'error-bar'" class="clearfix"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
-        <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess" autofocus="autofocus">[["remove" | translate]]</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess" autofocus="autofocus">{{"remove" | translate}}</button>
       </div>
       </form>
     </div>
@@ -29,20 +29,20 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[['change_name_move' | translate]]</h4>
+              <h4 class="modal-title">{{'change_name_move' | translate}}</h4>
             </div>
             <div class="modal-body">
-              <label class="radio">[['enter_new_name_for' | translate]] <b>[[temp.model.name]]</b></label>
+              <label class="radio">{{'enter_new_name_for' | translate}} <b>{{temp.model.name}}</b></label>
               <input class="form-control" ng-model="temp.tempModel.name" autofocus="autofocus">
 
               <div ng-include data-src="'path-selector'" class="clearfix"></div>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
-              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">[['rename' | translate]]</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">{{'rename' | translate}}</button>
             </div>
         </form>
     </div>
@@ -56,19 +56,19 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[['copy_file' | translate]]</h4>
+              <h4 class="modal-title">{{'copy_file' | translate}}</h4>
             </div>
             <div class="modal-body">
-              <label class="radio">[['enter_new_name_for' | translate]] <b>[[temp.model.name]]</b></label>
+              <label class="radio">{{'enter_new_name_for' | translate}} <b>{{temp.model.name}}</b></label>
               <input class="form-control" ng-model="temp.tempModel.name" autofocus="autofocus">
 
               <div ng-include data-src="'path-selector'" class="clearfix"></div>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
               <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">Copy</button>
             </div>
         </form>
@@ -83,20 +83,20 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[['compress' | translate]]</h4>
+              <h4 class="modal-title">{{'compress' | translate}}</h4>
             </div>
             <div class="modal-body">
               <div ng-show="temp.asyncSuccess">
-                  <div class="label label-success error-msg">[['compression_started' | translate]]</div>
+                  <div class="label label-success error-msg">{{'compression_started' | translate}}</div>
               </div>
               <div ng-hide="temp.asyncSuccess">
                   <div ng-hide="config.allowedActions.compressChooseName">
-                    [['sure_to_start_compression_with' | translate]] <b>[[temp.model.name]]</b> ?
+                    {{'sure_to_start_compression_with' | translate}} <b>{{temp.model.name}}</b> ?
                   </div>
                   <div ng-show="config.allowedActions.compressChooseName">
-                    <label class="radio">[['enter_folder_name_for_compression' | translate]] <b>[[fileNavigator.currentPath.join('/')]]/[[temp.model.name]]</b></label>
+                    <label class="radio">{{'enter_folder_name_for_compression' | translate}} <b>{{fileNavigator.currentPath.join('/')}}/{{temp.model.name}}</b></label>
                     <input class="form-control" ng-model="temp.tempModel.name" autofocus="autofocus">
                   </div>
               </div>
@@ -105,11 +105,11 @@
             </div>
             <div class="modal-footer">
               <div ng-show="temp.asyncSuccess">
-                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["close" | translate]]</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"close" | translate}}</button>
               </div>
               <div ng-hide="temp.asyncSuccess">
-                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
-                  <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">[['compress' | translate]]</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+                  <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">{{'compress' | translate}}</button>
               </div>
             </div>
         </form>
@@ -124,16 +124,16 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[['extract_item' | translate]]</h4>
+              <h4 class="modal-title">{{'extract_item' | translate}}</h4>
             </div>
             <div class="modal-body">
               <div ng-show="temp.asyncSuccess">
-                  <div class="label label-success error-msg">[['extraction_started' | translate]]</div>
+                  <div class="label label-success error-msg">{{'extraction_started' | translate}}</div>
               </div>
               <div ng-hide="temp.asyncSuccess">
-                  <label class="radio">[['enter_folder_name_for_extraction' | translate]] <b>[[temp.model.name]]</b></label>
+                  <label class="radio">{{'enter_folder_name_for_extraction' | translate}} <b>{{temp.model.name}}</b></label>
                   <input class="form-control" ng-model="temp.tempModel.name" autofocus="autofocus">
                   <div ng-include data-src="'path-selector'" class="clearfix"></div>
               </div>
@@ -141,11 +141,11 @@
             </div>
             <div class="modal-footer">
               <div ng-show="temp.asyncSuccess">
-                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["close" | translate]]</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"close" | translate}}</button>
               </div>
               <div ng-hide="temp.asyncSuccess">
-                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
-                  <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">[['extract' | translate]]</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+                  <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">{{'extract' | translate}}</button>
               </div>
             </div>
         </form>
@@ -160,23 +160,23 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
               <button type="button" class="close mr5" ng-click="fullscreen=!fullscreen">
                   <span>&loz;</span>
-                  <span class="sr-only">[['toggle_fullscreen' | translate]]</span>
+                  <span class="sr-only">{{'toggle_fullscreen' | translate}}</span>
               </button>
-              <h4 class="modal-title">[['edit_file' | translate]]</h4>
+              <h4 class="modal-title">{{'edit_file' | translate}}</h4>
             </div>
             <div class="modal-body">
-                <label class="radio">[['file_content' | translate]]</label>
-                <span class="label label-warning" ng-show="temp.inprocess">[['loading' | translate]] ...</span>
+                <label class="radio">{{'file_content' | translate}}</label>
+                <span class="label label-warning" ng-show="temp.inprocess">{{'loading' | translate}} ...</span>
                 <textarea class="form-control code" ng-model="temp.tempModel.content" ng-show="!temp.inprocess" autofocus="autofocus"></textarea>
                 <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
-              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">[['edit' | translate]]</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">{{'edit' | translate}}</button>
             </div>
         </form>
     </div>
@@ -190,18 +190,18 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <!-- <h4 class="modal-title">[['create_folder' | translate]]</h4> -->
+              <!-- <h4 class="modal-title">{{'create_folder' | translate}}</h4> -->
             </div>
             <div class="modal-body">
-              <label class="radio">[['folder_name' | translate]]</label>
+              <label class="radio">{{'folder_name' | translate}}</label>
               <input class="form-control" ng-model="temp.tempModel.name" autofocus="autofocus">
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["cancel" | translate]]</button>
-              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">[['create' | translate]]</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">{{'create' | translate}}</button>
             </div>
         </form>
     </div>
@@ -215,22 +215,22 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[["upload_file" | translate]]</h4>
+              <h4 class="modal-title">{{"upload_file" | translate}}</h4>
             </div>
             <div class="modal-body">
-              <label class="radio">[["files_will_uploaded_to" | translate]] <b>[[fileNavigator.currentPath.join('/')]]</b></label>
+              <label class="radio">{{"files_will_uploaded_to" | translate}} <b>{{fileNavigator.currentPath.join('/')}}</b></label>
               <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" multiple="multiple"/>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
               <div ng-show="!fileUploader.requesting">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">[["cancel" | translate]]</button>
-                  <button type="submit" class="btn btn-primary" ng-disabled="!uploadFileList.length || fileUploader.requesting">[['upload' | translate]]</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
+                  <button type="submit" class="btn btn-primary" ng-disabled="!uploadFileList.length || fileUploader.requesting">{{'upload' | translate}}</button>
               </div>
               <div ng-show="fileUploader.requesting">
-                  <span class="label label-warning">[["uploading" | translate]] ...</span>
+                  <span class="label label-warning">{{"uploading" | translate}} ...</span>
               </div>
             </div>
         </form>
@@ -245,9 +245,9 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[['change_permissions' | translate]]</h4>
+              <h4 class="modal-title">{{'change_permissions' | translate}}</h4>
             </div>
             <div ng-switch on="temp.requesting">
                 <div class="modal-body" ng-switch-when="true">
@@ -257,15 +257,15 @@
                   <table class="table mb0">
                       <thead>
                           <tr>
-                              <th>[['permissions' | translate]]</th>
-                              <th class="col-xs-1 text-center">[['exec' | translate]]</th>
-                              <th class="col-xs-1 text-center">[['read' | translate]]</th>
-                              <th class="col-xs-1 text-center">[['write' | translate]]</th>
+                              <th>{{'permissions' | translate}}</th>
+                              <th class="col-xs-1 text-center">{{'exec' | translate}}</th>
+                              <th class="col-xs-1 text-center">{{'read' | translate}}</th>
+                              <th class="col-xs-1 text-center">{{'write' | translate}}</th>
                           </tr>
                       </thead>
                       <tbody>
                           <tr ng-repeat="(permTypeKey, permTypeValue) in temp.tempModel.perms">
-                              <td>[[permTypeKey | translate]]</td>
+                              <td>{{permTypeKey | translate}}</td>
                               <td ng-repeat="(permKey, permValue) in permTypeValue" class="col-xs-1 text-center" ng-click="main()">
                                   <label class="col-xs-12">
                                     <input type="checkbox" ng-model="temp.tempModel.perms[permTypeKey][permKey]">
@@ -278,8 +278,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">[["cancel" | translate]]</button>
-              <button type="submit" class="btn btn-primary" ng-disabled="">[['change' | translate]]</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
+              <button type="submit" class="btn btn-primary" ng-disabled="">{{'change' | translate}}</button>
             </div>
         </form>
     </div>
@@ -292,9 +292,9 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">[["close" | translate]]</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">[['Metadata' | translate]]</h4>
+              <h4 class="modal-title">{{'Metadata' | translate}}</h4>
             </div>
             <div ng-switch on="temp.inprocess">
                 <div class="modal-body" ng-switch-when="true">
@@ -305,7 +305,7 @@
                   <form novalidate name="meta-form">
                     <label for='meta-key'>Key:</label>
                     <input type="text" ng-model="temp.tempModel.metaForm.key" name="meta-key">
-                    <label for='meta-value'>Key:</label>
+                    <label for='meta-value'>Value:</label>
                     <input type="text" ng-model="temp.tempModel.metaForm.value" name="meta-value">
                     <button type="button" class="btn btn-success" ng-click="addKeyValueMeta(temp)">Add</button>
                   </form>
@@ -314,15 +314,15 @@
                   <table class="table mb0">
                       <thead>
                           <tr>
-                              <th class="col-xs-1 text-center">[['key' | translate]]</th>
-                              <th class="col-xs-1 text-center">[['value' | translate]]</th>
+                              <th class="col-xs-1 text-center">{{'key' | translate}}</th>
+                              <th class="col-xs-1 text-center">{{'value' | translate}}</th>
                               <th class="col-xs-1"></th>
                           </tr>
                       </thead>
                       <tbody>
                           <tr ng-repeat="(mKey, mValue) in temp.tempModel.metadata[0].value">
-                              <td>[[mKey | translate]]</td>
-                              <td>[[mValue]]</td>
+                              <td>{{mKey | translate}}</td>
+                              <td>{{mValue}}</td>
                               <td><button type="button" class="btn btn-danger" 
                                     ng-click="deleteKeyMeta(temp, mKey)">Delete</button>
                           </tr>
@@ -339,8 +339,8 @@
             </div>
             <div class="modal-footer">
         <form ng-submit="updateMetadata(temp)">
-              <button type="button" class="btn btn-default" data-dismiss="modal">[["cancel" | translate]]</button>
-              <button type="submit" class="btn btn-primary" ng-disabled="">[['update' | translate]]</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
+              <button type="submit" class="btn btn-primary" ng-disabled="">{{'update' | translate}}</button>
             </div>
         </form>
     </div>
@@ -353,9 +353,9 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">
             <span aria-hidden="true">&times;</span>
-            <span class="sr-only">[["close" | translate]]</span>
+            <span class="sr-only">{{"close" | translate}}</span>
         </button>
-        <h4 class="modal-title">[["select_destination_folder" | translate]]</h4>
+        <h4 class="modal-title">{{"select_destination_folder" | translate}}</h4>
       </div>
       <div class="modal-body">
         <div>
@@ -364,7 +364,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">[["close" | translate]]</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"close" | translate}}</button>
       </div>
     </div>
   </div>
@@ -374,11 +374,11 @@
   <div class="panel panel-primary mt10 mb0">
     <div class="panel-body">
         <div class="detail-sources">
-          <code class="mr5"><b>[["source" | translate]]:</b> [[temp.model.fullPath()]]</code>
+          <code class="mr5"><b>{{"source" | translate}}:</b> {{temp.model.fullPath()}}</code>
         </div>
         <div class="detail-sources">
-          <code class="mr5"><b>[["destination" | translate]]:</b>[[temp.tempModel.fullPath()]]</code>
-          <a href="" class="label label-primary" ng-click="openNavigator(temp)">[['change' | translate]]</a>
+          <code class="mr5"><b>{{"destination" | translate}}:</b>{{temp.tempModel.fullPath()}}</code>
+          <a href="" class="label label-primary" ng-click="openNavigator(temp)">{{'change' | translate}}</a>
         </div>
     </div>
   </div>
@@ -386,6 +386,6 @@
 <script type="text/ng-template" id="error-bar">
     <div class="label label-danger error-msg pull-left animated fadeIn" ng-show="temp.error">
       <i class="glyphicon glyphicon-remove-circle"></i>
-      <span>[[temp.error]]</span>
+      <span>{{temp.error}}</span>
     </div>
 </script>
