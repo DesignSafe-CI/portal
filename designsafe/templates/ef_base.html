@@ -32,33 +32,6 @@
       </div>
 
       <div class="site-banner-right">
-<!--
-        <div class="user-menu" style="margin-bottom:10px">
-          {% if user.is_authenticated %}
-            <span style="vertical-align:middle">Welcome, {{ user.first_name }}!</span>
-            <span id="id_user_notify">
-              <a href="{% url 'designsafe_accounts:notifications' %}" class="btn btn-link">
-                <span class="sr-only">Notifications</span>
-                <span class="badge badge-default" title="You have no unread notifications">&nbsp;</span>
-              </a>
-            </span>
-            <div class="btn-group">
-              <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>
-              <button type="button" class="btn btn-link-alt dropdown-toggle"
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="{% url 'logout' %}">Log out</a></li>
-              </ul>
-            </div>
-
-          {% else %}
-            <a href="{% url 'login' %}" class="btn btn-link-alt">Log in</a>
-          {% endif %}
-        </div>
- -->
         <div class="text-right">
           <a class="logo" href="https://www.designsafe-ci.org/">
             <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
