@@ -30,47 +30,45 @@ def call_api(request, service):
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     server = os.environ.get('AGAVE_TENANT_BASEURL')
-    agave = Agave(api_server=server, token=access_token)
 
-    response = HttpResponse()
-    if service == 'apps':
-        app_id = request.GET.get('app_id')
-        if app_id:
-            data = agave.apps.get(appId=app_id)
-        else:
-            publicOnly = request.GET.get('publicOnly')
-            if publicOnly == 'true':
-                data = agave.apps.list(publicOnly='true')
+    try:
+        agave = Agave(api_server=server, token=access_token)
+        if service == 'apps':
+            app_id = request.GET.get('app_id')
+            if app_id:
+                data = agave.apps.get(appId=app_id)
             else:
-                data = agave.apps.list()
+                publicOnly = request.GET.get('publicOnly')
+                if publicOnly == 'true':
+                    data = agave.apps.list(publicOnly='true')
+                else:
+                    data = agave.apps.list()
 
-    elif service == 'files':
-        system_id = request.GET.get('system_id')
-        file_path = request.GET.get('file_path')
-        data = agave.files.list(systemId=system_id, filePath=file_path)
+        elif service == 'files':
+            system_id = request.GET.get('system_id')
+            file_path = request.GET.get('file_path')
+            data = agave.files.list(systemId=system_id, filePath=file_path)
 
-    elif service == 'jobs':
-        job_id = request.GET.get('job_id')
-        if job_id:
-            data = agave.jobs.get(jobId=job_id)
-        else:
-            if request.method == 'POST':
-                job_post = json.loads(request.body)
-                logger.debug(job_post)
-                try:
+        elif service == 'jobs':
+            job_id = request.GET.get('job_id')
+            if job_id:
+                data = agave.jobs.get(jobId=job_id)
+            else:
+                if request.method == 'POST':
+                    job_post = json.loads(request.body)
                     data = agave.jobs.submit(body=job_post)
-                except AgaveException as ae:
-                    return HttpResponse(json.dumps(ae.message), status=400,
-                        content_type='application/json')
-                except Exception as e:
-                    return HttpResponse(
-                        json.dumps({'status': 'error', 'message': e.message}), status=400,
-                        content_type='application/json')
-            else:
-                data = agave.jobs.list()
+                else:
+                    data = agave.jobs.list()
 
-    else:
-        return HttpResponse('Unexpected service: %s' % service, status=400)
+        else:
+            return HttpResponse('Unexpected service: %s' % service, status=400)
+    except AgaveException as ae:
+        return HttpResponse(json.dumps(ae.message), status=400,
+            content_type='application/json')
+    except Exception as e:
+        return HttpResponse(
+            json.dumps({'status': 'error', 'message': e.message}), status=400,
+            content_type='application/json')
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
