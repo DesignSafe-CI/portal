@@ -24,9 +24,10 @@ urlpatterns = patterns('',
     # admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
-    
+
     # api urls, just for the samples.
     url(r'^data/', include('designsafe.apps.data.urls')),
+    url(r'^workspace/', include('designsafe.apps.workspace.urls', namespace='designsafe_workspace')),
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
 
     # auth

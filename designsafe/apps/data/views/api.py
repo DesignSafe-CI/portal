@@ -95,6 +95,7 @@ def metadata(request, file_path = '/'):
     #Let's just get the metadata.
     if request.method == 'GET':
         logger.info('Looking for metadata with the query: {0}'.format(meta_q))
+        logger.info('file path:{0}'.format(file_path))
 
         meta = a.meta.listMetadata(q=meta_q)
         logger.info('Metadata: {0}'.format(meta))
@@ -123,3 +124,30 @@ def metadata(request, file_path = '/'):
             r = a.meta.updateMetadata(uuid = meta['uuid'], body = meta)
 
         return HttpResponse('{"status": 200, "message": "OK"}', content_type="application/json")
+
+
+@login_required
+@require_http_methods(['GET'])
+def meta_search(request):
+    """
+    Search metadata
+    """
+    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
+    access_token = token.get('access_token', None)
+    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+    a = Agave(api_server = url, token = access_token)
+
+    meta_q = '{"value":"value"}'
+    meta_q = '{"name":"designsafe metadata"}'
+    meta_q = '{"value.testkey":"testvalue"}'
+    meta_q = '{"owner":"mlm55"}'
+    # meta_q = request.GET.get('q')
+
+    # logger.info('Searching for metadata with the query: {0}'.format(meta_q))
+    # logger.info('meta_link: {0}'.format(meta_link))
+
+    meta = a.meta.listMetadata(q=meta_q)
+    logger.info('Metadata results for query {0}: {1}'.format(meta_q, meta))
+
+    return HttpResponse(json.dumps(meta), content_type='application/json', status=200)

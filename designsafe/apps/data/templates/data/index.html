@@ -1,6 +1,12 @@
 {% extends "base_angular.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
+{% block title %}Data Browser: My Data{% endblock %}
 {% block content %}
+<div class="container">
+    <h1 class="headline headline-research">
+        <span class="hl hl-research">Data Browser</span><br>My Data
+    </h1>
+</div>
 <div data-ng-app="FileManagerApp" class="file-manager">
     <angular-filemanager></angular-filemanager>
 </div>

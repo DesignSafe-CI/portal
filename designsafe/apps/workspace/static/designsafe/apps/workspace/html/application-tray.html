@@ -1,0 +1,13 @@
+<div class="apps-tray">
+  <div ng-repeat="app in data.apps" class="app" ng-class="{'app-active': app._active}" ng-click="launchApp(app);"
+    uib-tooltip="{{app.shortDescription}}" tooltip-placement="bottom">
+    <span class="app-icon"><i class="fa fa-cube fa-3x"></i></span>
+    <span class="app-title">{{app.label}}</span>
+  </div>
+</div>
+<div class="checkbox">
+  <label for="id_publicOnly">
+    <input type="checkbox" name="publicOnly" id="id_publicOnly" ng-model="data.publicOnly" ng-change="refreshApps()">
+    Show only publicly available apps
+  </label>
+</div>
