@@ -20,7 +20,14 @@
     <header class="container site-banner">
       <div class="site-banner-left">
         <div class="ef-site-title">
-          <a href="/">{% static_placeholder 'ef_site_title' site %}</a>
+          <a href="/">
+            {% static_placeholder 'ef_site_title' site or %}
+              <h1>
+                Edit EF Site Name<br>
+                <small>Experimental Facility</small>
+              </h1>
+            {% endstatic_placeholder %}
+          </a>
         </div>
       </div>
 
