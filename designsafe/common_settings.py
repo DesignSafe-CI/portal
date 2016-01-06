@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
+    'djangular',
     'cms',
     'treebeard',
     'menus',
@@ -80,8 +81,9 @@ INSTALLED_APPS = (
     # signals
     'designsafe.apps.signals',
 
-    #Designsafe apps
+    # Designsafe apps
     'designsafe.apps.data',
+    'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
     # 'designsafe.apps.cilogon',
 )
@@ -101,6 +103,7 @@ AUTHENTICATION_BACKENDS = (
 #}
 
 MIDDLEWARE_CLASSES = (
+    'djangular.middleware.DjangularUrlMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -242,6 +245,8 @@ MIGRATION_MODULES = {
     'djangocms_video': 'djangocms_video.migrations_django',
     'djangocms_style': 'djangocms_style.migrations_django',
 }
+
+LOGIN_URL = '/login/'
 
 DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
