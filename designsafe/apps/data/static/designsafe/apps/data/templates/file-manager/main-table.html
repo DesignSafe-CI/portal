@@ -51,10 +51,15 @@
         <!-- <tr ng-repeat="item in fileNavigator.fileList | filter: query | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting> -->
         <tr ng-repeat="item in fileNavigator.fileList | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting && item.model.name !== '.'">
             <td ng-right-click="touch(item)">
-                <a href="" ng-click="smartClick(item)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)">
+                <a href="{{item.model.agavePath}}" ng-click="smartClick(item, $event)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)">
                     <i class="glyphicon glyphicon-folder-close" ng-show="item.model.type === 'dir'"></i>
                     <i class="glyphicon glyphicon-file" ng-show="item.model.type === 'file'"></i>
-                    {{item.model.name | strLimit : 64}}
+                    <span ng-if = "!fileNavigator.searchResults">
+                    {{item.model.name | strLimit : 120}}
+                    </span>
+                    <span ng-if = "fileNavigator.searchResults">
+                    {{item.model.fullPath() | strLimit : 120}}
+                    </span>
                 </a>
             </td>
             <td class="hidden-xs">

@@ -6,6 +6,7 @@
             var rawModel = {
                 name: model && model.name || '',
                 path: path || [],
+                agavePath: model && model.agavePath || '',
                 type: model && model.type || 'file',
                 size: model && parseInt(model.size || 0),
                 // date: parseMySQLDate(model && model.date),
@@ -16,7 +17,11 @@
                 recursive: false,
                 sizeKb: function() {
                     // return Math.round(this.size / 1024, 1);
+                    if (isNaN(this.size)){
+                        return '- ';
+                    }else{
                       return (this.size / 1024).toFixed(1);
+                    }
                 },
                 fullPath: function() {
                     return ('/' + this.path.join('/') + '/' + this.name).replace(/\/\//, '/');

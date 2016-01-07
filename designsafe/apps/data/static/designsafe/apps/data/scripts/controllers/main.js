@@ -1,8 +1,7 @@
 (function(window, angular, $) {
     "use strict";
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader',
-    function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader) {
+    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope',   function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
 
         $scope.config = fileManagerConfig;
         $scope.appName = fileManagerConfig.appName;
@@ -49,10 +48,11 @@
             // item = item instanceof Item ? item : new Item();
             item.revert && item.revert();
             $scope.temp = item;
-            $rootScope.$broadcast('fileManager:select', {item: item});
         };
 
-        $scope.smartClick = function(item) {
+        $scope.smartClick = function(item, $event) {
+            $event && $event.preventDefault();
+            $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
             }

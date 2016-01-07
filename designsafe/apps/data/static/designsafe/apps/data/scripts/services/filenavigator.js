@@ -48,6 +48,7 @@
             self.requesting = true;
             self.fileList = [];
             self.error = '';
+            self.searchResults = false;
 
             var url = fileManagerConfig.listUrl + data.params.path;
 
@@ -81,6 +82,7 @@
                         }
                         file.date = file.lastModified;
                         file.size = file.length;
+                        file.agavePath = file.agavePath;
                         return file;
                       });
                     }
@@ -185,10 +187,12 @@
         FileNavigator.prototype.search = function(searchTerm){
             var self = this;
             var path = '/';
-
+            self.searchResults = true;
             return self.searchByTerm(searchTerm).then(function(matches){
                 self.fileList = (matches || []).map(function(file){
-                    return new Item(file, file.path);
+                    var path = file.path.split('/');
+                    path.pop();
+                    return new Item(file, path.splice(1));
                 });
                 self.buildTree(path);
             });
@@ -211,13 +215,11 @@
                     }
                     var matches=data.result;
                     matches = matches.map(function(file){
-                    var rfile = {};
-                    var filepath = file.split('/');
-                    rfile.name = filepath[filepath.length - 1];
+                    var rfile = file;
                     rfile.rights = 'r--------';
-                    rfile.date = '-';
-                    rfile.size = '-';
-                    rfile.path = file;
+                    rfile.agavePath = file.agavePath;
+                    file.date = file.lastModified;
+                    file.size = file.length;
                     return rfile;
                     });
                     return matches;

@@ -23,6 +23,7 @@ def listings(request, file_path = '/'):
     returns: array of file objects.
     """
     #TODO: should use @is_ajax.
+    #TODO: paginate resutls.
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     logger.info('token: {0}'.format(access_token))
@@ -33,8 +34,10 @@ def listings(request, file_path = '/'):
     l = a.files.list(systemId = filesystem,
                      filePath = request.user.username + '/' + file_path)
 
+    #TODO: We need a proper serializer for datetimes
     for f in l:
         f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
+        f['agavePath'] = 'agave://{0}/{1}'.format(f['system'], f['path'])
 
     logger.info('Listing: {0}'.format(json.dumps(l, indent=4)))
     DataEvent.send_event(event_data = {'path': file_path, 'callback': 'getList'})
@@ -211,13 +214,19 @@ def meta_search(request):
 
     matches = a.meta.listMetadata(q=json.dumps(meta_q))
     res = []
-    s = ''
-    i = 0
+    fs = ''
+    fsi = 0
+    f = {}
     for match in matches:
-        s = match['_links']['file']['href']
-        i = s.find(request.user.username)
-        s = s[i + len(request.user.username) + 1:]
-        res.append(s)
+        fs = match['_links']['file']['href']
+        fsi = fs.find(filesystem)
+        f = a.files.list(systemId = filesystem, filePath = fs[ fsi + len(filesystem) + 1:])
+        f = f[0]
+        f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
+        f['agavePath'] = 'agave://{0}/{1}'.format(f['system'], f['path'])
+        if f['name'] == '.':
+            f['name'] = fs[fs.find(request.user.username) + len(request.user.username) + 1:]
+        res.append(f)
     logger.info('Metadata results for query {0}: {1}'.format(meta_q, res))
 
     return HttpResponse('{{"status": 200, "message": "OK", "result": {0} }}'.format(json.dumps(res)), content_type='application/json', status=200)
