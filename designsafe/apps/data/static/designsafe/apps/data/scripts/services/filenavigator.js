@@ -33,6 +33,7 @@
         };
 
         FileNavigator.prototype.list = function() {
+            //TODO: Paginate results
             var self = this;
             var deferred = $q.defer();
             var path = self.currentPath.join('/');
@@ -181,7 +182,19 @@
             }
         };
 
-        FileNavigator.prototype.search = function(searchTerm) {
+        FileNavigator.prototype.search = function(searchTerm){
+            var self = this;
+            var path = '/';
+
+            return self.searchByTerm(searchTerm).then(function(matches){
+                self.fileList = (matches || []).map(function(file){
+                    return new Item(file, file.path);
+                });
+                self.buildTree(path);
+            });
+        };
+
+        FileNavigator.prototype.searchByTerm = function(searchTerm) {
             var self = this;
             var deferred = $q.defer();
             var url = fileManagerConfig.metadataUrl + '?q=' + searchTerm;
@@ -190,16 +203,34 @@
             $http(
               {
                 method: 'GET',
-                url: url
+                url: url,
+                transformResponse: function(data){
+                    data = JSON.parse(data);
+                    if (data.status != 200){
+                        return [];
+                    }
+                    var matches=data.result;
+                    matches = matches.map(function(file){
+                    var rfile = {};
+                    var filepath = file.split('/');
+                    rfile.name = filepath[filepath.length - 1];
+                    rfile.rights = 'r--------';
+                    rfile.date = '-';
+                    rfile.size = '-';
+                    rfile.path = file;
+                    return rfile;
+                    });
+                    return matches;
+                }
               }
-            ).success(function(data) {
-                var matches=data.result;
+            ).success(function(matches) {
                 console.log('matches', matches);
                 self.deferredHandler(matches, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('Search Error.'));
             })['finally'](function() {
                 self.inprocess = false;
+                self.requesting = false;
             });
 
             return deferred.promise;
