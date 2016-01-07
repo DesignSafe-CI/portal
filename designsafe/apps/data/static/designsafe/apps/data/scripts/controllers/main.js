@@ -32,7 +32,13 @@
             $translate.use($cookies.language || fileManagerConfig.defaultLang);
         };
 
-
+        $scope.search = function($event){
+            var self = this;
+            if ($event.keyCode != 13){
+                return;
+            }
+            $scope.fileNavigator.search('{"all": "' + $event.currentTarget.value + '"}');
+        };
 
         $scope.touch = function(item) {
             if (item instanceof Item){
@@ -43,6 +49,7 @@
             // item = item instanceof Item ? item : new Item();
             item.revert && item.revert();
             $scope.temp = item;
+            $rootScope.$broadcast('fileManager:select', {item: item});
         };
 
         $scope.smartClick = function(item) {

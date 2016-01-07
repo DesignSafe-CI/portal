@@ -178,16 +178,46 @@ def meta_search(request):
     filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
     a = Agave(api_server = url, token = access_token)
 
-    meta_q = '{"value":"value"}'
-    meta_q = '{"name":"designsafe metadata"}'
-    meta_q = '{"value.testkey":"testvalue"}'
-    meta_q = '{"owner":"mlm55"}'
-    # meta_q = request.GET.get('q')
+    #TODO: Make it more intelligent by looking in the metadata schemas.
+    #TODO: Probably should have a libr to create MongoDB-like queries from q string and schema.
+    #TODO: Querying Agave metadata does not return file Permissions or file type. We could handle this in the frontend by caching this information. Too big?
+    #TODO: How is this going to change once we have the Data Backend in place?
+    #TODO: Agave just knows if it's a folder or something else, discuss...
 
-    # logger.info('Searching for metadata with the query: {0}'.format(meta_q))
-    # logger.info('meta_link: {0}'.format(meta_link))
+    meta_qs = json.loads(request.GET.get('q'))
+    if 'all' in meta_qs:
+        meta_q = {
+            '$or': [
+                {
+                    'value.project': meta_qs['all']
+                },
+                {
+                    'value.source': meta_qs['all']
+                },
+                {
+                    'value.key': meta_qs['all']
+                }
+            ]
+        }
+    else:
+        meta_q = {
+            '$or': [
+            ]
+        }
+        for key, value in meta_qs:
+            meta_q['$or'].append({ 'value.' + key: value})
 
-    meta = a.meta.listMetadata(q=meta_q)
-    logger.info('Metadata results for query {0}: {1}'.format(meta_q, meta))
+    logger.info('Searching for metadata with the query: {0}'.format(json.dumps(meta_q)))
 
-    return HttpResponse(json.dumps(meta), content_type='application/json', status=200)
+    matches = a.meta.listMetadata(q=json.dumps(meta_q))
+    res = []
+    s = ''
+    i = 0
+    for match in matches:
+        s = match['_links']['file']['href']
+        i = s.find(request.user.username)
+        s = s[i + len(request.user.username) + 1:]
+        res.append(s)
+    logger.info('Metadata results for query {0}: {1}'.format(meta_q, res))
+
+    return HttpResponse('{{"status": 200, "message": "OK", "result": {0} }}'.format(json.dumps(res)), content_type='application/json', status=200)

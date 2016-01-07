@@ -1,5 +1,5 @@
 <div class="iconset clearfix">
-    <div class="col-120" ng-repeat="item in fileNavigator.fileList | filter: query | orderBy: orderProp" ng-show="!fileNavigator.requesting && !fileNavigator.error && item.model.name !== '.'">
+    <div class="col-120" ng-repeat="item in fileNavigator.fileList | orderBy: orderProp" ng-show="!fileNavigator.requesting && !fileNavigator.error && item.model.name !== '.'">
         <a href="" class="thumbnail text-center" ng-click="smartClick(item)" ng-right-click="touch(item)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)">
             <div class="item-icon">
                 <i class="glyphicon glyphicon-folder-open" ng-show="item.model.type === 'dir'"></i>

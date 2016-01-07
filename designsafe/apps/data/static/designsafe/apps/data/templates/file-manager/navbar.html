@@ -1,7 +1,8 @@
   <div class="container">
     <div id="db-navbar">
-      <div class="pull-right">
-        <input type="text" class="form-control input-sm" placeholder="{{'search' | translate}}..." ng-model="$parent.query">
+        <div class="search-ph">
+            <input type="text" class="form-control input-sm" placeholder="{{'search' | translate}}..." ng-model="query" ng-keydown="search($event, query)">
+        </div>
         <!-- <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#newfolder" ng-click="touch()">
             <i class="glyphicon glyphicon-plus"></i> {{"create_folder" | translate}}
         </button> -->
@@ -26,6 +27,5 @@
             <i class="glyphicon glyphicon-th-list"></i>
         </button>
 
-      </div>
     </div>
   </div>

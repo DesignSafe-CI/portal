@@ -193,11 +193,8 @@
                 url: url
               }
             ).success(function(data) {
-                var matches=[]
-                for (var match in data){
-                  matches.push(data[match]['_links']['file']['href'])
-                }
-                console.log('matches', matches)
+                var matches=data.result;
+                console.log('matches', matches);
                 self.deferredHandler(matches, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('Search Error.'));

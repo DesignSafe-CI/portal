@@ -1,7 +1,6 @@
 from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-#from dsapi.agave.files import *
 import logging
 
 logger = logging.getLogger(__name__)
