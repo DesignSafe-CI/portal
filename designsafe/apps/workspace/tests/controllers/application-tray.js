@@ -6,19 +6,25 @@ describe('ApplicationTrayCtrl', function() {
 
   describe('ApplicationTrayCtrl controller', function() {
 
-    beforeEach(function() {
-      spyOn()
-    });
+    it('should ....', inject(function($rootScope, $controller, Apps) {
+      spyOn(Apps, 'list').and.callFake(function() {
+        return {
+          then: function(callback) {
+            return callback({data:[{name: 'testing', description: 'testing'}]});
+          }
+        };
+      });
 
-    it('should ....', inject(function($rootScope, $controller) {
-      //spec body
       var scope = $rootScope.$new();
       var ctrl = $controller('ApplicationTrayCtrl', {
-        $scope: scope, $rootScope: $rootScope
+        $scope: scope, $rootScope: $rootScope, Apps: Apps
       });
+
       expect(ctrl).toBeDefined();
-      console.log(scope.data.apps);
       expect(scope.data.publicOnly).toBe(false);
+      expect(Apps.list).toHaveBeenCalled();
+      expect(scope.data.apps.length).toBe(1);
+      expect(scope.data.apps[0].name).toBe('testing');
     }));
 
   });
