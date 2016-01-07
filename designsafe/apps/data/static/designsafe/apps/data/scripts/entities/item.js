@@ -390,7 +390,13 @@
             self.inprocess = true;
             self.error = '';
             $http.get(fileManagerConfig.metadataUrl + path).success(function(data) {
-                self.tempModel.metadata = data;
+                var md = data[0];
+                self.tempModel.metadata = md;
+                self.tempModel.metaForm = md;
+                self.tempModel.metaForm.value.author = md && md.value.author || '';
+                self.tempModel.metaForm.value.project = md && md.value.project || '';
+                self.tempModel.metaForm.value.source = md && md.value.source || '';
+                self.tempModel.metaForm.value.key = md && md.value.key || '';
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
@@ -407,7 +413,7 @@
             self.inprocess = true;
             self.error = '';
             var data = {
-                "metadata": self.tempModel.metadata[0]
+                "metadata": self.tempModel.metaForm
             };
             $http.post(fileManagerConfig.metadataUrl + path,data)
             .success(function(data){

@@ -165,7 +165,7 @@ def metadata(request, file_path = '/'):
             r = a.meta.addMetadata(body = meta)
         else:
             r = a.meta.updateMetadata(uuid = meta['uuid'], body = meta)
-
+        logger.info('Metadata sent: {0}'.format(meta))
         return HttpResponse('{"status": 200, "message": "OK"}', content_type="application/json")
 
 

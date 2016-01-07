@@ -289,63 +289,43 @@
 <div class="modal animated fadeIn" id="metadata">
   <div class="modal-dialog">
     <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">
-                  <span aria-hidden="true">&times;</span>
-                  <span class="sr-only">{{"close" | translate}}</span>
-              </button>
-              <h4 class="modal-title">{{'Metadata' | translate}}</h4>
-            </div>
-            <div ng-switch on="temp.inprocess">
-                <div class="modal-body" ng-switch-when="true">
-                  <div ng-include="config.tplPath + '/spinner.html'"></div>
-                </div>
-                <div class="modal-body" ng-switch-when="false">
-                <div class="metadata-form">
-                  <form novalidate name="meta-form">
-                    <label for='meta-key'>Key:</label>
-                    <input type="text" ng-model="temp.tempModel.metaForm.key" name="meta-key">
-                    <label for='meta-value'>Value:</label>
-                    <input type="text" ng-model="temp.tempModel.metaForm.value" name="meta-value">
-                    <button type="button" class="btn btn-success" ng-click="addKeyValueMeta(temp)">Add</button>
-                  </form>
-                </div>
-                  <div ng-if = "temp.tempModel.metadata.length > 0">
-                  <table class="table mb0">
-                      <thead>
-                          <tr>
-                              <th class="col-xs-1 text-center">{{'key' | translate}}</th>
-                              <th class="col-xs-1 text-center">{{'value' | translate}}</th>
-                              <th class="col-xs-1"></th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr ng-repeat="(mKey, mValue) in temp.tempModel.metadata[0].value">
-                              <td>{{mKey | translate}}</td>
-                              <td>{{mValue}}</td>
-                              <td><button type="button" class="btn btn-danger" 
-                                    ng-click="deleteKeyMeta(temp, mKey)">Delete</button>
-                          </tr>
-                    </tbody>
-                  </table>
-                  </div>
-                  <div ng-if="temp.tempModel.metadata.length == 0">
-                    <p>
-                      This object doesn't have any metadata.
-                    </p>
-                  </div>
-                  <div ng-include data-src="'error-bar'" class="clearfix"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-        <form ng-submit="updateMetadata(temp)">
-              <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
-              <button type="submit" class="btn btn-primary" ng-disabled="">{{'update' | translate}}</button>
-            </div>
-        </form>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">{{"close" | translate}}</span>
+        </button>
+        <h4 class="modal-title">{{'Metadata' | translate}}</h4>
+      </div>
+      <div ng-switch on="temp.inprocess">
+        <div class="modal-body" ng-switch-when="true">
+            <div ng-include="config.tplPath + '/spinner.html'"></div>
+        </div>
+        <div class="modal-body" ng-switch-when="false">
+          <div class="metadata-form">
+            <form novalidate name="meta-form">
+              <label for='meta-author'>Author:</label>
+              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.author" name="meta-author">
+              <label for='meta-project'>Project:</label>
+              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.project" name="meta-project">
+              <label for='meta-source'>Source:</label>
+              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.source" name="meta-source">
+              <label for='meta-key'>Key:</label>
+              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.key" name="meta-key">
+            
+            </form>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <form ng-submit="updateMetadata(temp)">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
+            <button type="submit" class="btn btn-primary" ng-disabled="">{{'update' | translate}}</button>
+          </form>
+        </div>
+      </div>
+      </div>
     </div>
   </div>
-</div>
 
 <div class="modal animated fadeIn" id="selector" ng-controller="ModalFileManagerCtrl">
   <div class="modal-dialog">
