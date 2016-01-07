@@ -27,26 +27,21 @@
             var self = this;
             var formData = new window.FormData();
             var deferred = $q.defer();
-            var path = '/' + path.join('/');
-            var system = encodeURIComponent('data.iplantcollaborative.org');
+            path = path.join('/');
 
             for (var i = 0; i < fileList.length; i++) {
                 var fileObj = fileList.item(i);
-                formData.append('fileToUpload', fileObj);
+                formData.append('file', fileObj);
             }
 
             self.requesting = true;
-            var url = fileManagerConfig.tenantUrl + fileManagerConfig.uploadUrl + fileManagerConfig.systemUrl + '//' + fileManagerConfig.user + path;
+            var url = fileManagerConfig.uploadUrl + path;
             $http(
               {
                 method: 'POST',
                 url: url,
                 data: formData,
-                headers: {
-                  'Authorization': 'Bearer ' +  fileManagerConfig.token,
-                  'accept': 'application/json',
-                  "Content-Type": undefined
-                }
+                headers: {'Content-Type': undefined}
               }
             ).success(function(data) {
                 deferredHandler(data, deferred);

@@ -9,6 +9,8 @@ from designsafe.apps.data.apps import DataEvent
 import json
 import logging
 import requests
+import traceback
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +55,7 @@ def download(request, file_path = '/'):
     filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 
     a = Agave(api_server = url, token = access_token)
-    logger.info('file_path: ' + file_path)
+    logger.info('download file_path: ' + file_path)
     f = a.files.list(systemId = filesystem,
                      filePath = request.user.username + '/' + file_path)
 
@@ -65,6 +67,44 @@ def download(request, file_path = '/'):
 
     return StreamingHttpResponse(resp.content, content_type=content_type, status=200)
 
+@login_required
+@require_http_methods(['POST'])
+def upload(request, file_path = '/'):
+    """
+    Uploads a file to the specified filesystem
+    @file_path: String, file path to upload
+    """
+    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
+    access_token = token.get('access_token', None)
+    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+    if file_path is None:
+        file_path = '/'
+    a = Agave(api_server = url, token = access_token)
+    logger.info('upload file_path: ' + file_path)
+    f = request.FILES['file']
+    logger.info('File to upload: {0}'.format(request.FILES['file']))
+    #TODO: get the URI from the resources.
+    upload_uri = url + 'files/v2/media/system/' + filesystem + '/' + request.user.username + '/' + file_path
+    
+    data = {
+        'fileToUpload': f,
+        'filePath': request.user.username + file_path,
+        'fileName': f.name.split('/')[-1]
+    }
+    try:
+        #TODO: Loop if multiple files.
+        #TODO: Loading progress bar, we'd need a custom file handler for that.
+        #TODO: Create a custom file-like class to override 'read()' and return a chunk. Right now requests is probably using f.read() and that loads the entire file in memory. CHUNKS!
+        resp = requests.post(upload_uri, files = data,
+        headers={'Authorization':'Bearer %s' % access_token})
+        #resp = a.files.importData(systemId = filesystem, fileToUpload = f, filePath = request.user.username + file_path, fileType=f.content_type)
+        logger.info('Rsponse from upload: {0}'.format(resp.text))
+    except:
+        logger.error(traceback.format_exc())
+        return HttpResponse('{"status": 500, "message": "Error uploading data."}', content_type="application/json", status = 500)
+
+    return HttpResponse('{"status":200, "message": "Succesfully uploaded."}', content_type='application/json', status=200)
 @login_required
 @require_http_methods(['GET', 'POST'])
 def metadata(request, file_path = '/'):

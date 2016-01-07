@@ -8,7 +8,7 @@
 
             // agave endpoints
             listUrl: "/data/api/listings/",
-            uploadUrl: "/data/api/upload",
+            uploadUrl: "/data/api/upload/",
             renameUrl: "",
             copyUrl: "",
             removeUrl: "/data/api/",
