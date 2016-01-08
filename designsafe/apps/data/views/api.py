@@ -229,7 +229,7 @@ def meta_search(request):
         f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
         f['agavePath'] = 'agave://{0}/{1}'.format(f['system'], f['path'])
         if f['name'] == '.':
-            f['name'] = fs[fs.find(request.user.username) + len(request.user.username) + 1:]
+            f['name'] = fs.split('/')[-1]
         res.append(f)
     logger.info('Metadata results for query {0}: {1}'.format(meta_q, res))
 
