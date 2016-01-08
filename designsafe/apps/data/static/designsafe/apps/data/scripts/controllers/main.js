@@ -1,8 +1,7 @@
 (function(window, angular, $) {
     "use strict";
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader',
-    function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader) {
+    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope',   function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
 
         $scope.config = fileManagerConfig;
         $scope.appName = fileManagerConfig.appName;
@@ -20,6 +19,7 @@
         $scope.fileUploader = FileUploader;
         $scope.uploadFileList = [];
         $scope.viewTemplate = $cookies.viewTemplate || 'main-table.html';
+        $scope.advSearch = {};
 
         $scope.setTemplate = function(name) {
             $scope.viewTemplate = $cookies.viewTemplate = name;
@@ -32,7 +32,26 @@
             $translate.use($cookies.language || fileManagerConfig.defaultLang);
         };
 
+        $scope.toggleAdvSearch = function(){
+            if (!$scope.advSearch.show){
+                $scope.advSearch.show = true;
+                return;
+            }else{
+                $scope.advSearch.show = $scope.advSearch.show ? false : true;
+            }
+        };
 
+        $scope.search = function($event){
+            var self = this;
+            if ($event.keyCode != 13){
+                return;
+            }
+            $scope.fileNavigator.search('{"all": "' + $event.currentTarget.value + '"}');
+        };
+
+        $scope.searchAdvanced = function(advSearch){
+            $scope.fileNavigator.search(JSON.stringify(advSearch.form));
+        };
 
         $scope.touch = function(item) {
             if (item instanceof Item){
@@ -45,7 +64,9 @@
             $scope.temp = item;
         };
 
-        $scope.smartClick = function(item) {
+        $scope.smartClick = function(item, $event) {
+            $event && $event.preventDefault();
+            $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
             }

@@ -33,6 +33,7 @@
         };
 
         FileNavigator.prototype.list = function() {
+            //TODO: Paginate results
             var self = this;
             var deferred = $q.defer();
             var path = self.currentPath.join('/');
@@ -47,6 +48,7 @@
             self.requesting = true;
             self.fileList = [];
             self.error = '';
+            self.searchResults = false;
 
             var url = fileManagerConfig.listUrl + data.params.path;
 
@@ -80,6 +82,7 @@
                         }
                         file.date = file.lastModified;
                         file.size = file.length;
+                        file.agavePath = file.agavePath;
                         return file;
                       });
                     }
@@ -179,6 +182,60 @@
                     return true;
                 }
             }
+        };
+
+        FileNavigator.prototype.search = function(searchTerm){
+            var self = this;
+            var path = '/';
+            self.searchResults = true;
+            return self.searchByTerm(searchTerm).then(function(matches){
+                self.fileList = (matches || []).map(function(file){
+                    var path = file.path.split('/');
+                    path.pop();
+                    return new Item(file, path.splice(1));
+                });
+                self.buildTree(path);
+            });
+        };
+
+        FileNavigator.prototype.searchByTerm = function(searchTerm) {
+            var self = this;
+            var deferred = $q.defer();
+            var url = fileManagerConfig.metadataUrl + '?q=' + searchTerm;
+
+            self.requesting = true;
+            $http(
+              {
+                method: 'GET',
+                url: url,
+                transformResponse: function(data){
+                    data = JSON.parse(data);
+                    if (data.status != 200){
+                        return [];
+                    }
+                    var matches=data.result;
+                    matches = matches.map(function(file){
+                    var rfile = file;
+                    rfile.rights = 'r--------';
+                    rfile.agavePath = file.agavePath;
+                    file.date = file.lastModified;
+                    file.size = file.length;
+                    return rfile;
+                    });
+                    return matches;
+                }
+              }
+            ).success(function(matches) {
+                console.log('matches', matches);
+                self.deferredHandler(matches, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, $translate.instant('Search Error.'));
+            })['finally'](function() {
+                self.inprocess = false;
+                self.requesting = false;
+            });
+
+            return deferred.promise;
         };
 
         return FileNavigator;

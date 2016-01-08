@@ -6,6 +6,7 @@
             var rawModel = {
                 name: model && model.name || '',
                 path: path || [],
+                agavePath: model && model.agavePath || '',
                 type: model && model.type || 'file',
                 size: model && parseInt(model.size || 0),
                 // date: parseMySQLDate(model && model.date),
@@ -16,7 +17,11 @@
                 recursive: false,
                 sizeKb: function() {
                     // return Math.round(this.size / 1024, 1);
+                    if (isNaN(this.size)){
+                        return '- ';
+                    }else{
                       return (this.size / 1024).toFixed(1);
+                    }
                 },
                 fullPath: function() {
                     return ('/' + this.path.join('/') + '/' + this.name).replace(/\/\//, '/');
@@ -180,14 +185,12 @@
             $http(
               {
                 method: 'GET',
-                url: url
+                url: url,
+                responseType: 'arraybuffer',
+                cache: false
               }
             ).success(function(data) {
-                if (angular.isObject(data)) {
-                    saveAs(new Blob([JSON.stringify(data, null, 2)]),self.model.name);
-                } else {
-                    saveAs(new Blob([data]),self.model.name);
-                }
+                saveAs(new Blob([data]),self.model.name);
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, 'Unknown error downloading file');
@@ -385,7 +388,13 @@
             self.inprocess = true;
             self.error = '';
             $http.get(fileManagerConfig.metadataUrl + path).success(function(data) {
-                self.tempModel.metadata = data;
+                var md = data[0];
+                self.tempModel.metadata = md;
+                self.tempModel.metaForm = md;
+                self.tempModel.metaForm.value.author = md && md.value.author || '';
+                self.tempModel.metaForm.value.project = md && md.value.project || '';
+                self.tempModel.metaForm.value.source = md && md.value.source || '';
+                self.tempModel.metaForm.value.key = md && md.value.key || '';
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
@@ -402,7 +411,7 @@
             self.inprocess = true;
             self.error = '';
             var data = {
-                "metadata": self.tempModel.metadata[0]
+                "metadata": self.tempModel.metaForm
             };
             $http.post(fileManagerConfig.metadataUrl + path,data)
             .success(function(data){
