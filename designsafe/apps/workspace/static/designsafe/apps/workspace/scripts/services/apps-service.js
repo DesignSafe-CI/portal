@@ -65,7 +65,15 @@
               field.enum = _.map(param.value.enum_values, function(enum_val) {
                 return Object.keys(enum_val)[0];
               });
-              // field.titleMap = param.value.enum_values;
+              field['x-schema-form'] = {
+                'titleMap': _.map(param.value.enum_values, function(enum_val) {
+                  var key = Object.keys(enum_val)[0];
+                  return {
+                    'value': key,
+                    'name': enum_val[key]
+                  };
+                })
+              };
               break;
 
             case 'number':
