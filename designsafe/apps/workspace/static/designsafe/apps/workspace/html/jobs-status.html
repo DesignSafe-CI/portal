@@ -19,7 +19,7 @@
       }">
       <h4>{{job.name}}</h4>
       <span>{{job.status}}</span>
-      <button class="btn btn-sm btn-default" ng-click="jobDetails(job)"><i class="fa fa-info-circle"></i> More info</button>
+      <button class="btn btn-sm btn-default" ng-click="jobDetails(job)"><i class="fa fa-info-circle"></i><span class="hidden-md"> More info</span></button>
     </li>
   </ul>
 </div>
@@ -29,6 +29,10 @@
     <h3 class="modal-title">{{job.name}}</h3>
   </div>
   <div class="modal-body">
+    <div ng-if="job.message" class="alert alert-warning">
+      <h4>Job status: {{job.status}}</h4>
+      <p>{{job.message}}</p>
+    </div>
     <dl>
       <dt>Application</dt>
       <dd>{{job.appId}}</dd>
