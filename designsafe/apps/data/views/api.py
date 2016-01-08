@@ -188,11 +188,15 @@ def meta_search(request):
     #TODO: Agave just knows if it's a folder or something else, discuss...
 
     meta_qs = json.loads(request.GET.get('q'))
+    logger.info('Meta_qs: {0}'.format(meta_qs))
     if 'all' in meta_qs:
         meta_q = {
             '$or': [
                 {
                     'value.project': meta_qs['all']
+                },
+                {
+                    'value.author': meta_qs['all']
                 },
                 {
                     'value.source': meta_qs['all']
@@ -207,7 +211,7 @@ def meta_search(request):
             '$or': [
             ]
         }
-        for key, value in meta_qs:
+        for key, value in meta_qs.items():
             meta_q['$or'].append({ 'value.' + key: value})
 
     logger.info('Searching for metadata with the query: {0}'.format(json.dumps(meta_q)))
