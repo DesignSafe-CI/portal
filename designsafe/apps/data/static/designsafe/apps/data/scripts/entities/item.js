@@ -185,14 +185,12 @@
             $http(
               {
                 method: 'GET',
-                url: url
+                url: url,
+                responseType: 'arraybuffer',
+                cache: false
               }
             ).success(function(data) {
-                if (angular.isObject(data)) {
-                    saveAs(new Blob([JSON.stringify(data, null, 2)]),self.model.name);
-                } else {
-                    saveAs(new Blob([data]),self.model.name);
-                }
+                saveAs(new Blob([data]),self.model.name);
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, 'Unknown error downloading file');
