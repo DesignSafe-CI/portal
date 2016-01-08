@@ -50,8 +50,8 @@
         </tr>
         <!-- <tr ng-repeat="item in fileNavigator.fileList | filter: query | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting> -->
         <tr ng-repeat="item in fileNavigator.fileList | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting && item.model.name !== '.'">
-            <td ng-right-click="touch(item)">
-                <a href="{{item.model.agavePath}}" ng-click="smartClick(item, $event)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)">
+            <td>
+                <a fm-draggable data-agave-href = "{{item.model.agavePath}}" href="{{item.model.path}}" ng-click="smartClick(item, $event)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)" class="file-folder">
                     <i class="glyphicon glyphicon-folder-close" ng-show="item.model.type === 'dir'"></i>
                     <i class="glyphicon glyphicon-file" ng-show="item.model.type === 'file'"></i>
                     <span ng-if = "!fileNavigator.searchResults">
