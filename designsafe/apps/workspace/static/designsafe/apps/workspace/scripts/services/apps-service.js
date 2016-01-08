@@ -62,7 +62,10 @@
 
             case 'enumeration':
               field.type = 'string';
-              field.enum = param.value.enumValues;
+              field.enum = _.map(param.value.enum_values, function(enum_val) {
+                return Object.keys(enum_val)[0];
+              });
+              // field.titleMap = param.value.enum_values;
               break;
 
             case 'number':

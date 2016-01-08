@@ -16,17 +16,16 @@
 
       $scope.resetForm = function() {
         $scope.data.job = null;
-        $scope.form = {
-          schema: Apps.formSchema($scope.data.app),
-          model: {},
-          form: [
-            '*',
-            {type: 'actions', items: [
-              {type: 'submit', title: 'Run', style: 'btn-primary'},
-              {type: 'button', title: 'Cancel', style: 'btn-link', onClick: 'closeApp()'}
-            ]}
-          ]
-        };
+        $scope.form = {model: {}};
+        $scope.form.schema = Apps.formSchema($scope.data.app);
+        $scope.form.form = [
+          '*',
+          {type: 'actions', items: [
+            {type: 'submit', title: 'Run', style: 'btn-primary'},
+            {type: 'button', title: 'Cancel', style: 'btn-link', onClick: 'closeApp()'}
+          ]}
+        ];
+        // console.log($scope.form);
       };
 
       $scope.onSubmit = function(form) {
