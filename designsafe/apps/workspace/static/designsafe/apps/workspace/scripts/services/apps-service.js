@@ -34,13 +34,7 @@
 
       var schema = {
         type: 'object',
-        properties: {
-          name: {
-            title: 'Job name',
-            description: 'A recognizable name for this job',
-            type: 'string'
-          }
-        }
+        properties: {}
       };
 
       if (params.length > 0) {
@@ -97,12 +91,34 @@
         _.each(inputs, function(input) {
           var field = {
             title: input.details.label,
-            description: input.details.description,
-            type: 'string'
+            description: input.details.description
           };
+          if (input.semantics.maxCardinality === 1) {
+            field.type = 'string';
+          } else {
+            field.type = 'array';
+            field.items = {
+              type: 'string',
+              'x-schema-form': {notitle: true}
+            }
+            if (input.semantics.maxCardinality > 1) {
+              field.maxItems = input.semantics.maxCardinality;
+            }
+          }
           schema.properties.inputs.properties[input.id] = field;
         });
       }
+
+      schema.properties.name = {
+        title: 'Job name',
+        description: 'A recognizable name for this job',
+        type: 'string'
+      };
+      schema.properties.archivePath = {
+        title: 'Job output archive location',
+        description: 'Location where the job output should be archived. A relative path or absolute path may be specified. Paths can include template variables that will be replaced on submission. If not specified, output will be archived at <code>archive/jobs/job-${JOB_ID}</code>. <a href="http://agaveapi.co/documentation/tutorials/job-management-tutorial/#webhooks">See the documentation</a> for a full list of template variables.',
+        type: 'string'
+      };
 
       return schema;
     };
