@@ -77,11 +77,43 @@
 
 (function(angular){
     'use strict';
-    function fileSelect(e){
-        e.stopPropagation();
-        e.preventDeafult();
+
+    function fmDroppable(scope, element){
         
-        var files = e.dataTransfer.files;
-        
+        function fileSelect(e){
+            e.stopPropagation();
+            if(e.preventDefault) e.preventDefault();
+
+            if(!scope.$parent.dropFiles) scope.$parent.dropFiles = [];
+
+            var files = e.dataTransfer.files;
+            var f = {};
+            console.log('files: ', files);
+            for(var i = 0; i < files.length; i++){
+                f = files[i];
+                scope.dropFiles.push(f);
+            }
+            scope.$apply();
+            console.log('dropFiles', scope.dropFiles);
+        }
+
+        function dragOver(e){
+            e.stopPropagation();
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }
+
+        var el = element[0];
+        el.addEventListener('dragend', dragOver);
+        el.addEventListener('dragover', dragOver);
+        el.addEventListener('drop', fileSelect);
     }
+
+    angular.module('FileManagerApp').directive('fmDroppable', function(){
+            return {
+                restring:"A",
+                scope:false,
+                link: fmDroppable
+            };
+        });
 })(angular);

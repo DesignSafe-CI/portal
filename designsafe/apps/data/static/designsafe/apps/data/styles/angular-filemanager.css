@@ -546,3 +546,20 @@
     color: #2196f3;
     content: '\25b2';
 }
+
+.file-drop {
+    margin:20px 0px 5px 0px;
+    width:100%;
+    display:block;
+    border-radius:5px;
+    padding:25px;
+    text-align:center;
+    font-size:20px;
+    color:#bbb;
+    border:2px dashed #bbb;
+}
+
+.file-drop output {
+    font-size:18px;
+    text-align:center;
+}

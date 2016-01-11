@@ -220,14 +220,25 @@
               <h4 class="modal-title">{{"upload_file" | translate}}</h4>
             </div>
             <div class="modal-body">
-              <label class="radio">{{"files_will_uploaded_to" | translate}} <b>{{fileNavigator.currentPath.join('/')}}</b></label>
-              <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus"/>
+              <label class="radio">{{"files_will_uploaded_to" | translate}} <pre><code>{{'/' + fileNavigator.currentPath.join('/')}}</code></pre></label>
+              <label for="file-upload">Browse files</label>
+              <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" name = "file-upload"/>
+              <div class="file-drop" fm-droppable>Or drop files here
+                <output class="droppable-files">
+                    <ul>
+                        <li ng-repeat = "f in dropFiles">
+                            <strong>{{f.name}}</strong> - {{Math.floor(f.size/1024)}} Kb, last modified: {{f.lastModifiedDate.toLocaleDateString()}}
+                        </li>
+                    </ul>
+                </output>
+              </div>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
               <div ng-show="!fileUploader.requesting">
                   <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
-                  <button type="submit" class="btn btn-primary" ng-disabled="!uploadFileList.length || fileUploader.requesting">{{'upload' | translate}}</button>
+                  <button type="submit" class="btn btn-primary" 
+                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && dropFiles.length || uploadFileList.length && !dropFiles.length) || (uploadFileList.length && dropFiles.length && fileUploader.requesting))">{{'upload' | translate}}</button>
               </div>
               <div ng-show="fileUploader.requesting">
                   <span class="label label-warning">{{"uploading" | translate}} ...</span>

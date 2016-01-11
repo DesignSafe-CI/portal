@@ -20,6 +20,8 @@
         $scope.uploadFileList = [];
         $scope.viewTemplate = $cookies.viewTemplate || 'main-table.html';
         $scope.advSearch = {};
+        $scope.dropFiles = [];
+        $scope.Math = window.Math;
 
         $scope.setTemplate = function(name) {
             $scope.viewTemplate = $cookies.viewTemplate = name;
@@ -224,7 +226,13 @@
         };
 
         $scope.uploadFiles = function() {
-            $scope.fileUploader.upload($scope.uploadFileList, $scope.fileNavigator.currentPath)
+            var filesToSend = [];
+            if(!$scope.uploadFileList.length){
+                filesToSend = $scope.dropFiles;
+            } else {
+                filesToSend = $scope.uploadFileList;
+            }
+            $scope.fileUploader.upload(filesToSend, $scope.fileNavigator.currentPath)
             .then(function() {
                 $scope.fileNavigator.refresh();
                 $scope.modal('uploadfile', true);
