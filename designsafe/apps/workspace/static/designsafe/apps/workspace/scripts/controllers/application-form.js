@@ -19,7 +19,13 @@
         $scope.form = {model: {}};
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [
-          '*',
+          'parameters',
+          'inputs',
+          {
+            type: 'fieldset',
+            title: 'Job details',
+            items: ['name', 'archivePath']
+          },
           {type: 'actions', items: [
             {type: 'submit', title: 'Run', style: 'btn-primary'},
             {type: 'button', title: 'Cancel', style: 'btn-link', onClick: 'closeApp()'}
@@ -30,17 +36,17 @@
 
       $scope.onSubmit = function(form) {
         var jobData = {
-          appId: $scope.data.app.id,
-          name: $scope.form.model.name,
-          archive: true,
-          inputs: $scope.form.model.inputs || [],
-          parameters: $scope.form.model.parameters || []
+            appId: $scope.data.app.id,
+            archive: true,
+            inputs: [],
+            parameters: []
         };
+        jobData = _.extend(jobData, $scope.form.model);
         Jobs.submit(jobData).then(
           function(resp) {
             $rootScope.$broadcast('job-submitted', resp.data);
             $scope.data.job = resp.data;
-            $scope.form.form[1].items[0] = {
+            $scope.form.form[$scope.form.form.length - 1].items[0] = {
               type: 'button',
               title: 'Clear Form',
               style: 'btn-default',
