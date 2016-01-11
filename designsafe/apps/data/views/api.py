@@ -89,7 +89,7 @@ def upload(request, file_path = '/'):
     logger.info('File to upload: {0}'.format(request.FILES['file']))
     #TODO: get the URI from the resources.
     upload_uri = url + 'files/v2/media/system/' + filesystem + '/' + request.user.username + '/' + file_path
-    
+
     data = {
         'fileToUpload': f,
         'filePath': request.user.username + file_path,
@@ -192,27 +192,16 @@ def meta_search(request):
     if 'all' in meta_qs:
         meta_q = {
             '$or': [
-                {
-                    'value.project': meta_qs['all']
-                },
-                {
-                    'value.author': meta_qs['all']
-                },
-                {
-                    'value.source': meta_qs['all']
-                },
-                {
-                    'value.key': meta_qs['all']
-                }
+                {'value.project': {'$regex': meta_qs['all'], '$options':'i'}},
+                {'value.author': {'$regex': meta_qs['all'], '$options':'i'}},
+                {'value.source': {'$regex': meta_qs['all'], '$options':'i'}},
+                {'value.key': {'$regex': meta_qs['all', '$options':'i']}}
             ]
         }
     else:
-        meta_q = {
-            '$or': [
-            ]
-        }
+        meta_q = {'$or': []}
         for key, value in meta_qs.items():
-            meta_q['$or'].append({ 'value.' + key: value})
+            meta_q['$or'].append({'value.%s' % key: {'$regex': value, '$options':'i'}})
 
     logger.info('Searching for metadata with the query: {0}'.format(json.dumps(meta_q)))
 
