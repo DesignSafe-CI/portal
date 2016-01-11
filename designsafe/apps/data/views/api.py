@@ -69,7 +69,7 @@ def download(request, file_path = '/'):
 
     resp = requests.get(download_url, stream=True,
         headers={'Authorization':'Bearer %s' % access_token})
-
+    #TODO: Create a file-like object to overwrtie read() to iterate through resp.iter_content, resp.content is probably loading the entire file in memory.
     return StreamingHttpResponse(resp.content, content_type=content_type, status=200)
 
 @login_required
@@ -110,6 +110,41 @@ def upload(request, file_path = '/'):
         return HttpResponse('{"status": 500, "message": "Error uploading data."}', content_type="application/json", status = 500)
 
     return HttpResponse('{"status":200, "message": "Succesfully uploaded."}', content_type='application/json', status=200)
+
+def get_metadata(request, file_path, **kwargs):
+    a = kwargs.get('a')
+    meta_q = kwargs.get('meta_q')
+    logger.info('Looking for metadata with the query: {0}'.format(meta_q))
+    logger.info('file path:{0}'.format(file_path))
+    meta = a.meta.listMetadata(q=meta_q)
+    logger.info('Metadata: {0}'.format(meta))
+
+    return HttpResponse(json.dumps(meta), content_type='application/json', status=200)
+
+def post_metadata(request, file_path, **kwargs):
+    #The verb is POST so we need to add/update metadata
+    a = kwargs.get('a')
+    body = json.loads(request.body)
+    meta = body.get('metadata', None)
+    logger.info('Metadata received: {0}'.format(request.body))
+    if meta is None or 'value' not in meta:
+        return HttpResponse('{"status": 500, "message": "No metadata sent."}', content_type="application/json", status = 500)
+
+    if 'uuid' not in meta:
+        meta_uuid = meta_q.split(':')[1]
+        meta_uuid = meta_uuid.replace('"', '').replace('}', '')
+        logger.info('Meta UUID: {0}'.format(meta_uuid))
+        meta = {
+            'name': 'designsafe metadata',
+            'associationIds': [meta_uuid],
+            'value': meta['value']
+        }
+        r = a.meta.addMetadata(body = meta)
+    else:
+        r = a.meta.updateMetadata(uuid = meta['uuid'], body = meta)
+    logger.info('Metadata sent: {0}'.format(meta))
+    return HttpResponse('{"status": 200, "message": "OK"}', content_type="application/json")
+
 @login_required
 @require_http_methods(['GET', 'POST'])
 def metadata(request, file_path = '/'):
@@ -118,7 +153,6 @@ def metadata(request, file_path = '/'):
     @file_path: String
     """
     #TODO: Should use @is_ajax
-    #TODO: POST verb, too?
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     url = getattr(settings, 'AGAVE_TENANT_BASEURL')
@@ -136,41 +170,9 @@ def metadata(request, file_path = '/'):
         return HttpResponse('{"status": 404, "message": "Not Found"}', content_type="application/json", status = 404)
 
     meta_q = meta_link.split('?q=')[1]
-
-    #Let's just get the metadata.
-    if request.method == 'GET':
-        logger.info('Looking for metadata with the query: {0}'.format(meta_q))
-        logger.info('file path:{0}'.format(file_path))
-
-        meta = a.meta.listMetadata(q=meta_q)
-        logger.info('Metadata: {0}'.format(meta))
-
-        return HttpResponse(json.dumps(meta), content_type='application/json', status=200)
-
-    else:
-        #The verb is POST so we need to add/update metadata
-        body = json.loads(request.body)
-        meta = body.get('metadata', None)
-        logger.info('Metadata received: {0}'.format(request.body))
-        if meta is None or 'value' not in meta:
-            return HttpResponse('{"status": 500, "message": "No metadata sent."}', content_type="application/json", status = 500)
-
-        if 'uuid' not in meta:
-            meta_uuid = meta_q.split(':')[1]
-            meta_uuid = meta_uuid.replace('"', '').replace('}', '')
-            logger.info('Meta UUID: {0}'.format(meta_uuid))
-            meta = {
-                'name': 'designsafe metadata',
-                'associationIds': [meta_uuid],
-                'value': meta['value']
-            }
-            r = a.meta.addMetadata(body = meta)
-        else:
-            r = a.meta.updateMetadata(uuid = meta['uuid'], body = meta)
-        logger.info('Metadata sent: {0}'.format(meta))
-        return HttpResponse('{"status": 200, "message": "OK"}', content_type="application/json")
-
-
+    handler = globals()['%s_metadata' % request.method.lower()]
+    return handler(request, file_path, a = a, filesystem = filesystem, meta_q = meta_q)
+           
 @login_required
 @require_http_methods(['GET'])
 def meta_search(request):
