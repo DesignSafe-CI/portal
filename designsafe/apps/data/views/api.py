@@ -195,7 +195,7 @@ def meta_search(request):
                 {'value.project': {'$regex': meta_qs['all'], '$options':'i'}},
                 {'value.author': {'$regex': meta_qs['all'], '$options':'i'}},
                 {'value.source': {'$regex': meta_qs['all'], '$options':'i'}},
-                {'value.key': {'$regex': meta_qs['all', '$options':'i']}}
+                {'value.key': {'$regex': meta_qs['all'], '$options':'i'}}
             ]
         }
     else:
