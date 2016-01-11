@@ -62,6 +62,10 @@
   white-space: nowrap;
 }
 
+.app-version {
+  font-size: 0.7em;
+}
+
 .app-active {
   background-color: #337AB7;
   color: #fff;

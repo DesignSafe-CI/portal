@@ -21,8 +21,10 @@
       $scope.refreshApps();
 
       $scope.launchApp = function(app) {
-        app._active = true;
-        $rootScope.$broadcast('launch-app', app.id);
+        if (! app._active) {
+          app._active = true;
+          $rootScope.$broadcast('launch-app', app.id);
+        }
       };
     }]);
 
