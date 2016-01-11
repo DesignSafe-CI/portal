@@ -236,12 +236,12 @@
             </div>
             <div class="modal-footer">
               <div ng-show="!fileUploader.requesting">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
-                  <button type="submit" class="btn btn-primary" 
-                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && dropFiles.length || uploadFileList.length && !dropFiles.length) || (uploadFileList.length && dropFiles.length && fileUploader.requesting))">{{'upload' | translate}}</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{{"Cancel" | translate}}</button>
+                  <button type="submit" class="btn btn-primary"
+                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && dropFiles.length || uploadFileList.length && !dropFiles.length) || (uploadFileList.length && dropFiles.length && fileUploader.requesting))">{{'Upload' | translate}}</button>
               </div>
               <div ng-show="fileUploader.requesting">
-                  <span class="label label-warning">{{"uploading" | translate}} ...</span>
+                  <span class="label label-warning">{{"Uploading" | translate}} ...</span>
               </div>
             </div>
         </form>
@@ -322,7 +322,7 @@
               <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.source" name="meta-source">
               <label for='meta-key'>Key:</label>
               <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.key" name="meta-key">
-            
+
             </form>
           </div>
         </div>
