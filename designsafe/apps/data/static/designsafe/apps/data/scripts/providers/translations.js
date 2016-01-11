@@ -36,6 +36,7 @@
             create: "Create",
             folder_name: "Folder name",
             upload: "Upload",
+            update: "Update",
             change_permissions: "Change permissions",
             change: "Change",
             details: "Details",
