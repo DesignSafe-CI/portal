@@ -88,7 +88,7 @@ def upload(request, file_path = '/'):
     f = request.FILES['file']
     logger.info('File to upload: {0}'.format(request.FILES['file']))
     #TODO: get the URI from the resources.
-    upload_uri = url + 'files/v2/media/system/' + filesystem + '/' + request.user.username + '/' + file_path
+    upload_uri = url + '/files/v2/media/system/' + filesystem + '/' + request.user.username + '/' + file_path
 
     data = {
         'fileToUpload': f,
