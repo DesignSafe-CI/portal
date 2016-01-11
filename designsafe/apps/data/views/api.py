@@ -29,10 +29,12 @@ def listings(request, file_path = '/'):
     logger.info('token: {0}'.format(access_token))
     url = getattr(settings, 'AGAVE_TENANT_BASEURL')
     filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-
+    if file_path is None:
+        path = request.user.username
+    else:
+        path = '%s/%s' % (request.user.username, file_path)
     a = Agave(api_server = url, token = access_token)
-    l = a.files.list(systemId = filesystem,
-                     filePath = request.user.username + '/' + file_path)
+    l = a.files.list(systemId = filesystem, filePath = path)
 
     #TODO: We need a proper serializer for datetimes
     for f in l:
