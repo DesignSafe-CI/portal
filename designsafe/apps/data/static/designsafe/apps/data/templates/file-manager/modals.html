@@ -238,7 +238,7 @@
               <div ng-show="!fileUploader.requesting">
                   <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
                   <button type="submit" class="btn btn-primary"
-                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && dropFiles.length || uploadFileList.length && !dropFiles.length) || (uploadFileList.length && dropFiles.length && fileUploader.requesting))">{{'upload' | translate}}</button>
+                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && dropFiles.length || uploadFileList.length && !dropFiles.length || uploadFileList.length && dropFiles.length))">{{'upload' | translate}}</button>
               </div>
               <div ng-show="fileUploader.requesting">
                   <span class="label label-warning">{{"uploading" | translate}} ...</span>
