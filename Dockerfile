@@ -7,7 +7,8 @@ EXPOSE 8000
 CMD ["/usr/local/bin/uwsgi", "--ini", "/portal/conf/uwsgi.ini"]
 
 RUN apt-get update && \
-    apt-get install -y python python-dev gettext && \
+    curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
+    apt-get install -y python python-dev gettext nodejs xvfb chromium-browser && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python && \
     pip install uwsgi
 
