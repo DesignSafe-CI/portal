@@ -35,26 +35,47 @@
       };
 
       $scope.onSubmit = function(form) {
-        var jobData = {
-            appId: $scope.data.app.id,
-            archive: true,
-            inputs: [],
-            parameters: []
-        };
-        jobData = _.extend(jobData, $scope.form.model);
-        Jobs.submit(jobData).then(
-          function(resp) {
-            $rootScope.$broadcast('job-submitted', resp.data);
-            $scope.data.job = resp.data;
-            $scope.form.form[$scope.form.form.length - 1].items[0] = {
-              type: 'button',
-              title: 'Clear Form',
-              style: 'btn-default',
-              onClick: 'resetForm()'
-            };
-          }, function(err) {
-            window.alert(err.data.message);
+        $scope.$broadcast('schemaFormValidate');
+        if (form.$valid) {
+          var jobData = {
+              appId: $scope.data.app.id,
+              archive: true,
+              inputs: [],
+              parameters: []
+          };
+          /* copy form model to disconnect from $scope */
+          _.extend(jobData, angular.copy($scope.form.model));
+          /* remove falsy input/parameter */
+          _.each(jobData.inputs, function(v,k) {
+            if (_.isArray(v)) {
+              v = _.compact(v);
+              if (v.length === 0) {
+                delete jobData.inputs[k];
+              }
+            }
           });
+          _.each(jobData.parameters, function(v,k) {
+            if (_.isArray(v)) {
+              v = _.compact(v);
+              if (v.length === 0) {
+                delete jobData.parameters[k];
+              }
+            }
+          });
+          Jobs.submit(jobData).then(
+            function(resp) {
+              $rootScope.$broadcast('job-submitted', resp.data);
+              $scope.data.job = resp.data;
+              $scope.form.form[$scope.form.form.length - 1].items[0] = {
+                type: 'button',
+                title: 'Clear Form',
+                style: 'btn-default',
+                onClick: 'resetForm()'
+              };
+            }, function(err) {
+              window.alert(err.data.message);
+            });
+        }
       };
 
       $scope.closeApp = function() {
