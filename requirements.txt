@@ -50,4 +50,4 @@ wheel==0.24.0
 opbeat
 
 # pytas
--e git+https://bitbucket.org/taccaci/pytas.git@v1.0.3#egg=pytas-v1.0.3
+-e git+https://bitbucket.org/taccaci/pytas.git@v1.0.3#egg=pytas-1.0.3
