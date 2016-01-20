@@ -1,4 +1,5 @@
 # ignore the populated environment file so as not to commit secrets!
+.idea/
 designsafe.env
 certs/
 
