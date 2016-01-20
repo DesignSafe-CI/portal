@@ -20,4 +20,6 @@ COPY . /portal
 
 WORKDIR /portal
 
+RUN npm install
+
 RUN python manage.py collectstatic --noinput

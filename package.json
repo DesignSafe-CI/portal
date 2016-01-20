@@ -1,13 +1,11 @@
 {
-  "name": "workspace",
-  "version": "1.0.0",
+  "name": "designsafe-portal",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "private": true,
+  "main": "manage.py",
   "scripts": {
-    "test": "karma start karma.conf.js"
+    "test": "./bin/run-tests.sh"
   },
   "author": "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>",
   "license": "MIT",

@@ -15,8 +15,8 @@ module.exports = function(config){
       '/var/www/designsafe-ci.org/static/vendor/tv4/tv4.js',
       '/var/www/designsafe-ci.org/static/vendor/objectpath/lib/ObjectPath.js',
       '/var/www/designsafe-ci.org/static/djangular/js/django-angular.js',
-      'static/designsafe/apps/workspace/scripts/**/*.js',
-      'tests/**/*.js'
+      '/portal/designsafe/apps/workspace/static/designsafe/apps/workspace/scripts/**/*.js',
+      '/portal/designsafe/apps/workspace/tests/**/*.js'
     ],
 
     autoWatch : true,

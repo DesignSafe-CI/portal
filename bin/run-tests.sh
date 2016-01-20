@@ -11,7 +11,7 @@ xvfb=$!
 
 export DISPLAY=:99.0
 
-/portal/designsafe/apps/workspace/node_modules/.bin/karma start /portal/designsafe/apps/workspace/karma.conf.js --single-run
+/portal/node_modules/.bin/karma start /portal/karma.conf.js --single-run
 
 kill -TERM $xvfb
 wait $xvfb
