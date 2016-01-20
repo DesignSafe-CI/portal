@@ -82,6 +82,37 @@ the Django `settings.py` with `designsafe.apps.{app_name}`.
 
 See the [DesignSafe Styles Reference][7] for style reference and custom CSS documentation.
 
+## Testing
+
+The easiest way to run the tests is from inside a running Docker container. While you can
+install all the Python/Django/npm dependencies locally (ideally within a virtualenv), this
+is already done in the docker container.
+
+We assume you have the image built or checked out locally and it is called 
+`designsafeci/portal`.
+
+### Django tests
+
+Django tests should be written according to standard [Django testing procedures][8]. 
+
+You can run Django tests with the following command:
+
+```shell
+$ docker run -it --rm designsafe/portal python manage.py test
+```
+
+### Frontend tests
+
+Frontend tests are [Jasmine][9] tests executed using the [Karma engine][10]. Testing
+guidelines can be found in the [AngularJS Developer Guide on Unit Testing][11].
+
+To run frontend tests, ensure that all scripts and test scripts are configured in 
+[`karma-conf.js`](karma-conf.js) and then run the command:
+
+```shell
+$ docker run -it --rm designsafe/portal bin/run-tests.sh 
+```
+
 ## Production setup
 
 The production setup registers the container composition as a systemd service.
@@ -111,4 +142,7 @@ The production setup registers the container composition as a systemd service.
 [5]: https://www.docker.com/toolbox
 [6]: https://github.com/DesignSafe-CI/portal/wiki/Importing-data-from-Production-to-Development
 [7]: https://github.com/DesignSafe-CI/portal/wiki/CSS-Styles-Reference
-
+[8]: https://docs.djangoproject.com/en/dev/topics/testing/
+[9]: http://jasmine.github.io/1.3/introduction.html
+[10]: http://karma-runner.github.io/0.12/intro/installation.html
+[11]: https://docs.angularjs.org/guide/unit-testing
