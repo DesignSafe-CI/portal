@@ -19,15 +19,15 @@
 
       <div class="login-option-block">
         <p>
-          <a href="{% url 'designsafe_auth:agave_oauth' %}" class="btn btn-lg btn-primary img-responsive">
+          <a href="{% url 'designsafe_auth:agave_oauth' %}?{{ request.META.QUERY_STRING }}" class="btn btn-lg btn-primary img-responsive">
             <img class="provider-logo img-responsive" style="width:100% \9;" alt="TACC" title="Log in with TACC" src="{% static 'designsafe/apps/auth/logos/tacc.svg'%}">
           </a>
         </p>
 
         <p>
-          <a href="{% url 'designsafe_auth:agave_oauth' %}">Log in using your TACC Account.</a>
+          <a href="{% url 'designsafe_auth:agave_oauth' %}?{{ request.META.QUERY_STRING }}">Log in using your TACC Account.</a>
         </p>
-        <a href="{% url 'designsafe_accounts:register' %}">Register for a TACC account</a>
+        <a href="{% url 'designsafe_accounts:register' %}?{{ request.META.QUERY_STRING }}">Register for a TACC account</a>
         &bull;
         <a href="https://www.tacc.utexas.edu">TACC Website</a>
       </div>

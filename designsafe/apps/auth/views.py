@@ -4,8 +4,6 @@ from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-
-import json
 import logging
 import os
 import requests
@@ -14,44 +12,51 @@ import time
 
 logger = logging.getLogger(__name__)
 
+
 def login_options(request):
     if request.user.is_authenticated():
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('/')
     return render(request, 'designsafe/apps/auth/login.html')
 
+
 def agave_oauth(request):
-    tenantBaseUrl = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    clientKey = getattr(settings, 'AGAVE_CLIENT_KEY')
+    tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+    client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
 
     session = request.session
     session['auth_state'] = os.urandom(24).encode('hex')
-    session.save()
+    next_page = request.GET.get('next')
+    if next_page:
+        session['next'] = next_page
 
-    authorizationUrl = ('%s/authorize?client_id=%s&response_type=code'
-            '&redirect_uri=%s&state=%s' % (
-            tenantBaseUrl,
-            clientKey,
-            request.build_absolute_uri(reverse('designsafe_auth:agave_oauth_callback')),
+    redirect_uri = reverse('designsafe_auth:agave_oauth_callback')
+    authorization_url = (
+        '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
+            tenant_base_url,
+            client_key,
+            request.build_absolute_uri(redirect_uri),
             session['auth_state'],
-            ))
-    return HttpResponseRedirect(authorizationUrl)
+        )
+    )
+    return HttpResponseRedirect(authorization_url)
+
 
 def agave_oauth_callback(request):
     state = request.GET.get('state')
 
     if request.session['auth_state'] != state:
         msg = ('OAuth Authorization State mismatch!? auth_state=%s '
-            'does not match returned state=%s' % (request.session['auth_state'], state))
+               'does not match returned state=%s' % (request.session['auth_state'], state))
         logger.error(msg)
         return HttpResponseBadRequest('Authorization State Failed')
 
     if 'code' in request.GET:
         # obtain a token for the user
         code = request.GET['code']
-        tenantBaseUrl = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        clientKey = getattr(settings, 'AGAVE_CLIENT_KEY')
-        clientSec = getattr(settings, 'AGAVE_CLIENT_SECRET')
+        tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+        client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
+        client_sec = getattr(settings, 'AGAVE_CLIENT_SECRET')
         redirect_uri = request.build_absolute_uri(
             reverse('designsafe_auth:agave_oauth_callback'))
         body = {
@@ -59,8 +64,9 @@ def agave_oauth_callback(request):
             'code': code,
             'redirect_uri': redirect_uri,
         }
-        response = requests.post('%s/token' % tenantBaseUrl, data=body,
-            auth=(clientKey, clientSec))
+        response = requests.post('%s/token' % tenant_base_url,
+                                 data=body,
+                                 auth=(client_key, client_sec))
         token = response.json()
         token['created'] = int(time.time())
         request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = token
@@ -72,9 +78,11 @@ def agave_oauth_callback(request):
             messages.success(request, 'Login successful. Welcome back, %s %s!' %
                 (user.first_name, user.last_name))
         else:
-            messages.error(request,
+            messages.error(
+                request,
                 'Authentication failed. Please try again. If this problem '
-                'persists please submit a support ticket.')
+                'persists please submit a support ticket.'
+            )
             return HttpResponseRedirect(reverse('designsafe_auth:login'))
     else:
         if 'error' in request.GET:
@@ -84,4 +92,8 @@ def agave_oauth_callback(request):
         messages.error(request, 'Authentication failed')
         return HttpResponseRedirect(reverse('designsafe_auth:login'))
 
-    return HttpResponseRedirect('/')
+    if 'next' in request.session:
+        next_uri = request.session.pop('next')
+        return HttpResponseRedirect(next_uri)
+    else:
+        return HttpResponseRedirect('/')
