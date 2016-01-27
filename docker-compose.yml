@@ -13,7 +13,7 @@ django:
   dns:
     - 8.8.8.8
     - 8.8.4.4
-  command: python manage.py runserver 0.0.0.0:8000
+  command: bash -c "python manage.py runserver 0.0.0.0:8000 && celery -A designsafe worker -l info"
 
 #fiu-ef:
 #  build: .
