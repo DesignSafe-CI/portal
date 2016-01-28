@@ -1,4 +1,6 @@
 agavepy
+celery==3.1.19
+
 Django<1.9.0
 django-bootstrap3==6.1.0
 django-classy-tags==0.6.2
@@ -10,6 +12,7 @@ django_polymorphic<0.8
 django-filer==0.9.12
 
 django-angular==0.7.15
+# django-celery==3.1.17
 django-impersonate==0.9.1
 django-pipeline==1.5.4
 django-reversion==1.8.7
@@ -41,6 +44,7 @@ MySQL-python==1.2.5
 Pillow==2.9.0
 ply==3.4
 pytz==2015.4
+redis==2.10.5
 requests==2.7.0
 rt==1.0.8
 six==1.9.0
@@ -48,9 +52,6 @@ slimit==0.8.1
 virtualenv==13.0.1
 wheel==0.24.0
 opbeat
-# celery
-celery==3.1.19
-django-celery==3.1.17
 
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.0.3#egg=pytas-1.0.3

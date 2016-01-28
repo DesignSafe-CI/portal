@@ -55,13 +55,13 @@ def call_api(request, service):
 
         elif service == 'jobs':
             job_id = request.GET.get('job_id')
-            import pdb; pdb.set_trace()
             if job_id:
                 data = agave.jobs.get(jobId=job_id)
             else:
                 if request.method == 'POST':
                     job_post = json.loads(request.body)
                     # data = agave.jobs.submit(body=job_post)
+                    # data = submit_job.delay(server, access_token, job_post)
                     data = submit_job(agave, job_post)
                     task_id=data.id
                 else:
@@ -85,18 +85,5 @@ def call_api(request, service):
     #     return HttpResponse(
     #         json.dumps({'status': 'error', 'message': '{}'.format(res.status)}), status=400,
     #         content_type='application/json')
-
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
-
-def task_result(request, task_id):
-    """
-    return task result by task_id
-    """
-    res = AsyncResult(task_id)
-    if res.result:
-      result = res.result
-    data = {
-      'status': res.status,
-      'result': result
-    }

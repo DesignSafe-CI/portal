@@ -51,7 +51,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'djangular',
-    'djcelery',
     'cms',
     'treebeard',
     'menus',
@@ -78,7 +77,6 @@ INSTALLED_APPS = (
     'designsafe.apps.auth',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
-    'designsafe.apps.celery',
 
     # signals
     'designsafe.apps.signals',
@@ -427,11 +425,7 @@ AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 ##
-# django-celery
+# celery
 #
 BROKER_URL = 'redis://redis:6379/0'
-
-import djcelery
-djcelery.setup_loader()
 CELERY_RESULT_BACKEND='redis://redis:6379/0'
-# CELERY_RESULT_BACKEND='djcelery.backends.cache:CacheBackend'
