@@ -6,6 +6,8 @@ redis:
 django:
   build: .
   env_file: designsafe.env
+  environment:
+    - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
   links:
     - redis:redis
   volumes:
