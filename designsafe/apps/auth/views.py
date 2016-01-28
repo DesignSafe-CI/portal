@@ -96,4 +96,4 @@ def agave_oauth_callback(request):
         next_uri = request.session.pop('next')
         return HttpResponseRedirect(next_uri)
     else:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
