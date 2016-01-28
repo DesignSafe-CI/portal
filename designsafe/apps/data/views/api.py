@@ -301,3 +301,4 @@ def meta_search(request):
             status = 500, content_type='application/json')
 
     return HttpResponse('{{"status": 200, "message": "OK", "result": {0} }}'.format(json.dumps(res)), content_type='application/json', status=200)
+
