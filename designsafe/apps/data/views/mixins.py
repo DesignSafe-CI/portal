@@ -38,4 +38,4 @@ class JSONResponseMixin(object):
     """
 
     def render_to_json_response(self, context, **response_kwargs):
-        return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), content_type = response_kwargs['content_type'], status = response_kwargs['status'])
+        return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs)

@@ -302,3 +302,11 @@ def meta_search(request):
 
     return HttpResponse('{{"status": 200, "message": "OK", "result": {0} }}'.format(json.dumps(res)), content_type='application/json', status=200)
 
+from .mixins import PermissionRequiredMixin, SystemVarsMixin, JSONResponseMixin
+from django.views.generic.base import View
+
+class TestingView(PermissionRequiredMixin, SystemVarsMixin, JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        svs = get_system_vars(request)
+        context = {'message': 'OK'}
+        return render_to_json_response(context, content_type = 'application/json', status=200)
