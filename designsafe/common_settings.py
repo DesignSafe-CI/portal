@@ -95,6 +95,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+LOGIN_REDIRECT_URL = '/account/'
+
 # CACHES = {
 #   'default': {
 #       'BACKEND': 'redis_cache.RedisCache',
@@ -118,6 +120,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
