@@ -32,6 +32,7 @@ class AgaveMixin(object):
 
     def get_agave_client(self, api_vars):
         a = Agave(api_server = api_vars.agave_url, token = api_vars.access_token)
+        setattr(self, a)
         return a
 
     def get_operation(self, a, op):
@@ -39,7 +40,6 @@ class AgaveMixin(object):
         return o
 
     def exec_operation(self, op, args):
-        logger.info('args: {}'.format(args))
         response = op(**args)
         return response
 
@@ -61,12 +61,6 @@ class JSONResponseMixin(object):
 
     def render_to_json_response(self, context, **response_kwargs):
         return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs)
-
-class APIVarsMixin(object):
-    """
-    View mixin to set local variables needed to talk to agave an other APIs
-    e.g. access_token, filesystem, etc...
-    """
 
 class SecureMixin(object):
     """
