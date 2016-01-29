@@ -3,9 +3,14 @@ from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, StreamingHttpResponse
 from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
 #from dsapi.agave.files import *
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.data.apps import DataEvent
+
+from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
+from django.views.generic.base import View
+
 import json
 import logging
 import requests
@@ -14,50 +19,15 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-@login_required
-@require_http_methods(['GET'])
-def listings(request, file_path = '/'):
-    """
-    Returns a list of files/diretories under a specific path.
-    @file_path: String, path to list.
-    returns: array of file objects.
-    """
-    #TODO: should use @is_ajax.
-    #TODO: paginate resutls.
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    logger.info('token: {0}'.format(access_token))
-    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-    if file_path is None:
-        path = request.user.username
-    else:
-        path = '%s/%s' % (request.user.username, file_path)
-    try:
-        a = Agave(api_server = url, token = access_token)
-        l = a.files.list(systemId = filesystem, filePath = path)
+class ListingsView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
+    operation = 'files.list'
 
-        #TODO: We need a proper serializer for datetimes
-        for f in l:
-            f['lastModified'] = f['lastModified'].strftime('%Y-%m-%d %H:%M:%S')
-            f['agavePath'] = 'agave://{0}/{1}'.format(f['system'], f['path'])
-
-        logger.info('Listing: {0}'.format(json.dumps(l, indent=4)))
-        DataEvent.send_event(event_data = {'path': file_path, 'callback': 'getList'})
-
-
-    except AgaveException as e:
-        logger.error('Agave Exception: {0}'.format(e))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-    except Exception as e:
-        logger.error('Exception: {0}'.format(e.message))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-
-    return HttpResponse(json.dumps(l), content_type="application/json", status=200)
+    def get(self, request, *args, **kwargs):
+        av = self.get_api_vars(request, **kwargs)
+        response = self.call_operation(av, self.operation, {'systemId': av.filesystem, 'filePath': av.file_path})
+        if not response:
+            return self.render_to_json_response({'message': 'There was an error.'}, content_type = 'application/json', status = 500)
+        return self.render_to_json_response(response, content_type = 'application/json', status=200)
 
 @login_required
 @require_http_methods(['GET'])
@@ -301,12 +271,3 @@ def meta_search(request):
             status = 500, content_type='application/json')
 
     return HttpResponse('{{"status": 200, "message": "OK", "result": {0} }}'.format(json.dumps(res)), content_type='application/json', status=200)
-
-from .mixins import PermissionRequiredMixin, SystemVarsMixin, JSONResponseMixin
-from django.views.generic.base import View
-
-class TestingView(PermissionRequiredMixin, SystemVarsMixin, JSONResponseMixin, View):
-    def get(self, request, *args, **kwargs):
-        svs = get_system_vars(request)
-        context = {'message': 'OK'}
-        return render_to_json_response(context, content_type = 'application/json', status=200)
