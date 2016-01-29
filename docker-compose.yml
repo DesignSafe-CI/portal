@@ -32,7 +32,7 @@ django:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8002:8002
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.lehigh_ef
 #  command: python manage.py runserver 0.0.0.0:8002
@@ -43,7 +43,7 @@ django:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8003:8003
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.oregonstate_ef
 #  command: python manage.py runserver 0.0.0.0:8003
@@ -54,7 +54,7 @@ django:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8004:8004
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.ucdavis_ef
 #  command: python manage.py runserver 0.0.0.0:8004
@@ -65,7 +65,7 @@ django:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8005:8005
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.ucsd_ef
 #  command: python manage.py runserver 0.0.0.0:8005
@@ -76,7 +76,7 @@ django:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8006:8006
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.ufl_ef
 #  command: python manage.py runserver 0.0.0.0:8006
@@ -87,7 +87,7 @@ django:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8007:8007
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.utexas_ef
 #  command: python manage.py runserver 0.0.0.0:8007
