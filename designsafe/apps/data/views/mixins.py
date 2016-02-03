@@ -46,14 +46,14 @@ class AgaveMixin(object):
         response = op(**args)
         return response
 
-    def call_operation(self, api_vars, operation, args):
-        a = self.get_agave_client(api_vars)
+    def call_operation(self, operation, args):
+        a = self.agave_client
         op = self.get_operation(a, operation)
         try:
             response = self.exec_operation(op, args)
-        except (AgaveException, ConnectionError, HTTPError) as e:
-            logger.error('Agave Exception: {}'.format(e.message), exc_info = True, extra = api_vars.as_json())
-            response = False
+        except AgaveException as e:
+            raise HTTPError(e.message)
+            response = None
         return response
      
 class JSONResponseMixin(object):
@@ -63,6 +63,8 @@ class JSONResponseMixin(object):
     """
 
     def render_to_json_response(self, context, **response_kwargs):
+        response_kwargs['status'] = response_kwargs.get('status', 200)
+        response_kwargs['content_type'] = 'application/json'
         return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs)
 
 class SecureMixin(object):
@@ -70,5 +72,5 @@ class SecureMixin(object):
     View mixin to use login_required
     """
     @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(SecureMixin, self).dispatch(*args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        return super(SecureMixin, self).dispatch(request, *args, **kwargs)
