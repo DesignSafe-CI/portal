@@ -8,8 +8,9 @@ from django.utils.decorators import method_decorator
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.data.apps import DataEvent
 
-from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
 from django.views.generic.base import View
+from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
+from ..daos import AgaveFile
 
 import json
 import logging
@@ -28,6 +29,34 @@ class ListingsView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         if not response:
             return self.render_to_json_response({'message': 'There was an error.'}, content_type = 'application/json', status = 500)
         return self.render_to_json_response(response, content_type = 'application/json', status=200)
+
+class DownloadView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
+    operation = 'files.list'
+
+    def get_file_obj(self, av):
+        response = self.call_operation(av, self.operation, {'systemId': av.filesystem, 'filePath': av.file_path})
+        if not response or len(response) > 1:
+            return False
+        f = AgaveFile(file_obj = response[0], agave_client = self.agave_client)
+        return f
+
+    def get_download_stream(self, av, download_url):
+        try:
+            resp = requests.get(download_url, stream=True,
+                headers={'Authorization':'Bearer %s' % av.access_token})
+        except (requests.exceptions.HTTPError, requests.exceptions.RequestException) as e:
+            logger.error('Requests Exception: {}'.format(e.message), exc_info = True, extra = av.as_json())
+            return False
+        return resp
+
+    def get(self, request, *args, **kwargs):
+        av = self.get_api_vars(request, **kwargs)
+        f = self_get_file_obj(av)
+        ds = self.get_download_stream(av, f.link)
+        if not f:
+            return self.render_to_json_response({'message': 'There was an error.'}, content_type = 'application/json', status = 400)
+
+        return StreamingHttpResponse(ds.content, content_type=f.mimetype, status=200)
 
 @login_required
 @require_http_methods(['GET'])
@@ -99,7 +128,7 @@ def upload(request, file_path = '/'):
         #TODO: Loading progress bar, we'd need a custom file handler for that.
         #TODO: Create a custom file-like class to override 'read()' and return a chunk. Right now requests is probably using f.read() and that loads the entire file in memory. CHUNKS!
         resp = requests.post(upload_uri, files = data,
-        headers={'Authorization':'Bearer %s' % access_token})
+            headers={'Authorization':'Bearer %s' % access_token})
         #resp = a.files.importData(systemId = filesystem, fileToUpload = f, filePath = request.user.username + file_path, fileType=f.content_type)
         logger.info('Rsponse from upload: {0}'.format(resp.text))
 
