@@ -31,9 +31,12 @@ class AgaveMixin(object):
         return av
 
     def get_agave_client(self, api_vars):
-        a = Agave(api_server = api_vars.agave_url, token = api_vars.access_token)
-        setattr(self, a)
-        return a
+        if getattr(self, 'agave_client', None) is None:
+            a = Agave(api_server = api_vars.agave_url, token = api_vars.access_token)
+            setattr(self, 'agave_client', a)
+            return a
+        else:
+            return self.agave_client
 
     def get_operation(self, a, op):
         o = reduce(getattr, op.split("."), a)
@@ -49,7 +52,7 @@ class AgaveMixin(object):
         try:
             response = self.exec_operation(op, args)
         except (AgaveException, ConnectionError, HTTPError) as e:
-            logger.error('Agave Exception: {}'.format(e.message), exc_info = True, extra = api_vars.toDict())
+            logger.error('Agave Exception: {}'.format(e.message), exc_info = True, extra = api_vars.as_json())
             response = False
         return response
      
