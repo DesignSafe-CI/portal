@@ -8,8 +8,7 @@ from django.utils.decorators import method_decorator
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.data.apps import DataEvent
 
-from django.views.generic.base import View
-from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
+from .base import BaseView
 from ..daos import AgaveFile
 
 import json
@@ -20,17 +19,20 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-class ListingsView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
+class ListingsView(BaseView):
     operation = 'files.list'
+    
+    def get_context_data(self, request, **kwargs):
+        context = super(ListingsView, self).get_context_data(request, **kwargs)
+        return context
 
     def get(self, request, *args, **kwargs):
-        av = self.get_api_vars(request, **kwargs)
-        response = self.call_operation(av, self.operation, {'systemId': av.filesystem, 'filePath': av.file_path})
-        if not response:
-            return self.render_to_json_response({'message': 'There was an error.'}, content_type = 'application/json', status = 500)
+        context = self.get_context_data(request, **kwargs)
+        response = self.call_operation(self.operation, 
+                        {'systemId': self.api_vars.filesystem, 'filePath': self.api_vars.file_path})
         return self.render_to_json_response(response, content_type = 'application/json', status=200)
 
-class DownloadView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
+class DownloadView(BaseView):
     operation = 'files.list'
 
     def get_file_obj(self, av):
