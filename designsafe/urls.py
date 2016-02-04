@@ -40,6 +40,9 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout', { 'next_page': '/' },
         name='logout'),
 
+    # webhooks
+    url(r'^webhooks/', include('designsafe.webhooks')),
+
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),
