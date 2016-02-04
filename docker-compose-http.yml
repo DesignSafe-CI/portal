@@ -32,3 +32,17 @@ nginx:
   ports:
     - 80:80
     - 443:443
+
+worker:
+  build: .
+  env_file: designsafe.env
+  environment:
+    - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
+  links:
+    - redis:redis
+  volumes:
+    - .:/portal
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  command: ./bin/run-celery-debug.sh

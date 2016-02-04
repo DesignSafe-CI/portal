@@ -15,6 +15,18 @@ django:
     - 8.8.4.4
   command: python manage.py runserver 0.0.0.0:8000
 
+worker:
+  build: .
+  env_file: designsafe.env
+  links:
+    - redis:redis
+  volumes:
+    - .:/portal
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  command: ./bin/run-celery-debug.sh
+
 #fiu-ef:
 #  build: .
 #  env_file: designsafe.env

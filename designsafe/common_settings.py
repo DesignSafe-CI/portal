@@ -413,6 +413,15 @@ WS4REDIS_CONNECTION = {
 WS4REDIS_EXPIRE = 3600
 
 ###
+# Celery settings
+#
+BROKER_URL = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+###
 # Agave Integration
 #
 # Agave Tenant Configuration
