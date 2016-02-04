@@ -7,6 +7,4 @@ urlpatterns = patterns(
     url(r'^initialize/$', 'initialize_token', name='initialize_token'),
     url(r'^oauth2/$', 'oauth2_callback', name='oauth2_callback'),
     url(r'^disconnect/$', 'disconnect', name='disconnect'),
-
-    url(r'^test/$', 'test'),
 )

@@ -1,4 +1,5 @@
 from boxsdk import OAuth2
+from boxsdk.exception import BoxOAuthException, BoxException
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -13,22 +14,27 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def test(request):
-    from .tasks import check_or_create_sync_folder
-    check_or_create_sync_folder(request.user)
-    return HttpResponseRedirect(reverse('box_integration:index'))
-
-
 @login_required
 def index(request):
     context = {}
     try:
         BoxUserToken.objects.get(user=request.user)
         context['box_enabled'] = True
-        box_user = check_connection(request.user)
-        context['box_connection'] = box_user
+        try:
+            box_user = check_connection(request.user.username)
+            context['box_connection'] = box_user
+        except BoxOAuthException:
+            # authentication failed
+            logger.exception('Box oauth token for user=%s failed to authenticate' % request.user.username)
+            context['box_connection'] = False
+        except BoxException:
+            # session layer exception
+            logger.exception('Box API error when testing oauth token for user=%s' % request.user.username)
+            context['box_connection'] = False
+
     except BoxUserToken.DoesNotExist:
-        pass
+        logger.debug('BoxUserToken does not exist for user=%s' % request.user.username)
+
     return render(request, 'designsafe/apps/box_integration/index.html', context)
 
 
@@ -71,7 +77,7 @@ def oauth2_callback(request):
         refresh_token=refresh_token
     )
     token.save()
-    check_or_create_sync_folder.delay(request.user)
+    check_or_create_sync_folder.delay(request.user.username)
 
     return HttpResponseRedirect(reverse('box_integration:index'))
 
