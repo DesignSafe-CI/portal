@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     'designsafe.apps.auth',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
+    'designsafe.apps.box_integration',
 
     # signals
     'designsafe.apps.signals',
@@ -421,8 +422,10 @@ AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
 # Agave Client Configuration
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
 AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
-AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID')
+AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+
+from box_settings import *

@@ -36,6 +36,7 @@ django-websocket-redis
 django-redis-sessions
 django-redis-cache
 # end wsr
+celery==3.1.20
 html5lib==0.999
 MySQL-python==1.2.5
 Pillow==2.9.0
@@ -48,6 +49,7 @@ slimit==0.8.1
 virtualenv==13.0.1
 wheel==0.24.0
 opbeat
+boxsdk==1.4.0
 
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.0.3#egg=pytas-1.0.3

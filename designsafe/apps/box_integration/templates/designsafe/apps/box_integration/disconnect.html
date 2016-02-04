@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Box.com Integration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Disconnect Box.com</h1>
+
+    <p class="lead">
+        By disconnecting your Box.com account from DesignSafe-CI, you will halt any automatic
+        syncing of files and folders between Box.com and DesignSafe-CI. This <strong>will not</strong>
+        delete any files from either DesignSafe-CI or Box.com. What <strong>will</strong> happen
+        is that you will be removing the authorization you granted DesignSafe-CI to manage files
+        and folders in your Box.com account.
+    </p>
+    <p class="alert alert-info">
+        To reiterate, this will not delete any files. If you wish to delete the files from either
+        your Box.com storage or your DesignSafe-CI storage you will need to do that manually.
+    </p>
+    <p class="alert alert-warning">
+        You will still see DesignSafe-CI on your Box.com Account Security page. Be assured that
+        by disconnecting your account here DesignSafe-CI will no longer be able to act on your
+        Box.com account. If you wish, click "Forget App" on the Box.com Account Security page
+        to ensure access has been revoked.
+    </p>
+    <hr>
+    <p class="lead">
+        If you would like to disconnect your Box.com account from DesignSafe-CI, you can
+        do so by clicking the button below.
+    </p>
+    <form action="{% url 'box_integration:disconnect' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-lg btn-danger">Disconnect Box.com</button>
+            <a href="{% url 'box_integration:index' %}" class="btn btn-lg btn-default">Cancel</a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
