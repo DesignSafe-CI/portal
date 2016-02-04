@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import BoxUserToken
-from .tasks import check_connection
+from .tasks import check_connection, check_or_create_sync_folder
 import logging
 
 
@@ -71,6 +71,7 @@ def oauth2_callback(request):
         refresh_token=refresh_token
     )
     token.save()
+    check_or_create_sync_folder.delay(request.user)
 
     return HttpResponseRedirect(reverse('box_integration:index'))
 
