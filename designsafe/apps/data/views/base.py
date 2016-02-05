@@ -20,7 +20,14 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         try:
             return super(BaseView, self).dispatch(request, *args, **kwargs)
         except (ConnectionError, HTTPError) as e:
-            logger.error('{}'.format(e.message), exc_info = True, extra = self.api_vars.as_json())
+            logger.error('{}'.format(e.message), 
+                exc_info = True, 
+                extra = {
+                    'filesystem': self.filesystem,
+                    'file_path': self.file_path,
+                    'username': request.user.username
+                }
+                )
             return HttpResponse(e.message, status = 400)
 
     def set_context_props(self, request, **kwargs):
