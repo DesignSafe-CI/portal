@@ -56,95 +56,27 @@ class UploadView(BaseView):
                       headers = {'Authorization': 'Bearer %s' % self.access_token})
         return self.render_to_json_response({'message': 'OK'})
 
-def get_metadata(request, file_path, **kwargs):
-    a = kwargs.get('a')
-    meta_q = kwargs.get('meta_q')
-    logger.info('Looking for metadata with the query: {0}'.format(meta_q))
-    logger.info('file path:{0}'.format(file_path))
-    meta = a.meta.listMetadata(q=meta_q)
-    logger.info('Metadata: {0}'.format(meta))
+class MetadataView(BaseView):
+    def set_context_props(self, request, **kwargs):
+        super(MetadataView, self).set_context_props(request, **kwargs)
+        f = AgaveMetaFolderFile.from_path(
+                agave_client = self.agave_client,
+                system_id = self.filesystem,
+                path = self.file_path,
+                username = request.user.username)
+        return f
 
-    return HttpResponse(json.dumps(meta), content_type='application/json', status=200)
+    def get(request, *args, **kwargs):
+        f = self.set_context_props(request, **kwargs)
+        return self.render_to_jston_response(f.as_json())
 
-def post_metadata(request, file_path, **kwargs):
-    #The verb is POST so we need to add/update metadata
-    a = kwargs.get('a')
-    body = json.loads(request.body)
-    meta = body.get('metadata', None)
-    meta_q = kwargs.get('meta_q')
-    logger.info('Metadata received: {0}'.format(request.body))
-    if meta is None or 'value' not in meta:
-        return HttpResponse('{"status": 500, "message": "No metadata sent."}', content_type="application/json", status = 500)
+    def post(request, *args, **kwargs):
+        f = self.set_context_props(request, **kwargs)
+        body = json.loads(request.body)
+        meta = body.get('metadata', None)
+        f = f.update(meta)
+        return self.render_to_json_response(f.to_json())
 
-    if 'uuid' not in meta:
-        meta_uuid = meta_q.split(':')[1]
-        meta_uuid = meta_uuid.replace('"', '').replace('}', '')
-        logger.info('Meta UUID: {0}'.format(meta_uuid))
-        meta = {
-            'name': 'designsafe metadata',
-            'associationIds': [meta_uuid],
-            'value': meta['value']
-        }
-        try:
-            r = a.meta.addMetadata(body = meta)
-        except KeyError as e:
-            if e.message == 'date-time':
-                logger.error('Error on agavepy looking for key "date-time".')
-            else:
-                raise
-    else:
-        try:
-            r = a.meta.updateMetadata(uuid = meta['uuid'], body = meta)
-        except KeyError as e:
-            if e.message == 'date-time':
-                logger.error('Error on agavepy looking for key "date-time".')
-            else:
-                raise
-    logger.info('Metadata sent: {0}'.format(meta))
-    return HttpResponse('{"status": 200, "message": "OK"}', content_type="application/json")
-
-@login_required
-@require_http_methods(['GET', 'POST'])
-def metadata(request, file_path = '/'):
-    """
-    Gets/sets metadata to a specific file/folder.
-    @file_path: String
-    """
-    #TODO: Should use @is_ajax
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-    try:
-        a = Agave(api_server = url, token = access_token)
-
-        f = a.files.list(systemId = filesystem,
-                    filePath = request.user.username + '/' + file_path)
-
-        f = f[0]
-        meta_dict = f['_links'].get('metadata', None)
-        meta_link = meta_dict['href']
-
-        if meta_link is None:
-            return HttpResponse('{"status": 404, "message": "Not Found"}', content_type="application/json", status = 404)
-
-        meta_q = meta_link.split('?q=')[1]
-        handler = globals()['%s_metadata' % request.method.lower()]
-
-        return handler(request, file_path, a = a, filesystem = filesystem, meta_q = meta_q)
-
-    except AgaveException as e:
-        logger.error('Agave Exception: {0}'.format(e))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-    except Exception as e:
-        logger.error('Exception: {0}'.format(e.message))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-
-           
 @login_required
 @require_http_methods(['GET'])
 def meta_search(request):
