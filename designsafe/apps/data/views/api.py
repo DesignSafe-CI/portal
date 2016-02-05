@@ -20,7 +20,6 @@ import traceback
 logger = logging.getLogger(__name__)
 
 class ListingsView(BaseView):
-    operation = 'files.list'
     
     def set_context_props(self, request, **kwargs):
         super(ListingsView, self).set_context_props(request, **kwargs)
@@ -32,119 +31,30 @@ class ListingsView(BaseView):
         return self.render_to_json_response([o.as_json() for o in l])
 
 class DownloadView(BaseView):
-    operation = 'files.list'
 
-    def get_file_obj(self, av):
-        response = self.call_operation(av, self.operation, {'systemId': av.filesystem, 'filePath': av.file_path})
-        if not response or len(response) > 1:
-            return False
-        f = AgaveFile(file_obj = response[0], agave_client = self.agave_client)
-        return f
-
-    def get_download_stream(self, av, download_url):
-        try:
-            resp = requests.get(download_url, stream=True,
-                headers={'Authorization':'Bearer %s' % av.access_token})
-        except (requests.exceptions.HTTPError, requests.exceptions.RequestException) as e:
-            logger.error('Requests Exception: {}'.format(e.message), exc_info = True, extra = av.as_json())
-            return False
-        return resp
+    def set_context_props(self, request, **kwargs):
+        super(DownloadView, self).set_context_props(request, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        av = self.get_api_vars(request, **kwargs)
-        f = self_get_file_obj(av)
-        ds = self.get_download_stream(av, f.link)
-        if not f:
-            return self.render_to_json_response({'message': 'There was an error.'}, content_type = 'application/json', status = 400)
-
+        self.set_context_props(request, **kwargs)
+        f = AgaveFolderFile.frompath(agave_client = self.agave_client,
+                system_id = self.filesystem, 
+                path = self.file_path,
+                username = request.user.username)
+        ds = self.download_stream(headers = {'Authorization': 'Bearer %s' % self.access_token})
         return StreamingHttpResponse(ds.content, content_type=f.mimetype, status=200)
 
-@login_required
-@require_http_methods(['GET'])
-def download(request, file_path = '/'):
-    """
-    Returns bytes of a specific file
-    @file_path: String, file path to download
-    """
-    #TODO: should use @is_ajax
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-
-    try:
-
-        a = Agave(api_server = url, token = access_token)
-        logger.info('download file_path: ' + file_path)
-        f = a.files.list(systemId = filesystem,
-                         filePath = request.user.username + '/' + file_path)
-
-        download_url = f[0]['_links']['self']['href']
-        content_type = f[0]['mimeType']
-
-        resp = requests.get(download_url, stream=True,
-            headers={'Authorization':'Bearer %s' % access_token})
-        #TODO: Create a file-like object to overwrtie read() to iterate through resp.iter_content, resp.content is probably loading the entire file in memory.
-
-    except AgaveException as e:
-        logger.error('Agave Exception: {0}'.format(e))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-    except Exception as e:
-        logger.error('Exception: {0}'.format(e.message))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-
-    return StreamingHttpResponse(resp.content, content_type=content_type, status=200)
-
-@login_required
-@require_http_methods(['POST'])
-def upload(request, file_path = '/'):
-    """
-    Uploads a file to the specified filesystem
-    @file_path: String, file path to upload
-    """
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-    access_token = token.get('access_token', None)
-    url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-    if file_path is None:
-        file_path = '/'
-    try:
-        a = Agave(api_server = url, token = access_token)
-        logger.info('upload file_path: ' + file_path)
-        f = request.FILES['file']
-        logger.info('File to upload: {0}'.format(request.FILES['file']))
-        #TODO: get the URI from the resources.
-        upload_uri = url + '/files/v2/media/system/' + filesystem + '/' + request.user.username + '/' + file_path
-
-        data = {
-            'fileToUpload': f,
-            'filePath': request.user.username + file_path,
-            'fileName': f.name.split('/')[-1]
-        }
-        #TODO: Loop if multiple files.
-        #TODO: Loading progress bar, we'd need a custom file handler for that.
-        #TODO: Create a custom file-like class to override 'read()' and return a chunk. Right now requests is probably using f.read() and that loads the entire file in memory. CHUNKS!
-        resp = requests.post(upload_uri, files = data,
-            headers={'Authorization':'Bearer %s' % access_token})
-        #resp = a.files.importData(systemId = filesystem, fileToUpload = f, filePath = request.user.username + file_path, fileType=f.content_type)
-        logger.info('Rsponse from upload: {0}'.format(resp.text))
-
-    except AgaveException as e:
-        logger.error('Agave Exception: {0}'.format(e))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-    except Exception as e:
-        logger.error('Exception: {0}'.format(e.message))
-        logger.error(traceback.format_exc())
-        return HttpResponse('{{"error": "{0}" }}'.format(json.dumps(e.message)),
-            status = 500, content_type='application/json')
-
-    return HttpResponse('{"status":200, "message": "Succesfully uploaded."}', content_type='application/json', status=200)
+class UploadView(BaseView):
+    def post(self, request, *args, **kwargs):
+        self.set_context_props(request, **kwargs)
+        f = AgaveMetaFolderFile.from_file(agave_client = self.agave_client,
+                f = request.FILES['file'],
+                system_id = self.filesystem,
+                path = self.file_path,
+                username = request.user.username)
+        f.upload_file(f, 
+                      headers = {'Authorization': 'Bearer %s' % self.access_token})
+        return self.render_to_json_response({'message': 'OK'})
 
 def get_metadata(request, file_path, **kwargs):
     a = kwargs.get('a')
