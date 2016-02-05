@@ -34,4 +34,6 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         #TODO: Getting the filesystem should check in which system is the user in or requesting.
         self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
         self.file_path = kwargs.get('file_path', None)
+        if self.file_path is None or self.file_path == '/':
+            self.file_path = request.user.username + '/'
         super(BaseView, self).set_context_props(request, **kwargs)
