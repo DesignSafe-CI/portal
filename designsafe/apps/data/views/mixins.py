@@ -20,41 +20,26 @@ class AgaveMixin(object):
     View mixin to catch APIs specific errors. This should not catch HTTP specific errors, 
     those should get handled in the corresponding verb method.
     """
-    def get_api_vars(self, request, **kwargs):
-        token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-        access_token = token.get('access_token', None)
-        agave_url = url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        #TODO: Getting the filesystem should check in which system is the user in or requesting.
-        filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-        file_path = kwargs.get('file_path', None)
-        av = APIVars(token = token, access_token = access_token, agave_url = agave_url, filesystem = filesystem, file_path = file_path, username = request.user.username)
-        return av
+    def __init__(self, **kwargs):
+        self.token = None
+        self.access_token = None
+        self.agave_url = None
+        self.agave_client = None
+        super(BaseView, self).__init__(**kwargs)
 
-    def get_agave_client(self, api_vars):
+    def get_agave_client(self, api_server = None, token = None, **kwargs):
         if getattr(self, 'agave_client', None) is None:
-            a = Agave(api_server = api_vars.agave_url, token = api_vars.access_token)
+            a = Agave(api_server = api_server, token = token, **kwargs)
             setattr(self, 'agave_client', a)
             return a
         else:
             return self.agave_client
 
-    def get_operation(self, a, op):
-        o = reduce(getattr, op.split("."), a)
-        return o
-
-    def exec_operation(self, op, args):
-        response = op(**args)
-        return response
-
-    def call_operation(self, operation, args):
-        a = self.agave_client
-        op = self.get_operation(a, operation)
-        try:
-            response = self.exec_operation(op, args)
-        except AgaveException as e:
-            raise HTTPError(e.message)
-            response = None
-        return response
+    def set_context_props(self, request, **kwargs):
+        self.token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
+        self.access_token = self.token.get('access_token', None)
+        self.agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+        self.agave_client = self.get_agave_client(api_server = self.agave_url, token = self.access_token)
      
 class JSONResponseMixin(object):
     """

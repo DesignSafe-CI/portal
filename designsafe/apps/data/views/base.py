@@ -4,6 +4,7 @@ from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
 from django.views.generic.base import View
 from django.http import HttpResponse
 from requests.exceptions import ConnectionError, HTTPError
+from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -11,8 +12,8 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
     def __init__(self, **kwargs):
-        self.api_vars = None
-        self.agave_client = None
+        self.filesystem = None
+        self.file_path = None
         super(BaseView, self).__init__(**kwargs)
 
     def dispatch(self, request, *args, **kwargs):
@@ -22,8 +23,8 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
             logger.error('{}'.format(e.message), exc_info = True, extra = self.api_vars.as_json())
             return HttpResponse(e.message, status = 400)
 
-    def get_context_data(self, request, **kwargs):
-        self.api_vars = self.get_api_vars(request, **kwargs)
-        self.agave_client = self.get_agave_client(self.api_vars)
-        context = {}
-        return context
+    def set_context_props(self, request, **kwargs):
+        #TODO: Getting the filesystem should check in which system is the user in or requesting.
+        self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+        self.file_path = kwargs.get('file_path', None)
+        super(BaseView, self).set_context_props(request, **kwargs)
