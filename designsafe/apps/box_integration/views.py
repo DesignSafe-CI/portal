@@ -1,4 +1,4 @@
-from boxsdk import OAuth2
+from boxsdk import OAuth2, Client
 from boxsdk.exception import BoxOAuthException, BoxException
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -66,18 +66,26 @@ def oauth2_callback(request):
     if not (state == box['state']):
         return HttpResponseBadRequest('Request expired')
 
-    oauth = OAuth2(
-        client_id=settings.BOX_APP_CLIENT_ID,
-        client_secret=settings.BOX_APP_CLIENT_SECRET
-    )
-    access_token, refresh_token = oauth.authenticate(auth_code)
-    token = BoxUserToken(
-        user=request.user,
-        access_token=access_token,
-        refresh_token=refresh_token
-    )
-    token.save()
-    check_or_create_sync_folder.delay(request.user.username)
+    try:
+        oauth = OAuth2(
+            client_id=settings.BOX_APP_CLIENT_ID,
+            client_secret=settings.BOX_APP_CLIENT_SECRET
+        )
+        access_token, refresh_token = oauth.authenticate(auth_code)
+        client = Client(oauth)
+        box_user = client.user(user_id='me').get()
+        token = BoxUserToken(
+            user=request.user,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            box_user_id=box_user.id,
+        )
+        token.save()
+        check_or_create_sync_folder.delay(request.user.username)
+    except BoxException as e:
+        logger.exception('Unable to complete Box integration setup: %s' % e)
+        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
+                                'up the Box.com application. Please try again.')
 
     return HttpResponseRedirect(reverse('box_integration:index'))
 
