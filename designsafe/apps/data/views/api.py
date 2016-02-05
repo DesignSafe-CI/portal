@@ -9,7 +9,7 @@ from agavepy.agave import Agave, AgaveException
 from designsafe.apps.data.apps import DataEvent
 
 from .base import BaseView
-from ..daos import AgaveFile
+from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager
 
 import json
 import logging
@@ -22,15 +22,14 @@ logger = logging.getLogger(__name__)
 class ListingsView(BaseView):
     operation = 'files.list'
     
-    def get_context_data(self, request, **kwargs):
-        context = super(ListingsView, self).get_context_data(request, **kwargs)
-        return context
+    def set_context_props(self, request, **kwargs):
+        super(ListingsView, self).set_context_props(request, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(request, **kwargs)
-        response = self.call_operation(self.operation, 
-                        {'systemId': self.api_vars.filesystem, 'filePath': self.api_vars.file_path})
-        return self.render_to_json_response(response, content_type = 'application/json', status=200)
+        set_context_props(request, **kwargs)
+        manager = AgaveFilesManager(self.agave_client)
+        l = manager.list_path(system_id = self.filesystem, path = self.file_path)
+        return self.render_to_json_response([o.as_json() for o in l])
 
 class DownloadView(BaseView):
     operation = 'files.list'
