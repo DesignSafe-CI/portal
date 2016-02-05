@@ -81,7 +81,6 @@ def call_api(request, service):
     #     res = AsyncResult(task_id)
     #     if res.ready():
     #         data = res.result
-    #     import pdb; pdb.set_trace()
     #     return HttpResponse(
     #         json.dumps({'status': 'error', 'message': '{}'.format(res.status)}), status=400,
     #         content_type='application/json')

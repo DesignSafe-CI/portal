@@ -5,6 +5,7 @@ from ws4redis.publisher import RedisPublisher
 from ws4redis.redis_store import RedisMessage
 import json
 import logging
+import copy
 logger = logging.getLogger(__name__)
 
 
@@ -13,17 +14,29 @@ logger = logging.getLogger(__name__)
 @receiver(ds_event, dispatch_uid = __name__)
 def ds_event_callback(sender, **kwargs):
     event_type = kwargs.get('event_type', '')
-    event_data = kwargs.get('event_data', '')
+    job_owner = kwargs.get('job_owner', '')
+
+    data = copy.copy(kwargs)
+
+    data.pop('signal')
 
     logger.info('Event received from {0}'.format(sender))
     logger.info('Event Type: {0}'.format(event_type))
-    logger.info('Event Data: {0}'.format(event_data))
+    logger.info('Event Data: {0}'.format(kwargs))
 
-    data = {
-        'eventType': event_type,
-        'data': event_data,
-        }
-    rp = RedisPublisher(facility = event_type, broadcast=True)
+    # data = {
+    #     'eventType': event_type,
+    #     'event': event,
+    #     'jobName': job_name,
+    #     'jobOwner': job_owner,
+    #     'jobId': job_id
+    #     }
+
+    if job_owner:
+        rp = RedisPublisher(facility = event_type, users=[job_owner])
+    else:
+        rp = RedisPublisher(facility = event_type, broadcast=True)
+    rp = RedisPublisher(facility = event_type, broadcast=True) # for testing
 
     msg = RedisMessage(json.dumps(data))
     rp.publish_message(msg)

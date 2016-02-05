@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from designsafe.apps.accounts import forms
+from designsafe.apps.notifications.models import Notification, JobNotification
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
@@ -77,6 +78,27 @@ def departments_json(request):
     return HttpResponse(json.dumps(departments), content_type='application/json')
 
 def notifications(request):
-    notifications = ()
+    # notification_objects = Notification.objects.filter(deleted=False)
+    jobnotifications=JobNotification.objects.filter(deleted=False, user=str(request.user)).order_by('-notification_time')
+    job_events = []
+    unread = 0
+    for notification in jobnotifications:
+        job_events.append({
+            'jobName': notification.job_name,
+            'jobId': notification.job_id,
+            'user': notification.user,
+            'event': notification.event,
+            'read': notification.read,
+            'notification_time': notification.notification_time,
+            'id': notification.id
+            })
+        if not notification.read:
+            unread += 1
+            notification.read = True
+            notification.save()
+
+    notifications={}
+    notifications['job'] = job_events
+    notifications['unread'] = unread
     return render(request, 'designsafe/apps/accounts/notifications.html',
         {'notifications': notifications})

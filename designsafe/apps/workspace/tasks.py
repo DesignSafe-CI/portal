@@ -22,5 +22,14 @@ def submit_job(agave, job_post):
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         logger.info('Task HTTPError: {}'.format(e.__class__))
         submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when it returns."), max_retries=None)
-
+    logger.info('agave response: {}'.format(response))
+    mock_agave_notification(response)
     return response
+
+#just for testing
+def mock_agave_notification(response):
+    # http://requestb.in/1lq1gyg1?job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}
+    import requests
+    r = requests.post('http://requestb.in/1n0ijse1', data={"job_id":response.id, "event":"JOB_CREATED", "job_name":response.name})
+
+    r = requests.post('http://192.168.99.100:8000/notifications/jobs/', data={"job_id":response.id, "event":"JOB_CREATED", "job_name":response.name, "job_owner": response.owner})
