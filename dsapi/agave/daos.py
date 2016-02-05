@@ -2,6 +2,9 @@ import datetime
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
 #Data Access Objects to represent data to and from APIs
+import logging
+
+logger = logging.getLogger(__name__)
 
 object_name = 'object'
 project_name = 'project'
@@ -49,15 +52,16 @@ class AgaveObject(object):
 
 class AgaveFilesManager(AgaveObject):
     
-    def list_path(self, system_id = None, file_path = None):
+    def list_path(self, system_id = None, path = None):
+        logger.info('listing path {} from {}'.format(path, system_id))
         res = self.call_operation('files.list', 
-                {'systemId': system_id, 'filePath': file_path})
+                {'systemId': system_id, 'filePath': path})
         ret = [AgaveFolderFile(self.agave_client, file_obj = o) for o in res]
         return ret
 
     def list_meta_path(self, system_id = None, path = None):
         q = '''{{ "name" = "{}", "value.parentPath" = "{}"
-                  "value.systemId" = "{}" }}'''
+                  "value.systemId" = "{}" }}'''.format(object_name, path, system_id)
         res = self.call_operation('meta.listMetadata',
                 {'q': q})
         ret = [AgaveMetaFolderFile(agave_client = self.client, 

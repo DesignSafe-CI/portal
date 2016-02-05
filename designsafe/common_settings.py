@@ -329,6 +329,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        'dsapi':{
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     },
 }
 
