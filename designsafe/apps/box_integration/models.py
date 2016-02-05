@@ -7,6 +7,7 @@ class BoxUserToken(models.Model):
     Represents an OAuth Token for a Box.com user
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    box_user_id = models.CharField(max_length=48)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
 
