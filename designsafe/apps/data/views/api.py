@@ -27,7 +27,8 @@ class ListingsView(BaseView):
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         manager = AgaveFilesManager(self.agave_client)
-        l = manager.list_path(system_id = self.filesystem, path = self.file_path)
+        l = manager.list_meta_path(system_id = self.filesystem, 
+                                    path = self.file_path)
         return self.render_to_json_response([o.as_json() for o in l])
 
 class DownloadView(BaseView):
