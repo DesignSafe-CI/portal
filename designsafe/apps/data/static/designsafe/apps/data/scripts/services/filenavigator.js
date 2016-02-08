@@ -83,6 +83,7 @@
                         file.date = file.lastModified;
                         file.size = file.length;
                         file.agavePath = file.agavePath;
+                        file.type = file.fileType == 'folder' ? 'dir' : 'file';
                         return file;
                       });
                     }

@@ -42,8 +42,9 @@ class DownloadView(BaseView):
                 system_id = self.filesystem, 
                 path = self.file_path,
                 username = request.user.username)
-        ds = self.download_stream(headers = {'Authorization': 'Bearer %s' % self.access_token})
-        return StreamingHttpResponse(ds.content, content_type=f.mimetype, status=200)
+        logger.info('Downloading: {}'.format(f.link))
+        ds = f.download_stream(headers = {'Authorization': 'Bearer %s' % self.access_token})
+        return StreamingHttpResponse(ds.content, content_type=f.mime_type, status=200)
 
 class UploadView(BaseView):
     def post(self, request, *args, **kwargs):

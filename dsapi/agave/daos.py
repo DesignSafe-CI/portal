@@ -35,6 +35,9 @@ class AgaveObject(object):
         try:
             response = self.exec_operation(op, args)
         except AgaveException as e:
+            logger.error('Agave Error:{}\nArgs:{} '.format(e.message, args),
+                exc_info = True,
+                extra = '{}'.format(args))
             raise HTTPError(e.message)
             response = None
         except KeyError as e:
@@ -115,6 +118,7 @@ class AgaveFolderFile(AgaveObject):
         if path is None or path == '/':
             path = username
         try:
+            logger.info('Listing file {}'.format(path))
             res = agave_client.files.list(systemId = system_id, filePath = path)
             if len(res) > 0:
                 f = res[0]
@@ -188,6 +192,7 @@ class AgaveFolderFile(AgaveObject):
         return o
 
     def download_stream(self, headers):
+        logger.info('Downloading: {}'.format(self.link))
         stream = requests.get(self.link, stream=True, headers = headers)
         return stream
 
@@ -364,12 +369,10 @@ class AgaveMetaFolderFile(AgaveObject):
             'uuid': self.uuid,
             'value': {
                 'deleted': self.deleted,
-                'type': self.type,
                 'fileType': self.file_type,
                 'length': self.length,
                 'mimeType': self.mime_type,
                 'name': self.name,
-                'parentPath': self.parent_path,
                 'path': self.path,
                 'systemId': self.system_id,
                 'keywords': self.keywords,
