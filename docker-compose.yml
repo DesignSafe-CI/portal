@@ -16,13 +16,17 @@ django:
   # command: bash -c "python manage.py runserver 0.0.0.0:8000 && celery -A designsafe worker -l info"
   command: python manage.py runserver 0.0.0.0:8000
 
-celery:
+worker:
   build: .
-  command: celery -A designsafe worker -l info
-  links:
-    - "redis:redis"
-    - "django:django"
   env_file: designsafe.env
+  links:
+    - redis:redis
+  volumes:
+    - .:/portal
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  command: ./bin/run-celery-debug.sh
 
 #fiu-ef:
 #  build: .
@@ -41,7 +45,7 @@ celery:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8002:8002
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.lehigh_ef
 #  command: python manage.py runserver 0.0.0.0:8002
@@ -52,7 +56,7 @@ celery:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8003:8003
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.oregonstate_ef
 #  command: python manage.py runserver 0.0.0.0:8003
@@ -63,7 +67,7 @@ celery:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8004:8004
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.ucdavis_ef
 #  command: python manage.py runserver 0.0.0.0:8004
@@ -74,7 +78,7 @@ celery:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8005:8005
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.ucsd_ef
 #  command: python manage.py runserver 0.0.0.0:8005
@@ -85,7 +89,7 @@ celery:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8006:8006
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.ufl_ef
 #  command: python manage.py runserver 0.0.0.0:8006
@@ -96,7 +100,7 @@ celery:
 #  volumes:
 #    - .:/portal
 #  ports:
-#    - 8001:8001
+#    - 8007:8007
 #  environment:
 #    DJANGO_SETTINGS_MODULE: designsafe.sites.utexas_ef
 #  command: python manage.py runserver 0.0.0.0:8007

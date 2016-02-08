@@ -1,0 +1,61 @@
+{% extends "designsafe/apps/accounts/base.html" %}
+
+{% block title %}Account Profile{% endblock %}
+
+{% block panel_content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Personal information</h3>
+                <dl>
+                    <dt>Full name</dt>
+                    <dd>{{profile.firstName}} {{profile.lastName}}</dd>
+
+                    <dt>Email address</dt>
+                    <dd>{{profile.email}}</dd>
+
+                    <dt>Phone number</dt>
+                    <dd>{{profile.phone}}</dd>
+
+                    <dt>Institution</dt>
+                    <dd>{{profile.institution}}{% if profile.department %},
+                        {{profile.department}}{% endif %}
+                    </dd>
+
+                    <dt>Title</dt>
+                    <dd>{{profile.title}}</dd>
+
+                    <dt>Country of residence</dt>
+                    <dd>{{profile.country}}</dd>
+
+                    <dt>Country of citizenship</dt>
+                    <dd>{{profile.citizenship}}</dd>
+
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <h3>Demographics
+                    <a title="Why do we collect this?">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="sr-only">Why do we collect this?</span>
+                    </a>
+                </h3>
+                <dl>
+                    <dt>Ethnicity</dt>
+                    <dd>&nbsp;</dd>
+
+                    <dt>Gender</dt>
+                    <dd>&nbsp;</dd>
+                </dl>
+            </div>
+        </div>
+
+        <hr>
+
+        <button disabled class="btn btn-default"><i class="fa fa-edit"></i> Edit profile
+        </button>
+
+    </div>
+</div>
+{% endblock %}

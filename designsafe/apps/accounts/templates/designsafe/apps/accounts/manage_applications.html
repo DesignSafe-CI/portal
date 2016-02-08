@@ -1,0 +1,21 @@
+{% extends "designsafe/apps/accounts/base.html" %}
+
+{% block panel_content %}
+<p class="lead">
+    Select the application settings to manage.
+</p>
+<p>
+{% for app in integrations %}
+    <h3>{{app.label}}</h3>
+    <p>{{app.description}}</p>
+    <p>
+        {% if app.href %}
+            <a href="{{app.href}}" class="btn btn-default">Manage App Settings</a>
+        {% else %}
+            <button disabled class="btn btn-default">Coming Soon</button>
+        {% endif %}
+    </p>
+    <hr>
+{% endfor %}
+</div>
+{% endblock %}

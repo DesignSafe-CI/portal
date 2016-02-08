@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     'designsafe.apps.auth',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
+    'designsafe.apps.box_integration',
 
     # signals
     'designsafe.apps.signals',
@@ -95,6 +96,8 @@ AUTHENTICATION_BACKENDS = (
     # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+LOGIN_REDIRECT_URL = '/account/'
 
 # CACHES = {
 #   'default': {
@@ -119,6 +122,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
@@ -410,6 +414,15 @@ WS4REDIS_CONNECTION = {
 WS4REDIS_EXPIRE = 3600
 
 ###
+# Celery settings
+#
+BROKER_URL = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+###
 # Agave Integration
 #
 # Agave Tenant Configuration
@@ -419,14 +432,10 @@ AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
 # Agave Client Configuration
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
 AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
-AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID')
+AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
-##
-# celery
-#
-BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND='redis://redis:6379/0'
+from box_settings import *

@@ -113,6 +113,34 @@ To run frontend tests, ensure that all scripts and test scripts are configured i
 $ docker run -it --rm designsafe/portal bin/run-tests.sh 
 ```
 
+## Development setup
+
+Use `docker-compose` to run the portal in development. The default compose file, 
+[`docker-compose.yml`](docker-compose.yml) runs the main django server in development
+mode with a redis service for websockets support. You can optionally enable the EF sites
+for testing.
+
+```shell
+$ docker-compose build
+$ docker-compose up
+```
+
+When using this compose file, your Agave Client should be configured with a `callback_url`
+of `http://$DOCKER_HOST_IP:8000/auth/agave/callback/`.
+
+For developing some services, e.g. Box.com integration, https support is required. To 
+enable an Nginx http proxy run using the [`docker-compose-http.yml`](docker-compose-http.yml)
+file. This file configures the same services as the default compose file, but it also sets
+up an Nginx proxy secured by a self-signed certificate.
+
+```shell
+$ docker-compose -f docker-compose-http.yml build
+$ docker-compose -f docker-compose-http.yml up
+```
+
+When using this compose file, your Agave Client should be configured with a `callback_url`
+of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
+
 ## Production setup
 
 The production setup registers the container composition as a systemd service.

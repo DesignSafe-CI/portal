@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Box.com Integration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">Box.com Integration</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel {% if box_enabled and box_connection %}panel-success{% elif box_enabled %}panel-warning{% else %}panel-default{% endif %}">
+                {% if box_enabled %}
+                    <div class="panel-heading">Box.com Enabled</div>
+                {% else %}
+                    <div class="panel-heading">Box.com NOT Enabled</div>
+                {% endif %}
+                <div class="panel-body">
+                {% if box_enabled %}
+                    {% if box_connection %}
+                        <p>
+                            Box.com integration is enabled. DesignSafe-CI can connect to
+                            Box.com as <em>{{box_connection.name}} ({{box_connection.login}})</em>.
+                        </p>
+                    {% else %}
+                        <p class="text-warning">
+                            While you have previously authorized DesignSafe-CI to connect
+                            to your Box.com account, the connection test failed for some
+                            reason. You may have revoked access from your Box.com Account
+                            Security page. To fix this, first disconnect Box.com integration
+                            and then re-enable.
+                        </p>
+                    {% endif %}
+                    <a href="{% url 'box_integration:disconnect' %}" class="btn btn-default">Disconnect Box.com</a>
+                {% else %}
+                    <p>
+                        Box.com integration is not enabled for your account. Click below
+                        to configure DesignSafe/Box.com integration.
+                    </p>
+                    <a href="{% url 'box_integration:initialize_token' %}" class="btn btn-default">Setup Box.com</a>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <p class="lead">
+                When Box.com integration is enabled, DesignSafe will create and manage a folder
+                in your Box.com account called <strong>DesignSafe-CI-Sync</strong>.
+                DesignSafe will watch this folder for changes and automatically import any
+                files and folders created there into the CI. If you opt to sync the
+                <strong>DesignSafe-CI-Sync</strong> folder to your Desktop using
+                <a href="http://box.com/sync" target="_blank">Box Sync <i class="fa fa-external-link"></i></a>,
+                then you will be able to upload files from your desktop to the CI via Box.com.
+                Additionally, files created within the CI can be back to your Desktop.
+            </p>
+            <p class="lead">
+                Please read the
+                <a href="/docs/guides/file-syncing/">file syncing user guide</a>
+                for more details.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

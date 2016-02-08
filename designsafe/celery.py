@@ -9,10 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'designsafe.settings')
 
 from django.conf import settings  # noqa
 
-app = Celery('designsafe',
-            broker=getattr(settings, 'BROKER_URL'),
-            backend=getattr(settings, 'CELERY_RESULT_BACKEND')
-)
+app = Celery('designsafe')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
