@@ -38,7 +38,7 @@ class DownloadView(BaseView):
 
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
-        f = AgaveFolderFile.frompath(agave_client = self.agave_client,
+        f = AgaveFolderFile.from_path(agave_client = self.agave_client,
                 system_id = self.filesystem, 
                 path = self.file_path,
                 username = request.user.username)
@@ -49,12 +49,15 @@ class DownloadView(BaseView):
 class UploadView(BaseView):
     def post(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
+        logger.info('Files {}'.format(request.FILES))
+        logger.info('File to upload {}'.format(request.FILES['file'].name))
+        uf = request.FILES['file']
         f = AgaveMetaFolderFile.from_file(agave_client = self.agave_client,
-                f = request.FILES['file'],
+                f = uf,
                 system_id = self.filesystem,
                 path = self.file_path,
                 username = request.user.username)
-        f.upload_file(f, 
+        f.upload_file(uf, 
                       headers = {'Authorization': 'Bearer %s' % self.access_token})
         return self.render_to_json_response({'message': 'OK'})
 
