@@ -37,5 +37,7 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         if self.file_path is None or self.file_path == '/':
             self.file_path = request.user.username
         else:
+            if '/' == self.file_path[0]:
+                self.file_path = self.file_path[1:]
             self.file_path = request.user.username + '/' + self.file_path
         super(BaseView, self).set_context_props(request, **kwargs)
