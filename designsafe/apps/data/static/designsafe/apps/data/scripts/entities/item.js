@@ -7,6 +7,7 @@
                 name: model && model.name || '',
                 path: path || [],
                 agavePath: model && model.agavePath || '',
+                fileType: model && model.fileType || 'file',
                 type: model && model.type || 'file',
                 size: model && parseInt(model.size || 0),
                 // date: parseMySQLDate(model && model.date),
