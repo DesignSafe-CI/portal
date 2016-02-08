@@ -1,6 +1,6 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import JobEvent
-from designsafe.apps.notifications.models import Notification, JobNotification
+from designsafe.apps.notifications.models import JobNotification
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
@@ -40,3 +40,9 @@ def job_notification_handler(request):
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
 
+def get_number_unread_notifications():
+    nondeleted = JobNotification.objects.filter(deleted=False).count()
+    unread = JobNotification.objects.filter(deleted=False, read=False).count()
+    logger.info('nondeleted: {}'.format(nondeleted))
+    logger.info('unread: {}'.format(unread))
+    return unread

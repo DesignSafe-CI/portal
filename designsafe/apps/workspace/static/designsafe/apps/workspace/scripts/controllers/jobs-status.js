@@ -32,19 +32,6 @@
       $scope.refresh();
     });
 
-    // //does this work?  testing
-    // function init(){
-    //   $rootScope.$on('ds.wsBus:default', processMessage);
-    // }
-
-    // function processMessage(event, msg){
-    //   if(msg.eventType !== 'data'){
-    //       return;
-    //   }
-    //   dataVM[msg.data.callback](msg.data.path);
-    //   //getList(action);
-    // }
-
   }]);
 
   angular.module('WorkspaceApp').controller('JobDetailsModalCtrl', function($scope, $uibModalInstance, job) {

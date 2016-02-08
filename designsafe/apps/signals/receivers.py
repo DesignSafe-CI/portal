@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 @receiver(ds_event, dispatch_uid = __name__)
 def ds_event_callback(sender, **kwargs):
+    WEBSOCKETS_FACILITY = 'websockets'
     event_type = kwargs.get('event_type', '')
     job_owner = kwargs.get('job_owner', '')
 
@@ -33,10 +34,10 @@ def ds_event_callback(sender, **kwargs):
     #     }
 
     if job_owner:
-        rp = RedisPublisher(facility = event_type, users=[job_owner])
+        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[job_owner])
     else:
-        rp = RedisPublisher(facility = event_type, broadcast=True)
-    rp = RedisPublisher(facility = event_type, broadcast=True) # for testing
+        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True)
+    rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True) # for testing
 
     msg = RedisMessage(json.dumps(data))
     rp.publish_message(msg)

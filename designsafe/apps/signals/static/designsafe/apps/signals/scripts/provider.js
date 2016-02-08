@@ -33,7 +33,11 @@
 
         function processWSMessage(msg){
             //var rScope = $injector.get('$rootScope');
-            console.log('websockets msg', msg);
+            // console.log('websockets msg', msg);
+            var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
+            notification_badge.removeClass('label-default')
+            notification_badge.addClass('label-info')
+            console.log('notification_badge', notification_badge.html());
             $rootScope.$broadcast('ds.wsBus:default', msg);
         }
     }
