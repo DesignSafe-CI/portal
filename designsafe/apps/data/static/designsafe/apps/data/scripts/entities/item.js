@@ -418,9 +418,7 @@
             var path = self.model.fullPath();
             self.inprocess = true;
             self.error = '';
-            console.log('meta kw: ', self.tempModel.meta.keywords);
             self.tempModel.metaForm.keywords = self.tempModel.metaForm.keywords.concat(self.tempModel.meta.keywords);
-            console.log('metaform kw: ', self.tempModel.metaForm.keywords);
             var data = {
                 "metadata": self.tempModel.metaForm
             };
