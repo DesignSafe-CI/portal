@@ -1,12 +1,16 @@
 from django.http.response import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from .tasks import handle_box_webhook_event
 import logging
+import json
 
 
 logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def box_webhook(request):
     """
     Webhook to receive event notifications from Box.com when users operate on their
@@ -36,6 +40,5 @@ def box_webhook(request):
         None
 
     """
-    if request.method == 'POST':
-        logger.debug(request.body)
+    handle_box_webhook_event.delay(json.loads(request.body))
     return HttpResponse('OK')
