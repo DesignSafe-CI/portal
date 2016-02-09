@@ -149,6 +149,40 @@
             });
         };
 
+        $scope.updateKeywords = function(item){
+            item.tempModel.metaForm.keywords = item.tempModel.metaForm.keywords.split(',');
+            item.updateMetadata().then(function(){
+                $scope.modal('metadata', true);
+            }).catch(function(err){
+                $scope.modal('metadata', true);
+                console.log('Error saving metadata: ', err);
+            });
+        };
+
+        $scope.delKw = function(item, kw){
+            console.log('item ', item);
+            var index = -1;
+            for (var i = 0; i < item.tempModel.meta.keywords.length; i++){
+                if(kw === item.tempModel.meta.keywords[i]){
+                    index = i;
+                    break;
+                }
+            }
+            if(index > -1){
+                item.tempModel.meta.keywords.splice(index, 1);
+            }
+            console.log('updated meta: ', item.tempModel.meta);
+            if (typeof item.tempModel.metaForm === 'undefined') item.tempModel.metaForm = {};
+            item.tempModel.metaForm.keywords = item.tempModel.meta.keywords;
+            item.tempModel.meta.keywords = [];
+            item.updateMetadata().then(function(){
+                $scope.modal('metadata', true);
+            }).catch(function(err){
+                $scope.modal('metadata', true);
+                console.log('Error saving metadata: ', err);
+            });
+        };
+
         $scope.changePermissions = function(item) {
             item.changePermissions().then(function() {
                 $scope.modal('changepermissions', true);

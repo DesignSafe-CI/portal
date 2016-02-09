@@ -89,16 +89,16 @@ class MetadataView(BaseView):
                 path = self.file_path)
         return f
 
-    def get(request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         f = self.set_context_props(request, **kwargs)
-        return self.render_to_jston_response(f.as_json())
+        return self.render_to_json_response(f.as_json())
 
-    def post(request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         f = self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         meta = body.get('metadata', None)
-        f = f.update(meta)
-        return self.render_to_json_response(f.to_json())
+        f = f.update_from_json(meta)
+        return self.render_to_json_response(f.as_json())
 
 @login_required
 @require_http_methods(['GET'])

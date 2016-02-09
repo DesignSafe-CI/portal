@@ -397,13 +397,12 @@
             self.inprocess = true;
             self.error = '';
             $http.get(fileManagerConfig.metadataUrl + path).success(function(data) {
-                var md = data[0];
-                self.tempModel.metadata = md;
-                self.tempModel.metaForm = md;
-                self.tempModel.metaForm.value.author = md && md.value.author || '';
-                self.tempModel.metaForm.value.project = md && md.value.project || '';
-                self.tempModel.metaForm.value.source = md && md.value.source || '';
-                self.tempModel.metaForm.value.key = md && md.value.key || '';
+                var md = data;
+                console.log('md: ', md);
+                self.tempModel.meta = {};
+                self.tempModel.meta.name = md.name;
+                self.tempModel.meta.path = md.path;
+                self.tempModel.meta.keywords = md.keywords;
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
@@ -419,6 +418,9 @@
             var path = self.model.fullPath();
             self.inprocess = true;
             self.error = '';
+            console.log('meta kw: ', self.tempModel.meta.keywords);
+            self.tempModel.metaForm.keywords = self.tempModel.metaForm.keywords.concat(self.tempModel.meta.keywords);
+            console.log('metaform kw: ', self.tempModel.metaForm.keywords);
             var data = {
                 "metadata": self.tempModel.metaForm
             };
@@ -429,6 +431,7 @@
             .error(function(data){
                 self.deferredHandler(data, deferred, $translate.instant('Error saving metadata.'));
             })['finally'](function(){
+                self.tempModel.metaForm.keywords = [];
                 self.inprocess = false;
             });
             return deferred.promise;

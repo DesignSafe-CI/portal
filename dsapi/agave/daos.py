@@ -139,16 +139,15 @@ class AgaveFilesManager(AgaveObject):
         if len(paths) >= 2:
             path = '/'.join(paths[:-1])
             name = paths[-1]
-        copy_path = path + '/' + 'copy_' + name
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
                         system_id = system_id,
                         path = path + '/' + name)
-        f.copy(copy_path)
+        f.copy(new)
 
         mf = AgaveMetaFolderFile.from_path(agave_client = self.agave_client,
                         system_id = system_id,
                         path = path + '/' + name)
-        mf.copy(copy_path)
+        mf.copy(new)
         return mf, f
 
 class AgaveFolderFile(AgaveObject):
@@ -402,6 +401,16 @@ class AgaveMetaFolderFile(AgaveObject):
         for f in fields:
             nf = getattr(new_meta, f)
             setattr(self, f, nf)
+        return self
+
+    def update_from_json(self, new_meta):
+        for key, val in new_meta.iteritems():
+            if key in self.__dict__:
+                if key == 'keywords':
+                    val = set(val)
+                logger.info('Setting key {}  val {}'.format(key, val))
+                setattr(self, key, list(val))
+        self.save()
         return self
 
     def save(self):
