@@ -75,7 +75,7 @@ def check_or_create_box_sync_folder(username):
             else:
                 logger.exception('Unable to create sync folder')
     except BoxUserToken.DoesNotExist:
-        logger.exception('Box.com not enabled for user=%s' % user.username)
+        logger.exception('Box.com not enabled for user=%s' % username)
 
 
 @shared_task

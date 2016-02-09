@@ -60,8 +60,7 @@ def oauth2_callback(request):
     state = request.GET.get('state')
     if 'box' in request.session:
         box = request.session['box']
-
-    if not (box and auth_code and state):
+    else:
         return HttpResponseBadRequest('Unexpected request')
 
     if not (state == box['state']):
@@ -99,7 +98,9 @@ def disconnect(request):
         try:
             token = BoxUserToken.objects.get(user=request.user)
             token.delete()
-            messages.success(request, 'Your Box.com account has been disconnected from DesignSafe-CI.')
+            messages.success(
+                request,
+                'Your Box.com account has been disconnected from DesignSafe-CI.')
             return HttpResponseRedirect(reverse('box_integration:index'))
         except:
             logger.exception('Disconnect Box.com failed')
