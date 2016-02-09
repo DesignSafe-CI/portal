@@ -1,11 +1,13 @@
+from agavepy.agave import Agave, AgaveException
 from django.conf import settings
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
-
 import logging
-import requests
+import json
+
 
 logger = logging.getLogger(__name__)
+
 
 @receiver(user_logged_in)
 def check_agave_home_dir(sender, user, request, **kwargs):
@@ -15,21 +17,14 @@ def check_agave_home_dir(sender, user, request, **kwargs):
 
     TODO: Wrap this in a celery task to prevent it from holding up login processing.
     """
-    agave_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    default_storage_sys = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-    system_url = '%s/files/v2/media/system/%s/' % (agave_base_url, default_storage_sys)
-    post_data = {'action':'mkdir', 'path': user.username}
-    auth_header = {'Authorization': 'Bearer %s' % getattr(settings, 'AGAVE_SUPER_TOKEN')}
-
     logger.info("Checking home directory for user=%s on default storage systemId=%s" % (
-        user.username, default_storage_sys))
+        user.username, settings.AGAVE_STORAGE_SYSTEM))
     try:
-        resp = requests.put(system_url, data=post_data, headers=auth_header)
-    except Exception as e:
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token=settings.AGAVE_SUPER_TOKEN)
+        body = {'action': 'mkdir', 'path': user.username}
+        ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                        filePath='/',
+                        body=json.dumps(body))
+    except AgaveException:
         logger.exception('Failed to create home directory for user=%s' % user.username)
-
-    if not resp.status_code == 200:
-        if resp.status_code == 400:
-            logger.warn(resp.json())
-        else:
-            logger.error(resp.text)
