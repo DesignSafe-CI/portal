@@ -192,7 +192,6 @@
             return self.searchByTerm(searchTerm).then(function(matches){
                 self.fileList = (matches || []).map(function(file){
                     var path = file.path.split('/');
-                    path.pop();
                     return new Item(file, path.splice(1));
                 });
                 self.buildTree(path);
@@ -210,17 +209,14 @@
                 method: 'GET',
                 url: url,
                 transformResponse: function(data){
-                    data = JSON.parse(data);
-                    if (data.status != 200){
-                        return [];
-                    }
-                    var matches=data.result;
+                    var matches=JSON.parse(data);
                     matches = matches.map(function(file){
                     var rfile = file;
                     rfile.rights = 'r--------';
                     rfile.agavePath = file.agavePath;
                     file.date = file.lastModified;
                     file.size = file.length;
+                    file.type = file.fileType == 'folder' ? 'dir' : 'file';
                     return rfile;
                     });
                     return matches;
