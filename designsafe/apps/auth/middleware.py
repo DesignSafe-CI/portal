@@ -12,9 +12,9 @@ class AgaveTokenRefreshMiddleware(object):
 
     def process_request(self, request):
         if request.path != '/logout/' and request.user.is_authenticated():
+            token = request.user.agave_oauth
             try:
-                token = AgaveOAuthToken.objects.get(user=request.user)
-                if token.expired:
+                if token and token.expired:
                     try:
                         token.refresh()
                         request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = \
