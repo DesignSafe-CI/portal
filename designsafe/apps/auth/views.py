@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import AgaveOAuthToken
@@ -74,9 +75,9 @@ def agave_oauth_callback(request):
         user = authenticate(backend='agave', token=token_data['access_token'])
         if user:
             try:
-                token = AgaveOAuthToken.objects.get(user=user)
+                token = user.agave_oauth
                 token.update(**token_data)
-            except AgaveOAuthToken.DoesNotExist:
+            except ObjectDoesNotExist:
                 token = AgaveOAuthToken(**token_data)
                 token.user = user
             token.save()
