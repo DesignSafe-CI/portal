@@ -199,15 +199,27 @@
         };
 
         $scope.rename = function(item) {
-            var samePath = item.tempModel.path.join() === item.model.path.join();
+            console.log('item: ', item);
+            var tempPath = item.tempModel.path.join('/');
+            console.log('tempPath: ', tempPath);
+            var path = item.model.path.join('/');
+            console.log('path: ', path);
+            var samePath = tempPath === path;
             if (samePath && $scope.fileNavigator.fileNameExists(item.tempModel.name)) {
                 item.error = $translate.instant('error_invalid_filename');
                 return false;
             }
-            item.rename().then(function() {
-                $scope.fileNavigator.refresh();
-                $scope.modal('rename', true);
-            });
+            if( tempPath === path){
+                item.rename().then(function() {
+                    $scope.fileNavigator.refresh();
+                    $scope.modal('rename', true);
+                });
+            } else {
+                item.move().then(function() {
+                    $scope.fileNavigator.refresh();
+                    $scope.modal('rename', true);
+                });
+            }
         };
 
         $scope.createFolder = function(item) {

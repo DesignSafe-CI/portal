@@ -95,14 +95,32 @@
         Item.prototype.rename = function() {
             var self = this;
             var deferred = $q.defer();
-            var data = {params: {
-                "mode": "rename",
-                "path": self.model.fullPath(),
-                "newPath": self.tempModel.fullPath()
-            }};
+            var data = {
+                "action": "rename",
+                "path": self.tempModel.fullPath()
+            };
             self.inprocess = true;
             self.error = '';
-            $http.post(fileManagerConfig.renameUrl, data).success(function(data) {
+            $http.put(fileManagerConfig.renameUrl + self.model.fullPath(), data).success(function(data) {
+                self.deferredHandler(data, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+            })['finally'](function() {
+                self.inprocess = false;
+            });
+            return deferred.promise;
+        };
+
+        Item.prototype.move = function() {
+            var self = this;
+            var deferred = $q.defer();
+            var data = {
+                "action": "move",
+                "path": self.tempModel.fullPath()
+            };
+            self.inprocess = true;
+            self.error = '';
+            $http.put(fileManagerConfig.moveUrl + self.model.fullPath(), data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
@@ -115,15 +133,14 @@
         Item.prototype.copy = function() {
             var self = this;
             var deferred = $q.defer();
-            var data = {params: {
-                mode: "copy",
-                path: self.model.fullPath(),
-                newPath: self.tempModel.fullPath()
-            }};
+            var data = {
+                "action": "copy",
+                "path": self.tempModel.fullPath(),
+            };
 
             self.inprocess = true;
             self.error = '';
-            $http.post(fileManagerConfig.copyUrl, data).success(function(data) {
+            $http.put(fileManagerConfig.copyUrl + self.model.fullPath(), data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_copying'));
@@ -232,18 +249,9 @@
             var self = this;
             var deferred = $q.defer();
             var path = self.model.fullPath();
-            var url = fileManagerConfig.tenantUrl + fileManagerConfig.removeUrl  + fileManagerConfig.user + path;
 
-            self.requesting = true;
-            $http(
-              {
-                method: 'DELETE',
-                url: url,
-                headers: {
-                  'Authorization': 'Bearer ' +  fileManagerConfig.token,
-                }
-              }
-            ).success(function(data) {
+            self.inprocess = true;
+            $http.delete(fileManagerConfig.removeUrl + path).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, 'Unknown error removing file');
