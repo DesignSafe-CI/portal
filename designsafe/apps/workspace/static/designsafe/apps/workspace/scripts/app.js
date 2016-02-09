@@ -14,6 +14,5 @@
     .run(['WSBusService', function init(WSBusService){
         WSBusService.init(WSBusService.url);
         console.log(WSBusService.url);
-        WSBusService.init(WSBusService.url);
     }]);
 })(window, angular, jQuery);

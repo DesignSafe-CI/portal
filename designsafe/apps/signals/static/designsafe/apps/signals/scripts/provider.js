@@ -34,10 +34,18 @@
         function processWSMessage(msg){
             //var rScope = $injector.get('$rootScope');
             // console.log('websockets msg', msg);
-            var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
-            notification_badge.removeClass('label-default')
-            notification_badge.addClass('label-info')
-            console.log('notification_badge', notification_badge.html());
+            if ( msg.new_notification) {
+                var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
+                notification_badge.removeClass('label-default')
+                notification_badge.addClass('label-info')
+
+                var numNotifications = notification_badge.html();
+                if (isNaN(numNotifications)) {
+                    notification_badge.html(1);
+                } else {
+                    notification_badge.html(Number(numNotifications) + 1);
+                }
+            }
             $rootScope.$broadcast('ds.wsBus:default', msg);
         }
     }

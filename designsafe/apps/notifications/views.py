@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @require_POST
 @csrf_exempt
 def job_notification_handler(request):
+    logger.debug(request.body)
     job_name = request.POST.get('job_name')
     event = request.POST.get('event')
     job_id = request.POST.get('job_id')
@@ -23,7 +24,6 @@ def job_notification_handler(request):
     logger.info('job_name: {}'.format(job_name))
     logger.info('event: {}'.format(event))
     logger.info('job_id: {}'.format(job_id))
-    # send_job_notification(job_name, job_id, event)
 
     notification = JobNotification(job_name=job_name, job_id=job_id, user=job_owner, event=event)
     notification.save()
@@ -32,7 +32,8 @@ def job_notification_handler(request):
         "job_name": job_name,
         "event": event,
         "job_id": job_id,
-        "job_owner": job_owner
+        "job_owner": job_owner,
+        "new_notification": True
     }
 
     JobEvent.send_event(data)
