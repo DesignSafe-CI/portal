@@ -55,6 +55,31 @@ class UploadView(BaseView):
         mgr.upload_file(uf, system_id = self.filesystem, path = self.file_path)
         return self.render_to_json_response({'message': 'OK'})
 
+class ManageView(BaseView):
+    def set_context_props(self, request, **kwargs):
+        super(ManageView, self).set_context_props(request, **kwargs)
+        mngr = AgaveFilesManager(agave_client = self.agave_client)
+        return mngr
+
+    def put(self, request, *args, **kwargs):
+        mngr = self.set_context_props(request, **kwargs)
+        body = json.loads(request.body)
+        action = body.get('action', None)
+        path = request.user.username + body.get('path', None)
+        logger.info('action: {} path: {} file_path: {}'.format(action, path, self.file_path))
+        op = getattr(mngr, action)
+        mf, f = op(path = self.file_path, new = path, system_id = self.filesystem)
+        return self.render_to_json_response(mf.as_json())
+
+    def delete(self, request, *args, **kwargs):
+        self.set_context_props(request, **kwargs)
+        mf = AgaveMetaFolderFile.from_path(agave_client = self.agave_client,
+                                    system_id = self.filesystem,
+                                    path = self.file_path)
+        mf.deleted = 'true'
+        mf.save()
+        return self.render_to_json_response(mf.as_json())
+
 class MetadataView(BaseView):
     def set_context_props(self, request, **kwargs):
         super(MetadataView, self).set_context_props(request, **kwargs)
@@ -74,24 +99,6 @@ class MetadataView(BaseView):
         meta = body.get('metadata', None)
         f = f.update(meta)
         return self.render_to_json_response(f.to_json())
-
-class ManageView(BaseView):
-    def set_context_props(self, request, **kwargs):
-        super(ManageView, self).set_context_props(request, **kwargs)
-        f = AgaveMetaFolderFile.from_path(
-                agave_client = self.agave_client,
-                system_id = self.filesystem,
-                path = self.file_path)
-        return f
-
-    def put(request, *args, **kwargs):
-        f = self.set_context_props(request, **kwargs)
-        body = json.loads(request.body)
-        action = body.get('action', None)
-        path = body.get('path', None)
-        op = getattr(f, action)
-        res = op(path)
-        return self.render_to_json_response(res.to_json())
 
 @login_required
 @require_http_methods(['GET'])

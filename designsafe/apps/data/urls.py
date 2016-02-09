@@ -11,6 +11,9 @@ urlpatterns += patterns('designsafe.apps.data.views.api',
     url(r'^api/upload/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', UploadView.as_view(), name='upload'),
     url(r'^api/meta/?$', 'meta_search', name='meta_search'),
     url(r'^api/meta/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', MetadataView, name='metadata'),
-    url(r'^api/manage/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/rename/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/move/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/copy/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/delete/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
 )
 
