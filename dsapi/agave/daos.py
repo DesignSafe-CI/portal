@@ -5,6 +5,7 @@ import requests
 import copy
 #Data Access Objects to represent data to and from APIs
 import re
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -81,7 +82,20 @@ class AgaveFilesManager(AgaveObject):
         return ret
 
     def search_meta(self, q):
-        res = self.call_operation('meta.listMetadata', **{'q': q})
+        if q is None:
+            return []
+        q = json.loads(q)
+        meta_q = '{}';
+        if 'all' in q:
+            meta_q = '''{{
+                "$or": [
+                    {{"value.name": {{"$regex": "{term}", "$options": "i"}} }},
+                    {{"value.path": {{"$regex": "{term}", "$options": "i"}} }},
+                    {{"value.keywords": {{"$regex": "{term}", "$options": "i"}} }}
+                ]
+            }}'''.format(term = q['all'])
+        logger.info('json to search: {}'.format(meta_q))
+        res = self.call_operation('meta.listMetadata', **{'q': meta_q})
         ret = [AgaveMetaFolderFile(agave_client = self.agave_client,
                     meta_obj = o) for o in res]
         return ret
@@ -150,6 +164,27 @@ class AgaveFilesManager(AgaveObject):
         mf.copy(new)
         return mf, f
 
+    def mkdir(self, path = None, new = None, system_id = None):
+        new = new.split('/')
+        new = new[-1]
+        args = {
+            'systemId': system_id,
+            'filePath': path,
+            'body':'''{{
+                "action": "mkdir",
+                "path": '{}'
+                   }} '''.format(new)
+        }
+        self.call_operation('files.manage', **args)
+        f = AgaveFolderFile.from_path(agave_client = self.agave_client,
+                    system_id = system_id,
+                    path = path + '/' + name)
+
+        mf = AgaveMetaFolderFile(agave_client = self.agave_client, 
+                                meta_obj = f.as_meta_json())
+        mf.save()
+        return mf, f
+        
 class AgaveFolderFile(AgaveObject):
 
     def __init__(self, agave_client = None, file_obj = None, **kwargs):

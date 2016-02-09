@@ -73,15 +73,15 @@
         Item.prototype.createFolder = function() {
             var self = this;
             var deferred = $q.defer();
-            var data = {params: {
-                mode: "addfolder",
-                path: self.tempModel.path.join('/'),
-                name: self.tempModel.name
-            }};
+            var fullPath = self.tempModel.path.join('/') + '/' + self.tempModel.name;
+            var data = {
+                action: "mkdir",
+                path: fullPath
+            };
 
             self.inprocess = true;
             self.error = '';
-            $http.post(fileManagerConfig.createFolderUrl, data).success(function(data) {
+            $http.put(fileManagerConfig.createFolderUrl + '/' + self.model.fullPath(), data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
