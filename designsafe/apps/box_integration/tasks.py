@@ -1,10 +1,13 @@
+from agavepy.agave import Agave, AgaveException
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from boxsdk import OAuth2, Client
-from boxsdk.exception import BoxAPIException
-from models import BoxUserToken
+from boxsdk.exception import BoxAPIException, BoxException
+from .models import BoxUserToken
 import logging
+import six
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -39,7 +42,7 @@ def check_connection(username):
 
 
 @shared_task
-def check_or_create_sync_folder(username):
+def check_or_create_box_sync_folder(username):
     """
     Check if a sync folder named according to settings.BOX_SYNC_FOLDER_NAME exists in
     the user's Box account, and creates one if not.
@@ -76,17 +79,34 @@ def check_or_create_sync_folder(username):
 
 
 @shared_task
-def handle_box_webhook_event(event):
+def check_or_create_agave_sync_folder(username):
+    logger.info(
+        "Checking BoxSync directory for user=%s on BoxSync storage systemId=%s" %
+        (username, settings.BOX_SYNC_AGAVE_SYSTEM))
+    try:
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token=settings.AGAVE_SUPER_TOKEN)
+        body = {'action': 'mkdir', 'path': username}
+        ag.files.manage(systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
+                        filePath='/',
+                        body=json.dumps(body))
+    except AgaveException:
+        logger.exception('Failed to create home directory for user=%s' % username)
+
+
+@shared_task
+def handle_box_webhook_event(event_data):
     """
     Async handler for box_webhook events.
 
     Args:
-        event: the event object received from box.
+        event_data: the event object received from box.
 
     Returns:
         None
 
     """
+    event = BoxWebhookEvent(event_data)
     box_user_id = event.from_user_id
     try:
         box_user_token = BoxUserToken.objects.get(box_user_id=box_user_id)
@@ -97,6 +117,26 @@ def handle_box_webhook_event(event):
     except BoxUserToken.DoesNotExist:
         logger.exception('BoxUserToken not found for box_user_id=%s; '
                          'unable to handle event %s' % (box_user_id, event))
+
+
+class BoxWebhookEvent(object):
+
+    def __init__(self, event_data=None, **kwargs):
+        if event_data is not None:
+            for k, v in six.iteritems(event_data):
+                setattr(self, k, v)
+        for k, v in six.iteritems(kwargs):
+            setattr(self, k, v)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        return u'BoxWebhookEvent[event_type="%s" item_type="%s" item_id="%s"]' % (
+            getattr(self, 'event_type', None),
+            getattr(self, 'item_type', None),
+            getattr(self, 'item_id', None)
+        )
 
 
 class BoxSyncAgent(object):
@@ -113,16 +153,19 @@ class BoxSyncAgent(object):
         self.client = Client(self._oauth)
 
     def handle_box_event(self, event):
-        if event.event_type == 'created':
-            self.handle_new_item_event(event)
-        if event.event_type == 'uploaded':
-            self.handle_new_item_event(event)
-        if event.event_type == 'copied':
-            self.handle_new_item_event(event)
-        if event.event_type == 'deleted':
-            self.handle_rm_item_event(event)
-        if event.event_type == 'moved':
-            self.handle_move_item_event(event)
+        try:
+            if event.event_type == 'created':
+                self.handle_new_item_event(event)
+            if event.event_type == 'uploaded':
+                self.handle_new_item_event(event)
+            if event.event_type == 'copied':
+                self.handle_new_item_event(event)
+            if event.event_type == 'deleted':
+                self.handle_rm_item_event(event)
+            if event.event_type == 'moved':
+                self.handle_move_item_event(event)
+        except BoxException:
+            logger.exception('Unable to handle event: %s' % event)
 
     def _get_event_item(self, event):
         if event.item_type == 'file':
@@ -136,7 +179,7 @@ class BoxSyncAgent(object):
         if self.check_item_in_sync_path(item):
             path = self.get_item_path(item)
             logger.debug('Create item %s at path %s' % (item.name, path))
-            pass
+
 
     def handle_rm_item_event(self, event):
         parent_folder_id = event.parent_folder_id
