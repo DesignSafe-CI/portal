@@ -77,14 +77,13 @@ class AgaveOAuthBackend(ModelBackend):
 
         if 'backend' in kwargs and kwargs['backend'] == 'agave':
             token = kwargs['token']
-            tenantBaseUrl = getattr(settings, 'AGAVE_TENANT_BASEURL')
+            base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
 
             self.logger.info('Attempting login via Agave with token "%s"' %
-                token[:8].ljust(len(token), '-'))
+                             token[:8].ljust(len(token), '-'))
 
-            response = requests.get('%s/profiles/v2/me' % tenantBaseUrl, headers={
-                'Authorization': 'Bearer %s' % token
-                })
+            response = requests.get('%s/profiles/v2/me' % base_url,
+                                    headers={'Authorization': 'Bearer %s' % token})
             json_result = response.json()
             if 'status' in json_result and json_result['status'] == 'success':
                 agave_user = json_result['result']
@@ -97,7 +96,8 @@ class AgaveOAuthBackend(ModelBackend):
                     user.email = agave_user['email']
                     user.save()
                 except UserModel.DoesNotExist:
-                    self.logger.info('Creating local user record for "%s" from Agave Profile' % username)
+                    self.logger.info('Creating local user record for "%s" '
+                                     'from Agave Profile' % username)
                     user = UserModel.objects.create_user(
                         username=username,
                         first_name=agave_user['first_name'],
