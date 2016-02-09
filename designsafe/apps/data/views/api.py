@@ -52,7 +52,7 @@ class UploadView(BaseView):
         logger.info('File to upload {}'.format(request.FILES['file'].name))
         uf = request.FILES['file']
         mgr = AgaveFilesManager(self.agave_client)
-        mgr.upload_file(uf, system_id = self.system_id, path = self.file_path)
+        mgr.upload_file(uf, system_id = self.filesystem, path = self.file_path)
         return self.render_to_json_response({'message': 'OK'})
 
 class MetadataView(BaseView):
