@@ -40,8 +40,7 @@ class DownloadView(BaseView):
         self.set_context_props(request, **kwargs)
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
                 system_id = self.filesystem, 
-                path = self.file_path,
-                username = request.user.username)
+                path = self.file_path)
         logger.info('Downloading: {}'.format(f.link))
         ds = f.download_stream(headers = {'Authorization': 'Bearer %s' % self.access_token})
         return StreamingHttpResponse(ds.content, content_type=f.mime_type, status=200)
@@ -52,13 +51,8 @@ class UploadView(BaseView):
         logger.info('Files {}'.format(request.FILES))
         logger.info('File to upload {}'.format(request.FILES['file'].name))
         uf = request.FILES['file']
-        f = AgaveMetaFolderFile.from_file(agave_client = self.agave_client,
-                f = uf,
-                system_id = self.filesystem,
-                path = self.file_path,
-                username = request.user.username)
-        f.upload_file(uf, 
-                      headers = {'Authorization': 'Bearer %s' % self.access_token})
+        mgr = AgaveFilesManager(self.agave_client)
+        mgr.upload_file(uf, system_id = self.system_id, path = self.file_path)
         return self.render_to_json_response({'message': 'OK'})
 
 class MetadataView(BaseView):
@@ -67,8 +61,7 @@ class MetadataView(BaseView):
         f = AgaveMetaFolderFile.from_path(
                 agave_client = self.agave_client,
                 system_id = self.filesystem,
-                path = self.file_path,
-                username = request.user.username)
+                path = self.file_path)
         return f
 
     def get(request, *args, **kwargs):
@@ -81,6 +74,24 @@ class MetadataView(BaseView):
         meta = body.get('metadata', None)
         f = f.update(meta)
         return self.render_to_json_response(f.to_json())
+
+class ManageView(BaseView):
+    def set_context_props(self, request, **kwargs):
+        super(ManageView, self).set_context_props(request, **kwargs)
+        f = AgaveMetaFolderFile.from_path(
+                agave_client = self.agave_client,
+                system_id = self.filesystem,
+                path = self.file_path)
+        return f
+
+    def put(request, *args, **kwargs):
+        f = self.set_context_props(request, **kwargs)
+        body = json.loads(request.body)
+        action = body.get('action', None)
+        path = body.get('path', None)
+        op = getattr(f, action)
+        res = op(path)
+        return self.render_to_json_response(res.to_json())
 
 @login_required
 @require_http_methods(['GET'])
