@@ -7,7 +7,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import BoxUserToken
-from .tasks import check_connection, check_or_create_sync_folder
+from .tasks import (check_connection, check_or_create_box_sync_folder,
+                    check_or_create_agave_sync_folder)
 import logging
 
 
@@ -81,7 +82,8 @@ def oauth2_callback(request):
             box_user_id=box_user.id,
         )
         token.save()
-        check_or_create_sync_folder.delay(request.user.username)
+        check_or_create_box_sync_folder.delay(request.user.username)
+        check_or_create_agave_sync_folder.delay(request.user.username)
     except BoxException as e:
         logger.exception('Unable to complete Box integration setup: %s' % e)
         messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
