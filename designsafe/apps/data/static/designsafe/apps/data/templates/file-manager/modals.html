@@ -305,7 +305,7 @@
           <span aria-hidden="true">&times;</span>
           <span class="sr-only">{{"close" | translate}}</span>
         </button>
-        <h4 class="modal-title">{{'Metadata' | translate}}</h4>
+        <h4 class="modal-title">{{'Metadata for' | translate}} <code>{{temp.tempModel.meta.path}}/{{temp.tempModel.meta.name}}</code></h4>
       </div>
       <div ng-switch on="temp.inprocess">
         <div class="modal-body" ng-switch-when="true">
@@ -314,21 +314,24 @@
         <div class="modal-body" ng-switch-when="false">
           <div class="metadata-form">
             <form novalidate name="meta-form">
-              <label for='meta-author'>Author:</label>
-              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.author" name="meta-author">
-              <label for='meta-project'>Project:</label>
-              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.project" name="meta-project">
-              <label for='meta-source'>Source:</label>
-              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.source" name="meta-source">
-              <label for='meta-key'>Key:</label>
-              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.value.key" name="meta-key">
+              <pre>Type in a comma separated list of keywords to add</pre>
+              <label for="meta-keywords">Keywords:</label>
+              <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.keywords" name="meta-keywords">
 
             </form>
+          </div>
+          <div class="metadata-kw-list">
+            <ul class="metadata-kw-ul">
+               <li ng-repeat="kw in temp.tempModel.meta.keywords" class="metadata-kw-item">
+                    {{kw}}  <button type="button" class="btn btn-danger close" ng-click="delKw(temp, kw)">&times;</button>
+
+               </li> 
+            </ul>
           </div>
         </div>
 
         <div class="modal-footer">
-          <form ng-submit="updateMetadata(temp)">
+          <form ng-submit="updateKeywords(temp)">
             <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
             <button type="submit" class="btn btn-primary" ng-disabled="">{{'update' | translate}}</button>
           </form>
