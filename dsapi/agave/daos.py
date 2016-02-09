@@ -87,6 +87,17 @@ class AgaveFilesManager(AgaveObject):
                     meta_obj = o) for o in res]
         return ret
 
+    def upload_file(self, uploaded, system_id = None, path = None):
+        f = AgaveFolderFile.from_file(agave_client = self.agave_client,
+                        f = uploaded, system_id = system_id,
+                        path = path)
+        f.upload(f, headers = {'Authorization': 'Bearer %s' % self.agave_client.token})
+        mf = AgaveMetaFolderFile.from_file(agave_client = self.agave_client,
+                        f = f,
+                        system_id = system_id,
+                        path = path)
+        mf.save()
+
 class AgaveFolderFile(AgaveObject):
 
     def __init__(self, agave_client = None, file_obj = None, **kwargs):
@@ -109,24 +120,18 @@ class AgaveFolderFile(AgaveObject):
             self.meta_link = None
 
     @classmethod
-    def from_path(cls, agave_client = None, system_id = None, path = None, username = None):
-        if path is None or path == '/':
-            path = username
-        try:
-            ao = AgaveObject(agave_client = agave_client)
-            res = ao.call_operation('files.list', systemId = system_id, filePath = path)
-            if len(res) > 0:
-                f = res[0]
-            else:
-                #TODO: raise custom exception
-                return None
-        except AgaveException as e:
-            raise HTTPError(e.message)
+    def from_path(cls, agave_client = None, system_id = None, path = None):
+        ao = AgaveObject(agave_client = agave_client)
+        res = ao.call_operation('files.list', systemId = system_id, filePath = path)
+        if len(res) > 0:
+            f = res[0]
+        else:
+            #TODO: raise custom exception
             return None
         return cls(agave_client = agave_client, file_obj = f)
 
     @classmethod
-    def from_file(cls, agave_client = None, f = None, system_id = None, path = None, username = None):
+    def from_file(cls, agave_client = None, f = None, system_id = None, path = None):
         ao = AgaveObject(agave_client = agave_client)
         res = ao.call_operation('files.list', systemId = system_id, filePath = path + f.name)
         if len(res) > 0:
@@ -191,6 +196,74 @@ class AgaveFolderFile(AgaveObject):
         stream = requests.get(self.link, stream=True, headers = headers)
         return stream
 
+    def upload(self, f = None, headers = None):
+    #TODO: Updating a file should be put into a queue.
+        data = {
+            'fileToUpload': f,
+            'filePath': self.path,
+            'fileName': self.name
+        }
+        url = '{}/files/v2/media/system/{}/{}'.format(
+            self.agave_client.api_server, self.system_id, self.path)
+        resp = requests.post(url, files = data, headers = headers)
+        resp.raise_for_status()
+        r_json = resp.json()['result']
+        self._update(r_json)
+        return self
+
+    def rename(self, path):
+        paths = path('/')
+        name = ''
+        npath = ''
+        if len(paths) >= 2:
+            npath = '/'.join(paths[:-1])
+            name = paths[-1]
+
+        self.name = name
+        self.path = npath
+        d = {
+            'systemId': self.system,
+            'filePath': self.path,
+            'body': '{ "action": "rename", "path": "{}"}'.format(path)
+        }
+        res = self.call_operation('files.manage', **d)
+        return self
+
+    def move(self, path):
+        paths = path('/')
+        name = ''
+        npath = ''
+        if len(paths) >= 2:
+            npath = '/'.join(paths[:-1])
+            name = paths[-1]
+        self.name = name
+        self.path = npath
+        d = {
+            'systemId': self.system,
+            'filePath': self.path,
+            'body': '{ "action": "move", "path": "{}"}'.format(path)
+        }
+        res = self.call_operation('files.manage', **d)
+        return self
+
+    def copy(self, path):
+        paths = path('/')
+        name = ''
+        npath = ''
+        if len(paths) >= 2:
+            npath = '/'.join(paths[:-1])
+            name = paths[-1]
+        f = copy.deepcopy(self)
+        f.name = name
+        f.path = npath
+        d = {
+            'systemId': f.system,
+            'filePath': f.path,
+            'body': '{ "action": "copy", "path": "{}"}'.format(path)
+        }
+        res = self.call_operation('files.manage', **d)
+        return f
+
     def get_metadata(self):
         ret = None
         mngr = AgaveFilesManager(agave_client = self.agave_client)
@@ -231,10 +304,7 @@ class AgaveMetaFolderFile(AgaveObject):
         super(AgaveMetaFolderFile, self).__init__(agave_client = agave_client, **kwargs)
         
     @classmethod
-    def from_path(cls, agave_client = None, system_id = None, path = None, username = None):
-        if path is None or path == '/':
-            path = username
-
+    def from_path(cls, agave_client = None, system_id = None, path = None):
         paths = path.split('/')
         name = ''
 
@@ -257,8 +327,7 @@ class AgaveMetaFolderFile(AgaveObject):
             #Should we automatically create the object in Agave? Probably not in prod.
             f = AgaveFolderFile.from_path(agave_client = agave_client,
                                          system_id = system_id,
-                                         path = path,
-                                         username = username)
+                                         path = path)
             f_dict = f.as_meta_json()
             logger.info('Creating metadata {}'.format(f_dict))
             meta_obj = ao.call_operation('meta.addMetadata', **{'body': f_dict})
@@ -266,7 +335,7 @@ class AgaveMetaFolderFile(AgaveObject):
         return cls(agave_client = agave_client, meta_obj = meta_obj)
 
     @classmethod
-    def from_file(cls, agave_client = None, f = None, system_id = None, path = None, username = None):
+    def from_file(cls, agave_client = None, f = None, system_id = None, path = None):
         ao = AgaveObject(agave_client = agave_client)
         q = '''{{"name": "{}", 
                  "value.path": "{}",
@@ -293,8 +362,7 @@ class AgaveMetaFolderFile(AgaveObject):
                 },
                 'lastUpdated': datetime.datetime.now().strftime(datetime_format),
                 'created': datetime.datetime.now().strftime(datetime_format),
-                'name': object_name,
-                'owner': username
+                'name': object_name
             }
         return cls(agave_client = agave_client, meta_obj = d)
 
@@ -302,11 +370,19 @@ class AgaveMetaFolderFile(AgaveObject):
         fields = set()
         for f, v in self.__dict__.iteritems():
             if not callable(v) and not f.startswith('__'):
-                if getattr(new_meta, f) != getattr(self, f):
+                new_meta_attr = getattr(new_meta, f)
+                if new_meta_attr is not None and new_meta_attr != getattr(self, f):
                     fields.add(f)
         return fields
 
-    def update(self, new_meta):
+    def _update(self, new_meta):
+        fields = self._get_upated_fields(new_meta)
+        for f in fields:
+            nf = getattr(new_meta, f)
+            setattr(self, f, nf)
+        return self
+
+    def save(self):
         #TODO: push old object into history list
         '''
         q = '{"name": "history", "associationIds":["{}"]'.format(self.uuid)
@@ -314,50 +390,37 @@ class AgaveMetaFolderFile(AgaveObject):
         history.value['history'] += self.as_json()
         self.call_operation('meta.addUpdate', 'body': history)
         '''
-
-        #q = '''{{
-        #        "name": "{}",
-        #        "value.path": "{}",
-        #        "value.name": "{}",
-        #        "value.systemId": "{}"
-        #    }}'''.format(object_name, new_meta.path,
-        #                new_meta.name, new_meta.system_id)
-
-        fields = self._get_upated_fields(new_meta)
-        for f in fields:
-            nf = getattr(new_meta, f)
-            setattr(self, f, nf)
-
-        #self.association_ids = new_meta.association_ids
-
-        #self.deleted = new_meta.deleted
-        #self.file_type = new_meta.file_type
-        #self.length = new_meta.length
-        #self.mime_type = new_meta.mime_type
-        #self.name = new_meta.name
-        #self.path = new_meta.path
-        #self.system_id = new_meta.system_id
-        #self.keywords = new_meta.keywords
-        #self.system_tags = new_meta.system_tagas
-
-        #self.meta_name = new_meta.meta_name
-        #self.schema_id = new_meta.schema_id
-
-        self.call_operation('meta.addMetadata', **{'body': self.as_meta_json()})
-        return self
-
-    def save(self):
-        us_upper = re.compile(r'(.)([A-Z][a-z]+)')
-        us_lower = re.compile('([a-z0-9])([A-Z])')
-        res = self.call_operation('meta.addMetadata', **{'body': self.as_meta_json()})
+        if self.uuid is None:
+            q = '''{{
+                    "name": "{}",
+                    "value.path": "{}",
+                    "value.name": "{}",
+                    "value.systemId": "{}"
+                }}'''.format(object_name, self.path, self.name, self.system_id)
+            search = self.call_operation('meta.listMetadata', q = q)
+            if len(search) == 1:
+                meta = res[0]
+                res = self.call_operation('meta.updateMetadata', 
+                                               uuid = meta.uuid, 
+                                               body = self.as_meta_json())
+                meta = res
+            elif len(search) > 1:
+                logger.warning('Multiple metadata objects for q: {}'.format(q))
+                meta = res[0]
+                res = self.call_operation('meta.updateMetadata', 
+                                               uuid = meta.uuid, 
+                                               body = self.as_meta_json())
+                meta = res
+            elif len(search) == 0:
+                res = self.call_operation('meta.addMetadata', **{'body': self.as_meta_json()})
+                meta = res
         if res is None:
-            new_meta = AgaveMetaFolderFile.from_path(agave_client = self.agave_client,
+            meta = AgaveMetaFolderFile.from_path(agave_client = self.agave_client,
                                 system_id = self.system_id,
                                 path = self.path + '/' + self.name)
         else:
-            new_meta = AgaveMetaFolderFile(agave_client = self.agave_client, meta_obj = res)
-        for k, v in new_meta.__dict__.iteritems():
-            setattr(self, k, v)
+            meta = AgaveMetaFolderFile(agave_client = self.agave_client, meta_obj = res)
+        self._update(meta)
         return self
 
     #TODO: Updating a file should be put into a queue.
@@ -382,6 +445,42 @@ class AgaveMetaFolderFile(AgaveObject):
                                     'value': file_dict})
         self.save()
         return self
+
+    def rename(self, path):
+        paths = path('/')
+        name = ''
+        if len(paths) >= 2:
+            path = '/'.join(paths[:-1])
+            name = paths[-1]
+        self.name = name
+        self.save()
+        return self
+
+    def move(self, path):
+        paths = path('/')
+        name = ''
+        if len(paths) >= 2:
+            path = '/'.join(paths[:-1])
+            name = paths[1]
+        self.path = path
+        self.save()
+        return self
+
+    def copy(self, path):
+        paths = path('/')
+        name = ''
+        if len(paths) >= 2:
+            path = '/'.join(paths[:-1])
+            name = paths[1]
+        nmeta = copy.deepcopy(self)
+        nmeta.path = path
+        nmeta.name = name
+        nmeta.save()
+        return self
+
+    def delete(self):
+        self.deleted = 'true'
+        self.save()
 
     #TODO: Might want to implement corresponding Encoder/Decoder classes
     def as_json(self):
