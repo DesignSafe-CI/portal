@@ -144,7 +144,7 @@ of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
 ### Agave filesystem setup
 1. Delete all of the old metadata objects using this command:
 
-  `metadata-list -V -Q '{"name": "designsafe metadata"}' | while read x; do metadata-delete $x; done;`
+  `metadata-list Q '{"name": "designsafe metadata"}' | while read x; do metadata-delete $x; done;`
 2. Run `dsapi/agave/tools/bin/walker.py` to create the metadata objects for the existing files in your FS.
 
   `python portal/dsapi/agave/tools/bin/walker.py <api_server> <token> <systemId> <base_folder>`
