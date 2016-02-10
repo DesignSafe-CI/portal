@@ -73,7 +73,7 @@
         Item.prototype.createFolder = function() {
             var self = this;
             var deferred = $q.defer();
-            var fullPath = self.tempModel.path.join('/') + '/' + self.tempModel.name;
+            var fullPath = self.tempModel.fullPath();
             var data = {
                 action: "mkdir",
                 path: fullPath
@@ -81,7 +81,11 @@
 
             self.inprocess = true;
             self.error = '';
-            $http.put(fileManagerConfig.createFolderUrl + '/' + self.model.fullPath(), data).success(function(data) {
+            var parentPath = self.tempModel.fullPath().split('/');
+            console.log('path: ', parentPath);
+            parentPath.pop();
+            parentPath = parentPath.join('/');
+            $http.put(fileManagerConfig.createFolderUrl + parentPath, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));

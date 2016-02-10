@@ -167,19 +167,19 @@ class AgaveFilesManager(AgaveObject):
     def mkdir(self, path = None, new = None, system_id = None):
         new = new.split('/')
         new = new[-1]
+        logger.info('path {} new {}'.format(path, new))
         args = {
             'systemId': system_id,
             'filePath': path,
-            'body':'''{{
-                "action": "mkdir",
-                "path": '{}'
-                   }} '''.format(new)
+            'body':'{{"action": "mkdir","path": "{}"}}'.format(new)
         }
+
         self.call_operation('files.manage', **args)
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
                     system_id = system_id,
-                    path = path + '/' + name)
-
+                    path = path + '/' + new)
+        logger.debug('dir: {}'.format(f.as_json()))
+        logger.debug('dir: {}'.format(f.as_meta_json()))
         mf = AgaveMetaFolderFile(agave_client = self.agave_client, 
                                 meta_obj = f.as_meta_json())
         mf.save()
@@ -213,6 +213,8 @@ class AgaveFolderFile(AgaveObject):
         res = ao.call_operation('files.list', systemId = system_id, filePath = path)
         if len(res) > 0:
             f = res[0]
+            if f['type'] == 'dir':
+                f['name'] = path.split('/')[-1]
         else:
             #TODO: raise custom exception
             return None
@@ -259,11 +261,11 @@ class AgaveFolderFile(AgaveObject):
         f_dict = {
             'deleted': 'false',
             'type': 'file' if self.type == 'file' else 'folder',
-            'fileType': self.name.split('.')[-1] if self.type != 'folder' else 'folder',
+            'fileType': self.name.split('.')[-1] if self.format != 'folder' else 'folder',
             'length': self.length,
             'mimeType': self.mime_type,
             'name': self.name,
-            'path': self.parent_path,
+            'path': self.parent_path ,
             'systemId': self.system,
             'keywords': [],
             'systemTags': {}
@@ -464,15 +466,16 @@ class AgaveMetaFolderFile(AgaveObject):
                     "value.systemId": "{}"
                 }}'''.format(object_name, self.path, self.name, self.system_id)
             search = self.call_operation('meta.listMetadata', q = q)
+            res = None
             if len(search) == 1:
-                meta = res[0]
+                meta = search[0]
                 res = self.call_operation('meta.updateMetadata', 
                                                uuid = meta.uuid, 
                                                body = self.as_meta_json())
                 meta = res
             elif len(search) > 1:
                 logger.warning('Multiple metadata objects for q: {}'.format(q))
-                meta = res[0]
+                meta = search[0]
                 res = self.call_operation('meta.updateMetadata', 
                                                uuid = meta.uuid, 
                                                body = self.as_meta_json())
