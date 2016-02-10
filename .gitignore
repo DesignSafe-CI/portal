@@ -3,6 +3,8 @@
 designsafe.env
 certs/
 node_modules/
+datadump.json
+db.sqlite3*
 
 ####
 #
