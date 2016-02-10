@@ -301,7 +301,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'default': {
-            'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s: %(message)s'
+            'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: %(message)s'
+        },
+        'agave': {
+            'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
     },
     'handlers': {
@@ -309,6 +312,11 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'default',
+        },
+        'agave': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'agave',
         },
     },
     'loggers': {
@@ -326,6 +334,10 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'tas': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'dsapi':{
             'handlers': ['console'],
             'level': 'DEBUG',
         },

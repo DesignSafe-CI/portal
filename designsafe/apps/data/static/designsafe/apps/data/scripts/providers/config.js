@@ -9,12 +9,13 @@
             // agave endpoints
             listUrl: "/data/api/listings/",
             uploadUrl: "/data/api/upload/",
-            renameUrl: "",
-            copyUrl: "",
-            removeUrl: "/data/api/",
+            renameUrl: "/data/api/rename/",
+            moveUrl: "/data/api/move/",
+            copyUrl: "/data/api/copy/",
+            removeUrl: "/data/api/delete/",
             editUrl: "",
             getContentUrl: "",
-            createFolderUrl: "",
+            createFolderUrl: "/data/api/mkdir/",
             downloadFileUrl: "/data/api/download",
             compressUrl: "",
             extractUrl: "",
@@ -24,8 +25,8 @@
             sidebar: false,
             breadcrumb: true,
             allowedActions: {
-                rename: false,
-                copy: false,
+                rename: true,
+                copy: true,
                 edit: false,
                 changePermissions: false,
                 compress: false,
@@ -33,7 +34,7 @@
                 extract: true,
                 download: true,
                 preview: false,
-                remove: false,
+                remove: true,
                 metadata: true
             },
 
