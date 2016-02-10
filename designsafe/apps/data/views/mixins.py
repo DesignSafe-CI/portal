@@ -3,7 +3,6 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, StreamingHttpResponse
-from ..daos import APIVars
 from agavepy.agave import Agave, AgaveException
 from django.conf import settings
 import datetime
