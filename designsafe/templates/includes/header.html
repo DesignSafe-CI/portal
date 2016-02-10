@@ -14,9 +14,10 @@
         <span id="id_user_notify">
           <a href="{% url 'designsafe_accounts:notifications' %}" class="btn btn-link">
             <span class="sr-only">Notifications</span>
-            <span id="notification_badge" class="label label-default label-as-badge" title="You have no unread notifications">
-            {% if notifications.unread %}
-              {{notifications.unread}}
+            <span id="notification_badge" class="label label-as-badge
+            {% if unreadNotifications %} label-info {% else %} label-default {% endif %}" title="You have no unread notifications">
+            {% if unreadNotifications %}
+              {{unreadNotifications}}
             {% else %}
               &nbsp;
             {% endif %}

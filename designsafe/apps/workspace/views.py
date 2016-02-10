@@ -4,16 +4,15 @@ from django.shortcuts import render, render_to_response
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 import logging
 import json
 
 import os
-from agavepy.agave import Agave
-from django.http import HttpResponse
 
 from designsafe.apps.workspace.tasks import submit_job
+from designsafe.apps.notifications.views import get_number_unread_notifications
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +25,7 @@ def index(request):
         context['session'] = {
             'agave': json.dumps(request.session[token_key])
         }
+    context['unreadNotifications'] = get_number_unread_notifications(request)
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
 @login_required
@@ -77,12 +77,5 @@ def call_api(request, service):
             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}), status=400,
             content_type='application/json')
 
-    # if task_id:
-    #     res = AsyncResult(task_id)
-    #     if res.ready():
-    #         data = res.result
-    #     return HttpResponse(
-    #         json.dumps({'status': 'error', 'message': '{}'.format(res.status)}), status=400,
-    #         content_type='application/json')
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')

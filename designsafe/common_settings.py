@@ -411,7 +411,7 @@ WEBSOCKET_URL = '/ws/'
 WS4REDIS_CONNECTION = {
     'host': 'redis',
 }
-WS4REDIS_EXPIRE = 3600
+WS4REDIS_EXPIRE = 0
 
 ###
 # Celery settings

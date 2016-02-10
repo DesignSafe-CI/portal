@@ -84,13 +84,12 @@ def notifications(request):
         if not notification.read:
             unread += 1
             notification.read = True
-            notification.save()
+            # notification.save()
 
     notifications={}
     notifications['job'] = job_events
-    notifications['unread'] = unread
     return render(request, 'designsafe/apps/accounts/notifications.html',
-        {'notifications': notifications})
+        {'notifications': notifications, 'unreadNotifications': unread})
 
 
 def register(request):

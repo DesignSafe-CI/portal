@@ -1,6 +1,4 @@
-#agavepy
-#-e git+https://github.com/mrhanlon/agavepy.git@5eedc256aac1f95b9f67eb1c499b6423c4d6ff5e#egg=agavepy-master
--e git+https://github.com/TACC/agavepy.git@master#egg=agavepy-master
+agavepy
 
 Django<1.9.0
 django-bootstrap3==6.1.0
