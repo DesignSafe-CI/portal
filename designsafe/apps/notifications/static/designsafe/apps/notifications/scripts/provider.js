@@ -1,12 +1,18 @@
 (function(){
     'use strict';
     function NotificationService($rootScope){
+        var service = {
+            init: init,
+        };
 
-        function init(url){
-            $rootScope.$on('ds.wsBus:default', processWSMessage);
+        return service;
+
+        function init(){
+            $rootScope.$on('ds.wsBus:default', processMessage);
+            console.log('notifications provider initiated')
         }
 
-        function processWSMessage(msg){
+        function processMessage(e, msg){
             //var rScope = $injector.get('$rootScope');
             console.log('websockets msg', msg);
             if (msg.new_notification) {
@@ -25,12 +31,12 @@
     }
 
     function NotificationServiceProvider($injector){
-        var configURL = '';
+        // var configURL = '';
         this.$get = ['$rootScope', NotificationBusHelper];
 
-        this.setUrl = function setUrl(url){
-            configURL = url;
-        };
+        // this.setUrl = function setUrl(url){
+            // configURL = url;
+        // };
         function NotificationBusHelper($rootScope){
             return new NotificationService($rootScope);
         }
