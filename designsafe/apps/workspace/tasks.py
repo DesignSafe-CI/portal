@@ -41,8 +41,8 @@ def subscribe_job_notification(agave, job_id):
     mock_agave_notification() #for testing
 
     d = {
-        "url" : "http://requestb.in/w59adew5",
-        # "url" : "http://designsafe-ci.org/webhooks/job?uuid={UUID}&status=${EVENT}&ob_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${EVENT}&ob_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        # "url" : "http://designsafe-ci.org/webhooks/job/?uuid={UUID}&status=${EVENT}&ob_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
         "event" : "*",
         "associatedUuid" : job_id,
         "persistent": True
