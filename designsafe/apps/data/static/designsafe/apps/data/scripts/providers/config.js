@@ -15,7 +15,7 @@
             removeUrl: "/data/api/delete/",
             editUrl: "",
             getContentUrl: "",
-            createFolderUrl: "/data/api/manage",
+            createFolderUrl: "/data/api/mkdir/",
             downloadFileUrl: "/data/api/download",
             compressUrl: "",
             extractUrl: "",
