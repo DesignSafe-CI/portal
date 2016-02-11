@@ -147,8 +147,13 @@ of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
   `metadata-list Q '{"name": "designsafe metadata"}' | while read x; do metadata-delete $x; done;`
 2. Run `dsapi/agave/tools/bin/walker.py` to create the metadata objects for the existing files in your FS.
 
-  `python portal/dsapi/agave/tools/bin/walker.py <api_server> <token> <systemId> <base_folder>`
-  - Where `base_folder` is your username.
+  `python portal/dsapi/agave/tools/bin/walker.py <command> <api_server> <token> <systemId> <base_folder>`
+  - `base_folder` is your username, if you want to fix everything under your home dir.
+  - `command`:
+    - `files`: Walk through the files and print their path.
+    - `meta`: Walk through the metadata objs in a filesystem-like manner and print their path.
+    - `files-fix`: Check if there's a meta obj for every file, if not create the meta obj.
+    - `meta-fix`: Check if there's a file for every meta obj, if not delete the meta obj.
 
 ## Production setup
 

@@ -86,7 +86,7 @@ def main(args):
                 get_or_create_from_path(agave_client = c, system_id = system_id, file_path = path)
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 5:
         print 'Usage <command> <api_server> <token> <systemId> <base_folder>'
         print 'commands:\n'
         print 'files'
