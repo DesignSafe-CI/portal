@@ -186,9 +186,7 @@ class AgaveFilesManager(AgaveObject):
         return mf, f
         
 class AgaveFolderFile(AgaveObject):
-
     def __init__(self, agave_client = None, file_obj = None, **kwargs):
-
         super(AgaveFolderFile, self).__init__(agave_client = agave_client, **kwargs)
         self.uuid = file_obj.get('uuid', None)
         self.format = file_obj.get('format', 'raw')
@@ -200,6 +198,7 @@ class AgaveFolderFile(AgaveObject):
         self.permissions = file_obj['permissions']
         self.system = file_obj['system']
         self.type = file_obj['type']
+        self.agave_path = 'agave://{}/{}'.format(file_obj['system'], file_obj['path'])
         if '_links' in file_obj:
             self.link = file_obj['_links']['self']['href']
             self.meta_link = file_obj['_links']['metadata']['href'] if 'metadata' in file_obj['_links'] else None
@@ -254,7 +253,8 @@ class AgaveFolderFile(AgaveObject):
             'systemId': self.system,
             'type': self.type,
             'link': self.link,
-            'metaLink': self.meta_link
+            'metaLink': self.meta_link,
+            'agavePath': self.agave_path
         }
 
     def as_meta_json(self):
@@ -341,6 +341,7 @@ class AgaveFolderFile(AgaveObject):
 
 class AgaveMetaFolderFile(AgaveObject):
     def __init__(self, agave_client = None, meta_obj = None, **kwargs):
+        self.uuid = meta_obj.get('uuid', None)
         self.association_ids = meta_obj.get('associationIds', [])
         self.deleted = meta_obj['value'].get('deleted', 'false')
         self.type = meta_obj['value'].get('type', 'file')
@@ -358,7 +359,8 @@ class AgaveMetaFolderFile(AgaveObject):
         self.meta_name = meta_obj.get('name', None)
         self.owner = meta_obj.get('owner', None)
         self.schema_id = meta_obj.get('schemaId', None)
-        self.uuid = meta_obj.get('uuid', None)
+        self.agave_path = 'agave://{}/{}'.format(meta_obj['value'].get('systemId', None), 
+                                               meta_obj['value'].get('path', None) + '/' + meta_obj['value'].get('name', None))
         super(AgaveMetaFolderFile, self).__init__(agave_client = agave_client, **kwargs)
         
     @classmethod
@@ -550,6 +552,7 @@ class AgaveMetaFolderFile(AgaveObject):
     #TODO: Might want to implement corresponding Encoder/Decoder classes
     def as_json(self):
         return {
+           'uuid': self.uuid,
            'associationIds': self.association_ids,
            'deleted': self.deleted,
            'type': self.type,
@@ -566,7 +569,7 @@ class AgaveMetaFolderFile(AgaveObject):
            'meta_name': self.meta_name,
            'owner': self.owner,
            'schemaId': self.schema_id,
-           'uuid': self.uuid,
+           'agavePath': self.agave_path
         }
 
     def as_meta_json(self):

@@ -1,8 +1,8 @@
 from django.conf.urls import include, url, patterns
-from django.views.generic.base import TemplateView
 from designsafe.apps.data.views.api import *
+from designsafe.apps.data.views.base import BaseTemplate
 urlpatterns = patterns('designsafe.apps.data.views.base',
-    url(r'^$', TemplateView.as_view(template_name='data/index.html')),
+    url(r'^$', BaseTemplate.as_view(template_name='data/index.html')),
 )
 
 urlpatterns += patterns('designsafe.apps.data.views.api',
