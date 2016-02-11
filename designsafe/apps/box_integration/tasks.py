@@ -112,7 +112,6 @@ def handle_box_webhook_event(event_data):
         None
 
     """
-    logger.info('Received Box webhook event %s' % event_data)
     event = BoxWebhookEvent(event_data)
     try:
         tokens = BoxUserToken.objects.filter(box_user_id__in=event_data.to_user_ids)

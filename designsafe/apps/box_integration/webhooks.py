@@ -40,5 +40,6 @@ def box_webhook(request):
         None
 
     """
-    handle_box_webhook_event.delay(json.loads(request.body))
+    logger.debug('Received Box Webhook; body=%s' % request.body)
+    handle_box_webhook_event.delay(request.body)
     return HttpResponse('OK')
