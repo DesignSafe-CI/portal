@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load staticfiles sekizai_tags %}
+{% block title %}Agave Session Error{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1 class="headline headline-research">API Session Unavailable</h1>
+    <div class="alert alert-warning">
+        <p class="lead">
+            Your Login Session does not currently have an associated DesignSafe API
+            Session. This could be due to a number of reasons. To fix this, please
+            log out and log in again. If you continue to receive this message, please
+            submit a support request.
+        </p>
+        <p>
+            <a href="{% url 'logout' %}" class="btn btn-lg btn-primary">Log out</a>
+            <a href="#" class="btn btn-lg btn-default">Submit a Support Request</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

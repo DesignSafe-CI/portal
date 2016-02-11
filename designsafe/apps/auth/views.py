@@ -108,3 +108,7 @@ def agave_oauth_callback(request):
         return HttpResponseRedirect(next_uri)
     else:
         return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+
+
+def agave_session_error(request):
+    return render(request, 'designsafe/apps/auth/agave_session_error.html')

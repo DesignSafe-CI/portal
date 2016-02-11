@@ -40,6 +40,10 @@ def box_webhook(request):
         None
 
     """
-    logger.debug('Received Box Webhook; body=%s' % request.body)
-    handle_box_webhook_event.delay(request.body)
+    if request.META['CONTENT_TYPE'] == 'appliaction/json':
+        event_data = json.loads(request.body)
+    else:
+        event_data = request.POST.copy()
+    logger.debug('Received Box Webhook; event_data=%s' % event_data)
+    handle_box_webhook_event.delay(event_data)
     return HttpResponse('OK')
