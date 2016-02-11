@@ -4,13 +4,13 @@ from django.views.decorators.http import require_http_methods
 from .tasks import handle_box_webhook_event
 import logging
 import json
-
+import ast
 
 logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 def box_webhook(request):
     """
     Webhook to receive event notifications from Box.com when users operate on their
@@ -40,10 +40,18 @@ def box_webhook(request):
         None
 
     """
-    if request.META['CONTENT_TYPE'] == 'appliaction/json':
-        event_data = json.loads(request.body)
+    if request.method == 'POST':
+        if request.META['CONTENT_TYPE'] == 'application/json':
+            event_data = json.loads(request.body)
+        else:
+            event_data = request.POST.copy()
+            # to_user_ids is a list as string
+            event_data['to_user_ids'] = ast.literal_eval(event_data['to_user_ids'])
     else:
-        event_data = request.POST.copy()
+        event_data = request.GET.copy()
+        # to_user_ids is a list as string
+        event_data['to_user_ids'] = ast.literal_eval(event_data['to_user_ids'])
+
     logger.debug('Received Box Webhook; event_data=%s' % event_data)
     handle_box_webhook_event.delay(event_data)
     return HttpResponse('OK')
