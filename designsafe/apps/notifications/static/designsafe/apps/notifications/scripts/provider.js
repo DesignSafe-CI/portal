@@ -15,7 +15,7 @@
         function processMessage(e, msg){
             //var rScope = $injector.get('$rootScope');
             console.log('websockets msg', msg);
-            if (msg.new_notification) {
+            if (msg.status == 'FINISHED') {
                 var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
                 notification_badge.removeClass('label-default')
                 notification_badge.addClass('label-info')

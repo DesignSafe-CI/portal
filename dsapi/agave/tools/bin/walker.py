@@ -42,7 +42,11 @@ def check_from_path(agave_client, system_id, file_path):
                     agave_client.meta.deleteMetadata(uuid = m['uuid']) 
 
 def fs_walk(c, system_id, folder, bottom_up = False):
-    files = c.files.list(systemId = system_id, filePath = folder)
+    try:
+        files = c.files.list(systemId = system_id, filePath = folder)
+    except requests.exceptions.HTTPError as e:
+        print '404: {}, {}'.format(system_id, folder)
+        raise
     for f in files:
         if f['name'] == '.' or f['name'] == '..':
             continue
