@@ -98,25 +98,49 @@ def check_or_create_agave_sync_folder(username):
 def handle_box_webhook_event(event_data):
     """
     Async handler for box_webhook events.
-
+    The event_data.to_user_ids is a list of box user_ids who have added
+    the DesignSafe-CI Box Sync app. We just need to have one of these in
+    order to query for the item to 1) determine if the item is in the watched
+    sync path and 2) get the item ownership. The item's owner is who we will
+    sync the item for in DesignSafe-CI.
     Args:
         event_data: the event object received from box.
-
     Returns:
         None
-
     """
+    logger.info('Received Box webhook event %s' % event_data)
     event = BoxWebhookEvent(event_data)
-    box_user_id = event.from_user_id
     try:
-        box_user_token = BoxUserToken.objects.get(box_user_id=box_user_id)
-        logger.info('Received Box event for user=%s. %s' %
-                    (box_user_token.user.username, event))
-        agent = BoxSyncAgent(box_user_token)
+        tokens = BoxUserToken.objects.filter(box_user_id__in=event_data.to_user_ids)
+        for token in tokens:
+            agent = BoxSyncAgent(token)
+            item = agent.get_event_item(event)
+            if item.owned_by['id'] == token.box_user_id:
+                break
         agent.handle_box_event(event)
     except BoxUserToken.DoesNotExist:
-        logger.exception('BoxUserToken not found for box_user_id=%s; '
-                         'unable to handle event %s' % (box_user_id, event))
+        logger.exception('BoxUserToken not found for box_user_ids=%s; '
+                         'unable to handle event %s' % (event_data.to_user_ids, event))
+
+
+class BoxWebhookEvent(object):
+
+    def __init__(self, event_data=None, **kwargs):
+        if event_data is not None:
+            for k, v in six.iteritems(event_data):
+                setattr(self, k, v)
+        for k, v in six.iteritems(kwargs):
+            setattr(self, k, v)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        return u'BoxWebhookEvent[event_type="%s" item_type="%s" item_id="%s"]' % (
+            getattr(self, 'event_type', None),
+            getattr(self, 'item_type', None),
+            getattr(self, 'item_id', None)
+        )
 
 
 class BoxWebhookEvent(object):
@@ -167,7 +191,7 @@ class BoxSyncAgent(object):
         except BoxException:
             logger.exception('Unable to handle event: %s' % event)
 
-    def _get_event_item(self, event):
+    def get_event_item(self, event):
         if event.item_type == 'file':
             item = self.client.file(file_id=event.item_id)
         else:
@@ -175,7 +199,7 @@ class BoxSyncAgent(object):
         return item.get()
 
     def handle_new_item_event(self, event):
-        item = self._get_event_item(event)
+        item = self.get_event_item(event)
         if self.check_item_in_sync_path(item):
             path = self.get_item_path(item)
             logger.debug('Create item %s at path %s' % (item.name, path))
@@ -190,7 +214,7 @@ class BoxSyncAgent(object):
             logger.debug('Deleted item %s from path %s' % (event.item_name, path))
 
     def handle_move_item_event(self, event):
-        item = self._get_event_item(event)
+        item = self.get_event_item(event)
         if self.check_item_in_sync_path(item):
             path = self.get_item_path(item)
             logger.debug('Moved item %s to path %s' % (event.item_name, path))

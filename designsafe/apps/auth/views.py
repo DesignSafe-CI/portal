@@ -2,8 +2,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
+from .models import AgaveOAuthToken
 import logging
 import os
 import requests
@@ -67,16 +69,25 @@ def agave_oauth_callback(request):
         response = requests.post('%s/token' % tenant_base_url,
                                  data=body,
                                  auth=(client_key, client_sec))
-        token = response.json()
-        token['created'] = int(time.time())
-        request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = token
-
+        token_data = response.json()
+        token_data['created'] = int(time.time())
         # log user in
-        user = authenticate(backend='agave', token=token['access_token'])
+        user = authenticate(backend='agave', token=token_data['access_token'])
         if user:
+            try:
+                token = user.agave_oauth
+                token.update(**token_data)
+            except ObjectDoesNotExist:
+                token = AgaveOAuthToken(**token_data)
+                token.user = user
+            token.save()
+            request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = token.token
             login(request, user)
-            messages.success(request, 'Login successful. Welcome back, %s %s!' %
-                (user.first_name, user.last_name))
+            if user.last_login is not None:
+                msg_tmpl = 'Login successful. Welcome back, %s %s!'
+            else:
+                msg_tmpl = 'Login successful. Welcome to DesignSafe-CI, %s %s!'
+            messages.success(request, msg_tmpl % (user.first_name, user.last_name))
         else:
             messages.error(
                 request,

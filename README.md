@@ -141,6 +141,15 @@ $ docker-compose -f docker-compose-http.yml up
 When using this compose file, your Agave Client should be configured with a `callback_url`
 of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
 
+### Agave filesystem setup
+1. Delete all of the old metadata objects using this command:
+
+  `metadata-list Q '{"name": "designsafe metadata"}' | while read x; do metadata-delete $x; done;`
+2. Run `dsapi/agave/tools/bin/walker.py` to create the metadata objects for the existing files in your FS.
+
+  `python portal/dsapi/agave/tools/bin/walker.py <api_server> <token> <systemId> <base_folder>`
+  - Where `base_folder` is your username.
+
 ## Production setup
 
 The production setup registers the container composition as a systemd service.

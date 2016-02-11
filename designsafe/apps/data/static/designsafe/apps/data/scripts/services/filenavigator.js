@@ -84,6 +84,7 @@
                         file.size = file.length;
                         file.agavePath = file.agavePath;
                         file.type = file.fileType == 'folder' ? 'dir' : 'file';
+                        console.log('file: ', file);
                         return file;
                       });
                     }
@@ -230,7 +231,7 @@
             })['finally'](function() {
                 self.inprocess = false;
                 self.requesting = false;
-            }); 
+            });
             return deferred.promise;
         };
 
