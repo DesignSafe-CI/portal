@@ -1,8 +1,9 @@
 from agavepy.agave import Agave
-import sys
-import imp
-import requests
-daos = imp.load_source('daos', '../../daos.py')
+import sys, os, imp, requests
+FILE_PATH = os.path.split(os.path.realpath(__file__))
+DAOS_PATH = os.path.realpath(FILE_PATH[0] + '/../../daos.py')
+print DAOS_PATH
+daos = imp.load_source('daos', DAOS_PATH)
 
 CURSOR_UP_ONE = '\x1b[1A'
 ERASE_LINE = '\x1b[2K'
