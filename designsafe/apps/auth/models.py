@@ -4,6 +4,8 @@ from agavepy.agave import Agave
 import logging
 import six
 import time
+import requests
+from requests import HTTPError
 
 from .signals import *
 
@@ -58,3 +60,31 @@ class AgaveOAuthToken(models.Model):
         self.save()
         logger.debug('Agave OAuth token for user=%s refreshed: %s' % (self.user.username,
                                                                       self.masked_token))
+
+
+class AgaveServiceStatus(object):
+    page_id = getattr(settings, 'AGAVE_STATUSIO_PAGE_ID', '53a1e022814a437c5a000781')
+    status_io_base_url = getattr(settings, 'STATUSIO_BASE_URL',
+                                 'https://api.status.io/1.0')
+    status_overall = {}
+    status = []
+    incidents = []
+    maintenance = {
+        'active': [],
+        'upcoming': [],
+    }
+
+    def __init__(self):
+        self.update()
+
+    def update(self):
+        try:
+            resp = requests.get('%s/status/%s' % (self.status_io_base_url, self.page_id))
+            data = resp.json()
+            if 'result' in data:
+                for k, v, in six.iteritems(data['result']):
+                    setattr(self, k, v)
+            else:
+                raise Exception(data)
+        except HTTPError:
+            logger.exception('Agave Service Status update failed')

@@ -147,6 +147,7 @@ TEMPLATES = [
                 'cms.context_processors.cms_settings',
                 'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
+                'designsafe.apps.auth.context_processors.auth',
             ],
         },
     },

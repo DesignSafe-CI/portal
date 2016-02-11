@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from .models import AgaveOAuthToken
+from .models import AgaveOAuthToken, AgaveServiceStatus
 import logging
 import os
 import requests
@@ -19,7 +19,33 @@ def login_options(request):
     if request.user.is_authenticated():
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('/')
-    return render(request, 'designsafe/apps/auth/login.html')
+
+    agave_status = AgaveServiceStatus()
+    ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
+                              '56bb6d92a216b873280008fd')
+    designsafe_status = (s for s in agave_status.status
+                         if s['id'] == ds_oauth_svc_id).next()
+    if designsafe_status['status_code'] == 400:
+        message = {
+            'class': 'warning',
+            'text': 'DesignSafe API Services are experiencing a Partial Service '
+                    'Disruption. Some services may be unavailable.'
+        }
+    elif designsafe_status['status_code'] == 500:
+        message = {
+            'class': 'danger',
+            'text': 'DesignSafe API Services are experiencing a Service Disruption. '
+                    'Some services may be unavailable.'
+        }
+    else:
+        message = False
+
+    context = {
+        'message': message,
+        'agave_status': agave_status,
+        'designsafe_status': designsafe_status,
+    }
+    return render(request, 'designsafe/apps/auth/login.html', context)
 
 
 def agave_oauth(request):

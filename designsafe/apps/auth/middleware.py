@@ -30,8 +30,3 @@ class AgaveTokenRefreshMiddleware(object):
                     logger.warn('Agave Token missing for user=%s. Forcing logout...' %
                                 request.user.username)
                     logout(request)
-
-    def process_template_response(self, request, response):
-        session_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
-        response.context_data['agave_ready'] = session_key in request.session
-        return response
