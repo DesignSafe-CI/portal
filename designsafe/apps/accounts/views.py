@@ -84,7 +84,7 @@ def notifications(request):
         if not notification.read:
             unread += 1
             notification.read = True
-            # notification.save()
+            notification.save()
 
     notifications={}
     notifications['job'] = job_events

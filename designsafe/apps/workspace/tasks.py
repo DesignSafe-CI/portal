@@ -41,7 +41,7 @@ def subscribe_job_notification(agave, job_id):
     mock_agave_notification() #for testing
 
     d = {
-        "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${EVENT}&ob_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${EVENT}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
         # "url" : "http://designsafe-ci.org/webhooks/job/?uuid={UUID}&status=${EVENT}&ob_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
         "event" : "*",
         "associatedUuid" : job_id,
@@ -61,4 +61,4 @@ def subscribe_job_notification(agave, job_id):
 def mock_agave_notification():
     import requests
     # r = requests.post('http://requestb.in/w59adew5', data={"job_id":response.id, "event":"JOB_CREATED", "job_name":response.name})
-    r = requests.post('http://192.168.99.100:8000/webhooks/jobs/', data={"job_id":'1234512345', "event":"test", "job_name":'test name', "job_owner": 'mlm55'})
+    r = requests.post('http://192.168.99.100:8000/webhooks/jobs/', data={"job_id":'1234512345', "event":"test", "job_name":'test name', "job_owner": 'mlm55', "status":"test status"})

@@ -15,3 +15,4 @@ class JobNotification(Notification):
     # type = models.CharField(default='job', max_length=20)
     job_name = models.CharField(max_length=100)
     job_id = models.CharField(max_length=40)
+    status = models.CharField(max_length=50)
