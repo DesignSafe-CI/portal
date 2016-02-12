@@ -5,7 +5,7 @@
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-    WSBusServiceProvider.setUrl('ws://' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/ws/websockets?subscribe-broadcast');
+    WSBusServiceProvider.setUrl('wss://' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/ws/websockets?subscribe-broadcast');
   }
 
   angular.module('WorkspaceApp', ['ngCookies', 'ng.django.urls', 'ui.bootstrap', 'schemaForm', 'ds.wsBus', 'ds.notifications']).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
