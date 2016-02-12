@@ -6,7 +6,7 @@
         $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-        WSBusServiceProvider.setUrl('ws://' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/ws/websockets?subscribe-broadcast');
+        WSBusServiceProvider.setUrl('wss://' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/ws/websockets?subscribe-broadcast');
     }
 
     angular.module('ds.dataApp',
