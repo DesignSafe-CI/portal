@@ -1,0 +1,87 @@
+{% load cms_tags staticfiles sekizai_tags menu_tags pipeline %}
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="description" content="{{ site.description }}">
+      <link rel="icon" href="{% static 'favicon.ico' %}">
+      <link rel="canonical" href="{{request.get_full_path}}">
+      <!-- styles -->
+      {% stylesheet 'vendor' %}
+      {% stylesheet 'main' %}
+      {% render_block "css" %}
+  </head>
+  <body>
+    {% cms_toolbar %}
+
+    <header class="container site-banner">
+      <div class="site-banner-left">
+        <div class="ef-site-title">
+          <a href="/">
+            {% static_placeholder 'ef_site_title' site or %}
+              <h1>
+                Edit EF Site Name<br>
+                <small>Experimental Facility</small>
+              </h1>
+            {% endstatic_placeholder %}
+          </a>
+        </div>
+      </div>
+
+      <div class="site-banner-right">
+<!--
+        <div class="user-menu" style="margin-bottom:10px">
+          {% if user.is_authenticated %}
+            <span style="vertical-align:middle">Welcome, {{ user.first_name }}!</span>
+            <span id="id_user_notify">
+              <a href="{% url 'designsafe_accounts:notifications' %}" class="btn btn-link">
+                <span class="sr-only">Notifications</span>
+                <span class="badge badge-default" title="You have no unread notifications">&nbsp;</span>
+              </a>
+            </span>
+            <div class="btn-group">
+              <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>
+              <button type="button" class="btn btn-link-alt dropdown-toggle"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'logout' %}">Log out</a></li>
+              </ul>
+            </div>
+
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-link-alt">Log in</a>
+          {% endif %}
+        </div>
+ -->
+        <div class="text-right">
+          <a class="logo" href="https://www.designsafe-ci.org/">
+            <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
+            <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="60" width="225">
+          </a>
+        </div>
+      </div>
+    </header>
+
+    {% include 'includes/ef_navigation.html' %}
+
+    {% include 'includes/messages.html' %}
+
+    {% block content %}{% endblock %}
+
+    {% include 'includes/footer.html' %}
+    <!-- scripts -->
+    {% javascript 'vendor' %}
+    {% javascript 'main' %}
+    <script src="//use.typekit.net/tku7ygd.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    {% render_block "js" %}
+    {% block scripts %}{% endblock %}
+    {% include 'includes/analytics.html' %}
+  </body>
+</html>
