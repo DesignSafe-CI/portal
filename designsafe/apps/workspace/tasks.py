@@ -9,7 +9,9 @@ import logging
 import requests
 import json
 
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+
 logger = logging.getLogger(__name__)
 
 @app.task
@@ -39,12 +41,12 @@ def submit_job(agave, job_post):
 @app.task
 def subscribe_job_notification(agave, job_id):
     mock_agave_notification() #for testing
-    url=reverse('jobs_webhook')
-
+    url=request.build_absolute_uri(reverse('jobs_webhook'))+'?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}"'
 
     d = {
         # "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
-        "url" : "https://designsafeci-dev.tacc.utexas.edu/webhooks/jobs/?uuid=${UUID}&status=${JOB_STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        # "url" : "https://designsafeci-dev.tacc.utexas.edu/webhooks/jobs/?uuid=${UUID}&status=${JOB_STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        "url" : url,
         "event" : "*",
         "associatedUuid" : job_id,
         "persistent": True
