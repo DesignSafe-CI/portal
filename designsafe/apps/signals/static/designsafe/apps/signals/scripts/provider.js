@@ -13,11 +13,13 @@
         function init(url){
             //var ws = new WebSocket('/ws/data?subscribe-broadcast');
             ws = new WebSocket(url);
+            console.log('wss : ', ws)
             ws.onopen = function(){
                 console.log('websocket to data, connected');
             };
             ws.onmessage = function(e){
                 var res = JSON.parse(e.data);
+                console.log('onmessage e', e)
                 processWSMessage(res);
             };
             ws.onerror = function(e){

@@ -98,19 +98,15 @@ def check_or_create_agave_sync_folder(username):
 def handle_box_webhook_event(event_data):
     """
     Async handler for box_webhook events.
-
     The event_data.to_user_ids is a list of box user_ids who have added
     the DesignSafe-CI Box Sync app. We just need to have one of these in
     order to query for the item to 1) determine if the item is in the watched
     sync path and 2) get the item ownership. The item's owner is who we will
     sync the item for in DesignSafe-CI.
-
     Args:
         event_data: the event object received from box.
-
     Returns:
         None
-
     """
     event = BoxWebhookEvent(event_data)
     try:
@@ -124,6 +120,26 @@ def handle_box_webhook_event(event_data):
     except BoxUserToken.DoesNotExist:
         logger.exception('BoxUserToken not found for box_user_ids=%s; '
                          'unable to handle event %s' % (event_data.to_user_ids, event))
+
+
+class BoxWebhookEvent(object):
+
+    def __init__(self, event_data=None, **kwargs):
+        if event_data is not None:
+            for k, v in six.iteritems(event_data):
+                setattr(self, k, v)
+        for k, v in six.iteritems(kwargs):
+            setattr(self, k, v)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        return u'BoxWebhookEvent[event_type="%s" item_type="%s" item_id="%s"]' % (
+            getattr(self, 'event_type', None),
+            getattr(self, 'item_type', None),
+            getattr(self, 'item_id', None)
+        )
 
 
 class BoxWebhookEvent(object):

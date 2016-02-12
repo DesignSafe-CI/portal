@@ -7,6 +7,8 @@ from requests.exceptions import ConnectionError, HTTPError
 from django.conf import settings
 import logging
 
+from designsafe.apps.notifications.views import get_number_unread_notifications
+
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -20,8 +22,8 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         try:
             return super(BaseView, self).dispatch(request, *args, **kwargs)
         except (ConnectionError, HTTPError) as e:
-            logger.error('{}'.format(e.message), 
-                exc_info = True, 
+            logger.error('{}'.format(e.message),
+                exc_info = True,
                 extra = {
                     'filesystem': self.filesystem,
                     'file_path': self.file_path,
@@ -45,4 +47,5 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
 class  BaseTemplate(SecureMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BaseTemplate, self).get_context_data(**kwargs)
+        context['unreadNotifications'] = get_number_unread_notifications(self.request)
         return context

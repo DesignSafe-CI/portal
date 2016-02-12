@@ -31,6 +31,7 @@
       console.log(data);
       $scope.refresh();
     });
+
   }]);
 
   angular.module('WorkspaceApp').controller('JobDetailsModalCtrl', function($scope, $uibModalInstance, job) {

@@ -231,7 +231,7 @@
             })['finally'](function() {
                 self.inprocess = false;
                 self.requesting = false;
-            }); 
+            });
             return deferred.promise;
         };
 

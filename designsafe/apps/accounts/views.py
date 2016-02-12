@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
+from designsafe.apps.notifications.models import Notification, JobNotification
+
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
@@ -65,9 +68,28 @@ def manage_applications(request):
 
 @login_required
 def notifications(request):
-    items = ()
+    jobnotifications=JobNotification.objects.filter(deleted=False, user=str(request.user)).order_by('-notification_time')
+    job_events = []
+    unread = 0
+    for notification in jobnotifications:
+        job_events.append({
+            'jobName': notification.job_name,
+            'jobId': notification.job_id,
+            'user': notification.user,
+            'event': notification.event,
+            'read': notification.read,
+            'notification_time': notification.notification_time,
+            'id': notification.id
+            })
+        if not notification.read:
+            unread += 1
+            notification.read = True
+            notification.save()
+
+    notifications={}
+    notifications['job'] = job_events
     return render(request, 'designsafe/apps/accounts/notifications.html',
-        {'notifications': items})
+        {'notifications': notifications, 'unreadNotifications': unread})
 
 
 def register(request):
