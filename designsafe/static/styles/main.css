@@ -431,3 +431,7 @@ label.required:after,
   background-color: #eeeeee;
   border-color: #cccccc;
 }
+
+.label-as-badge {
+    border-radius: 1em;
+}

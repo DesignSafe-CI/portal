@@ -1,16 +1,18 @@
 from agavepy.agave import Agave, AgaveException
+from celery.result import AsyncResult
 from django.shortcuts import render, render_to_response
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 import logging
 import json
 
 import os
-from agavepy.agave import Agave
-from django.http import HttpResponse
+
+from designsafe.apps.workspace.tasks import submit_job
+from designsafe.apps.notifications.views import get_number_unread_notifications
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +25,12 @@ def index(request):
         context['session'] = {
             'agave': json.dumps(request.session[token_key])
         }
+    context['unreadNotifications'] = get_number_unread_notifications(request)
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
 @login_required
 def call_api(request, service):
+    task_id = ''
     token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
     access_token = token.get('access_token', None)
     server = os.environ.get('AGAVE_TENANT_BASEURL')
@@ -56,7 +60,10 @@ def call_api(request, service):
             else:
                 if request.method == 'POST':
                     job_post = json.loads(request.body)
-                    data = agave.jobs.submit(body=job_post)
+                    # data = agave.jobs.submit(body=job_post)
+                    # data = submit_job.delay(server, access_token, job_post)
+                    data = submit_job(agave, job_post)
+                    task_id=data.id
                 else:
                     data = agave.jobs.list()
 
@@ -67,7 +74,7 @@ def call_api(request, service):
             content_type='application/json')
     except Exception as e:
         return HttpResponse(
-            json.dumps({'status': 'error', 'message': e.message}), status=400,
+            json.dumps({'status': 'error', 'message': '{}'.format(e.message)}), status=400,
             content_type='application/json')
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),

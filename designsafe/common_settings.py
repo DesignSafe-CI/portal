@@ -84,6 +84,7 @@ INSTALLED_APPS = (
 
     # Designsafe apps
     'designsafe.apps.data',
+    'designsafe.apps.notifications',
     'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
     # 'designsafe.apps.cilogon',
@@ -426,7 +427,7 @@ WEBSOCKET_URL = '/ws/'
 WS4REDIS_CONNECTION = {
     'host': 'redis',
 }
-WS4REDIS_EXPIRE = 3600
+WS4REDIS_EXPIRE = 0
 
 ###
 # Celery settings
