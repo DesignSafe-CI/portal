@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
-from requests.exceptions import HTTPError
+from requests.exceptions import RequestException, HTTPError
 import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -29,4 +28,9 @@ class AgaveTokenRefreshMiddleware(object):
                 except ObjectDoesNotExist:
                     logger.warn('Agave Token missing for user=%s. Forcing logout...' %
                                 request.user.username)
+                    logout(request)
+                except RequestException:
+                    logger.exception('Agave Token refresh failed for user=%s. '
+                                     'Forcing logout...' %
+                                     request.user.username)
                     logout(request)
