@@ -62,7 +62,7 @@ def call_api(request, service):
                     job_post = json.loads(request.body)
                     # data = agave.jobs.submit(body=job_post)
                     # data = submit_job.delay(server, access_token, job_post)
-                    data = submit_job(agave, job_post)
+                    data = submit_job(request, agave, job_post)
                     task_id=data.id
                 else:
                     data = agave.jobs.list()

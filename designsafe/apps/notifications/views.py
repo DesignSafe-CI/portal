@@ -23,10 +23,10 @@ def job_notification_handler(request):
         logger.info('notification name: {}'.format(notification['name']))
         job_name = notification['name']
         status = notification['status']
-        event = notification['event']
-        job_id = notification['job_id']
-        job_owner = notification['job_owner']
-    except ValueError as e:
+        event = request.GET.get('event')
+        job_id = request.GET.get('job_id')
+        job_owner = notification['owner']
+    except ValueError as e: #for testing ->used when mocking agave notification
         job_name = request.POST.get('job_name')
         status = request.POST.get('status')
         event = request.POST.get('event')

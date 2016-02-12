@@ -15,7 +15,7 @@ from django.http import HttpResponse
 logger = logging.getLogger(__name__)
 
 @app.task
-def submit_job(agave, job_post):
+def submit_job(request, agave, job_post):
     logger.info('submitting job: {0}'.format(job_post))
     try:
       response=agave.jobs.submit(body=job_post)
@@ -34,14 +34,15 @@ def submit_job(agave, job_post):
     # subscribe = agave.notifications.add(body=json.dumps(d))
     # logger.info('agave subs: {}'.format(subscribe))
 
-    subscribe_job_notification(agave, str(response.id))
+    subscribe_job_notification(request, agave, str(response.id))
 
     return response
 
 @app.task
-def subscribe_job_notification(agave, job_id):
+def subscribe_job_notification(request, agave, job_id):
     # mock_agave_notification() #for testing
-    url=request.build_absolute_uri(reverse('jobs_webhook'))+'?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}"'
+    url=request.build_absolute_uri(reverse('jobs_webhook'))+'?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
+    logger.info('job notification url: {}'.format(url))
 
     d = {
         # "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
