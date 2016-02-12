@@ -39,10 +39,12 @@ def submit_job(agave, job_post):
 @app.task
 def subscribe_job_notification(agave, job_id):
     mock_agave_notification() #for testing
+    url=reverse('jobs_webhook')
+
 
     d = {
-        "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
-        # "url" : "https://designsafe-ci.org/webhooks/jobs/?uuid=${UUID}&status=${JOB_STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        # "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        "url" : "https://designsafeci-dev.tacc.utexas.edu/webhooks/jobs/?uuid=${UUID}&status=${JOB_STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
         "event" : "*",
         "associatedUuid" : job_id,
         "persistent": True
