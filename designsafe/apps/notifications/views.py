@@ -55,6 +55,7 @@ def job_notification_handler(request):
         "event": event,
         "job_id": job_id,
         "job_owner": job_owner,
+        "archive_path": notification['archivePath'],
         "body": body,
     }
 
