@@ -51,7 +51,7 @@ def job_notification_handler(request):
         'job_owner': job_owner,
     }
 
-    notification = Notification(event_type=JOB_EVENT, user=job_owner, body=body)
+    notification = Notification(event_type=JOB_EVENT, user=job_owner, body=json.dumps(body))
     notification.save()
 
     data = {

@@ -21,21 +21,13 @@
   {% for x in notifications %}
   <pre> {{x}} </pre>
   <pre class="{% if x.read %} text-muted {% else %} text-info {% endif %}">
-      <div>
-        Job Name: {{x.body.job_name}}
-      </div>
-      <div>
-        Job ID: {{x.body.job_id}}
-      </div>
-      <div>
-        Status: {{x.body.event}}
-      </div>
-      <div>
+        Job Name: {{x.body.job_name}} <br>
+        Job ID: {{x.body.job_id}} <br>
+        Status: {{x.body.event}} <br>
         Time: {{x.notification_time|date:'Y-m-d H:i'}}
-      </div>
-      <!--   <button type="button" class="btn btn-info btn-sm">
+<!--         <button type="button" class="btn btn-info btn-sm">
           <span class="glyphicon glyphicon-remove"></span>
-        </button> -->
+        </button>  -->
   </pre>
   {% endfor %}
 
