@@ -32,6 +32,18 @@
       $scope.refresh();
     });
 
+    $rootScope.$on('ds.wsBus:default', function update_job(e, msg){
+      console.log('update job msg', msg)
+      for (var i=0; i < $scope.data.jobs.length; i++){
+          if ($scope.data.jobs[i]['id'] == msg.job_id) {
+            $scope.data.jobs[i]['status'] = msg.status;
+            break;
+          }
+      }
+    });
+
+
+
   }]);
 
   angular.module('WorkspaceApp').controller('JobDetailsModalCtrl', function($scope, $uibModalInstance, job) {
