@@ -14,29 +14,39 @@ from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
+
 @app.task
 def submit_job(request, agave, job_post):
     logger.info('submitting job: {0}'.format(job_post))
+
+    # subscribe to notifications
+    notify_url = reverse('jobs_webhook') + '?uuid=${UUID}&status=${STATUS}&' \
+                                           'job_id=${JOB_ID}&event=${EVENT}&' \
+                                           'system=${JOB_SYSTEM}&job_name=${JOB_NAME}&' \
+                                           'job_owner=${JOB_OWNER}'
+    notify_url = request.build_absolute_uri(notify_url)
+    notify = {
+        'url': notify_url,
+        'event': '*',
+        'persistent': True
+    }
+    if 'notifications' in job_post:
+        job_post['notifications'].append(notify)
+    else:
+        job_post['notifications'] = [notify]
+
     try:
-      response=agave.jobs.submit(body=job_post)
+        response = agave.jobs.submit(body=job_post)
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         logger.info('Task HTTPError: {}'.format(e.__class__))
-        submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when it returns."), max_retries=None)
+        submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when "
+                               "it returns."), max_retries=None)
     logger.info('agave response: {}'.format(response))
 
-    # d = {
-    #     "url" : "http://requestb.in/w59adew5",
-    #     # "url" : "http://designsafe-ci.org/webhooks/job?uuid={UUID}&status=${EVENT}&ob_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
-    #     "event" : "*",
-    #     "associatedUuid" : str(response.id),
-    #     "persistent": True
-    # }
-    # subscribe = agave.notifications.add(body=json.dumps(d))
-    # logger.info('agave subs: {}'.format(subscribe))
-
-    subscribe_job_notification(request, agave, str(response.id))
+    # subscribe_job_notification(request, agave, str(response.id))
 
     return response
+
 
 @app.task
 def subscribe_job_notification(request, agave, job_id):
