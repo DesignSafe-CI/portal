@@ -1,5 +1,5 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
-from designsafe.apps.notifications.apps import JobEvent
+from designsafe.apps.notifications.apps import Event
 from designsafe.apps.notifications.models import Notification
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @require_POST
 @csrf_exempt
 def job_notification_handler(request):
+    JOB_EVENT='job'
     logger.debug('request body: {}'.format(request.body))
 
     try:
@@ -26,12 +27,14 @@ def job_notification_handler(request):
         event = request.GET.get('event')
         job_id = request.GET.get('job_id')
         job_owner = notification['owner']
+        archive_path = notification['archivePath']
     except ValueError as e: #for testing ->used when mocking agave notification
         job_name = request.POST.get('job_name')
         status = request.POST.get('status')
         event = request.POST.get('event')
         job_id = request.POST.get('job_id')
         job_owner = request.POST.get('job_owner')
+        archive_path = request.POST.get('archivePath')
 
     logger.info('job_name: {}'.format(job_name))
     logger.info('event: {}'.format(event))
@@ -43,23 +46,19 @@ def job_notification_handler(request):
         'job_name': job_name,
         'job_id': job_id,
         'event': event,
-        'status': status
+        'status': status,
+        'archive_path': archive_path,
+        'job_owner': job_owner,
     }
 
-    notification = Notification(event_type='job', user=job_owner, body=body)
+    notification = Notification(event_type=JOB_EVENT, user=job_owner, body=body)
     notification.save()
 
     data = {
-        "job_name": job_name,
-        "status": status,
-        "event": event,
-        "job_id": job_id,
-        "job_owner": job_owner,
-        "archive_path": notification['archivePath'],
-        "body": body,
+        'body': body,
     }
 
-    JobEvent.send_event(data)
+    Event.send_event(JOB_EVENT, data)
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
