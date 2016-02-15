@@ -1,7 +1,7 @@
 # This compose file is useful for testing https
 ---
 redis:
-    image: redis
+  image: redis
 
 django:
   build: .
