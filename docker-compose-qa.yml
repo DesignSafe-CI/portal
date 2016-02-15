@@ -45,7 +45,7 @@ websocket:
     - /var/www/designsafe-ci.org/static
   volumes_from:
     - data
-  command: uwsgi --ini-file /portal/conf/uwsgi_websocket.ini
+  command: uwsgi --ini /portal/conf/uwsgi_websocket.ini
 
 fiu_ef:
   image: designsafeci/portal
