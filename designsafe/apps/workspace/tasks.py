@@ -20,13 +20,11 @@ def submit_job(request, agave, job_post):
     logger.info('submitting job: {0}'.format(job_post))
 
     # subscribe to notifications
-    notify_url = reverse('jobs_webhook') + '?uuid=${UUID}&status=${STATUS}&' \
-                                           'job_id=${JOB_ID}&event=${EVENT}&' \
-                                           'system=${JOB_SYSTEM}&job_name=${JOB_NAME}&' \
-                                           'job_owner=${JOB_OWNER}'
-    notify_url = request.build_absolute_uri(notify_url)
+    notify_url = request.build_absolute_uri(reverse('jobs_webhook'))
+    query = 'uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}' \
+            '&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
     notify = {
-        'url': notify_url,
+        'url': '%s?%s' % (notify_url, query),
         'event': '*',
         'persistent': True
     }
