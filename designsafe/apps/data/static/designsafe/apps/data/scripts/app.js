@@ -13,7 +13,12 @@
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|agave):/);
-        WSBusServiceProvider.setUrl('ws://' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/ws/websockets?subscribe-broadcast');
+        WSBusServiceProvider.setUrl(
+            (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+            window.location.hostname +
+            (window.location.port ? ':' + window.location.port : '') +
+            '/ws/websockets?subscribe-broadcast'
+        );
     }
 
     var app = angular.module('FileManagerApp', [
