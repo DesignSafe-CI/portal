@@ -1,6 +1,6 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import JobEvent
-from designsafe.apps.notifications.models import JobNotification
+from designsafe.apps.notifications.models import Notification
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
@@ -37,7 +37,16 @@ def job_notification_handler(request):
     logger.info('event: {}'.format(event))
     logger.info('job_id: {}'.format(job_id))
 
-    notification = JobNotification(job_name=job_name, job_id=job_id, user=job_owner, event=event, status=status)
+    # notification = JobNotification(job_name=job_name, job_id=job_id, user=job_owner, event=event, status=status)
+
+    body={
+        'job_name': job_name,
+        'job_id': job_id,
+        'event': event,
+        'status': status
+    }
+
+    notification = Notification(event_type='job', user=job_owner, body=body)
     notification.save()
 
     data = {
@@ -46,7 +55,7 @@ def job_notification_handler(request):
         "event": event,
         "job_id": job_id,
         "job_owner": job_owner,
-        "new_notification": True
+        "body": body,
     }
 
     JobEvent.send_event(data)
@@ -56,7 +65,7 @@ def job_notification_handler(request):
 
 def get_number_unread_notifications(request):
     # nondeleted = JobNotification.objects.filter(deleted=False, user=str(request.user)).count()
-    unread = JobNotification.objects.filter(deleted=False, read=False, user=str(request.user)).count()
+    unread = Notification.objects.filter(deleted=False, read=False, user=str(request.user)).count()
     # logger.info('nondeleted: {}'.format(nondeleted))
     logger.info('unread: {}'.format(unread))
     return unread
