@@ -100,17 +100,22 @@ class AgaveFilesManager(AgaveObject):
                     meta_obj = o) for o in res]
         return ret
 
-    def upload_file(self, uploaded, system_id = None, path = None):
-        f = AgaveFolderFile.from_file(agave_client = self.agave_client,
-                        f = uploaded, system_id = system_id,
-                        path = path)
-        logger.info('file: {}'.format(f.as_json()))
-        f.upload(uploaded, headers = {'Authorization': 'Bearer %s' % self.agave_client._token})
-        mf = AgaveMetaFolderFile(agave_client = self.agave_client,
-                                meta_obj = f.as_meta_json())
-        logger.info('metadata: {}'.format(mf.as_json()))
-        mf.save()
-        return mf, f
+    def upload_files(self, uploaded_files, system_id = None, path = None):
+        mfs = []
+        fs = []
+        for uf_name, uf in uploaded_files.iteritems():
+            f = AgaveFolderFile.from_file(agave_client = self.agave_client,
+                            f = uf, system_id = system_id,
+                            path = path)
+            logger.debug('file: {}'.format(f.as_json()))
+            f.upload(uf, headers = {'Authorization': 'Bearer %s' % self.agave_client._token})
+            fs.append(f)
+            mf = AgaveMetaFolderFile(agave_client = self.agave_client, 
+                                    meta_obj = f.as_meta_json())
+            logger.info('metadata: {}'.format(mf.as_json()))
+            mf.save()
+            mfs.append(mf)
+        return mfs, fs
 
     def rename(self, path = None, new = None, system_id = None):
         name = ''

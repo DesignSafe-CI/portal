@@ -11,12 +11,12 @@ from designsafe.apps.data.apps import DataEvent
 from .base import BaseView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager
 
-import json
+import json, requests, traceback
+
+if settings.DEBUG:
+    import ipdb
+
 import logging
-import requests
-import traceback
-
-
 logger = logging.getLogger(__name__)
 
 class ListingsView(BaseView):
@@ -48,12 +48,13 @@ class DownloadView(BaseView):
 class UploadView(BaseView):
     def post(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
-        logger.info('Files {}'.format(request.FILES))
-        logger.info('File to upload {}'.format(request.FILES['file'].name))
-        uf = request.FILES['file']
+        if settings.DEBUG:
+            ipdb.set_trace()
+        ufs = request.FILES
         mgr = AgaveFilesManager(self.agave_client)
-        mgr.upload_file(uf, system_id = self.filesystem, path = self.file_path)
-        return self.render_to_json_response({'message': 'OK'})
+        mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
+        return self.render_to_json_response({'files': [o.as_json() for o in fs], 
+                                             'filesMeta': [o.as_json() for o in mfs]})
 
 class ManageView(BaseView):
     def set_context_props(self, request, **kwargs):

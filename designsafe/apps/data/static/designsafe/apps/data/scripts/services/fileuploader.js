@@ -31,7 +31,7 @@
 
             for (var i = 0; i < fileList.length; i++) {
                 var fileObj = fileList.item && fileList.item(i) || fileList[i];
-                formData.append('file', fileObj);
+                formData.append(fileObj.name, fileObj);
             }
 
             self.requesting = true;
