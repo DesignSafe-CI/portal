@@ -225,8 +225,9 @@ MEDIA_URL = '/media/'
 CMS_PERMISSION = True
 
 CMS_TEMPLATES = (
-    ('cms_page.html', 'Basic Page'),
+    ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
+    ('cms_page.html', 'Main Site Page'),
 )
 
 CMSPLUGIN_CASCADE_PLUGINS = (
