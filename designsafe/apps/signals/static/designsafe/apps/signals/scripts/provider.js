@@ -11,7 +11,6 @@
         return service;
 
         function init(url){
-            //var ws = new WebSocket('/ws/data?subscribe-broadcast');
             ws = new WebSocket(url);
             console.log('wss : ', ws)
             ws.onopen = function(){
@@ -26,13 +25,13 @@
                 console.log('WS error: ', e);
             };
             ws.onclose = function(e){
-                console.log('connection closed');
+                console.log('connection closed; reopening');
+                init(url);
             };
             service.ws = ws;
         }
 
         function processWSMessage(msg){
-            //var rScope = $injector.get('$rootScope');
             $rootScope.$broadcast('ds.wsBus:default', msg);
         }
     }
