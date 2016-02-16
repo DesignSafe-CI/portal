@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def index_job_outputs(data):
+    logger.debug('Preparing to index Job outputs: %s' % data)
+
     job_owner = data['job_owner']
     job_id = data['job_id']
 
