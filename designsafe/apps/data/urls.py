@@ -11,17 +11,17 @@ urlpatterns = patterns('designsafe.apps.data.views.base',
 )
 
 urlpatterns += patterns('designsafe.apps.data.views.api',
-    url(r'^api/listings/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ListingsView.as_view(), name='listings'),
-    url(r'^api/download/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', DownloadView.as_view(), name='download'),
-    url(r'^api/upload/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', UploadView.as_view(), name='upload'),
-    url(r'^api/meta/?$', MetaSearchView.as_view(), name='meta_search'),
-    url(r'^api/meta/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', MetadataView.as_view(), name='metadata'),
-    url(r'^api/rename/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
-    url(r'^api/move/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
-    url(r'^api/copy/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
-    url(r'^api/delete/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
-    url(r'^api/mkdir/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
-    url(r'^api/share/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ShareView.as_view(), name='manage'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/listings/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ListingsView.as_view(), name='listings'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/download/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', DownloadView.as_view(), name='download'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/upload/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', UploadView.as_view(), name='upload'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/?$', MetaSearchView.as_view(), name='meta_search'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', MetadataView.as_view(), name='metadata'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/rename/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/move/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/copy/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/delete/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/mkdir/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/share/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ShareView.as_view(), name='manage'),
 )
 
 

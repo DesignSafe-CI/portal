@@ -5,12 +5,13 @@
 
         $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-        var FileNavigator = function() {
+        var FileNavigator = function(filesystem) {
             this.requesting = false;
             this.fileList = [];
             this.currentPath = [];
             this.history = [];
             this.error = '';
+            this.filesystem = filesystem;
         };
 
         FileNavigator.prototype.deferredHandler = function(data, deferred, defaultMsg) {
@@ -50,7 +51,7 @@
             self.error = '';
             self.searchResults = false;
 
-            var url = fileManagerConfig.listUrl + data.params.path;
+            var url = fileManagerConfig.baseUrl + self.filesystem + '/' + fileManagerConfig.listUrl + data.params.path;
 
             $http(
               {
@@ -83,7 +84,12 @@
                         file.date = file.lastModified;
                         file.size = file.length;
                         file.agavePath = file.agavePath;
-                        file.type = file.fileType == 'folder' ? 'dir' : 'file';
+                        if (typeof file.fileType != 'undefined' && file.fileType !== null){
+                            file.type = file.fileType === 'folder' ? 'dir' : 'file';
+                        }
+                        else{
+                            file.type = file.type === 'dir' ? 'dir' : 'file';
+                        }
                         console.log('file: ', file);
                         return file;
                       });
@@ -105,9 +111,9 @@
             var self = this;
             var path = self.currentPath.join('/');
 
-            return self.list().then(function(data) {
+            return self.list(self.filesystem).then(function(data) {
                 self.fileList = (data.result || []).map(function(file) {
-                    return new Item(file, self.currentPath);
+                    return new Item(file, self.currentPath, self.filesystem);
                 });
                 self.buildTree(path);
             });
@@ -202,7 +208,7 @@
         FileNavigator.prototype.searchByTerm = function(searchTerm) {
             var self = this;
             var deferred = $q.defer();
-            var url = fileManagerConfig.metadataUrl + '?q=' + searchTerm;
+            var url = fileManagerConfig.baseUrl + self.filesystem + '/' + fileManagerConfig.metadataUrl + '?q=' + searchTerm;
 
             self.requesting = true;
             $http(

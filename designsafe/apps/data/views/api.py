@@ -25,8 +25,6 @@ class ListingsView(BaseView):
         if self.file_path == request.user.username:
             manager.check_shared_folder(system_id = self.filesystem, 
                                     username = request.user.username)
-        if settings.DEBUG:
-            import ipdb; ipdb.set_trace()
         l = manager.list_meta_path(system_id = self.filesystem, 
                                     path = self.file_path)
         return self.render_to_json_response([o.as_json() for o in l])

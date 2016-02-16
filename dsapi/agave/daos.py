@@ -147,8 +147,6 @@ class AgaveFilesManager(AgaveObject):
                           "value.path": "{}", 
                           "value.systemId": "{}" }}'''.format(object_name, path, system_id)
         else:
-            if path[-1] == '/':
-                path = path[:-1]
             q = '''{{ "value.deleted": "false", 
                       "name": "{}", 
                       "value.path": "{}", 

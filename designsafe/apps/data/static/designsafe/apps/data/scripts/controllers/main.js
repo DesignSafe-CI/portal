@@ -1,8 +1,7 @@
 (function(window, angular, $) {
     "use strict";
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope',   function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
-
+    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$attrs',   function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
         $scope.config = fileManagerConfig;
         $scope.appName = fileManagerConfig.appName;
 
@@ -14,14 +13,25 @@
         };
 
         $scope.query = '';
-        $scope.temp = new Item();
-        $scope.fileNavigator = new FileNavigator();
+        $scope.temp = new Item($scope.filesystem);
+        $scope.fileNavigator = new FileNavigator($scope.filesystem);
         $scope.fileUploader = FileUploader;
         $scope.uploadFileList = [];
         $scope.viewTemplate = $cookies.viewTemplate || 'main-table.html';
         $scope.advSearch = {};
         $scope.dropFiles = [];
         $scope.Math = window.Math;
+
+        $scope.onPrivateData = function(){
+            if($scope.filesystem !== 'default'){
+                return false;
+            }
+            var currentPath = $scope.fileNavigator.currentPath;
+            if(currentPath[0] === 'Shared with me'){
+                return false;
+            }
+            return true;
+        };
 
         $scope.setTemplate = function(name) {
             $scope.viewTemplate = $cookies.viewTemplate = name;
@@ -68,6 +78,7 @@
 
         $scope.smartClick = function(item, $event) {
             $event && $event.preventDefault();
+            item.model.filesystem = $scope.filesystem;
             $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
@@ -196,14 +207,14 @@
                 return false;
             }
             item.copy().then(function() {
-                $scope.fileNavigator.refresh();
+                $scope.fileNavigator.refresh($scope.filesystem);
                 $scope.modal('copy', true);
             });
         };
 
         $scope.compress = function(item) {
             item.compress().then(function() {
-                $scope.fileNavigator.refresh();
+                $scope.fileNavigator.refresh($scope.filesystem);
                 if (! $scope.config.compressAsync) {
                     return $scope.modal('compress', true);
                 }
@@ -215,7 +226,7 @@
 
         $scope.extract = function(item) {
             item.extract().then(function() {
-                $scope.fileNavigator.refresh();
+                $scope.fileNavigator.refresh($scope.filesystem);
                 if (! $scope.config.extractAsync) {
                     return $scope.modal('extract', true);
                 }
@@ -227,7 +238,7 @@
 
         $scope.remove = function(item) {
             item.remove().then(function() {
-                $scope.fileNavigator.refresh();
+                $scope.fileNavigator.refresh($scope.filesystem);
                 $scope.modal('delete', true);
             });
         };
@@ -242,12 +253,12 @@
             }
             if( tempPath === path){
                 item.rename().then(function() {
-                    $scope.fileNavigator.refresh();
+                    $scope.fileNavigator.refresh($scope.filesystem);
                     $scope.modal('rename', true);
                 });
             } else {
                 item.move().then(function() {
-                    $scope.fileNavigator.refresh();
+                    $scope.fileNavigator.refresh($scope.filesystem);
                     $scope.modal('rename', true);
                 });
             }
@@ -255,7 +266,7 @@
 
         $scope.share = function(item){
             item.share(item.tempModel.userToShare).then(function(){
-                $scope.fileNavigator.refresh();
+                $scope.fileNavigator.refresh($scope.filesystem);
                 $scope.modal('share', true);
             });
         };
@@ -266,7 +277,7 @@
             item.tempModel.path = $scope.fileNavigator.currentPath;
             if (name && !$scope.fileNavigator.fileNameExists(name)) {
                 item.createFolder().then(function() {
-                    $scope.fileNavigator.refresh();
+                    $scope.fileNavigator.refresh($scope.filesystem);
                     $scope.modal('newfolder', true);
                 });
             } else {
@@ -284,7 +295,7 @@
             }
             $scope.fileUploader.upload(filesToSend, $scope.fileNavigator.currentPath)
             .then(function() {
-                $scope.fileNavigator.refresh();
+                $scope.fileNavigator.refresh($scope.filesystem);
                 $scope.modal('uploadfile', true);
             }, function(data) {
                 var errorMsg = data.result && data.result.error || $translate.instant('error_uploading_files');
@@ -305,6 +316,6 @@
 
         $scope.changeLanguage($scope.getQueryParam('lang'));
         $scope.isWindows = $scope.getQueryParam('server') === 'Windows';
-        $scope.fileNavigator.refresh();
+        $scope.fileNavigator.refresh($scope.filesystem);
     }]);
 })(window, angular, jQuery);

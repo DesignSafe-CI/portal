@@ -2,7 +2,7 @@
     "use strict";
     angular.module('FileManagerApp').factory('item', ['$http', '$q', '$translate', 'fileManagerConfig', 'chmod', function($http, $q, $translate, fileManagerConfig, Chmod) {
 
-        var Item = function(model, path) {
+        var Item = function(model, path, filesystem) {
             var rawModel = {
                 name: model && model.name || '',
                 path: path || [],
@@ -15,6 +15,7 @@
                 // perms: new Chmod(model && model.rights),
                 perms: {},
                 content: model && model.content || '',
+                filesystem: filesystem || 'default',
                 recursive: false,
                 sizeKb: function() {
                     // return Math.round(this.size / 1024, 1);
@@ -85,7 +86,8 @@
             console.log('path: ', parentPath);
             parentPath.pop();
             parentPath = parentPath.join('/');
-            $http.put(fileManagerConfig.createFolderUrl + parentPath, data).success(function(data) {
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.createFolderUrl + parentPath;
+            $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
@@ -105,7 +107,8 @@
             };
             self.inprocess = true;
             self.error = '';
-            $http.put(fileManagerConfig.renameUrl + self.model.fullPath(), data).success(function(data) {
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.renameUrl + self.model.fullPath();
+            $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
@@ -124,7 +127,8 @@
             };
             self.inprocess = true;
             self.error = '';
-            $http.put(fileManagerConfig.moveUrl + self.model.fullPath(), data).success(function(data) {
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.moveUrl + self.model.fullPath();
+            $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
@@ -144,7 +148,8 @@
 
             self.inprocess = true;
             self.error = '';
-            $http.put(fileManagerConfig.copyUrl + self.model.fullPath(), data).success(function(data) {
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.copyUrl + self.model.fullPath();
+            $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_copying'));
@@ -164,7 +169,8 @@
             };
             self.inprocess = true;
             self.error = '';
-            $http.post(fileManagerConfig.shareUrl + self.model.fullPath(), data).success(function(data){
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.shareUrl + self.model.fullPath();
+            $http.post(url, data).success(function(data){
                 self.deferredHandler(data, deferred);
             }).error(function(data){
                 self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
@@ -221,8 +227,7 @@
             var self = this;
             var deferred = $q.defer();
             var path = self.model.fullPath();
-            var url = fileManagerConfig.downloadFileUrl + path;
-
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.downloadFileUrl + path;
             self.requesting = true;
             $http(
               {
@@ -273,9 +278,9 @@
             var self = this;
             var deferred = $q.defer();
             var path = self.model.fullPath();
-
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.removeUrl + path;
             self.inprocess = true;
-            $http.delete(fileManagerConfig.removeUrl + path).success(function(data) {
+            $http.delete(url).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, 'Unknown error removing file');
@@ -420,7 +425,8 @@
             var path = self.model.fullPath();
             self.inprocess = true;
             self.error = '';
-            $http.get(fileManagerConfig.metadataUrl + path).success(function(data) {
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.metadataUrl + path;
+            $http.get(url).success(function(data) {
                 var md = data;
                 console.log('md: ', md);
                 self.tempModel.meta = {};
@@ -446,7 +452,8 @@
             var data = {
                 "metadata": self.tempModel.metaForm
             };
-            $http.post(fileManagerConfig.metadataUrl + path,data)
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.metadataUrl + path;
+            $http.post(url,data)
             .success(function(data){
                 self.deferredHandler(data, deferred);
             })

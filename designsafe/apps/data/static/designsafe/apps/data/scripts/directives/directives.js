@@ -5,7 +5,22 @@
     app.directive('angularFilemanager', ['$parse', 'fileManagerConfig', function($parse, fileManagerConfig) {
         return {
             restrict: 'EA',
-            templateUrl: fileManagerConfig.tplPath + '/main.html'
+            templateUrl: fileManagerConfig.tplPath + '/main.html',
+            scope: {
+                filesystem: '@'
+            },
+            controller: function($scope, $element, $attrs){
+                $scope.filesystem = $attrs.filesystem;
+                if ($scope.filesystem === '' || typeof $scope.filesystem === 'undefined'){
+                    $scope.filesystem = 'default';
+                }
+            },
+            link: function($scope, $element, $attrs){
+                $scope.filesystem = $attrs.filesystem;
+                if ($scope.filesystem === '' || typeof $scope.filesystem === 'undefined'){
+                    $scope.filesystem = 'default';
+                }
+            }
         };
     }]);
 
