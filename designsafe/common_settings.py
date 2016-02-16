@@ -363,6 +363,9 @@ MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe
 ###
 # Pipeline
 #
+PIPELINE_COMPILERS = (
+    'pipeline.compilers.sass.SASSCompiler',
+)
 PIPELINE_CSS_COMPRESSOR = None
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
 
@@ -379,6 +382,7 @@ PIPELINE_CSS = {
         'source_filenames': (
           'styles/main.css',
           'styles/corner-ribbon.css',
+          'styles/base.scss',
         ),
         'output_filename': 'css/main.css',
     },
