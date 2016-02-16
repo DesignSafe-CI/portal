@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def ds_event_callback(sender, **kwargs):
     WEBSOCKETS_FACILITY = 'websockets'
     event_type = kwargs.get('event_type', '')
-    job_owner = kwargs.get('job_owner', '')
+    users = kwargs.get('users', [])
 
     data = copy.copy(kwargs)
 
@@ -28,8 +28,8 @@ def ds_event_callback(sender, **kwargs):
     if event_type == 'job':
         tasks.index_job_outputs.delay(data)
 
-    if job_owner:
-        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=[job_owner])
+    if users:
+        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)
     else:
         rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, broadcast=True)
 
