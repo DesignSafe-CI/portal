@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.notifications.models import Notification, JobNotification
+from designsafe.apps.notifications.models import Notification
 
 from pytas.http import TASClient
 from pytas.models import User as TASUser
@@ -68,28 +68,28 @@ def manage_applications(request):
 
 @login_required
 def notifications(request):
-    jobnotifications=JobNotification.objects.filter(deleted=False, user=str(request.user)).order_by('-notification_time')
-    job_events = []
+    notifications=Notification.objects.filter(deleted=False, user=str(request.user)).order_by('-notification_time')
+    events = []
     unread = 0
-    for notification in jobnotifications:
-        job_events.append({
-            'jobName': notification.job_name,
-            'jobId': notification.job_id,
-            'user': notification.user,
-            'event': notification.event,
-            'read': notification.read,
-            'notification_time': notification.notification_time,
-            'id': notification.id
-            })
-        if not notification.read:
-            unread += 1
-            notification.read = True
-            notification.save()
+    for notification in notifications:
+        if notification.event_type == 'job':
+            events.append({
+                'event_type': notification.event_type,
+                'user': notification.user,
+                'read': notification.read,
+                'notification_time': notification.notification_time,
+                'id': notification.id,
+                'body': json.loads(notification.body)
+                })
+            if not notification.read:
+                unread += 1
+                notification.read = True
+                notification.save()
 
     notifications={}
-    notifications['job'] = job_events
+    # notifications['job'] = job_events
     return render(request, 'designsafe/apps/accounts/notifications.html',
-        {'notifications': notifications, 'unreadNotifications': unread})
+        {'notifications': events, 'unreadNotifications': unread})
 
 
 def register(request):

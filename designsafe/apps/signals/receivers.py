@@ -37,7 +37,6 @@ def ds_event_callback(sender, **kwargs):
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[job_owner])
     else:
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True)
-    rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True) # for testing
 
     msg = RedisMessage(json.dumps(data))
     rp.publish_message(msg)

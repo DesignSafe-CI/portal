@@ -42,6 +42,7 @@ def submit_job(request, agave, job_post):
     logger.info('agave response: {}'.format(response))
 
     # subscribe_job_notification(request, agave, str(response.id))
+    # mock_agave_notification() #for testing
 
     return response
 
@@ -53,8 +54,7 @@ def subscribe_job_notification(request, agave, job_id):
     logger.info('job notification url: {}'.format(url))
 
     d = {
-        # "url" : "http://requestb.in/150ed971?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
-        # "url" : "https://designsafeci-dev.tacc.utexas.edu/webhooks/jobs/?uuid=${UUID}&status=${JOB_STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
+        # "url" : "http://requestb.in/p8rlbtp8?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
         "url" : url,
         "event" : "*",
         "associatedUuid" : job_id,
@@ -64,7 +64,7 @@ def subscribe_job_notification(request, agave, job_id):
     try:
       subscribe = agave.notifications.add(body=json.dumps(d))
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
-        logger.info('Task HTTPError: {}'.format(e.__class__))
+        logger.debug('Job Notification Subscription Task HTTPError {0}: {1}'.format(e.response.status_code, e.__class__))
         submit_job.retry(exc=e("Agave is currently down. Your notification will be created when it returns."), max_retries=None)
 
     logger.info('agave subs: {}'.format(subscribe))
@@ -73,5 +73,4 @@ def subscribe_job_notification(request, agave, job_id):
 #just for testing
 def mock_agave_notification():
     import requests
-    # r = requests.post('http://requestb.in/w59adew5', data={"job_id":response.id, "event":"JOB_CREATED", "job_name":response.name})
-    r = requests.post('http://192.168.99.100:8000/webhooks/jobs/', data={"job_id":'1234512345', "event":"test", "job_name":'test name', "job_owner": 'mlm55', "status":"test status"})
+    r = requests.post('http://192.168.99.100:8000/webhooks/jobs/', data={"job_id":'1234512345', "event":"test", "job_name":'test name', "job_owner": 'mlm55', "status":"test status", "archivePath":"test/path"})

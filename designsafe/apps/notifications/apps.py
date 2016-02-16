@@ -1,8 +1,6 @@
 from designsafe.apps.signals.signals import ds_event
 
-class JobEvent(object):
-    event_type = 'job'
-
+class Event(object):
     @classmethod
-    def send_event(self, event_data):
-        ds_event.send(sender=self.__class__, event_type = self.event_type, **event_data);
+    def send_event(self, event_type, event_data):
+        ds_event.send(sender=self.__class__, event_type = event_type, **event_data);
