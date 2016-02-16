@@ -56,8 +56,7 @@ def job_notification_handler(request):
 
     Event.send_event(JOB_EVENT, body)
 
-    return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
-        content_type='application/json')
+    return HttpResponse('OK')
 
 def get_number_unread_notifications(request):
     # nondeleted = JobNotification.objects.filter(deleted=False, user=str(request.user)).count()
