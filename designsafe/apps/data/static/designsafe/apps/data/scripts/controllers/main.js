@@ -233,11 +233,8 @@
         };
 
         $scope.rename = function(item) {
-            console.log('item: ', item);
             var tempPath = item.tempModel.path.join('/');
-            console.log('tempPath: ', tempPath);
             var path = item.model.path.join('/');
-            console.log('path: ', path);
             var samePath = tempPath === path;
             if (samePath && $scope.fileNavigator.fileNameExists(item.tempModel.name)) {
                 item.error = $translate.instant('error_invalid_filename');
@@ -254,6 +251,13 @@
                     $scope.modal('rename', true);
                 });
             }
+        };
+
+        $scope.share = function(item){
+            item.share(item.tempModel.userToShare).then(function(){
+                $scope.fileNavigator.refresh();
+                $scope.modal('share', true);
+            });
         };
 
         $scope.createFolder = function(item) {

@@ -12,21 +12,21 @@ from .base import BaseView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager
 
 import json, requests, traceback
-
-if settings.DEBUG:
-    import ipdb
-
 import logging
 logger = logging.getLogger(__name__)
 
 class ListingsView(BaseView):
-    
     def set_context_props(self, request, **kwargs):
         super(ListingsView, self).set_context_props(request, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         manager = AgaveFilesManager(self.agave_client)
+        if self.file_path == request.user.username:
+            manager.check_shared_folder(system_id = self.filesystem, 
+                                    username = request.user.username)
+        if settings.DEBUG:
+            import ipdb; ipdb.set_trace()
         l = manager.list_meta_path(system_id = self.filesystem, 
                                     path = self.file_path)
         return self.render_to_json_response([o.as_json() for o in l])
@@ -65,8 +65,6 @@ class ManageView(BaseView):
         body = json.loads(request.body)
         action = body.get('action', None)
         path = request.user.username + body.get('path', None)
-        if settings.DEBUG:
-            ipdb.set_trace()
         op = getattr(mngr, action)
         mf, f = op(path = self.file_path, new = path, system_id = self.filesystem)
         return self.render_to_json_response(mf.as_json())
@@ -78,6 +76,18 @@ class ManageView(BaseView):
                                     path = self.file_path)
         mf.delete()
         return self.render_to_json_response(mf.as_json())
+
+class ShareView(BaseView):
+    def post(self, request, *args, **kwargs):
+        self.set_context_props(request, **kwargs)
+        mngr = AgaveFilesManager(agave_client = self.agave_client)
+        body = json.loads(request.body)
+        action = body.get('action', None)
+        user = body.get('user', None)
+        permission = body.get('permission', None)
+        op = getattr(mngr, action)
+        resp = op(self.filesystem, self.file_path, user, permission)
+        return self.render_to_json_response(resp)
 
 class MetadataView(BaseView):
     def set_context_props(self, request, **kwargs):

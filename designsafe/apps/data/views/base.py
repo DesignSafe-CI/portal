@@ -16,6 +16,7 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
     def __init__(self, **kwargs):
         self.filesystem = None
         self.file_path = None
+        self.force_homedir = True
         super(BaseView, self).__init__(**kwargs)
 
     def dispatch(self, request, *args, **kwargs):

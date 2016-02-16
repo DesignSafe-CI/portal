@@ -154,6 +154,26 @@
             return deferred.promise;
         };
 
+        Item.prototype.share = function(user){
+            var self = this;
+            var deferred = $q.defer();
+            var data = {
+                "action": "share",
+                "user": user,
+                "permission": "READ"
+            };
+            self.inprocess = true;
+            self.error = '';
+            $http.post(fileManagerConfig.shareUrl + self.model.fullPath(), data).success(function(data){
+                self.deferredHandler(data, deferred);
+            }).error(function(data){
+                self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+            })['finally'](function(){
+                self.inprocess = false;
+            });
+            return deferred.promise;
+        };
+
         Item.prototype.compress = function() {
             var self = this;
             var deferred = $q.defer();

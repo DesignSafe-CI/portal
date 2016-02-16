@@ -24,7 +24,7 @@ class AgaveMixin(object):
         self.access_token = None
         self.agave_url = None
         self.agave_client = None
-        super(BaseView, self).__init__(**kwargs)
+        super(AgaveMixin, self).__init__(**kwargs)
 
     def get_agave_client(self, api_server = None, token = None, **kwargs):
         if getattr(self, 'agave_client', None) is None:

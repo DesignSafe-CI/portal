@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 object_name = 'object'
 project_name = 'project'
 model_name = 'model'
+shared_with_me = 'Shared with me'
 datetime_format = '%Y-%m-%dT%H:%M:%S'
 
 class AgaveObject(object):
@@ -63,7 +64,64 @@ class AgaveObject(object):
         pass
 
 class AgaveFilesManager(AgaveObject):
-    
+    def share(self, system_id, path, username, permission):
+        paths = path.split('/')
+        ret = {}
+        mf = AgaveMetaFolderFile.from_path(self.agave_client, 
+                                    system_id, path)
+        if mf.file_type == 'folder':
+            q = '''{{
+                    "name": "{}",
+                    "value.path": {{ "$regex": "^{}", "$options": "m"}},
+                    "value.systemId": "{}"
+                }}'''.format(object_name, mf.path + '/' + mf.name, system_id)
+            objs = self.call_operation('meta.listMetadata', q = q)
+            for obj in objs:
+                self.call_operation('meta.updateMetadataPermissions',
+                                uuid = obj.uuid,
+                                body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
+
+            self.call_operation('files.updatePermissions', 
+                                filePath = '/'.join(paths),
+                                systemId = system_id,
+                                body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
+
+        for i in range(len(paths)):
+            mf = AgaveMetaFolderFile.from_path(self.agave_client, 
+                                        system_id, '/'.join(paths))
+            resp = self.call_operation('meta.updateMetadataPermissions',
+                                uuid = mf.uuid,
+                                body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
+            self.call_operation('files.updatePermissions', 
+                                filePath = '/'.join(paths),
+                                systemId = system_id,
+                                body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
+            if i == 0:
+                ret = resp
+
+            paths.pop()
+        return ret
+         
+    def check_shared_folder(self, system_id, username):
+        q = '''{{
+                "name": "{}",
+                "value.path": "{}",
+                "value.name": "{}",
+                "value.systemId": "{}"
+            }}'''.format(object_name, username, shared_with_me, system_id)
+        res = self.call_operation('meta.listMetadata', q = q)
+        if len(res) == 0:
+            mf = AgaveMetaFolderFile()
+            mf.path = username
+            mf.name = shared_with_me
+            mf.type = 'folder'
+            mf.file_type = 'folder'
+            mf.mime_type = 'text/directory'
+            mf.system_id = system_id
+            mf.meta_name = object_name
+            mf.system_tags = {"shared": "true"}
+            mf.save()
+
     def list_path(self, system_id = None, path = None):
         res = self.call_operation('files.list', 
                 **{'systemId': system_id, 'filePath': path})
@@ -71,9 +129,31 @@ class AgaveFilesManager(AgaveObject):
         return ret
 
     def list_meta_path(self, system_id = None, path = None):
-        if path[-1] == '/':
-            path = path[:-1]
-        q = '''{{ "value.deleted": "false", "name": "{}", "value.path": "{}", "value.systemId": "{}" }}'''.format(object_name, path, system_id)
+        paths = path.split('/')
+        if len(paths) >= 2 and paths[1] == shared_with_me:
+            if len(paths) == 2:
+                q = '''{{ "value.deleted": "false", 
+                          "name": "{}", 
+                          "value.path": "/", 
+                          "value.name": {{ "$not": {{ "$regex": "^{}$", "$options": "m"}} }},
+                          "value.systemId": "{}" }}'''.format(object_name, paths[0], system_id)
+            else:
+                regex = r'^{}/{}/'.format(paths[0], paths[1])
+                path = re.sub(regex, '', path)
+                if path[-1] == '/':
+                    path = path[:-1]
+                q = '''{{ "value.deleted": "false", 
+                          "name": "{}", 
+                          "value.path": "{}", 
+                          "value.systemId": "{}" }}'''.format(object_name, path, system_id)
+        else:
+            if path[-1] == '/':
+                path = path[:-1]
+            q = '''{{ "value.deleted": "false", 
+                      "name": "{}", 
+                      "value.path": "{}", 
+                      "value.systemId": "{}" }}'''.format(object_name, path, system_id)
+
         logger.info('searching: {}'.format(q))
         res = self.call_operation('meta.listMetadata',
                 **{'q': q})
@@ -252,8 +332,12 @@ class AgaveFolderFile(AgaveObject):
     @property
     def parent_path(self):
         path = self.path.split('/')
-        path = path[:-1]
-        return '/'.join(path)
+        if len(path) >= 2:
+            path = path[:-1]
+            path = '/'.join(path)
+        else:
+            path = '/'
+        return path
 
     #TODO: Might want to implement corresponding Encoder/Decoder classes
     def as_json(self):
@@ -386,6 +470,9 @@ class AgaveMetaFolderFile(AgaveObject):
         if len(paths) >= 2:
             path = '/'.join(paths[:-1])
             name = paths[-1]
+        else:
+            path = '/'
+            name = paths[0]
 
         ao = AgaveObject(agave_client = agave_client)
         q = '''{{"name": "{}", "value.path": "{}", 
@@ -400,9 +487,13 @@ class AgaveMetaFolderFile(AgaveObject):
         elif len(res) == 0:
             logger.error('No Metadata object found for q = {}'.format(q))
             #Should we automatically create the object in Agave? Probably not in prod.
+            if path == '/':
+                searchpath = name
+            else:
+                searchpath = path + '/' + name
             f = AgaveFolderFile.from_path(agave_client = agave_client,
                                          system_id = system_id,
-                                         path = path)
+                                         path = searchpath)
             f_dict = f.as_meta_json()
             logger.info('Creating metadata {}'.format(f_dict))
             meta_obj = ao.call_operation('meta.addMetadata', **{'body': f_dict})

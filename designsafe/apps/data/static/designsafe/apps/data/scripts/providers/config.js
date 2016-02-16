@@ -13,6 +13,7 @@
             moveUrl: "/data/api/move/",
             copyUrl: "/data/api/copy/",
             removeUrl: "/data/api/delete/",
+            shareUrl: "/data/api/share/",
             editUrl: "",
             getContentUrl: "",
             createFolderUrl: "/data/api/mkdir/",
@@ -35,7 +36,8 @@
                 download: true,
                 preview: false,
                 remove: true,
-                metadata: true
+                metadata: true,
+                share: true
             },
 
             enablePermissionsRecursive: true,

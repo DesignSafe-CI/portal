@@ -1,11 +1,11 @@
 <div ng-show="!item.inprocess">
-    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#rename" ng-show="config.allowedActions.rename" ng-click="touch(item)" title="{{'rename' | translate}}">
+    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#rename" ng-show="config.allowedActions.rename && item.model.name != 'Shared with me'" ng-click="touch(item)" title="{{'rename' | translate}}">
         <i class="glyphicon glyphicon-edit"></i>
     </button>
-    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#copy" ng-show="config.allowedActions.copy" ng-click="touch(item)" title="{{'copy' | translate}}">
+    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#copy" ng-show="config.allowedActions.copy && item.model.name != 'Shared with me'" ng-click="touch(item)" title="{{'copy' | translate}}">
         <i class="glyphicon glyphicon-log-out"></i>
     </button>
-    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#edit" ng-show="config.allowedActions.edit && item.isEditable()" ng-click="item.getContent(); touch(item)" title="{{'edit' | translate}}">
+    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#edit" ng-show="config.allowedActions.edit && item.model.name != 'Shared with me' && item.isEditable()" ng-click="item.getContent(); touch(item)" title="{{'edit' | translate}}">
         <i class="glyphicon glyphicon-pencil"></i>
     </button>
     <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#changepermissions" ng-show="config.allowedActions.changePermissions" ng-click="getPermissions(item)" title="{{'permissions' | translate}}">
@@ -23,12 +23,16 @@
     <button class="btn btn-sm btn-default" ng-show="config.allowedActions.preview && item.isImage()" ng-click="item.preview()" title="{{'view_item' | translate}}">
         <i class="glyphicon glyphicon-picture"></i>
     </button>
-    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete" ng-show="config.allowedActions.remove" ng-click="touch(item)" title="{{'remove' | translate}}">
+    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete" ng-show="config.allowedActions.remove && item.model.name != 'Shared with me'" ng-click="touch(item)" title="{{'remove' | translate}}">
         <i class="glyphicon glyphicon-trash"></i>
     </button>
-    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#metadata" ng-show="config.allowedActions.metadata" ng-click="showMetadata(item)" title="{{'metadata' | translate}}">
+    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#metadata" ng-show="config.allowedActions.metadata && item.model.name != 'Shared with me'" ng-click="showMetadata(item)" title="{{'metadata' | translate}}">
         <i class="glyphicon glyphicon-tags"></i>
     </button>
+    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#share" ng-show="config.allowedActions.share && item.model.name != 'Shared with me'" ng-click = "touch(item)" title="{{'share' | translate}}">
+        <i class="glyphicon glyphicon-send"></i>
+    </button>
+
 </div>
 <div ng-show="item.inprocess">
     <button class="btn btn-sm" style="visibility: hidden">&nbsp;</button><span class="label label-warning">{{"wait" | translate}} ...</span>
