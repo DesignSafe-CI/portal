@@ -6,6 +6,7 @@ import os
 from pprint import pprint
 import sys
 import time
+import urllib
 
 # set default encoding to utf8 for file uploads
 # reload(sys)
@@ -24,6 +25,16 @@ def convert_rows_to_dict_list(cursor):
 def convert_to_camel_case(snake_str):
     components = snake_str.split('_')
     return components[0] + "".join(x.title() for x in components[1:])
+
+
+def set_metadata_public_permissions(agave, metadata_uuid, username, permission):
+    body = {}
+    body['username'] = username
+    body['permission'] = permission
+    body_json = json.dumps(body)
+    metadata_permission = agave.meta.updateMetadataPermissionsForUser(uuid=metadata_uuid, username=username, body=body_json)
+    print 'changed permissions for = ' + metadata_uuid
+    print metadata_permission
 
 def insert_project_metadata(root_dir, cursor, agave):
 
@@ -52,6 +63,9 @@ def insert_project_metadata(root_dir, cursor, agave):
         organization_dict_list = convert_rows_to_dict_list(cursor)
         row_dict['organization'] = organization_dict_list
 
+        # add path and change name
+        row_dict['path'] = '/'
+
         # clean dates & description
         if row_dict['startDate'] is not None:
             row_dict['startDate'] = row_dict['startDate'].strftime('%Y-%m-%d %H:%M:%S')
@@ -65,15 +79,22 @@ def insert_project_metadata(root_dir, cursor, agave):
 
         # create and insert project metadata
         project_metadata = {}
-        project_metadata['name'] = row_dict['name']
+        # project_metadata['name'] = row_dict['name']
+        project_metadata['name'] = 'object'
         project_metadata['value'] = {}
         project_metadata['value'] = row_dict
+        project_metadata['value']['deleted'] = "false"
         project_metadata_json = json.dumps(project_metadata)
         print 'project_metadata_json:' + project_metadata_json
         # print project_metadata_json
 
         project_metadata = agave.meta.addMetadata(body=project_metadata_json)
         print project_metadata['uuid']
+
+        # set public permissions
+        set_metadata_public_permissions(agave, project_metadata['uuid'], 'public', 'READ')
+        set_metadata_public_permissions(agave, project_metadata['uuid'], 'world', 'READ')
+
         return project_metadata['uuid']
 
 def insert_experiment_metadata(root_dir, experiment_name, cursor, agave, project_metadata_uuid):
@@ -118,22 +139,30 @@ def insert_experiment_metadata(root_dir, experiment_name, cursor, agave, project
 
         # create and insert experiment metadata
         experiment_metadata = {}
-        experiment_metadata['name'] = row_dict['name']
-        experiment_metadata['associatedIds'] = project_metadata_uuid
+        # experiment_metadata['name'] = row_dict['name']
+        experiment_metadata['name'] = 'object'
+        experiment_metadata['associationIds'] = project_metadata_uuid
         experiment_metadata['value'] = {}
         experiment_metadata['value'] = row_dict
+        experiment_metadata['value']['deleted'] = "false"
         experiment_metadata_json = json.dumps(experiment_metadata)
         print experiment_metadata_json
 
-        project_metadata = agave.meta.addMetadata(body=experiment_metadata_json)
-        print project_metadata['uuid']
-        return project_metadata['uuid']
+        experiment_metadata = agave.meta.addMetadata(body=experiment_metadata_json)
+        print 'experiment_dir_metadata_uuid:'
+        print experiment_metadata['uuid']
+
+        # set public permissions
+        set_metadata_public_permissions(agave, experiment_metadata['uuid'], 'public', 'READ')
+        set_metadata_public_permissions(agave, experiment_metadata['uuid'], 'world', 'READ')
+
+        return experiment_metadata['uuid']
 
 
 def main(args):
 
     Config = ConfigParser.ConfigParser()
-    Config.read('config.properties')
+    Config.read('/home1/02791/mrojas/dsimport/config.properties')
 
     # nees db auth
     user = Config.get('nees', 'user')
@@ -194,7 +223,10 @@ def main(args):
         print 'Found directory: ' + dir_name
 
         # get metadata uuid for dir
-        agave_dir_path = agave_user + '/' + dir_name
+        # agave_dir_path = agave_user + '/' + dir_name
+        agave_dir_path = urllib.quote(dir_name)
+        print 'agave_system = ' + agave_system
+        print 'agave_dir_path = ' + agave_dir_path
         agave_dir = agave.files.list(systemId=agave_system, filePath=agave_dir_path)
         metadata_link = agave_dir[0]['_links']['metadata']['href']
         metadata_str = metadata_link[metadata_link.rindex('=')+1:]
@@ -214,8 +246,9 @@ def main(args):
             # insert experiment dir metadata
             # for dirs grab obly the first element returned by list which is the directory
             experiment_dir_metadata = {}
-            experiment_dir_metadata['name'] = dir_name
-            experiment_dir_metadata['associatedIds'] = [experiment_metadata_uuid]
+            # experiment_dir_metadata['name'] = dir_name
+            experiment_dir_metadata['name'] = 'object'
+            experiment_dir_metadata['associationIds'] = [experiment_metadata_uuid]
             experiment_dir_metadata['value'] = {}
             experiment_dir_metadata['value']['format'] = agave_dir[0]['format']
             experiment_dir_metadata['value']['length'] = agave_dir[0]['length']
@@ -223,9 +256,11 @@ def main(args):
             experiment_dir_metadata['value']['path'] = dir_name
             experiment_dir_metadata['value']['name'] = dir_name.split(os.path.sep)[-1]
             experiment_dir_metadata['value']['permissions'] = agave_dir[0]['permissions']
-            experiment_dir_metadata['value']['system'] = agave_dir[0]['system']
+            # experiment_dir_metadata['value']['system'] = agave_dir[0]['system']
+            experiment_dir_metadata['value']['systemId'] = agave_dir[0]['system']
             experiment_dir_metadata['value']['type'] = agave_dir[0]['type']
-            experiment_dir_metadata['value']['legacy'] = True
+            experiment_dir_metadata['value']['legacy'] = "true"
+            experiment_dir_metadata['value']['deleted'] = "false"
 
             experiment_dir_metadata_json = json.dumps(experiment_dir_metadata)
             print 'experiment_dir_metadata_json:'
@@ -234,12 +269,18 @@ def main(args):
             print 'experiment_dir_metadata_uuid'
             print experiment_dir_metadata_uuid['uuid']
 
+            # set public permissions
+            set_metadata_public_permissions(agave, experiment_dir_metadata_uuid['uuid'], 'public', 'READ')
+            set_metadata_public_permissions(agave, experiment_dir_metadata_uuid['uuid'], 'world', 'READ')
+
             for fname in file_list:
                 print '\tInserting experiment file = ' +  fname
 
                 # get metadata uuid for file
                 print '\tagave_system = ' + agave_system
-                agave_file_path = agave_user + '/' + dir_name + '/' + fname
+                # agave_file_path = agave_user + '/' + dir_name + '/' + fname
+                # agave_file_path =  urllib.quote(dir_name + '/' + fname)
+                agave_file_path =  urllib.quote(dir_name)
                 print '\tagave_file_path = ' + agave_file_path
                 agave_file = agave.files.list(systemId=agave_system, filePath=agave_file_path)
 
@@ -249,17 +290,21 @@ def main(args):
                 metadata_uuid = metadata_json['associationIds']
 
                 experiment_file_metadata = {}
-                experiment_file_metadata['name'] = fname
-                experiment_file_metadata['associatedIds'] = [experiment_metadata_uuid]
+                # experiment_file_metadata['name'] = fname
+                experiment_file_metadata['name'] = 'object'
+                experiment_file_metadata['associationIds'] = [experiment_metadata_uuid]
                 experiment_file_metadata['value'] = {}
                 experiment_file_metadata['value']['format'] = agave_file[0]['format']
                 experiment_file_metadata['value']['length'] = agave_file[0]['length']
                 experiment_file_metadata['value']['mimeType'] = agave_file[0]['mimeType']
+                experiment_file_metadata['value']['path'] = agave_file_path
                 experiment_file_metadata['value']['name'] = fname
                 experiment_file_metadata['value']['permissions'] = agave_file[0]['permissions']
-                experiment_file_metadata['value']['system'] = agave_file[0]['system']
+                # experiment_file_metadata['value']['system'] = agave_file[0]['system']
+                experiment_file_metadata['value']['systemId'] = agave_file[0]['system']
                 experiment_file_metadata['value']['type'] = agave_file[0]['type']
-                experiment_file_metadata['value']['legacy'] = True
+                experiment_file_metadata['value']['legacy'] = "true"
+                experiment_file_metadata['value']['deleted'] = "false"
 
                 experiment_file_metadata_json = json.dumps(experiment_file_metadata)
                 print '\texperiment_file_metadata_json:'
@@ -268,24 +313,41 @@ def main(args):
                 print '\texperiment_file_metadata_uuid:'
                 print experiment_file_metadata_uuid['uuid']
 
+                # set public permissions
+                set_metadata_public_permissions(agave, experiment_file_metadata_uuid['uuid'], 'public', 'READ')
+                set_metadata_public_permissions(agave, experiment_file_metadata_uuid['uuid'], 'world', 'READ')
+
         # create project dir/files metadata
         else:
-            print '\tInserting project dir metadata =' + dir_name
+            print '\tInserting project dir metadata = ' + dir_name
+
+            # rel_path = os.path.abspath(os.path.join(dir_name, os.pardir))
+            rel_path = (os.path.abspath(os.path.join(dir_name, os.pardir))).split(os.path.sep)[-1]
+            print '\tRelative path = ' + rel_path
             # insert experiment dir metadata
             # for dirs grab obly the first element returned by list which is the directory
             project_dir_metadata = {}
-            project_dir_metadata['name'] = dir_name
-            project_dir_metadata['associatedIds'] = [project_metadata_uuid]
+            # project_dir_metadata['name'] = dir_name
+            project_dir_metadata['name'] = 'object'
+            project_dir_metadata['associationIds'] = [project_metadata_uuid]
             project_dir_metadata['value'] = {}
             project_dir_metadata['value']['format'] = agave_dir[0]['format']
             project_dir_metadata['value']['length'] = agave_dir[0]['length']
             project_dir_metadata['value']['mimeType'] = agave_dir[0]['mimeType']
-            project_dir_metadata['value']['path'] = dir_name
+
+            # If creating NEES-####-####.groups dir, rel path from projects/ to /
+            if '.groups' in dir_name.split(os.path.sep)[-1]:
+                project_dir_metadata['value']['path'] = '/'
+            else:
+                project_dir_metadata['value']['path'] = rel_path
+
             project_dir_metadata['value']['name'] = dir_name.split(os.path.sep)[-1]
             project_dir_metadata['value']['permissions'] = agave_dir[0]['permissions']
-            project_dir_metadata['value']['system'] = agave_dir[0]['system']
+            # project_dir_metadata['value']['system'] = agave_dir[0]['system']
+            project_dir_metadata['value']['systemId'] = agave_dir[0]['system']
             project_dir_metadata['value']['type'] = agave_dir[0]['type']
-            project_dir_metadata['value']['legacy'] = True
+            project_dir_metadata['value']['legacy'] = "true"
+            project_dir_metadata['value']['deleted'] = "false"
 
             project_dir_metadata_json = json.dumps(project_dir_metadata)
             print '\tproject_dir_metadata_json:'
@@ -294,27 +356,37 @@ def main(args):
             print '\tproject_dir_metadata_uuid:'
             print project_dir_metadata_uuid['uuid']
 
+            # set public permissions
+            set_metadata_public_permissions(agave, project_dir_metadata_uuid['uuid'], 'public', 'READ')
+            set_metadata_public_permissions(agave, project_dir_metadata_uuid['uuid'], 'world', 'READ')
+
             for fname in file_list:
                 print '\tInserting project file metadata' + fname
                 # get metadata uuid for file
                 print '\tagave_system = ' + agave_system
-                agave_file_path = agave_user + '/' + dir_name + '/' + fname
+                # agave_file_path = agave_user + '/' + dir_name + '/' + fname
+                # agave_file_path = urllib.quote(dir_name + '/' + fname)
+                agave_file_path = urllib.quote(dir_name)
                 print '\tagave_file_path = ' + agave_file_path
                 agave_file = agave.files.list(systemId=agave_system, filePath=agave_file_path)
 
                 # create project_dir_metadata
                 project_file_metadata = {}
-                project_file_metadata['name'] = fname
-                project_file_metadata['associatedIds'] = [project_metadata_uuid]
+                # project_file_metadata['name'] = fname
+                project_file_metadata['name'] = 'object'
+                project_file_metadata['associationIds'] = [project_metadata_uuid]
                 project_file_metadata['value'] = {}
                 project_file_metadata['value']['format'] = agave_file[0]['format']
                 project_file_metadata['value']['length'] = agave_file[0]['length']
                 project_file_metadata['value']['mimeType'] = agave_file[0]['mimeType']
+                project_file_metadata['value']['path'] = agave_file_path
                 project_file_metadata['value']['name'] = fname
                 project_file_metadata['value']['permissions'] = agave_file[0]['permissions']
-                project_file_metadata['value']['system'] = agave_file[0]['system']
+                # project_file_metadata['value']['system'] = agave_file[0]['system']
+                project_file_metadata['value']['systemId'] = agave_file[0]['system']
                 project_file_metadata['value']['type'] = agave_file[0]['type']
-                project_file_metadata['value']['legacy'] = True
+                project_file_metadata['value']['legacy'] = "true"
+                project_file_metadata['value']['deleted'] = "false"
 
                 project_file_metadata_json = json.dumps(project_file_metadata)
                 print '\tproject_file_metadata_json:'
@@ -323,9 +395,13 @@ def main(args):
                 print '\tproject_file_metadata_uuid:'
                 print project_file_metadata_uuid['uuid']
 
+                # set public permissions
+                set_metadata_public_permissions(agave, project_file_metadata_uuid['uuid'], 'public', 'READ')
+                set_metadata_public_permissions(agave, project_file_metadata_uuid['uuid'], 'world', 'READ')
+
 if len(sys.argv) < 2:
     # TO-DO: fix this so you can feed paths instead of names
-    print 'Usage: $ python meta.py <NEES-####-####.groups>'
-    print 'e.g. $ python meta.py NEES-2005-0086.groups'
+    print '$ cd to /corral-repl/tacc/NHERI/public/projects/'
+    print '$ python /path/to/nees-walker.py NEES-####-####.groups'
 else:
     main(sys.argv[1:])
