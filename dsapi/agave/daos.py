@@ -111,7 +111,7 @@ class AgaveFilesManager(AgaveObject):
             }}'''.format(object_name, username, shared_with_me, system_id)
         res = self.call_operation('meta.listMetadata', q = q)
         if len(res) == 0:
-            mf = AgaveMetaFolderFile()
+            mf = AgaveMetaFolderFile(agave_client = self.agave_client, meta_obj = { 'value': {} })
             mf.path = username
             mf.name = shared_with_me
             mf.type = 'folder'
@@ -456,8 +456,7 @@ class AgaveMetaFolderFile(AgaveObject):
         self.meta_name = meta_obj.get('name', None)
         self.owner = meta_obj.get('owner', None)
         self.schema_id = meta_obj.get('schemaId', None)
-        self.agave_path = 'agave://{}/{}'.format(meta_obj['value'].get('systemId', None), 
-                                               meta_obj['value'].get('path', None) + '/' + meta_obj['value'].get('name', None))
+        self.agave_path = 'agave://{}/{}'.format(meta_obj['value'].get('systemId', None), meta_obj['value'].get('path', '') + '/' + meta_obj['value'].get('name', ''))
         super(AgaveMetaFolderFile, self).__init__(agave_client = agave_client, **kwargs)
         
     @classmethod
