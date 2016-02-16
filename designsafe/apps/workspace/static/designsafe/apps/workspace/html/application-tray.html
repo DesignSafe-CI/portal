@@ -1,11 +1,14 @@
 <div class="apps-tray">
-  <div ng-repeat="app in data.apps" class="app"
+  <div ng-repeat="app in data.apps" class="app corner-ribbon-container"
     ng-class="{'app-active': app._active}" ng-click="launchApp(app);"
     uib-tooltip-html="app.shortDescription + '<br>(' + app.id + ')'" tooltip-placement="bottom"
     tooltip->
     <span class="app-icon"><i class="fa fa-cube fa-3x"></i></span>
     <span class="app-title">{{app.label}}</span>
     <span class="app-version">{{app.version}}</span>
+    <span ng-if="!app.isPublic" class="corner-ribbon corner-ribbon-fa grey" title="Private app">
+      <i class="fa fa-lock"></i>
+    </span>
   </div>
 </div>
 <div class="checkbox">
