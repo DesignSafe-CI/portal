@@ -68,28 +68,19 @@ def manage_applications(request):
 
 @login_required
 def notifications(request):
-    notifications=Notification.objects.filter(deleted=False, user=str(request.user)).order_by('-notification_time')
-    events = []
+    items = Notification.objects.filter(
+        deleted=False, user=str(request.user)).order_by('-notification_time')
     unread = 0
-    for notification in notifications:
-        if notification.event_type == 'job':
-            events.append({
-                'event_type': notification.event_type,
-                'user': notification.user,
-                'read': notification.read,
-                'notification_time': notification.notification_time,
-                'id': notification.id,
-                'body': json.loads(notification.body)
-                })
-            if not notification.read:
-                unread += 1
-                notification.read = True
-                notification.save()
+    for i in items:
+        if not i.read:
+            unread += 1
+            i.mark_read()
 
-    notifications={}
-    # notifications['job'] = job_events
     return render(request, 'designsafe/apps/accounts/notifications.html',
-        {'notifications': events, 'unreadNotifications': unread})
+                  {
+                      'notifications': items,
+                      'unread': unread
+                  })
 
 
 def register(request):

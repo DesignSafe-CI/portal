@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load sekizai_tags %}
 {% block title %}Notifications{% endblock %}
 
 {% block content %}
@@ -7,26 +7,43 @@
 <h1 class="headline headline-research">Notifications</h1>
 
 {% if notifications %}
-  <div class="alert alert-warning">
-    <h4>TODO!</h4>
+  <div class="alert alert-info">
+    <h4>Coming soon!</h4>
     <p>
-      Display notifications by category and type, with action links to follow up on each
-      item.
+      Notifications will have action links to be able to jump to relevant pages to
+      act on the notification.
     </p>
   </div>
 
-  <h4>Notifications</h4>
-  {% for x in notifications %}
-  <pre class="{% if x.read %} text-muted {% else %} text-info {% endif %}">
-        Job Name: {{x.body.job_name}} <br>
-        Job ID: {{x.body.job_id}} <br>
-        Status: {{x.body.event}} <br>
-        Time: {{x.notification_time|date:'Y-m-d H:i'}}
-<!--         <button type="button" class="btn btn-info btn-sm">
-          <span class="glyphicon glyphicon-remove"></span>
-        </button>  -->
-  </pre>
-  {% endfor %}
+  <ul class="list-group">
+    {% for x in notifications %}
+      <li class="list-group-item {% if x.read %} text-muted {% else %} text-info {% endif %}">
+        <dl class="dl-horizontal">
+          <dt>Type</dt>
+          <dd>{{ x.event_type }}</dd>
+          <dt>Time</dt>
+          <dd>{{x.notification_time|date:'Y-m-d H:i'}}</dd>
+
+          {% if x.event_type == 'job' %}
+            <dt>Job name</dt>
+            <dd>{{x.content.job_name}}</dd>
+
+            <dt>Status</dt>
+            <dd>{{x.content.status}}</dd>
+
+            <dt>Archive path</dt>
+            <dd>{{x.content.archive_path}}</dd>
+          {% endif %}
+
+          <dt>Raw message</dt>
+          <dd>
+            <p><button type="button" name="toggle-raw-message" class="btn btn-xs btn-default">Click to view</button></p>
+            <p class="hide">{{x.body}}</p>
+          </dd>
+        </dl>
+      </li>
+    {% endfor %}
+  </ul>
 
 {% else %}
   <div class="jumbotron text-center">
@@ -40,4 +57,15 @@
   </div>
 {% endif %}
 </div>
+
+{% addtoblock 'js' %}
+<script>
+  (function(window, $, undefined) {
+    $('button[name="toggle-raw-message"]').on('click', function(e) {
+      e.preventDefault();
+      $(this).parent().next().toggleClass('show');
+    });
+  })(window, jQuery);
+</script>
+{% endaddtoblock %}
 {% endblock %}

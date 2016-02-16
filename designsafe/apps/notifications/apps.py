@@ -1,5 +1,6 @@
 from designsafe.apps.signals.signals import ds_event
 
+
 class Event(object):
     @classmethod
     def send_event(self, event_type, event_data):
