@@ -19,6 +19,14 @@
   -webkit-transform: rotate(-45deg);
 }
 
+.corner-ribbon-fa {
+    line-height: 1.5;
+    font-size: 0.9em;
+    width: 60px;
+    top: 0px;
+    left: -20px;
+}
+
 .corner-ribbon.shadow{
   box-shadow: 0 0 3px rgba(0,0,0,.3);
 }
