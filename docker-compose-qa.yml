@@ -2,13 +2,9 @@ data:
   image: buildpack-deps:trusty
   volumes:
     - /designsafe/media:/var/www/designsafe-ci.org/media
-    - /designsafe/redis_data:/data
 
 redis:
   image: redis
-  command: redis-server --appendonly yes
-  volumes_from:
-    - data
 
 django:
   image: designsafeci/portal
@@ -35,7 +31,7 @@ worker:
     - /var/www/designsafe-ci.org/static
   volumes_from:
     - data
-  command: celery worker -A designsafe -l info --autoscale=10,2
+  command: celery -A designsafe worker -l info --autoscale=10,2
 
 websocket:
   image: designsafeci/portal
