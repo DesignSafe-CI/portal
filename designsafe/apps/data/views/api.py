@@ -48,8 +48,6 @@ class DownloadView(BaseView):
 class UploadView(BaseView):
     def post(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
-        if settings.DEBUG:
-            ipdb.set_trace()
         ufs = request.FILES
         mgr = AgaveFilesManager(self.agave_client)
         mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
@@ -67,6 +65,8 @@ class ManageView(BaseView):
         body = json.loads(request.body)
         action = body.get('action', None)
         path = request.user.username + body.get('path', None)
+        if settings.DEBUG:
+            ipdb.set_trace()
         op = getattr(mngr, action)
         mf, f = op(path = self.file_path, new = path, system_id = self.filesystem)
         return self.render_to_json_response(mf.as_json())
@@ -76,8 +76,7 @@ class ManageView(BaseView):
         mf = AgaveMetaFolderFile.from_path(agave_client = self.agave_client,
                                     system_id = self.filesystem,
                                     path = self.file_path)
-        mf.deleted = 'true'
-        mf.save()
+        mf.delete()
         return self.render_to_json_response(mf.as_json())
 
 class MetadataView(BaseView):
