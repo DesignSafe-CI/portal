@@ -9,6 +9,7 @@ from designsafe.apps.notifications.models import Notification
 
 from pytas.http import TASClient
 from pytas.models import User as TASUser
+import ast
 import logging
 import json
 
@@ -73,13 +74,14 @@ def notifications(request):
     unread = 0
     for notification in notifications:
         if notification.event_type == 'job':
+            body = ast.literal_eval(notification.body)
             events.append({
                 'event_type': notification.event_type,
                 'user': notification.user,
                 'read': notification.read,
                 'notification_time': notification.notification_time,
                 'id': notification.id,
-                'body': notification.body
+                'body': body
                 })
             if not notification.read:
                 unread += 1

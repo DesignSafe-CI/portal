@@ -15,11 +15,8 @@
     </p>
   </div>
 
-  <pre> {{notifications}} </pre>
-
-  <h4>Job Notifications</h4>
+  <h4>Notifications</h4>
   {% for x in notifications %}
-  <pre> {{x}} </pre>
   <pre class="{% if x.read %} text-muted {% else %} text-info {% endif %}">
         Job Name: {{x.body.job_name}} <br>
         Job ID: {{x.body.job_id}} <br>
