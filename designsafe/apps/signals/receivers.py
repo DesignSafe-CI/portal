@@ -25,16 +25,8 @@ def ds_event_callback(sender, **kwargs):
     logger.info('Event Type: {0}'.format(event_type))
     logger.info('Event Data: {0}'.format(kwargs))
 
-    # data = {
-    #     'eventType': event_type,
-    #     'event': event,
-    #     'jobName': job_name,
-    #     'jobOwner': job_owner,
-    #     'jobId': job_id
-    #     }
-
     if job_owner:
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[job_owner])
+        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)
     else:
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True)
 

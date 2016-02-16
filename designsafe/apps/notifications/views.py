@@ -51,10 +51,12 @@ def job_notification_handler(request):
         'job_owner': job_owner,
     }
 
+    users=[job_owner]
+
     notification = Notification(event_type=JOB_EVENT, user=job_owner, body=json.dumps(body))
     notification.save()
 
-    Event.send_event(JOB_EVENT, body)
+    Event.send_event(JOB_EVENT, users, body)
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
