@@ -2,9 +2,13 @@ data:
   image: buildpack-deps:trusty
   volumes:
     - /designsafe/media:/var/www/designsafe-ci.org/media
+    - /designsafe/redis_data:/data
 
 redis:
   image: redis
+  command: redis-server --appendonly yes
+  volumes_from:
+    - data
 
 django:
   image: designsafeci/portal
