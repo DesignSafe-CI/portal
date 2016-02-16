@@ -6,10 +6,10 @@ from ws4redis.redis_store import RedisMessage
 import json
 import logging
 import copy
+from designsafe.apps.data import tasks
+
 logger = logging.getLogger(__name__)
 
-
-# Create your views here.
 
 @receiver(ds_event, dispatch_uid = __name__)
 def ds_event_callback(sender, **kwargs):
@@ -25,18 +25,13 @@ def ds_event_callback(sender, **kwargs):
     logger.info('Event Type: {0}'.format(event_type))
     logger.info('Event Data: {0}'.format(kwargs))
 
-    # data = {
-    #     'eventType': event_type,
-    #     'event': event,
-    #     'jobName': job_name,
-    #     'jobOwner': job_owner,
-    #     'jobId': job_id
-    #     }
+    if event_type == 'job':
+        tasks.index_job_outputs.delay(data)
 
     if job_owner:
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[job_owner])
+        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, users=[job_owner])
     else:
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, broadcast=True)
+        rp = RedisPublisher(facility=WEBSOCKETS_FACILITY, broadcast=True)
 
     msg = RedisMessage(json.dumps(data))
     rp.publish_message(msg)
