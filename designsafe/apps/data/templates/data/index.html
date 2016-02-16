@@ -4,38 +4,21 @@
 {% block content %}
 <div class="container">
     <h1 class="headline headline-research">
-        <span class="hl hl-research">Data Browser</span><br>My Data
+        <span class="hl hl-research">Data Browser</span>
     </h1>
+    <div class="row-flex row-flex-center">
+        <div class="col-flex col-flex-center">
+            <a href="{% url 'designsafe_data:public_data' %}" class="col-flex col-flex-v-center giant-button text-center">
+                <i class="fa fa-5x fa-globe"></i>
+                <h2>Public Data</h2>
+            </a>
+        </div>
+        <div class="col-flex col-flex-center">
+            <a href="{% url 'designsafe_data:my_data' %}" class="col-flex col-flex-v-center giant-button text-center">
+                <i class="fa fa-5x fa-hdd-o"></i>
+                <h2>My Data</h2>
+            </a>
+        </div>
+    </div>
 </div>
-<div data-ng-app="FileManagerApp" class="file-manager">
-    <angular-filemanager></angular-filemanager>
-</div>
-
-{% addtoblock "css" %}
-    <!-- <link href="{% static 'vendor/bootswatch-dist/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"> -->
-    <link href="{% static 'designsafe/apps/data/styles/angular-filemanager.css' %}" rel="stylesheet" type="text/css">
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-    <script src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
-    <script src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
-    <script src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
-    <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
-    <script src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-    <script src="{% static 'designsafe/apps/data/scripts/app.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/directives/directives.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/filters/filters.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/providers/config.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/entities/chmod.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/entities/item.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/services/filenavigator.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/services/fileuploader.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/providers/translations.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/controllers/main.js' %}"></script>
-    <script src="{% static 'designsafe/apps/data/scripts/controllers/selector-controller.js' %}"></script>
-
-{% endaddtoblock %}
 {% endblock %}
