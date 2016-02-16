@@ -26,8 +26,8 @@ urlpatterns = patterns('',
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
     # api urls, just for the samples.
-    url(r'^data/', include('designsafe.apps.data.urls')),
-    url(r'^workspace/', include('designsafe.apps.workspace.urls', namespace='designsafe_workspace')),
+    url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
+    url(r'^rw/workspace/', include('designsafe.apps.workspace.urls', namespace='designsafe_workspace')),
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
     url(r'^notifications/', include('designsafe.apps.notifications.urls')),
 

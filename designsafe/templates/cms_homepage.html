@@ -17,35 +17,12 @@
   <body>
     {% cms_toolbar %}
 
-    <header class="container site-banner">
-      <div class="site-banner-left">
-        <div class="ef-site-title">
-          <a href="/">
-            {% static_placeholder 'ef_site_title' site or %}
-              <h1>
-                Edit EF Site Name<br>
-                <small>Experimental Facility</small>
-              </h1>
-            {% endstatic_placeholder %}
-          </a>
-        </div>
-      </div>
-
-      <div class="site-banner-right">
-        <div class="text-right">
-          <a class="logo" href="https://www.designsafe-ci.org/">
-            <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
-            <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="60" width="225">
-          </a>
-        </div>
-      </div>
-    </header>
-
-    {% include 'includes/ef_navigation.html' %}
+    {% include 'includes/header.html' %}
+    {% include 'includes/homepage_navigation.html' %}
 
     {% include 'includes/messages.html' %}
 
-    {% block content %}{% placeholder "content" %}{% endblock content %}
+    {% block content %}{% placeholder "content" %}{% endblock %}
 
     {% include 'includes/footer.html' %}
     <!-- scripts -->
@@ -53,8 +30,8 @@
     {% javascript 'main' %}
     <script src="//use.typekit.net/tku7ygd.js"></script>
     <script>try{Typekit.load({ async: true });}catch(e){}</script>
-    {% render_block "js" %}
     {% block scripts %}{% endblock %}
+    {% render_block "js" %}
     {% include 'includes/analytics.html' %}
   </body>
 </html>

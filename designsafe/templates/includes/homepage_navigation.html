@@ -1,4 +1,3 @@
-{% load menu_tags %}
 <nav class="navbar navbar-default navbar-ds">
   <div class="container">
     <div class="navbar-header">
@@ -14,9 +13,19 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="main-navigation">
       <ul class="nav navbar-nav">
-         {% show_menu 1 100 100 100 "includes/cms_menu.html" %}
+        <li><a class="hover-text hl-community" href="/#community">NHERI Community</a></li>
+        <li><a class="hover-text hl-research" href="/#research">Research Workbench</a></li>
+        <li><a class="hover-text hl-ef" href="/#ef">Experimental Facilities</a></li>
+        <li><a class="hover-text hl-learning" href="/#learning">Learning Center</a></li>
       </ul>
-
+      <ul class="nav navbar-nav navbar-right">
+        <li class="{% if request.path == '/about/' %}active{% endif %}">
+          <a href="/about">About</a>
+        </li>
+        <li class="{% if request.path == '/contact/' %}active{% endif %}">
+          <a href="/contact">Contact</a>
+        </li>
+      </ul>
     </div><!-- /.navbar-collapse -->
   </div>
 </nav>

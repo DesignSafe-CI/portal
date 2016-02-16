@@ -14,19 +14,37 @@ from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
+
 @app.task
 def submit_job(request, agave, job_post):
     logger.info('submitting job: {0}'.format(job_post))
+
+    # subscribe to notifications
+    notify_url = request.build_absolute_uri(reverse('jobs_webhook'))
+    query = 'uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}' \
+            '&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
+    notify = {
+        'url': '%s?%s' % (notify_url, query),
+        'event': '*',
+        'persistent': True
+    }
+    if 'notifications' in job_post:
+        job_post['notifications'].append(notify)
+    else:
+        job_post['notifications'] = [notify]
+
     try:
-      response=agave.jobs.submit(body=job_post)
+        response = agave.jobs.submit(body=job_post)
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
-        logger.debug('Submit Job Task HTTPError {0}: {1}'.format(e.response.status_code, e.__class__))
-        submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when it returns."), max_retries=None)
+        logger.info('Task HTTPError: {}'.format(e.__class__))
+        submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when "
+                               "it returns."), max_retries=None)
     logger.info('agave response: {}'.format(response))
 
-    subscribe_job_notification(request, agave, str(response.id))
+    # subscribe_job_notification(request, agave, str(response.id))
 
     return response
+
 
 @app.task
 def subscribe_job_notification(request, agave, job_id):

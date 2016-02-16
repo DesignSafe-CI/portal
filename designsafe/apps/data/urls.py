@@ -1,8 +1,13 @@
-from django.conf.urls import include, url, patterns
 from designsafe.apps.data.views.api import *
 from designsafe.apps.data.views.base import BaseTemplate
+from django.conf.urls import url, patterns
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
+
 urlpatterns = patterns('designsafe.apps.data.views.base',
-    url(r'^$', BaseTemplate.as_view(template_name='data/index.html')),
+    url(r'^$', BaseTemplate.as_view(template_name='data/index.html'), name='index'),
+    url(r'^my/$', BaseTemplate.as_view(template_name='data/my_data.html'), name='my_data'),
+    url(r'^public/$', BaseTemplate.as_view(template_name='data/public_data.html'), name='public_data'),
 )
 
 urlpatterns += patterns('designsafe.apps.data.views.api',
@@ -18,3 +23,24 @@ urlpatterns += patterns('designsafe.apps.data.views.api',
     url(r'^api/mkdir/(?P<file_path>[a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(), name='manage'),
 )
 
+
+def menu_items(**kwargs):
+    if 'type' in kwargs and kwargs['type'] == 'research_workbench':
+        return [
+            {
+                'label': _('Data Browser'),
+                'url': reverse('designsafe_data:index'),
+                'children': [
+                    {
+                        'label': _('Public Data'),
+                        'url': reverse('designsafe_data:public_data'),
+                        'children': []
+                    },
+                    {
+                        'label': _('My Data'),
+                        'url': reverse('designsafe_data:my_data'),
+                        'children': []
+                    }
+                ]
+            }
+        ]

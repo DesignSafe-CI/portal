@@ -1,5 +1,34 @@
 # DesignSafe-CI Portal Release Notes
 
+## v1.0.0-alpha-1
+
+February 15, 2016
+
+First alpha release of the Portal.
+
+Features:
+
+- Research Workbench
+    - Discovery Workspace
+        - ...
+    - Data Depot Browser
+        - ...
+- Updated site navigation to support per-section navigation
+    - Driven by CMS
+
+
+## v0.4.2
+
+February 12, 2016
+
+- Support per-site CMS permissions
+
+## v0.4.1
+
+January 06, 2016
+
+- Add individual EF sites.
+
 ## v0.3.0
 
 December 04, 2015
