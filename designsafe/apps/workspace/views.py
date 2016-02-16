@@ -31,7 +31,7 @@ def index(request):
 @login_required
 def call_api(request, service):
     task_id = ''
-    token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
+    token = request.user.agave_oauth.token
     access_token = token.get('access_token', None)
     server = os.environ.get('AGAVE_TENANT_BASEURL')
 
