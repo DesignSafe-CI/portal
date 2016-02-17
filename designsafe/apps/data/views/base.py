@@ -34,25 +34,30 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
             return HttpResponse(e.message, status = 400)
 
     def set_context_props(self, request, **kwargs):
-        #TODO: Getting the filesystem should check in which system is the user in or requesting.
+        #TODO: Getting the filesystem should check in which system is the user in or requesting
         filesystem = kwargs.get('filesystem')
+        settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+        self.file_path = kwargs.get('file_path', None)
+        if self.file_path is None:
+            self.file_path = '/'
         if filesystem == 'default':
             self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
             self.force_homedir = True
         else:
             self.filesystem = filesystem
             self.force_homedir = False
-        self.file_path = kwargs.get('file_path', None)
 
-        if self.file_path is None or self.file_path == '/' and self.force_homedir:
+        logger.debug('file_path before : {}'.format(self.file_path))
+        if self.file_path == '/' and filesystem == 'default':
             self.file_path = request.user.username
         else:
             if len(self.file_path) > 1 and '/' == self.file_path[0]:
                 self.file_path = self.file_path[1:]
-            if self.force_homedir:
+            if self.force_homedir and filesystem == 'default':
                 self.file_path = request.user.username + '/' + self.file_path
                 if '/' == self.file_path[-1]:
                     self.file_path = self.file_path[:-1]
+        logger.debug('file_path: {}'.format(self.file_path))
         super(BaseView, self).set_context_props(request, **kwargs)
 
 class  BaseTemplate(SecureMixin, TemplateView):
