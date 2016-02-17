@@ -19,7 +19,7 @@
         }
 
         this.requesting = false;
-        this.upload = function(fileList, path) {
+        this.upload = function(fileList, path, filesystem) {
 
             if (! window.FormData) {
                 throw new Error('Unsupported browser version');
@@ -35,7 +35,7 @@
             }
 
             self.requesting = true;
-            var url = fileManagerConfig.uploadUrl + path;
+            var url = fileManagerConfig.baseUrl + filesystem + '/' + fileManagerConfig.uploadUrl + path;
             $http(
               {
                 method: 'POST',

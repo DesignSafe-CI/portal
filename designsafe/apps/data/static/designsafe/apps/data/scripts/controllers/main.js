@@ -293,7 +293,7 @@
             } else {
                 filesToSend = $scope.uploadFileList;
             }
-            $scope.fileUploader.upload(filesToSend, $scope.fileNavigator.currentPath)
+            $scope.fileUploader.upload(filesToSend, $scope.fileNavigator.currentPath, $scope.filesystem)
             .then(function() {
                 $scope.fileNavigator.refresh($scope.filesystem);
                 $scope.modal('uploadfile', true);
