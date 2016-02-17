@@ -26,7 +26,9 @@ class ListingsView(BaseView):
             manager.check_shared_folder(system_id = self.filesystem, 
                                     username = request.user.username)
         l = manager.list_meta_path(system_id = self.filesystem, 
-                                    path = self.file_path)
+                                    path = self.file_path, 
+                                    special_dir = self.special_dir, 
+                                    username = request.user.username)
         return self.render_to_json_response([o.as_json() for o in l])
 
 class DownloadView(BaseView):

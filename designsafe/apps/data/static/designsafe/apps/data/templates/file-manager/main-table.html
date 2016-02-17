@@ -7,7 +7,7 @@
                     <span class="sortorder" ng-show="predicate[1] === 'model.name'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
-            <th class="hidden-xs">
+            <th class="hidden-xs hidden-sm">
                 <a href="" ng-click="order('model.size')">
                     {{"size" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.size'" ng-class="{reverse:reverse}"></span>
@@ -25,7 +25,7 @@
                     <span class="sortorder" ng-show="predicate[1] === 'model.permissions'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th> -->
-            <th class="hidden-sm hidden-xs">
+            <th class="">
                 <a href="" ng-click="order('model.date')">
                     <span class="sortorder" ng-class="{reverse:reverse}">Action</span>
                 </a>
@@ -60,9 +60,12 @@
                     <span ng-if = "fileNavigator.searchResults">
                     {{item.model.fullPath() | strLimit : 120}}
                     </span>
+                    <span ng-show="item.downloading" class="label label-warning">
+                        {{"Downloading" | translate}}...
+                    </span>
                 </a>
             </td>
-            <td class="hidden-xs">
+            <td class="hidden-sm hidden-xs">
                 {{item.model.sizeKb()}}kb
             </td>
             <td class="hidden-sm hidden-xs">
@@ -72,7 +75,7 @@
             <!-- <td class="hidden-sm hidden-xs">
                 {{item.model.perms.toCode(item.model.type === 'dir'?'d':'-')}}
             </td> -->
-            <td class="hidden-sm hidden-xs">
+            <td class="">
                 <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
             </td>
         </tr>

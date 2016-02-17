@@ -36,7 +36,7 @@
         WSBusService.init(WSBusService.url);
     }])
     .run(['NotificationService', function init(NotificationService){
-        console.log('workspace app.js running NotificationService')
+        console.log('workspace app.js running NotificationService');
         NotificationService.init();
     }]);
 
@@ -54,11 +54,11 @@
     });
 
     $(window.document).on('contextmenu', '.main-navigation .table-files td:first-child, .iconset a.thumbnail', function(e) {
-        $("#context-menu").hide().css({
-            left: e.pageX,
-            top: e.pageY
-        }).show();
-        e.preventDefault();
+        //$("#context-menu").hide().css({
+        //    left: e.pageX,
+        //    top: e.pageY
+        //}).show();
+        //e.preventDefault();
     });
 
 })(window, angular, jQuery);

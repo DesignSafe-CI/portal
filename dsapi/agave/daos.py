@@ -69,10 +69,11 @@ class AgaveFilesManager(AgaveObject):
         ret = {}
         mf = AgaveMetaFolderFile.from_path(self.agave_client, 
                                     system_id, path)
+
         if mf.file_type == 'folder':
             q = '''{{
                     "name": "{}",
-                    "value.path": {{ "$regex": "^{}", "$options": "m"}},
+                    "value.path": {{ "$regex": "^{}(/.*)*$", "$options": "m"}},
                     "value.systemId": "{}"
                 }}'''.format(object_name, mf.path + '/' + mf.name, system_id)
             objs = self.call_operation('meta.listMetadata', q = q)
@@ -128,24 +129,14 @@ class AgaveFilesManager(AgaveObject):
         ret = [AgaveFolderFile(self.agave_client, file_obj = o) for o in res]
         return ret
 
-    def list_meta_path(self, system_id = None, path = None):
+    def list_meta_path(self, system_id = None, path = None, special_dir = None, username = None):
         paths = path.split('/')
-        if len(paths) >= 2 and paths[1] == shared_with_me:
-            if len(paths) == 2:
-                q = '''{{ "value.deleted": "false", 
-                          "name": "{}", 
-                          "value.path": "/", 
-                          "value.name": {{ "$not": {{ "$regex": "^{}$", "$options": "m"}} }},
-                          "value.systemId": "{}" }}'''.format(object_name, paths[0], system_id)
-            else:
-                regex = r'^{}/{}/'.format(paths[0], paths[1])
-                path = re.sub(regex, '', path)
-                if path[-1] == '/':
-                    path = path[:-1]
-                q = '''{{ "value.deleted": "false", 
-                          "name": "{}", 
-                          "value.path": "{}", 
-                          "value.systemId": "{}" }}'''.format(object_name, path, system_id)
+        if special_dir == shared_with_me and path == '/':
+            q = '''{{ "value.deleted": "false", 
+                      "name": "{}", 
+                      "value.path": "/", 
+                      "value.name": {{ "$not": {{ "$regex": "^{}$", "$options": "m"}} }},
+                      "value.systemId": "{}" }}'''.format(object_name, username, system_id)
         else:
             q = '''{{ "value.deleted": "false", 
                       "name": "{}", 

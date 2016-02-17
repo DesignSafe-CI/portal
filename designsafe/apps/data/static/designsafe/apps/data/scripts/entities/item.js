@@ -229,6 +229,8 @@
             var path = self.model.fullPath();
             var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.downloadFileUrl + path;
             self.requesting = true;
+            self.inprocess = true;
+            self.downloading = true;
             $http(
               {
                 method: 'GET',
@@ -243,6 +245,8 @@
                 self.deferredHandler(data, deferred, 'Unknown error downloading file');
             })['finally'](function(data) {
                 self.requesting = false;
+                self.inprocess = false;
+                self.downloading = false;
             });
 
             return deferred.promise;

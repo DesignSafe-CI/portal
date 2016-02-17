@@ -4,6 +4,7 @@ from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
 from django.views.generic.base import View, TemplateView
 from django.http import HttpResponse
 from requests.exceptions import ConnectionError, HTTPError
+from dsapi.agave.daos import shared_with_me
 from django.conf import settings
 import logging
 
@@ -17,6 +18,7 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         self.filesystem = None
         self.file_path = None
         self.force_homedir = True
+        self.special_dir = None
         super(BaseView, self).__init__(**kwargs)
 
     def dispatch(self, request, *args, **kwargs):
@@ -38,8 +40,7 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         filesystem = kwargs.get('filesystem')
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
         self.file_path = kwargs.get('file_path', None)
-        if self.file_path is None:
-            self.file_path = '/'
+
         if filesystem == 'default':
             self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
             self.force_homedir = True
@@ -47,16 +48,24 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
             self.filesystem = filesystem
             self.force_homedir = False
 
-        logger.debug('file_path before : {}'.format(self.file_path))
-        if self.file_path == '/' and filesystem == 'default':
-            self.file_path = request.user.username
+        if self.file_path is None or self.file_path == '/':
+            self.file_path = '/'
         else:
-            if len(self.file_path) > 1 and '/' == self.file_path[0]:
-                self.file_path = self.file_path[1:]
-            if self.force_homedir and filesystem == 'default':
-                self.file_path = request.user.username + '/' + self.file_path
-                if '/' == self.file_path[-1]:
-                    self.file_path = self.file_path[:-1]
+            self.file_path = self.file_path.strip('/')
+            paths = self.file_path.split('/')
+            if filesystem == 'default' and paths[0] == shared_with_me:
+                self.special_dir = shared_with_me
+                if len(paths) >= 2:
+                    self.file_path = '/'.join(paths[1:])
+                else:
+                    self.file_path = '/'
+                self.force_homedir = False
+
+        logger.debug('file_path before : {}'.format(self.file_path))
+        if filesystem == 'default' and self.force_homedir:
+            self.file_path = request.user.username + '/' + self.file_path
+            self.file_path = self.file_path.strip('/')
+
         logger.debug('file_path: {}'.format(self.file_path))
         super(BaseView, self).set_context_props(request, **kwargs)
 

@@ -82,8 +82,7 @@
             $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
-            }
-            if (item.isImage()) {
+            }else{
                 return item.preview();
             }
             // if (item.isEditable()) {
