@@ -34,10 +34,11 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
             return HttpResponse(e.message, status = 400)
 
     def set_context_props(self, request, **kwargs):
-        #TODO: Getting the filesystem should check in which system is the user in or requesting.
+        #TODO: Getting the filesystem should check in which system is the user in or requesting
         filesystem = kwargs.get('filesystem')
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-        logger.debug('Filesystem from kwargs: {}'.format(filesystem))
+        if self.file_path is None:
+            self.file_path = '/'
         if filesystem == 'default':
             self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
             self.force_homedir = True
@@ -45,11 +46,9 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
             self.filesystem = filesystem
             self.force_homedir = False
         self.file_path = kwargs.get('file_path', None)
-        logger.debug('Filesystem after: {}'.format(filesystem))
-        logger.debug('force_homedir: {}'.format(self.force_homedir))
 
         logger.debug('file_path before : {}'.format(self.file_path))
-        if self.file_path is None or self.file_path == '/' and filesystem == 'default':
+        if self.file_path == '/' and filesystem == 'default':
             self.file_path = request.user.username
         else:
             if len(self.file_path) > 1 and '/' == self.file_path[0]:
