@@ -37,6 +37,7 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         #TODO: Getting the filesystem should check in which system is the user in or requesting
         filesystem = kwargs.get('filesystem')
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
+        self.file_path = kwargs.get('file_path', None)
         if self.file_path is None:
             self.file_path = '/'
         if filesystem == 'default':
@@ -45,7 +46,6 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
         else:
             self.filesystem = filesystem
             self.force_homedir = False
-        self.file_path = kwargs.get('file_path', None)
 
         logger.debug('file_path before : {}'.format(self.file_path))
         if self.file_path == '/' and filesystem == 'default':
