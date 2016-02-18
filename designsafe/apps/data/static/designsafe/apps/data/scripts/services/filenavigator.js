@@ -14,6 +14,42 @@
             this.filesystem = filesystem;
         };
 
+        var transformFiles = function(data){
+          data = JSON.parse(data);
+            if (data.length){
+              data.result = data.map(function(file){
+                switch(file.permissions){
+                  case "READ": file.rights = "r--------";
+                  break;
+                  case "WRITE": file.rights = "-w-------";
+                  break;
+                  case "EXECUTE": file.rights = "--x------";
+                  break;
+                  case "READ_WRITE": file.rights = "rw-------";
+                  break;
+                  case "READ_EXECUTE": file.rights = "r-x------";
+                  break;
+                  case "WRITE_EXECUTE": file.rights = "-wx------";
+                  break;
+                  case "EXECUTE": file.rights = "rwx------";
+                  break;
+                }
+                file.date = file.lastModified;
+                file.size = file.length;
+                file.agavePath = file.agavePath;
+                if (typeof file.fileType != 'undefined' && file.fileType !== null){
+                    file.type = file.fileType === 'folder' ? 'dir' : 'file';
+                }
+                else{
+                    file.type = file.type === 'dir' ? 'dir' : 'file';
+                }
+                console.log('file: ', file);
+                return file;
+              });
+            }
+            return data;
+        };
+
         FileNavigator.prototype.deferredHandler = function(data, deferred, defaultMsg) {
             if (!data || typeof data !== 'object') {
                 this.error = 'Bridge response error, please check the docs';
@@ -57,46 +93,7 @@
               {
                 method: 'GET',
                 url: url,
-                transformResponse: function(data){
-                  data = JSON.parse(data);
-                  console.log('Data: ', data);
-                  if (data.status === 'error'){
-                  } else {
-                    if (data.length){
-                      data.result = data.map(function(file){
-                        file.name = file.name;
-                        switch(file.permissions){
-                          case "READ": file.rights = "r--------";
-                          break;
-                          case "WRITE": file.rights = "-w-------";
-                          break;
-                          case "EXECUTE": file.rights = "--x------";
-                          break;
-                          case "READ_WRITE": file.rights = "rw-------";
-                          break;
-                          case "READ_EXECUTE": file.rights = "r-x------";
-                          break;
-                          case "WRITE_EXECUTE": file.rights = "-wx------";
-                          break;
-                          case "EXECUTE": file.rights = "rwx------";
-                          break;
-                        }
-                        file.date = file.lastModified;
-                        file.size = file.length;
-                        file.agavePath = file.agavePath;
-                        if (typeof file.fileType != 'undefined' && file.fileType !== null){
-                            file.type = file.fileType === 'folder' ? 'dir' : 'file';
-                        }
-                        else{
-                            file.type = file.type === 'dir' ? 'dir' : 'file';
-                        }
-                        console.log('file: ', file);
-                        return file;
-                      });
-                    }
-                    return data;
-                }
-              }
+                transformResponse: transformFiles
             }).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
@@ -199,7 +196,8 @@
             return self.searchByTerm(searchTerm).then(function(matches){
                 self.fileList = (matches || []).map(function(file){
                     var path = file.path.split('/');
-                    return new Item(file, path.splice(1));
+                    path = self.filesystem == 'default'? path.splice(1): path;
+                    return new Item(file, path);
                 });
                 self.buildTree(path);
             });
@@ -215,19 +213,7 @@
               {
                 method: 'GET',
                 url: url,
-                transformResponse: function(data){
-                    var matches=JSON.parse(data);
-                    matches = matches.map(function(file){
-                    var rfile = file;
-                    rfile.rights = 'r--------';
-                    rfile.agavePath = file.agavePath;
-                    file.date = file.lastModified;
-                    file.size = file.length;
-                    file.type = file.fileType == 'folder' ? 'dir' : 'file';
-                    return rfile;
-                    });
-                    return matches;
-                }
+                transformResponse: transformFiles
               }
             ).success(function(matches) {
                 console.log('matches', matches);

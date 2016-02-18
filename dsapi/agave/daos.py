@@ -150,7 +150,7 @@ class AgaveFilesManager(AgaveObject):
                     meta_obj = o) for o in res]
         return ret
 
-    def search_meta(self, q):
+    def search_meta(self, q, system_id):
         if q is None:
             return []
         q = json.loads(q)
@@ -161,8 +161,9 @@ class AgaveFilesManager(AgaveObject):
                     {{"value.name": {{"$regex": "{term}", "$options": "i"}} }},
                     {{"value.path": {{"$regex": "{term}", "$options": "i"}} }},
                     {{"value.keywords": {{"$regex": "{term}", "$options": "i"}} }}
-                ]
-            }}'''.format(term = q['all'])
+                ],
+                "value.systemId": "{system_id}"
+            }}'''.format(term = q['all'], system_id = system_id)
         logger.info('json to search: {}'.format(meta_q))
         res = self.call_operation('meta.listMetadata', **{'q': meta_q})
         ret = [AgaveMetaFolderFile(agave_client = self.agave_client,

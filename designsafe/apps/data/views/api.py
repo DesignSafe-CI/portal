@@ -117,5 +117,5 @@ class MetaSearchView(BaseView):
 
     def get(self, request, *args, **kwargs):
         mgr = self.set_context_props(request, **kwargs)
-        res = mgr.search_meta(request.GET.get('q', None))
+        res = mgr.search_meta(request.GET.get('q', None), self.filesystem)
         return self.render_to_json_response([o.as_json() for o in res])
