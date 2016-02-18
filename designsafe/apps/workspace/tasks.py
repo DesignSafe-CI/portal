@@ -36,7 +36,7 @@ def submit_job(request, agave, job_post):
     try:
         response = agave.jobs.submit(body=job_post)
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
-        logger.info('Task HTTPError: {}'.format(e.__class__))
+        logger.info('Task HTTPError {0}: {1}'.format(e.response.status_code, e.__class__))
         submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when "
                                "it returns."), max_retries=None)
     logger.info('agave response: {}'.format(response))

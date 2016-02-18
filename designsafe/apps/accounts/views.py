@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -82,6 +82,10 @@ def notifications(request):
                       'unread': unread
                   })
 
+def delete_notification(request):
+    if request.POST.get('delete') == 'delete':
+        Notification.objects.get(id=request.POST.get('id')).delete()
+        return redirect('/account/notifications/')
 
 def register(request):
     if request.user.is_authenticated():

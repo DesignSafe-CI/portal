@@ -18,6 +18,11 @@
   <ul class="list-group">
     {% for x in notifications %}
       <li class="list-group-item {% if x.read %} text-muted {% else %} text-info {% endif %}">
+      <form id="delete_{{x.id}}" method="post" action ="{% url 'designsafe_accounts:delete_notification' %}">
+        {% csrf_token %}
+        <input name="id" type="hidden" value="{{x.id}}">
+        <button name="delete" value="delete" type="submit">Delete</button>
+      </form>
         <dl class="dl-horizontal">
           <dt>Type</dt>
           <dd>{{ x.event_type }}</dd>
@@ -68,4 +73,5 @@
   })(window, jQuery);
 </script>
 {% endaddtoblock %}
+
 {% endblock %}
