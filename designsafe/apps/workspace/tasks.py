@@ -42,7 +42,7 @@ def submit_job(request, agave, job_post):
     logger.info('agave response: {}'.format(response))
 
     # subscribe_job_notification(request, agave, str(response.id))
-    mock_agave_notification() #for testing
+    # mock_agave_notification() #for testing
 
     return response
 

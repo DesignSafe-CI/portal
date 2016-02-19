@@ -1,0 +1,41 @@
+{% extends "base_angular.html" %}
+{% load sekizai_tags %}
+{% load static %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container" ng-app="NotificationList">
+<h1 class="headline headline-research">Notifications</h1>
+  <div ng-controller="NotificationListCtrl" ng-include="'{% static 'designsafe/apps/notifications/html/notification_list.html' %}'">
+  {{message}}
+  </div>
+
+{% addtoblock "js" %}
+  <script type="text/javascript" src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/angular-sanitize/angular-sanitize.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/tv4/tv4.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/objectpath/lib/ObjectPath.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/schema-form.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+  <script type="text/javascript" src="{% static 'djangular/js/django-angular.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script>
+  (function(window, $, undefined) {
+    $('button[name="toggle-raw-message"]').on('click', function(e) {
+      e.preventDefault();
+      $(this).parent().next().toggleClass('show');
+    });
+  })(window, jQuery);
+</script>
+<script type="text/javascript" src="{% static 'designsafe/apps/notifications/scripts/app.js' %}"></script>
+<script type="text/javascript" src="{% static 'designsafe/apps/notifications/scripts/service.js' %}"></script>
+{% endaddtoblock %}
+
+{% endblock %}
