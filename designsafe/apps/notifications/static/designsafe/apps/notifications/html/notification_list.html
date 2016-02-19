@@ -12,20 +12,15 @@
         <li class="list-group-item {% if x.read %} text-muted {% else %} text-info {% endif %}"
             ng-repeat="x in data.notifications"
             ng-class="{
-              'text-muted': x.read===true,
-              'text-info': x.read===false
+              'text-muted': x.fields.read===true,
+              'text-info': x.fields.read===false
             }">
-            {{x}}
-        <form id="delete_{{x.id}}" method="post" action ="{% url 'designsafe_notifications:delete_notification' %}">
-          {% csrf_token %}
-          <input name="id" type="hidden" value="{{x.pk}}">
-          <button name="delete" value="delete" type="submit">Delete</button>
-        </form>
+          <button name="delete" ng-click="delete(x.pk)">Delete</button>
           <dl class="dl-horizontal">
             <dt>Type</dt>
             <dd>{{ x.fields.event_type }}</dd>
             <dt>Time</dt>
-            <dd>{{x.fields.notification_time|date:'Y-m-d H:i'}}</dd>
+            <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
 
             <div ng-if="x.fields.event_type=='job'">
               <dt>Job name</dt>
@@ -45,7 +40,6 @@
             </dd>
           </dl>
         </li>
-      {% endfor %}
     </ul>
 </div>
 

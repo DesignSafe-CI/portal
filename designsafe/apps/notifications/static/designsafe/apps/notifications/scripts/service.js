@@ -8,9 +8,9 @@
       return $http.get(djangoUrl.reverse('designsafe_notifications:notifications', []));
     };
 
-    // service.delete = function(id) {
-    //   return $http.post(djangoUrl.reverse('designsafe_notifications:delete_notification', []), params: {'id': encodeURIComponent(id)});
-    // };
+    service.delete = function(pk) {
+      return $http.post(djangoUrl.reverse('designsafe_notifications:delete_notification', []), {'pk': encodeURIComponent(pk)});
+    };
 
     return service;
   }]);

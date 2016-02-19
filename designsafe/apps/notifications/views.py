@@ -95,7 +95,8 @@ def get_number_unread_notifications(request):
 
 def notifications(request):
     items = Notification.objects.filter(
-        deleted=False, user=str(request.user)).order_by('-notification_time')
+        deleted=False,
+        user=str(request.user)).order_by('-notification_time')
     unread = 0
     for i in items:
         if not i.read:
@@ -108,6 +109,8 @@ def notifications(request):
     return HttpResponse(items, content_type='application/json')
 
 def delete_notification(request):
-    if request.POST.get('delete') == 'delete':
-        Notification.objects.get(id=request.POST.get('id')).delete()
-        return redirect('index')
+    body = json.loads(request.body)
+    x = Notification.objects.get(pk=body['pk'])
+    x.deleted = True
+    x.save()
+    return HttpResponse('OK')
