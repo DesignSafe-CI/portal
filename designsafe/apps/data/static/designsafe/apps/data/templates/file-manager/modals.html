@@ -390,7 +390,32 @@
   </div>
 </div>
 
-
+<div class="modal animated fadeIn" id="preview">
+  <div class="modal-dialog">
+    <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
+              </button>
+              <h4 class="modal-title">{{'Preview' | translate}} <b>{{temp.model.name}}</b></h4>
+            </div>
+            <div class="modal-body">
+              <span class="label label-warning" ng-show="temp.inprocess">{{'loading' | translate}} ...</span>
+              <div ng-show="!temp.inprocess">
+                <object ng-show="temp.tempModel.preview.isPdf" data = "{{temp.tempModel.preview.url}}" onload="window.URL.revokeObjectURL(this.src);">
+                </object>
+                <img ng-show="temp.tempModel.preview.isImage" src = "{{temp.tempModel.preview.url}}" onload="window.URL.revokeObjectURL(this.src);"/>
+                <pre ng-show="temp.tempModel.preview.isText">{{temp.tempModel.preview.data}}</pre>
+            </div>
+              <div ng-include data-src="'error-bar'" class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"close" | translate}}</button>
+            </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/ng-template" id="path-selector">
   <div class="panel panel-primary mt10 mb0">
