@@ -1,4 +1,4 @@
-<div ng-if="data.notifications">
+<div ng-if="data.notifications.length">
     <div class="alert alert-info">
       <h4>Coming soon!</h4>
       <p>
@@ -8,42 +8,38 @@
     </div>
 
     <ul class="list-group">
-      <!-- {% for x in notifications %} -->
-        <li class="list-group-item {% if x.read %} text-muted {% else %} text-info {% endif %}"
-            ng-repeat="x in data.notifications"
-            ng-class="{
-              'text-muted': x.fields.read===true,
-              'text-info': x.fields.read===false
-            }">
+        <li class="list-group-item" ng-repeat="x in data.notifications">
           <button name="delete" ng-click="delete(x.pk)">Delete</button>
-          <dl class="dl-horizontal">
-            <dt>Type</dt>
-            <dd>{{ x.fields.event_type }}</dd>
-            <dt>Time</dt>
-            <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+          <div ng-class="(x.fields.read) ? 'text-muted' : 'text-info'">
+            <dl class="dl-horizontal">
+              <dt>Type</dt>
+              <dd>{{ x.fields.event_type }}</dd>
+              <dt>Time</dt>
+              <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
 
-            <div ng-if="x.fields.event_type=='job'">
-              <dt>Job name</dt>
-              <dd>{{x.fields.body.job_name}}</dd>
+              <div ng-if="x.fields.event_type=='job'">
+                <dt>Job name</dt>
+                <dd>{{x.fields.body.job_name}}</dd>
 
-              <dt>Status</dt>
-              <dd>{{x.fields.body.status}}</dd>
+                <dt>Status</dt>
+                <dd>{{x.fields.body.status}}</dd>
 
-              <dt>Archive path</dt>
-              <dd>{{x.fields.body.archive_path}}</dd>
-            </div>
+                <dt>Archive path</dt>
+                <dd>{{x.fields.body.archive_path}}</dd>
+              </div>
 
-            <dt>Raw message</dt>
-            <dd>
-              <p><button type="button" name="toggle-raw-message" class="btn btn-xs btn-default">Click to view</button></p>
-              <p class="hide">{{x}}</p>
-            </dd>
-          </dl>
+              <dt>Raw message</dt>
+              <dd>
+                <p><button ng-click="showRawMessage = !showRawMessage" type="button" name="toggle-raw-message" class="btn btn-xs btn-default">Click to view</button></p>
+                <p ng-show="showRawMessage">{{x}}</p>
+              </dd>
+            </dl>
+          </div>
         </li>
     </ul>
 </div>
 
-<div ng-if="!data.notifications" class="jumbotron text-center">
+<div ng-if="!data.notifications.length" class="jumbotron text-center">
   <i class="fa fa-bell fa-2x text-muted"></i>
   <h2>No unread notifications.</h2>
   <p>

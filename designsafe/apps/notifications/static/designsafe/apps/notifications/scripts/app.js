@@ -18,6 +18,8 @@
 
   angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', function($scope,$rootScope,notificationFactory) {
       $scope.data = {};
+      $scope.showRawMessage = false;
+      $scope.data.notifications = [];
 
       $scope.list = function(){
         notificationFactory.list().then(function(resp) {
