@@ -235,14 +235,20 @@
               {
                 method: 'GET',
                 url: url,
-                responseType: 'arraybuffer',
                 cache: false
               }
             ).success(function(data) {
                 if (preview){
                     previewFile(data, self);
                 }else{
-                    saveAs(new Blob([data]),self.model.name);
+                    var link = document.createElement('a');
+                    link.setAttribute('download', data.name);
+                    link.setAttribute('href', data.link);
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    //saveAs(new Blob([data]),self.model.name);
                 }
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
@@ -257,22 +263,22 @@
         };
 
         var previewFile = function(data, item){
-            var blobUrl;
-            if (URL.createObjectURL){
-                blobUrl = window.URL.createObjectURL(new Blob([data]));
-            } else{
-                blobUrl = window.webkitURL.createObjectURL(new Blob([data]));
-            }
             item.tempModel.preview = {};
-            if (item.isPdf()){
-                item.tempModel.preview.isPdf = true;
-                item.tempModel.preview.url = blobUrl;
-            } else if (item.isImage()){
-                item.tempModel.preview.isImage = true;
-                item.tempModel.preview.url = blobUrl;
-            } else {
-                item.tempModel.preview.isText = true;
-                item.tempModel.preview.data = data;
+            item.tempModel.preview.url = data.link;
+            item.tempModel.preview.isPdf = item.isPdf();
+            item.tempModel.preview.isImage = item.isImage();
+            item.tempModel.preview.isText = item.isText();
+            if(!item.tempModel.preview.isImage){
+                $http({
+                    method: 'GET',
+                    url: data.link,
+                    responseType: 'arraybuffer',
+                    cache: false
+                }).success(function(filedata){
+                    item.tempModel.preview.data = URL.createObjectURL(new Blob([filedata]));
+                }).error(function(err){
+                    self.deferredHandler(err, deferred, 'Unknown error downloading file');
+                });
             }
         };
 
@@ -520,6 +526,10 @@
 
         Item.prototype.isPdf = function(){
             return !this.isFolder() && fileManagerConfig.isPdfFilePattern.test(this.model.name);
+        };
+
+        Item.prototype.isText = function(){
+            return !this.isFolder() && fileManagerConfig.isTextFilePattern.test(this.model.name);
         };
 
         return Item;
