@@ -1,6 +1,7 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import Event
 from designsafe.apps.notifications.models import Notification
+from designsafe.apps.signals.signals import generic_event
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
@@ -11,6 +12,17 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+@require_POST
+@csrf_exempt
+def generic_webhook_handler(request):
+    event_type = request.GET.get('type', None)
+    if event_type:
+        generic_event.send_robust(None, event_type=event_type, event_data=request.body)
+        return HttpResponse('OK')
+    else:
+        return HttpResponse('Unexpected', status=400)
 
 @require_POST
 @csrf_exempt
