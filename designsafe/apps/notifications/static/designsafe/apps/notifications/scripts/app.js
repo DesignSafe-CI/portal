@@ -36,7 +36,6 @@
 
       $scope.delete = function(pk){
         notificationFactory.delete(pk).then(function(resp) {
-          console.log
           $scope.list();
         })
       }

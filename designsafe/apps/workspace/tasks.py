@@ -42,14 +42,13 @@ def submit_job(request, agave, job_post):
     logger.info('agave response: {}'.format(response))
 
     # subscribe_job_notification(request, agave, str(response.id))
-    # mock_agave_notification() #for testing
+    mock_agave_notification() #for testing
 
     return response
 
 
 @app.task
 def subscribe_job_notification(request, agave, job_id):
-    # mock_agave_notification() #for testing
     url=request.build_absolute_uri(reverse('jobs_webhook'))+'?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
     logger.info('job notification url: {}'.format(url))
 

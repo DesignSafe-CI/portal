@@ -110,7 +110,14 @@ def notifications(request):
 
 def delete_notification(request):
     body = json.loads(request.body)
-    x = Notification.objects.get(pk=body['pk'])
-    x.deleted = True
-    x.save()
+    pk = body['pk']
+    logger.info('pk: {}'.format(pk))
+    if pk == 'all':
+        items=Notification.objects.filter(deleted=False, user=str(request.user))
+        for i in items:
+            i.mark_deleted()
+    else:
+        x = Notification.objects.get(pk=pk)
+        x.mark_deleted()
+
     return HttpResponse('OK')
