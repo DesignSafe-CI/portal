@@ -26,14 +26,6 @@
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
-<script>
-  (function(window, $, undefined) {
-    $('button[name="toggle-raw-message"]').on('click', function(e) {
-      e.preventDefault();
-      $(this).parent().next().toggleClass('show');
-    });
-  })(window, jQuery);
-</script>
 <script type="text/javascript" src="{% static 'designsafe/apps/notifications/scripts/app.js' %}"></script>
 <script type="text/javascript" src="{% static 'designsafe/apps/notifications/scripts/service.js' %}"></script>
 {% endaddtoblock %}
