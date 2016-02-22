@@ -82,8 +82,16 @@
             $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
+            }else if(item.isPreviewable()){
+                $scope.modal('preview');
+                $scope.temp = item;
+                return item.preview().catch(
+                    function(data){
+                        item.error = $translate.instant('error_invalid_filename');
+                    }
+                );
             }else{
-                return item.preview();
+                return item.download();
             }
             // if (item.isEditable()) {
             //     item.getContent();

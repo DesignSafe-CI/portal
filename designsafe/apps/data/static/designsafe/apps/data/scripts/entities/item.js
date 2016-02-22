@@ -239,7 +239,11 @@
                 cache: false
               }
             ).success(function(data) {
-                saveAs(new Blob([data]),self.model.name);
+                if (preview){
+                    previewFile(data, self);
+                }else{
+                    saveAs(new Blob([data]),self.model.name);
+                }
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, 'Unknown error downloading file');
@@ -250,6 +254,26 @@
             });
 
             return deferred.promise;
+        };
+
+        var previewFile = function(data, item){
+            var blobUrl;
+            if (URL.createObjectURL){
+                blobUrl = window.URL.createObjectURL(new Blob([data]));
+            } else{
+                blobUrl = window.webkitURL.createObjectURL(new Blob([data]));
+            }
+            item.tempModel.preview = {};
+            if (item.isPdf()){
+                item.tempModel.preview.isPdf = true;
+                item.tempModel.preview.url = blobUrl;
+            } else if (item.isImage()){
+                item.tempModel.preview.isImage = true;
+                item.tempModel.preview.url = blobUrl;
+            } else {
+                item.tempModel.preview.isText = true;
+                item.tempModel.preview.data = data;
+            }
         };
 
         Item.prototype.preview = function() {
@@ -478,6 +502,10 @@
             return !this.isFolder() && fileManagerConfig.isEditableFilePattern.test(this.model.name);
         };
 
+        Item.prototype.isPreviewable = function() {
+            return !this.isFolder() && fileManagerConfig.isPreviewableFilePattern.test(this.model.name);
+        };
+
         Item.prototype.isImage = function() {
             return fileManagerConfig.isImageFilePattern.test(this.model.name);
         };
@@ -488,6 +516,10 @@
 
         Item.prototype.isExtractable = function() {
             return !this.isFolder() && fileManagerConfig.isExtractableFilePattern.test(this.model.name);
+        };
+
+        Item.prototype.isPdf = function(){
+            return !this.isFolder() && fileManagerConfig.isPdfFilePattern.test(this.model.name);
         };
 
         return Item;
