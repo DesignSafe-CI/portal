@@ -28,7 +28,7 @@ def basic_search(index, user, search_phrase):
     Args:
         index: the search index to query against
         user: the user to filter results to
-        search_phrase: search string
+        search_phrase: search string. should be lowercase.
 
     Returns:
         A tuple of (response, search)
@@ -46,7 +46,8 @@ def advanced_search(index, user, search_terms):
     Args:
         index: the search index to query against
         user: the user to filter results to
-        search_terms: a dictionary of {"field":"value"} to query
+        search_terms: a dictionary of {"field":"value"} to query. values should be
+                      lowercase.
 
     Returns:
         A tuple of (response, search)
