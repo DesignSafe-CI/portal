@@ -52,6 +52,8 @@ virtualenv==13.0.1
 wheel==0.24.0
 opbeat
 boxsdk==1.4.0
+elasticsearch>=2.0.0,<3.0.0
+elasticsearch-dsl>=2.0.0,<3.0.0
 
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.0.3#egg=pytas-1.0.3
