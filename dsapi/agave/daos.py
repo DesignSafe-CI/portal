@@ -3,6 +3,7 @@ from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
 import requests
 import copy
+import urllib
 #Data Access Objects to represent data to and from APIs
 import re
 import json
@@ -373,10 +374,35 @@ class AgaveFolderFile(AgaveObject):
                 setattr(self, key, nv)
                 logger.info('setted {} val {}'.format(key, getattr(self, key)))
         return self
-
+    
     def download_stream(self, headers):
+        '''
+        @deprecated
+        Use download_postit()
+        '''
         stream = requests.get(self.link, stream=True, headers = headers)
         return stream
+
+    def download_postit(self):
+        logger.info('Creating postit of: {}'.format(self.link))
+        filepath = self.link.replace(self.agave_client.api_server, "")
+        url = self.agave_client.api_server
+        vals = filepath.split('/')
+        for i, v in enumerate(vals):
+            url += urllib.quote_plus(v)
+            if i < len(vals) - 1:
+                url += '/'
+        logger.info('url {}'.format(url))
+        postit_data = {
+            'url': url,
+            'maxUses': 1,
+            'method': 'GET',
+            'lifetime': 60,
+            'noauth': True
+        }
+        postit = self.call_operation('postits.create', body = postit_data)
+        logger.debug('Postit: {}'.format(postit))
+        return postit['_links']['self']['href']
 
     def upload(self, f = None, headers = None):
     #TODO: Updating a file should be put into a queue.

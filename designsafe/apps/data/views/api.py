@@ -8,14 +8,14 @@ from django.utils.decorators import method_decorator
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.data.apps import DataEvent
 
-from .base import BaseView
+from .base import BaseView, BaseJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager
 
 import json, requests, traceback
 import logging
 logger = logging.getLogger(__name__)
 
-class ListingsView(BaseView):
+class ListingsView(BaseJSONView):
     def set_context_props(self, request, **kwargs):
         super(ListingsView, self).set_context_props(request, **kwargs)
 
@@ -31,7 +31,7 @@ class ListingsView(BaseView):
                                     username = request.user.username)
         return self.render_to_json_response([o.as_json() for o in l])
 
-class DownloadView(BaseView):
+class DownloadView(BaseJSONView):
 
     def set_context_props(self, request, **kwargs):
         super(DownloadView, self).set_context_props(request, **kwargs)
@@ -41,11 +41,15 @@ class DownloadView(BaseView):
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
                 system_id = self.filesystem, 
                 path = self.file_path)
-        logger.info('Downloading: {}'.format(f.link))
-        ds = f.download_stream(headers = {'Authorization': 'Bearer %s' % self.access_token})
-        return StreamingHttpResponse(ds.content, content_type=f.mime_type, status=200)
+        postit_link = f.download_postit()
+        logger.info('Posit Link: {}'.format(postit_link))
+        resp = {
+            'filename': f.name,
+            'link': postit_link
+        }
+        return self.render_to_json_response(resp)
 
-class UploadView(BaseView):
+class UploadView(BaseJSONView):
     def post(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         ufs = request.FILES
@@ -54,7 +58,7 @@ class UploadView(BaseView):
         return self.render_to_json_response({'files': [o.as_json() for o in fs], 
                                              'filesMeta': [o.as_json() for o in mfs]})
 
-class ManageView(BaseView):
+class ManageView(BaseJSONView):
     def set_context_props(self, request, **kwargs):
         super(ManageView, self).set_context_props(request, **kwargs)
         mngr = AgaveFilesManager(agave_client = self.agave_client)
@@ -77,7 +81,7 @@ class ManageView(BaseView):
         mf.delete()
         return self.render_to_json_response(mf.as_json())
 
-class ShareView(BaseView):
+class ShareView(BaseJSONView):
     def post(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         mngr = AgaveFilesManager(agave_client = self.agave_client)
@@ -89,7 +93,7 @@ class ShareView(BaseView):
         resp = op(self.filesystem, self.file_path, user, permission)
         return self.render_to_json_response(resp)
 
-class MetadataView(BaseView):
+class MetadataView(BaseJSONView):
     def set_context_props(self, request, **kwargs):
         super(MetadataView, self).set_context_props(request, **kwargs)
         f = AgaveMetaFolderFile.from_path(
@@ -109,7 +113,7 @@ class MetadataView(BaseView):
         f = f.update_from_json(meta)
         return self.render_to_json_response(f.as_json())
 
-class MetaSearchView(BaseView):
+class MetaSearchView(BaseJSONView):
     def set_context_props(self, request, **kwargs):
         super(MetaSearchView, self).set_context_props(request, **kwargs)
         mgr = AgaveFilesManager(agave_client = self.agave_client)

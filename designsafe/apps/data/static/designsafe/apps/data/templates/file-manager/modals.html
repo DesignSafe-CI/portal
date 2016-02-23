@@ -403,10 +403,20 @@
             <div class="modal-body">
               <span class="label label-warning" ng-show="temp.inprocess">{{'loading' | translate}} ...</span>
               <div ng-show="!temp.inprocess">
-                <object ng-show="temp.tempModel.preview.isPdf" data = "{{temp.tempModel.preview.url}}" onload="window.URL.revokeObjectURL(this.src);">
-                </object>
-                <img ng-show="temp.tempModel.preview.isImage" src = "{{temp.tempModel.preview.url}}" onload="window.URL.revokeObjectURL(this.src);"/>
+                <div ng-if="temp.tempModel.preview.isPdf">
+                    <object data = "{{temp.tempModel.preview.data}}" >
+                    </object>
+                </div>
+                <div ng-if="temp.tempModel.preview.isImage">
+                    <img src = "{{temp.tempModel.preview.url}}" class="img-responsive"/>
+                </div>
+                <div ng-if="temp.tempModel.preview.isText">
+                    <object data = "{{temp.tempModel.preview.data}}" onload="window.URL.revokeObjectURL(this.data);" width="100%" height="500px">
+                    </object>
+                </div>
+                <!--
                 <pre ng-show="temp.tempModel.preview.isText">{{temp.tempModel.preview.data}}</pre>
+                -->
             </div>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>

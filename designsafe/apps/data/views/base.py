@@ -13,7 +13,7 @@ from designsafe.apps.notifications.views import get_number_unread_notifications
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
+class BaseView(SecureMixin, AgaveMixin, View):
     def __init__(self, **kwargs):
         self.filesystem = None
         self.file_path = None
@@ -68,6 +68,9 @@ class BaseView(SecureMixin, JSONResponseMixin, AgaveMixin, View):
 
         logger.debug('file_path: {}'.format(self.file_path))
         super(BaseView, self).set_context_props(request, **kwargs)
+
+class BaseJSONView(JSONResponseMixin, BaseView):
+    pass
 
 class  BaseTemplate(SecureMixin, TemplateView):
     def get_context_data(self, **kwargs):

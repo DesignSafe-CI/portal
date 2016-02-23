@@ -1,5 +1,6 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import Event
+from designsafe.apps.signals.signals import notify_event
 from designsafe.apps.notifications.models import Notification
 
 from django.core import serializers
@@ -66,9 +67,7 @@ def job_notification_handler(request):
     logger.info('event: {}'.format(event))
     logger.info('job_id: {}'.format(job_id))
 
-    # notification = JobNotification(job_name=job_name, job_id=job_id, user=job_owner, event=event, status=status)
-
-    body={
+    body = {
         'job_name': job_name,
         'job_id': job_id,
         'event': event,
@@ -76,13 +75,8 @@ def job_notification_handler(request):
         'archive_path': archive_path,
         'job_owner': job_owner,
     }
-
-    users=[job_owner]
-
-    notification = Notification(event_type=JOB_EVENT, user=job_owner, body=json.dumps(body))
-    notification.save()
-
-    Event.send_event(JOB_EVENT, users, body)
+    notify_event.send_robust(None, event_type='job', event_data=body,
+                             event_users=[job_owner])
 
     return HttpResponse('OK')
 
