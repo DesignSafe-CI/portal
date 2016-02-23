@@ -2,17 +2,76 @@ from __future__ import absolute_import
 
 from celery import shared_task, task
 from designsafe.celery import app
-
+from designsafe.apps.signals.signals import notify_event
 from agavepy.agave import Agave, AgaveException
 
 import logging
 import requests
 import json
 
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.conf import settings
+from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
+
+
+@shared_task
+def watch_job_status(data):
+    username = data['username']
+    job_id = data['job_id']
+    current_status = data.get('current_status', None)
+    try:
+        user = get_user_model().objects.get(username=username)
+        if user.agave_oauth.expired:
+            user.agave_oauth.refresh()
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token=user.agave_oauth.token['access_token'])
+        job = ag.jobs.get(jobId=job_id)
+        job_status = job['status']
+
+        event_data = {
+            'job_name': job['name'],
+            'job_id': job['id'],
+            'event': job_status,
+            'status': job_status,
+            'archive_path': job['archivePath'],
+            'job_owner': job['owner'],
+        }
+
+        if 'retry' in data:
+            # clear out any past retries
+            del data['retry']
+
+        if job_status in ['FINISHED', 'FAILED']:
+            # job finished, no additional tasks; notify
+            logger.debug('JOB FINALIZED: id=%s status=%s' % (job_id, job_status))
+            notify_event.send_robust(None, event_type='job', event_data=event_data,
+                                     event_users=[username])
+        elif current_status and current_status == job_status:
+            # DO NOT notify, but still queue another watch task
+            checks = data.get('status_checks', 0) + 1
+            data['status_checks'] = checks
+            watch_job_status.apply_async(args=[data], countdown=10*checks)
+        else:
+            # queue another watch task
+            data['current_status'] = job_status
+            data['status_checks'] = 0
+            watch_job_status.apply_async(args=[data], countdown=10)
+            # notify
+            logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
+            notify_event.send_robust(None, event_type='job', event_data=event_data,
+                                     event_users=[username])
+    except ObjectDoesNotExist:
+        logger.exception('Unable to locate local user account: %s' % username)
+    except (AgaveException, RequestException):
+        retries = data.get('retry', 0) + 1
+        data['retry'] = retries
+        logger.warning('Agave API error. Retry number %s...' % retries)
+        watch_job_status.apply_async(args=[data], countdown=10**retries)
 
 
 @app.task
@@ -20,21 +79,27 @@ def submit_job(request, agave, job_post):
     logger.info('submitting job: {0}'.format(job_post))
 
     # subscribe to notifications
-    notify_url = request.build_absolute_uri(reverse('jobs_webhook'))
-    query = 'uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}' \
-            '&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
-    notify = {
-        'url': '%s?%s' % (notify_url, query),
-        'event': '*',
-        'persistent': True
-    }
-    if 'notifications' in job_post:
-        job_post['notifications'].append(notify)
-    else:
-        job_post['notifications'] = [notify]
+    # notify_url = request.build_absolute_uri(reverse('jobs_webhook'))
+    # query = 'uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}' \
+    #         '&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
+    # notify = {
+    #     'url': '%s?%s' % (notify_url, query),
+    #     'event': '*',
+    #     'persistent': True
+    # }
+    # if 'notifications' in job_post:
+    #     job_post['notifications'].append(notify)
+    # else:
+    #     job_post['notifications'] = [notify]
 
     try:
         response = agave.jobs.submit(body=job_post)
+
+        task_data = {
+            'username': request.user.username,
+            'job_id': response['id']
+        }
+        watch_job_status.apply_async(args=[task_data], countdown=10)
     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
         logger.info('Task HTTPError {0}: {1}'.format(e.response.status_code, e.__class__))
         submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when "
