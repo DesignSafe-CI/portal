@@ -408,7 +408,7 @@
                     </object>
                 </div>
                 <div ng-if="temp.tempModel.preview.isImage">
-                    <img src = "{{temp.tempModel.preview.url}}"/>
+                    <img src = "{{temp.tempModel.preview.url}}" class="img-responsive"/>
                 </div>
                 <div ng-if="temp.tempModel.preview.isText">
                     <object data = "{{temp.tempModel.preview.data}}" onload="window.URL.revokeObjectURL(this.data);" width="100%" height="500px">

@@ -509,7 +509,7 @@
         };
 
         Item.prototype.isPreviewable = function() {
-            return !this.isFolder() && fileManagerConfig.isPreviewableFilePattern.test(this.model.name);
+            return !this.isFolder() && (this.isImage() || this.isText());
         };
 
         Item.prototype.isImage = function() {
