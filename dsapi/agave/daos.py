@@ -2,7 +2,8 @@ import datetime
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
 import requests
-import copy, urllib
+import copy
+import urllib
 #Data Access Objects to represent data to and from APIs
 import re
 import json
