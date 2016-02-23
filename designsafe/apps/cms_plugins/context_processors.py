@@ -11,8 +11,7 @@ def cms_section(request):
         logger.debug(menu_root.__dict__)
         return {
             'section_root': {
-                'title': menu_root.title,
-                'reverse_id': menu_root.attr['reverse_id']
+                'title': menu_root.title
             }
         }
     return {}

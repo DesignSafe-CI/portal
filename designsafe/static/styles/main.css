@@ -109,7 +109,11 @@ body.navbar-fixed {
   border-bottom: 2px solid #ccc;
 }
 
-.navbar-ds .navbar-brand,
+.navbar-ds .navbar-brand {
+  color: #878787;
+  font-size: 1.2em;
+}
+
 .navbar-ds .navbar-nav > li > a {
   color: #494d4e;
   font-size: 1.2em;
