@@ -608,3 +608,9 @@
   right: 0;
   top: 0;
 }
+
+@media (min-width: 768px){
+    .modal-dialog {
+        width:750px;
+    }
+}

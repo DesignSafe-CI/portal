@@ -49,7 +49,7 @@
             isImageFilePattern: /\.(jpe?g|gif|bmp|png|svg|tiff?)$/i,
             isExtractableFilePattern: /\.(gz|tar|rar|g?zip)$/i,
             isPdfFilePattern: /\.pdf$/i,
-            isTextFilePattern: /\.(txt|tcl)$/i,
+            isTextFilePattern: /\.(json|err|out|m|tex|sh|log|txt|tcl)$/i,
             tplPath: '/static/designsafe/apps/data/templates/file-manager'
         };
 
