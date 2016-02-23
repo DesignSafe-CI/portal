@@ -1,0 +1,30 @@
+{% extends "layout/default.html" %}
+{% load bootstrap3 %}
+{% block title %}Close #{{ ticket_id }}{% endblock %}
+{% block content %}
+
+{% if not hasAccess %}
+  {% include "djangoRT/access_denied.html" %}
+{% else %}
+
+<h2>
+  Close #{{ ticket_id }} : {{ ticket.Subject }}
+</h2>
+
+<div class='reply_description'>
+  Are you sure you want to close this ticket? Please provide a comment.
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  {% bootstrap_form form %}
+
+    <button class="btn btn-success" type="submit">
+      Close
+    </button>
+    <a href="{% url 'djangoRT:ticketdetail' ticket_id %}" class="btn btn-default">Cancel</a>
+</form>
+
+{% endif %}
+{% endblock %}

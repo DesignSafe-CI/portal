@@ -41,6 +41,9 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout', { 'next_page': '/' },
         name='logout'),
 
+    # help
+    url(r'^user/help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),
+
     # webhooks
     url(r'^webhooks/', include('designsafe.webhooks')),
 

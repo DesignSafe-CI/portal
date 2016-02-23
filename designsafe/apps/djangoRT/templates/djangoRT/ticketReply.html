@@ -1,0 +1,41 @@
+{% extends "layout/default.html" %}
+{% load bootstrap3 %}
+{% block title %}Reply to #{{ ticket_id }}{% endblock %}
+{% block content %}
+
+{% if not hasAccess %}
+  {% include "djangoRT/access_denied.html" %}
+{% else %}
+
+<h2>
+  {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
+    Reopen
+  {% else %}
+    Reply to
+  {% endif %}
+  #{{ ticket_id }} : {{ ticket.Subject }}
+</h2>
+
+<div class='reply_description'>
+{% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
+  Please provide a message to explain why you are reopening this ticket.
+{% endif %}
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  {% bootstrap_form form %}
+
+    <button class="btn btn-success" type="submit">
+      {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
+        Reopen
+      {% else %}
+        Reply
+      {% endif %}
+    </button>
+    <a href="{% url 'djangoRT:ticketdetail' ticket_id %}" class="btn btn-default">Cancel</a>
+</form>
+
+{% endif %}
+{% endblock %}

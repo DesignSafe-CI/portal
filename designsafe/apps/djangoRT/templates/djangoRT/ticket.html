@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="ticket {{ticket.id}} {{ticket.Status}} row" style="border-bottom: 1px solid #eee; padding-bottom: 3px; margin-bottom: 3px;">
+  <div class="col-sm-2">
+    <span class="label label-info">
+      {% trans ticket.Status %}
+    </span>
+  </div>
+  <div class="col-sm-4">
+    <a href="{% url 'djangoRT:ticketdetail' ticket.id %}"> #{{ ticket.id }} : {{ ticket.Subject }}</a>
+  </div>
+  <div class="col-sm-3">
+    {{ticket.LastUpdated|date:"F j Y"}}
+  </div>
+  <div class="col-sm-3">
+    {% include "djangoRT/reply.html" %}
+  </div>
+</div>
