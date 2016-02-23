@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
@@ -66,22 +67,32 @@ def manage_applications(request):
     return render(request, 'designsafe/apps/accounts/manage_applications.html', context)
 
 
-@login_required
-def notifications(request):
-    items = Notification.objects.filter(
-        deleted=False, user=str(request.user)).order_by('-notification_time')
-    unread = 0
-    for i in items:
-        if not i.read:
-            unread += 1
-            i.mark_read()
+# @login_required
+# def notifications(request):
+#     items = Notification.objects.filter(
+#         deleted=False, user=str(request.user)).order_by('-notification_time')
+#     unread = 0
+#     for i in items:
+#         if not i.read:
+#             unread += 1
+#             i.mark_read()
 
-    return render(request, 'designsafe/apps/accounts/notifications.html',
-                  {
-                      'notifications': items,
-                      'unread': unread
-                  })
+#     try:
+#         items = json.dumps(items, cls=DjangoJSONEncoder)
+#     except TypeError as e:
+#         items=[]
+#     return HttpResponse(items, content_type='application/json')
 
+#     return render(request, 'designsafe/apps/accounts/notifications.html',
+#                   {
+#                       'notifications': items,
+#                       'unread': unread
+#                   })
+
+# def delete_notification(request):
+#     if request.POST.get('delete') == 'delete':
+#         Notification.objects.get(id=request.POST.get('id')).delete()
+#         return redirect('/account/notifications/')
 
 def register(request):
     if request.user.is_authenticated():
