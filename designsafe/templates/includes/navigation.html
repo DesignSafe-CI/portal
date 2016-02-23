@@ -1,4 +1,4 @@
-{% load menu_tags %}
+{% load menu_tags cms_tags %}
 <nav class="navbar navbar-default navbar-ds">
   <div class="container">
     <div class="navbar-header">
@@ -9,6 +9,9 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      {% if section_root %}
+        <a class="navbar-brand" href="{% page_url section_root.reverse_id %}">{{section_root.title}}</a>
+      {% endif %}
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
