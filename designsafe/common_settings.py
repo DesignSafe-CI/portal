@@ -450,17 +450,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 # Django RT Settings
 #
 #####
-# DJANGO_RT = {
-#     'RT_HOST': os.environ.get('RT_HOST'),
-#     'RT_UN': os.environ.get('RT_USERNAME'),
-#     'RT_PW': os.environ.get('RT_PASSWORD'),
-#     'RT_QUEUE': os.environ.get('RT_DEFAULT_QUEUE'),
-# }
 DJANGO_RT = {
-    'RT_HOST': 'https://example.com/REST/1.0/',
-    'RT_UN': 'username',
-    'RT_PW': 'password',
-    'RT_QUEUE': 'Helpdesk',
+    'RT_HOST': os.environ.get('RT_HOST'),
+    'RT_UN': os.environ.get('RT_USERNAME'),
+    'RT_PW': os.environ.get('RT_PASSWORD'),
+    'RT_QUEUE': os.environ.get('RT_DEFAULT_QUEUE'),
 }
 
 ###

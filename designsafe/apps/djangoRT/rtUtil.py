@@ -11,11 +11,6 @@ class DjangoRt:
     RESPONSE_REQUIRED = 'response required'
 
     def __init__(self):
-        print 'asdfasdfas'
-        import os
-        print settings.DJANGO_RT['RT_HOST']
-        print os.environ.get('RT_HOST')
-        print 'asdfrt_HOST'
         self.rtHost = settings.DJANGO_RT['RT_HOST']
         self.rtUn = settings.DJANGO_RT['RT_UN']
         self.rtPw = settings.DJANGO_RT['RT_PW']
