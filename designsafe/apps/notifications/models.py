@@ -18,3 +18,7 @@ class Notification(models.Model):
     def mark_read(self):
         self.read = True
         self.save()
+
+    def mark_deleted(self):
+        self.deleted = True
+        self.save()

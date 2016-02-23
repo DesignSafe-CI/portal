@@ -37,7 +37,7 @@
           {% if user.is_authenticated %}
             <span style="vertical-align:middle">Welcome, {{ user.first_name }}!</span>
             <span id="id_user_notify">
-              <a href="{% url 'designsafe_accounts:notifications' %}" class="btn btn-link">
+              <a href="{% url 'designsafe_notifications:notifications' %}" class="btn btn-link">
                 <span class="sr-only">Notifications</span>
                 <span class="badge badge-default" title="You have no unread notifications">&nbsp;</span>
               </a>
