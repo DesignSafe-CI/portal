@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.core.validators import validate_email
 from captcha.fields import CaptchaField
 
@@ -21,14 +22,6 @@ class MultiEmailField(forms.Field):
         for email in value:
             validate_email(email.strip())
 
-TICKET_CATEGORIES = (
-    ('','Choose one'),
-    ('LOGIN', 'Login/Registration'),
-    ('DATA_DEPOT','Data Depot'),
-    ('DISCOVER_WORKSPACE','Discovery Workspace'),
-    ('OTHER','Other'),
-)
-
 class BaseTicketForm(forms.Form):
     """
     Base form class for Tickets.
@@ -37,7 +30,7 @@ class BaseTicketForm(forms.Form):
     last_name = forms.CharField(widget=forms.TextInput(), label='Last name', max_length=100, required=True)
     email = forms.EmailField(widget=forms.EmailInput(), label='Email', required=True)
     subject = forms.CharField(widget=forms.TextInput(), label='Subject', max_length=100, required=True)
-    category = forms.CharField(widget=forms.Select(choices=TICKET_CATEGORIES), required=True)
+    category = forms.CharField(widget=forms.Select(choices=settings.TICKET_CATEGORIES), required=True)
     problem_description = forms.CharField(widget=forms.Textarea(), label='Problem description', required=True)
     attachment = forms.FileField(required=False)
 

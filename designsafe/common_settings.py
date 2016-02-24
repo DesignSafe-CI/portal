@@ -445,18 +445,6 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-#####
-#
-# Django RT Settings
-#
-#####
-DJANGO_RT = {
-    'RT_HOST': os.environ.get('RT_HOST'),
-    'RT_UN': os.environ.get('RT_USERNAME'),
-    'RT_PW': os.environ.get('RT_PASSWORD'),
-    'RT_QUEUE': os.environ.get('RT_DEFAULT_QUEUE'),
-}
-
 ###
 # Agave Integration
 #
@@ -475,3 +463,4 @@ AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 from box_settings import *
 from elasticsearch_settings import *
+from rt_settings import *
