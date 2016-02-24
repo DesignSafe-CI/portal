@@ -29,7 +29,7 @@ def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'research_workbench':
         return [
             {
-                'label': _('Data Browser'),
+                'label': _('Data Depot'),
                 'url': reverse('designsafe_data:index'),
                 'children': [
                     {

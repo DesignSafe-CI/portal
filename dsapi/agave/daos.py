@@ -374,6 +374,18 @@ class AgaveFolderFile(AgaveObject):
                 setattr(self, key, nv)
                 logger.info('setted {} val {}'.format(key, getattr(self, key)))
         return self
+
+    @property
+    def encoded_url(self):
+        filepath = self.link.replace(self.agave_client.api_server, "")
+        #url = self.agave_client.api_server + urllib.pathname2url(filepath)
+        url = self.agave_client.api_server
+        vals = filepath.split('/')
+        for i, v in enumerate(vals):
+            url += urllib.quote_plus(v)
+            if i < len(vals) - 1:
+                url += '/'
+        return url
     
     def download_stream(self, headers):
         '''
@@ -385,20 +397,13 @@ class AgaveFolderFile(AgaveObject):
 
     def download_postit(self):
         logger.info('Creating postit of: {}'.format(self.link))
-        filepath = self.link.replace(self.agave_client.api_server, "")
-        url = self.agave_client.api_server
-        vals = filepath.split('/')
-        for i, v in enumerate(vals):
-            url += urllib.quote_plus(v)
-            if i < len(vals) - 1:
-                url += '/'
-        logger.info('url {}'.format(url))
+        logger.info('url {}'.format(self.encoded_url))
         postit_data = {
-            'url': url,
+            'url': self.link,
             'maxUses': 1,
             'method': 'GET',
             'lifetime': 60,
-            'noauth': True
+            'noauth': False
         }
         postit = self.call_operation('postits.create', body = postit_data)
         logger.debug('Postit: {}'.format(postit))

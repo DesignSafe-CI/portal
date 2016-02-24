@@ -4,7 +4,7 @@ from celery import shared_task
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from dsapi.agave.tools.bin.walker import fs_walk, get_or_create_from_file
+from dsapi.agave.utils import fs_walk, get_or_create_from_file
 from agavepy.agave import Agave
 import logging
 
