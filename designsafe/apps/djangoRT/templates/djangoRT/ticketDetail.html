@@ -1,47 +1,49 @@
-{% extends "layout/user.html" %}
+{% extends "base.html" %}
 
 {% block title %}Ticket #{{ ticket_id }}{% endblock %}
 
 {% block content %}
 
-{% if not hasAccess %}
-  {% include "djangoRT/access_denied.html" %}
-  {% include "djangoRT/navigation.html" %}
-{% else %}
-  <h2>Ticket #{{ ticket_id }} : {{ ticket.Subject }} </h2>
-  {% include "djangoRT/reply.html" %}
-  <div class="row">
-    <div class="col-md-9">
-      {% for history in ticket_history %}
-        {% if history.Type == "Correspond" or history.Type == "Create" %}
-          <div class="history-item history-item-{{history.Type|lower}}">
-            <h4>
-              <i class="fa fa-{% if history.Type == "Correspond" %}comment{% elif history.Type == 'Create' %}plus-circle{% endif %}"></i>
-              {{history.Created|date:"M j Y P"}}
-              <small>{{history.Description}}</small>
-            </h4>
+<div class="container">
+  {% if not hasAccess %}
+    {% include "djangoRT/access_denied.html" %}
+    {% include "djangoRT/navigation.html" %}
+  {% else %}
+    <h2>Ticket #{{ ticket_id }} : {{ ticket.Subject }} </h2>
+    {% include "djangoRT/reply.html" %}
+    <div class="row">
+      <div class="col-md-9">
+        {% for history in ticket_history %}
+          {% if history.Type == "Correspond" or history.Type == "Create" %}
+            <div class="history-item history-item-{{history.Type|lower}}">
+              <h4>
+                <i class="fa fa-{% if history.Type == "Correspond" %}comment{% elif history.Type == 'Create' %}plus-circle{% endif %}"></i>
+                {{history.Created|date:"M j Y P"}}
+                <small>{{history.Description}}</small>
+              </h4>
 
-            <pre>{{ history.Content }}</pre>
+              <pre>{{ history.Content }}</pre>
 
-            {% if history.Attachments %}
-              <h5>Attachments:</h5>
-              {% for attachment_id, title in history.Attachments %}
-                <a href="{% url 'djangoRT:ticketattachment' ticket_id attachment_id %}">{{ title }}</a> <br />
-              {% endfor %}
-            {% endif %}
-          </div>
-        {% elif history.Type == "Status" %}
-          <div class="history-item history-item-{{history.Type|lower}}">
-            <blockquote>
-              <i class="fa fa-bell"></i>
-              {{history.Description }}<br>
-              {{history.Created|date:"M j Y P"}}
-            </blockquote>
-          </div>
-        {% endif %}
-      {% endfor %}
+              {% if history.Attachments %}
+                <h5>Attachments:</h5>
+                {% for attachment_id, title in history.Attachments %}
+                  <a href="{% url 'djangoRT:ticketattachment' ticket_id attachment_id %}">{{ title }}</a> <br />
+                {% endfor %}
+              {% endif %}
+            </div>
+          {% elif history.Type == "Status" %}
+            <div class="history-item history-item-{{history.Type|lower}}">
+              <blockquote>
+                <i class="fa fa-bell"></i>
+                {{history.Description }}<br>
+                {{history.Created|date:"M j Y P"}}
+              </blockquote>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
-  </div>
-  {% include "djangoRT/reply.html" %}
-{% endif %}
+    {% include "djangoRT/reply.html" %}
+  {% endif %}
+</div>
 {% endblock %}
