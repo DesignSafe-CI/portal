@@ -10,6 +10,11 @@ import mimetypes
 
 logger = logging.getLogger('default')
 
+def index(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('djangoRT:mytickets'))
+    return HttpResponseRedirect(reverse('djangoRT:ticketcreateguest'))
+
 @login_required
 def mytickets(request):
     rt = rtUtil.DjangoRt()

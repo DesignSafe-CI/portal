@@ -3,7 +3,8 @@ from django.conf.urls import patterns, url
 from designsafe.apps.djangoRT import views
 
 urlpatterns = patterns('',
-    url(r'^$', views.mytickets, name='mytickets'),
+    url(r'^$', views.index, name='index'),
+    url(r'^mytickets/$', views.mytickets, name='mytickets'),
     url(r'^ticket/(?P<ticketId>\d+)/$', views.ticketdetail, name='ticketdetail'),
     url(r'^ticket/new/$', views.ticketcreate, name='ticketcreate'),
     url(r'^ticket/reply/(?P<ticketId>\d+)/$', views.ticketreply, name='ticketreply'),

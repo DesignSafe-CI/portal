@@ -42,7 +42,8 @@ urlpatterns = patterns('',
         name='logout'),
 
     # help
-    url(r'^user/help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),
+    url(r'^help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),
+    url(r'^captcha/', include('captcha.urls')),
 
     # webhooks
     url(r'^webhooks/', include('designsafe.webhooks')),
