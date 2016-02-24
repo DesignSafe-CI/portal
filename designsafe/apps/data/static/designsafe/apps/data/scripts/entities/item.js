@@ -242,7 +242,7 @@
                     previewFile(data, self);
                 }else{
                     var link = document.createElement('a');
-                    link.setAttribute('download', data.name);
+                    link.setAttribute('download', data.filename);
                     link.setAttribute('href', data.link + '?force=true');
                     link.style.display = 'none';
                     document.body.appendChild(link);

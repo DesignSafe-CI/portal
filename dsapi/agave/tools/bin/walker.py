@@ -2,11 +2,7 @@ from agavepy.agave import Agave
 import sys, os, imp, requests
 FILE_PATH = os.path.split(os.path.realpath(__file__))
 DAOS_PATH = os.path.realpath(FILE_PATH[0] + '/../../daos.py')
-# print DAOS_PATH
 daos = imp.load_source('daos', DAOS_PATH)
-
-CURSOR_UP_ONE = '\x1b[1A'
-ERASE_LINE = '\x1b[2K'
 
 def get_or_create_from_file(agave_client, file_obj):
     af = daos.AgaveFolderFile(agave_client = agave_client, file_obj = file_obj)
@@ -38,38 +34,9 @@ def check_from_path(agave_client, system_id, file_path):
                         raise
             else:
                 print 'multiple metadata found'
-                for m in resp:
-                    print 'about to delete meta with {}'.format(m)
+                for m in resp[1:]:
+                    print 'about to delete meta {}'.format(m)
                     agave_client.meta.deleteMetadata(uuid = m['uuid']) 
-
-def fs_walk(c, system_id, folder, bottom_up = False):
-    try:
-        files = c.files.list(systemId = system_id, filePath = folder)
-    except requests.exceptions.HTTPError as e:
-        print '404: {}, {}'.format(system_id, folder)
-        raise
-    for f in files:
-        if f['name'] == '.' or f['name'] == '..':
-            continue
-        if not bottom_up:
-            yield f
-        if f['format'] == 'folder':
-            for sf in fs_walk(c, system_id, f['path'], bottom_up):
-                yield sf
-        if bottom_up:
-            yield f
-
-def meta_walk(c, system_id, folder, bottom_up = False):
-    q = '{{"name": "object", "value.path": "{}", "value.systemId": "{}", "value.deleted": "false"}}'.format(folder, system_id)
-    metas = c.meta.listMetadata(q = q)
-    for m in metas:
-        if not bottom_up:
-            yield m
-        if m['value']['type'] == 'folder':
-            for sm in meta_walk(c, system_id, m['value']['path'] + '/' + m['value']['name'], bottom_up):
-                yield sm
-        if bottom_up:
-            yield f
 
 def main(args):
     cmd = args[0]
