@@ -23,9 +23,9 @@ class MultiEmailField(forms.Field):
 
 TICKET_CATEGORIES = (
     ('','Choose one'),
-    ('ACCTS_PRJ_ALLOC', 'Accounts, Projects, and Allocations'),
-    ('BARE_METAL','Bare Metal'),
-    ('OPENSTACK_KVM_CLOUD','OpenStack KVM Cloud'),
+    ('LOGIN', 'Login/Registration'),
+    ('DATA_DEPOT','Data Depot'),
+    ('DISCOVER_WORKSPACE','Discovery Workspace'),
     ('OTHER','Other'),
 )
 

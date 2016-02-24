@@ -51,7 +51,7 @@ def ticketcreate(request):
             meta = (
                 ('Opened by', request.user),
                 ('Category', dict(forms.TICKET_CATEGORIES)[form.cleaned_data['category']]),
-                ('Resource', 'Chameleon'),
+                ('Resource', 'DesignSafe'),
             )
 
             header = '\n'.join('[%s] %s' % m for m in meta)
