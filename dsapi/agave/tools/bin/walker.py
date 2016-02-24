@@ -4,6 +4,36 @@ FILE_PATH = os.path.split(os.path.realpath(__file__))
 DAOS_PATH = os.path.realpath(FILE_PATH[0] + '/../../daos.py')
 daos = imp.load_source('daos', DAOS_PATH)
 
+def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = True):
+    try:
+        files = agave_client.files.list(systemId = system_id, filePath = folder)
+    except requests.exceptions.HTTPError as e:
+        print '{}: {}, {}'.format(e.message, system_id, folder)
+        raise
+    for f in files:
+        if f['name'] == '.' or f['name'] == '..':
+            if not yield_base:
+                continue
+        if not bottom_up:
+            yield f
+        if f['format'] == 'folder':
+            for sf in fs_walk(agave_client, system_id, f['path'], bottom_up, False):
+                yield sf
+        if bottom_up:
+            yield f
+
+def meta_walk(agave_client, system_id, folder, bottom_up = False):
+    q = '{{"name": "object", "value.path": "{}", "value.systemId": "{}", "value.deleted": "false"}}'.format(folder, system_id)
+    metas = agave_client.meta.listMetadata(q = q)
+    for m in metas:
+        if not bottom_up:
+            yield m
+        if m['value']['type'] == 'folder':
+            for sm in meta_walk(agave_client, system_id, m['value']['path'] + '/' + m['value']['name'], bottom_up):
+                yield sm
+        if bottom_up:
+            yield m
+
 def get_or_create_from_file(agave_client, file_obj):
     af = daos.AgaveFolderFile(agave_client = agave_client, file_obj = file_obj)
     mf = daos.AgaveMetaFolderFile(agave_client = agave_client, meta_obj = af.as_meta_json())

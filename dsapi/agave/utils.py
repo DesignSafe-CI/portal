@@ -14,7 +14,7 @@ def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = Tru
         if not bottom_up:
             yield f
         if f['format'] == 'folder':
-            for sf in fs_walk(c, system_id, f['path'], bottom_up, False):
+            for sf in fs_walk(agave_client, system_id, f['path'], bottom_up, False):
                 yield sf
         if bottom_up:
             yield f
@@ -26,7 +26,7 @@ def meta_walk(agave_client, system_id, folder, bottom_up = False):
         if not bottom_up:
             yield m
         if m['value']['type'] == 'folder':
-            for sm in meta_walk(c, system_id, m['value']['path'] + '/' + m['value']['name'], bottom_up):
+            for sm in meta_walk(agave_client, system_id, m['value']['path'] + '/' + m['value']['name'], bottom_up):
                 yield sm
         if bottom_up:
             yield m
