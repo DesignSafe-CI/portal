@@ -21,7 +21,7 @@
       return $http({
         url: djangoUrl.reverse('designsafe_workspace:call_api', ['apps']),
         method: 'GET',
-        params: {'app_id': encodeURIComponent(app_id)}
+        params: {'app_id': app_id}
       });
     };
 
@@ -46,7 +46,8 @@
         _.each(params, function(param) {
           var field = {
             title: param.details.label,
-            description: param.details.description
+            description: param.details.description,
+            required: param.value.required
           };
           switch (param.value.type) {
             case 'bool':
@@ -95,10 +96,13 @@
           };
           if (input.semantics.maxCardinality === 1) {
             field.type = 'string';
+            field.format = 'agaveFile';
+            field.required = input.value.required;
           } else {
             field.type = 'array';
             field.items = {
               type: 'string',
+              format: 'agaveFile',
               'x-schema-form': {notitle: true}
             }
             if (input.semantics.maxCardinality > 1) {
@@ -112,12 +116,15 @@
       schema.properties.name = {
         title: 'Job name',
         description: 'A recognizable name for this job',
-        type: 'string'
+        type: 'string',
+        required: true
       };
       schema.properties.archivePath = {
-        title: 'Job output archive location',
-        description: 'Location where the job output should be archived. A relative path or absolute path may be specified. Paths can include template variables that will be replaced on submission. If not specified, output will be archived at <code>archive/jobs/job-${JOB_ID}</code>. <a href="http://agaveapi.co/documentation/tutorials/job-management-tutorial/#webhooks">See the documentation</a> for a full list of template variables.',
-        type: 'string'
+        title: 'Job output archive location (optional)',
+        description: 'Specify a location where the job output should be archived. By default, job output will be archived at <code>&lt;username&gt;/archive/jobs/job-${JOB_ID}</code>. <a href="http://agaveapi.co/documentation/tutorials/job-management-tutorial/#webhooks">See the documentation</a> for a full list of template variables that can be used here.',
+        type: 'string',
+        format: 'agaveFile',
+        'x-schema-form': {placeholder: '<username>/archive/jobs/job-${JOB_ID}'}
       };
 
       return schema;

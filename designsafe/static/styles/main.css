@@ -119,6 +119,7 @@ body.navbar-fixed {
   font-size: 1.2em;
 }
 
+@media (min-width: 768px) {
 .navbar-ds .navbar-nav > li > a:after {
   content: '';
   height: 4px;
@@ -145,6 +146,7 @@ body.navbar-fixed {
 .navbar-ds .navbar-nav > li > a.hl-learning:after {
   background: #a5a4a4;
 }
+}
 
 .navbar-ds .navbar-nav > li > a:hover:after,
 .navbar-ds .navbar-nav > li > a:focus:after {
@@ -167,10 +169,17 @@ body.navbar-fixed {
 
 @media (min-width: 768px) and (max-width: 991px) {
   .navbar-ds .navbar-nav > li > a {
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 1.1em;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 1.05em;
   }
+}
+
+@media (max-width: 767px) {
+    .global-nav {
+        background-color: #eee;
+        border-top: 2px solid #ddd;
+    }
 }
 
 hr {

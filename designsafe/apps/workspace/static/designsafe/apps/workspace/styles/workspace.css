@@ -1,44 +1,72 @@
-.row-flex, .row-flex > div[class*='col-'] {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex:1 1 auto;
-}
-
-.row-flex-wrap {
-  -webkit-flex-flow: row wrap;
-  align-content: flex-start;
-  flex:0;
-}
-
-.row-flex > div[class*='col-'], .container-flex > div[class*='col-'] {
-   margin:-.2px; /* hack adjust for wrapping */
-}
-
-.container-flex > div[class*='col-'] div,.row-flex > div[class*='col-'] div {
-  width:100%;
-}
-
-.flex-col {
-  display: flex;
-  display: -webkit-flex;
-  flex: 1 100%;
-  flex-flow: column nowrap;
-}
-
-.flex-grow {
-  display: flex;
-  -webkit-flex: 2;
-  flex: 2;
+.workspace-panel-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    align-content: flex-start;
+    flex: 0;
 }
 
 .workspace-panel {
-  border: 1px solid #ddd;
-  background-color: #eee;
-  padding: 9px;
-  margin-bottom: 30px;
+    position: relative;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    padding: 9px;
+    margin-bottom: 30px;
+}
+
+.workspace-panel-main {
+    flex: 1;
+}
+
+.workspace-panel-sidebar {
+    flex: 0 0 auto;
+    max-width: 310px;
+}
+
+.workspace-panel-toggle {
+    width: 1.5em;
+    position: absolute;
+    top: 0;
+}
+
+.workspace-panel-sidebar-left .workspace-panel-toggle {
+    right: 0;
+}
+
+.workspace-panel-sidebar-right .workspace-panel-toggle {
+    left: 0;
+}
+
+.workspace-panel-collapsed {
+    background-color: #999;
+    border-color: #777;
+    color: white;
+}
+
+.workspace-panel-collapsed .workspace-panel-toggle {
+    width: 100%;
+}
+
+.workspace-panel-collapsed .workspace-panel-content {
+    display: none;
+}
+
+.workspace-panel-title {
+    display: none;
+    position: absolute;
+    top: 2em;
+    transform: rotate(90deg);
+    transform-origin: 0;
+    white-space: nowrap;
+}
+
+.workspace-panel-collapsed .workspace-panel-title {
+    display: block;
 }
 
 .apps-tray {
@@ -49,17 +77,21 @@
   align-items: center;
 }
 
-.app {
+.app-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
   border: 1px solid #ddd;
   background-color: #fff;
-  padding: 0.5em;
   margin-right: 0.5em;
   box-shadow: 1px 1px 2px rgba(192,192,192,0.1);
   white-space: nowrap;
+  overflow: visible;
+}
+
+.app {
+  padding: 5px;
 }
 
 .app-version {
@@ -78,7 +110,6 @@
 }
 
 .jobs-list-wrapper {
-  max-height: 600px;
   overflow-y: auto;
 }
 
@@ -86,4 +117,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.agave-file-picker.wants {
+    background-color: #fcf8e3;
 }
