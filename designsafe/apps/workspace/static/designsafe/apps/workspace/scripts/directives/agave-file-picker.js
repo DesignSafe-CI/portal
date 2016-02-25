@@ -10,19 +10,47 @@
       link: function($scope, $element, attrs, $ngModel) {
         var formKey = $scope.form.key.join('.');
 
-        $scope.wantFile = function($event) {
-          $event.preventDefault();
-          $scope.$emit('wants-file', {'form': $scope.form, 'formKey': formKey});
+        $scope.requesting = false;
+
+        $scope.data = {
+          input: null
         };
 
-        $scope.$on('selects-file', function(key, file) {
-          if (key === formKey) {
-            $ngModel.$setViewValue('agave://' + file.system + '/' + file.path);
+        $scope.wantFile = function wantFile($event) {
+          $event.preventDefault();
+          $element.parent().addClass('wants');
+          $scope.$emit('wants-file', {
+            requestKey: formKey,
+            title: $scope.form.title || formKey,
+            description: $scope.form.description || ''
+          });
+          $scope.requesting = true;
+        };
+
+        function stopWant() {
+          $element.parent().removeClass('wants');
+          $scope.$emit('cancel-wants-file', {requestKey: formKey});
+          $scope.requesting = false;
+        }
+
+        $scope.stopWant = function($event) {
+          $event.preventDefault();
+          stopWant();
+        }
+
+        $scope.$on('provides-file', function($event, args) {
+          var requestKey = args.requestKey || '';
+          var file = args.file || {};
+          if (formKey === requestKey) {
+            var value = 'agave://' + file.system + '/' + file.path;
+            $scope.data.input = value;
+            $ngModel.$setViewValue(value);
+            stopWant();
           }
         });
 
         $element.find('input').on('change', function() {
-          $ngModel.$setViewValue(this.value);
+          $ngModel.$setViewValue($scope.data.input);
         });
       }
     };

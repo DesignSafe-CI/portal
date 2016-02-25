@@ -1,5 +1,9 @@
-<div class="agave-file-picker form-group {{form.htmlClass}}" ng-class="{'has-error': hasError()}">
-  <label class="control-label" ng-show="showTitle()">{{form.title}}</label>
-  <agave-file-picker ng-model="$$value$$" schema-validate="form"></agave-file-picker>
-  <span class="help-block">{{ (hasError() && errorMessage(schemaError())) || form.description}}</span>
+<div class="agave-file-picker form-group {{form.htmlClass}}"
+     ng-class="{'has-error': form.disableErrorState !== true && hasError(),
+                'has-success': form.disableSuccessState !== true && hasSuccess(),
+                'has-feedback': form.feedback !== false }">
+    <label class="control-label" ng-show="showTitle()">{{form.title}}</label>
+    <agave-file-picker ng-model="$$value$$" schema-validate="form"></agave-file-picker>
+    <span ng-if="form.feedback !== false" class="form-control-feedback ng-scope glyphicon" ng-class="evalInScope(form.feedback) || {'glyphicon': true, 'glyphicon-ok': hasSuccess(), 'glyphicon-remove': hasError() }" aria-hidden="true"></span>
+    <span class="help-block">{{ (hasError() && errorMessage(schemaError())) || form.description}}</span>
 </div>

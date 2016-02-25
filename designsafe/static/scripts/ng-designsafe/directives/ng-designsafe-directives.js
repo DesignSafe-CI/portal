@@ -1,27 +1,27 @@
 (function(angular){
     'use strict';
-    function dragStart(e){
+    function dragStart(e) {
         var ele = this;
         ele.style.opacity = '0.4';
         e.dataTransfer.effectAllowed = 'copyLink';
-        e.dataTransfer.setData('Text', ele.getAttribute('data-ds-data-href'));
+        e.dataTransfer.setData('text/plain', ele.getAttribute('data-ds-data'));
         this.classList.add('drag');
     }
 
-    function dragOver(e){
+    function dragOver(e) {
         e.preventDefault();
         var ele = this;
         ele.style.opacity = '1';
     }
 
-    function onDrop(e){
+    function onDrop(e) {
         e.stopPropagation();
         var ele = this;
         ele.style.opacity = '1';
     }
 
-    function dataDraggable(scope, element){
-        var el = element[0];
+    function dataDraggable($scope, $element) {
+        var el = $element[0];
         el.draggable = true;
         el.addEventListener('dragstart', dragStart);
         el.addEventListener('dragover', dragOver);
@@ -29,7 +29,7 @@
         el.addEventListener('drop', onDrop);
     }
 
-    angular.module('ng.designsafe').directive('dsDataDraggable', function(){
-      return dataDraggable;
-    });
+    angular.module('ng.designsafe')
+        .directive('dsDataDraggable', function() { return dataDraggable; })
+
 })(angular);

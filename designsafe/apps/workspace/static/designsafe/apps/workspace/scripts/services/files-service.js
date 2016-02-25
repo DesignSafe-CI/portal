@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
   angular.module('WorkspaceApp').factory('Files',
-  ['$http', 'djangoUrl', function($http, djangoUrl) {
+  ['$rootScope', '$http', 'djangoUrl', function($rootScope, $http, djangoUrl) {
     var service = {};
 
     service.list = function(options) {
@@ -11,8 +11,36 @@
       );
     };
 
-    service.choose = function(file) {
-      alert('agave://' + file.system + '/' + file.path);
+    /**
+     * Request a file form another controller. Broadcasts a 'wants-file' event with
+     * argument: `{ requestKey: <string>, title: <string>, description: <string>}`.
+     *
+     * Parameters:
+     *    requestKey: A unique identifier for this request
+     *    options:    (optional) An object with properties
+     *                "title" and "description" to describe
+     *                the requested file.
+     */
+    service.wantFile = function(requestKey, options) {
+      var title = options.title || requestKey;
+      var description = options.description || '';
+      $rootScope.$broadcast('wants-file', {
+        requestKey: requestKey,
+        title: title,
+        description: description
+      });
+    }
+
+    /**
+     * Provide a file to another controller. Broadcasts a 'provides-file' event with
+     * argument: `{file: <agaveFile>, requestKey: <string>}`.
+     *
+     * Parameters:
+     *    requestKey: A unique identifier for the requested file.
+     *    file:       An Agave File object representation.
+     */
+    service.provideFile = function provideFile(requestKey, file) {
+      $rootScope.$broadcast('provides-file', {requestKey: requestKey, file: file});
     };
 
     service.icon = function(file) {
@@ -39,12 +67,35 @@
           case 'pdf':
             icon = 'file-pdf-o';
             break;
+          case 'doc':
+          case 'docx':
+            icon = 'file-word-o';
+            break;
+          case 'xls':
+          case 'xlsx':
+            icon = 'file-excel-o';
+            break;
+          case 'ppt':
+          case 'pptx':
+            icon = 'file-powerpoint-o';
+            break;
+          case 'mov':
+          case 'mp4':
+            icon = 'file-video-o';
+            break;
+          case 'mp3':
+          case 'wav':
+            icon = 'file-audio-o';
+            break;
           case 'txt':
-          case 'tcl':
           case 'out':
           case 'err':
-          case 'json':
             icon = 'file-text-o';
+            break;
+          case 'tcl':
+          case 'sh':
+          case 'json':
+            icon = 'file-code-o';
             break;
           default:
             icon = 'file-o';

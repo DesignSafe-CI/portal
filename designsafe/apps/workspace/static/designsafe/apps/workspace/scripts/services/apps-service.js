@@ -46,7 +46,8 @@
         _.each(params, function(param) {
           var field = {
             title: param.details.label,
-            description: param.details.description
+            description: param.details.description,
+            required: param.value.required
           };
           switch (param.value.type) {
             case 'bool':
@@ -96,6 +97,7 @@
           if (input.semantics.maxCardinality === 1) {
             field.type = 'string';
             field.format = 'agaveFile';
+            field.required = input.value.required;
           } else {
             field.type = 'array';
             field.items = {
@@ -114,7 +116,8 @@
       schema.properties.name = {
         title: 'Job name',
         description: 'A recognizable name for this job',
-        type: 'string'
+        type: 'string',
+        required: true
       };
       schema.properties.archivePath = {
         title: 'Job output archive location',

@@ -7,7 +7,15 @@
 
     $scope.data = {
       loading: false,
-      systemList: [
+      wants: null,
+      systemList: [],
+      filesListing: null,
+      system: null,
+      filePath: ''
+    };
+
+    /* TODO: this should be an API call. A static list will do for now... */
+    $scope.data.systemList = [
         {
           id: 'designsafe.storage.default',
           name: 'DesignSafe User Data'
@@ -16,12 +24,7 @@
           id: 'nees.public',
           name: 'NEES Public Data'
         }
-      ],
-      filesListing: null,
-      system: null,
-      filePath: ''
-    };
-
+    ];
     $scope.data.system = $scope.data.systemList[0];
 
     $scope.updateListing = function updateListing() {
@@ -40,6 +43,13 @@
     }
     $scope.updateListing();
 
+    $scope.dataSourceUpdated = function dataSourceUpdated() {
+      $scope.data.filePath = '';
+      $scope.updateListing();
+    };
+
+    $scope.getFileIcon = Files.icon;
+
     $scope.browseFile = function(file) {
       if (file.type === 'dir') {
         if (file.name === '.') {
@@ -56,20 +66,26 @@
     };
 
     $scope.chooseFile = function(file) {
-      console.log(file);
-      Files.choose(file);
+      if ($scope.data.wants) {
+        Files.provideFile($scope.data.wants.requestKey, file);
+      }
     };
 
-    $scope.dataSourceUpdated = function dataSourceUpdated() {
-      $scope.filePath = '';
-      $scope.updateListing();
-    };
+    $rootScope.$on('wants-file', function($event, wantArgs) {
+      $scope.data.wants = wantArgs;
+      if ($scope.panel.collapsed) {
+        $scope.data.wants.wasCollapsed = true;
+        $scope.panel.collapsed = false;
+      }
+    });
 
-    $scope.getFileIcon = Files.icon;
-
-    $rootScope.$on('wants-file', function($event, options) {
-      console.log($event);
-      console.log(options);
+    $rootScope.$on('cancel-wants-file', function($event, args) {
+      if ($scope.data.wants && $scope.data.wants.requestKey === args.requestKey) {
+        if ($scope.data.wants.wasCollapsed) {
+          $scope.panel.collapsed = true;
+        }
+        $scope.data.wants = null;
+      }
     });
   }]);
 })(window, angular, jQuery);

@@ -118,8 +118,6 @@
   text-overflow: ellipsis;
 }
 
-.view {
-}
-
-.view-min {
+.agave-file-picker.wants {
+    background-color: #fcf8e3;
 }
