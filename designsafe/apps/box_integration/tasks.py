@@ -203,7 +203,6 @@ class BoxSyncAgent(object):
             path = self.get_item_path(item)
             logger.debug('Create item %s at path %s' % (item.name, path))
 
-
     def handle_rm_item_event(self, event):
         parent_folder_id = event.parent_folder_id
         folder = self.client.folder(folder_id=parent_folder_id).get()

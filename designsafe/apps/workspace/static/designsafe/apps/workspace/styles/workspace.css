@@ -21,6 +21,7 @@
 
 .workspace-panel-main {
     flex: 1;
+    min-height: 600px;
 }
 
 .workspace-panel-sidebar {
