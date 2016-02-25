@@ -25,6 +25,7 @@
 
 .workspace-panel-sidebar {
     flex: 0 0 auto;
+    max-width: 310px;
 }
 
 .workspace-panel-toggle {

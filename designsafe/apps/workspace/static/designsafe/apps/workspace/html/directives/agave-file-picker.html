@@ -3,7 +3,7 @@
         <span class="input-group-btn">
           <button ng-click="wantFile($event)" class="btn btn-default" type="button">Select Input</button>
         </span>
-        <input type="text" class="form-control" ng-model="data.input" placeholder="Click to select input data" />
+        <input type="text" class="form-control" ng-model="data.input" placeholder="{{form.placeholder || 'Click to select input data'}}" />
     </div>
     <span class="help-text" ng-if="requesting">
         <button type="button" class="btn btn-xs btn-link" ng-click="stopWant($event)">Cancel</button>

@@ -1,22 +1,19 @@
 from agavepy.agave import Agave, AgaveException
-from celery.result import AsyncResult
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, JsonResponse
-
-import logging
-import json
-
-import os
-
+from django.http import HttpResponse
 from designsafe.apps.workspace.tasks import submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
+from urlparse import urlparse
+import json
+import os
+import logging
 
 logger = logging.getLogger(__name__)
 
-# Create your views here.
+
 @login_required
 def index(request):
     context = {}
@@ -64,10 +61,15 @@ def call_api(request, service):
             else:
                 if request.method == 'POST':
                     job_post = json.loads(request.body)
-                    # data = agave.jobs.submit(body=job_post)
-                    # data = submit_job.delay(server, access_token, job_post)
+
+                    # parse agave:// URI into "archiveSystem" and "archivePath"
+                    if job_post['archivePath'].startswith('agave://'):
+                        parsed = urlparse(job_post['archivePath'])
+                        # strip leading slash
+                        job_post['archivePath'] = parsed.path[1:]
+                        job_post['archiveSystem'] = parsed.netloc
+
                     data = submit_job(request, agave, job_post)
-                    task_id=data.id
                 else:
                     data = agave.jobs.list()
 
@@ -82,4 +84,4 @@ def call_api(request, service):
             content_type='application/json')
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
-        content_type='application/json')
+                        content_type='application/json')
