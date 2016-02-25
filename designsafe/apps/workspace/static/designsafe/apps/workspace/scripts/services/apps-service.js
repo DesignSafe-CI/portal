@@ -21,7 +21,7 @@
       return $http({
         url: djangoUrl.reverse('designsafe_workspace:call_api', ['apps']),
         method: 'GET',
-        params: {'app_id': encodeURIComponent(app_id)}
+        params: {'app_id': app_id}
       });
     };
 
@@ -95,10 +95,12 @@
           };
           if (input.semantics.maxCardinality === 1) {
             field.type = 'string';
+            field.format = 'agaveFile';
           } else {
             field.type = 'array';
             field.items = {
               type: 'string',
+              format: 'agaveFile',
               'x-schema-form': {notitle: true}
             }
             if (input.semantics.maxCardinality > 1) {
