@@ -18,6 +18,7 @@
     'ng.django.urls',
     'ui.bootstrap',
     'schemaForm',
+    'ng.designsafe',
     'ds.wsBus',
     'ds.notifications'
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);

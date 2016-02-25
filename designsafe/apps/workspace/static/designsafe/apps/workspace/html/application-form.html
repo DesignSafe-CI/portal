@@ -1,20 +1,23 @@
 <div ng-if="!data.app">
-  <div class="jumbotron">
-    <h1>Select an app</h1>
-    <p>Select an application from the tray above.</p>
-  </div>
+    <div class="jumbotron">
+        <h1>Select an app</h1>
+        <p>Select an application from the tray above.</p>
+    </div>
 </div>
 <div ng-if="data.app" class="app-form-wrapper">
-  <h2>Run <em>{{data.app.label}}</em></h2>
-  <p>{{data.app.shortDescription}}</p>
-  <form name="appForm"
-        sf-schema="form.schema"
-        sf-form="form.form"
-        sf-model="form.model"
-        ng-submit="onSubmit(appForm)"></form>
+    <h2>Run <em>{{data.app.label}}</em></h2>
+    <p>{{data.app.shortDescription}}</p>
+    <form name="appForm"
+          sf-schema="form.schema"
+          sf-form="form.form"
+          sf-model="form.model"
+          ng-submit="onSubmit(appForm)"></form>
 </div>
 
 <div ng-if="data.job" class="alert alert-success">
-  <h4>Job Submitted Successfully!</h4>
-  <p>Your job <em>{{data.job.name}}</em> has been submitted. Monitor its status on the right.</p>
+    <h4>Job Submitted Successfully!</h4>
+    <p>
+        Your job <em>{{data.job.name}}</em> has been submitted. Monitor its status on
+        the right.
+    </p>
 </div>

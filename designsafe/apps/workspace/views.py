@@ -50,7 +50,11 @@ def call_api(request, service):
 
         elif service == 'files':
             system_id = request.GET.get('system_id')
-            file_path = request.GET.get('file_path')
+            file_path = request.GET.get('file_path', '')
+            if (system_id == 'designsafe.storage.default' and
+                    not file_path.startswith(request.user.username)):
+                file_path = '%s/%s' % (request.user.username, file_path)
+            logger.debug('Listing "agave://%s/%s"...' % (system_id, file_path))
             data = agave.files.list(systemId=system_id, filePath=file_path)
 
         elif service == 'jobs':

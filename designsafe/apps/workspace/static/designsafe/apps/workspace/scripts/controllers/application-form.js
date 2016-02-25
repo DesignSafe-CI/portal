@@ -78,10 +78,16 @@
         }
       };
 
-      $scope.closeApp = function() {
-        $rootScope.$broadcast('close-app', $scope.data.app.id);
+      function closeApp() {
         $scope.data.app = null;
         $scope.data.job = null;
+      }
+
+      $scope.$on('close-app', closeApp)
+
+      $scope.closeApp = function() {
+        $rootScope.$broadcast('close-app', $scope.data.app.id);
+        closeApp();
       }
     }]);
 })(window, angular, jQuery);

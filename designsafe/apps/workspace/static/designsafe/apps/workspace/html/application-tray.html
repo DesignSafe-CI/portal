@@ -1,19 +1,31 @@
 <div class="apps-tray">
-  <div ng-repeat="app in data.apps" class="app corner-ribbon-container"
-    ng-class="{'app-active': app._active}" ng-click="launchApp(app);"
-    uib-tooltip-html="app.shortDescription + '<br>(' + app.id + ')'" tooltip-placement="bottom"
-    tooltip->
-    <span class="app-icon"><i class="fa fa-cube fa-3x"></i></span>
-    <span class="app-title">{{app.label}}</span>
-    <span class="app-version">{{app.version}}</span>
-    <span ng-if="!app.isPublic" class="corner-ribbon corner-ribbon-fa grey" title="Private app">
-      <i class="fa fa-lock"></i>
-    </span>
-  </div>
+    <div class="app-wrapper" ng-show="!data.apps">
+        <div class="app text-center">
+            <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+            <div class="app-title">Loading...</div>
+            <div class="app-version">&nbsp;</div>
+        </div>
+    </div>
+    <div ng-repeat="app in data.apps | orderBy : 'name'"
+         class="app-wrapper" ng-class="{'app-active': data.activeApp.id==app.id}"
+         ng-click="launchApp(app);"
+         uib-tooltip-html="app.shortDescription + '<br>(' + app.id + ')'"
+         tooltip-placement="bottom">
+        <div class="corner-ribbon-container">
+            <div class="app text-center">
+                <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>
+                <div class="app-title">{{app.label}}</div>
+                <div class="app-version">{{app.version}}</div>
+                <div ng-if="!app.isPublic" class="corner-ribbon corner-ribbon-fa grey" title="Private app"><i class="fa fa-lock"></i></div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <div class="checkbox">
-  <label for="id_publicOnly">
-    <input type="checkbox" name="publicOnly" id="id_publicOnly" ng-model="data.publicOnly" ng-change="refreshApps()">
-    Show only publicly available apps
-  </label>
+    <label for="id_publicOnly">
+        <input type="checkbox" name="publicOnly" id="id_publicOnly"
+               ng-model="data.publicOnly" ng-change="refreshApps()">
+        Show only publicly available apps
+    </label>
 </div>
