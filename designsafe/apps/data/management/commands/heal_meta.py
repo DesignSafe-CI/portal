@@ -24,17 +24,22 @@ class Command(BaseCommand):
         
         self.stdout.write('Cheking metadata...')
         for f in agave_utils.fs_walk(agave_client = ag, system_id = system_id, folder = base_path):
-
             self.stdout.write(f['path'])
-            mf = agave_utils.get_or_create_from_file(agave_client = ag, file_obj = f)
-            o = Object.get(id = mf.uuid, ignore=404)
+            fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
+            self.stdout.write(fo.uuid)
+            o = Object.get(id = fo.uuid, ignore=404)
             #if o is not None:
             #    o.delete()
             if o is None:
-                o = Object(**mf.to_dict())
+                o = Object(**fo.to_dict())
+                o.save()
                 self.stdout.write('Created {}'.format(o.meta.id))
             else:
                 #o.update(**mf.to_dict())
-                o = Object(**mf.to_dict())
+                no = Object(**fo.to_dict())
+                if hasattr(o, 'keywords'):
+                    no.keywords = o.keywords
+                if hasattr(o, 'systemTags'):
+                    no.systemTags = o.systemTags
+                no.save()
                 self.stdout.write('Updated {}'.format(o.meta.id))
-            o.save()

@@ -278,7 +278,8 @@ class AgaveFilesManager(AgaveObject):
 class AgaveFolderFile(AgaveObject):
     def __init__(self, agave_client = None, file_obj = None, **kwargs):
         super(AgaveFolderFile, self).__init__(agave_client = agave_client, **kwargs)
-        self.uuid = file_obj.get('uuid', None)
+        self.uuid = None
+        self.meta_link = None
         self.format = file_obj.get('format', 'raw')
         self.last_modified = file_obj['lastModified']
         self.length = file_obj['length']
@@ -288,9 +289,10 @@ class AgaveFolderFile(AgaveObject):
         self.system = file_obj['system']
         self.type = file_obj['type']
         self.agave_path = 'agave://{}/{}'.format(file_obj['system'], file_obj['path'])
+        self.meta_link = None
+        self.uuid = None
         if '_links' in file_obj:
             self.link = file_obj['_links']['self']['href']
-            self.meta_link = file_obj['_links']['metadata']['href'] if 'metadata' in file_obj['_links'] else None
         else:
             self.link = None
             self.meta_link = None
@@ -299,6 +301,11 @@ class AgaveFolderFile(AgaveObject):
             self.permissions = self._get_permissions()
         else:
             self.permissions = []
+        if self.name == '.':
+            self.name = self.path.split('/')[-1]
+        self.path = '/'.join(self.path.split('/')[:-1])
+        self._set_uuid(file_obj)
+
 
     @classmethod
     def from_path(cls, agave_client = None, system_id = None, path = None):
@@ -336,6 +343,19 @@ class AgaveFolderFile(AgaveObject):
         else:
             path = '/'
         return path
+
+    @property
+    def full_path(self):
+        return self.path + '/' + self.name
+
+    def _set_uuid(self, file_obj):
+        res = self.call_operation('files.list', filePath = self.full_path, systemId = self.system)
+        if res:
+            obj = res[0]
+
+        if 'metadata' in obj['_links']:
+            self.meta_link = obj['_links']['metadata']['href']
+            self.uuid = json.loads(self.meta_link.split('?q=')[1])['associationIds']
 
     def _get_permissions(self):
         '''
@@ -381,6 +401,27 @@ class AgaveFolderFile(AgaveObject):
             'permissions': self.permissions
         }
         return o
+
+    def to_dict(self):
+        d = {
+            '_id': self.uuid,
+            'lastModified': self.last_modified,
+            'length': self.length,
+            'format': self.format,
+            'mimeType': self.mime_type,
+            'name': self.name,
+            'path': self.path,
+            'permissions': self.permissions,
+            'systemId': self.system,
+            'type': self.type,
+            'deleted': False,
+            'fileType': self.name.split('.')[-1] if self.format != 'folder' else 'folder',
+            'link': self.link,
+            'agavePath': self.agave_path,
+            'keywords': [],
+            'systemTags': []
+        }
+        return d
 
     def _update(self, obj):
         for key, val in self.__dict__.iteritems():
