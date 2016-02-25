@@ -481,7 +481,7 @@ class AgaveMetaFolderFile(AgaveObject):
         self.owner = meta_obj.get('owner', None)
         self.schema_id = meta_obj.get('schemaId', None)
         self.agave_path = 'agave://{}/{}'.format(meta_obj['value'].get('systemId', None), meta_obj['value'].get('path', '') + '/' + meta_obj['value'].get('name', ''))
-        if self.path is not None:
+        if self.path is not None and self.path != '/':
             self.path = self.path.strip('/')
         
     @classmethod
