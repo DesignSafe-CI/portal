@@ -40,6 +40,7 @@ Machine, which is required to run Docker on Mac/Windows hosts.
    - `DJANGO_SECRET`: should be changed for production
    - `TAS_*`: should be set to enable direct access to `django.contrib.admin`
    - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
+   - `RT_*`: should be set to enable ticketing
 
 3. Set up local/testing database
 
@@ -88,12 +89,12 @@ The easiest way to run the tests is from inside a running Docker container. Whil
 install all the Python/Django/npm dependencies locally (ideally within a virtualenv), this
 is already done in the docker container.
 
-We assume you have the image built or checked out locally and it is called 
+We assume you have the image built or checked out locally and it is called
 `designsafeci/portal`.
 
 ### Django tests
 
-Django tests should be written according to standard [Django testing procedures][8]. 
+Django tests should be written according to standard [Django testing procedures][8].
 
 You can run Django tests with the following command:
 
@@ -106,16 +107,16 @@ $ docker run -it --rm designsafe/portal python manage.py test
 Frontend tests are [Jasmine][9] tests executed using the [Karma engine][10]. Testing
 guidelines can be found in the [AngularJS Developer Guide on Unit Testing][11].
 
-To run frontend tests, ensure that all scripts and test scripts are configured in 
+To run frontend tests, ensure that all scripts and test scripts are configured in
 [`karma-conf.js`](karma-conf.js) and then run the command:
 
 ```shell
-$ docker run -it --rm designsafe/portal bin/run-tests.sh 
+$ docker run -it --rm designsafe/portal bin/run-tests.sh
 ```
 
 ## Development setup
 
-Use `docker-compose` to run the portal in development. The default compose file, 
+Use `docker-compose` to run the portal in development. The default compose file,
 [`docker-compose.yml`](docker-compose.yml) runs the main django server in development
 mode with a redis service for websockets support. You can optionally enable the EF sites
 for testing.
@@ -128,7 +129,7 @@ $ docker-compose up
 When using this compose file, your Agave Client should be configured with a `callback_url`
 of `http://$DOCKER_HOST_IP:8000/auth/agave/callback/`.
 
-For developing some services, e.g. Box.com integration, https support is required. To 
+For developing some services, e.g. Box.com integration, https support is required. To
 enable an Nginx http proxy run using the [`docker-compose-http.yml`](docker-compose-http.yml)
 file. This file configures the same services as the default compose file, but it also sets
 up an Nginx proxy secured by a self-signed certificate.
