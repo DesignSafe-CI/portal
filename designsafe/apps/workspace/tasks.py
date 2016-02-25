@@ -53,13 +53,10 @@ def watch_job_status(data):
                                      event_users=[username])
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
-            checks = data.get('status_checks', 0) + 1
-            data['status_checks'] = checks
-            watch_job_status.apply_async(args=[data], countdown=10*checks)
+            watch_job_status.apply_async(args=[data], countdown=10)
         else:
             # queue another watch task
             data['current_status'] = job_status
-            data['status_checks'] = 0
             watch_job_status.apply_async(args=[data], countdown=10)
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
@@ -71,7 +68,7 @@ def watch_job_status(data):
         retries = data.get('retry', 0) + 1
         data['retry'] = retries
         logger.warning('Agave API error. Retry number %s...' % retries)
-        watch_job_status.apply_async(args=[data], countdown=10**retries)
+        watch_job_status.apply_async(args=[data], countdown=10*retries)
 
 
 @app.task
