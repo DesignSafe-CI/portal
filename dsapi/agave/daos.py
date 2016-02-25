@@ -503,7 +503,7 @@ class AgaveMetaFolderFile(AgaveObject):
         if self.uuid is not None:
             self.permissions = self._get_permissions()
 
-        if self.path is not None:
+        if self.path is not None and self.path != '/':
             self.path = self.path.strip('/')
         
         if '_links' in meta_obj:

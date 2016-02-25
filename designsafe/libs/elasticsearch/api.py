@@ -63,6 +63,36 @@ def advanced_search(index, user, search_terms):
     return response, s
 
 class Object(DocType):
+    @classmethod
+    def from_agave_file_meta_obj(cls, meta_obj):
+        d = {
+            '_id': meta_obj.uuid,
+            'uuid': meta_obj.uuid,
+            'association_ids': meta_obj.association_ids,
+            'lastUpdated': meta_obj.last_modified,
+            'created': meta_obj.created,
+            'name': meta_obj.meta_name,
+            'owner': meta_obj.owner,
+            'internalUsername': meta_obj.internal_username,
+            'schemaId': meta_obj.schema_id,
+            'value': {
+                'deleted': meta_obj.deleted,
+                'type': meta_obj.type,
+                'fileType': meta_obj.file_type,
+                'length': meta_obj.length,
+                'mimeType': meta_obj.mime_type,
+                'name': meta_obj.name,
+                'path': meta_obj.path,
+                'systemId': meta_obj.system_id,
+                'keywords': meta_obj.keywords,
+                'systemTags': meta_obj.system_tags,
+            },
+            '_links': meta_obj._links,
+            'permissions': meta_obj.permissions
+        }
+        return cls(**d)
+
     class Meta:
         index = 'designsafe'
         doc_type = 'objects'
+
