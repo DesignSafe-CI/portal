@@ -280,7 +280,7 @@ class AgaveFolderFile(AgaveObject):
         self.length = file_obj['length']
         self.mime_type = file_obj['mimeType']
         self.name = file_obj['name']
-        self.path = file_obj['path']
+        self.path = file_obj['path'].strip('/')
         self.permissions = file_obj['permissions']
         self.system = file_obj['system']
         self.type = file_obj['type']
@@ -461,6 +461,7 @@ class AgaveFolderFile(AgaveObject):
 
 class AgaveMetaFolderFile(AgaveObject):
     def __init__(self, agave_client = None, meta_obj = None, **kwargs):
+        super(AgaveMetaFolderFile, self).__init__(agave_client = agave_client, **kwargs)
         self.uuid = meta_obj.get('uuid', None)
         self.association_ids = meta_obj.get('associationIds', [])
         self.deleted = meta_obj['value'].get('deleted', 'false')
@@ -480,7 +481,8 @@ class AgaveMetaFolderFile(AgaveObject):
         self.owner = meta_obj.get('owner', None)
         self.schema_id = meta_obj.get('schemaId', None)
         self.agave_path = 'agave://{}/{}'.format(meta_obj['value'].get('systemId', None), meta_obj['value'].get('path', '') + '/' + meta_obj['value'].get('name', ''))
-        super(AgaveMetaFolderFile, self).__init__(agave_client = agave_client, **kwargs)
+        if self.path is not None:
+            self.path = self.path.strip('/')
         
     @classmethod
     def from_path(cls, agave_client = None, system_id = None, path = None):
