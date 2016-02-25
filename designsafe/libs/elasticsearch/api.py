@@ -1,5 +1,5 @@
 from django.conf import settings
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
 import logging
@@ -19,7 +19,7 @@ connections.create_connection(hosts=hosts, timeout=20)
 
 
 def _user_filter(user):
-    return Q('bool', should=[Q('term', owner=user), Q('term', permission=user)])
+    return Q('bool', should=[Q('term', owner=user), Q('term', permissions=user)])
 
 
 def basic_search(index, user, search_phrase):
@@ -61,3 +61,8 @@ def advanced_search(index, user, search_terms):
     s = Search(index=index).query('filtered', query=q, filter=_user_filter(user))
     response = s.execute()
     return response, s
+
+class Object(DocType):
+    class Meta:
+        index = 'designsafe'
+        doc_type = 'objects'

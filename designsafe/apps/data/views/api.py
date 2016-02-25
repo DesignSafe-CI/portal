@@ -54,6 +54,7 @@ class UploadView(BaseJSONView):
         self.set_context_props(request, **kwargs)
         ufs = request.FILES
         mgr = AgaveFilesManager(self.agave_client)
+        import ipdb; ipdb.set_trace()
         mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
         return self.render_to_json_response({'files': [o.as_json() for o in fs], 
                                              'filesMeta': [o.as_json() for o in mfs]})

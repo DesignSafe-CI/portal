@@ -70,7 +70,7 @@ class AgaveFilesManager(AgaveObject):
         ret = {}
         mf = AgaveMetaFolderFile.from_path(self.agave_client,
                                     system_id, path)
-
+        #If it's a folder upate permissions for every metadata of every file in the folder.
         if mf.file_type == 'folder':
             q = '''{{
                     "name": "{}",
@@ -87,16 +87,17 @@ class AgaveFilesManager(AgaveObject):
                                 filePath = '/'.join(paths),
                                 systemId = system_id,
                                 body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
-
+        #Update file permission on the actual file/folder
+        self.call_operation('files.updatePermissions', 
+                            filePath = '/'.join(paths),
+                            systemId = system_id,
+                            body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
+        #Update permissions for every metadata object to reach the desired file.
         for i in range(len(paths)):
             mf = AgaveMetaFolderFile.from_path(self.agave_client,
                                         system_id, '/'.join(paths))
             resp = self.call_operation('meta.updateMetadataPermissions',
                                 uuid = mf.uuid,
-                                body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
-            self.call_operation('files.updatePermissions',
-                                filePath = '/'.join(paths),
-                                systemId = system_id,
                                 body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
             if i == 0:
                 ret = resp
@@ -285,7 +286,6 @@ class AgaveFolderFile(AgaveObject):
         self.mime_type = file_obj['mimeType']
         self.name = file_obj['name']
         self.path = file_obj['path'].strip('/')
-        self.permissions = file_obj['permissions']
         self.system = file_obj['system']
         self.type = file_obj['type']
         self.agave_path = 'agave://{}/{}'.format(file_obj['system'], file_obj['path'])
@@ -295,6 +295,11 @@ class AgaveFolderFile(AgaveObject):
         else:
             self.link = None
             self.meta_link = None
+
+        if self.link is not None:
+            self.permissions = self._get_permissions()
+        else:
+            self.permissions = []
 
     @classmethod
     def from_path(cls, agave_client = None, system_id = None, path = None):
@@ -318,7 +323,6 @@ class AgaveFolderFile(AgaveObject):
             'mimeType': f.content_type,
             'name': f.name,
             'path': path,
-            'permissions': 'READ_WRITE',
             'system': system_id,
             'type': 'file'
         }
@@ -334,6 +338,13 @@ class AgaveFolderFile(AgaveObject):
             path = '/'
         return path
 
+    def _get_permissions(self):
+        '''
+        Return permissions of self.
+        '''
+        ret = self.call_operation('files.listPermissions', filePath = self.path, systemId = self.system)
+        return ret
+
     #TODO: Might want to implement corresponding Encoder/Decoder classes
     def as_json(self):
         return {
@@ -348,7 +359,8 @@ class AgaveFolderFile(AgaveObject):
             'type': self.type,
             'link': self.link,
             'metaLink': self.meta_link,
-            'agavePath': self.agave_path
+            'agavePath': self.agave_path,
+            'permissions': self.permissions
         }
 
     def as_meta_json(self):
@@ -362,11 +374,12 @@ class AgaveFolderFile(AgaveObject):
             'path': self.parent_path ,
             'systemId': self.system,
             'keywords': [],
-            'systemTags': {}
+            'systemTags': {},
         }
         o = {
             'name': object_name,
             'value': f_dict,
+            'permissions': self.permissions
         }
         return o
 
@@ -483,11 +496,20 @@ class AgaveMetaFolderFile(AgaveObject):
         self.created = meta_obj.get('created', None)
         self.meta_name = meta_obj.get('name', None)
         self.owner = meta_obj.get('owner', None)
+        self.internal_username = meta_obj.get('internalUsername', None)
         self.schema_id = meta_obj.get('schemaId', None)
         self.agave_path = 'agave://{}/{}'.format(meta_obj['value'].get('systemId', None), meta_obj['value'].get('path', '') + '/' + meta_obj['value'].get('name', ''))
-        if self.path is not None and self.path != '/':
-            self.path = self.path.strip('/')
+        self.permissions = []
+        if self.uuid is not None:
+            self.permissions = self._get_permissions()
 
+        if self.path is not None:
+            self.path = self.path.strip('/')
+        
+        if '_links' in meta_obj:
+            self.link = meta_obj['_links']['self']['href']
+            self._links = meta_obj['_links']
+        
     @classmethod
     def from_path(cls, agave_client = None, system_id = None, path = None):
         paths = path.split('/')
@@ -557,6 +579,13 @@ class AgaveMetaFolderFile(AgaveObject):
                 'name': object_name
             }
         return cls(agave_client = agave_client, meta_obj = d)
+
+    def _get_permissions(self):
+        '''
+        Used to get permissions from Agave and add the obj to self.
+        '''
+        ret = self.call_operation('meta.listMetadataPermissions', uuid = self.uuid)
+        return ret
 
     def _get_upated_fields(self, new_meta):
         fields = set()
@@ -757,42 +786,42 @@ class AgaveMetaFolderFile(AgaveObject):
     #TODO: Might want to implement corresponding Encoder/Decoder classes
     def as_json(self):
         return {
-           'uuid': self.uuid,
-           'associationIds': self.association_ids,
-           'deleted': self.deleted,
-           'type': self.type,
-           'fileType': self.file_type,
-           'length': self.length,
-           'mimeType': self.mime_type,
-           'name': self.name,
-           'path': self.path,
-           'systemId': self.system_id,
-           'keywords': self.keywords,
-           'systemTags': self.system_tags,
-           'lastModified': self.last_modified,
-           'created': self.created,
-           'meta_name': self.meta_name,
-           'owner': self.owner,
-           'schemaId': self.schema_id,
-           'agavePath': self.agave_path
+            'uuid': self.uuid,
+            'associationIds': self.association_ids,
+            'deleted': self.deleted,
+            'type': self.type,
+            'fileType': self.file_type,
+            'length': self.length,
+            'mimeType': self.mime_type,
+            'name': self.name,
+            'path': self.path,
+            'systemId': self.system_id,
+            'keywords': self.keywords,
+            'systemTags': self.system_tags,
+            'lastModified': self.last_modified,
+            'created': self.created,
+            'meta_name': self.meta_name,
+            'owner': self.owner,
+            'schemaId': self.schema_id,
+            'agavePath': self.agave_path,
+            'permissions': self.permissions           
         }
 
     def as_meta_json(self):
         return{
-            'associationIds': self.association_ids,
-            'name': self.meta_name,
-            'schemaId': self.schema_id,
             'uuid': self.uuid,
+            'name': self.meta_name,
+            'associationIds': self.association_ids,
             'value': {
-                'deleted': self.deleted,
-                'type': self.type,
-                'fileType': self.file_type,
-                'length': self.length,
                 'mimeType': self.mime_type,
                 'name': self.name,
+                'deleted': self.deleted,
+                'fileType': self.file_type,
+                'type': self.type,
+                'length': self.length,
                 'path': self.path,
                 'systemId': self.system_id,
                 'keywords': self.keywords,
-                'systemTags': self.system_tags
+                'systemTags': self.system_tags,
             }
         }
