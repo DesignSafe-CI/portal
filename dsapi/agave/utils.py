@@ -18,7 +18,7 @@ def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = Tru
         if not bottom_up:
             yield f
         if f['format'] == 'folder':
-            for sf in fs_walk(agave_client, system_id, f['path'], bottom_up, False):
+            for sf in fs_walk(agave_client, system_id, f['path'], bottom_up = bottom_up, yield_base = False):
                 yield sf
         if bottom_up:
             yield f

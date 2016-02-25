@@ -27,9 +27,14 @@ class Command(BaseCommand):
 
             self.stdout.write(f['path'])
             mf = agave_utils.get_or_create_from_file(agave_client = ag, file_obj = f)
-            self.stdout.write('Created/updated {}'.format(mf.uuid))
             o = Object.get(id = mf.uuid, ignore=404)
+            #if o is not None:
+            #    o.delete()
             if o is None:
-                o = Object.from_agave_file_meta_obj(mf)
-                self.stdout.write(self.style.SUCCESS('Created {}'.format(o.meta.id)))
+                o = Object(**mf.to_dict())
+                self.stdout.write('Created {}'.format(o.meta.id))
+            else:
+                #o.update(**mf.to_dict())
+                o = Object(**mf.to_dict())
+                self.stdout.write('Updated {}'.format(o.meta.id))
             o.save()

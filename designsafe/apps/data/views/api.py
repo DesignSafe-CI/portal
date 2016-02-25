@@ -13,6 +13,7 @@ from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesMan
 
 import json, requests, traceback
 import logging
+from designsafe.libs.elasticsearch.api import Object
 logger = logging.getLogger(__name__)
 
 class ListingsView(BaseJSONView):
@@ -21,6 +22,10 @@ class ListingsView(BaseJSONView):
 
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
+        #import ipdb; ipdb.set_trace()
+        #obj = Object()
+        #es_res, es_s = obj.search_exact_path(self.filesystem, request.user.username, 'xirdneh', 'apps')
+        #es_res, es_s = obj.search_partial_path(self.filesystem, request.user.username, 'xirdneh/data')
         manager = AgaveFilesManager(self.agave_client)
         if self.file_path == request.user.username:
             manager.check_shared_folder(system_id = self.filesystem, 
@@ -54,7 +59,6 @@ class UploadView(BaseJSONView):
         self.set_context_props(request, **kwargs)
         ufs = request.FILES
         mgr = AgaveFilesManager(self.agave_client)
-        import ipdb; ipdb.set_trace()
         mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
         return self.render_to_json_response({'files': [o.as_json() for o in fs], 
                                              'filesMeta': [o.as_json() for o in mfs]})
