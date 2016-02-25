@@ -5,6 +5,10 @@
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
 
+    if ($(window).width() < 992) {
+      $scope.panel.collapsed = true;
+    }
+
     $scope.data = {
       loading: false,
       wants: null,
