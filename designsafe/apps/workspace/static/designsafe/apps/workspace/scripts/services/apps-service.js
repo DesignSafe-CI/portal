@@ -121,7 +121,7 @@
       };
       schema.properties.archivePath = {
         title: 'Job output archive location (optional)',
-        description: 'Specify a location where the job output should be archived. By default, job output will be archived at <code>&lt;username&gt;/archive/jobs/job-${JOB_ID}</code>',
+        description: 'Specify a location where the job output should be archived. By default, job output will be archived at <code>&lt;username&gt;/archive/jobs/job-${JOB_ID}</code>. <a href="http://agaveapi.co/documentation/tutorials/job-management-tutorial/#webhooks">See the documentation</a> for a full list of template variables that can be used here.',
         type: 'string',
         format: 'agaveFile',
         'x-schema-form': {placeholder: '<username>/archive/jobs/job-${JOB_ID}'}
