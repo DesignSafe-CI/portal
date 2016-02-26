@@ -13,11 +13,9 @@ def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = Tru
         if f['name'] == '.' or f['name'] == '..':
             if not yield_base:
                 continue
-            else:
-                f['name'] = f['path'].split('/')[-1]
         if not bottom_up:
             yield f
-        if f['format'] == 'folder':
+        if f['format'] == 'folder' and f['name'] != '.':
             for sf in fs_walk(agave_client, system_id, f['path'], bottom_up = bottom_up, yield_base = False):
                 yield sf
         if bottom_up:
@@ -36,10 +34,19 @@ def meta_walk(agave_client, system_id, folder, bottom_up = False):
             yield m
 
 def get_or_create_from_file(agave_client, file_obj):
+    '''
+    @deprecated
+    We're not using Agave Meta anymore, use get folder from below
+    '''
     af = AgaveFolderFile(agave_client = agave_client, file_obj = file_obj)
     mf = AgaveMetaFolderFile(agave_client = agave_client, meta_obj = af.as_meta_json())
     mf.save()
     return mf
+
+
+def get_folder_obj(agave_client, file_obj):
+    af = AgaveFolderFile(agave_client = agave_client, file_obj = file_obj)
+    return af
 
 def check_from_path(agave_client, system_id, file_path):
     try:
