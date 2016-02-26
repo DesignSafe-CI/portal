@@ -27,12 +27,16 @@ def generic_webhook_handler(request):
     if event_type == 'VNC':
         event_type = request.POST.get('event_type', '')
         job_owner = request.POST.get('owner', '')
-        connection_address = request.POST.get('address', '')
+        host = request.POST.get('host', '')
+        port = request.POST.get('port','')
+        password = request.POST.get('password','')
 
         body = {
             'event_type': event_type,
             'job_owner': job_owner,
-            'connection_address': connection_address,
+            'host': host,
+            'port': port,
+            'password': password,
         }
 
         generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)

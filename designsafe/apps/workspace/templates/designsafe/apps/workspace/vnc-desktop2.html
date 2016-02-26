@@ -176,9 +176,9 @@
         <!-- Connection Panel -->
         <div id="noVNC_controls" class="triangle-right top">
             <ul>
-                <li><label><strong>Host: </strong><input id="noVNC_host" value="vis.tacc.utexas.edu"/></label></li>
+                <li><label><strong>Host: </strong><input id="noVNC_host" /></label></li>
                 <li><label><strong>Port: </strong><input id="noVNC_port" /></label></li>
-                <li><label><strong>Password: </strong><input id="noVNC_password" type="password" value="moocow"/></label></li>
+                <li><label><strong>Password: </strong><input id="noVNC_password" type="password"/></label></li>
                 <li><input id="noVNC_connect_button" type="button" value="Connect"></li>
             </ul>
         </div>
@@ -200,10 +200,10 @@
 
     </div>
     <script>
+        //sets the proper include path for the noVNC UI scripts to pick up.
         INCLUDE_URI="{% static 'vendor/no-vnc/include/' %}";
     </script>
     <script type="text/javascript" src="{% static 'vendor/no-vnc/include/util.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/no-vnc/include/ui.js' %}"></script>
-
  </body>
 </html>

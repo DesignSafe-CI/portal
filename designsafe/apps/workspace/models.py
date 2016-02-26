@@ -19,7 +19,6 @@ def _interactive_job_callback(sender, **kwargs):
     if event_type == 'VNC':
         event_data = kwargs.get('event_data')
         job_owner = event_data.get('job_owner')
-        #check that job_owner, connection_address, and event_type are all defined
 
         WEBSOCKETS_FACILITY = 'websockets'
         users = [event_data.get('job_owner')]

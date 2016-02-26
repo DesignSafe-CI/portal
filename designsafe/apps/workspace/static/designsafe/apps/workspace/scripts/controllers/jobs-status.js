@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('JobsStatusCtrl',
-    ['$scope', '$rootScope', '$uibModal', 'Jobs', function($scope, $rootScope, $uibModal, Jobs) {
+    ['$scope', '$rootScope', '$uibModal', 'Jobs', 'djangoUrl', function($scope, $rootScope, $uibModal, Jobs, djangoUrl) {
     $scope.data = {};
 
     $scope.jobDetails = function(job) {
@@ -36,9 +36,11 @@
       console.log('update job msg', msg)
       if('event_type' in msg && msg.event_type === 'VNC') {
         //alert(msg.connection_address)
+        $scope.interactive_url = djangoUrl.reverse('designsafe_workspace:interactive2', { 'hostname': msg.host, 'port':msg.port , 'password':msg.password });
         $uibModal.open({
           templateUrl: 'local/vncjob-details-modal.html',
           controller: 'VNCJobDetailsModalCtrl',
+          scope: $scope,
           resolve: {
             msg: msg
           }

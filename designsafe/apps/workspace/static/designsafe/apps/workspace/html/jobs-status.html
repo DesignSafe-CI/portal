@@ -57,14 +57,11 @@
 
 <script type="text/ng-template" id="local/vncjob-details-modal.html">
   <div class="modal-header">
-    <h3 class="modal-title">VNC Job Started</h3>
+    <h3 class="modal-title">Your {{msg.event_type}} job has started!</h3>
   </div>
   <div class="modal-body">
-    <div class="alert alert-warning">
-      <h4><a href="">Connect!</a></h4>
-      <h4>or here? <a href="{% url 'workspace:interactive2' %}{{msg.address}}"</h4>
-      <p>{{msg.job_owner}}</p>
-      <p>{{msg.event_type}}</p>
+    <div class="alert alert-success">
+      <h4><a href="{{interactive_url}}&hostname={{msg.host}}&port={{msg.port}}&autoconnect=true&password={{msg.password}}" target="_blank" class="btn btn-primary">Click here to connect!</a></h4>
     </div>
   </div>
   <div class="modal-footer">
