@@ -40,18 +40,23 @@ def box_webhook(request):
         None
 
     """
-    if request.method == 'POST':
-        if request.META['CONTENT_TYPE'] == 'application/json':
-            event_data = json.loads(request.body)
+    try:
+        if request.method == 'POST':
+            if request.META['CONTENT_TYPE'] == 'application/json':
+                event_data = json.loads(request.body)
+            else:
+                event_data = request.POST.copy()
+                # to_user_ids is a list as string
+                event_data['to_user_ids'] = ast.literal_eval(event_data['to_user_ids'])
         else:
-            event_data = request.POST.copy()
+            event_data = request.GET.copy()
             # to_user_ids is a list as string
             event_data['to_user_ids'] = ast.literal_eval(event_data['to_user_ids'])
-    else:
-        event_data = request.GET.copy()
-        # to_user_ids is a list as string
-        event_data['to_user_ids'] = ast.literal_eval(event_data['to_user_ids'])
 
-    logger.debug('Received Box Webhook; event_data=%s' % event_data)
-    handle_box_webhook_event.delay(event_data)
+        logger.debug('Received Box Webhook; event_data=%s' % event_data)
+        handle_box_webhook_event.delay(event_data)
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
     return HttpResponse('OK')
