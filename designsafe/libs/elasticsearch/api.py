@@ -112,15 +112,29 @@ class Object(DocType):
                 }
             }
         '''
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"value.path._path":path}}, {"term": {"value.systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
-        s = Search.from_dict(q)
-        s.doc_type(self)
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_path(self, system_id, username, path, name):
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"value.path._exact":path}},{"term":{"value.name._exact":name}}, {"term": {"value.systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
-        s = Search.from_dict(q)
-        s.doc_type(self)
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_folder_path(self, system_id, username, path):
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["name", "path", "keywords"]
+        qs = '*{}*'.format(qs)
+        q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}} 
+        s = self.__class__.search()
+        s.update_from_dict(q)
         return s.execute(), s
 
     def search_special_dir(self, system_id, username, path):
@@ -169,10 +183,22 @@ class Object(DocType):
                 }
             }
         '''
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"value.path._exact":path}},{"term": {"value.systemId": system_id}}], "must_not":{"term": {"value.name._exact":username}}}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
-        s = Search.from_dict(q)
-        s.doc_type(self)
-        return s.execute(), s     
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update_from_dict(**self.to_dict())
+        else:
+            return super(Object, self).save(**kwargs)
    
     class Meta:
         index = 'designsafe'
