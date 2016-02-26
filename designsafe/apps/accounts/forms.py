@@ -38,6 +38,24 @@ USER_PROFILE_TITLES = (
     ('University Non-Research Staff', 'University Non-Research Staff'),
     ('University Research Staff', 'University Research Staff (excluding postdoctorates)'),
 )
+ETHNICITY_OPTIONS = (
+    ('Decline', 'Decline to Identify'),
+    ('White', 'White'),
+    ('Asian', 'Asian'),
+    ('Black or African American', 'Black or African American'),
+    ('Hispanic or Latino', 'Hispanic or Latino'),
+    ('American Indian or Alaska Native', 'American Indian or Alaska Native'),
+    ('Native Hawaiian or Other Pacific Islander', 'Native Hawaiian or Other Pacific Islander'),
+    ('Two or more races', 'Two or more races, not Hispanic')
+)
+
+GENDER_OPTIONS = (
+    ('Decline', 'Decline to Identify'),
+    ('Male', 'Male'),
+    ('Female', 'Female'),
+    ('Other', 'Other'),
+)
+
 
 
 def get_institution_choices():
@@ -223,6 +241,9 @@ class UserRegistrationForm(forms.Form):
     citizenshipId = forms.ChoiceField(label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
 
+    ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
+    gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
+
     username = forms.RegexField(label='Username',
         help_text='Usernames must be 3-8 characters in length, start with a letter, and '
             'can contain only lowercase letters, numbers, or underscore.',
@@ -265,7 +286,7 @@ class UserRegistrationForm(forms.Form):
                 self.add_error('confirmPassword', '')
                 raise forms.ValidationError(error_message)
 
-    def save(self, source='DesignSafe', pi_eligibility='Ineligible'):
+    def save(self, source='DesignSafe', pi_eligibility=INELIGIBLE):
         data = self.cleaned_data
         data['source'] = source
         data['piEligibility'] = pi_eligibility

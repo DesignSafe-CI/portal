@@ -124,6 +124,37 @@ def register(request):
     return render(request, 'designsafe/apps/accounts/register.html', context)
 
 
+@login_required
+def profile_edit(request):
+    tas = TASClient()
+    tas_user = tas.get_user(username=request.user)
+
+    # if tas_user['source'] != 'DesignSafe':
+    #     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile')) #for testing -> uncomment when DesignSafe is a valid choice
+
+    if request.method == 'POST':
+        form = forms.UserProfileForm(request.POST, initial=tas_user)
+        if form.is_valid():
+            data = form.cleaned_data
+            if request.POST.get('request_pi_eligibility'):
+                data['piEligibility'] = 'Requested'
+                _create_ticket_for_pi_request(tas_user)
+            else:
+                data['piEligibility'] = tas_user['piEligibility']
+            data['source'] = 'DesignSafe'
+            tas.save_user(tas_user['id'], data)
+            messages.success(request, 'Your profile has been updated!')
+            return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
+    else:
+        form = forms.UserProfileForm(initial=tas_user)
+
+    context = {
+        'form': form,
+        'user': tas_user,
+        }
+    return render(request, 'designsafe/apps/accounts/profile_edit.html', context)
+
+
 def password_reset(request):
     if request.user is not None and request.user.is_authenticated():
         return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))

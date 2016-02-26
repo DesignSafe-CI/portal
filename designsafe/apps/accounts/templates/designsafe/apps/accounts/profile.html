@@ -43,18 +43,18 @@
                 </h3>
                 <dl>
                     <dt>Ethnicity</dt>
-                    <dd>&nbsp;</dd>
+                    <dd>{{profile.ethnicity}}</dd>
 
                     <dt>Gender</dt>
-                    <dd>&nbsp;</dd>
+                    <dd>{{profile.gender}}</dd>
                 </dl>
             </div>
         </div>
 
         <hr>
 
-        <button disabled class="btn btn-default"><i class="fa fa-edit"></i> Edit profile
-        </button>
+        <a href="{% url 'designsafe_accounts:profile_edit' %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit profile
+        </a>
 
     </div>
 </div>

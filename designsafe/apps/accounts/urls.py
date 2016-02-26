@@ -6,6 +6,7 @@ urlpatterns = patterns(
     'designsafe.apps.accounts.views',
     url(r'^$', 'index', name='index'),
     url(r'^profile/$', 'manage_profile', name='manage_profile'),
+    url(r'^profile/edit/$', 'profile_edit', name='profile_edit'),
     url(r'^authentication/$', 'manage_authentication', name='manage_authentication'),
     url(r'^identities/$', 'manage_identities', name='manage_identities'),
     url(r'^applications/$', 'manage_applications', name='manage_applications'),
