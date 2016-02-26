@@ -16,6 +16,10 @@
     information.
   </p>
 
+  <a href="https://www.tacc.utexas.edu/" class="btn btn-lg btn-primary" target="_blank">
+    <img class="provider-logo img-responsive" style="width:100% \9;" alt="TACC" src="{% static 'designsafe/apps/auth/logos/tacc.svg'%}">
+  </a>
+
   <div class="row">
     <div class="col-md-5 col-md-push-7">
       <div class="well well-sm">
@@ -34,7 +38,7 @@
       </div>
     </div>
     <div class="col-md-7 col-md-pull-5">
-      <div class="alert alert-info">
+      <!-- <div class="alert alert-info">
         <h4>Please visit the TACC User Portal to Register</h4>
         <p>
           Registering for a TACC Account via DesignSafe is not yet available. In the
@@ -42,7 +46,7 @@
           <a href="https://portal.tacc.utexas.edu/account-request">TACC User Portal</a> to
           register an account. Then you can return to DesignSafe-CI and log in.
         </p>
-      </div>
+      </div> -->
       <div style="position:relative" title="Registration disabled.">
         <form method="post">
           {% csrf_token %}
@@ -51,7 +55,6 @@
           <a class="btn btn-link" href="/">Cancel</a>
           <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
         </form>
-        <div style="background:rgba(255,255,255,0.5);position:absolute;top:0;left:0;bottom:0;right:0"></div>
       </div>
     </div>
   </div>

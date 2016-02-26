@@ -67,7 +67,12 @@ class EmailConfirmationForm(forms.Form):
             })
 
     username = forms.CharField(
-            label='Enter Your Chameleon Username',
+            label='Enter Your TACC Username',
+            required=True)
+
+    password = forms.CharField(
+            widget=forms.PasswordInput,
+            label='Password',
             required=True)
 
 
@@ -108,10 +113,10 @@ def check_password_policy(user, password, confirmPassword):
     return True, None
 
 class PasswordResetRequestForm(forms.Form):
-    username = forms.CharField(label='Enter Your Chameleon Username', required=True)
+    username = forms.CharField(label='Enter Your TACC Username', required=True)
 
 class PasswordResetConfirmForm(forms.Form):
-    username = forms.CharField(label='Enter Your Chameleon Username', required=True)
+    username = forms.CharField(label='Enter Your TACC Username', required=True)
     code = forms.CharField(label='Reset Code', required=True)
     password = forms.CharField(widget=forms.PasswordInput, label='Password', required=True)
     confirmPassword = forms.CharField(
@@ -260,9 +265,10 @@ class UserRegistrationForm(forms.Form):
                 self.add_error('confirmPassword', '')
                 raise forms.ValidationError(error_message)
 
-    def save(self):
+    def save(self, source='DesignSafe', pi_eligibility='Ineligible'):
         data = self.cleaned_data
-        data['source'] = 'DesignSafe'
+        data['source'] = source
+        data['piEligibility'] = pi_eligibility
 
         safe_data = data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
