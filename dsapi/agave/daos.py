@@ -1,6 +1,8 @@
 import datetime
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
+from designsafe.libs.elasticsearch.api import Object
+import utils as agave_utils
 import requests
 import copy
 import urllib
@@ -8,8 +10,7 @@ import urllib
 import re
 import json
 import logging
-from designsafe.libs.elasticsearch.api import Object
-import utils as agave_utils
+import hashlib
 
 logger = logging.getLogger(__name__)
 
@@ -125,12 +126,21 @@ class FileManager(AgaveObject):
             mf.mimeType = 'text/directory'
             mf.systemId = system_id
             mf.system_tags = [{"shared": "true"}]
-            mf.permissions = [{'username': username, 'permission': 'ALL'}]
-            mf._id = username + '-magic-' + shared_with_me
+            mf.permissions = [{'username': username, 'permission': {'read': True}}]
+            id_str = username + '-magic-' + shared_with_me
+            mf._id = hashlib.md5(id_str).hexdigest()
             mf.save()
-            logger.debug('Shared folder created: {}'.format(mf.id))
+            logger.debug('Shared folder created: {}'.format(mf._id))
 
-    def list_path(self, system_id, path, username):
+    def list_path(self, system_id, path, username, special_dir):
+        if special_dir == shared_with_me and path == '/':
+            q = '''{{ "value.deleted": "false",
+                      "name": "{}",
+                      "value.path": "/",
+                      "value.name": {{ "$not": {{ "$regex": "^{}$", "$options": "m"}} }},
+                      "value.systemId": "{}" }}'''.format(object_name, username, system_id)
+        if special_dir == shared_with_me and path == '/':
+            res, s = Object().search
         res, s = Object().search_exact_folder_path(system_id, username, path)
         ret = s.scan()
         return ret
@@ -554,16 +564,11 @@ class AgaveFolderFile(AgaveObject):
 
         if self.path == '':
             self.path = '/'
-
+        self.agave_path = 'agave://{}/{}'.format(self.system, self.full_path)
         if self.link is not None:
             self.permissions = self._get_permissions()
         else:
             self.permissions = []
-
-        if self.path == '/':
-            self.agave_path = 'agave://{}/{}'.format(self.system, self.name)
-        else:
-            self.agave_path = 'agave://{}/{}/{}'.format(self.system, self.path, self.name)
         self._set_uuid()
 
     @classmethod
@@ -603,7 +608,9 @@ class AgaveFolderFile(AgaveObject):
 
     @property
     def full_path(self):
-        return self.path + '/' + self.name
+        full_path = self.path + '/' + self.name
+        full_path = full_path.strip('/')
+        return full_path
 
     def _set_uuid(self):
         try:

@@ -41,7 +41,8 @@ class ListingsView(BaseJSONView):
                                     username = request.user.username)
         l = mgr.list_path(system_id = self.filesystem,
                       path = self.file_path,
-                      username = request.user.username)
+                      username = request.user.username,
+                      special_dir = self.special_dir)
         return self.render_to_json_response([o.to_dict() for o in l])
 
 class DownloadView(BaseJSONView):
