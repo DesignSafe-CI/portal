@@ -106,9 +106,6 @@ def submit_job(request, agave, job_post):
                                "it returns."), max_retries=None)
     logger.info('agave response: {}'.format(response))
 
-    # subscribe_job_notification(request, agave, str(response.id))
-    # mock_agave_notification() #for testing
-
     return response
 
 
@@ -118,7 +115,6 @@ def subscribe_job_notification(request, agave, job_id):
     logger.info('job notification url: {}'.format(url))
 
     d = {
-        # "url" : "http://requestb.in/p8rlbtp8?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}",
         "url" : url,
         "event" : "*",
         "associatedUuid" : job_id,
