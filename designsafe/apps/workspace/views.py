@@ -79,3 +79,31 @@ def call_api(request, service):
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
+
+@login_required
+def interactive(request):
+    logger.info('interactive view called');
+    context = {}
+    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
+    if token_key in request.session:
+        context['session'] = {
+            'agave': json.dumps(request.session[token_key])
+        }
+
+    logger.info('request is: '.format(request))
+    #context['unreadNotifications'] = get_number_unread_notifications(request)
+    return render(request, 'designsafe/apps/workspace/vnc-desktop.html', context)
+
+@login_required
+def interactive2(request):
+    logger.info('interactive view called');
+    context = {}
+    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
+    if token_key in request.session:
+        context['session'] = {
+            'agave': json.dumps(request.session[token_key])
+        }
+
+    logger.info('request is: '.format(request))
+    #context['unreadNotifications'] = get_number_unread_notifications(request)
+    return render(request, 'designsafe/apps/workspace/vnc-desktop2.html', context)

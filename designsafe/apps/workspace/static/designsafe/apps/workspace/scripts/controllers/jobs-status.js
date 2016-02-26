@@ -34,12 +34,24 @@
 
     $scope.$on('ds.wsBus:default', function update_job(e, msg){
       console.log('update job msg', msg)
-      for (var i=0; i < $scope.data.jobs.length; i++){
-          if ($scope.data.jobs[i]['id'] == msg.job_id) {
-            $scope.data.jobs[i]['status'] = msg.status;
-            $scope.$apply()
-            break;
+      if('event_type' in msg && msg.event_type === 'VNC') {
+        //alert(msg.connection_address)
+        $uibModal.open({
+          templateUrl: 'local/vncjob-details-modal.html',
+          controller: 'VNCJobDetailsModalCtrl',
+          resolve: {
+            msg: msg
           }
+        });
+      }
+      else {
+        for (var i=0; i < $scope.data.jobs.length; i++){
+            if ($scope.data.jobs[i]['id'] == msg.job_id) {
+              $scope.data.jobs[i]['status'] = msg.status;
+              $scope.$apply()
+              break;
+            }
+        }
       }
     });
 
@@ -53,4 +65,12 @@
       $uibModalInstance.dismiss('cancel');
     };
   });
+
+  angular.module('WorkspaceApp').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
+    $scope.msg = msg;
+    $scope.dismiss = function() {
+      $uibModalInstance.dismiss('cancel');
+    };
+  });
+
 })(window, angular, jQuery);

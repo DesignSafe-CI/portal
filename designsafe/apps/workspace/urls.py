@@ -7,6 +7,8 @@ urlpatterns = patterns(
     'designsafe.apps.workspace.views',
     url(r'^$', 'index', name='index'),
     url(r'^api/(?P<service>[a-z]+?)/$', 'call_api', name='call_api'),
+    url(r'^interactive/$', 'interactive', name='interactive'),
+    url(r'^interactive2/$', 'interactive2', name='interactive2'),
 )
 
 

@@ -17,9 +17,25 @@ logger = logging.getLogger(__name__)
 @require_POST
 @csrf_exempt
 def generic_webhook_handler(request):
-    event_type = request.GET.get('type', None)
-    if event_type:
-        generic_event.send_robust(None, event_type=event_type, event_data=request.body)
+    if request.method == 'POST':
+        # do stuff
+        event_type = request.POST.get('event_type', None)
+    else:
+        # do other stuff, to be determined in future webhooks I suppose
+        return HttpResponse('Unexpected', status=400)
+
+    if event_type == 'VNC':
+        event_type = request.POST.get('event_type', '')
+        job_owner = request.POST.get('owner', '')
+        connection_address = request.POST.get('address', '')
+
+        body = {
+            'event_type': event_type,
+            'job_owner': job_owner,
+            'connection_address': connection_address,
+        }
+
+        generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)
         return HttpResponse('OK')
     else:
         return HttpResponse('Unexpected', status=400)
