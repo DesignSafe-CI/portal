@@ -1,5 +1,5 @@
 from django.conf import settings
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
 import logging
@@ -19,7 +19,7 @@ connections.create_connection(hosts=hosts, timeout=20)
 
 
 def _user_filter(user):
-    return Q('bool', should=[Q('term', owner=user), Q('term', permission=user)])
+    return Q('bool', should=[Q('term', owner=user), Q('term', permissions__user=user)])
 
 
 def basic_search(index, user, search_phrase):
@@ -61,3 +61,120 @@ def advanced_search(index, user, search_terms):
     s = Search(index=index).query('filtered', query=q, filter=_user_filter(user))
     response = s.execute()
     return response, s
+
+class Object(DocType):
+    #def search_partial_path(self, system_id, path):
+    #    s = self.search().query('filtered', query = 
+    #    s.filter('term', systemId=system_id)
+    def search_partial_path(self, system_id, username, path):
+        '''
+            {
+                "query": {
+                    "filtered": {
+                        "filter": {
+                            "bool": {
+                                "should": [
+                                    {
+                                        "term": {
+                                            "owner": "xirdneh"
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "permissions.username": "xirdneh"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "query": {
+                            "bool": {
+                                "must": [
+                                    {
+                                        "term": {
+                                            "value.path._exact": "xirdneh"
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "value.name._exact": "apps"
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "value.systemId": "designsafe.storage.default"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        '''
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"value.path._path":path}}, {"term": {"value.systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = Search.from_dict(q)
+        s.doc_type(self)
+        return s.execute(), s
+
+    def search_exact_path(self, system_id, username, path, name):
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"value.path._exact":path}},{"term":{"value.name._exact":name}}, {"term": {"value.systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = Search.from_dict(q)
+        s.doc_type(self)
+        return s.execute(), s
+
+    def search_special_dir(self, system_id, username, path):
+        '''
+        {
+        "query": {
+                    "filtered": {
+                        "filter": {
+                            "bool": {
+                                "should": [
+                                    {
+                                        "term": {
+                                            "owner": "xirdneh"
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "permissions.username": "xirdneh"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "query": {
+                            "bool": {
+                                "must": [
+                                    {
+                                        "term": {
+                                            "value.path._exact": "/"
+                                        }
+                                    },
+                                    {
+                                        "term": {
+                                            "value.systemId": "designsafe.storage.default"
+                                        }
+                                    }
+                                ],
+                                "must_not": {
+                                    "term": {
+                                        "value.name._exact": "xirdneh"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        '''
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"value.path._exact":path}},{"term": {"value.systemId": system_id}}], "must_not":{"term": {"value.name._exact":username}}}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = Search.from_dict(q)
+        s.doc_type(self)
+        return s.execute(), s     
+   
+    class Meta:
+        index = 'designsafe'
+        doc_type = 'objects'
+

@@ -1,0 +1,61 @@
+.none {
+	display: none;
+}
+
+.ticket div.title {
+	float: left;
+	width: 30%;
+	margin: 5px;;
+}
+
+.ticket div.status,
+.ticket div.reply,
+.ticket div.updated {
+	float: left;
+	width: 20%;
+	margin: 5px;
+}
+
+.ticket {
+	clear: left;
+}
+
+.button {
+	font-size: 2em;
+}
+
+.navigation {
+	float: right;
+}
+
+.navigation ul {
+	list-style-type: none;
+}
+
+.reply-link {
+	height: 3em;
+}
+
+.history-item {
+	margin-bottom: 20px;
+}
+
+.history-content-container {
+	width: 80%;
+}
+
+.history-content {
+	border: 1px solid;
+	border-color: #e0e0e0;
+	border-radius: .5em;
+	box-shadow: 5px 5px 5px #9b9b9a;
+	padding-left: 10px;
+	margin-bottom: 20px;
+	overflow-x: auto;
+	width: 100%;
+}
+
+.required label:after, label.required:after {
+	content: "*";
+	color: red;
+}

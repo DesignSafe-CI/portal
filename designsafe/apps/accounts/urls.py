@@ -28,7 +28,7 @@ def menu_items(**kwargs):
             },
             {
                 'label': _('Notifications'),
-                'url': reverse('designsafe_accounts:notifications'),
+                'url': reverse('designsafe_notifications:notifications'),
                 'children': []
             }
         ]

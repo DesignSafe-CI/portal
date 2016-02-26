@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}My Tickets{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>My Tickets</h2>
+
+  <a class="btn btn-primary" href="{% url 'djangoRT:ticketcreate' %}">
+    <i class="fa fa-plus-circle"></i>
+    Create a new ticket
+  </a>
+
+  {% if show_resolved %}
+    <h3>All Tickets <small><a class="btn btn-default btn-xs pull-right" href="{% url 'djangoRT:mytickets' %}">Show only open tickets</a></small></h3>
+  {% else %}
+    <h3>Open Tickets <small><a class="btn btn-default btn-xs pull-right" href="?show_resolved">Show resolved tickets</a></small></h3>
+  {% endif %}
+
+  <form>
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+        <input class="form-control search" type="text" id="search" placeholder="Filter tickets">
+      </div>
+    </div>
+  </form>
+
+  <div class="tickets">
+    {% for ticket in tickets %}
+      {% include "djangoRT/ticket.html" %}
+    {% empty %}
+      <div class="jumbotron">
+        <p>No tickets to display!</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block title %}Create a Ticket{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% include "djangoRT/navigation.html" %}
+    <h1>Submit a new ticket</h1>
+    <p><i>Fields marked with <label class="required"></label> are required.</i></p>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% bootstrap_form form %}
+
+      <button type="submit" class="btn btn-success">Create Ticket</button>
+      <a href="{% url 'djangoRT:mytickets' %}" class="btn btn-default">Cancel</a>
+</form>
+</div>
+{% endblock %}

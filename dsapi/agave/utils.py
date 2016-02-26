@@ -1,5 +1,7 @@
 from agavepy.agave import Agave
 from .daos import *
+import json
+logger = logging.getLogger(__name__)
 
 def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = True):
     try:
@@ -11,10 +13,12 @@ def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = Tru
         if f['name'] == '.' or f['name'] == '..':
             if not yield_base:
                 continue
+            else:
+                f['name'] = f['path'].split('/')[-1]
         if not bottom_up:
             yield f
         if f['format'] == 'folder':
-            for sf in fs_walk(agave_client, system_id, f['path'], bottom_up, False):
+            for sf in fs_walk(agave_client, system_id, f['path'], bottom_up = bottom_up, yield_base = False):
                 yield sf
         if bottom_up:
             yield f
@@ -35,6 +39,7 @@ def get_or_create_from_file(agave_client, file_obj):
     af = AgaveFolderFile(agave_client = agave_client, file_obj = file_obj)
     mf = AgaveMetaFolderFile(agave_client = agave_client, meta_obj = af.as_meta_json())
     mf.save()
+    return mf
 
 def check_from_path(agave_client, system_id, file_path):
     try:
@@ -51,7 +56,7 @@ def check_from_path(agave_client, system_id, file_path):
             resp = agave_client.meta.listMetadata(q = q)
             if len(resp) == 1:
                 m = resp[0]
-                print 'about to delete meta with {}'.format(m)
+                #print 'about to delete meta with {}'.format(m)
                 try:
                     agave_client.meta.deleteMetadata(uuid = m['uuid'])
                 except KeyError as e:
@@ -60,9 +65,9 @@ def check_from_path(agave_client, system_id, file_path):
                     else:
                         raise
             else:
-                print 'multiple metadata found'
+                #print 'multiple metadata found'
                 for m in resp[1:]:
-                    print 'about to delete meta {}'.format(m)
+                    #print 'about to delete meta {}'.format(m)
                     agave_client.meta.deleteMetadata(uuid = m['uuid']) 
 
 

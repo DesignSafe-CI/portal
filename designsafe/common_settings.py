@@ -69,6 +69,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
+    'captcha',
 
     #websockets
     'ws4redis',
@@ -84,6 +85,7 @@ INSTALLED_APPS = (
 
     # Designsafe apps
     'designsafe.apps.data',
+    'designsafe.apps.djangoRT',
     'designsafe.apps.notifications',
     'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
@@ -443,7 +445,6 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-
 ###
 # Agave Integration
 #
@@ -462,3 +463,4 @@ AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 from box_settings import *
 from elasticsearch_settings import *
+from rt_settings import *
