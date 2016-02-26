@@ -196,7 +196,7 @@ class Object(DocType):
     def save(self, **kwargs):
         o = self.__class__.get(id = self._id, ignore = 404)
         if o is not None:
-            return self.update_from_dict(**self.to_dict())
+            return self.update(**self.to_dict())
         else:
             return super(Object, self).save(**kwargs)
    
