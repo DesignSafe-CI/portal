@@ -122,7 +122,7 @@ class MetadataView(BaseJSONView):
         f = self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         meta = body.get('metadata', None)
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         f.update(**meta)
         return self.render_to_json_response(f.to_dict())
 
@@ -134,6 +134,6 @@ class MetaSearchView(BaseJSONView):
 
     def get(self, request, *args, **kwargs):
         mgr = self.set_context_props(request, **kwargs)
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         res = mgr.search_meta(request.GET.get('q', None), self.filesystem, request.user.username)
         return self.render_to_json_response([o.to_dict() for o in res])
