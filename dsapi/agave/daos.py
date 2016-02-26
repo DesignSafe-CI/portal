@@ -535,9 +535,9 @@ class AgaveFolderFile(AgaveObject):
         self.path = file_obj['path'].strip('/')
         self.system = file_obj['system']
         self.type = file_obj['type']
-        self.agave_path = 'agave://{}/{}/{}'.format(file_obj['system'], file_obj['path'], file_obj['name'])
         self.meta_link = None
         self.uuid = None
+
         if '_links' in file_obj:
             self.link = file_obj['_links']['self']['href']
         else:
@@ -551,12 +551,19 @@ class AgaveFolderFile(AgaveObject):
             paths = self.path.split('/')
             self.name = paths[-1]
             self.path = '/'.join(paths[:-1])
+
         if self.path == '':
             self.path = '/'
+
         if self.link is not None:
             self.permissions = self._get_permissions()
         else:
             self.permissions = []
+
+        if self.path == '/':
+            self.agave_path = 'agave://{}/{}'.format(self.system, self.name)
+        else:
+            self.agave_path = 'agave://{}/{}/{}'.format(self.system, self.path, self.name)
         self._set_uuid()
 
     @classmethod
