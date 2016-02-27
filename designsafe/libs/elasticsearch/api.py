@@ -111,7 +111,7 @@ class Project(DocType):
    
     class Meta:
         index = 'nees'
-        doc_type = 'experiment'
+        doc_type = 'project'
 
 class Experiment(DocType):
     def search_by_project(self, project):
