@@ -15,7 +15,7 @@ try:
 except KeyError:
     logger.exception('ELASTIC_SEARCH missing required configuration')
 
-connections.create_connection(hosts=hosts, timeout=20)
+connections.configure(default={'hosts': hosts})
 
 
 def _user_filter(user):
