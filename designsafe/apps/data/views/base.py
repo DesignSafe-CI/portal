@@ -19,6 +19,7 @@ class BaseView(SecureMixin, AgaveMixin, View):
         self.file_path = None
         self.force_homedir = True
         self.special_dir = None
+        self.is_public = False
         super(BaseView, self).__init__(**kwargs)
 
     def dispatch(self, request, *args, **kwargs):
@@ -41,6 +42,7 @@ class BaseView(SecureMixin, AgaveMixin, View):
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
         self.file_path = kwargs.get('file_path', None)
 
+        self.is_public = False
         if filesystem == 'default':
             self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
             self.force_homedir = True
@@ -49,8 +51,6 @@ class BaseView(SecureMixin, AgaveMixin, View):
             self.force_homedir = False
             if 'public' in self.filesystem:
                 self.is_public = True
-            else:
-                self.is_public = False
         if self.file_path is None or self.file_path == '/':
             self.file_path = '/'
         else:
