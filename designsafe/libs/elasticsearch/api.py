@@ -4,6 +4,7 @@ from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
 import logging
 import six
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,7 @@ def advanced_search(index, user, search_terms):
 
 class Project(DocType):
     def search_by_name(self, name):
+        name = re.sub(r'\.groups$', '', name)
         q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
         s = self.__class__.search()
         s.update_from_dict(q)
@@ -115,6 +117,7 @@ class Project(DocType):
 
 class Experiment(DocType):
     def search_by_project(self, project):
+        project = re.sub(r'\.groups$', '', project)
         q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
         s = self.__class__.search()
         s.update_from_dict(q)

@@ -17,9 +17,6 @@ from designsafe.libs.elasticsearch.api import Object
 logger = logging.getLogger(__name__)
 
 class ListingsView(BaseJSONView):
-    def set_context_props(self, request, **kwargs):
-        super(ListingsView, self).set_context_props(request, **kwargs)
-
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         #import ipdb; ipdb.set_trace()
@@ -113,18 +110,20 @@ class MetadataView(BaseJSONView):
         super(MetadataView, self).set_context_props(request, **kwargs)
         mgr = FileManager(self.agave_client)
         return mgr.get(system_id = self.filesystem, 
-                       path = self.file_path, username = request.user.username)
+                       path = self.file_path, 
+                       username = request.user.username,
+                       is_public = self.is_public)
 
     def get(self, request, *args, **kwargs):
-        f = self.set_context_props(request, **kwargs)
-        return self.render_to_json_response(f.to_dict())
+        meta, meta_dict = self.set_context_props(request, **kwargs)
+        return self.render_to_json_response(meta_dict)
 
     def post(self, request, *args, **kwargs):
-        f = self.set_context_props(request, **kwargs)
+        meta_obj, meta_dict = self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         meta = body.get('metadata', None)
-        f.update(**meta)
-        return self.render_to_json_response(f.to_dict())
+        meta_obj.update(**meta)
+        return self.render_to_json_response(meta_obj.to_dict())
 
 class MetaSearchView(BaseJSONView):
     def set_context_props(self, request, **kwargs):

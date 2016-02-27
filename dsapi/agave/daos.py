@@ -1,7 +1,7 @@
 import datetime
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
-from designsafe.libs.elasticsearch.api import Object, PublicObject
+from designsafe.libs.elasticsearch.api import Object, PublicObject, Experiment, Project
 import utils as agave_utils
 import requests
 import copy
@@ -286,15 +286,49 @@ class FileManager(AgaveObject):
                 logger.error('Multiple folder/files found')
             return res[0]
 
-    def get(self, system_id, path , username):
+    def get(self, system_id, path , username, is_public):
         paths = path.split('/')
         if len(paths) >= 2:
             name = paths[-1]
             path = '/'.join(paths[:-1])
-        res, search = Object().search_exact_path(system_id = system_id,
-                               username = username, path = path,
-                               name = name)
-        return res[0]
+        else:
+            name = path.strip('/')
+            path = '/'
+        if is_public:
+            res, search = PublicObject().search_exact_path(
+                           system_id = system_id,
+                           username = username, 
+                           path = path,
+                           name = name)
+            if res.hits.total:
+                meta = res[0]
+                experiments = []
+                project = {}
+                res, search = Experiment().search_by_project(
+                           project = meta.project)
+                if res.hits.total:
+                    for e in search.scan():
+                        experiments.append(e.to_dict())
+                res, search = Project().search_by_name(
+                           name = meta.project)
+                if res.hits.total:
+                    project = res[0].to_dict()
+                ret = {
+                    'meta':meta.to_dict(),
+                    'project': project,
+                    'experiments': experiments
+                }
+            meta_obj = meta
+        else:
+            res, search = Object().search_exact_path(
+                           system_id = system_id,
+                           username = username, 
+                           path = path,
+                           name = name)
+            if res.hits.total:
+                ret = res[0].to_dict()
+                meta_obj = res[0]
+        return meta_obj, ret
 
     def search_meta(self, q, filesystem, username, is_public = False):
         q = json.loads(q)
