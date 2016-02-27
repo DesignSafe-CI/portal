@@ -70,6 +70,51 @@ def advanced_search(index, user, search_terms):
     response = s.execute()
     return response, s
 
+class PublicObject(DocType):
+    def search_partial_path(self, system_id, username, path):
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_path(self, system_id, username, path, name):
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_folder_path(self, system_id, path):
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["name", "path", "keywords"]
+        qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        if '_id' in d:
+            d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update(**self.to_dict())
+        else:
+            return super(Object, self).save(**kwargs)
+   
+    class Meta:
+        index = 'nees'
+        doc_type = 'object'
+
+
 class Object(DocType):
     #def search_partial_path(self, system_id, path):
     #    s = self.search().query('filtered', query = 
@@ -145,7 +190,7 @@ class Object(DocType):
         s.update_from_dict(q)
         return s.execute(), s
 
-    def search_special_dir(self, system_id, username, path):
+    def search_special_dir(self, system_id, username, path, self_root):
         '''
         {
         "query": {
@@ -191,13 +236,18 @@ class Object(DocType):
                 }
             }
         '''
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}} }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+
+        if not self_root:
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        else:
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}] }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def update_from_dict(self, **d):
-        d.pop('_id')
+        if '_id' in d:
+            d.pop('_id')
         self.update(**d)
         return self
 
@@ -211,4 +261,3 @@ class Object(DocType):
     class Meta:
         index = 'designsafe'
         doc_type = 'objects'
-

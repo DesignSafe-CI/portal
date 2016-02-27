@@ -1,7 +1,7 @@
 import datetime
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
-from designsafe.libs.elasticsearch.api import Object
+from designsafe.libs.elasticsearch.api import Object, PublicObject
 import utils as agave_utils
 import requests
 import copy
@@ -74,44 +74,34 @@ class FileManager(AgaveObject):
         mf = AgaveFolderFile.from_path(self.agave_client,
                                     system_id, path)
         #If it's a folder upate permissions for every metadata of every file in the folder.
-        if mf.file_type == 'folder':
+        if mf.format == 'folder':
+            self.call_operation('files.updatePermissions',
+                                filePath = path,
+                                systemId = system_id,
+                                body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
+            
             objs, search = Object().search_partial_path(system_id, 
                                             me, mf.full_path)
             cnt = 0
             while cnt <= objs.hits.total - len(objs):
                 for o in search[cnt:cnt+len(objs)]:
-                    pems = o.permissions
-                    updated = False
-                    for i, p in enumerate(pems):
-                        if p['username'] == username:
-                            pems[i]['permission'] = permission
-                            break
-                    if not updated:
-                        pems.append({'user': username, 'permission': permission})
+                    pems = self.call_operation('files.listPermissions', 
+                                filePath = o.path + '/' + o.name, systemId = system_id)
                     o.update(permissions = pems)
-                cnt = cnt + 10
+                cnt = cnt + len(objs)
 
-            self.call_operation('files.updatePermissions',
-                                filePath = path,
-                                systemId = system_id,
-                                body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
-        #Update file permission on the actual file/folder
-        self.call_operation('files.updatePermissions', 
-                            filePath = '/'.join(paths),
-                            systemId = system_id,
-                            body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
         #Update permissions for every metadata object to reach the desired file.
         for i in range(len(paths)):
-            o = Object().search_exact_path(system_id, me, mf.path, mf.name)
-            pems = o.permissions
-            updated = False
-            for i, p in enumerate(pems):
-                if p['username'] == username:
-                    pems[i]['permission'] = permission
-                    break
-            if not updated:
-                pems.append({'user': username, 'permission': permission})
-            o.update(permissions = pems)
+            res, s = Object().search_exact_path(system_id, me, '/'.join(paths[:-1]), paths[-1])
+            if res.hits.total:
+                o = res[0]
+                self.call_operation('files.updatePermissions', 
+                                filePath = '/'.join(paths),
+                                systemId = system_id,
+                                body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
+                pems = self.call_operation('files.listPermissions', 
+                                filePath = o.path + '/' + o.name, systemId = system_id)
+                o.update(permissions = pems)
             paths.pop()
         return ret
 
@@ -132,16 +122,15 @@ class FileManager(AgaveObject):
             mf.save()
             logger.debug('Shared folder created: {}'.format(mf._id))
 
-    def list_path(self, system_id, path, username, special_dir):
+    def list_path(self, system_id, path, username, special_dir, is_public = False):
         if special_dir == shared_with_me and path == '/':
-            q = '''{{ "value.deleted": "false",
-                      "name": "{}",
-                      "value.path": "/",
-                      "value.name": {{ "$not": {{ "$regex": "^{}$", "$options": "m"}} }},
-                      "value.systemId": "{}" }}'''.format(object_name, username, system_id)
-        if special_dir == shared_with_me and path == '/':
-            res, s = Object().search
-        res, s = Object().search_exact_folder_path(system_id, username, path)
+            res, s = Object().search_special_dir(system_id = system_id,
+                              username = username, path = path, self_root = False)
+        else:
+            if is_public:
+                res, s = PublicObject().search_exact_folder_path(system_id, path)
+            else:
+                res, s = Object().search_exact_folder_path(system_id, username, path)
         ret = s.scan()
         return ret
 
@@ -186,7 +175,7 @@ class FileManager(AgaveObject):
                 for o in search[cnt:cnt+len(objs)]:
                     regex = r'^{}'.format(mf.path + '/' + mf.name)
                     o.update(path = re.sub(regex, path + '/' + new.split('/')[-1], o.path, count = 1))
-                cnt += 10
+                cnt += len(objs)
         mf.update(name = new.split('/')[-1])
         logger.info('Meta Renamed to: {}'.format(mf.path + '/' + mf.name))
         return mf, f
@@ -222,7 +211,7 @@ class FileManager(AgaveObject):
                     regex = r'^{}'.format(mf.path + '/' + mf.name)
                     o.update(path = re.sub(regex, new_path, o.path, count = 1),
                              name = new_name)
-                cnt += 10
+                cnt += len(objs)
         mf.update(path = new_path, name = new_name)
 
         logger.info('Moved metadata to: {}'.format(mf.path + '/' + mf.name))
@@ -263,7 +252,6 @@ class FileManager(AgaveObject):
         return mf, f
 
     def mkdir(self, path, new, system_id, username):
-        # import ipdb; ipdb.set_trace()
         new = new.split('/')
         new = new[-1]
         logger.info('path {} new {}'.format(path, new))
@@ -308,14 +296,19 @@ class FileManager(AgaveObject):
                                name = name)
         return res[0]
 
-    def search_meta(self, q, filesystem, username):
+    def search_meta(self, q, filesystem, username, is_public = False):
         q = json.loads(q)
         qs = ''
         if 'all' in q:
             qs = q['all']
-        res, s = Object().search_query(system_id = filesystem,
+        if is_public:
+            res, s = PublicObject().search_query(system_id = filesystem,
                           username = username, qs = qs)
-        return s.scan()
+        else:
+            res, s = Object().search_query(system_id = filesystem,
+                          username = username, qs = qs)
+        #return s.scan()
+        return res
 
 class AgaveFilesManager(AgaveObject):
     '''

@@ -47,7 +47,10 @@ class BaseView(SecureMixin, AgaveMixin, View):
         else:
             self.filesystem = filesystem
             self.force_homedir = False
-
+            if 'public' in self.filesystem:
+                self.is_public = True
+            else:
+                self.is_public = False
         if self.file_path is None or self.file_path == '/':
             self.file_path = '/'
         else:
@@ -61,12 +64,10 @@ class BaseView(SecureMixin, AgaveMixin, View):
                     self.file_path = '/'
                 self.force_homedir = False
 
-        logger.debug('file_path before : {}'.format(self.file_path))
         if filesystem == 'default' and self.force_homedir:
             self.file_path = request.user.username + '/' + self.file_path
             self.file_path = self.file_path.strip('/')
 
-        logger.debug('file_path: {}'.format(self.file_path))
         super(BaseView, self).set_context_props(request, **kwargs)
 
 class BaseJSONView(JSONResponseMixin, BaseView):

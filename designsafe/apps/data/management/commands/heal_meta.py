@@ -26,12 +26,5 @@ class Command(BaseCommand):
         for f in agave_utils.fs_walk(agave_client = ag, system_id = system_id, folder = base_path):
             self.stdout.write(f['path'])
             fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
-            o = Object.get(id = fo.uuid, ignore=404)
-            #if o is not None:
-            #    o.delete()
-            if o is None:
-                o = Object(**fo.to_dict())
-                o.save()
-            else:
-                fo.deleted = False
-                o.update_from_dict(**fo.to_dict())
+            o = Object(fo.to_dict())
+            o.save()
