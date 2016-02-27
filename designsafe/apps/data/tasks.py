@@ -4,8 +4,8 @@ from celery import shared_task
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from dsapi.agave.utils import fs_walk, get_or_create_from_file
-from dsapi.agave.daos import AgaveMetaFolderFile
+from dsapi.agave.utils import fs_walk, get_folder_obj
+from designsafe.libs.elasticsearch.api import Object
 from agavepy.agave import Agave
 import logging
 
@@ -29,14 +29,15 @@ def index_job_outputs(data):
             job = ag.jobs.get(jobId=job_id)
             system_id = job['archiveSystem']
             archive_path = job['archivePath']
-            #base_file = ag.files.list(systemId=system_id, filePath=archive_path)
-            # the listing returns "name"="." for the first folder in the list
-            # we need the actual folder name
-            #base_file[0]['name'] = base_file[0]['path'].split('/')[-1]
-            #get_or_create_from_file(ag, base_file[0])
-            AgaveMetaFolderFile.from_path(agave_client = ag, system_id = system_id, path = archive_path)
-            for f in fs_walk(ag, system_id, archive_path):
-                get_or_create_from_file(ag, f)
+            for f in fs_walk(agave_client=ag, system_id=system_id, folder=archive_path):
+                fo = get_folder_obj(agave_client=ag, file_obj=f)
+                o = Object.get(id=fo.uuid, ignore=404)
+                if o is None:
+                    o = Object(**fo.to_dict())
+                    o.save()
+                else:
+                    fo.deleted = False
+                    o.update_from_dict(**fo.to_dict())
 
         except ObjectDoesNotExist:
             logger.exception('Unable to locate local user=%s' % job_owner)
