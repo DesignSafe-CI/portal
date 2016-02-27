@@ -263,7 +263,7 @@ class FileManager(AgaveObject):
         return mf, f
 
     def mkdir(self, path, new, system_id, username):
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         new = new.split('/')
         new = new[-1]
         logger.info('path {} new {}'.format(path, new))
