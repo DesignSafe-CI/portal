@@ -70,15 +70,103 @@ def advanced_search(index, user, search_terms):
     response = s.execute()
     return response, s
 
+class Project(DocType):
+    def search_by_name(self, name):
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["description",
+                  "endDate",
+                  "equipment.component",
+                  "equipment.equipmentClasse",
+                  "equipment.facility",
+                  "fundorg"
+                  "fundorgprojid",
+                  "name",
+                  "organization.name",
+                  "pis.firstName",
+                  "pis.lastName",
+                  "title"]
+        qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        if '_id' in d:
+            d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update(**self.to_dict())
+        else:
+            return super(Object, self).save(**kwargs)
+   
+    class Meta:
+        index = 'nees'
+        doc_type = 'experiment'
+
+class Experiment(DocType):
+    def search_by_project(self, project):
+        q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_by_name(self, name):
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["description", 
+                  "facility.country"
+                  "facility.name",
+                  "facility.state",
+                  "name",
+                  "project",
+                  "startDate",
+                  "title"]
+        qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        if '_id' in d:
+            d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update(**self.to_dict())
+        else:
+            return super(Object, self).save(**kwargs)
+   
+    class Meta:
+        index = 'nees'
+        doc_type = 'experiment'
+
 class PublicObject(DocType):
     def search_partial_path(self, system_id, username, path):
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_path(self, system_id, username, path, name):
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -90,7 +178,7 @@ class PublicObject(DocType):
         return s.execute(), s
 
     def search_query(self, system_id, username, qs):
-        fields = ["name", "path", "keywords"]
+        fields = ["name", "path", "project"]
         qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":fields, "query": qs}}}
         s = self.__class__.search()
@@ -113,7 +201,6 @@ class PublicObject(DocType):
     class Meta:
         index = 'nees'
         doc_type = 'object'
-
 
 class Object(DocType):
     #def search_partial_path(self, system_id, path):
