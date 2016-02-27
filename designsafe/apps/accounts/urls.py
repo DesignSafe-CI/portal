@@ -25,10 +25,5 @@ def menu_items(**kwargs):
                 'url': reverse('designsafe_accounts:index'),
                 'children': [],
                 'visible': False
-            },
-            {
-                'label': _('Notifications'),
-                'url': reverse('designsafe_notifications:notifications'),
-                'children': []
             }
         ]
