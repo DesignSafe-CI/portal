@@ -69,4 +69,11 @@
     };
   });
 
+  angular.module('WorkspaceApp').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
+    $scope.msg = msg;
+    $scope.dismiss = function() {
+      $uibModalInstance.dismiss('cancel');
+    };
+  });
+
 })(window, angular, jQuery);
