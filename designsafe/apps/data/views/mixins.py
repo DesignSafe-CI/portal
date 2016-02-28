@@ -38,7 +38,9 @@ class AgaveMixin(object):
     def set_context_props(self, request, **kwargs):
         if request.user.is_authenticated():
             me = get_user_model().objects.get(username=request.user.username)
-            me.agave_oauth.refresh()
+            # shouldn't be necessary; AgaveTokenRefreshMiddleware does this...
+            if me.agave_oauth.expired:
+                me.agave_oauth.refresh()
             self.token = me.agave_oauth
             self.access_token = self.token.access_token
         else:
