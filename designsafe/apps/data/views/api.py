@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ListingsMixin(object):
     def set_context_props(self, request, **kwargs):
-        super(ListingsView, self).set_context_props(request, **kwargs)
+        super(ListingsMixin, self).set_context_props(request, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
