@@ -40,11 +40,10 @@ class AgaveMixin(object):
             me = get_user_model().objects.get(username=request.user.username)
             me.agave_oauth.refresh()
             self.token = me.agave_oauth
+            self.access_token = self.token.access_token
         else:
-            me = get_user_model().objects.get(username='envision')
-            me.agave_oauth.refresh()
-            self.token = me.agave_oauth
-        self.access_token = self.token.access_token
+            self.token = None
+            self.access_token = ''
         self.agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         self.set_agave_client(api_server = self.agave_url, token = self.access_token)
 
