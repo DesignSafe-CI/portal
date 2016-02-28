@@ -47,11 +47,21 @@
             </dl>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
+           <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
         </div>
-    </script>
-</div>
-<button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
-    <i class="fa" ng-class="{'fa-caret-left': panel.collapsed, 'fa-caret-right':! panel.collapsed}"></i>
-    <span class="sr-only">Toggle panel</span>
-</button>
+</script>
+
+<script type="text/ng-template" id="local/vncjob-details-modal.html">
+  <div class="modal-header">
+    <h3 class="modal-title">Your interactive session has started!</h3>
+  </div>
+  <div class="modal-body">
+    <div class="alert">
+      <p>To connect to your interactive session, click the button below.</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="{{interactive_url}}&hostname={{msg.host}}&port={{msg.port}}&autoconnect=true&password={{msg.password}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+    <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
+  </div>
+</script>
