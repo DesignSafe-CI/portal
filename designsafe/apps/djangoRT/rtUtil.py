@@ -16,7 +16,8 @@ class DjangoRt:
         self.rtPw = settings.DJANGO_RT['RT_PW']
         self.rtQueue = settings.DJANGO_RT['RT_QUEUE']
 
-        self.tracker = rt.Rt(self.rtHost, self.rtUn, self.rtPw, basic_auth=(self.rtUn, self.rtPw))
+        self.tracker = rt.Rt(self.rtHost, default_queue=self.rtQueue,
+                             default_login=self.rtUn, default_password=self.rtPw)
         self.tracker.login()
 
     def getUserTickets(self, userEmail, show_resolved=False):
@@ -54,11 +55,9 @@ class DjangoRt:
 
     # Returns the ticket id of the created ticket
     def createTicket(self, ticket):
-        return self.tracker.create_ticket(Queue=self.rtQueue,
-                                          Subject=ticket.subject,
-                                          Text=ticket.problem_description.replace('\n', '\n '),
-                                          Requestors=ticket.requestor,
-                                          Cc=",".join(ticket.cc))
+        return self.tracker.create_ticket(
+            Subject=ticket.subject, Requestors=ticket.requestor, Cc=",".join(ticket.cc),
+            Text=ticket.problem_description.replace('\n', '\n '))
 
     def replyToTicket(self, ticket_id, text='', files=[]):
         return self.tracker.reply(ticket_id, text=text, files=files)

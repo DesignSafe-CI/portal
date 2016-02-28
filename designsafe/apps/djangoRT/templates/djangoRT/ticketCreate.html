@@ -6,6 +6,9 @@
 <div class="container">
     <ul class="breadcrumb">
         <li><a href="{% url 'djangoRT:index' %}">Help</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'djangoRT:mytickets' %}">My Tickets</a></li>
+        {% endif %}
         <li class="active">Create Ticket</li>
     </ul>
 </div>
@@ -13,16 +16,16 @@
 
 {% block content %}
 <div class="container">
-    {% include "djangoRT/navigation.html" %}
     <h1>Submit a new ticket</h1>
     <p><i>Fields marked with <label class="required"></label> are required.</i></p>
     <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
+        {% csrf_token %}
+        {% bootstrap_form form %}
 
-      {% bootstrap_form form %}
-
-      <button type="submit" class="btn btn-success">Create Ticket</button>
-      <a href="{% url 'djangoRT:mytickets' %}" class="btn btn-default">Cancel</a>
-</form>
+        <button type="submit" class="btn btn-success">Create Ticket</button>
+        {% if user.is_authenticated %}
+        <a href="{% url 'djangoRT:mytickets' %}" class="btn btn-default">Cancel</a>
+        {% endif %}
+    </form>
 </div>
 {% endblock %}

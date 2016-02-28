@@ -26,12 +26,15 @@ class BaseTicketForm(forms.Form):
     """
     Base form class for Tickets.
     """
-    first_name = forms.CharField(widget=forms.TextInput(), label='First name', max_length=100, required=True)
-    last_name = forms.CharField(widget=forms.TextInput(), label='Last name', max_length=100, required=True)
-    email = forms.EmailField(widget=forms.EmailInput(), label='Email', required=True)
-    subject = forms.CharField(widget=forms.TextInput(), label='Subject', max_length=100, required=True)
-    category = forms.CharField(widget=forms.Select(choices=settings.TICKET_CATEGORIES), required=True)
-    problem_description = forms.CharField(widget=forms.Textarea(), label='Problem description', required=True)
+    first_name = forms.CharField(widget=forms.TextInput(), max_length=100, required=True)
+    last_name = forms.CharField(widget=forms.TextInput(), max_length=100, required=True)
+    email = forms.EmailField(widget=forms.EmailInput(), required=True)
+    subject = forms.CharField(widget=forms.TextInput(), max_length=100, required=True)
+
+    category_choices = (('', 'Choose one'),) + settings.TICKET_CATEGORIES
+    category = forms.CharField(widget=forms.Select(choices=category_choices),
+                               required=True)
+    problem_description = forms.CharField(widget=forms.Textarea(), required=True)
     attachment = forms.FileField(required=False)
 
 class TicketForm(BaseTicketForm):
@@ -39,7 +42,9 @@ class TicketForm(BaseTicketForm):
     Authenticated users ticket form. Additional "CC" field. This field is not
     provided to anonymous users because it could be used for spam.
     """
-    cc = MultiEmailField(widget=forms.TextInput(), label='CC', required=False, help_text='Copy other people on this ticket. Multiple emails should be comma-separated')
+    cc = MultiEmailField(widget=forms.TextInput(), label='CC', required=False,
+                         help_text='You can copy other people on this ticket. '
+                                   'Multiple emails should be comma-separated')
 
 class TicketGuestForm(BaseTicketForm):
     """
