@@ -149,7 +149,7 @@ class FileManager(AgaveObject):
             fs.append(f)
             mf = Object(**f.to_dict())
             mf.save()
-            logger.debug('Saved meta: {}'.format(mf._id))
+            mf.update(deleted = False)
             mfs.append(mf)
         return mfs, fs
 
