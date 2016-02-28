@@ -112,7 +112,7 @@ class Project(DocType):
         if o is not None:
             return self.update(**self.to_dict())
         else:
-            return super(Object, self).save(**kwargs)
+            return super(Project, self).save(**kwargs)
    
     class Meta:
         index = 'nees'
@@ -158,7 +158,7 @@ class Experiment(DocType):
         if o is not None:
             return self.update(**self.to_dict())
         else:
-            return super(Object, self).save(**kwargs)
+            return super(Experiment, self).save(**kwargs)
    
     class Meta:
         index = 'nees'
@@ -269,19 +269,19 @@ class Object(DocType):
                 }
             }
         '''
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_path(self, system_id, username, path, name):
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_folder_path(self, system_id, username, path):
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}} }}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -289,7 +289,7 @@ class Object(DocType):
     def search_query(self, system_id, username, qs):
         fields = ["name", "path", "keywords"]
         qs = '*{}*'.format(qs)
-        q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}} 
+        q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}} 
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -342,9 +342,9 @@ class Object(DocType):
         '''
 
         if not self_root:
-            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         else:
-            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}] }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}] }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s

@@ -86,8 +86,8 @@ class ManageView(BasePrivateJSONView):
     def delete(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         mf = FileManager(agave_client = self.agave_client)
-        mf.delete(self.filesystem, self.file_path, request.user.username)
-        return self.render_to_json_response(mf.to_dict())
+        o = mf.delete(self.filesystem, self.file_path, request.user.username)
+        return self.render_to_json_response(o.to_dict())
 
 class ShareView(BasePrivateJSONView):
     def post(self, request, *args, **kwargs):
