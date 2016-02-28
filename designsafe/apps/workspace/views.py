@@ -63,7 +63,8 @@ def call_api(request, service):
                     job_post = json.loads(request.body)
 
                     # parse agave:// URI into "archiveSystem" and "archivePath"
-                    if job_post['archivePath'].startswith('agave://'):
+                    if ('archivePath' in job_post and
+                            job_post['archivePath'].startswith('agave://')):
                         parsed = urlparse(job_post['archivePath'])
                         # strip leading slash
                         job_post['archivePath'] = parsed.path[1:]
