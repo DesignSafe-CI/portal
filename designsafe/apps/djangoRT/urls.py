@@ -9,6 +9,6 @@ urlpatterns = patterns('',
     url(r'^tickets/$', views.mytickets, name='mytickets'),
     url(r'^tickets/(?P<ticketId>\d+)/$', views.ticketdetail, name='ticketdetail'),
     url(r'^tickets/(?P<ticketId>\d+)/reply/$', views.ticketreply, name='ticketreply'),
-    url(r'^ticket/close/(?P<ticketId>\d+)/$', views.ticketclose, name='ticketclose'),
-    url(r'^ticket/attachment/(?P<ticketId>\d+)/(?P<attachmentId>\d+)/$', views.ticketattachment, name='ticketattachment'),
+    url(r'^tickets/(?P<ticketId>\d+)/close/$', views.ticketclose, name='ticketclose'),
+    url(r'^tickets/(?P<ticketId>\d+)/attachment/(?P<attachmentId>\d+)/$', views.ticketattachment, name='ticketattachment'),
 )

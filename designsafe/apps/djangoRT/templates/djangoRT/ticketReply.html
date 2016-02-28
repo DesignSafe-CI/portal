@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
 {% block title %}Reply to #{{ ticket_id }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="container">
+    <ul class="breadcrumb">
+        <li><a href="{% url 'djangoRT:index' %}">Help</a></li>
+        <li><a href="{% url 'djangoRT:mytickets' %}">My Tickets</a></li>
+        <li><a href="{% url 'djangoRT:ticketdetail' ticket_id %}">{{ticket_id}}</a></li>
+        <li class="active">
+          {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}Reopen{% else %}Reply to {% endif %}
+          Ticket
+        </li>
+    </ul>
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="container">
-  {% if not hasAccess %}
-    {% include "djangoRT/access_denied.html" %}
-  {% else %}
-
   <h2>
     {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
       Reopen
@@ -36,7 +47,5 @@
       </button>
       <a href="{% url 'djangoRT:ticketdetail' ticket_id %}" class="btn btn-default">Cancel</a>
   </form>
-
-  {% endif %}
 </div>
 {% endblock %}

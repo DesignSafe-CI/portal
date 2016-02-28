@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from designsafe.apps.djangoRT import rtUtil, forms, rtModels
@@ -8,6 +9,7 @@ from django.contrib import messages
 from django.conf import settings
 import logging
 import mimetypes
+import pytz
 
 logger = logging.getLogger(__name__)
 
@@ -27,14 +29,23 @@ def mytickets(request):
 @login_required
 def ticketdetail(request, ticketId):
     rt = rtUtil.DjangoRt()
+
+    if not rt.hasAccess(ticketId, request.user.email):
+        raise PermissionDenied
+
     ticket = rt.getTicket(ticketId)
     ticket_history = rt.getTicketHistory(ticketId)
 
-    # remove bogus "untitled" attachments
     for history in ticket_history:
-        history['Attachments'] = filter(lambda a: not a[1].startswith('untitled ('), history['Attachments'])
+        # remove bogus "untitled" attachments
+        history['Attachments'] = filter(lambda a: not a[1].startswith('untitled ('),
+                                        history['Attachments'])
 
-    return render(request, 'djangoRT/ticketDetail.html', { 'ticket' : ticket, 'ticket_history' : ticket_history, 'ticket_id' : ticketId, 'hasAccess' : rt.hasAccess(ticketId, request.user.email) })
+    return render(request, 'djangoRT/ticketDetail.html', {
+        'ticket': ticket,
+        'ticket_history': ticket_history,
+        'ticket_id': ticketId
+    })
 
 
 def ticketcreate(request):
@@ -112,6 +123,9 @@ def ticketcreate(request):
 def ticketreply(request, ticketId):
     rt = rtUtil.DjangoRt()
 
+    if not rt.hasAccess(ticketId, request.user.email):
+        raise PermissionDenied
+
     ticket = rt.getTicket(ticketId)
     data = {}
 
@@ -134,11 +148,18 @@ def ticketreply(request, ticketId):
 
     else:
         form = forms.ReplyForm(initial=data)
-    return render(request, 'djangoRT/ticketReply.html', { 'ticket_id' : ticketId , 'ticket' : ticket, 'form' : form, 'hasAccess' : rt.hasAccess(ticketId, request.user.email) })
+    return render(request, 'djangoRT/ticketReply.html', {
+        'ticket_id': ticketId,
+        'ticket': ticket,
+        'form': form
+    })
 
 @login_required
 def ticketclose(request, ticketId):
     rt = rtUtil.DjangoRt()
+
+    if not rt.hasAccess(ticketId, request.user.email):
+        raise PermissionDenied
 
     ticket = rt.getTicket(ticketId)
     data = {}
@@ -146,11 +167,17 @@ def ticketclose(request, ticketId):
     if request.method == 'POST':
         form = forms.CloseForm(request.POST)
         if form.is_valid():
-            if rt.commentOnTicket(ticketId, text=form.cleaned_data['reply']) and rt.closeTicket(ticketId):
-                return HttpResponseRedirect(reverse( 'djangoRT:ticketdetail', args=[ ticketId ] ) )
+            if (rt.commentOnTicket(ticketId, text=form.cleaned_data['reply']) and
+                    rt.closeTicket(ticketId)):
+                return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
+                                                    args=[ticketId]))
     else:
         form = forms.CloseForm(initial=data)
-    return render(request, 'djangoRT/ticketClose.html', { 'ticket_id' : ticketId , 'ticket' : ticket, 'form' : form, 'hasAccess' : rt.hasAccess(ticketId, request.user.email) })
+    return render(request, 'djangoRT/ticketClose.html', {
+        'ticket_id': ticketId,
+        'ticket': ticket,
+        'form': form
+    })
 
 
 @login_required

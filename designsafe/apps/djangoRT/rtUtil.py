@@ -1,6 +1,10 @@
 import rt
+import pytz
 from django.conf import settings
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DjangoRt:
@@ -34,7 +38,8 @@ class DjangoRt:
 
         for ticket in ticket_list:
             ticket['id'] = ticket['id'].replace('ticket/', '')
-            ticket['LastUpdated'] = datetime.strptime(ticket['LastUpdated'], '%a %b %d %X %Y')
+            ticket['LastUpdated'] = datetime.strptime(ticket['LastUpdated'],
+                                                      '%a %b %d %X %Y',)
 
         return ticket_list
 
@@ -42,14 +47,20 @@ class DjangoRt:
         ticket = self.tracker.get_ticket(ticket_id)
 
         ticket['id'] = ticket['id'].replace('ticket/', '')
+        ticket['LastUpdated'] = datetime.strptime(ticket['LastUpdated'],
+                                                  '%a %b %d %X %Y',)
 
         return ticket
 
     def getTicketHistory(self, ticket_id):
         ticketHistory = self.tracker.get_history(ticket_id)
 
+        local_tz = pytz.timezone('US/Central')
         for ticket in ticketHistory:
             ticket['Created'] = datetime.strptime(ticket['Created'], '%Y-%m-%d %X')
+            ticket['Created'] = ticket['Created'].replace(tzinfo=pytz.UTC)
+            ticket['Created'] = ticket['Created'].astimezone(local_tz)
+            logger.debug(ticket['Created'])
 
         return ticketHistory
 

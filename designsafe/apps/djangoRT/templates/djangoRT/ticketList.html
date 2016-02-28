@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load staticfiles sekizai_tags tz %}
 {% block title %}My Tickets{% endblock %}
 
 {% block breadcrumb %}
@@ -13,7 +13,7 @@
 
 {% block content %}
 <div class="container">
-  <h2>My Tickets</h2>
+  <h1>My Tickets</h1>
 
   <a class="btn btn-primary" href="{% url 'djangoRT:ticketcreate' %}">
     <i class="fa fa-plus-circle"></i>
@@ -21,9 +21,23 @@
   </a>
 
   {% if show_resolved %}
-    <h3>All Tickets <small><a class="btn btn-default btn-xs pull-right" href="{% url 'djangoRT:mytickets' %}">Show only open tickets</a></small></h3>
+    <h3>
+      All Tickets
+      <small>
+        <a class="btn btn-default btn-xs pull-right" href="{% url 'djangoRT:mytickets' %}">
+          Show only open tickets
+        </a>
+      </small>
+    </h3>
   {% else %}
-    <h3>Open Tickets <small><a class="btn btn-default btn-xs pull-right" href="?show_resolved">Show resolved tickets</a></small></h3>
+    <h3>
+      Open Tickets
+      <small>
+        <a class="btn btn-default btn-xs pull-right" href="{% url 'djangoRT:mytickets' %}?show_resolved">
+          Show resolved tickets
+        </a>
+      </small>
+    </h3>
   {% endif %}
 
   <form>
@@ -35,14 +49,34 @@
     </div>
   </form>
 
-  <div class="tickets">
-    {% for ticket in tickets %}
-      {% include "djangoRT/ticket.html" %}
-    {% empty %}
-      <div class="jumbotron">
-        <p>No tickets to display!</p>
-      </div>
-    {% endfor %}
+  <div class="table-responsive">
+    <table class="tickets table table-striped">
+      <thead>
+      <th>Status</th>
+      <th>Ticket ID / Subject</th>
+      <th>Last Updated</th>
+      <th>Actions</th>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+          <tr class="ticket">
+            {% include "djangoRT/ticket.html" %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">
+              <div class="jumbotron">
+                <p>No tickets to display!</p>
+              </div>
+            </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
+
+{% addtoblock "js" %}
+<script src="{% static 'djangoRT/js/djangoRT.js' %}"></script>
+{% endaddtoblock %}
 {% endblock %}
