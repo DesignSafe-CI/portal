@@ -222,7 +222,7 @@
             <div class="modal-body">
               <label class="radio">{{"files_will_uploaded_to" | translate}} <pre><code>{{'/' + fileNavigator.currentPath.join('/')}}</code></pre></label>
               <label for="file-upload">Browse files</label>
-              <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" name = "file-upload"/>
+              <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" name = "file-upload" multiple/>
               <div class="file-drop" fm-droppable>Or drop files here
                 <output class="droppable-files">
                     <ul>
@@ -378,8 +378,7 @@
             <div class="modal-body">
               <label class="radio">{{'User' | translate}} <b>{{temp.model.name}}</b></label>
               <input class="form-control" ng-model="temp.tempModel.userToShare" autofocus="autofocus">
-              <pre>
-                Type in the username to share this file/folder with. Please, make sure the username is correct.
+              <pre>Type in the username to share this file/folder with. Please, make sure the username is correct.</pre>
 
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>

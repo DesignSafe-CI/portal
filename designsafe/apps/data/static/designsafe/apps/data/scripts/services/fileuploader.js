@@ -49,6 +49,7 @@
                 deferredHandler(data, deferred, 'Unknown error uploading files');
             })['finally'](function(data) {
                 self.requesting = false;
+
             });
 
             return deferred.promise;

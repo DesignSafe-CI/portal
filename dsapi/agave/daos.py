@@ -617,7 +617,7 @@ class AgaveFolderFile(AgaveObject):
             'length': f.size,
             'mimeType': f.content_type,
             'name': f.name,
-            'path': path,
+            'path': path + '/' + f.name,
             'system': system_id,
             'type': 'file'
         }
