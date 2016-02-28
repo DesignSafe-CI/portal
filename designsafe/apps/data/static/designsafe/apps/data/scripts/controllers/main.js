@@ -306,6 +306,7 @@
                 $scope.modal('uploadfile', true);
                 $scope.dropFiles = [];
                 $scope.uploadFileList = [];
+                $scope.$applu();
             }, function(data) {
                 var errorMsg = data.result && data.result.error || $translate.instant('error_uploading_files');
                 $scope.temp.error = errorMsg;

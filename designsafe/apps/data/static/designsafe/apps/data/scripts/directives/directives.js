@@ -106,7 +106,11 @@
             console.log('files: ', files);
             for(var i = 0; i < files.length; i++){
                 f = files[i];
-                scope.dropFiles.push(f);
+                if (!f.type && f.size%4096 === 0) {
+                    
+                } else {
+                    scope.dropFiles.push(f);
+                }
             }
             scope.$apply();
             console.log('dropFiles', scope.dropFiles);
