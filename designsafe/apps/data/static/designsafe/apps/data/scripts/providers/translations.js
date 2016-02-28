@@ -80,7 +80,27 @@
             exec: "Exec",
             original: "Original",
             changes: "Changes",
-            recursive: "Recursive"
+            recursive: "Recursive",
+
+            // public data
+            details: "Details",
+
+            // public data - project
+            startDate: "Start Date",
+            pis: "PIS",
+            endDate: "End Date",
+            fundorg: "Fund Organization",
+            title: "Title",
+            equipment: "Equipment",
+            fundorgprojid: "Sponsor",
+            organization: "Organization",
+            description: "Description",
+
+            // public data - experiment
+            project: "Project",
+            facility: "Facility"
+
+
         });
 
         $translateProvider.translations('pt', {

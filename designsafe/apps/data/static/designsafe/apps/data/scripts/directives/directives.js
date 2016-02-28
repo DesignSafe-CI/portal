@@ -7,16 +7,19 @@
             restrict: 'EA',
             templateUrl: fileManagerConfig.tplPath + '/main.html',
             scope: {
-                filesystem: '@'
+                filesystem: '@',
+                public: '@'
             },
             controller: function($scope, $element, $attrs){
                 $scope.filesystem = $attrs.filesystem;
+                $scope.public = $attrs.public;
                 if ($scope.filesystem === '' || typeof $scope.filesystem === 'undefined'){
                     $scope.filesystem = 'default';
                 }
             },
             link: function($scope, $element, $attrs){
                 $scope.filesystem = $attrs.filesystem;
+                $scope.public = $attrs.public;
                 if ($scope.filesystem === '' || typeof $scope.filesystem === 'undefined'){
                     $scope.filesystem = 'default';
                 }
@@ -51,7 +54,7 @@
             });
         };
     }]);
-    
+
 })(angular);
 
 //Custom drag and drop directive
@@ -94,7 +97,7 @@
     'use strict';
 
     function fmDroppable(scope, element){
-        
+
         function fileSelect(e){
             e.stopPropagation();
             if(e.preventDefault) e.preventDefault();
@@ -107,7 +110,7 @@
             for(var i = 0; i < files.length; i++){
                 f = files[i];
                 if (!f.type && f.size%4096 === 0) {
-                    
+
                 } else {
                     scope.dropFiles.push(f);
                 }

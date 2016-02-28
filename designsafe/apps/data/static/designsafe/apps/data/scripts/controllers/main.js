@@ -139,6 +139,19 @@
             });
         };
 
+        $scope.showPublicMetadata = function (item) {
+            $scope.temp = item;
+
+            item.showPublicMetadata()
+            .then(function(data){
+                $scope.publicMetadata = data;
+                console.log('showPublicMetadata: ', data);
+            })
+            .catch(function(data){
+                console.log('showPublicMetadata: ', data);
+            });
+        };
+
         $scope.addKeyValueMeta = function (item){
             var key = item.tempModel.metaForm.key;
             var value = item.tempModel.metaForm.value;

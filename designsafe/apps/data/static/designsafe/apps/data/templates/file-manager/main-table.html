@@ -92,7 +92,13 @@
                 {{item.model.perms.toCode(item.model.type === 'dir'?'d':'-')}}
             </td> -->
             <td class="">
-                <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
+              <div ng-switch="public">
+                <div ng-switch-when="true">
+                  <div ng-include="config.tplPath + '/item-toolbar-public.html'"></div>
+                </div>
+                <div ng-switch-default>
+                  <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
+                </div>
             </td>
         </tr>
     </tbody>

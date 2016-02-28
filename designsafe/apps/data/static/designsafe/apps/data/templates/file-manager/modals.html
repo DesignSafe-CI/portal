@@ -49,6 +49,21 @@
   </div>
 </div>
 
+<div class="modal animated fadeIn" id="details">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+      </div>
+      <div class="modal-body">
+          <div ng-include="config.tplPath + '/meta-public-project.html'"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"close" | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal animated fadeIn" id="copy">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -325,7 +340,7 @@
                <li ng-repeat="kw in temp.tempModel.meta.keywords" class="metadata-kw-item">
                     {{kw}}  <button type="button" class="close" ng-click="delKw(temp, kw)">&times;</button>
 
-               </li> 
+               </li>
             </ul>
           </div>
         </div>

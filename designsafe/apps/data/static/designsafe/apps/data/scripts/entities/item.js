@@ -477,6 +477,23 @@
             return deferred.promise;
         };
 
+        Item.prototype.showPublicMetadata = function(){
+           var self = this;
+           var deferred = $q.defer();
+           var path = self.model.fullPath();
+           self.inprocess = true;
+           self.error = '';
+           var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.metadataUrl + path;
+           $http.get(url).success(function(data) {
+               self.deferredHandler(data, deferred);
+           }).error(function(data) {
+               self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
+           })['finally'](function() {
+               self.inprocess = false;
+           });
+           return deferred.promise;
+       };
+
         Item.prototype.updateMetadata = function(){
             var self = this;
             var deferred = $q.defer();
