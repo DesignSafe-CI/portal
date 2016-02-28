@@ -21,36 +21,39 @@
            tooltip-append-to-body="true"><i class="fa fa-info-circle"></i> More info</a>
     </p>
     <div class="files-listing">
-        <p style="white-space:nowrap;overflow-x:auto">
-            <span class="text text-info">{{data.filePath}}</span>
-        </p>
-        <table class="table table-striped">
-            <thead>
-            <th>File name</th>
-            <th>Size</th>
-            <th>Action</th>
-            </thead>
-            <tbody>
-            <tr ng-repeat="f in data.filesListing | orderBy : ['type','name']">
-                <td>
-                    <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
-                        <i class="fa fa-{{getFileIcon(f)}}"></i>
-                        <span ng-if="f.name === '.'">..</span>
-                        <span ng-if="f.name !== '.'">{{f.name}}</span>
-                    </a>
-                </td>
-                <td>{{f.length|bytes:0}}</td>
-                <td>
-                    <button ng-if="f.name !== '.' && data.wants"
-                            type="button"
-                            class="btn btn-xs btn-info"
-                            ng-click="chooseFile(f)">Select</button>
-                </td>
-            </tr>
-            <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
-            <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <caption style="white-space:nowrap">
+                    <label>Browsing:</label><br>
+                    <span class="text text-info">{{data.filePath}}</span>
+                </caption>
+                <thead>
+                <th>File name</th>
+                <th>Size</th>
+                <th>Action</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="f in data.filesListing | orderBy : ['type', 'name']">
+                    <td>
+                        <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
+                            <i class="fa fa-{{getFileIcon(f)}}"></i>
+                            <span ng-if="f.name === '.'">..</span>
+                            <span ng-if="f.name !== '.'">{{f.name}}</span>
+                        </a>
+                    </td>
+                    <td>{{f.length|bytes:0}}</td>
+                    <td>
+                        <button ng-if="f.name !== '.' && data.wants"
+                                type="button"
+                                class="btn btn-xs btn-info"
+                                ng-click="chooseFile(f)">Select</button>
+                    </td>
+                </tr>
+                <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
+                <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">

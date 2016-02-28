@@ -42,9 +42,8 @@
           var requestKey = args.requestKey || '';
           var file = args.file || {};
           if (formKey === requestKey) {
-            var value = 'agave://' + file.system + '/' + file.path;
-            $scope.data.input = value;
-            $ngModel.$setViewValue(value);
+            $scope.data.input = file.agavePath;
+            $ngModel.$setViewValue(file.agavePath);
             stopWant();
           }
         });

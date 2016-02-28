@@ -45,7 +45,7 @@
 
     service.icon = function(file) {
       var icon;
-      if (file.type === 'dir') {
+      if (file.type === 'dir' || file.type === 'folder') {
         icon = 'folder';
       } else {
         var ext = file.name.split('.').pop().toLowerCase();

@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('DataBrowserCtrl',
-    ['$scope', '$controller', '$rootScope', 'Files', function($scope, $controller, $rootScope, Files) {
+    ['$scope', '$controller', '$rootScope', 'Systems', 'Files', function($scope, $controller, $rootScope, Systems, Files) {
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
 
@@ -15,29 +15,50 @@
       systemList: [],
       filesListing: null,
       system: null,
+      dirPath: [],
       filePath: ''
     };
 
-    /* TODO: this should be an API call. A static list will do for now... */
-    $scope.data.systemList = [
-        {
-          id: 'designsafe.storage.default',
-          name: 'DesignSafe User Data'
-        },
-        {
-          id: 'nees.public',
-          name: 'NEES Public Data'
-        }
-    ];
-    $scope.data.system = $scope.data.systemList[0];
+    $scope.dataSourceUpdated = function dataSourceUpdated() {
+      $scope.data.filesListing = null;
+      $scope.data.loading = true;
+      $scope.data.filePath = '';
+      $scope.data.dirPath = [];
 
-    $scope.updateListing = function updateListing() {
+      /* initialize the browser */
+      Files.list({systemId: $scope.data.system.id, path: $scope.data.filePath})
+      .then(function(response) {
+        $scope.data.filesListing = response.data;
+        $scope.data.filePath = $scope.data.filesListing[0].path;
+        $scope.data.dirPath = $scope.data.filePath.split('/');
+        $scope.data.loading = false;
+      }, function(response) {
+        console.log(error);
+        $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+        $scope.data.loading = false;
+      });
+    };
+
+    $scope.getFileIcon = Files.icon;
+
+    $scope.browseFile = function(file) {
+      if (file.type === 'dir' || file.type === 'folder') {
+        if (file.name === '.') {
+          $scope.data.dirPath.pop();
+        } else {
+          $scope.data.dirPath.push(file.name);
+        }
+        $scope.data.filePath = $scope.data.dirPath.join('/')
+        $scope.loadFiles();
+      }
+    };
+
+    $scope.loadFiles = function loadFiles() {
       $scope.data.filesListing = null;
       $scope.data.loading = true;
       Files.list({systemId: $scope.data.system.id, path: $scope.data.filePath})
       .then(function(response) {
         $scope.data.filesListing = response.data;
-        $scope.data.filePath = $scope.data.filesListing[0].path;
         $scope.data.loading = false;
       }, function(error) {
         console.log(error);
@@ -45,29 +66,6 @@
         $scope.data.loading = false;
       });
     }
-    $scope.updateListing();
-
-    $scope.dataSourceUpdated = function dataSourceUpdated() {
-      $scope.data.filePath = '';
-      $scope.updateListing();
-    };
-
-    $scope.getFileIcon = Files.icon;
-
-    $scope.browseFile = function(file) {
-      if (file.type === 'dir') {
-        if (file.name === '.') {
-          // browse to parent dir
-          var parts = file.path.split('/');
-          parts.pop();
-          var parentPath = parts.join('/');
-          $scope.data.filePath = parentPath;
-        } else {
-          $scope.data.filePath = file.path;
-        }
-        $scope.updateListing();
-      }
-    };
 
     $scope.chooseFile = function(file) {
       if ($scope.data.wants) {
@@ -90,6 +88,13 @@
         }
         $scope.data.wants = null;
       }
+    });
+
+    /* Initialize... */
+    Systems.list().then(function(systemList) {
+      $scope.data.systemList = systemList;
+      $scope.data.system = systemList[0];
+      $scope.dataSourceUpdated();
     });
   }]);
 })(window, angular, jQuery);
