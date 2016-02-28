@@ -48,7 +48,6 @@ class DownloadMixin(object):
                 system_id = self.filesystem, 
                 path = self.file_path)
         postit_link = f.download_postit()
-        logger.info('Posit Link: {}'.format(postit_link))
         resp = {
             'filename': f.name,
             'link': postit_link

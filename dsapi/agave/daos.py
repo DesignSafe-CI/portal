@@ -91,8 +91,12 @@ class FileManager(AgaveObject):
                 cnt = cnt + len(objs)
 
         #Update permissions for every metadata object to reach the desired file.
-        for i in range(len(paths)):
-            res, s = Object().search_exact_path(system_id, me, '/'.join(paths[:-1]), paths[-1])
+        l = len(paths)
+        for i in range(l):
+            if len(paths) >= 2:
+                res, s = Object().search_exact_path(system_id, me, '/'.join(paths[:-1]), paths[-1])
+            else:
+                res, s = Object().search_exact_path(system_id, me, '/', paths[-1])
             if res.hits.total:
                 o = res[0]
                 self.call_operation('files.updatePermissions', 
@@ -751,8 +755,6 @@ class AgaveFolderFile(AgaveObject):
         return stream
 
     def download_postit(self):
-        logger.info('Creating postit of: {}'.format(self.link))
-        logger.info('url {}'.format(self.encoded_url))
         postit_data = {
             'url': self.link,
             'maxUses': 1,
