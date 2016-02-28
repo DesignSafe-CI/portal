@@ -12,16 +12,14 @@
       var searchTerms = $(this).val();
       if (searchTerms != "") {
         $(".ticket").filter(function() {
-          return !$(this).is(":containsNoCase('" + searchTerms +
-            "')");
-        }).addClass("none");
+          return !$(this).is(":containsNoCase('" + searchTerms + "')");
+        }).addClass("hide");
 
         $(".ticket").filter(function() {
-          return $(this).is(":containsNoCase('" + searchTerms +
-            "')");
-        }).removeClass("none");
+          return $(this).is(":containsNoCase('" + searchTerms + "')");
+        }).removeClass("hide");
       } else {
-        $(".ticket").removeClass("none");
+        $(".ticket").removeClass("hide");
       }
     });
 

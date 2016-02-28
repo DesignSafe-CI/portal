@@ -1,3 +1,6 @@
+
+
+
 class Ticket:
 	def __init__(self, subject = "", problem_description = "", requestor = "", cc=""):
 		self.subject = subject
