@@ -342,7 +342,7 @@ class FileManager(AgaveObject):
             res, s = Object().search_query(system_id = filesystem,
                           username = username, qs = qs)
         #return s.scan()
-        return res
+        return res, s
 
 class AgaveFilesManager(AgaveObject):
     '''

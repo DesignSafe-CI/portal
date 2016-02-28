@@ -1,6 +1,6 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import Event
-from designsafe.apps.signals.signals import notify_event
+from designsafe.apps.signals.signals import generic_event
 from designsafe.apps.notifications.models import Notification
 from designsafe.apps.signals.signals import generic_event
 
@@ -106,7 +106,7 @@ def job_notification_handler(request):
         'archive_path': archive_path,
         'job_owner': job_owner,
     }
-    notify_event.send_robust(None, event_type='job', event_data=body,
+    generic_event.send_robust(None, event_type='job', event_data=body,
                              event_users=[job_owner])
 
     return HttpResponse('OK')

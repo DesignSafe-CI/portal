@@ -13,7 +13,8 @@ from designsafe.apps.notifications.views import get_number_unread_notifications
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-class BaseView(SecureMixin, AgaveMixin, View):
+class BaseView(AgaveMixin, View):
+    filesystem = None
     def __init__(self, **kwargs):
         self.filesystem = None
         self.file_path = None
@@ -38,7 +39,7 @@ class BaseView(SecureMixin, AgaveMixin, View):
 
     def set_context_props(self, request, **kwargs):
         #TODO: Getting the filesystem should check in which system is the user in or requesting
-        filesystem = kwargs.get('filesystem')
+        filesystem = kwargs.get('filesystem', self.filesystem)
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
         self.file_path = kwargs.get('file_path', None)
 
@@ -70,11 +71,26 @@ class BaseView(SecureMixin, AgaveMixin, View):
 
         super(BaseView, self).set_context_props(request, **kwargs)
 
-class BaseJSONView(JSONResponseMixin, BaseView):
+class BasePrivateView(SecureMixin, BaseView):
     pass
 
-class  BaseTemplate(SecureMixin, TemplateView):
+class BasePublicView(BaseView):
+    pass
+
+class BasePrivateJSONView(JSONResponseMixin, BasePrivateView):
+    pass
+
+class BasePublicJSONView(JSONResponseMixin, BasePublicView):
+    pass
+
+class  BasePrivateTemplate(SecureMixin, TemplateView):
     def get_context_data(self, **kwargs):
-        context = super(BaseTemplate, self).get_context_data(**kwargs)
+        context = super(BasePrivateTemplate, self).get_context_data(**kwargs)
         context['unreadNotifications'] = get_number_unread_notifications(self.request)
+        return context
+
+class  BasePublicTemplate(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super(BasePublicTemplate, self).get_context_data(**kwargs)
+        context['unreadNotifications'] = 0
         return context

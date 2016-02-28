@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, StreamingHttpResponse
 from agavepy.agave import Agave, AgaveException
+from django.contrib.auth import get_user_model
 from django.conf import settings
 import datetime
 import copy
@@ -26,7 +27,7 @@ class AgaveMixin(object):
         self.agave_client = None
         super(AgaveMixin, self).__init__(**kwargs)
 
-    def get_agave_client(self, api_server = None, token = None, **kwargs):
+    def set_agave_client(self, api_server = None, token = None, **kwargs):
         if getattr(self, 'agave_client', None) is None:
             a = Agave(api_server = api_server, token = token, **kwargs)
             setattr(self, 'agave_client', a)
@@ -35,11 +36,18 @@ class AgaveMixin(object):
             return self.agave_client
 
     def set_context_props(self, request, **kwargs):
-        self.token = request.session.get(getattr(settings, 'AGAVE_TOKEN_SESSION_ID'))
-        self.access_token = self.token.get('access_token', None)
+        if request.user.is_authenticated():
+            me = get_user_model().objects.get(username=request.user.username)
+            me.agave_oauth.refresh()
+            self.token = me.agave_oauth
+        else:
+            me = get_user_model().objects.get(username='envision')
+            me.agave_oauth.refresh()
+            self.token = me.agave_oauth
+        self.access_token = self.token.access_token
         self.agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = self.get_agave_client(api_server = self.agave_url, token = self.access_token)
-     
+        self.set_agave_client(api_server = self.agave_url, token = self.access_token)
+
 class JSONResponseMixin(object):
     """
     View mixin to return a JSON response. 

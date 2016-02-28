@@ -2,6 +2,7 @@ from django.conf import settings
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
+from elasticsearch_dsl.utils import AttrList
 import logging
 import six
 import re
@@ -72,9 +73,11 @@ def advanced_search(index, user, search_terms):
     return response, s
 
 class Project(DocType):
-    def search_by_name(self, name):
+    def search_by_name(self, name, fields = None):
         name = re.sub(r'\.groups$', '', name)
         q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+        if fields is not None:
+            q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -199,7 +202,18 @@ class PublicObject(DocType):
         if o is not None:
             return self.update(**self.to_dict())
         else:
-            return super(Object, self).save(**kwargs)
+            return super(PublicObject, self).save(**kwargs)
+
+    def to_dict(self, *args, **kwargs):
+        d = super(PublicObject, self).to_dict(*args, **kwargs)
+        r, s = Project().search_by_name(self.project, ['title'])
+        if r.hits.total:
+            title = r[0].title
+            if isinstance(title, AttrList):
+                d['projecTitle'] = title[0]
+            else:
+                d['projecTitle'] = title
+        return d
    
     class Meta:
         index = 'nees'
