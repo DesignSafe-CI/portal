@@ -9,7 +9,7 @@
 
     service.get = function(uuid) {
       return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
-        params: {'job_id': encodeURIComponent(uuid)}
+        params: {'job_id': uuid}
       });
     };
 

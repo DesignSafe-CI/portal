@@ -8,9 +8,8 @@ DJANGO_RT = {
 }
 
 TICKET_CATEGORIES = (
-    ('','Choose one'),
     ('LOGIN', 'Login/Registration'),
-    ('DATA_DEPOT','Data Depot'),
-    ('DISCOVER_WORKSPACE','Discovery Workspace'),
-    ('OTHER','Other'),
+    ('DATA_DEPOT', 'Data Depot'),
+    ('DISCOVERY_WORKSPACE', 'Discovery Workspace'),
+    ('OTHER', 'Other'),
 )

@@ -1,7 +1,8 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('JobsStatusCtrl',
-    ['$scope', '$rootScope', '$uibModal', 'Jobs', function($scope, $rootScope, $uibModal, Jobs) {
+  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs) {
+    $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {};
 
     $scope.jobDetails = function(job) {
@@ -34,12 +35,26 @@
 
     $scope.$on('ds.wsBus:default', function update_job(e, msg){
       console.log('update job msg', msg)
-      for (var i=0; i < $scope.data.jobs.length; i++){
-          if ($scope.data.jobs[i]['id'] == msg.job_id) {
-            $scope.data.jobs[i]['status'] = msg.status;
-            $scope.$apply()
-            break;
+      if('event_type' in msg && msg.event_type === 'VNC') {
+        //alert(msg.connection_address)
+        $scope.interactive_url = djangoUrl.reverse('designsafe_workspace:interactive2', { 'hostname': msg.host, 'port':msg.port , 'password':msg.password });
+        $uibModal.open({
+          templateUrl: 'local/vncjob-details-modal.html',
+          controller: 'VNCJobDetailsModalCtrl',
+          scope: $scope,
+          resolve: {
+            msg: msg
           }
+        });
+      }
+      else {
+        for (var i=0; i < $scope.data.jobs.length; i++){
+            if ($scope.data.jobs[i]['id'] == msg.job_id) {
+              $scope.data.jobs[i]['status'] = msg.status;
+              $scope.$apply()
+              break;
+            }
+        }
       }
     });
 
@@ -53,4 +68,12 @@
       $uibModalInstance.dismiss('cancel');
     };
   });
+
+  angular.module('WorkspaceApp').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
+    $scope.msg = msg;
+    $scope.dismiss = function() {
+      $uibModalInstance.dismiss('cancel');
+    };
+  });
+
 })(window, angular, jQuery);

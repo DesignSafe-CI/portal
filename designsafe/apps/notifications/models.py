@@ -1,6 +1,6 @@
 from django.db import models
 from django.dispatch import receiver
-from designsafe.apps.signals.signals import notify_event
+from designsafe.apps.signals.signals import generic_event
 from .apps import Event
 import datetime
 import json
@@ -27,7 +27,7 @@ class Notification(models.Model):
         self.save()
 
 
-@receiver(notify_event)
+@receiver(generic_event)
 def receive_notification(sender, **kwargs):
     event_type = kwargs.get('event_type')
     event_data = kwargs.get('event_data')

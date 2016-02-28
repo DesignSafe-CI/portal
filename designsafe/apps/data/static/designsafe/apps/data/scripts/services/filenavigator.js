@@ -43,7 +43,6 @@
                 else{
                     file.type = file.type === 'dir' ? 'dir' : 'file';
                 }
-                console.log('file: ', file);
                 return file;
               });
             }
@@ -138,7 +137,7 @@
                 parent.nodes = parent.nodes.sort(function(a, b) {
                     return a.name < b.name ? -1 : a.name === b.name ? 0 : 1;
                 });
-            };
+            }
 
             !self.history.length && self.history.push({name: path, nodes: []});
             for (var o in self.fileList) {
@@ -197,7 +196,7 @@
                 self.fileList = (matches || []).map(function(file){
                     var path = file.path.split('/');
                     path = self.filesystem == 'default'? path.splice(1): path;
-                    return new Item(file, path);
+                    return new Item(file, path, self.filesystem);
                 });
                 self.buildTree(path);
             });
@@ -216,7 +215,6 @@
                 transformResponse: transformFiles
               }
             ).success(function(matches) {
-                console.log('matches', matches);
                 self.deferredHandler(matches, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('Search Error.'));

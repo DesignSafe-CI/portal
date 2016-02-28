@@ -14,6 +14,7 @@
                 date: model && model.date,
                 // perms: new Chmod(model && model.rights),
                 perms: {},
+                projectTitle: model && model.projecTitle || '',
                 content: model && model.content || '',
                 filesystem: filesystem || 'default',
                 recursive: false,

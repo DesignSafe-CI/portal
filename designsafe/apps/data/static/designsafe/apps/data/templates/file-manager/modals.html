@@ -31,7 +31,7 @@
                   <span aria-hidden="true">&times;</span>
                   <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">{{'change_name_move' | translate}}</h4>
+              <h4 class="modal-title">{{'Rename / Move' | translate}}</h4>
             </div>
             <div class="modal-body">
               <label class="radio">{{'enter_new_name_for' | translate}} <b>{{temp.model.name}}</b></label>
@@ -222,7 +222,7 @@
             <div class="modal-body">
               <label class="radio">{{"files_will_uploaded_to" | translate}} <pre><code>{{'/' + fileNavigator.currentPath.join('/')}}</code></pre></label>
               <label for="file-upload">Browse files</label>
-              <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" name = "file-upload"/>
+              <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" name = "file-upload" multiple/>
               <div class="file-drop" fm-droppable>Or drop files here
                 <output class="droppable-files">
                     <ul>
@@ -378,6 +378,7 @@
             <div class="modal-body">
               <label class="radio">{{'User' | translate}} <b>{{temp.model.name}}</b></label>
               <input class="form-control" ng-model="temp.tempModel.userToShare" autofocus="autofocus">
+              <pre>Type in the username to share this file/folder with. Please, make sure the username is correct.</pre>
 
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
@@ -408,7 +409,7 @@
                     </object>
                 </div>
                 <div ng-if="temp.tempModel.preview.isImage">
-                    <img src = "{{temp.tempModel.preview.url}}" class="img-responsive"/>
+                    <img ng-src = "{{temp.tempModel.preview.url}}" class="img-responsive"/>
                 </div>
                 <div ng-if="temp.tempModel.preview.isText">
                     <object data = "{{temp.tempModel.preview.data}}" onload="window.URL.revokeObjectURL(this.data);" width="100%" height="500px">
