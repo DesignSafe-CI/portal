@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from celery import shared_task, task
 from designsafe.celery import app
-from designsafe.apps.signals.signals import notify_event
+from designsafe.apps.signals.signals import generic_event
 from agavepy.agave import Agave, AgaveException
 
 import logging
@@ -49,8 +49,8 @@ def watch_job_status(data):
         if job_status in ['FINISHED', 'FAILED']:
             # job finished, no additional tasks; notify
             logger.debug('JOB FINALIZED: id=%s status=%s' % (job_id, job_status))
-            notify_event.send_robust(None, event_type='job', event_data=event_data,
-                                     event_users=[username])
+            generic_event.send_robust(None, event_type='job', event_data=event_data,
+                                      event_users=[username])
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
             watch_job_status.apply_async(args=[data], countdown=10)
@@ -60,8 +60,8 @@ def watch_job_status(data):
             watch_job_status.apply_async(args=[data], countdown=10)
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
-            notify_event.send_robust(None, event_type='job', event_data=event_data,
-                                     event_users=[username])
+            generic_event.send_robust(None, event_type='job', event_data=event_data,
+                                      event_users=[username])
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
     except (AgaveException, RequestException):
