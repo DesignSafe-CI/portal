@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('JobsStatusCtrl',
-  ['$scope', '$controller', '$rootScope', '$uibModal', 'Jobs', function($scope, $controller, $rootScope, $uibModal, Jobs) {
+  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs) {
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {};
 
