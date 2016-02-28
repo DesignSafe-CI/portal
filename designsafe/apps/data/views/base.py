@@ -13,12 +13,14 @@ from designsafe.apps.notifications.views import get_number_unread_notifications
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-class BaseView(SecureMixin, AgaveMixin, View):
+class BaseView(AgaveMixin, View):
+    filesystem = None
     def __init__(self, **kwargs):
         self.filesystem = None
         self.file_path = None
         self.force_homedir = True
         self.special_dir = None
+        self.is_public = False
         super(BaseView, self).__init__(**kwargs)
 
     def dispatch(self, request, *args, **kwargs):
@@ -37,17 +39,19 @@ class BaseView(SecureMixin, AgaveMixin, View):
 
     def set_context_props(self, request, **kwargs):
         #TODO: Getting the filesystem should check in which system is the user in or requesting
-        filesystem = kwargs.get('filesystem')
+        filesystem = kwargs.get('filesystem', self.filesystem)
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
         self.file_path = kwargs.get('file_path', None)
 
+        self.is_public = False
         if filesystem == 'default':
             self.filesystem = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
             self.force_homedir = True
         else:
             self.filesystem = filesystem
             self.force_homedir = False
-
+            if 'public' in self.filesystem:
+                self.is_public = True
         if self.file_path is None or self.file_path == '/':
             self.file_path = '/'
         else:
@@ -61,19 +65,32 @@ class BaseView(SecureMixin, AgaveMixin, View):
                     self.file_path = '/'
                 self.force_homedir = False
 
-        logger.debug('file_path before : {}'.format(self.file_path))
         if filesystem == 'default' and self.force_homedir:
             self.file_path = request.user.username + '/' + self.file_path
             self.file_path = self.file_path.strip('/')
 
-        logger.debug('file_path: {}'.format(self.file_path))
         super(BaseView, self).set_context_props(request, **kwargs)
 
-class BaseJSONView(JSONResponseMixin, BaseView):
+class BasePrivateView(SecureMixin, BaseView):
     pass
 
-class  BaseTemplate(SecureMixin, TemplateView):
+class BasePublicView(BaseView):
+    pass
+
+class BasePrivateJSONView(JSONResponseMixin, BasePrivateView):
+    pass
+
+class BasePublicJSONView(JSONResponseMixin, BasePublicView):
+    pass
+
+class  BasePrivateTemplate(SecureMixin, TemplateView):
     def get_context_data(self, **kwargs):
-        context = super(BaseTemplate, self).get_context_data(**kwargs)
+        context = super(BasePrivateTemplate, self).get_context_data(**kwargs)
         context['unreadNotifications'] = get_number_unread_notifications(self.request)
+        return context
+
+class  BasePublicTemplate(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super(BasePublicTemplate, self).get_context_data(**kwargs)
+        context['unreadNotifications'] = 0
         return context

@@ -2,8 +2,10 @@ from django.conf import settings
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
+from elasticsearch_dsl.utils import AttrList
 import logging
 import six
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +71,153 @@ def advanced_search(index, user, search_terms):
     s = Search(index=index).query('filtered', query=q, filter=_user_filter(user))
     response = s.execute()
     return response, s
+
+class Project(DocType):
+    def search_by_name(self, name, fields = None):
+        name = re.sub(r'\.groups$', '', name)
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["description",
+                  "endDate",
+                  "equipment.component",
+                  "equipment.equipmentClasse",
+                  "equipment.facility",
+                  "fundorg"
+                  "fundorgprojid",
+                  "name",
+                  "organization.name",
+                  "pis.firstName",
+                  "pis.lastName",
+                  "title"]
+        qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        if '_id' in d:
+            d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update(**self.to_dict())
+        else:
+            return super(Object, self).save(**kwargs)
+   
+    class Meta:
+        index = 'nees'
+        doc_type = 'project'
+
+class Experiment(DocType):
+    def search_by_project(self, project):
+        project = re.sub(r'\.groups$', '', project)
+        q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_by_name(self, name):
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["description", 
+                  "facility.country"
+                  "facility.name",
+                  "facility.state",
+                  "name",
+                  "project",
+                  "startDate",
+                  "title"]
+        qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        if '_id' in d:
+            d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update(**self.to_dict())
+        else:
+            return super(Object, self).save(**kwargs)
+   
+    class Meta:
+        index = 'nees'
+        doc_type = 'experiment'
+
+class PublicObject(DocType):
+    def search_partial_path(self, system_id, username, path):
+        q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_path(self, system_id, username, path, name):
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_folder_path(self, system_id, path):
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs):
+        fields = ["name", "path", "project"]
+        qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def update_from_dict(self, **d):
+        if '_id' in d:
+            d.pop('_id')
+        self.update(**d)
+        return self
+
+    def save(self, **kwargs):
+        o = self.__class__.get(id = self._id, ignore = 404)
+        if o is not None:
+            return self.update(**self.to_dict())
+        else:
+            return super(PublicObject, self).save(**kwargs)
+
+    def to_dict(self, *args, **kwargs):
+        d = super(PublicObject, self).to_dict(*args, **kwargs)
+        r, s = Project().search_by_name(self.project, ['title'])
+        if r.hits.total:
+            title = r[0].title
+            if isinstance(title, AttrList):
+                d['projecTitle'] = title[0]
+            else:
+                d['projecTitle'] = title
+        return d
+   
+    class Meta:
+        index = 'nees'
+        doc_type = 'object'
 
 class Object(DocType):
     #def search_partial_path(self, system_id, path):
@@ -145,7 +294,7 @@ class Object(DocType):
         s.update_from_dict(q)
         return s.execute(), s
 
-    def search_special_dir(self, system_id, username, path):
+    def search_special_dir(self, system_id, username, path, self_root):
         '''
         {
         "query": {
@@ -191,13 +340,18 @@ class Object(DocType):
                 }
             }
         '''
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}} }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+
+        if not self_root:
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
+        else:
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}] }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}]}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def update_from_dict(self, **d):
-        d.pop('_id')
+        if '_id' in d:
+            d.pop('_id')
         self.update(**d)
         return self
 
@@ -211,4 +365,3 @@ class Object(DocType):
     class Meta:
         index = 'designsafe'
         doc_type = 'objects'
-
