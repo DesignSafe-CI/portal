@@ -1,18 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.notifications.models import Notification
 
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 
 import logging
 import json
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +94,11 @@ def manage_applications(request):
 #         Notification.objects.get(id=request.POST.get('id')).delete()
 #         return redirect('/account/notifications/')
 
+
+def nees_migration(request):
+    context = {}
+    return render(request, 'designsafe/apps/accounts/nees_migration.html', context)
+
 def register(request):
     if request.user.is_authenticated():
         messages.info(request, 'You are already logged in!')
@@ -107,8 +111,9 @@ def register(request):
                 account_form.save()
                 messages.success(
                     request,
-                    'Congratulations! Your account request has been received. Please '
-                    'check your email for account verification.'
+                    'Congratulations! Your account request has been received. You should '
+                    'receive an activation code at the email address provided. Please '
+                    'follow the instructions in the email to activate your account.'
                 )
                 return HttpResponseRedirect('/')
             except Exception as e:
@@ -167,31 +172,40 @@ def password_reset(request):
                 form = forms.PasswordResetRequestForm()
 
     elif 'code' in request.GET:
-        form = forms.PasswordResetConfirmForm(initial={ 'code': request.GET['code'] })
+        form = forms.PasswordResetConfirmForm(initial={'code': request.GET['code']})
         form.fields['code'].widget = forms.HiddenInput()
     else:
         form = forms.PasswordResetRequestForm()
 
     if 'code' in request.GET:
-        message = 'Confirm your password reset using the form below. Enter your TACC username and new password to complete the password reset process.'
+        message = 'Confirm your password reset using the form below. Enter your TACC ' \
+                  'username and new password to complete the password reset process.'
     else:
-        message = 'Enter your TACC username to request a password reset. If your account is found, you will receive an email at the registered email address with instructions to complete the password reset.'
+        message = 'Enter your TACC username to request a password reset. If your ' \
+                  'account is found, you will receive an email at the registered email ' \
+                  'address with instructions to complete the password reset.'
 
-    return render(request, 'designsafe/apps/accounts/password_reset.html', { 'message': message, 'form': form })
+    return render(request, 'designsafe/apps/accounts/password_reset.html',
+                  {'message': message, 'form': form})
 
 def _process_password_reset_request(request, form):
     if form.is_valid():
         # always show success to prevent data leaks
-        messages.success(request, 'Your request has been received. If an account matching the username you provided is found, you will receive an email with further instructions to complete the password reset process.')
+        messages.success(request, 'Your request has been received. If an account '
+                                  'matching the username you provided is found, you will '
+                                  'receive an email with further instructions to '
+                                  'complete the password reset process.')
 
         username = form.cleaned_data['username']
-        logger.info('Password reset request for username: "%s"', username)
+        logger.info('Attempting password reset request for username: "%s"', username)
         try:
             tas = TASClient()
             user = tas.get_user(username=username)
-            resp = tas.request_password_reset(user['username'], source='DesignSafe')
+            logger.info('Processing password reset request for username: "%s"', username)
+            resp = tas.request_password_reset(user['id'], source='DesignSafe')
             logger.debug(resp)
-        except:
+        except Exception as e:
+            logger.debug(e)
             logger.exception('Failed password reset request')
 
         return True
@@ -216,35 +230,59 @@ def _process_password_reset_confirm(request, form):
                 elif re.search('expired', e.args[1]):
                     form.add_error('code', e.args[1])
                 else:
-                    form.add_error('__all__', 'An unexpected error occurred. Please try again')
+                    form.add_error('__all__', 'An unexpected error occurred. '
+                                              'Please try again')
             else:
-                form.add_error('__all__', 'An unexpected error occurred. Please try again')
+                form.add_error('__all__', 'An unexpected error occurred. '
+                                          'Please try again')
 
     return False
 
-def email_confirmation(request):
+
+def email_confirmation(request, code=None):
     context = {}
     if request.method == 'POST':
         form = forms.EmailConfirmationForm(request.POST)
         if form.is_valid():
-            code = request.POST['code']
-            username = request.POST['username']
+            data = form.cleaned_data
+            code = data['code']
+            username = data['username']
+            password = data['password']
             try:
                 tas = TASClient()
                 user = tas.get_user(username=username)
-                tas.verify_user(user['id'], code)
-                activate_local_user(username)
-                messages.success(request, 'Congratulations, your email has been verified! Please log in now.')
-                return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
+                if tas.verify_user(user['id'], code, password=password):
+                    get_user_model().objects.create_user(
+                        username=username,
+                        first_name=user['firstName'],
+                        last_name=user['lastName'],
+                        email=user['email']
+                        )
+                    messages.success(request,
+                                     'Congratulations, your account has been activated! '
+                                     'You can now log in to DesignSafe-CI.')
+                    return HttpResponseRedirect(
+                        reverse('designsafe_accounts:manage_profile'))
+                else:
+                    messages.error(request,
+                                   'We were unable to activate your account. Please try '
+                                   'again. If this problem persists, please open a '
+                                   'support ticket.')
+                    form = forms.EmailConfirmationForm(
+                        initial={'code': code, 'username': username})
             except Exception as e:
-                logger.exception('Email verification failed')
+                logger.exception('TAS Account activation failed')
                 if e[0] == 'User not found':
                     form.add_error('username', e[1])
                 else:
-                    form.add_error('code', 'Email verification failed. Please check your verification code and username and try again.')
+                    form.add_error('code',
+                                   'Account activation failed. Please check your '
+                                   'activation code and username and try again.')
 
     else:
-        form = EmailConfirmationForm(initial={'code': request.GET.get('code', '')})
+        if code is None:
+            code = request.GET.get('code', '')
+        form = forms.EmailConfirmationForm(initial={'code': code})
 
     context['form'] = form
 

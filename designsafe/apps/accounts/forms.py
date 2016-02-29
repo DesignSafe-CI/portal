@@ -60,10 +60,10 @@ def get_country_choices():
 
 class EmailConfirmationForm(forms.Form):
     code = forms.CharField(
-            label='Enter Your Verification Code',
+            label='Enter Your Activation Code',
             required=True,
             error_messages={
-                'required': 'Please enter the verification code you received via email.'
+                'required': 'Please enter the activation code you received via email.'
             })
 
     username = forms.CharField(
@@ -72,7 +72,7 @@ class EmailConfirmationForm(forms.Form):
 
     password = forms.CharField(
             widget=forms.PasswordInput,
-            label='Password',
+            label='Enter Your TACC Password',
             required=True)
 
 

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 sekizai_tags staticfiles %}
+
+{% block title %}Migrate NEES Account{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">NEES Account Migration</h1>
+
+    <p class="lead">
+        <a href="https://nees.org/">NEEShub</a> users can use our account migration wizard
+        to easily migration their NEEShub account to DesignSafe-CI. We will guide you
+        through the steps to create an account, migrate your profile, and retain ownership
+        of your data. Welcome to DesignSafe-CI!
+    </p>
+
+    <p class="lead">
+        To begin, please enter the email address associated with your NEEShub account.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Begin Account Migration</button>
+        <a class="btn btn-link" href="/">Cancel</a>
+        <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
+    </form>
+
+</div>
+{% endblock %}

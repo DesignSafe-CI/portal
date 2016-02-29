@@ -13,8 +13,9 @@ urlpatterns = patterns(
     # url(r'^notifications/$', 'notifications', name='notifications'),
     url(r'^notifications/settings/$', 'manage_notifications', name='manage_notifications'),
     url(r'^register/$', 'register', name='register'),
+    url(r'^migrate-nees-account/$', 'nees_migration', name='nees_migration'),
     url(r'^password-reset/$', 'password_reset', name='password_reset'),
-    url(r'^activate/$', 'email_confirmation', name='email_confirmation'),
+    url(r'^activate/(?P<code>.+)/$', 'email_confirmation', name='email_confirmation'),
     url(r'^departments\.json$', 'departments_json', name='departments_json'),
 )
 
