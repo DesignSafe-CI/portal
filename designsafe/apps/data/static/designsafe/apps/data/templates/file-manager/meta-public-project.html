@@ -1,46 +1,48 @@
 <h3>{{publicMetadata.project.title}}</h3>
 <uib-tabset active="active">
     <uib-tab index="0" heading="Project">
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody ng-repeat="(key,value) in publicMetadata.project" ng-if="value && key !== 'deleted'">
-          <tr>
-            <td>{{key | translate}}</td>
-            <td>
-              <div ng-switch="key">
-                <div ng-switch-when="pis">
-                  <div ng-repeat="pi in value">
-                    {{pi.firstName}} {{pi.lastName}}<br>
-                  </div>
-                </div>
-                <div ng-switch-when="equipment">
-                  <div ng-repeat="equipment in value">
-                    <div ng-repeat="(equipmentKey,equipmentValue) in equipment">
-                        {{equipmentValue}}<br>
-                    </div>
-                    <hr>
-                  </div>
-                </div>
-                <div ng-switch-when="organization">
-                  <div ng-repeat="organization in value">
-                    <div ng-repeat="(organizationKey,organizationValue) in organization">
-                        {{organizationValue}}<br>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody ng-repeat="(key,value) in publicMetadata.project" ng-if="value && key !== 'deleted'">
+            <tr>
+              <td>{{key | translate}}</td>
+              <td>
+                <div ng-switch="key">
+                  <div ng-switch-when="pis">
+                    <div ng-repeat="pi in value">
+                      {{pi.firstName}} {{pi.lastName}}<br>
                     </div>
                   </div>
+                  <div ng-switch-when="equipment">
+                    <div ng-repeat="equipment in value">
+                      <div ng-repeat="(equipmentKey,equipmentValue) in equipment">
+                          {{equipmentValue}}<br>
+                      </div>
+                      <hr>
+                    </div>
+                  </div>
+                  <div ng-switch-when="organization">
+                    <div ng-repeat="organization in value">
+                      <div ng-repeat="(organizationKey,organizationValue) in organization">
+                          {{organizationValue}}<br>
+                      </div>
+                    </div>
+                  </div>
+                  <div ng-switch-default>
+                    {{value}}
+                  </div>
                 </div>
-                <div ng-switch-default>
-                  {{value}}
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </uib-tab>
     <uib-tab index="$index + 1" ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" disable="tab.disabled">
       {{tab.content}}
@@ -48,47 +50,49 @@
     <uib-tab index="3">
       <uib-tab-heading>Experiments
       </uib-tab-heading>
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody ng-repeat="experiment in publicMetadata.experiments">
-          <tr>
-            <td>{{experiment.name | translate}}</td>
-            <td>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody ng-repeat="(key,value) in experiment" ng-if="value && (key !== 'deleted') && key !== 'name'">
-                  <tr>
-                    <td>{{key | translate}}</td>
-                    <td>
-                      <div ng-switch="key">
-                        <div ng-switch-when="facility">
-                          <div ng-repeat="facility in value">
-                            <div ng-repeat="(facilityKey,facilityValue) in facility">
-                                {{facilityValue}}<br>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="col-lg-2"></th>
+              <th class="col-lg-10"></th>
+            </tr>
+          </thead>
+          <tbody ng-repeat="experiment in publicMetadata.experiments">
+            <tr>
+              <td class="col-lg-2">{{experiment.name | translate}}</td>
+              <td class="col-lg-10"> 
+                <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody ng-repeat="(key,value) in experiment" ng-if="value && (key !== 'deleted') && key !== 'name'">
+                    <tr>
+                      <td>{{key | translate}}</td>
+                      <td>
+                        <div ng-switch="key">
+                          <div ng-switch-when="facility">
+                            <div ng-repeat="facility in value">
+                              <div ng-repeat="(facilityKey,facilityValue) in facility">
+                                  {{facilityValue}}<br>
+                              </div>
                             </div>
                           </div>
+                          <div ng-switch-default>
+                            {{value}}
+                          </div>
                         </div>
-                        <div ng-switch-default>
-                          {{value}}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </uib-tab>
 </uib-tabset>

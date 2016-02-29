@@ -565,7 +565,7 @@
 }
 
 .metadata-kw-list {
-    margin-top:10px; 
+    margin-top:10px;
 }
 
 .metadata-kw-item button {
@@ -607,6 +607,10 @@
   position: absolute;
   right: 0;
   top: 0;
+}
+
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+    border: none;
 }
 
 @media (min-width: 768px){
