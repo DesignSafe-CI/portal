@@ -145,7 +145,9 @@
 
         $scope.showMetadata = function (item) {
             $scope.temp = item;
-            $scope.temp.tempModel.metaForm.keywords = "";
+            if($scope.temp.tempModel && $scope.temp.tempModel.metaForm){
+                $scope.temp.tempModel.metaForm.keywords = "";
+            }
             item.showMetadata()
             .then(function(data){
                 console.log('getMetadata: ', data);
