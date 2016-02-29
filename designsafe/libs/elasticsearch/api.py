@@ -113,7 +113,7 @@ class Project(DocType):
             return self.update(**self.to_dict())
         else:
             return super(Project, self).save(**kwargs)
-   
+
     class Meta:
         index = 'nees'
         doc_type = 'project'
@@ -133,7 +133,7 @@ class Experiment(DocType):
         return s.execute(), s
 
     def search_query(self, system_id, username, qs):
-        fields = ["description", 
+        fields = ["description",
                   "facility.country"
                   "facility.name",
                   "facility.state",
@@ -159,7 +159,7 @@ class Experiment(DocType):
             return self.update(**self.to_dict())
         else:
             return super(Experiment, self).save(**kwargs)
-   
+
     class Meta:
         index = 'nees'
         doc_type = 'experiment'
@@ -184,7 +184,7 @@ class PublicObject(DocType):
         return s.execute(), s
 
     def search_query(self, system_id, username, qs):
-        fields = ["name", "path", "project"]
+        fields = ["name", "path", "project", "pis.lastName", "pis.firstName"]
         qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":fields, "query": qs}}}
         s = self.__class__.search()
@@ -214,14 +214,14 @@ class PublicObject(DocType):
             else:
                 d['projecTitle'] = title
         return d
-   
+
     class Meta:
         index = 'nees'
         doc_type = 'object'
 
 class Object(DocType):
     #def search_partial_path(self, system_id, path):
-    #    s = self.search().query('filtered', query = 
+    #    s = self.search().query('filtered', query =
     #    s.filter('term', systemId=system_id)
     def search_partial_path(self, system_id, username, path):
         '''
@@ -289,7 +289,7 @@ class Object(DocType):
     def search_query(self, system_id, username, qs):
         fields = ["name", "path", "keywords"]
         qs = '*{}*'.format(qs)
-        q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}} 
+        q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -361,7 +361,7 @@ class Object(DocType):
             return self.update(**self.to_dict())
         else:
             return super(Object, self).save(**kwargs)
-   
+
     class Meta:
         index = 'designsafe'
         doc_type = 'objects'
