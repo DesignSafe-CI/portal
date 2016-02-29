@@ -178,13 +178,17 @@ class PublicObject(DocType):
         return s.execute(), s
 
     def search_exact_folder_path(self, system_id, path):
-        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}}}
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_query(self, system_id, username, qs):
-        fields = ["name", "path", "project", "pis.lastName", "pis.firstName"]
+        fields = ["name", 
+                  "path", 
+                  "project",
+                  "pis.lastName",
+                  "pis.firstName"]
         qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":fields, "query": qs}}}
         s = self.__class__.search()
@@ -342,7 +346,7 @@ class Object(DocType):
         '''
 
         if not self_root:
-            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
+            q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         else:
             q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}] }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
