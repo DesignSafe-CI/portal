@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -38,7 +39,7 @@ def manage_profile(request):
         demographics['ethnicity'] = django_user.profile.ethnicity
         demographics['gender'] = django_user.profile.gender
 
-    except Exception as e:
+    except ObjectDoesNotExist as e:
         logger.info('exception e:{} {}'.format(type(e), e))
         # pass #account was not created through designsafe
     context = {
@@ -166,7 +167,7 @@ def profile_edit(request):
                 dsuser.ethnicity=data['ethnicity']
                 dsuser.gender=data['gender']
                 dsuser.save()
-            except Exception as e:
+            except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 demographics = DsUser(
                     user=user,
@@ -180,7 +181,7 @@ def profile_edit(request):
         try:
             tas_user['ethnicity'] = user.profile.ethnicity
             tas_user['gender'] = user.profile.gender
-        except Exception as e:
+        except ObjectDoesNotExist as e:
             pass
         form = forms.UserProfileForm(initial=tas_user)
 
