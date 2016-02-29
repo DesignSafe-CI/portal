@@ -1,4 +1,6 @@
+from designsafe.apps.auth.models import DsUser
 from django import forms
+from django.contrib.auth import get_user_model
 from django.forms.util import ErrorList
 from pytas.http import TASClient
 import re
@@ -39,6 +41,7 @@ USER_PROFILE_TITLES = (
     ('University Research Staff', 'University Research Staff (excluding postdoctorates)'),
 )
 ETHNICITY_OPTIONS = (
+    ('', 'Choose one'),
     ('Decline', 'Decline to Identify'),
     ('White', 'White'),
     ('Asian', 'Asian'),
@@ -50,6 +53,7 @@ ETHNICITY_OPTIONS = (
 )
 
 GENDER_OPTIONS = (
+    ('', 'Choose one'),
     ('Decline', 'Decline to Identify'),
     ('Male', 'Male'),
     ('Female', 'Female'),
@@ -182,6 +186,8 @@ class UserProfileForm(forms.Form):
         error_messages={'invalid': 'Please select your Country of residence'})
     citizenshipId = forms.ChoiceField(label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
+    ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
+    gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
 
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
@@ -295,4 +301,23 @@ class UserRegistrationForm(forms.Form):
         safe_data['password'] = safe_data['confirmPassword'] = '********'
         logger.info('Attempting new user registration: %s' % safe_data)
 
-        return TASClient().save_user(None, data)
+        tas_user=TASClient().save_user(None, data)
+
+        UserModel = get_user_model()
+        try:
+            # Check if the user exists in Django's local database
+            user = UserModel.objects.get(username=data['username'])
+        except UserModel.DoesNotExist:
+            # Create a user in Django's local database
+            user = UserModel.objects.create_user(
+                username=data['username'],
+                first_name=tas_user['firstName'],
+                last_name=tas_user['lastName'],
+                email=tas_user['email'],
+                )
+            demographics = DsUser(
+                user=user,
+                ethnicity=data['ethnicity'],
+                gender=data['gender']
+                )
+            demographics.save()

@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
+from designsafe.apps.auth.models import DsUser
 from designsafe.apps.notifications.models import Notification
 
 from pytas.http import TASClient
@@ -27,10 +29,22 @@ def manage_profile(request):
     The default accounts view. Provides user settings for managing profile,
     authentication, notifications, identities, and applications.
     """
+    UserModel = get_user_model()
+    django_user = UserModel.objects.get(username=request.user.username)
     user_profile = TASUser(username=request.user.username)
+
+    demographics={}
+    try:
+        demographics['ethnicity'] = django_user.profile.ethnicity
+        demographics['gender'] = django_user.profile.gender
+
+    except Exception as e:
+        logger.info('exception e:{} {}'.format(type(e), e))
+        # pass #account was not created through designsafe
     context = {
         'title': 'Manage Profile',
-        'profile': user_profile
+        'profile': user_profile,
+        'demographics': demographics
     }
     return render(request, 'designsafe/apps/accounts/profile.html', context)
 
@@ -128,6 +142,8 @@ def register(request):
 def profile_edit(request):
     tas = TASClient()
     tas_user = tas.get_user(username=request.user)
+    UserModel = get_user_model()
+    user = UserModel.objects.get(username=request.user.username)
 
     # if tas_user['source'] != 'DesignSafe':
     #     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile')) #for testing -> uncomment when DesignSafe is a valid choice
@@ -141,11 +157,31 @@ def profile_edit(request):
                 _create_ticket_for_pi_request(tas_user)
             else:
                 data['piEligibility'] = tas_user['piEligibility']
-            data['source'] = 'DesignSafe'
+            data['source'] = 'Chameleon'
             tas.save_user(tas_user['id'], data)
             messages.success(request, 'Your profile has been updated!')
+
+            try:
+                dsuser=DsUser.objects.get(user=user)
+                dsuser.ethnicity=data['ethnicity']
+                dsuser.gender=data['gender']
+                dsuser.save()
+            except Exception as e:
+                logger.info('exception e: {} {}'.format(type(e), e ))
+                demographics = DsUser(
+                    user=user,
+                    ethnicity=data['ethnicity'],
+                    gender=data['gender']
+                    )
+                demographics.save()
+
             return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
     else:
+        try:
+            tas_user['ethnicity'] = user.profile.ethnicity
+            tas_user['gender'] = user.profile.gender
+        except Exception as e:
+            pass
         form = forms.UserProfileForm(initial=tas_user)
 
     context = {

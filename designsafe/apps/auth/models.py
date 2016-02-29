@@ -88,3 +88,9 @@ class AgaveServiceStatus(object):
                 raise Exception(data)
         except HTTPError:
             logger.exception('Agave Service Status update failed')
+
+
+class DsUser(models.Model):
+    user= models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    ethnicity = models.CharField(max_length=50)
+    gender = models.CharField(max_length=7)
