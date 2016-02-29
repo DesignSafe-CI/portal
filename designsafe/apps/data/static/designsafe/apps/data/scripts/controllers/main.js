@@ -82,22 +82,36 @@
             $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
-            }else if(item.isPreviewable()){
-                $scope.modal('preview');
+            }else{
+                return item.download();
+            }
+            //else if(item.isPreviewable()){
+            //    $scope.modal('preview');
+            //    $scope.temp = item;
+            //    return item.preview().catch(
+            //        function(data){
+            //            item.error = $translate.instant('error_invalid_filename');
+            //        }
+            //    );
+            //}
+
+            // if (item.isEditable()) {
+            //     item.getContent();
+            //     $scope.touch(item);
+            //     return $scope.modal('edit');
+            // }
+        };
+
+        $scope.preview = function(item){
+            item.model.filesystem = $scope.filesystem;
+            if (item.isPreviewable()){
                 $scope.temp = item;
                 return item.preview().catch(
                     function(data){
                         item.error = $translate.instant('error_invalid_filename');
                     }
                 );
-            }else{
-                return item.download();
             }
-            // if (item.isEditable()) {
-            //     item.getContent();
-            //     $scope.touch(item);
-            //     return $scope.modal('edit');
-            // }
         };
 
         $scope.modal = function(id, hide) {
@@ -319,7 +333,6 @@
                 $scope.modal('uploadfile', true);
                 $scope.dropFiles = [];
                 $scope.uploadFileList = [];
-                $scope.$applu();
             }, function(data) {
                 var errorMsg = data.result && data.result.error || $translate.instant('error_uploading_files');
                 $scope.temp.error = errorMsg;
@@ -335,6 +348,10 @@
                 }
             });
             return found;
+        };
+
+        $scope.refresh = function(){
+            $scope.fileNavigator.refresh()
         };
 
         $scope.changeLanguage($scope.getQueryParam('lang'));

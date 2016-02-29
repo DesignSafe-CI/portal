@@ -34,7 +34,7 @@
                 compressChooseName: false,
                 extract: true,
                 download: true,
-                preview: false,
+                preview: true,
                 remove: true,
                 metadata: true,
                 share: true

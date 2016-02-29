@@ -39,6 +39,11 @@
                         modelSetter(scope, element[0].files);
                     });
                 });
+                scope.$watch(attrs.ngFile, function(files){
+                    if (!files.length){
+                        element.val('');
+                    }
+                });
             }
         };
     }]);
