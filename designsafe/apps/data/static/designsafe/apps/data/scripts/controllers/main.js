@@ -74,6 +74,8 @@
             // item = item instanceof Item ? item : new Item();
             item.revert && item.revert();
             $scope.temp = item;
+            $scope.temp.tempModel.name = "";
+            $scope.temp.tempModel.userToShare = "";
         };
 
         $scope.smartClick = function(item, $event) {
@@ -143,7 +145,7 @@
 
         $scope.showMetadata = function (item) {
             $scope.temp = item;
-
+            $scope.temp.tempModel.metaForm.keywords = "";
             item.showMetadata()
             .then(function(data){
                 console.log('getMetadata: ', data);
