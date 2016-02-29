@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 #from dsapi.agave.files import *
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.data.apps import DataEvent
+from designsafe.apps.data import tasks
 
 from .base import BaseView, BasePrivateJSONView, BasePublicJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager, FileManager
@@ -90,17 +91,34 @@ class ManageView(BasePrivateJSONView):
 
 class ShareView(BasePrivateJSONView):
     def post(self, request, *args, **kwargs):
-        self.set_context_props(request, **kwargs)
-        mngr = FileManager(agave_client = self.agave_client)
+        self.set_context_props(request, **kwargs)    
         body = json.loads(request.body)
         action = body.get('action', None)
         user = body.get('user', None)
         permission = body.get('permission', None)
-        op = getattr(mngr, action)
-        resp = op(system_id = self.filesystem, path = self.file_path, 
-                  username = user, permission = permission,
-                  me = request.user.username)
-        return self.render_to_json_response(resp)
+
+        DataEvent.send_generic_event({'action': 'share_start', 
+                  'path': self.file_path, 
+                  'username_to': user,
+                  'username_from': request.user.username,
+                  'permission': permission,
+                  'message': 'Your files are being shared.'},
+                  [request.user.username])
+
+        tasks.share.delay(system_id = self.filesystem,
+              path = self.file_path, username = user,
+              permission = permission, me = request.user.username)
+        return self.render_to_json_response({'message':'Sharing...'})
+    #    mngr = FileManager(agave_client = self.agave_client)
+    #    body = json.loads(request.body)
+    #    action = body.get('action', None)
+    #    user = body.get('user', None)
+    #    permission = body.get('permission', None)
+    #    op = getattr(mngr, action)
+    #    resp = op(system_id = self.filesystem, path = self.file_path, 
+    #              username = user, permission = permission,
+    #              me = request.user.username)
+    #    return self.render_to_json_response(resp)
 
 class MetadataMixin(object):
     def set_context_props(self, request, **kwargs):

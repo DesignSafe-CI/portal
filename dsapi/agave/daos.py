@@ -106,6 +106,8 @@ class FileManager(AgaveObject):
                 pems = self.call_operation('files.listPermissions', 
                                 filePath = o.path + '/' + o.name, systemId = system_id)
                 o.update(permissions = pems)
+                if i == 0:
+                    ret = o
             paths.pop()
         return ret
 
