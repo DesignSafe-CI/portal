@@ -111,6 +111,18 @@
                 self.fileList = (data.result || []).map(function(file) {
                     return new Item(file, self.currentPath, self.filesystem);
                 });
+                self.fileList = self.fileList.filter(function(o){
+                    if(o.model.projectTitle){
+                        if(o.model.projectTitle.indexOf('EMPTY PROJECT') > -1 || o.model.projectTitle.indexOf('READY FOR REUSE') > -1){
+                            return false;
+                        }
+                        else{
+                            return true;
+                        }
+                    }else{
+                        return true;
+                    }
+                });
                 self.buildTree(path);
             });
         };

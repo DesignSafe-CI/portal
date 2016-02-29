@@ -196,6 +196,9 @@
 
         $scope.updateKeywords = function(item){
             item.tempModel.metaForm.keywords = item.tempModel.metaForm.keywords.split(',');
+            item.tempModel.metaForm.keywords = item.tempModel.metaForm.keywords.map(function(o){
+                return $.trim(o);
+            });
             item.updateMetadata().then(function(){
                 $scope.modal('metadata', true);
             }).catch(function(err){

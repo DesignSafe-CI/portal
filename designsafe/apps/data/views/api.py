@@ -119,8 +119,11 @@ class MetadataMixin(object):
         meta_obj, meta_dict = self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         meta = body.get('metadata', None)
-        f.update(**meta)
-        return self.render_to_json_response(f.to_dict())
+        #Remove duplicates
+        if 'keywords' in meta:
+            meta['keywords'] = list(set(meta['keywords']))
+        meta_obj.update(**meta)
+        return self.render_to_json_response(meta_obj.to_dict())
 
 class MetadataView(MetadataMixin, BasePrivateJSONView):
     pass

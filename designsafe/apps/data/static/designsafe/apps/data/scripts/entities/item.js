@@ -500,7 +500,9 @@
             var path = self.model.fullPath();
             self.inprocess = true;
             self.error = '';
-            self.tempModel.metaForm.keywords = self.tempModel.metaForm.keywords.concat(self.tempModel.meta.keywords);
+            if(self.tempModel.meta.keywords){
+                self.tempModel.metaForm.keywords = self.tempModel.metaForm.keywords.concat(self.tempModel.meta.keywords);
+            }
             var data = {
                 "metadata": self.tempModel.metaForm
             };
