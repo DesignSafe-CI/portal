@@ -1,0 +1,62 @@
+<span class="workspace-panel-title">Data Depot Browser</span>
+<div class="workspace-panel-content">
+    <h2>Data Depot Browser</h2>
+    <form>
+        <div class="form-group">
+            <label for="id_system_id">Select data source</label>
+            <select id="id_system_id" name="system_id" class="form-control"
+                    ng-model="data.system"
+                    ng-options="s as s.name for s in data.systemList track by s.id"
+                    ng-change="dataSourceUpdated()"
+            ></select>
+        </div>
+    </form>
+    <p ng-if="data.wants" class="alert alert-info">
+        <!-- {{data.wants.requestKey}} -->
+        Select file for <em>{{data.wants.title}}</em>.
+        <a class="btn btn-link btn-xs"
+           ng-if="data.wants.description"
+           uib-tooltip="{{data.wants.description}}"
+           tooltip-placement="right"
+           tooltip-append-to-body="true"><i class="fa fa-info-circle"></i> More info</a>
+    </p>
+    <div class="files-listing">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <caption style="white-space:nowrap">
+                    <label>Browsing:</label><br>
+                    <span class="text text-info">{{data.filePath}}</span>
+                </caption>
+                <thead>
+                <th>File name</th>
+                <th>Size</th>
+                <th>Action</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="f in data.filesListing | orderBy : ['type', 'name']">
+                    <td>
+                        <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
+                            <i class="fa fa-{{getFileIcon(f)}}"></i>
+                            <span ng-if="f.name === '.'">..</span>
+                            <span ng-if="f.name !== '.'">{{f.name}}</span>
+                        </a>
+                    </td>
+                    <td>{{f.length|bytes:0}}</td>
+                    <td>
+                        <button ng-if="f.name !== '.' && data.wants"
+                                type="button"
+                                class="btn btn-xs btn-info"
+                                ng-click="chooseFile(f)">Select</button>
+                    </td>
+                </tr>
+                <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
+                <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
+    <i class="fa" ng-class="{'fa-caret-right': panel.collapsed, 'fa-caret-left':! panel.collapsed}"></i>
+    <span class="sr-only">Toggle panel</span>
+</button>

@@ -1,7 +1,8 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import Event
-from designsafe.apps.signals.signals import notify_event
+from designsafe.apps.signals.signals import generic_event
 from designsafe.apps.notifications.models import Notification
+from designsafe.apps.signals.signals import generic_event
 
 from django.core import serializers
 # from django.core.serializers.json import DjangoJSONEncoder
@@ -20,6 +21,36 @@ logger = logging.getLogger(__name__)
 def index(request):
     return render(request, 'designsafe/apps/notifications/index.html')
 
+
+@require_POST
+@csrf_exempt
+def generic_webhook_handler(request):
+    if request.method == 'POST':
+        # do stuff
+        event_type = request.POST.get('event_type', None)
+    else:
+        # do other stuff, to be determined in future webhooks I suppose
+        return HttpResponse('Unexpected', status=400)
+
+    if event_type == 'VNC':
+        event_type = request.POST.get('event_type', '')
+        job_owner = request.POST.get('owner', '')
+        host = request.POST.get('host', '')
+        port = request.POST.get('port','')
+        password = request.POST.get('password','')
+
+        body = {
+            'event_type': event_type,
+            'job_owner': job_owner,
+            'host': host,
+            'port': port,
+            'password': password,
+        }
+
+        generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)
+        return HttpResponse('OK')
+    else:
+        return HttpResponse('Unexpected', status=400)
 
 @require_POST
 @csrf_exempt
@@ -57,7 +88,7 @@ def job_notification_handler(request):
         'archive_path': archive_path,
         'job_owner': job_owner,
     }
-    notify_event.send_robust(None, event_type='job', event_data=body,
+    generic_event.send_robust(None, event_type='job', event_data=body,
                              event_users=[job_owner])
 
     return HttpResponse('OK')

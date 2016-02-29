@@ -101,7 +101,7 @@
         };
 
         $scope.modal = function(id, hide) {
-            $('#' + id).modal(hide ? 'hide' : 'show')
+            $('#' + id).modal(hide ? 'hide' : 'show');
         };
 
         $scope.isInThisPath = function(path) {
@@ -132,10 +132,23 @@
 
             item.showMetadata()
             .then(function(data){
-                console.log('getMetadata: ', data)
+                console.log('getMetadata: ', data);
             })
             .catch(function(data){
-                console.log('getMetadata: ', data)
+                console.log('getMetadata: ', data);
+            });
+        };
+
+        $scope.showPublicMetadata = function (item) {
+            $scope.temp = item;
+
+            item.showPublicMetadata()
+            .then(function(data){
+                $scope.publicMetadata = data;
+                console.log('showPublicMetadata: ', data);
+            })
+            .catch(function(data){
+                console.log('showPublicMetadata: ', data);
             });
         };
 
@@ -304,6 +317,9 @@
             .then(function() {
                 $scope.fileNavigator.refresh($scope.filesystem);
                 $scope.modal('uploadfile', true);
+                $scope.dropFiles = [];
+                $scope.uploadFileList = [];
+                $scope.$applu();
             }, function(data) {
                 var errorMsg = data.result && data.result.error || $translate.instant('error_uploading_files');
                 $scope.temp.error = errorMsg;

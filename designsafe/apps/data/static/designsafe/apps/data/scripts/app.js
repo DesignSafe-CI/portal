@@ -26,7 +26,8 @@
       'ngStorage',
       'ngCookies',
       'ds.wsBus',
-      'ds.notifications'
+      'ds.notifications',
+      'ui.bootstrap'
     ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$compileProvider', config]);
 
     // angular.module('FileManagerApp')

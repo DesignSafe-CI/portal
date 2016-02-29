@@ -18,8 +18,7 @@ class AgaveTokenRefreshMiddleware(object):
                     if token and token.expired:
                         try:
                             token.refresh()
-                            request.session[session_key] = \
-                                token.token
+                            request.session[session_key] = token.token
                         except HTTPError as e:
                             logger.exception('Failed to refresh token for user=%s. '
                                              'Forcing logout: %s' %

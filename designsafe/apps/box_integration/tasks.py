@@ -1,12 +1,17 @@
 from agavepy.agave import Agave, AgaveException
+from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from boxsdk import OAuth2, Client
+from boxsdk import Client
+from dsapi.agave.daos import AgaveFolderFile
 from boxsdk.exception import BoxAPIException, BoxException
-from .models import BoxUserToken
+from designsafe.libs.elasticsearch.api import Object
+from designsafe.apps.box_integration import util
+from designsafe.apps.box_integration.models import BoxUserToken
 import logging
-import six
+import requests
+from requests.exceptions import HTTPError
 import json
 
 
@@ -29,14 +34,7 @@ def check_connection(username):
     """
     user = get_user_model().objects.get(username=username)
     token = BoxUserToken.objects.get(user=user)
-    oauth = OAuth2(
-        client_id=settings.BOX_APP_CLIENT_ID,
-        client_secret=settings.BOX_APP_CLIENT_SECRET,
-        access_token=token.access_token,
-        refresh_token=token.refresh_token,
-        store_tokens=token.update_tokens
-    )
-    client = Client(oauth)
+    client = Client(util.get_box_oauth(token))
     box_user = client.user(user_id='me').get()
     return box_user
 
@@ -57,16 +55,9 @@ def check_or_create_box_sync_folder(username):
     try:
         user = get_user_model().objects.get(username=username)
         token = BoxUserToken.objects.get(user=user)
-        oauth = OAuth2(
-            client_id=settings.BOX_APP_CLIENT_ID,
-            client_secret=settings.BOX_APP_CLIENT_SECRET,
-            access_token=token.access_token,
-            refresh_token=token.refresh_token,
-            store_tokens=token.update_tokens
-        )
-        client = Client(oauth)
+        client = Client(util.get_box_oauth(token))
         try:
-            client.folder(folder_id=0).create_subfolder(settings.BOX_SYNC_FOLDER_NAME)
+            client.folder(folder_id=u'0').create_subfolder(settings.BOX_SYNC_FOLDER_NAME)
         except BoxAPIException as e:
             logger.debug(e)
             if e.code == 'item_name_in_use':
@@ -110,70 +101,64 @@ def handle_box_webhook_event(event_data):
     """
     event = BoxWebhookEvent(event_data)
     try:
-        tokens = BoxUserToken.objects.filter(box_user_id__in=event_data.to_user_ids)
-        for token in tokens:
-            agent = BoxSyncAgent(token)
-            item = agent.get_event_item(event)
-            if item.owned_by['id'] == token.box_user_id:
-                break
+        owner_box_user_id = event.get_owner_box_user_id()
+        box_token = BoxUserToken.objects.get(box_user_id=owner_box_user_id)
+        box_client = Client(util.get_box_oauth(box_token))
+        agave_token = box_token.user.agave_oauth
+        if agave_token.expired:
+            agave_token.refresh()
+        agave_client = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                             token=agave_token.access_token)
+
+        logger.info('Received BoxWebhookEvent=%s for User=%s' % (event, box_token.user))
+        agent = BoxSyncAgent(box_token.user, box_client, agave_client)
         agent.handle_box_event(event)
     except BoxUserToken.DoesNotExist:
         logger.exception('BoxUserToken not found for box_user_ids=%s; '
-                         'unable to handle event %s' % (event_data.to_user_ids, event))
+                         'unable to handle event %s' % (event.to_user_ids, event))
+    except:
+        logger.exception('Unexpected exception handling Box event %s' % event)
 
 
 class BoxWebhookEvent(object):
 
-    def __init__(self, event_data=None, **kwargs):
-        if event_data is not None:
-            for k, v in six.iteritems(event_data):
-                setattr(self, k, v)
-        for k, v in six.iteritems(kwargs):
-            setattr(self, k, v)
+    def __init__(self, event_data):
+        self.event_type = event_data['event_type']
+        self.item_id = event_data['item_id']
+        self.item_type = event_data['item_type']
+        self.item_name = event_data['item_name']
+        self.item_extension = event_data['item_extension']
+        self.item_parent_folder_id = event_data['item_parent_folder_id']
+        self.from_user_id = event_data['from_user_id']
+        self.to_user_ids = event_data['to_user_ids']
 
     def __str__(self):
         return unicode(self).encode('utf-8')
 
     def __unicode__(self):
-        return u'BoxWebhookEvent[event_type="%s" item_type="%s" item_id="%s"]' % (
-            getattr(self, 'event_type', None),
-            getattr(self, 'item_type', None),
-            getattr(self, 'item_id', None)
-        )
+        return u'BoxWebhookEvent[event_type="%s" item_type="%s" ' \
+               u'item_id="%s" item_name="%s"]' % \
+               (self.event_type, self.item_type, self.item_id, self.item_name)
 
-
-class BoxWebhookEvent(object):
-
-    def __init__(self, event_data=None, **kwargs):
-        if event_data is not None:
-            for k, v in six.iteritems(event_data):
-                setattr(self, k, v)
-        for k, v in six.iteritems(kwargs):
-            setattr(self, k, v)
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
-
-    def __unicode__(self):
-        return u'BoxWebhookEvent[event_type="%s" item_type="%s" item_id="%s"]' % (
-            getattr(self, 'event_type', None),
-            getattr(self, 'item_type', None),
-            getattr(self, 'item_id', None)
-        )
+    def get_owner_box_user_id(self):
+        tokens = BoxUserToken.objects.filter(box_user_id__in=self.to_user_ids)
+        if tokens:
+            client = Client(util.get_box_oauth(tokens[0]))
+            if self.item_type == 'file':
+                item = client.file(self.item_id)
+            else:
+                item = client.folder(self.item_id)
+            item = item.get()
+            return item.owned_by['id']
+        return None
 
 
 class BoxSyncAgent(object):
 
-    def __init__(self, token):
-        self._token = token
-        self._oauth = OAuth2(
-            client_id=settings.BOX_APP_CLIENT_ID,
-            client_secret=settings.BOX_APP_CLIENT_SECRET,
-            access_token=self._token.access_token,
-            refresh_token=self._token.refresh_token,
-            store_tokens=self._token.update_tokens
-        )
-        self.client = Client(self._oauth)
+    def __init__(self, user, box_client, agave_client):
+        self.user = user
+        self.box_client = box_client
+        self.agave_client = agave_client
 
     def handle_box_event(self, event):
         try:
@@ -192,39 +177,115 @@ class BoxSyncAgent(object):
 
     def get_event_item(self, event):
         if event.item_type == 'file':
-            item = self.client.file(file_id=event.item_id)
+            item = self.box_client.file(file_id=event.item_id)
         else:
-            item = self.client.folder(folder_id=event.item_id)
+            item = self.box_client.folder(folder_id=event.item_id)
         return item.get()
+
+    def file_download_url(self, box_file):
+        """
+        Get the File download URL instead of downloading the file.
+        Args:
+            box_file: a Box File item
+
+        Returns: A URL to download the File content
+
+        """
+        content_url = box_file.get_url('content')
+        headers = {
+            'Authorization': 'Bearer %s' % self.box_client._oauth.access_token
+        }
+        resp = requests.get(content_url, headers=headers, allow_redirects=False)
+        if resp.status_code == 302:
+            return resp.headers['Location']
 
     def handle_new_item_event(self, event):
         item = self.get_event_item(event)
-        if self.check_item_in_sync_path(item):
-            path = self.get_item_path(item)
-            logger.debug('Create item %s at path %s' % (item.name, path))
+        if util.check_item_in_sync_path(item):
+            download_url = self.file_download_url(item)
+            if download_url:
+                sync_path = util.get_sync_path(item)
+                full_path = '%s/%s' % (self.user.username, sync_path)
+                file_path = '%s/%s' % (full_path, item.name)
+                logger.info('Create item=%s for user=%s at path=%s' %
+                            (item.name, self.user, full_path))
 
+                # ensure full sync_path exists
+                full_path_parts = full_path.split('/')
+                for i in range(1, len(full_path_parts) + 1):
+                    sub_path = '/'.join(full_path_parts[:i])
+                    logger.debug('ensure path exist: %s' % sub_path)
+                    aff = None
+                    try:
+                        aff = AgaveFolderFile.from_path(
+                            self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
+                    except HTTPError:
+                        # mkdir
+                        body = {'action': 'mkdir', 'path': sub_path}
+                        self.agave_client.files.manage(
+                            systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
+                            filePath='/', body=body)
+                        aff = AgaveFolderFile.from_path(
+                            self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
+                    except AgaveException:
+                        logger.exception('Failed to create local path for sync')
+
+                    if aff is not None:
+                        meta = Object.get(id=aff.uuid, ignore=404)
+                        if meta is None:
+                            meta = Object(**aff.to_dict())
+                            meta.save()
+                        else:
+                            meta.update_from_dict(**aff.to_dict())
+
+                # schedule file import
+                import_resp = self.agave_client.files.importData(
+                    systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
+                    filePath=full_path,
+                    fileName=item.name,
+                    urlToIngest=download_url)
+
+                # import is async, so wait for status
+                # TODO If the transfer takes more than 10 mins, this will fail.
+                # TODO If the agave token expires this will fail
+                # TODO If the async_resp.result times out, we should queue another check.
+                try:
+
+                    async_resp = AgaveAsyncResponse(self.agave_client, import_resp)
+                    async_status = async_resp.result(600)
+                    if async_status == 'FAILED':
+                        logger.warning('Box File Transfer failed: %s' % file_path)
+                        # TODO notify the user it failed to transfer!
+                    else:
+                        logger.info('Indexing Box File Transfer %s' % file_path)
+                        aff = AgaveFolderFile.from_path(
+                            self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, file_path)
+                        meta = Object(**aff.to_dict())
+                        meta.save()
+                except TimeoutError:
+                    logger.error('Status check for %s timed out! '
+                                 'Box File Transfers are not indexed!' % file_path)
+                except Error:
+                    logger.exception('Unexpected exception during Box File Transfer. '
+                                     'Box File Indexing incomplete for %s' % file_path)
+            else:
+                logger.error('Unable to get download_url for item=%s for user=%s' %
+                             (item.name, self.user))
 
     def handle_rm_item_event(self, event):
         parent_folder_id = event.parent_folder_id
-        folder = self.client.folder(folder_id=parent_folder_id).get()
-        if self.check_item_in_sync_path(folder):
-            path = self.get_item_path(folder)
+        folder = self.box_client.folder(folder_id=parent_folder_id).get()
+        if util.check_item_in_sync_path(folder):
+            path = util.get_item_path(folder)
             path += '/%s' % folder.name
-            logger.debug('Deleted item %s from path %s' % (event.item_name, path))
+            logger.info(
+                'Deleted item=%s for user=%s from path=%s' %
+                (event.item_name, self.user, path))
 
     def handle_move_item_event(self, event):
         item = self.get_event_item(event)
-        if self.check_item_in_sync_path(item):
-            path = self.get_item_path(item)
-            logger.debug('Moved item %s to path %s' % (event.item_name, path))
-
-    def check_item_in_sync_path(self, item):
-        sync_folder = next((p for p in item.path_collection['entries']
-                            if p['name'] == settings.BOX_SYNC_FOLDER_NAME), None)
-        return sync_folder is not None
-
-    def get_item_path(self, item):
-        return '/'.join([p['name'] for p in item.path_collection['entries']])
-
-    def check_known_item(self, item):
-        pass
+        if util.check_item_in_sync_path(item):
+            path = util.get_item_path(item)
+            logger.info(
+                'Moved item=%s for user=%s to path %s' %
+                (event.item_name, self.user, path))

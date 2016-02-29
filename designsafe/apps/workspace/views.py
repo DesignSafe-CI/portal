@@ -1,22 +1,21 @@
 from agavepy.agave import Agave, AgaveException
-from celery.result import AsyncResult
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, JsonResponse
-
-import logging
-import json
-
-import os
-
+from django.http import HttpResponse
 from designsafe.apps.workspace.tasks import submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
+from dsapi.agave.daos import FileManager, shared_with_me
+from urlparse import urlparse
+import json
+import os
+import six
+import logging
 
 logger = logging.getLogger(__name__)
 
-# Create your views here.
+
 @login_required
 def index(request):
     context = {}
@@ -42,16 +41,66 @@ def call_api(request, service):
             if app_id:
                 data = agave.apps.get(appId=app_id)
             else:
-                publicOnly = request.GET.get('publicOnly')
-                if publicOnly == 'true':
+                public_only = request.GET.get('publicOnly')
+                if public_only == 'true':
                     data = agave.apps.list(publicOnly='true')
                 else:
                     data = agave.apps.list()
 
         elif service == 'files':
             system_id = request.GET.get('system_id')
-            file_path = request.GET.get('file_path')
-            data = agave.files.list(systemId=system_id, filePath=file_path)
+            file_path = request.GET.get('file_path', '')
+            special_dir = None
+            if system_id == 'designsafe.storage.default':
+                if shared_with_me in file_path:
+                    special_dir = shared_with_me
+                    file_path = '/'.join(file_path.split('/')[2:])
+
+                elif file_path == '':
+                    file_path = request.user.username
+
+            file_path = file_path.strip('/')
+
+            if file_path == '':
+                file_path = '/'
+
+            logger.debug('Listing "agave://%s/%s"...' % (system_id, file_path))
+
+            # Agave Files call
+            # data = agave.files.list(systemId=system_id, filePath=file_path)
+
+            # ElasticSearch call
+            try:
+                fm = FileManager(agave)
+                listing = fm.list_path(system_id=system_id,
+                                       path=file_path,
+                                       username=request.user.username,
+                                       special_dir=special_dir,
+                                       is_public=system_id == 'nees.public'
+                                       )
+                data = [f.to_dict() for f in listing]
+
+                # TODO type of "Shared with me" should be "dir" not "folder"
+                for d in data:
+                    d.update((k, 'dir') for k, v in six.iteritems(d)
+                             if k == 'type' and v == 'folder')
+
+                if special_dir:
+                    data = [{
+                        'name': '.',
+                        'path': special_dir + file_path.strip('/'),
+                        'systemId': system_id,
+                        'type': 'dir',
+                    }] + data
+                elif file_path != request.user.username:
+                    data = [{
+                        'name': '.',
+                        'path': file_path,
+                        'systemId': system_id,
+                        'type': 'dir',
+                    }] + data
+            except:
+                data = []
 
         elif service == 'jobs':
             job_id = request.GET.get('job_id')
@@ -60,10 +109,16 @@ def call_api(request, service):
             else:
                 if request.method == 'POST':
                     job_post = json.loads(request.body)
-                    # data = agave.jobs.submit(body=job_post)
-                    # data = submit_job.delay(server, access_token, job_post)
+
+                    # parse agave:// URI into "archiveSystem" and "archivePath"
+                    if ('archivePath' in job_post and
+                            job_post['archivePath'].startswith('agave://')):
+                        parsed = urlparse(job_post['archivePath'])
+                        # strip leading slash
+                        job_post['archivePath'] = parsed.path[1:]
+                        job_post['archiveSystem'] = parsed.netloc
+
                     data = submit_job(request, agave, job_post)
-                    task_id=data.id
                 else:
                     data = agave.jobs.list()
 
@@ -79,3 +134,16 @@ def call_api(request, service):
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
         content_type='application/json')
+
+@login_required
+def interactive2(request, hostname, port, password):
+    logger.info('interactive view called');
+    context = {}
+    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
+    if token_key in request.session:
+        context['session'] = {
+            'agave': json.dumps(request.session[token_key])
+        }
+
+    logger.info('request is: '.format(request))
+    return render(request, 'designsafe/apps/workspace/vnc-desktop2.html', context)

@@ -29,7 +29,7 @@ class AgaveOAuthToken(models.Model):
     @property
     def expired(self):
         current_time = time.time()
-        return self.created + self.expires_in - current_time <= 0
+        return self.created + self.expires_in - current_time - 600 <= 0
 
     @property
     def token(self):
