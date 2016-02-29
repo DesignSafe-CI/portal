@@ -11,5 +11,6 @@ TICKET_CATEGORIES = (
     ('LOGIN', 'Login/Registration'),
     ('DATA_DEPOT', 'Data Depot'),
     ('DISCOVERY_WORKSPACE', 'Discovery Workspace'),
+    ('ECSS', 'ECSS'),
     ('OTHER', 'Other'),
 )
