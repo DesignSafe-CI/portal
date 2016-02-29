@@ -2,9 +2,11 @@
     <div id="db-navbar">
         <div class="search-ph" style="overflow:auto">
             <input type="text" class="form-control input-sm" placeholder="{{'search' | translate}}..." ng-model="query" ng-keydown="search($event, query)" style="width:90%; float:left; margin:0px 0px 5px 0px;">
+            <!--
             <button class="btn btn-info btn-sm" ng-click="toggleAdvSearch()" style="float:right;"> 
             <i class="glyphicon glyphicon-cog"></i> Advanced
             </button>
+            -->
             <div class="search-adv" ng-show="advSearch.show" style="width:50%; margin:0 auto; margin-bottom:20px;">
                 <form name="adv-search">
                     <label for='meta-author'>Author:</label>
@@ -20,11 +22,14 @@
             </div>
             </div>
         </div>
-        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#newfolder" ng-click="touch()">
+        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#newfolder" ng-click="touch()" ng-show="filesystem == 'default'">
             <i class="glyphicon glyphicon-plus"></i> {{"create_folder" | translate}}
         </button>
-        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadfile" ng-click="touch()" style="margin: 5px 0;">
+        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadfile" ng-click="touch()" style="margin: 5px 0;"  ng-show="filesystem == 'default'">
             <i class="glyphicon glyphicon-upload"></i> {{"upload_file" | translate}}
+        </button>
+        <button class="btn btn-default btn-sm" ng-click="refresh()">
+            <i class="glyphicon glyphicon-refresh"></i> {{"Refresh" | translate}}
         </button>
 
         <!-- <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropDownMenuLang" data-toggle="dropdown" aria-expanded="true">

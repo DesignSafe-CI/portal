@@ -74,6 +74,8 @@
             // item = item instanceof Item ? item : new Item();
             item.revert && item.revert();
             $scope.temp = item;
+            $scope.temp.tempModel.name = "";
+            $scope.temp.tempModel.userToShare = "";
         };
 
         $scope.smartClick = function(item, $event) {
@@ -82,22 +84,36 @@
             $rootScope.$broadcast('fileManager:select', {item: item});
             if (item.isFolder()) {
                 return $scope.fileNavigator.folderClick(item);
-            }else if(item.isPreviewable()){
-                $scope.modal('preview');
+            }else{
+                return item.download();
+            }
+            //else if(item.isPreviewable()){
+            //    $scope.modal('preview');
+            //    $scope.temp = item;
+            //    return item.preview().catch(
+            //        function(data){
+            //            item.error = $translate.instant('error_invalid_filename');
+            //        }
+            //    );
+            //}
+
+            // if (item.isEditable()) {
+            //     item.getContent();
+            //     $scope.touch(item);
+            //     return $scope.modal('edit');
+            // }
+        };
+
+        $scope.preview = function(item){
+            item.model.filesystem = $scope.filesystem;
+            if (item.isPreviewable()){
                 $scope.temp = item;
                 return item.preview().catch(
                     function(data){
                         item.error = $translate.instant('error_invalid_filename');
                     }
                 );
-            }else{
-                return item.download();
             }
-            // if (item.isEditable()) {
-            //     item.getContent();
-            //     $scope.touch(item);
-            //     return $scope.modal('edit');
-            // }
         };
 
         $scope.modal = function(id, hide) {
@@ -129,7 +145,7 @@
 
         $scope.showMetadata = function (item) {
             $scope.temp = item;
-
+            $scope.temp.tempModel.metaForm.keywords = "";
             item.showMetadata()
             .then(function(data){
                 console.log('getMetadata: ', data);
@@ -182,6 +198,9 @@
 
         $scope.updateKeywords = function(item){
             item.tempModel.metaForm.keywords = item.tempModel.metaForm.keywords.split(',');
+            item.tempModel.metaForm.keywords = item.tempModel.metaForm.keywords.map(function(o){
+                return $.trim(o);
+            });
             item.updateMetadata().then(function(){
                 $scope.modal('metadata', true);
             }).catch(function(err){
@@ -319,7 +338,6 @@
                 $scope.modal('uploadfile', true);
                 $scope.dropFiles = [];
                 $scope.uploadFileList = [];
-                $scope.$applu();
             }, function(data) {
                 var errorMsg = data.result && data.result.error || $translate.instant('error_uploading_files');
                 $scope.temp.error = errorMsg;
@@ -335,6 +353,10 @@
                 }
             });
             return found;
+        };
+
+        $scope.refresh = function(){
+            $scope.fileNavigator.refresh()
         };
 
         $scope.changeLanguage($scope.getQueryParam('lang'));

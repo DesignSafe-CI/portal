@@ -1,24 +1,10 @@
 <table class="table mb0 table-files">
     <thead>
         <tr>
-            <th ng-if="(filesystem == 'default') || (filesystem != 'default' && (fileNavigator.currentPath.length || fileNavigator.searchResults))">
-                <a href="" ng-click="order('model.name')">
+            <th>
+                <a href="" ng-click="order('model.name')" ng-if="(filesystem == 'default') || (filesystem != 'default' && (fileNavigator.currentPath.length || fileNavigator.searchResults))">
                     {{"name" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.name'" ng-class="{reverse:reverse}"></span>
-                </a>
-            </th>
-            <th class="hidden-xs hidden-sm" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
-                <a href="" ng-click="order('model.size')">
-                    {{"size" | translate}}
-                    <span class="sortorder" ng-show="predicate[1] === 'model.size'" ng-class="{reverse:reverse}"></span>
-                </a>
-            </th>
-            <th class="hidden-sm hidden-xs" ng-class="{'col-md-6': filesystem != 'default'}">
-                <a href="" ng-click="order('model.date')" ng-if="filesystem == 'default'">
-                    <span>
-                        {{"date" | translate}}
-                    </span>
-                    <span class="sortorder" ng-show="predicate[1] === 'model.date'" ng-class="{reverse:reverse}"></span>
                 </a>
                 <a href="" ng-click="order('model.projectTitle')" ng-if="filesystem != 'default'">
                     <span>
@@ -27,17 +13,31 @@
                     <span class="sortorder" ng-show="predicate[1] === 'model.projectTitle'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
+            <th class="">
+                <a href="" ng-click="order('model.date')">
+                    <span class="sortorder" ng-class="{reverse:reverse}">Action</span>
+                </a>
+            </th>
+            <th class="hidden-xs hidden-sm" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
+                <a href="" ng-click="order('model.size')">
+                    {{"size" | translate}}
+                    <span class="sortorder" ng-show="predicate[1] === 'model.size'" ng-class="{reverse:reverse}"></span>
+                </a>
+            </th>
+            <th class="hidden-sm hidden-xs" ng-class="{'col-md-6': filesystem != 'default'}" ng-if="filesystem == 'default'">
+                <a href="" ng-click="order('model.date')">
+                    <span>
+                        {{"date" | translate}}
+                    </span>
+                    <span class="sortorder" ng-show="predicate[1] === 'model.date'" ng-class="{reverse:reverse}"></span>
+                </a>
+            </th>
             <!-- <th class="hidden-sm hidden-xs">
                 <a href="" ng-click="order('model.permissions')">
                     {{"permissions" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.permissions'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th> -->
-            <th class="">
-                <a href="" ng-click="order('model.date')">
-                    <span class="sortorder" ng-class="{reverse:reverse}">Action</span>
-                </a>
-            </th>
         </tr>
     </thead>
     <tbody class="file-item">
@@ -58,8 +58,11 @@
         </tr>
         <!-- <tr ng-repeat="item in fileNavigator.fileList | filter: query | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting> -->
         <tr ng-repeat="item in fileNavigator.fileList | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting && item.model.name !== '.'">
-            <td ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
-                <a fm-draggable data-agave-href = "{{item.model.agavePath}}" href="{{item.model.fullPath()}}" ng-click="smartClick(item, $event)" title="{{item.model.name}} ({{item.model.sizeKb()}}kb)" class="file-folder">
+            <td >
+                <a fm-draggable data-agave-href = "{{item.model.agavePath}}" 
+                   href="{{item.model.fullPath()}}" ng-click="smartClick(item, $event)" 
+                   title="{{item.model.name}} ({{item.model.sizeKb()}}kb)" class="file-folder"
+                   ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
                     <i class="glyphicon glyphicon-folder-close" ng-show="item.model.type === 'dir'"></i>
                     <i class="glyphicon glyphicon-file" ng-show="item.model.type !== 'dir'"></i>
                     <span ng-if = "!fileNavigator.searchResults">
@@ -72,25 +75,10 @@
                         {{"Downloading" | translate}}...
                     </span>
                 </a>
-            </td>
-            <td class="hidden-sm hidden-xs" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
-                {{item.model.sizeKb()}}kb
-            </td>
-             <td class="hidden-sm hidden-xs" ng-class="{'col-md-6': filesystem != 'default'}">
-                <!-- {{item.model.date | formatDate }} -->
-                <span ng-if="filesystem == 'default'">
-                    {{item.model.date}}
-                </span>
                 <a href = "#" ng-if="filesystem != 'default' && !fileNavigator.currentPath.length" ng-click="smartClick(item, $event)" title="{{item.model.projectTitle}}">
                     {{item.model.projectTitle | translate}}
                 </a>
-                <span ng-if="filesystem != 'default' && fileNavigator.currentPath.length">
-                    {{item.model.projectTitle | translate}}
-
             </td>
-            <!-- <td class="hidden-sm hidden-xs">
-                {{item.model.perms.toCode(item.model.type === 'dir'?'d':'-')}}
-            </td> -->
             <td class="">
               <div ng-switch="public">
                 <div ng-switch-when="true">
@@ -100,6 +88,22 @@
                   <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
                 </div>
             </td>
+            <td class="hidden-sm hidden-xs" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
+                {{item.model.sizeKb()}}kb
+            </td>
+             <td class="hidden-sm hidden-xs" ng-class="{'col-md-6': filesystem != 'default'}">
+                <!-- {{item.model.date | formatDate }} -->
+                <span ng-if="filesystem == 'default'">
+                    {{item.model.date}}
+                </span>
+                <span ng-if="filesystem != 'default' && fileNavigator.currentPath.length">
+                    {{item.model.projectTitle | translate}}
+                </span>
+
+            </td>
+            <!-- <td class="hidden-sm hidden-xs">
+                {{item.model.perms.toCode(item.model.type === 'dir'?'d':'-')}}
+            </td> -->
         </tr>
     </tbody>
 </table>

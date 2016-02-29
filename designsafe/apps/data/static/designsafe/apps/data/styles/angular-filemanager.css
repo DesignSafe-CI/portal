@@ -44,6 +44,37 @@
     border: none;
 }
 
+.file-manager .dropdown-action-menu .btn{
+    margin:5px;
+    min-width:170px;
+    padding:0;
+}
+
+.file-manager .dropdown-action-menu .btn.btn-default:hover, .file-manager .dropdown-action-menu .btn.btn-default:focus {
+    background:#eee;
+}
+
+.file-manager .dropdown-action-menu .btn i{
+    float:left;
+    display:inline-block;
+}
+
+.file-manager .dropdown-action-menu .btn .action-label{
+    display:inline-block;
+    padding:10px;
+    background-color:#eee;
+}
+
+.file-manager .dropdown-action-menu .btn.btn-danger .action-label{
+    background-color:#d73f3f;
+}
+.file-manager .dropdown-action-menu .btn span{
+    float:left;
+    display:inline-block;
+    padding-left:10px;
+    padding:6px;
+}
+
 .file-manager *, .file-manager *:focus {
     outline: 0!important;
 }
@@ -565,7 +596,7 @@
 }
 
 .metadata-kw-list {
-    margin-top:10px; 
+    margin-top:10px;
 }
 
 .metadata-kw-item button {
@@ -607,6 +638,10 @@
   position: absolute;
   right: 0;
   top: 0;
+}
+
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+    border: none;
 }
 
 @media (min-width: 768px){
