@@ -157,7 +157,7 @@ def profile_edit(request):
                 _create_ticket_for_pi_request(tas_user)
             else:
                 data['piEligibility'] = tas_user['piEligibility']
-            data['source'] = 'Chameleon'
+            data['source'] = 'DesignSafe'
             tas.save_user(tas_user['id'], data)
             messages.success(request, 'Your profile has been updated!')
 
