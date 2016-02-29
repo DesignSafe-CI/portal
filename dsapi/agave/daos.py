@@ -286,8 +286,11 @@ class FileManager(AgaveObject):
         else:
             if res.hits.total == 0:
                 logger.error('Folder/File to delete not found')
+                res = [Object()]
             else:
                 logger.error('Multiple folder/files found')
+                for r in res:
+                    r.update(deleted = True)
             return res[0]
 
     def get(self, system_id, path , username, is_public):
