@@ -125,6 +125,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
+    'designsafe.middleware.DesignSafeTermsMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
@@ -145,11 +146,11 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
                 'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
+                'designsafe.context_processors.messages',
                 'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],

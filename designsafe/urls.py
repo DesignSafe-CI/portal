@@ -30,7 +30,7 @@ urlpatterns = patterns(
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
     # terms-and-conditions
-    url(r'^terms/', include('termsandconditions.urls', namespace='terms')),
+    url(r'^terms/', include('termsandconditions.urls')),
 
     # api urls, just for the samples.
     url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
