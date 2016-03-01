@@ -19,8 +19,8 @@
         $scope.form = {model: {}};
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [
-          'parameters',
           'inputs',
+          'parameters',
           {
             type: 'fieldset',
             title: 'Job details',
