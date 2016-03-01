@@ -11,7 +11,7 @@
             $scope.predicate[1] = predicate;
         };
 
-        $scope.fileNavigator = new FileNavigator($scope.filesystem);
+        $scope.fileNavigator = new FileNavigator($scope.filesystem, $scope.path);
 
         $rootScope.select = function(item, temp) {
             temp.tempModel.path = item.model.fullPath().split('/');
