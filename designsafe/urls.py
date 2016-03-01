@@ -18,6 +18,9 @@ from django.conf import settings
 from django.conf.urls import include, url, patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.generic import RedirectView
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 urlpatterns = patterns('',
 
@@ -34,11 +37,29 @@ urlpatterns = patterns('',
     # auth
     url(r'^account/', include('designsafe.apps.accounts.urls',
         namespace='designsafe_accounts')),
+    url(r'^register/$', RedirectView.as_view(
+        pattern_name='designsafe_accounts:register')),
+
+    # need a fancier redirect here to pass the code param along
+    url(r'^activate/(?:(?P<code>.+)/)?$',
+        lambda x, code: HttpResponseRedirect(
+            reverse('designsafe_accounts:email_confirmation',
+                    args=[code] if code else None)
+        )),
+    url(r'^password-reset/(?:(?P<code>.+)/)?$',
+        lambda x, code: HttpResponseRedirect(
+            reverse('designsafe_accounts:password_reset',
+                    args=[code] if code else None)
+        )),
+
+    # box
     url(r'^account/applications/box/', include('designsafe.apps.box_integration.urls',
         namespace='box_integration')),
+
+    # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
     url(r'^login/$', 'designsafe.apps.auth.views.login_options', name='login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout', { 'next_page': '/' },
+    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'},
         name='logout'),
 
     # help

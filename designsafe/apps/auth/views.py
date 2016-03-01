@@ -126,7 +126,10 @@ def agave_oauth_callback(request):
             error = request.GET['error']
             logger.error('Authorization failed: %s' % error)
 
-        messages.error(request, 'Authentication failed')
+        messages.error(
+            request, 'Authentication failed! Did you forget your password? '
+                     '<a href="%s">Click here</a> to reset your password.' %
+                     reverse('designsafe_accounts:password_reset'))
         return HttpResponseRedirect(reverse('designsafe_auth:login'))
 
     if 'next' in request.session:

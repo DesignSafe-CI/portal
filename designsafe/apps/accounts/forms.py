@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.util import ErrorList
+from django.utils.translation import ugettext as _
 from pytas.http import TASClient
 import re
 import logging
@@ -60,14 +61,19 @@ def get_country_choices():
 
 class EmailConfirmationForm(forms.Form):
     code = forms.CharField(
-            label='Enter Your Verification Code',
+            label='Enter Your Activation Code',
             required=True,
             error_messages={
-                'required': 'Please enter the verification code you received via email.'
+                'required': 'Please enter the activation code you received via email.'
             })
 
     username = forms.CharField(
-            label='Enter Your Chameleon Username',
+            label='Enter Your TACC Username',
+            required=True)
+
+    password = forms.CharField(
+            widget=forms.PasswordInput,
+            label='Enter Your TACC Password',
             required=True)
 
 
@@ -107,22 +113,24 @@ def check_password_policy(user, password, confirmPassword):
 
     return True, None
 
+
 class PasswordResetRequestForm(forms.Form):
-    username = forms.CharField(label='Enter Your Chameleon Username', required=True)
+    username = forms.CharField(label='Enter Your TACC Username', required=True)
+
 
 class PasswordResetConfirmForm(forms.Form):
-    username = forms.CharField(label='Enter Your Chameleon Username', required=True)
     code = forms.CharField(label='Reset Code', required=True)
-    password = forms.CharField(widget=forms.PasswordInput, label='Password', required=True)
+    username = forms.CharField(label='Enter Your TACC Username', required=True)
+    password = forms.CharField(widget=forms.PasswordInput, label='New Password', required=True)
     confirmPassword = forms.CharField(
         widget=forms.PasswordInput,
-        label='Confirm Password',
+        label='Confirm New Password',
         required=True,
         help_text='Passwords must meet the following criteria:<ul>'
-            '<li>Must not contain your username or parts of your full name;</li>'
-            '<li>Must be a minimum of 8 characters in length;</li>'
-            '<li>Must contain characters from at least three of the following: '
-            'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+                  '<li>Must not contain your username or parts of your full name;</li>'
+                  '<li>Must be a minimum of 8 characters in length;</li>'
+                  '<li>Must contain characters from at least three of the following: '
+                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -250,7 +258,6 @@ class UserRegistrationForm(forms.Form):
         password = self.cleaned_data.get('password')
         confirmPassword = self.cleaned_data.get('confirmPassword')
 
-
         if username and firstName and lastName and password and confirmPassword:
             valid, error_message = check_password_policy(self.cleaned_data,
                                                          password,
@@ -260,12 +267,20 @@ class UserRegistrationForm(forms.Form):
                 self.add_error('confirmPassword', '')
                 raise forms.ValidationError(error_message)
 
-    def save(self):
+    def save(self, source='DesignSafe', pi_eligibility='Ineligible'):
         data = self.cleaned_data
-        data['source'] = 'DesignSafe'
+        data['source'] = source
+        data['piEligibility'] = pi_eligibility
 
         safe_data = data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
         logger.info('Attempting new user registration: %s' % safe_data)
 
         return TASClient().save_user(None, data)
+
+
+class NEESAccountMigrationForm(forms.Form):
+
+    email_address = forms.EmailField(label=_('Your NEEShub Email Address'),
+                                     help_text=_('Enter the email address associated '
+                                                 'with your NEEShub account.'))

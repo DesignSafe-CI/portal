@@ -77,6 +77,8 @@
             $scope.temp = item;
             $scope.temp.tempModel.name = "";
             $scope.temp.tempModel.userToShare = "";
+            $scope.uploadFileList = [];
+            $scope.dropFiles = [];
         };
 
         $scope.smartClick = function(item, $event) {
