@@ -2,6 +2,7 @@ from designsafe.apps.auth.models import DsUser
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms.util import ErrorList
+from django.utils.translation import ugettext as _
 from pytas.http import TASClient
 import re
 import logging
@@ -82,10 +83,10 @@ def get_country_choices():
 
 class EmailConfirmationForm(forms.Form):
     code = forms.CharField(
-            label='Enter Your Verification Code',
+            label='Enter Your Activation Code',
             required=True,
             error_messages={
-                'required': 'Please enter the verification code you received via email.'
+                'required': 'Please enter the activation code you received via email.'
             })
 
     username = forms.CharField(
@@ -94,7 +95,7 @@ class EmailConfirmationForm(forms.Form):
 
     password = forms.CharField(
             widget=forms.PasswordInput,
-            label='Password',
+            label='Enter Your TACC Password',
             required=True)
 
 
@@ -134,22 +135,24 @@ def check_password_policy(user, password, confirmPassword):
 
     return True, None
 
+
 class PasswordResetRequestForm(forms.Form):
     username = forms.CharField(label='Enter Your TACC Username', required=True)
 
+
 class PasswordResetConfirmForm(forms.Form):
-    username = forms.CharField(label='Enter Your TACC Username', required=True)
     code = forms.CharField(label='Reset Code', required=True)
-    password = forms.CharField(widget=forms.PasswordInput, label='Password', required=True)
+    username = forms.CharField(label='Enter Your TACC Username', required=True)
+    password = forms.CharField(widget=forms.PasswordInput, label='New Password', required=True)
     confirmPassword = forms.CharField(
         widget=forms.PasswordInput,
-        label='Confirm Password',
+        label='Confirm New Password',
         required=True,
         help_text='Passwords must meet the following criteria:<ul>'
-            '<li>Must not contain your username or parts of your full name;</li>'
-            '<li>Must be a minimum of 8 characters in length;</li>'
-            '<li>Must contain characters from at least three of the following: '
-            'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+                  '<li>Must not contain your username or parts of your full name;</li>'
+                  '<li>Must be a minimum of 8 characters in length;</li>'
+                  '<li>Must contain characters from at least three of the following: '
+                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -178,13 +181,16 @@ class UserProfileForm(forms.Form):
     lastName = forms.CharField(label='Last name')
     email = forms.EmailField()
     phone = forms.CharField()
-    institutionId = forms.ChoiceField(label='Institution', choices=(),
+    institutionId = forms.ChoiceField(
+        label='Institution', choices=(),
         error_messages={'invalid': 'Please select your affiliated institution'})
     departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(label='Country of residence', choices=(),
+    countryId = forms.ChoiceField(
+        label='Country of residence', choices=(),
         error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(label='Country of citizenship', choices=(),
+    citizenshipId = forms.ChoiceField(
+        label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
     ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
     gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
@@ -194,7 +200,7 @@ class UserProfileForm(forms.Form):
         self.fields['institutionId'].choices = get_institution_choices()
 
         data = self.data or self.initial
-        if (data is not None and 'institutionId' in data and data['institutionId']):
+        if data is not None and 'institutionId' in data and data['institutionId']:
             self.fields['departmentId'].choices = get_department_choices(
                 data['institutionId'])
 
@@ -233,35 +239,40 @@ class UserRegistrationForm(forms.Form):
     lastName = forms.CharField(label='Last name')
     email = forms.EmailField()
     phone = forms.CharField()
-    institutionId = forms.ChoiceField(label='Institution', choices=(),
+    institutionId = forms.ChoiceField(
+        label='Institution', choices=(),
         error_messages={'invalid': 'Please select your affiliated institution'})
     departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
-    institution = forms.CharField(label='Institution name',
+    institution = forms.CharField(
+        label='Institution name',
         help_text='If your institution is not listed, please provide the name of the '
                   'institution as it should be shown here.',
         required=False,
                                       )
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(label='Country of residence', choices=(),
+    countryId = forms.ChoiceField(
+        label='Country of residence', choices=(),
         error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(label='Country of citizenship', choices=(),
+    citizenshipId = forms.ChoiceField(
+        label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
 
     ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
     gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
 
-    username = forms.RegexField(label='Username',
+    username = forms.RegexField(
+        label='Username',
         help_text='Usernames must be 3-8 characters in length, start with a letter, and '
-            'can contain only lowercase letters, numbers, or underscore.',
+                  'can contain only lowercase letters, numbers, or underscore.',
         regex='^[a-z][a-z0-9_]{2,7}$')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
-    confirmPassword = forms.CharField(widget=forms.PasswordInput,
-        label='Confirm Password',
+    confirmPassword = forms.CharField(
+        label='Confirm Password', widget=forms.PasswordInput,
         help_text='Passwords must meet the following criteria:<ul>'
-            '<li>Must not contain your username or parts of your full name;</li>'
-            '<li>Must be a minimum of 8 characters in length;</li>'
-            '<li>Must contain characters from at least three of the following: '
-            'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+                  '<li>Must not contain your username or parts of your full name;</li>'
+                  '<li>Must be a minimum of 8 characters in length;</li>'
+                  '<li>Must contain characters from at least three of the following: '
+                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
@@ -269,7 +280,7 @@ class UserRegistrationForm(forms.Form):
         self.fields['institutionId'].choices += (('-1', 'My Institution is not listed'),)
 
         data = self.data or self.initial
-        if (data is not None and 'institutionId' in data and data['institutionId']):
+        if data is not None and 'institutionId' in data and data['institutionId']:
             self.fields['departmentId'].choices = get_department_choices(data['institutionId'])
 
         self.fields['countryId'].choices = get_country_choices()
@@ -281,7 +292,6 @@ class UserRegistrationForm(forms.Form):
         lastName = self.cleaned_data.get('lastName')
         password = self.cleaned_data.get('password')
         confirmPassword = self.cleaned_data.get('confirmPassword')
-
 
         if username and firstName and lastName and password and confirmPassword:
             valid, error_message = check_password_policy(self.cleaned_data,
@@ -301,7 +311,7 @@ class UserRegistrationForm(forms.Form):
         safe_data['password'] = safe_data['confirmPassword'] = '********'
         logger.info('Attempting new user registration: %s' % safe_data)
 
-        tas_user=TASClient().save_user(None, data)
+        tas_user = TASClient().save_user(None, data)
 
         UserModel = get_user_model()
         try:
@@ -321,3 +331,11 @@ class UserRegistrationForm(forms.Form):
                 gender=data['gender']
                 )
             demographics.save()
+        return TASClient().save_user(None, data)
+
+
+class NEESAccountMigrationForm(forms.Form):
+
+    email_address = forms.EmailField(label=_('Your NEEShub Email Address'),
+                                     help_text=_('Enter the email address associated '
+                                                 'with your NEEShub account.'))

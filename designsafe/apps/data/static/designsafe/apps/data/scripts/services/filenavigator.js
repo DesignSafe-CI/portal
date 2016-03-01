@@ -1,14 +1,22 @@
 (function(angular) {
     "use strict";
     angular.module('FileManagerApp').service('fileNavigator', [
-        '$http', '$q', 'fileManagerConfig', 'item', function ($http, $q, fileManagerConfig, Item) {
+        '$http', '$q', '$rootScope','fileManagerConfig', 'item', function ($http, $q, $rootScope, fileManagerConfig, Item) {
 
         $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-        var FileNavigator = function(filesystem) {
+        var FileNavigator = function(filesystem, path) {
             this.requesting = false;
             this.fileList = [];
-            this.currentPath = [];
+
+             if (path === '/'){
+              this.currentPath = [];
+            } else {
+              var temp = path.split('/');
+              temp.splice(0,1);
+              this.currentPath = temp;
+            }
+
             this.history = [];
             this.error = '';
             this.filesystem = filesystem;
@@ -108,6 +116,7 @@
             var path = self.currentPath.join('/');
 
             return self.list(self.filesystem).then(function(data) {
+                $rootScope.$broadcast('angular-filemanager', self.filesystem, decodeURIComponent(path));
                 self.fileList = (data.result || []).map(function(file) {
                     return new Item(file, self.currentPath, self.filesystem);
                 });

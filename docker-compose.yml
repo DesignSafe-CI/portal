@@ -6,7 +6,6 @@ django:
   env_file: designsafe.env
   links:
     - redis:redis
-    - worker:worker
   volumes:
     - .:/portal
   ports:

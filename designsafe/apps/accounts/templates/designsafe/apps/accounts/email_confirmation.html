@@ -2,24 +2,23 @@
 
 {% load bootstrap3 %}
 
-{% block title %}Email Confirmation{% endblock %}
+{% block title %}Account Activation{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2>Email Confirmation</h2>
+    <h1>Account Activation</h1>
 
     <p class="lead">
-      Almost finished! Enter the verification code that you received via email
-      and the username you registered with to activate your account.
+      Almost finished! Enter the activation code that you received via email
+      and the username and password you registered with to activate your account.
     </p>
 
     <form method="post">
       {% csrf_token %}
-
       {% bootstrap_form form %}
 
       <div class="form-group">
-        <button type="submit" class="btn btn-success">Verify</button>
+        <button type="submit" class="btn btn-success">Activate</button>
       </div>
     </form>
 </div>

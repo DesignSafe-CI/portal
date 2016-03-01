@@ -12,8 +12,10 @@ urlpatterns = patterns(
     url(r'^applications/$', 'manage_applications', name='manage_applications'),
     url(r'^notifications/settings/$', 'manage_notifications', name='manage_notifications'),
     url(r'^register/$', 'register', name='register'),
-    url(r'^password-reset/$', 'password_reset', name='password_reset'),
-    url(r'^activate/$', 'email_confirmation', name='email_confirmation'),
+    url(r'^migrate-nees-account/(?:(?P<step>\d+)/)?$', 'nees_migration',
+        name='nees_migration'),
+    url(r'^password-reset/(?:(?P<code>.+)/)?$', 'password_reset', name='password_reset'),
+    url(r'^activate/(?:(?P<code>.+)/)?$', 'email_confirmation', name='email_confirmation'),
     url(r'^departments\.json$', 'departments_json', name='departments_json'),
 )
 

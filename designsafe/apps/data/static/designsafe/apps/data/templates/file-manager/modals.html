@@ -329,7 +329,7 @@
         <div class="modal-body" ng-switch-when="false">
           <div class="metadata-form">
             <form novalidate name="meta-form">
-              <pre>Type in a comma separated list of keywords to add</pre>
+              <p class="alert alert-info">Type in a comma separated list of keywords to add</p>
               <label for="meta-keywords">Keywords:</label>
               <input class="form-control" type="text" ng-model="temp.tempModel.metaForm.keywords" name="meta-keywords">
 
@@ -388,12 +388,23 @@
                   <span aria-hidden="true">&times;</span>
                   <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">{{'Share' | translate}}</h4>
+              <h4 class="modal-title">{{'Share' | translate}} <code>{{temp.model.fullPath()}}</code></h4>
             </div>
             <div class="modal-body">
-              <label class="radio">{{'User' | translate}} <b>{{temp.model.name}}</b></label>
+              <p class="alert alert-info">Type in the username to share this file/folder with. Please, make sure the username is correct.</p>
+              <label class="radio">{{'User' | translate}} </label>
               <input class="form-control" ng-model="temp.tempModel.userToShare" autofocus="autofocus">
-              <pre>Type in the username to share this file/folder with. Please, make sure the username is correct.</pre>
+              <h4 class="">Permissions:</p>
+              <ul class="">
+                <li ng-repeat="p in temp.model.permissions">
+                    <b>{{p.username}}<b>  
+                    <ul>
+                        <li ng-repeat="(pkey, pval) in p.permission">
+                            {{pkey}} : {{pval}}
+                        </li>
+                    </ul>
+                </li>
+              </ul>
 
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>

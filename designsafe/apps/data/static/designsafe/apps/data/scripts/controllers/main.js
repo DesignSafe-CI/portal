@@ -1,7 +1,7 @@
 (function(window, angular, $) {
     "use strict";
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-    '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$attrs',   function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
+    '$scope', '$translate', '$cookies', '$location', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$attrs',   function($scope, $translate, $cookies, $location, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
         $scope.config = fileManagerConfig;
         $scope.appName = fileManagerConfig.appName;
 
@@ -12,9 +12,10 @@
             $scope.predicate[1] = predicate;
         };
 
+        $scope.path = $location.$$path;
         $scope.query = '';
         $scope.temp = new Item($scope.filesystem);
-        $scope.fileNavigator = new FileNavigator($scope.filesystem);
+        $scope.fileNavigator = new FileNavigator($scope.filesystem, $scope.path);
         $scope.fileUploader = FileUploader;
         $scope.uploadFileList = [];
         $scope.viewTemplate = $cookies.viewTemplate || 'main-table.html';
@@ -145,7 +146,9 @@
 
         $scope.showMetadata = function (item) {
             $scope.temp = item;
-            $scope.temp.tempModel.metaForm.keywords = "";
+            if($scope.temp.tempModel && $scope.temp.tempModel.metaForm){
+                $scope.temp.tempModel.metaForm.keywords = "";
+            }
             item.showMetadata()
             .then(function(data){
                 console.log('getMetadata: ', data);
@@ -362,5 +365,10 @@
         $scope.changeLanguage($scope.getQueryParam('lang'));
         $scope.isWindows = $scope.getQueryParam('server') === 'Windows';
         $scope.fileNavigator.refresh($scope.filesystem);
+
+        $rootScope.$on('angular-filemanager', function(event, systemId, newPath) {
+          console.log('Changed to agave://' + systemId + "/" + newPath);
+          $location.url(newPath);
+        });
     }]);
 })(window, angular, jQuery);
