@@ -1,4 +1,4 @@
-from designsafe.apps.auth.models import DsUser
+from designsafe.apps.accounts.models import DesignSafeProfile
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms.util import ErrorList
@@ -313,10 +313,13 @@ class UserRegistrationForm(forms.Form):
 
         tas_user = TASClient().save_user(None, data)
 
+        # extended profile information
         UserModel = get_user_model()
         try:
             # Check if the user exists in Django's local database
             user = UserModel.objects.get(username=data['username'])
+            logger.warning('On TAS registration, local user already existed? '
+                           'user=%s' % user)
         except UserModel.DoesNotExist:
             # Create a user in Django's local database
             user = UserModel.objects.create_user(
@@ -325,13 +328,14 @@ class UserRegistrationForm(forms.Form):
                 last_name=tas_user['lastName'],
                 email=tas_user['email'],
                 )
-            demographics = DsUser(
+            ds_profile = DesignSafeProfile(
                 user=user,
                 ethnicity=data['ethnicity'],
                 gender=data['gender']
                 )
-            demographics.save()
-        return TASClient().save_user(None, data)
+            ds_profile.save()
+
+        return tas_user
 
 
 class NEESAccountMigrationForm(forms.Form):

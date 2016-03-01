@@ -2,6 +2,7 @@ from django.db import models
 from django.db import connections, DatabaseError
 import logging
 import six
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -36,3 +37,9 @@ class NEESUser(object):
         else:
             logger.error('Database connection for `nees_users` is not defined')
             raise DatabaseError('The NEES users database connection is unavailable.')
+
+
+class DesignSafeProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    ethnicity = models.CharField(max_length=255)
+    gender = models.CharField(max_length=255)

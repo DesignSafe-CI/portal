@@ -9,17 +9,16 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('designsafe_auth', '0002_auto_20160209_0427'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DsUser',
+            name='DesignSafeProfile',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('ethnicity', models.CharField(max_length=50)),
-                ('gender', models.CharField(max_length=7)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('ethnicity', models.CharField(max_length=255)),
+                ('gender', models.CharField(max_length=255)),
+                ('user', models.OneToOneField(related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

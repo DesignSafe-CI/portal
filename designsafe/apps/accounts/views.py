@@ -2,12 +2,11 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from designsafe.apps.auth.models import DsUser
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.accounts.models import NEESUser
+from designsafe.apps.accounts.models import NEESUser, DesignSafeProfile
 
 from pytas.http import TASClient
 from pytas.models import User as TASUser
@@ -273,9 +272,8 @@ def register(request):
 @login_required
 def profile_edit(request):
     tas = TASClient()
-    tas_user = tas.get_user(username=request.user)
-    UserModel = get_user_model()
-    user = UserModel.objects.get(username=request.user.username)
+    user = request.user
+    tas_user = tas.get_user(username=user.username)
 
     if request.method == 'POST':
         form = forms.UserProfileForm(request.POST, initial=tas_user)
@@ -292,18 +290,18 @@ def profile_edit(request):
             messages.success(request, 'Your profile has been updated!')
 
             try:
-                dsuser = DsUser.objects.get(user=user)
-                dsuser.ethnicity = data['ethnicity']
-                dsuser.gender = data['gender']
-                dsuser.save()
+                ds_profile = user.profile
+                ds_profile.ethnicity = data['ethnicity']
+                ds_profile.gender = data['gender']
+                ds_profile.save()
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
-                demographics = DsUser(
+                ds_profile = DesignSafeProfile(
                     user=user,
                     ethnicity=data['ethnicity'],
                     gender=data['gender']
                     )
-                demographics.save()
+                ds_profile.save()
 
             return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
     else:
@@ -312,6 +310,7 @@ def profile_edit(request):
             tas_user['gender'] = user.profile.gender
         except ObjectDoesNotExist:
             pass
+
         form = forms.UserProfileForm(initial=tas_user)
 
     context = {
@@ -430,12 +429,6 @@ def email_confirmation(request, code=None):
                 tas = TASClient()
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
-                    get_user_model().objects.create_user(
-                        username=username,
-                        first_name=user['firstName'],
-                        last_name=user['lastName'],
-                        email=user['email']
-                        )
                     messages.success(request,
                                      'Congratulations, your account has been activated! '
                                      'You can now log in to DesignSafe-CI.')
