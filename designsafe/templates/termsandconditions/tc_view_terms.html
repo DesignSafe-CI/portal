@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <section title="Terms and Conditions" data-role="content">
+        <h1>{{ terms.name|safe }}</h1>
+
+        <div>
+            {{ terms.text|safe }}
+        </div>
+    </section>
+</div>
+{% endblock %}
