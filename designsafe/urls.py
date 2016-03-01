@@ -22,17 +22,23 @@ from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
 
+    # terms-and-conditions
+    url(r'^terms/', include('termsandconditions.urls', namespace='terms')),
+
     # api urls, just for the samples.
     url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
-    url(r'^rw/workspace/', include('designsafe.apps.workspace.urls', namespace='designsafe_workspace')),
+    url(r'^rw/workspace/', include('designsafe.apps.workspace.urls',
+                                   namespace='designsafe_workspace')),
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
-    url(r'^notifications/', include('designsafe.apps.notifications.urls', namespace='designsafe_notifications')),
+    url(r'^notifications/', include('designsafe.apps.notifications.urls',
+                                    namespace='designsafe_notifications')),
 
     # auth
     url(r'^account/', include('designsafe.apps.accounts.urls',
