@@ -34,9 +34,18 @@ class ListingsMixin(object):
                       is_public = self.is_public)
         response = [o.to_dict() for o in l]
         if response:
+            #If there are thing in the folder
             status = 200
         else:
-            status = 404
+            #If the folder is empty check if the metadata exists
+            meta_obj, ret = mgr.get(system_id = self.filesystem,
+                    path = self.file_path,
+                    username = request.user.username,
+                    is_public = self.is_public)
+            if meta_obj:
+                status = 200
+            else:
+                status = 404
         return self.render_to_json_response(response, status = status)
 
 

@@ -327,7 +327,10 @@ class FileManager(AgaveObject):
                     'project': project,
                     'experiments': experiments
                 }
-            meta_obj = meta
+                meta_obj = meta
+            else:
+                meta_obj = None
+                ret = {}
         else:
             res, search = Object().search_exact_path(
                            system_id = system_id,
@@ -337,6 +340,9 @@ class FileManager(AgaveObject):
             if res.hits.total:
                 ret = res[0].to_dict()
                 meta_obj = res[0]
+            else:
+                meta_obj = None
+                ret = {}
         return meta_obj, ret
 
     def search_meta(self, q, filesystem, username, is_public = False):
