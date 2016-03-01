@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 sekizai_tags staticfiles %}
+
+{% block title %}Migrate NEES Account{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">NEES Account Migration</h1>
+
+    <p class="lead">
+        We found the following NEEShub user matching the email address
+        <b>{{email_address}}</b>:
+    </p>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <td><b>Name</b></td>
+            <td>
+                {{nees_user_match.0.givenName}}
+                {{nees_user_match.0.middleName}}
+                {{nees_user_match.0.surname}}
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>Email</b></td>
+            <td>{{nees_user_match.0.email}}</td>
+            <td>
+                {% if tas_by_email %}
+                <div class="alert alert-warning">
+                    <h4>A TACC User Account already exists with this email address!</h4>
+                    <p>
+                        If you already have an account you
+                        <a href="{% url 'login' %}">can log in now.</a>
+                    </p>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td><b>NEEShub Username</b></td>
+            <td>{{nees_user_match.0.username}}</td>
+            <td>
+                {% if tas_by_username %}
+                <div class="alert alert-warning">
+                    <h4>A TACC User Account already exists with this username!</h4>
+                    <p>
+                        If you already have an account you <a href="{% url 'login' %}">can
+                        log in now.</a> If you are sure you do not already have a TACC
+                        account, then you will need to choose a different username in the
+                        next step.
+                    </p>
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <form method="post"  action="{% url 'designsafe_accounts:nees_migration' '2' %}">
+        {% csrf_token %}
+        <input name="email_address" value="{{email_address}}" type="hidden">
+        <button class="btn btn-primary" type="submit">Yes, Migrate Account</button>
+        <a class="btn btn-link" href="{% url 'designsafe_accounts:nees_migration' %}">Cancel</a>
+    </form>
+
+</div>
+{% endblock %}

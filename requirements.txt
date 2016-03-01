@@ -57,4 +57,4 @@ elasticsearch>=2.0.0,<3.0.0
 elasticsearch-dsl>=2.0.0,<3.0.0
 
 # pytas
--e git+https://bitbucket.org/taccaci/pytas.git@master#egg=pytas-1.0.4
+-e git+https://bitbucket.org/taccaci/pytas.git@v1.1.0#egg=pytas-1.1.0

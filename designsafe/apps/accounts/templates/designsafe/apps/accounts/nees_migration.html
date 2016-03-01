@@ -10,17 +10,18 @@
 
     <p class="lead">
         <a href="https://nees.org/">NEEShub</a> users can use our account migration wizard
-        to easily migration their NEEShub account to DesignSafe-CI. We will guide you
-        through the steps to create an account, migrate your profile, and retain ownership
-        of your data. Welcome to DesignSafe-CI!
+        to easily migrate their NEEShub account to a TACC Account for DesignSafe-CI. We
+        will guide you through the steps to create an account, migrate your profile, and
+        retain ownership of your data. Welcome to DesignSafe-CI!
     </p>
 
     <p class="lead">
         To begin, please enter the email address associated with your NEEShub account.
     </p>
 
-    <form method="post">
+    <form method="post" action="{% url 'designsafe_accounts:nees_migration' '1' %}">
         {% csrf_token %}
+        {% bootstrap_form form %}
         <button class="btn btn-primary" type="submit">Begin Account Migration</button>
         <a class="btn btn-link" href="/">Cancel</a>
         <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>

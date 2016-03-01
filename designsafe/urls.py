@@ -41,9 +41,15 @@ urlpatterns = patterns('',
         pattern_name='designsafe_accounts:register')),
 
     # need a fancier redirect here to pass the code param along
-    url(r'^activate/(?P<code>.+)/$',
+    url(r'^activate/(?:(?P<code>.+)/)?$',
         lambda x, code: HttpResponseRedirect(
-            reverse('designsafe_accounts:email_confirmation', args=[code])
+            reverse('designsafe_accounts:email_confirmation',
+                    args=[code] if code else None)
+        )),
+    url(r'^password-reset/(?:(?P<code>.+)/)?$',
+        lambda x, code: HttpResponseRedirect(
+            reverse('designsafe_accounts:password_reset',
+                    args=[code] if code else None)
         )),
 
     # box
