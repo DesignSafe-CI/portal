@@ -366,6 +366,10 @@ EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@designsafe-ci.org')
 MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe-ci.org')
 
+###
+# Terms and Conditions
+#
+DEFAULT_TERMS_SLUG = 'terms'
 
 ###
 # Pipeline
