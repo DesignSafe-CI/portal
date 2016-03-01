@@ -183,6 +183,10 @@ else:
         }
     }
 
+from nees_settings import NEES_USER_DATABASE
+if NEES_USER_DATABASE['NAME']:
+    DATABASES['nees_users'] = NEES_USER_DATABASE
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

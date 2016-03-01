@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 sekizai_tags staticfiles %}
+
+{% block title %}Migrate NEES Account{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">NEES Account Migration</h1>
+
+    <p class="lead">
+        We have pre-filled as many fields as possible from the NEEShub user profile you
+        selected to migrate. Please complete any missing data and submit.
+    </p>
+
+    <form method="post" action="{% url 'designsafe_accounts:nees_migration' '3' %}">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button class="btn btn-primary" type="submit">Complete Account Migration</button>
+        <a class="btn btn-link" href="{% url 'designsafe_accounts:nees_migration' %}">Cancel</a>
+    </form>
+</div>
+{% addtoblock 'js' %}
+<script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/institution_departments.js' %}"></script>
+<script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/new_institution.js' %}"></script>
+{% endaddtoblock %}
+{% endblock %}
