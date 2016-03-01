@@ -17,7 +17,11 @@
               <dd>{{ x.fields.event_type }}</dd>
               <dt>Time</dt>
               <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
-
+              <div ng-repeat="(key, val) in x.fields.body.html">
+                <dt ng-if="val.label">{{val.label}}</dt>
+                <dd ng-if="val.label">{{val.value}}</dt>
+              </div>
+              <!--
               <div ng-if="x.fields.event_type=='job'">
                 <dt>Job name</dt>
                 <dd>{{x.fields.body.job_name}}</dd>
@@ -28,7 +32,7 @@
                 <dt>Archive path</dt>
                 <dd>{{x.fields.body.archive_path}}</dd>
               </div>
-
+                -->
               <dt>Raw message</dt>
               <dd>
                 <p><button ng-click="showRawMessage = !showRawMessage" type="button" name="toggle-raw-message" class="btn btn-xs btn-default">Click to view</button></p>

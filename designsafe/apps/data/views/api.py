@@ -112,12 +112,20 @@ class ShareView(BasePrivateJSONView):
         user = body.get('user', None)
         permission = body.get('permission', None)
 
-        DataEvent.send_generic_event({'action': 'share_start', 
-                  'path': self.file_path, 
-                  'username_to': user,
+        DataEvent.send_generic_event(
+                  {
                   'username_from': request.user.username,
+                  'username_to': user,
                   'permission': permission,
-                  'message': 'Your files are being shared.'},
+                  'html':{
+                      'action': {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
+                      'path': {'label': 'View Files', 'value': '/data/my' + self.file_path}, 
+                      'username_to': { 'label': 'Shared with', 'value': user},
+                      'permission': { 'label': 'Permissions set', 'value': permission},
+                      'message': {'label': 'Message' , 'value': 'Your files are being shared.'},
+                      'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path}
+                      }
+                  },
                   [request.user.username])
 
         tasks.share.delay(system_id = self.filesystem,

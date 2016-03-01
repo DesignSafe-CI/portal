@@ -38,6 +38,7 @@ class BaseView(AgaveMixin, View):
             return HttpResponse(e.message, status = 400)
 
     def set_context_props(self, request, **kwargs):
+        #import ipdb; ipdb.set_trace();
         #TODO: Getting the filesystem should check in which system is the user in or requesting
         filesystem = kwargs.get('filesystem', self.filesystem)
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
