@@ -32,11 +32,12 @@ class ListingsMixin(object):
                       username = request.user.username,
                       special_dir = self.special_dir,
                       is_public = self.is_public)
-        if l:
+        response = [o.to_dict() for o in l]
+        if response:
             status = 200
         else:
             status = 404
-        return self.render_to_json_response([o.to_dict() for o in l], status = status)
+        return self.render_to_json_response(response, status = status)
 
 
 class ListingsView(ListingsMixin, BasePrivateJSONView):
