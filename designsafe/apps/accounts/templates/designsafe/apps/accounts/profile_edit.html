@@ -1,51 +1,15 @@
-{% extends "base.html" %}
+{% extends "designsafe/apps/accounts/base.html" %}
 {% load bootstrap3 static %}
 {% block title %}Edit Profile{% endblock %}
 {% block content %}
 <div class="container">
-  <h2>Edit Profile <small>| {{ user.username }} </small></h2>
+  <h1>Edit Profile <small>| {{ user.username }} </small></h1>
 
   <div class="row">
     <div class="col-md-6">
       <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
-
-        <div class="form-group">
-          <label>PI Eligibility</label>
-          {% if user.piEligibility|lower == 'eligible' %}
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" checked disabled>
-                Eligible
-              </label>
-            </div>
-          {% elif user.piEligibility|lower == 'requested' %}
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" checked disabled>
-                Requested
-              </label>
-            </div>
-            <p class="help-block">
-              You have requested PI Eligibility. The DesignSafe accounting team is reviewing your
-              request.
-            </p>
-          {% else %}
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" id="id_request_pi_eligibility" name="request_pi_eligibility">
-                Request PI Eligibility
-              </label>
-            </div>
-            <p class="help-block">
-              Users who intend to create and lead projects on DesignSafe must meet the PI Eligibility requirements.
-              <a href="/docs/getting-started/pi-eligibility/">Please review the PI Eligibility requirements</a> to
-              determine if you qualify as PI Eligibile.
-            </p>
-          {% endif %}
-        </div>
-
         <div class="form-group">
           <button type="submit" class="btn btn-success">Save Profile</button>
           <a href="{% url 'designsafe_accounts:manage_profile' %}" class="btn btn-default">Cancel</a>
