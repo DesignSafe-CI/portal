@@ -19,7 +19,7 @@
                     <dd>{{profile.phone}}</dd>
 
                     <dt>Institution</dt>
-                    <dd>{{profile.institution}}{% if profile.department %},
+                    <dd>{{profile.institution}}{% if profile.department %},<br>
                         {{profile.department}}{% endif %}
                     </dd>
 
@@ -35,26 +35,21 @@
                 </dl>
             </div>
             <div class="col-md-6">
-                <h3>Demographics
-                    <a title="Why do we collect this?">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="sr-only">Why do we collect this?</span>
-                    </a>
-                </h3>
+                <h3>Demographics</h3>
                 <dl>
                     <dt>Ethnicity</dt>
-                    <dd>&nbsp;</dd>
+                    <dd>{{demographics.ethnicity|default:'<span class="text-warning">Please provide</span>'}}</dd>
 
                     <dt>Gender</dt>
-                    <dd>&nbsp;</dd>
+                    <dd>{{demographics.gender|default:'<span class="text-warning">Please provide</span>'}}</dd>
                 </dl>
             </div>
         </div>
 
         <hr>
 
-        <button disabled class="btn btn-default"><i class="fa fa-edit"></i> Edit profile
-        </button>
+        <a href="{% url 'designsafe_accounts:profile_edit' %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit profile
+        </a>
 
     </div>
 </div>

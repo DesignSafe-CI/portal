@@ -1,0 +1,25 @@
+{% extends "designsafe/apps/accounts/base.html" %}
+{% load bootstrap3 static %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Edit Profile <small>| {{ user.username }} </small></h1>
+
+  <div class="row">
+    <div class="col-md-6">
+      <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="form-group">
+          <button type="submit" class="btn btn-success">Save Profile</button>
+          <a href="{% url 'designsafe_accounts:manage_profile' %}" class="btn btn-default">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'designsafe/apps/accounts/js/institution_departments.js' %}"></script>
+{% endblock %}

@@ -1,4 +1,6 @@
+from designsafe.apps.accounts.models import DesignSafeProfile
 from django import forms
+from django.contrib.auth import get_user_model
 from django.forms.util import ErrorList
 from django.utils.translation import ugettext as _
 from pytas.http import TASClient
@@ -39,6 +41,26 @@ USER_PROFILE_TITLES = (
     ('University Non-Research Staff', 'University Non-Research Staff'),
     ('University Research Staff', 'University Research Staff (excluding postdoctorates)'),
 )
+ETHNICITY_OPTIONS = (
+    ('', 'Choose one'),
+    ('Decline', 'Decline to Identify'),
+    ('White', 'White'),
+    ('Asian', 'Asian'),
+    ('Black or African American', 'Black or African American'),
+    ('Hispanic or Latino', 'Hispanic or Latino'),
+    ('American Indian or Alaska Native', 'American Indian or Alaska Native'),
+    ('Native Hawaiian or Other Pacific Islander', 'Native Hawaiian or Other Pacific Islander'),
+    ('Two or more races', 'Two or more races, not Hispanic')
+)
+
+GENDER_OPTIONS = (
+    ('', 'Choose one'),
+    ('Decline', 'Decline to Identify'),
+    ('Male', 'Male'),
+    ('Female', 'Female'),
+    ('Other', 'Other'),
+)
+
 
 
 def get_institution_choices():
@@ -159,21 +181,26 @@ class UserProfileForm(forms.Form):
     lastName = forms.CharField(label='Last name')
     email = forms.EmailField()
     phone = forms.CharField()
-    institutionId = forms.ChoiceField(label='Institution', choices=(),
+    institutionId = forms.ChoiceField(
+        label='Institution', choices=(),
         error_messages={'invalid': 'Please select your affiliated institution'})
     departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(label='Country of residence', choices=(),
+    countryId = forms.ChoiceField(
+        label='Country of residence', choices=(),
         error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(label='Country of citizenship', choices=(),
+    citizenshipId = forms.ChoiceField(
+        label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
+    ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
+    gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
 
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         self.fields['institutionId'].choices = get_institution_choices()
 
         data = self.data or self.initial
-        if (data is not None and 'institutionId' in data and data['institutionId']):
+        if data is not None and 'institutionId' in data and data['institutionId']:
             self.fields['departmentId'].choices = get_department_choices(
                 data['institutionId'])
 
@@ -212,32 +239,40 @@ class UserRegistrationForm(forms.Form):
     lastName = forms.CharField(label='Last name')
     email = forms.EmailField()
     phone = forms.CharField()
-    institutionId = forms.ChoiceField(label='Institution', choices=(),
+    institutionId = forms.ChoiceField(
+        label='Institution', choices=(),
         error_messages={'invalid': 'Please select your affiliated institution'})
     departmentId = forms.ChoiceField(label='Department', choices=(), required=False)
-    institution = forms.CharField(label='Institution name',
+    institution = forms.CharField(
+        label='Institution name',
         help_text='If your institution is not listed, please provide the name of the '
                   'institution as it should be shown here.',
         required=False,
                                       )
     title = forms.ChoiceField(label='Position/Title', choices=USER_PROFILE_TITLES)
-    countryId = forms.ChoiceField(label='Country of residence', choices=(),
+    countryId = forms.ChoiceField(
+        label='Country of residence', choices=(),
         error_messages={'invalid': 'Please select your Country of residence'})
-    citizenshipId = forms.ChoiceField(label='Country of citizenship', choices=(),
+    citizenshipId = forms.ChoiceField(
+        label='Country of citizenship', choices=(),
         error_messages={'invalid': 'Please select your Country of citizenship'})
 
-    username = forms.RegexField(label='Username',
+    ethnicity = forms.ChoiceField(label='Ethnicity', choices=ETHNICITY_OPTIONS)
+    gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
+
+    username = forms.RegexField(
+        label='Username',
         help_text='Usernames must be 3-8 characters in length, start with a letter, and '
-            'can contain only lowercase letters, numbers, or underscore.',
+                  'can contain only lowercase letters, numbers, or underscore.',
         regex='^[a-z][a-z0-9_]{2,7}$')
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
-    confirmPassword = forms.CharField(widget=forms.PasswordInput,
-        label='Confirm Password',
+    confirmPassword = forms.CharField(
+        label='Confirm Password', widget=forms.PasswordInput,
         help_text='Passwords must meet the following criteria:<ul>'
-            '<li>Must not contain your username or parts of your full name;</li>'
-            '<li>Must be a minimum of 8 characters in length;</li>'
-            '<li>Must contain characters from at least three of the following: '
-            'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+                  '<li>Must not contain your username or parts of your full name;</li>'
+                  '<li>Must be a minimum of 8 characters in length;</li>'
+                  '<li>Must contain characters from at least three of the following: '
+                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
@@ -245,7 +280,7 @@ class UserRegistrationForm(forms.Form):
         self.fields['institutionId'].choices += (('-1', 'My Institution is not listed'),)
 
         data = self.data or self.initial
-        if (data is not None and 'institutionId' in data and data['institutionId']):
+        if data is not None and 'institutionId' in data and data['institutionId']:
             self.fields['departmentId'].choices = get_department_choices(data['institutionId'])
 
         self.fields['countryId'].choices = get_country_choices()
@@ -267,7 +302,7 @@ class UserRegistrationForm(forms.Form):
                 self.add_error('confirmPassword', '')
                 raise forms.ValidationError(error_message)
 
-    def save(self, source='DesignSafe', pi_eligibility='Ineligible'):
+    def save(self, source='DesignSafe', pi_eligibility=INELIGIBLE):
         data = self.cleaned_data
         data['source'] = source
         data['piEligibility'] = pi_eligibility
@@ -276,7 +311,31 @@ class UserRegistrationForm(forms.Form):
         safe_data['password'] = safe_data['confirmPassword'] = '********'
         logger.info('Attempting new user registration: %s' % safe_data)
 
-        return TASClient().save_user(None, data)
+        tas_user = TASClient().save_user(None, data)
+
+        # extended profile information
+        UserModel = get_user_model()
+        try:
+            # Check if the user exists in Django's local database
+            user = UserModel.objects.get(username=data['username'])
+            logger.warning('On TAS registration, local user already existed? '
+                           'user=%s' % user)
+        except UserModel.DoesNotExist:
+            # Create a user in Django's local database
+            user = UserModel.objects.create_user(
+                username=data['username'],
+                first_name=tas_user['firstName'],
+                last_name=tas_user['lastName'],
+                email=tas_user['email'],
+                )
+            ds_profile = DesignSafeProfile(
+                user=user,
+                ethnicity=data['ethnicity'],
+                gender=data['gender']
+                )
+            ds_profile.save()
+
+        return tas_user
 
 
 class NEESAccountMigrationForm(forms.Form):

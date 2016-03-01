@@ -448,3 +448,7 @@ label.required:after,
 .label-as-badge {
     border-radius: 1em;
 }
+
+dd {
+    margin-bottom: .5em;
+}

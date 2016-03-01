@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.accounts.models import NEESUser
+from designsafe.apps.accounts.models import NEESUser, DesignSafeProfile
 
 from pytas.http import TASClient
 from pytas.models import User as TASUser
@@ -27,10 +28,22 @@ def manage_profile(request):
     The default accounts view. Provides user settings for managing profile,
     authentication, notifications, identities, and applications.
     """
+    UserModel = get_user_model()
+    django_user = UserModel.objects.get(username=request.user.username)
     user_profile = TASUser(username=request.user.username)
+
+    demographics={}
+    try:
+        demographics['ethnicity'] = django_user.profile.ethnicity
+        demographics['gender'] = django_user.profile.gender
+
+    except ObjectDoesNotExist as e:
+        logger.info('exception e:{} {}'.format(type(e), e))
+        # pass #account was not created through designsafe
     context = {
         'title': 'Manage Profile',
-        'profile': user_profile
+        'profile': user_profile,
+        'demographics': demographics
     }
     return render(request, 'designsafe/apps/accounts/profile.html', context)
 
@@ -66,34 +79,6 @@ def manage_applications(request):
         'integrations': integrations.get_integrations()
     }
     return render(request, 'designsafe/apps/accounts/manage_applications.html', context)
-
-
-# @login_required
-# def notifications(request):
-#     items = Notification.objects.filter(
-#         deleted=False, user=str(request.user)).order_by('-notification_time')
-#     unread = 0
-#     for i in items:
-#         if not i.read:
-#             unread += 1
-#             i.mark_read()
-
-#     try:
-#         items = json.dumps(items, cls=DjangoJSONEncoder)
-#     except TypeError as e:
-#         items=[]
-#     return HttpResponse(items, content_type='application/json')
-
-#     return render(request, 'designsafe/apps/accounts/notifications.html',
-#                   {
-#                       'notifications': items,
-#                       'unread': unread
-#                   })
-
-# def delete_notification(request):
-#     if request.POST.get('delete') == 'delete':
-#         Notification.objects.get(id=request.POST.get('id')).delete()
-#         return redirect('/account/notifications/')
 
 
 def nees_migration(request, step=None):
@@ -284,6 +269,57 @@ def register(request):
     return render(request, 'designsafe/apps/accounts/register.html', context)
 
 
+@login_required
+def profile_edit(request):
+    tas = TASClient()
+    user = request.user
+    tas_user = tas.get_user(username=user.username)
+
+    if request.method == 'POST':
+        form = forms.UserProfileForm(request.POST, initial=tas_user)
+        if form.is_valid():
+            data = form.cleaned_data
+
+            # punt on PI Eligibility for now
+            data['piEligibility'] = tas_user['piEligibility']
+
+            # retain original account source
+            data['source'] = tas_user['source']
+
+            tas.save_user(tas_user['id'], data)
+            messages.success(request, 'Your profile has been updated!')
+
+            try:
+                ds_profile = user.profile
+                ds_profile.ethnicity = data['ethnicity']
+                ds_profile.gender = data['gender']
+                ds_profile.save()
+            except ObjectDoesNotExist as e:
+                logger.info('exception e: {} {}'.format(type(e), e ))
+                ds_profile = DesignSafeProfile(
+                    user=user,
+                    ethnicity=data['ethnicity'],
+                    gender=data['gender']
+                    )
+                ds_profile.save()
+
+            return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
+    else:
+        try:
+            tas_user['ethnicity'] = user.profile.ethnicity
+            tas_user['gender'] = user.profile.gender
+        except ObjectDoesNotExist:
+            pass
+
+        form = forms.UserProfileForm(initial=tas_user)
+
+    context = {
+        'form': form,
+        'user': tas_user,
+        }
+    return render(request, 'designsafe/apps/accounts/profile_edit.html', context)
+
+
 def password_reset(request, code=None):
     if request.user is not None and request.user.is_authenticated():
         return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
@@ -393,12 +429,6 @@ def email_confirmation(request, code=None):
                 tas = TASClient()
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
-                    get_user_model().objects.create_user(
-                        username=username,
-                        first_name=user['firstName'],
-                        last_name=user['lastName'],
-                        email=user['email']
-                        )
                     messages.success(request,
                                      'Congratulations, your account has been activated! '
                                      'You can now log in to DesignSafe-CI.')

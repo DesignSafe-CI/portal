@@ -6,11 +6,10 @@ urlpatterns = patterns(
     'designsafe.apps.accounts.views',
     url(r'^$', 'index', name='index'),
     url(r'^profile/$', 'manage_profile', name='manage_profile'),
+    url(r'^profile/edit/$', 'profile_edit', name='profile_edit'),
     url(r'^authentication/$', 'manage_authentication', name='manage_authentication'),
     url(r'^identities/$', 'manage_identities', name='manage_identities'),
     url(r'^applications/$', 'manage_applications', name='manage_applications'),
-    # url(r'^notifications/delete/$', 'delete_notification', name='delete_notification'),
-    # url(r'^notifications/$', 'notifications', name='notifications'),
     url(r'^notifications/settings/$', 'manage_notifications', name='manage_notifications'),
     url(r'^register/$', 'register', name='register'),
     url(r'^migrate-nees-account/(?:(?P<step>\d+)/)?$', 'nees_migration',
@@ -25,9 +24,8 @@ def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'account':
         return [
             {
-                'label': _('Manage'),
+                'label': _('Manage Account'),
                 'url': reverse('designsafe_accounts:index'),
                 'children': [],
-                'visible': False
             }
         ]
