@@ -48,7 +48,12 @@
             <dd>{{job.endTime | date:'medium'}}</dd>
 
             <dt>Output</dt>
-            <dd><a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a></dd>
+            <dd ng-if="job.status === 'FINISHED'">
+                <a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a>
+            </dd>
+            <dd ng-if="job.status !== 'FINISHED'">
+                Output still pending
+            </dd>
         </dl>
     </div>
     <div class="modal-footer">
