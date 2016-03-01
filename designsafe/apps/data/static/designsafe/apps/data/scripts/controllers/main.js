@@ -12,6 +12,10 @@
             $scope.predicate[1] = predicate;
         };
 
+        $scope.nameOrder = function(experiment) {
+           return parseInt(experiment.name.split('-')[1]);
+        };
+
         $scope.path = $location.$$path;
         $scope.query = '';
         $scope.temp = new Item($scope.filesystem);

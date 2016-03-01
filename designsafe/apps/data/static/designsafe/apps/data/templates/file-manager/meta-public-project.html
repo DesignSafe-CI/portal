@@ -58,10 +58,10 @@
               <th class="col-lg-10"></th>
             </tr>
           </thead>
-          <tbody ng-repeat="experiment in publicMetadata.experiments">
+          <tbody ng-repeat="experiment in publicMetadata.experiments | orderBy: nameOrder">
             <tr>
               <td class="col-lg-2">{{experiment.name | translate}}</td>
-              <td class="col-lg-10"> 
+              <td class="col-lg-10">
                 <table class="table table-borderless">
                   <thead>
                     <tr>
