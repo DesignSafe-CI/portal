@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from designsafe.apps.workspace.tasks import submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
@@ -106,6 +107,8 @@ def call_api(request, service):
             job_id = request.GET.get('job_id')
             if job_id:
                 data = agave.jobs.get(jobId=job_id)
+                db_hash = data['archivePath'].replace(data['owner'], '')
+                data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
             else:
                 if request.method == 'POST':
                     job_post = json.loads(request.body)
@@ -117,6 +120,7 @@ def call_api(request, service):
                         # strip leading slash
                         job_post['archivePath'] = parsed.path[1:]
                         job_post['archiveSystem'] = parsed.netloc
+
 
                     data = submit_job(request, agave, job_post)
                 else:

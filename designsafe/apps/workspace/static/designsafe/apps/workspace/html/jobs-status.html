@@ -48,7 +48,7 @@
             <dd>{{job.endTime | date:'medium'}}</dd>
 
             <dt>Output</dt>
-            <dd>agave://{{job.archiveSystem}}/{{job.archivePath}}</dd>
+            <dd><a href="{{job.archiveUrl}}" target="_blank" class="btn btn-primary" title="agave://{{job.archiveSystem}}/{{job.archivePath}}">View</a></dd>
         </dl>
     </div>
     <div class="modal-footer">
