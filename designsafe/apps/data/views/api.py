@@ -32,7 +32,12 @@ class ListingsMixin(object):
                       username = request.user.username,
                       special_dir = self.special_dir,
                       is_public = self.is_public)
-        return self.render_to_json_response([o.to_dict() for o in l])
+        if l:
+            status = 200
+        else:
+            status = 404
+        return self.render_to_json_response([o.to_dict() for o in l], status = status)
+
 
 class ListingsView(ListingsMixin, BasePrivateJSONView):
     pass
@@ -131,7 +136,11 @@ class MetadataMixin(object):
 
     def get(self, request, *args, **kwargs):
         meta, meta_dict = self.set_context_props(request, **kwargs)
-        return self.render_to_json_response(meta_dict)
+        if meta and meta_dict:
+            status = 200
+        else:
+            status = 404
+        return self.render_to_json_response(meta_dict, status = status)
 
     def post(self, request, *args, **kwargs):
         meta_obj, meta_dict = self.set_context_props(request, **kwargs)
@@ -156,8 +165,15 @@ class MetaSearchMixin(object):
 
     def get(self, request, *args, **kwargs):
         mgr = self.set_context_props(request, **kwargs)
-        res, search = mgr.search_meta(request.GET.get('q', None), self.filesystem, request.user.username, is_public = self.is_public)
-        return self.render_to_json_response([o.to_dict() for o in search.scan()])
+        res, search = mgr.search_meta(request.GET.get('q', None), 
+                          self.filesystem, 
+                          request.user.username, 
+                          is_public = self.is_public)
+        if res.hits.total:
+            status = 200
+        else:
+            status = 404
+        return self.render_to_json_response([o.to_dict() for o in search.scan()], status = status)
 
 class MetaSearchView(MetaSearchMixin, BasePrivateJSONView):
     pass
