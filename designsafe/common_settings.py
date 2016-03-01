@@ -392,6 +392,7 @@ PIPELINE_CSS = {
     },
     'main': {
         'source_filenames': (
+          'styles/typekit.css',
           'styles/main.css',
           'styles/corner-ribbon.css',
           'styles/base.scss',
