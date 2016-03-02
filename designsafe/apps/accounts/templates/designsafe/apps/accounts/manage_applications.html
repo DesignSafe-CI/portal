@@ -1,22 +1,26 @@
 {% extends "designsafe/apps/accounts/base.html" %}
 
 {% block panel_content %}
-<h2>3rd Party Applications</h2>
-<p class="lead">
-    Select the application settings to manage.
-</p>
-<div>
-{% for app in integrations %}
-    <h3>{{app.label}}</h3>
-    <p>{{app.description}}</p>
-    <p>
-        {% if app.href %}
-            <a href="{{app.href}}" class="btn btn-default">Manage App Settings</a>
-        {% else %}
-            <button disabled class="btn btn-default">Coming Soon</button>
-        {% endif %}
-    </p>
-    <hr>
-{% endfor %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h2>3rd Party Applications</h2>
+        <p class="lead">
+            Select the application settings to manage.
+        </p>
+        {% for app in integrations %}
+        <hr>
+        <div>
+            <h3>{{app.label}}</h3>
+            <p>{{app.description}}</p>
+            <p>
+                {% if app.href %}
+                    <a href="{{app.href}}" class="btn btn-default">Manage App Settings</a>
+                {% else %}
+                    <button disabled class="btn btn-default">Coming Soon</button>
+                {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -12,19 +12,3 @@
         used by DesignSafe in order to validate the license.
     </li>
 </ul>
-<p>
-    To begin using MATLAB at DesignSafe, please open a support ticket and DesignSafe
-    support will provide assistance to configure your license and enable MATLAB for your
-    account.
-</p>
-<p>
-    {% if not license.current_user_license %}
-        <a class="btn btn-lg btn-default"
-           href="{% url 'djangoRT:ticketcreate' %}?category=OTHER&subject=MATLAB+license+activation+request">
-            Request Activation
-        </a>
-    {% else %}
-        <span class="btn btn-lg btn-default disabled">Request Activation</span>
-        <span class="text-success">MATLAB license already activated for your account</span>
-    {% endif %}
-</p>
