@@ -283,6 +283,9 @@ def register(request):
                         'please create a support ticket.')
 
                 messages.error(request, err_msg)
+        else:
+            messages.error(request, 'There were errors processing your registration. '
+                                    'Please see below for details.')
     else:
         account_form = forms.UserRegistrationForm()
 

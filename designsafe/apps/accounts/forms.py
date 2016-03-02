@@ -320,6 +320,9 @@ class UserRegistrationForm(forms.Form):
                   '<li>Must be a minimum of 8 characters in length;</li>'
                   '<li>Must contain characters from at least three of the following: '
                   'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+    agree_to_terms = forms.BooleanField(
+        label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
+        error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
@@ -356,6 +359,9 @@ class UserRegistrationForm(forms.Form):
 
         safe_data = data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
+
+        logger.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
+            data['firstName'], data['lastName'], data['email']))
         logger.info('Attempting new user registration: %s' % safe_data)
 
         tas_user = TASClient().save_user(None, data)
