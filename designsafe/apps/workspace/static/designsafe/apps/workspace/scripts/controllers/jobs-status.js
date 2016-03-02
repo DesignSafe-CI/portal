@@ -33,6 +33,11 @@
       $scope.refresh();
     });
 
+    $scope.$on('jobs-refresh', function(e, data) {
+      console.log('jobs-refresh event detected with data: ', data);
+      $scope.refresh();
+    });
+
     $scope.$on('ds.wsBus:default', function update_job(e, msg){
       console.log('update job msg', msg)
       if('event_type' in msg && msg.event_type === 'VNC') {
@@ -62,12 +67,41 @@
 
   }]);
 
-  angular.module('WorkspaceApp').controller('JobDetailsModalCtrl', function($scope, $uibModalInstance, job) {
+  angular.module('WorkspaceApp').controller('JobDetailsModalCtrl',
+    [ '$scope', '$uibModalInstance','$http', 'Jobs', 'job', 'djangoUrl',  function($scope, $uibModalInstance, $http, Jobs, job, djangoUrl) {
+
     $scope.job = job;
+
     $scope.dismiss = function() {
       $uibModalInstance.dismiss('cancel');
     };
-  });
+
+    $scope.deleteJob = function() {
+      console.log('deleteJob button clicked with jobId=',job.id);
+      $http.delete(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        params: {'job_id': job.id},
+
+      }).then(function(response){
+        $uibModalInstance.dismiss('cancel');
+        $scope.$parent.$broadcast('jobs-refresh');
+      }, function(error) {
+        console.log('nope!', error); //todo make error handling UI
+      });
+    };
+
+    $scope.cancelJob = function() {
+      console.log('cancelJob button clicked with jobId=',job.id);
+      $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        'job_id': job.id, params: {'job_id': job.id, 'action':'cancel', 'body':'{"action":"stop"}'},
+      }).then(function(response){
+        $uibModalInstance.dismiss('cancel');
+        $scope.$parent.$broadcast('jobs-refresh');
+      }, function(error) {
+        console.log('nope!', error); //todo make error handling UI
+      });
+    };
+
+  }]);
 
   angular.module('WorkspaceApp').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
     $scope.msg = msg;
