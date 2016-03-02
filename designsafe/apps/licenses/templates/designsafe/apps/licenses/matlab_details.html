@@ -1,0 +1,30 @@
+<p>
+    <a href="http://www.mathworks.com/" target="_blank">Mathworks' MATLAB <i class="fa fa-external-link"></i></a>
+    is available for use in the DesignSafe Discovery Workspace but requires a license
+    before you can use the application. MATLAB is supported under a "bring your own license"
+    model. In order to run MATLAB at DesignSafe, your license must satisfy the following
+    requirements:
+</p>
+<ul>
+    <li>Be supported for FLEXlm license management.</li>
+    <li>
+        The FLEXlm license server must be accessible from the computational resources
+        used by DesignSafe in order to validate the license.
+    </li>
+</ul>
+<p>
+    To begin using MATLAB at DesignSafe, please open a support ticket and DesignSafe
+    support will provide assistance to configure your license and enable MATLAB for your
+    account.
+</p>
+<p>
+    {% if not license.current_user_license %}
+        <a class="btn btn-lg btn-default"
+           href="{% url 'djangoRT:ticketcreate' %}?category=OTHER&subject=MATLAB+license+activation+request">
+            Request Activation
+        </a>
+    {% else %}
+        <span class="btn btn-lg btn-default disabled">Request Activation</span>
+        <span class="text-success">MATLAB license already activated for your account</span>
+    {% endif %}
+</p>

@@ -9,6 +9,7 @@ urlpatterns = patterns(
     url(r'^profile/edit/$', 'profile_edit', name='profile_edit'),
     url(r'^authentication/$', 'manage_authentication', name='manage_authentication'),
     url(r'^identities/$', 'manage_identities', name='manage_identities'),
+    url(r'^licenses/$', 'manage_licenses', name='manage_licenses'),
     url(r'^applications/$', 'manage_applications', name='manage_applications'),
     url(r'^notifications/settings/$', 'manage_notifications', name='manage_notifications'),
     url(r'^register/$', 'register', name='register'),

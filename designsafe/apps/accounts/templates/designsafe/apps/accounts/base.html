@@ -9,19 +9,24 @@
       <div class="col-sm-3">
         <ul class="nav nav-pills nav-stacked">
           {% url 'designsafe_accounts:manage_profile' as item_url %}
-          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Profile</a></li>
+          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Account Profile</a></li>
 
           {% url 'designsafe_accounts:manage_authentication' as item_url %}
           <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Authentication</a></li>
 
+          <!--
+          {% url 'designsafe_accounts:manage_identities' as item_url %}
+          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Identities</a></li>
+          -->
+
+          {% url 'designsafe_accounts:manage_licenses' as item_url %}
+          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Licenses</a></li>
+
           {% url 'designsafe_accounts:manage_notifications' as item_url %}
           <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Notifications</a></li>
 
-          {% url 'designsafe_accounts:manage_identities' as item_url %}
-          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Identities</a></li>
-
           {% url 'designsafe_accounts:manage_applications' as item_url %}
-          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Applications</a></li>
+          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">3rd Party Apps</a></li>
         </ul>
         <br>
       </div>

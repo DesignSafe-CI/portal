@@ -28,18 +28,16 @@ def manage_profile(request):
     The default accounts view. Provides user settings for managing profile,
     authentication, notifications, identities, and applications.
     """
-    UserModel = get_user_model()
-    django_user = UserModel.objects.get(username=request.user.username)
+    django_user = request.user
     user_profile = TASUser(username=request.user.username)
 
-    demographics={}
     try:
-        demographics['ethnicity'] = django_user.profile.ethnicity
-        demographics['gender'] = django_user.profile.gender
+        demographics = django_user.profile
 
     except ObjectDoesNotExist as e:
+        demographics = {}
         logger.info('exception e:{} {}'.format(type(e), e))
-        # pass #account was not created through designsafe
+
     context = {
         'title': 'Manage Profile',
         'profile': user_profile,
@@ -50,8 +48,17 @@ def manage_profile(request):
 
 @login_required
 def manage_authentication(request):
+    if request.method == 'POST':
+        form = forms.ChangePasswordForm(request.POST, username=request.user.username)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your TACC Password has been successfully changed!')
+    else:
+        form = forms.ChangePasswordForm(username=request.user.username)
+
     context = {
         'title': 'Authentication Settings',
+        'form': form
     }
     return render(request, 'designsafe/apps/accounts/manage_auth.html', context)
 
@@ -70,6 +77,22 @@ def manage_notifications(request):
         'title': 'Notification Settings',
     }
     return render(request, 'designsafe/apps/accounts/manage_notifications.html', context)
+
+
+@login_required
+def manage_licenses(request):
+    from designsafe.apps.licenses.models import get_license_info
+    licenses = get_license_info()
+
+    for l in licenses:
+        if request.user.licenses.filter(license_type=l['license_type']):
+            l['current_user_license'] = True
+
+    context = {
+        'title': 'Manage Software Licenses',
+        'licenses': licenses
+    }
+    return render(request, 'designsafe/apps/accounts/manage_licenses.html', context)
 
 
 @login_required
@@ -321,9 +344,6 @@ def profile_edit(request):
 
 
 def password_reset(request, code=None):
-    if request.user is not None and request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
-
     if code is None:
         code = request.GET.get('code', None)
 

@@ -79,6 +79,7 @@ INSTALLED_APPS = (
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
+    'designsafe.apps.licenses',
 
     # signals
     'designsafe.apps.signals',
