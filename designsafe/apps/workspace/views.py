@@ -104,15 +104,16 @@ def call_api(request, service):
                 data = []
 
         elif service == 'jobs':
-            job_id = request.GET.get('job_id')
-            if job_id:
-                data = agave.jobs.get(jobId=job_id)
-                db_hash = data['archivePath'].replace(data['owner'], '')
-                data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
-            else:
-                if request.method == 'POST':
-                    job_post = json.loads(request.body)
-
+            if request.method == 'DELETE':
+                job_id = request.GET.get('job_id')
+                data = []
+                data = agave.jobs.delete(jobId=job_id)
+            elif request.method == 'POST':
+                job_post = json.loads(request.body)
+                job_id = job_post.get('job_id')
+                if job_id: #cancel job / stop job
+                    data = agave.jobs.manage(jobId=job_id, body='{"action":"stop"}')
+                elif job_post: #submit job
                     # parse agave:// URI into "archiveSystem" and "archivePath"
                     if ('archivePath' in job_post and
                             job_post['archivePath'].startswith('agave://')):
@@ -121,10 +122,22 @@ def call_api(request, service):
                         job_post['archivePath'] = parsed.path[1:]
                         job_post['archiveSystem'] = parsed.netloc
 
-
                     data = submit_job(request, agave, job_post)
+
+                else: #list jobs
+                    data = agave.jobs.list()
+
+            elif request.method == 'GET':
+                #get specific job info
+                job_id = request.GET.get('job_id')
+                if job_id:
+                    data = agave.jobs.get(jobId=job_id)
+                    db_hash = data['archivePath'].replace(data['owner'], '')
+                    data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
                 else:
                     data = agave.jobs.list()
+            else:
+                return HttpResponse('Unexpected service: %s' % service, status=400)
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
@@ -141,7 +154,6 @@ def call_api(request, service):
 
 @login_required
 def interactive2(request, hostname, port, password):
-    logger.info('interactive view called');
     context = {}
     token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
     if token_key in request.session:
@@ -149,5 +161,4 @@ def interactive2(request, hostname, port, password):
             'agave': json.dumps(request.session[token_key])
         }
 
-    logger.info('request is: '.format(request))
     return render(request, 'designsafe/apps/workspace/vnc-desktop2.html', context)

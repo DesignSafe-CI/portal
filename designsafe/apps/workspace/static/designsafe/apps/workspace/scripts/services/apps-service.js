@@ -40,7 +40,7 @@
       if (params.length > 0) {
         schema.properties.parameters = {
           type: 'object',
-          title: 'Parameters',
+          notitle: true,
           properties: {}
         };
         _.each(params, function(param) {
