@@ -65,8 +65,8 @@ urlpatterns = patterns(
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
     url(r'^login/$', 'designsafe.apps.auth.views.login_options', name='login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'},
-        name='logout'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout',
+        {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # help
     url(r'^help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),

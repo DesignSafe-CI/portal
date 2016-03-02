@@ -6,9 +6,7 @@ import six
 import time
 import requests
 from requests import HTTPError
-
 from .signals import *
-
 
 logger = logging.getLogger(__name__)
 

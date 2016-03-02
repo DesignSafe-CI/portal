@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load staticfiles sekizai_tags %}
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="jumbotron">
+        <h1 class="headline headline-research"><span class="hl-research">Logged out</span> of DesignSafe-CI</h1>
+        <p>
+            You have logged out of DesignSafe-CI.
+        </p>
+        <p>
+            <a href="/" class="btn btn-lg btn-default">Go to the DesignSafe Homepage</a>
+        </p>
+    </div>
+</div>
+<script>
+window.setTimeout(function() {
+    window.location = '/';
+}, 10000);
+</script>
+{% endblock %}

@@ -1,11 +1,36 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.signals import user_logged_out
+from django.contrib import messages
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
+from django.dispatch import receiver
 from pytas.http import TASClient
 import logging
 import re
 import requests
+
+
+@receiver(user_logged_out)
+def on_user_logged_out(sender, request, user, **kwargs):
+    backend = request.session.get('_auth_user_backend', None)
+    tas_backend_name = '%s.%s' % (TASBackend.__module__,
+                                  TASBackend.__name__)
+    agave_backend_name = '%s.%s' % (AgaveOAuthBackend.__module__,
+                                    AgaveOAuthBackend.__name__)
+
+    if backend == tas_backend_name:
+        login_provider = 'TACC'
+    elif backend == agave_backend_name:
+        login_provider = 'TACC'
+    else:
+        login_provider = 'your authentication provider'
+
+    logout_message = '<h4>You are Logged Out!</h4>' \
+                     'You are now logged out of DesignSafe-CI! However, you may still ' \
+                     'be logged in at %s. To ensure security, you should close your ' \
+                     'browser to end all authenticated sessions.' % login_provider
+    messages.info(request, logout_message)
 
 
 class TASBackend(ModelBackend):

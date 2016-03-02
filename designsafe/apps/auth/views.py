@@ -15,6 +15,10 @@ import time
 logger = logging.getLogger(__name__)
 
 
+def logged_out(request):
+    return render(request, 'designsafe/apps/auth/logged_out.html')
+
+
 def login_options(request):
     if request.user.is_authenticated():
         messages.info(request, 'You are already logged in!')
