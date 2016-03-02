@@ -109,13 +109,15 @@ def ticketcreate(request):
             messages.error(request, 'You ticket is missing some information. '
                                     'Please see below for details.')
     else:
-        initial_data = {}
+        initial_data = {
+            'subject': request.GET.get('subject'),
+            'category': request.GET.get('category'),
+            'problem_description': request.GET.get('problem_description'),
+        }
         if request.user.is_authenticated():
-            initial_data = {
-                'email': request.user.email,
-                'first_name': request.user.first_name,
-                'last_name': request.user.last_name
-            }
+            initial_data['email'] = request.user.email
+            initial_data['first_name'] = request.user.first_name
+            initial_data['last_name'] = request.user.last_name
         form = form_cls(initial=initial_data)
     return render(request, template_name, {'form': form})
 
