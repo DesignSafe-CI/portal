@@ -70,7 +70,32 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 ### Importing data from production
 
-If you need or want to import data from production see [this wiki page][6] for instructions.
+If you need or want to import data from production to a local development instance 
+running SQLite, you will need to create a `datadump.json` file using the Django `dumpdata` 
+command.
+
+To dump data from the production database you will first need an environment/configuration
+file that is configured for the production database. Then, run the following command:
+
+```
+docker run -it --rm -v $(pwd):/datadump \
+    --env-file /path/to/production/designsafe.env \
+    designsafeci/portal:latest bin/dumpdata.sh
+```
+
+This will created a file named `datadump-YYYYMMDD.json` in the current directory. You can
+load that data back into your local instance with the command:
+
+```
+docker run -it --rm -v $(pwd):/datadump \
+    --env-file /path/to/local/designsafe.env \
+    designsafeci/portal:latest bin/loaddata.sh
+```
+
+The result will be a SQLite database file `db.sqlite3` in the current directory loaded
+with the contents of `datadump-YYYYMMDD.json`.
+
+See [this wiki page][6] for additional details.
 
 ## Developing DesignSafe-CI Portal
 
