@@ -346,13 +346,28 @@ class FileManager(AgaveObject):
         return meta_obj, ret
 
     def search_meta(self, q, filesystem, username, is_public = False):
+        #Update this with aggregation for efficiency and easier paginagion.
         q = json.loads(q)
         qs = ''
         if 'all' in q:
             qs = q['all']
         if is_public:
-            res, s = PublicObject().search_query(system_id = filesystem,
-                          username = username, qs = qs)
+            d = {
+                'system_id': filesystem,
+                'username': username,
+                'qs': qs
+            }
+            d['fields'] = ['name']
+            p_res, p_s = Project().search_query(**d)
+            p_names = ['{}'.format(o.name) for o in p_s.scan()]
+            d['fields'] = ['project']
+            e_res, e_s = Experiment().search_query(**d) 
+            e_names = ['{}'.format(o.project) for o in e_s.scan()]
+            po_names = p_names + e_names
+            d.pop('fields')
+            d['names'] = po_names
+            po_res, po_s = PublicObject().search_query(**d)
+                        
         else:
             res, s = Object().search_query(system_id = filesystem,
                           username = username, qs = qs)

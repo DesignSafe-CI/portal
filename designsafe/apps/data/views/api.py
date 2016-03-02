@@ -183,14 +183,13 @@ class MetaSearchMixin(object):
         return mgr
 
     def get(self, request, *args, **kwargs):
+        status = 200
         mgr = self.set_context_props(request, **kwargs)
         res, search = mgr.search_meta(request.GET.get('q', None), 
                           self.filesystem, 
                           request.user.username, 
                           is_public = self.is_public)
-        if res.hits.total:
-            status = 200
-        else:
+        if not res.hits.total:
             status = 404
         return self.render_to_json_response([o.to_dict() for o in search.scan()], status = status)
 

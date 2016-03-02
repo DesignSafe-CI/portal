@@ -82,8 +82,8 @@ class Project(DocType):
         s.update_from_dict(q)
         return s.execute(), s
 
-    def search_query(self, system_id, username, qs):
-        fields = ["description",
+    def search_query(self, system_id, username, qs, fields = None):
+        query_fields = ["description",
                   "endDate",
                   "equipment.component",
                   "equipment.equipmentClass",
@@ -96,7 +96,9 @@ class Project(DocType):
                   "pis.lastName",
                   "title"]
         qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        if fields is not None:
+            q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -132,8 +134,8 @@ class Experiment(DocType):
         s.update_from_dict(q)
         return s.execute(), s
 
-    def search_query(self, system_id, username, qs):
-        fields = ["description",
+    def search_query(self, system_id, username, qs, fields = None):
+        search_fields = ["description",
                   "facility.country"
                   "facility.name",
                   "facility.state",
@@ -142,7 +144,9 @@ class Experiment(DocType):
                   "startDate",
                   "title"]
         qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
+        if fields is not None:
+            q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -186,7 +190,12 @@ class PublicObject(DocType):
     def search_query(self, system_id, username, qs):
         fields = ["name", "path", "project"]
         qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":fields, "query": qs}}}
+        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        if names is not None and len(names) > 0:
+            nq = {"query": {"filtered": {"query": q['query'], "filter": {"terms": {"project._exact":names}}}}}
+            q = nq
+        if fields is not None:
+            q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
 
