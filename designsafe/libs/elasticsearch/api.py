@@ -86,7 +86,7 @@ class Project(DocType):
         fields = ["description",
                   "endDate",
                   "equipment.component",
-                  "equipment.equipmentClasse",
+                  "equipment.equipmentClass",
                   "equipment.facility",
                   "fundorg"
                   "fundorgprojid",
@@ -184,15 +184,12 @@ class PublicObject(DocType):
         return s.execute(), s
 
     def search_query(self, system_id, username, qs):
-        fields = ["name", 
-                  "path", 
-                  "project",
-                  "pis.lastName",
-                  "pis.firstName"]
+        fields = ["name", "path", "project"]
         qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":fields, "query": qs}}}
         s = self.__class__.search()
         s.update_from_dict(q)
+
         return s.execute(), s
 
     def update_from_dict(self, **d):

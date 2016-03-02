@@ -59,19 +59,36 @@ def share(system_id, path, username, permission, me):
                   username = username, permission = permission,
                   me = me)
         logger.debug('Successfully updated permissions: {}'.format(rep))
-        DataEvent.send_generic_event({'action': 'share_end', 
-                  'path': path, 
-                  'username_to': username,
+        DataEvent.send_generic_event({
                   'username_from': me,
+                  'username_to': username,
                   'permission': permission,
-                  'message': 'Your files have been succesfully shared.'},
+                  'action': 'share_start',
+                  'path': path,
+                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
+                  'html':[
+                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
+                      { 'label': 'Shared with', 'value': username},
+                      { 'label': 'Permissions set', 'value': permission},
+                      {'label': 'Message' , 'value': 'Your files are being shared.'},
+
+                      ]
+                  },
                   [me])
-        DataEvent.send_generic_event({'action': 'share_end', 
-                  'path': path, 
-                  'username_to': username,
-                  'username_from': me,
+        DataEvent.send_generic_event({
+                  'username_from': request.user.username,
+                  'username_to': user,
                   'permission': permission,
-                  'message': 'Files have been shared with you.'},
+                  'action': 'share_start',
+                  'path': self.file_path,
+                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
+                  'html':[
+                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
+                      { 'label': 'Shared with', 'value': user},
+                      { 'label': 'Permissions set', 'value': permission},
+                      {'label': 'Message' , 'value': 'Your files are being shared.'},
+                      ]
+                  }
                   [username])
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user=%s' % job_owner)
