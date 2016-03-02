@@ -30,11 +30,14 @@
                 <thead>
                 <th>File name</th>
                 <th>Size</th>
-                <th>Action</th>
                 </thead>
                 <tbody>
                 <tr ng-repeat="f in data.filesListing | orderBy : ['type', 'name']">
                     <td>
+                        <button ng-if="f.name !== '.' && data.wants"
+                                type="button"
+                                class="btn btn-xs btn-info"
+                                ng-click="chooseFile(f)">Select</button>
                         <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
                             <i class="fa fa-{{getFileIcon(f)}}"></i>
                             <span ng-if="f.name === '.'">..</span>
@@ -42,12 +45,6 @@
                         </a>
                     </td>
                     <td>{{f.length|bytes:0}}</td>
-                    <td>
-                        <button ng-if="f.name !== '.' && data.wants"
-                                type="button"
-                                class="btn btn-xs btn-info"
-                                ng-click="chooseFile(f)">Select</button>
-                    </td>
                 </tr>
                 <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
                 <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
