@@ -420,7 +420,7 @@ label.required:after,
   font-weight: bold;
   border: 2px solid #337AB7;
   text-decoration: none;
-  background: none;
+  background-color: #fff;
 }
 
 .btn-link-alt:hover,
@@ -430,9 +430,12 @@ label.required:after,
   color: #23527c;
 }
 
-.btn-link-alt.dropdown-toggle {
-  border-left-width: 1px;
+.btn-group .btn-link-alt + .btn-link-alt,
+.btn-group .btn-link-alt + .btn-group,
+.btn-group .btn-group + .btn-link-alt {
+    margin-left: -2px;
 }
+
 
 .callout {
   padding: 1em;
