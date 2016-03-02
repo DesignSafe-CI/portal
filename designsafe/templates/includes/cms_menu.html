@@ -5,9 +5,11 @@
     {% if child.children %}
       <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ child.get_menu_title | safe }} <span class="caret"></span></a>
       <ul class="dropdown-menu">
+        <!--
         <li {%if child.selected %}class="active"{% endif %}>
           <a href="{{ child.get_absolute_url }}"><span>{{ child.get_menu_title | safe }}</span></a>
         </li>
+        -->
         {% show_menu from_level to_level extra_inactive extra_active template "" "" child %}
       </ul>
     {% else %}
