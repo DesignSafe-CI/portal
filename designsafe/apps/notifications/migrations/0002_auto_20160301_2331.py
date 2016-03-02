@@ -8,7 +8,7 @@ import datetime
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifications', '0003_jobnotification_status'),
+        ('notifications', '0001_initial'),
     ]
 
     operations = [

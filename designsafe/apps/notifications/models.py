@@ -34,16 +34,18 @@ def receive_notification(sender, **kwargs):
     event_type = kwargs.get('event_type')
     event_data = kwargs.get('event_data')
     event_users = kwargs.get('event_users')
-    
-    d = {}
+
+    d = []
     if 'html' in event_data:
-        for key, value in six.iteritems(event_data['html']):
-            if 'label' in value and key != 'action_link':
-                value['label'] = cgi.escape(value['label'])
-                if 'value' in value:
-                    value['value'] = cgi.escape(value['value'])
-            d[key] = value
+        for item in event_data['html']:
+            for key, value in item.items():
+                if key != 'action_link':
+                    key= cgi.escape(key)
+                    value= cgi.escape(value)
+                    d.append({key:value})
+
     event_data['html'] = d
+
     for user in event_users:
         notification = Notification(event_type=event_type, user=user,
                                     body=json.dumps(event_data))
