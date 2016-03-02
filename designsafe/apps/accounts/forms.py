@@ -1,8 +1,9 @@
 from designsafe.apps.accounts.models import DesignSafeProfile
 from django import forms
 from django.contrib.auth import get_user_model
-from django.forms.util import ErrorList
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+from django.utils.safestring import mark_safe
 from pytas.http import TASClient
 import re
 import logging
@@ -134,6 +135,52 @@ def check_password_policy(user, password, confirmPassword):
         return False, 'The password provided must not contain parts of your name or username.'
 
     return True, None
+
+
+class ChangePasswordForm(forms.Form):
+
+    current_password = forms.CharField(widget=forms.PasswordInput)
+    new_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_new_password = forms.CharField(
+        widget=forms.PasswordInput,
+        help_text='Passwords must meet the following criteria:<ul>'
+                  '<li>Must not contain your username or parts of your full name;</li>'
+                  '<li>Must be a minimum of 8 characters in length;</li>'
+                  '<li>Must contain characters from at least three of the following: '
+                  'uppercase letters, lowercase letters, numbers, symbols</li></ul>')
+
+    def __init__(self, *args, **kwargs):
+        self._username = kwargs.pop('username')
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        reset_link = reverse('designsafe_accounts:password_reset')
+        tas = TASClient()
+        current_password_correct = tas.authenticate(self._username,
+                                                    cleaned_data['current_password'])
+        if current_password_correct:
+            tas_user = tas.get_user(username=self._username)
+            pw = cleaned_data['new_password']
+            confirm_pw = cleaned_data['confirm_new_password']
+            valid, error_message = check_password_policy(tas_user, pw, confirm_pw)
+            if not valid:
+                self.add_error('new_password', error_message)
+                self.add_error('confirm_new_password', error_message)
+                raise forms.ValidationError(error_message)
+        else:
+            err_msg = mark_safe(
+                'The current password you provided is incorrect. Please try again. '
+                'If you do not remember your current password you can '
+                '<a href="%s" tabindex="-1">reset your password</a> with an email '
+                'confirmation.' % reset_link)
+            self.add_error('current_password', err_msg)
+
+    def save(self):
+        cleaned_data = self.cleaned_data
+        tas = TASClient()
+        tas.change_password(self._username, cleaned_data['current_password'],
+                            cleaned_data['new_password'])
 
 
 class PasswordResetRequestForm(forms.Form):

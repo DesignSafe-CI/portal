@@ -1,9 +1,28 @@
 {% extends "designsafe/apps/accounts/base.html" %}
-
+{% load bootstrap3 %}
 {% block panel_content %}
 
-<div class="jumbotron">
-    <h1>TODO</h1>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h2>Change Your Password</h2>
+
+        <div class="alert alert-warning">
+            <h4>Changing your TACC Password</h4>
+            <strong>Please Note:</strong> This form requests a reset to your TACC Account
+            password. Changes to this password will affect your TACC Account
+            <em>as a whole</em>, not just at DesignSafe-CI.
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% bootstrap_form form %}
+
+            {% buttons %}
+            <button type="submit" class="btn btn-primary">Change Password</button>
+            {% endbuttons %}
+        </form>
+    </div>
 </div>
 
 {% endblock %}
