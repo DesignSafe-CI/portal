@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
+from models import DesignSafeProfile
+from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
 import logging
@@ -360,33 +362,48 @@ class UserRegistrationForm(forms.Form):
         safe_data = data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
 
-        logger.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
-            data['firstName'], data['lastName'], data['email']))
         logger.info('Attempting new user registration: %s' % safe_data)
 
         tas_user = TASClient().save_user(None, data)
 
-        # extended profile information
+        # create local user
         UserModel = get_user_model()
         try:
-            # Check if the user exists in Django's local database
+            # the user should not exist
             user = UserModel.objects.get(username=data['username'])
             logger.warning('On TAS registration, local user already existed? '
                            'user=%s' % user)
         except UserModel.DoesNotExist:
-            # Create a user in Django's local database
             user = UserModel.objects.create_user(
                 username=data['username'],
                 first_name=tas_user['firstName'],
                 last_name=tas_user['lastName'],
                 email=tas_user['email'],
                 )
+
+        # extended profile information
+        try:
+            # again, this should not exist
+            ds_profile = DesignSafeProfile.objects.get(user=user)
+            ds_profile.ethnicity = data['ethnicity']
+            ds_profile.gender = data['gender']
+        except DesignSafeProfile.DoesNotExist:
             ds_profile = DesignSafeProfile(
                 user=user,
                 ethnicity=data['ethnicity'],
                 gender=data['gender']
                 )
-            ds_profile.save()
+        ds_profile.save()
+
+        # terms of use
+        logger.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
+            data['firstName'], data['lastName'], data['email']))
+        try:
+            terms = TermsAndConditions.get_active()
+            user_terms = UserTermsAndConditions(user=user, terms=terms)
+            user_terms.save()
+        except:
+            logger.exception('Error saving UserTermsAndConditions for user=%s', user)
 
         return tas_user
 
