@@ -1,10 +1,11 @@
 {% extends "designsafe/apps/accounts/base.html" %}
 
 {% block panel_content %}
+<h2>3rd Party Applications</h2>
 <p class="lead">
     Select the application settings to manage.
 </p>
-<p>
+<div>
 {% for app in integrations %}
     <h3>{{app.label}}</h3>
     <p>{{app.description}}</p>
