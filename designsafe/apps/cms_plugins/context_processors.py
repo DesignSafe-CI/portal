@@ -9,10 +9,5 @@ def cms_section(request):
     if nodes:
         menu_root = nodes[0]
         if 'soft_root' in menu_root.attr:
-            logger.debug(menu_root.__dict__)
-            return {
-                'section_root': {
-                    'title': menu_root.title
-                }
-            }
+            return {'section_root': {'title': menu_root.title}}
     return {}
