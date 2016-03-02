@@ -30,7 +30,7 @@ def on_user_logged_out(sender, request, user, **kwargs):
                      'You are now logged out of DesignSafe-CI! However, you may still ' \
                      'be logged in at %s. To ensure security, you should close your ' \
                      'browser to end all authenticated sessions.' % login_provider
-    messages.info(request, logout_message)
+    messages.warning(request, logout_message)
 
 
 class TASBackend(ModelBackend):
