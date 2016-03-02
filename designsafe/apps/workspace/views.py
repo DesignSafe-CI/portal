@@ -9,6 +9,7 @@ from designsafe.apps.workspace.tasks import submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from dsapi.agave.daos import FileManager, shared_with_me
 from urlparse import urlparse
+from datetime import datetime
 import json
 import os
 import six
@@ -121,14 +122,20 @@ def call_api(request, service):
                         # strip leading slash
                         job_post['archivePath'] = parsed.path[1:]
                         job_post['archiveSystem'] = parsed.netloc
+                    else:
+                        job_post['archivePath'] = \
+                            '%s/archive/jobs/%s/${JOB_NAME}-${JOB_ID}' % (
+                                request.user.username,
+                                datetime.now().strftime('%Y-%m-%d'))
 
                     data = submit_job(request, agave, job_post)
 
-                else: #list jobs
+                else:
+                    # list jobs
                     data = agave.jobs.list()
 
             elif request.method == 'GET':
-                #get specific job info
+                # get specific job info
                 job_id = request.GET.get('job_id')
                 if job_id:
                     data = agave.jobs.get(jobId=job_id)
