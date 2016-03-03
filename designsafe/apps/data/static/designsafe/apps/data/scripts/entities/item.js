@@ -15,6 +15,7 @@
                 // perms: new Chmod(model && model.rights),
                 perms: {},
                 projectTitle: model && model.projecTitle || undefined,
+                projectName: model && model.projectName || undefined,
                 experimentTitle: model && model.experimentTitle || undefined,
                 parentProjectTitle: model && model.parentProjecTitle || undefined,
                 parentExperimentTitle: model && model.parentExperimentTitle || undefined,

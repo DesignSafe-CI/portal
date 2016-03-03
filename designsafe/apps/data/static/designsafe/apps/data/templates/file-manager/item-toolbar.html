@@ -128,7 +128,8 @@
                 data-toggle="modal" 
                 data-target="#metadata" 
                 ng-show="config.allowedActions.metadata" 
-                ng-click="showMetadata(item)" 
+                ng-click="showMetadata(item)"
+                ng-if = "fielsystem == 'default'" 
                 title="{{'Metadata' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-tags"></i>
@@ -147,6 +148,18 @@
             </span>
             <span>{{'Share' | translate}}</span>
         </button>
+        <button data-target="#details" 
+                class="btn btn-sm btn-default" 
+                data-toggle="modal" 
+                ng-click="showPublicMetadata(item)" 
+                title="{{'details' | translate}}">
+            <span class="action-label">
+                <i class="glyphicon glyphicon-modal-window"></i>
+            </span>
+            <span>{{'View Metadata' | translate}}</span>
+
+        </button>
+
       </div>
     </div>
 </div>

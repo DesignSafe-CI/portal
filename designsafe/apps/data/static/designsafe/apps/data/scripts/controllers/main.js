@@ -63,13 +63,11 @@
             if ($event.keyCode != 13){
                 return;
             }
-            $scope.fileNavigator.search('{"all": "' + $event.currentTarget.value + '"}');
-            $scope.fileNavigator.currentPath = ["Search Results"]; 
+            $location.search('q', $event.currentTarget.value);
         };
 
         $scope.searchAdvanced = function(advSearch){
             $scope.fileNavigator.search(JSON.stringify(advSearch.form));
-            $scope.fileNavigator.currentPath = ["Search Results"]; 
         };
 
         $scope.touch = function(item) {
@@ -380,9 +378,17 @@
         $rootScope.$on('$locationChangeSuccess',  function(event, next, current){
             var cpath = $scope.fileNavigator.currentPath.join('/');
             var lurl = $location.url().replace(/^\//, '');
+            var qstr = $location.search();
+            console.log('qstr: ', qstr);
             if(lurl != cpath){
-                $scope.fileNavigator.currentPath = lurl.split('/');
-                $scope.fileNavigator.refresh();
+                if(qstr.q){
+                    var val = qstr.q;
+                    console.log('val: ', val);
+                    $scope.fileNavigator.search('{"all": "' + val + '"}');
+                }else{
+                    $scope.fileNavigator.currentPath = lurl.split('/');
+                    $scope.fileNavigator.refresh();
+                }
             }
         });
     }]);

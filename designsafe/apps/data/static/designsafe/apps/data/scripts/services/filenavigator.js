@@ -224,6 +224,8 @@
             var self = this;
             var path = '/';
             self.searchResults = true;
+            self.currentPath = ["Search Results"]; 
+            self.fakePath = ["Search Results"]; 
             return self.searchByTerm(searchTerm).then(function(matches){
                 self.fileList = (matches || []).map(function(file){
                     var path = file.path.split('/');
@@ -252,6 +254,8 @@
         FileNavigator.prototype.searchByTerm = function(searchTerm) {
             var self = this;
             var deferred = $q.defer();
+            self.currentPath = ["Search Results"]; 
+            self.fakePath = ["Search Results"]; 
             var url = fileManagerConfig.baseUrl + self.filesystem + '/' + fileManagerConfig.metadataUrl + '?q=' + searchTerm;
 
             self.requesting = true;

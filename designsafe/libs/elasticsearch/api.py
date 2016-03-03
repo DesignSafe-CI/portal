@@ -229,24 +229,28 @@ class PublicObject(DocType):
         #TODO: This should be done by ES, this is terribly inefficient.
         paths = self.path.split('/')
         if self.path == '/':
-            r, s = Project().search_by_name(self.project, ['title'])
+            r, s = Project().search_by_name(self.project, ['title', 'name'])
             if r.hits.total:
                 d['projecTitle'] = r[0].title[0]
+                d['projectName'] = r[0].name[0]
         elif re.search('^experiment', self.name.lower()):
             r, s = Experiment().search_by_name_and_project(self.project, self.name, ['title'])
             if r.hits.total:
                 d['experimentTitle'] = r[0].title[0]
-            r, s = Project().search_by_name(paths[0], ['title'])
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
             if r.hits.total:
                 d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
         elif len(paths) == 1:
-            r, s = Project().search_by_name(paths[0], ['title'])
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
             if r.hits.total:
                 d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
         elif len(paths) >= 2:
-            r, s = Project().search_by_name(paths[0], ['title'])
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
             if r.hits.total:
                 d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
             r, s = Experiment().search_by_name_and_project(paths[0], paths[1], ['title'])
             if r.hits.total:
                 d['parentExperimentTitle'] = r[0].title[0]
