@@ -11,5 +11,15 @@
       $scope.panel.collapsed = ! $scope.panel.collapsed;
     };
 
+    $scope.openPanel = function openPanel() {
+      $scope.panel.collapsed = false;
+    };
+
+    $scope.$on('job-submitted', function(e, data) {
+      $scope.openPanel();
+    });
+
+
+
   }]);
 })(window, angular, jQuery);
