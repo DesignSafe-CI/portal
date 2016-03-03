@@ -7,6 +7,15 @@
 <div ng-if="data.app" class="app-form-wrapper">
     <h2>Run <em>{{data.app.label}}</em></h2>
     <p>{{data.app.shortDescription}}</p>
+    <div class="alert alert-warning" ng-if="data.needsLicense">
+        <h4>Software License Required</h4>
+        <p>
+            The use of this application required that your have a {{data.app.license.type}}
+            license enabled for your account. Please visit the
+            <a href="/account/licenses/" target="_blank">manage software licenses</a>
+            section on the My Account page for details on how to enable this license.
+        </p>
+    </div>
     <form name="appForm"
           sf-schema="form.schema"
           sf-form="form.form"

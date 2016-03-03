@@ -15,23 +15,45 @@
       });
 
       $scope.resetForm = function() {
+        $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
         $scope.data.job = null;
-        $scope.form = {model: {}};
+        $scope.form = {model: {}, readonly: $scope.data.needsLicense};
         $scope.form.schema = Apps.formSchema($scope.data.app);
-        $scope.form.form = [
-          'inputs',
-          'parameters',
-          {
-            type: 'fieldset',
-            title: 'Job details',
-            items: ['name', 'archivePath']
-          },
-          {type: 'actions', items: [
-            {type: 'submit', title: 'Run', style: 'btn-primary'},
-            {type: 'button', title: 'Cancel', style: 'btn-link', onClick: 'closeApp()'}
-          ]}
-        ];
-        // console.log($scope.form);
+        $scope.form.form = [];
+
+        /* inputs */
+        var items = [];
+        if ($scope.form.schema.properties.inputs) {
+          items.push('inputs');
+        }
+        if ($scope.form.schema.properties.parameters) {
+          items.push('parameters');
+        }
+        $scope.form.form.push({
+          type: 'fieldset',
+          readonly: $scope.data.needsLicense,
+          title: 'Inputs',
+          items: items
+        });
+
+        /* job details */
+        $scope.form.form.push({
+          type: 'fieldset',
+          readonly: $scope.data.needsLicense,
+          title: 'Job details',
+          items: ['name', 'archivePath']
+        });
+
+        /* buttons */
+        items = [];
+        if (! $scope.data.needsLicense) {
+          items.push({type: 'submit', title: 'Run', style: 'btn-primary'});
+        }
+        items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
+        $scope.form.form.push({
+          type: 'actions',
+          items: items
+        });
       };
 
       $scope.onSubmit = function(form) {
@@ -81,6 +103,7 @@
       function closeApp() {
         $scope.data.app = null;
         $scope.data.job = null;
+        $scope.data.appLicenseEnabled = false;
       }
 
       $scope.$on('close-app', closeApp)
@@ -88,6 +111,6 @@
       $scope.closeApp = function() {
         $rootScope.$broadcast('close-app', $scope.data.app.id);
         closeApp();
-      }
+      };
     }]);
 })(window, angular, jQuery);

@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from designsafe.apps.workspace.tasks import submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
+from designsafe.apps.licenses.models import LICENSE_TYPES
 from dsapi.agave.daos import FileManager, shared_with_me
 from urlparse import urlparse
 from datetime import datetime
@@ -42,6 +43,15 @@ def call_api(request, service):
             app_id = request.GET.get('app_id')
             if app_id:
                 data = agave.apps.get(appId=app_id)
+                app_lic_type = app_id.split('-')[0].upper()
+                lic_type = next((t[0] for t in LICENSE_TYPES
+                                        if t[0] == app_lic_type), None)
+                data['license'] = {'type': lic_type}
+                if lic_type is not None:
+                    lic = next((l for l in request.user.licenses.all()
+                                if l.license_type == lic_type), None)
+                    data['license']['enabled'] = lic is not None
+
             else:
                 public_only = request.GET.get('publicOnly')
                 if public_only == 'true':
