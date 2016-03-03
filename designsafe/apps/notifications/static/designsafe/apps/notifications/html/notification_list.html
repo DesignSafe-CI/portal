@@ -1,12 +1,4 @@
 <div ng-if="data.notifications.length">
-    <div class="alert alert-info">
-      <h4>Coming soon!</h4>
-      <p>
-        Notifications will have action links to be able to jump to relevant pages to
-        act on the notification.
-      </p>
-    </div>
-
     <a name="delete_all" ng-click="delete('all')">Delete All</a>
     <ul class="list-group">
         <li class="list-group-item" ng-repeat="x in data.notifications">
