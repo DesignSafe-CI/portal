@@ -7,6 +7,7 @@
 <div ng-if="data.app" class="app-form-wrapper">
     <h2>Run <em>{{data.app.label}}</em></h2>
     <p>{{data.app.shortDescription}}</p>
+    <p><a href="{{data.app.helpURI}}" target="_blank"><i class="fa fa-book"></i><span> <em>{{data.app.label}}</em> Documentation</span></a></p>
     <form name="appForm"
           sf-schema="form.schema"
           sf-form="form.form"
