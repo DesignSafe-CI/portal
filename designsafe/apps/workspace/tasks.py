@@ -68,7 +68,7 @@ def watch_job_status(data):
         retries = data.get('retry', 0) + 1
         data['retry'] = retries
         logger.warning('Agave API error. Retry number %s...' % retries)
-        watch_job_status.apply_async(args=[data], countdown=10*retries)
+        watch_job_status.apply_async(args=[data], countdown=2**retries)
 
 
 @app.task
