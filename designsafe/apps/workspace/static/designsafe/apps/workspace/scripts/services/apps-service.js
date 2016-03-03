@@ -7,6 +7,7 @@
     var default_list_opts = {
       publicOnly: false
     };
+
     service.list = function(opts) {
       opts = opts || {};
       var params = _.extend(default_list_opts, opts);
@@ -40,7 +41,6 @@
       if (params.length > 0) {
         schema.properties.parameters = {
           type: 'object',
-          notitle: true,
           properties: {}
         };
         _.each(params, function(param) {
@@ -86,7 +86,6 @@
       if (inputs.length > 0) {
         schema.properties.inputs = {
           type: 'object',
-          title: 'Inputs',
           properties: {}
         };
         _.each(inputs, function(input) {

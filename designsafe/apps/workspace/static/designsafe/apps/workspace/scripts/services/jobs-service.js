@@ -3,8 +3,13 @@
   angular.module('WorkspaceApp').factory('Jobs', ['$http', 'djangoUrl', function($http, djangoUrl) {
     var service = {};
 
-    service.list = function() {
-      return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']));
+    service.list = function(options) {
+      var params = {
+        limit: options.limit || 10,
+        offset: options.offset || 0
+      };
+      return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
+        params: params});
     };
 
     service.get = function(uuid) {

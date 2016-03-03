@@ -3,7 +3,10 @@
   angular.module('WorkspaceApp').controller('JobsStatusCtrl',
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs) {
     $controller('WorkspacePanelCtrl', {$scope: $scope});
-    $scope.data = {};
+    $scope.data = {
+      hasMoreJobs: true,
+      limit: 10
+    };
 
     $scope.jobDetails = function(job) {
       Jobs.get(job.id).then(function(resp) {
@@ -21,12 +24,18 @@
 
     $scope.refresh = function() {
       $scope.data.loading = true;
-      Jobs.list().then(function(resp) {
-        $scope.data.loading = false;
-        $scope.data.jobs = resp.data;
-      });
+      Jobs.list({limit: $scope.data.limit}).then(
+        function(resp) {
+          $scope.data.loading = false;
+          $scope.data.jobs = resp.data;
+        });
     };
     $scope.refresh();
+
+    $scope.loadMore = function() {
+      $scope.data.limit += 10;
+      $scope.refresh();
+    };
 
     $scope.$on('job-submitted', function(e, data) {
       console.log(data);
