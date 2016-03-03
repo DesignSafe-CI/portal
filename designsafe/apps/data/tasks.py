@@ -58,6 +58,7 @@ def index_job_outputs(data):
 @app.task
 def share(system_id, path, username, permission, me):
     logger.debug('Sharing file/folder: {}. To: {}. Owner: {}'.format(path, username, me))
+    path_shared = path
     try:
         user = get_user_model().objects.get(username=me)
         if user.agave_oauth.expired:
@@ -68,37 +69,39 @@ def share(system_id, path, username, permission, me):
         rep = mngr.share(system_id = system_id, path = path,
                   username = username, permission = permission,
                   me = me)
+        meta_obj, ret = mngr.get(system_id, path, me, False)
+        if meta_obj.format != 'folder':
+            path_shared = meta_obj.path
         logger.debug('Successfully updated permissions: {}'.format(rep))
         DataEvent.send_generic_event({
                   'username_from': me,
                   'username_to': username,
                   'permission': permission,
-                  'action': 'share_start',
+                  'action': 'share_finished',
                   'path': path,
-                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
+                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + path_shared},
                   'html':[
-                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
-                      { 'label': 'Shared with', 'value': username},
-                      { 'label': 'Permissions set', 'value': permission},
-                      {'label': 'Message' , 'value': 'Your files are being shared.'},
-
+                      {'Message': 'Your files have been shared.'},
+                      {'Action': 'Sharing Finished'}, 
+                      {'Shared with': username},
+                      {'Permissions set': permission},
                       ]
                   },
                   [me])
         DataEvent.send_generic_event({
-                  'username_from': request.user.username,
-                  'username_to': user,
+                  'username_from': me,
+                  'username_to': username,
                   'permission': permission,
-                  'action': 'share_start',
-                  'path': self.file_path,
-                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
+                  'action': 'share_finished',
+                  'path': path,
+                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + path_shared},
                   'html':[
-                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
-                      { 'label': 'Shared with', 'value': user},
-                      { 'label': 'Permissions set', 'value': permission},
-                      {'label': 'Message' , 'value': 'Your files are being shared.'},
+                      {'Message': '{} have shared some files with you.'.format(me)},
+                      {'Action': 'Sharing Finished'}, 
+                      {'Shared with': username},
+                      {'Permissions set': permission},
                       ]
-                  }
+                  },
                   [username])
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user=%s' % job_owner)
