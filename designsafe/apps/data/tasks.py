@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from designsafe.libs.elasticsearch.api import Object
 from dsapi.agave import utils as agave_utils 
-from dsapi.agave.daos import AgaveMetaFolderFile, FileManager
+from dsapi.agave.daos import AgaveMetaFolderFile, FileManager, AgaveFolderFile
 from designsafe.apps.data.apps import DataEvent
 from agavepy.agave import Agave
 import logging
@@ -39,8 +39,18 @@ def index_job_outputs(data):
             #get_or_create_from_file(ag, base_file[0])
             for f in agave_utils.fs_walk(ag, system_id, archive_path):
                 fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
+                logger.debug('Indexing: {}'.format(fo.full_path))
                 o = Object(**fo.to_dict())
                 o.save()
+            
+            paths = archive_path.split('/')
+            for i in range(len(paths)):
+                path = '/'.join(paths)
+                fo = AgaveFolderFile.from_path(ag, system_id, path)
+                logger.debug('Indexing: {}'.format(fo.full_path))
+                o = Object(**fo.to_dict())
+                o.save()
+                paths.pop()
 
         except ObjectDoesNotExist:
             logger.exception('Unable to locate local user=%s' % job_owner)
