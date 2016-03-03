@@ -38,19 +38,13 @@ def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'research_workbench':
         return [
             {
-                'label': _('Data Depot'),
-                'url': reverse('designsafe_data:index'),
-                'children': [
-                    {
-                        'label': _('Public Data'),
-                        'url': reverse('designsafe_data:public_data'),
-                        'children': []
-                    },
-                    {
-                        'label': _('My Data'),
-                        'url': reverse('designsafe_data:my_data'),
-                        'children': []
-                    }
-                ]
+                'label': _('Public Data'),
+                'url': reverse('designsafe_data:public_data'),
+                'children': []
+            },
+            {
+                'label': _('My Data'),
+                'url': reverse('designsafe_data:my_data'),
+                'children': []
             }
         ]
