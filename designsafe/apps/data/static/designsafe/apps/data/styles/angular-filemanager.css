@@ -48,6 +48,8 @@
     margin:5px;
     min-width:170px;
     padding:0;
+    box-shadow:none;
+    border:solid #efefef 1px;
 }
 
 .file-manager .dropdown-action-menu .btn.btn-default:hover, .file-manager .dropdown-action-menu .btn.btn-default:focus {
@@ -648,4 +650,16 @@
     .modal-dialog {
         width:750px;
     }
+}
+
+.path-wrap {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display:inline-block;
+}
+
+.path-wrap:hover {
+  max-width: initial;
 }

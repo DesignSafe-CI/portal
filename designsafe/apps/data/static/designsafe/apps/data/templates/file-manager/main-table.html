@@ -6,7 +6,7 @@
                     {{"name" | translate}}
                     <span class="sortorder" ng-show="predicate[1] === 'model.name'" ng-class="{reverse:reverse}"></span>
                 </a>
-                <a href="" ng-click="order('model.projectTitle')" ng-if="filesystem != 'default'">
+                <a href="" ng-click="order('model.projectTitle')" ng-if="filesystem != 'default' && !fileNavigator.currentPath.length && !fileNavigator.searchResults">
                     <span>
                         {{"Project Title" | translate}}
                     </span>
@@ -24,12 +24,17 @@
                     <span class="sortorder" ng-show="predicate[1] === 'model.size'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
-            <th class="hidden-sm hidden-xs" ng-class="{'col-md-6': filesystem != 'default'}" ng-if="filesystem == 'default'">
-                <a href="" ng-click="order('model.date')">
+            <th class="hidden-sm hidden-xs" ng-class="{'col-md-6': filesystem != 'default'}" >
+                <a href="" ng-click="order('model.date')" ng-if="filesystem == 'default'">
                     <span>
                         {{"date" | translate}}
                     </span>
                     <span class="sortorder" ng-show="predicate[1] === 'model.date'" ng-class="{reverse:reverse}"></span>
+                </a>
+                <a ng-if = "filesystem != 'default' && fileNavigator.currentPath.length == 1">
+                    <span>
+                        {{"Title" | translate}}
+                    </span>
                 </a>
             </th>
             <!-- <th class="hidden-sm hidden-xs">
@@ -61,23 +66,35 @@
             <td >
                 <a fm-draggable data-agave-href = "{{item.model.agavePath}}" 
                    href="{{item.model.fullPath()}}" ng-click="smartClick(item, $event)" 
-                   title="{{item.model.name}} ({{item.model.sizeKb()}}kb)" class="file-folder"
-                   ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
-                    <i class="glyphicon glyphicon-folder-close" ng-show="item.model.type === 'dir'"></i>
+                   title="{{item.model.name}} ({{item.model.sizeKb()}}kb)" ng-class="{'file-folder-project': item.model.projectTitle,'file-folder-experiment': item.model.experimentTitle}" class="file-folder">
+                    <i class="glyphicon glyphicon-folder-close" 
+                        ng-show="!item.model.projectTitle && !item.model.experimentTitle && item.model.type === 'dir'"></i>
+                    <i class="glyphicon glyphicon-briefcase" 
+                        ng-show="item.model.projectTitle && item.model.type === 'dir'"></i>
+                    <i class="glyphicon glyphicon-folder-close" 
+                        ng-show="item.model.experimentTitle && item.model.type === 'dir'"></i>
                     <i class="glyphicon glyphicon-file" ng-show="item.model.type !== 'dir'"></i>
-                    <span ng-if = "!fileNavigator.searchResults">
+                    <span ng-if = "!fileNavigator.searchResults && !item.model.projectTitle && !item.model.experimentTitle">
                     {{item.model.name | strLimit : 120}}
+                    </span>
+                    <span ng-if = "!fileNavigator.searchResults && item.model.projectTitle && !item.model.experimentTitle" clas="project-title">
+                    {{item.model.projectTitle}}
+                    </span>
+                    <span ng-if = "!fileNavigator.searchResults && !item.model.projectTitle && item.model.experimentTitle" clas="experiment-title">
+                    {{item.model.name}}
                     </span>
                     <span ng-if = "fileNavigator.searchResults">
                     {{item.model.fullPath() | strLimit : 120}}
                     </span>
-                    <span ng-show="item.downloading" class="label label-warning">
-                        {{"Downloading" | translate}}...
-                    </span>
                 </a>
-                <a href = "#" ng-if="filesystem != 'default' && !fileNavigator.currentPath.length" ng-click="smartClick(item, $event)" title="{{item.model.projectTitle}}">
+                <!--
+                <a href = "#" ng-if="filesystem != 'default' && !fileNavigator.currentPath.length && !fileNavigator.searchResults" ng-click="smartClick(item, $event)" title="{{item.model.projectTitle}}">
                     {{item.model.projectTitle | translate}}
                 </a>
+                -->
+                <span ng-show="item.downloading" class="label label-warning">
+                    {{"Downloading" | translate}}...
+                </span>
             </td>
             <td class="">
               <div ng-switch="public">
@@ -96,9 +113,14 @@
                 <span ng-if="filesystem == 'default'">
                     {{item.model.date}}
                 </span>
-                <span ng-if="filesystem != 'default' && fileNavigator.currentPath.length">
+                <span ng-if="filesystem != 'default' && fileNavigator.currentPath.length == 1">
+                    {{item.model.experimentTitle}}
+                </span>
+                <!--
+                <span ng-if="filesystem != 'default' && (fileNavigator.currentPath.length || fileNavigator.searchResults)">
                     {{item.model.projectTitle | translate}}
                 </span>
+                -->
 
             </td>
             <!-- <td class="hidden-sm hidden-xs">

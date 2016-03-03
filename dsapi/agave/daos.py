@@ -196,8 +196,7 @@ class FileManager(AgaveObject):
         new_paths = new.split('/')
         if len(new_paths) >= 2:
             new_path = '/'.join(new_paths[:-1])
-            new_name = new_paths[-1]
-
+        logger.debug('new_path {}, new_name: {}'.format(new_path, new_name))
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
                         system_id = system_id,
                         path = path + '/' + name)
@@ -215,10 +214,9 @@ class FileManager(AgaveObject):
             while cnt <= objs.hits.total - len(objs):
                 for o in search[cnt:cnt+len(objs)]:
                     regex = r'^{}'.format(mf.path + '/' + mf.name)
-                    o.update(path = re.sub(regex, new_path, o.path, count = 1),
-                             name = new_name)
+                    o.update(path = re.sub(regex, new_path, o.path, count = 1))
                 cnt += len(objs)
-        mf.update(path = new_path, name = new_name)
+        mf.update(path = new_path)
 
         logger.info('Moved metadata to: {}'.format(mf.path + '/' + mf.name))
         return mf, f
@@ -345,14 +343,38 @@ class FileManager(AgaveObject):
                 ret = {}
         return meta_obj, ret
 
+    def search_public_meta(self, q, filesystem, username):
+        q = json.loads(q)
+        qs = ''
+        if 'all' in q:
+            qs = q['all']
+        d = {
+            'system_id': filesystem,
+            'username': username,
+            'qs': qs
+        }
+        d['fields'] = ['name']
+        p_res, p_s = Project().search_query(**d)
+        p_names = ['{}.groups'.format(o.name[0]) for o in p_s.scan()]
+        d['fields'] = ['project']
+        e_res, e_s = Experiment().search_query(**d) 
+        e_names = ['{}.groups'.format(o.project) for o in e_s.scan()]
+        po_names = p_names + e_names
+        d.pop('fields')
+        res, s = PublicObject().search_project_folders(system_id = filesystem, username = username, project_names = po_names)
+        return res, s
+
+
     def search_meta(self, q, filesystem, username, is_public = False):
+        #Update this with aggregation for efficiency and easier paginagion.
         q = json.loads(q)
         qs = ''
         if 'all' in q:
             qs = q['all']
         if is_public:
             res, s = PublicObject().search_query(system_id = filesystem,
-                          username = username, qs = qs)
+                         username = username, qs = qs)
+                        
         else:
             res, s = Object().search_query(system_id = filesystem,
                           username = username, qs = qs)
@@ -809,8 +831,9 @@ class AgaveFolderFile(AgaveObject):
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
-            'body': {"action": "move", "path": path}
+            'body': {"action": "move", "path": path + '/' + self.name}
         }
+        logger.debug('d: {}'.format(d))
         res = self.call_operation('files.manage', **d)
         self.path = path
         return self

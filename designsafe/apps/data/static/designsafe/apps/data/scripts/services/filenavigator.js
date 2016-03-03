@@ -7,6 +7,7 @@
 
         var FileNavigator = function(filesystem, path) {
             this.requesting = false;
+            this.searchResults = false;
             this.fileList = [];
 
              if (path === '/'){
@@ -132,6 +133,9 @@
                         return true;
                     }
                 });
+                if (!self.fakePath){
+                    self.fakePath = self.fileList[0].model.fakePath().slice(0, -1).splice(1);
+                }
                 self.buildTree(path);
             });
         };
@@ -172,14 +176,20 @@
             self.currentPath = [];
             if (item && item.isFolder()) {
                 self.currentPath = item.model.fullPath().split('/').splice(1);
+                self.fakePath = item.model.fakePath().splice(1);
             }
             self.refresh();
         };
 
         FileNavigator.prototype.upDir = function() {
             var self = this;
-            if (self.currentPath[0]) {
+            if (self.currentPath[0] && self.currentPath[0] != 'Search Results') {
                 self.currentPath = self.currentPath.slice(0, -1);
+                self.fakePath = self.fakePath.slice(0, -1);
+                self.refresh();
+            }
+            else{
+                self.currentPath = [""];
                 self.refresh();
             }
         };
@@ -187,6 +197,7 @@
         FileNavigator.prototype.goTo = function(index) {
             var self = this;
             self.currentPath = self.currentPath.slice(0, index + 1);
+            self.fakePath = self.fakePath.slice(0, index + 1);
             self.refresh();
         };
 
@@ -217,7 +228,22 @@
                 self.fileList = (matches || []).map(function(file){
                     var path = file.path.split('/');
                     path = self.filesystem == 'default'? path.splice(1): path;
+                    path = path.filter(function(p){
+                        return p.length;
+                    });
                     return new Item(file, path, self.filesystem);
+                });
+                self.fileList = self.fileList.filter(function(o){
+                    if(o.model.projectTitle){
+                        if(o.model.projectTitle.indexOf('EMPTY PROJECT') > -1 || o.model.projectTitle.indexOf('READY FOR REUSE') > -1){
+                            return false;
+                        }
+                        else{
+                            return true;
+                        }
+                    }else{
+                        return true;
+                    }
                 });
                 self.buildTree(path);
             });
@@ -238,7 +264,7 @@
             ).success(function(matches) {
                 self.deferredHandler(matches, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('Search Error.'));
+                self.deferredHandler(data, deferred, 'Search Error.');
             })['finally'](function() {
                 self.inprocess = false;
                 self.requesting = false;

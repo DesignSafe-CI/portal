@@ -64,10 +64,12 @@
                 return;
             }
             $scope.fileNavigator.search('{"all": "' + $event.currentTarget.value + '"}');
+            $scope.fileNavigator.currentPath = ["Search Results"]; 
         };
 
         $scope.searchAdvanced = function(advSearch){
             $scope.fileNavigator.search(JSON.stringify(advSearch.form));
+            $scope.fileNavigator.currentPath = ["Search Results"]; 
         };
 
         $scope.touch = function(item) {
@@ -307,7 +309,7 @@
             } else {
                 item.move().then(function() {
                     $scope.fileNavigator.refresh($scope.filesystem);
-                    $scope.modal('rename', true);
+                    $scope.modal('move', true);
                 });
             }
         };
@@ -365,7 +367,7 @@
         };
 
         $scope.refresh = function(){
-            $scope.fileNavigator.refresh()
+            $scope.fileNavigator.refresh();
         };
 
         $scope.changeLanguage($scope.getQueryParam('lang'));
@@ -373,8 +375,15 @@
         $scope.fileNavigator.refresh($scope.filesystem);
 
         $rootScope.$on('angular-filemanager', function(event, systemId, newPath) {
-          console.log('Changed to agave://' + systemId + "/" + newPath);
           $location.url(newPath);
+        });
+        $rootScope.$on('$locationChangeSuccess',  function(event, next, current){
+            var cpath = $scope.fileNavigator.currentPath.join('/');
+            var lurl = $location.url().replace(/^\//, '');
+            if(lurl != cpath){
+                $scope.fileNavigator.currentPath = lurl.split('/');
+                $scope.fileNavigator.refresh();
+            }
         });
     }]);
 })(window, angular, jQuery);

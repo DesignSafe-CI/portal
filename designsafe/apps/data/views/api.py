@@ -12,7 +12,10 @@ from designsafe.apps.data import tasks
 from .base import BaseView, BasePrivateJSONView, BasePublicJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager, FileManager
 
-import json, requests, traceback
+import json 
+import requests
+import traceback
+import itertools
 import logging
 from designsafe.libs.elasticsearch.api import Object
 logger = logging.getLogger(__name__)
@@ -93,7 +96,9 @@ class ManageView(BasePrivateJSONView):
         mngr = self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         action = body.get('action', None)
-        path = request.user.username + body.get('path', None)
+        path = body.get('path', None)
+        if not self.special_dir:
+            path = request.user.username + body.get('path', None)
         op = getattr(mngr, action)
         mf, f = op(path = self.file_path, new = path, system_id = self.filesystem, username = request.user.username)
         return self.render_to_json_response(mf.to_dict())
@@ -112,12 +117,21 @@ class ShareView(BasePrivateJSONView):
         user = body.get('user', None)
         permission = body.get('permission', None)
 
-        DataEvent.send_generic_event({'action': 'share_start', 
-                  'path': self.file_path, 
-                  'username_to': user,
+        DataEvent.send_generic_event({
                   'username_from': request.user.username,
+                  'username_to': user,
                   'permission': permission,
-                  'message': 'Your files are being shared.'},
+                  'action': 'share_start',
+                  'path': self.file_path,
+                  'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
+                  'html':[
+                      {'label': 'Action', 'value': 'Sharing Sarting'}, 
+                      {'label': 'View Files', 'value': '/data/my' + self.file_path}, 
+                      { 'label': 'Shared with', 'value': user},
+                      { 'label': 'Permissions set', 'value': permission},
+                      {'label': 'Message' , 'value': 'Your files are being shared.'},
+                      ]
+                  },
                   [request.user.username])
 
         tasks.share.delay(system_id = self.filesystem,
@@ -174,16 +188,21 @@ class MetaSearchMixin(object):
         return mgr
 
     def get(self, request, *args, **kwargs):
+        status = 200
         mgr = self.set_context_props(request, **kwargs)
         res, search = mgr.search_meta(request.GET.get('q', None), 
                           self.filesystem, 
                           request.user.username, 
                           is_public = self.is_public)
-        if res.hits.total:
-            status = 200
-        else:
-            status = 404
-        return self.render_to_json_response([o.to_dict() for o in search.scan()], status = status)
+        res_search = search[0:10]
+        response = [o.to_dict() for o in res_search]
+        if self.is_public:
+            p_res, p_search = mgr.search_public_meta(request.GET.get('q', None), 
+                              self.filesystem, 
+                              request.user.username)
+            p_res = [o.to_dict() for o in p_search.scan()]
+            response = p_res + response
+        return self.render_to_json_response(response, status = status)
 
 class MetaSearchView(MetaSearchMixin, BasePrivateJSONView):
     pass

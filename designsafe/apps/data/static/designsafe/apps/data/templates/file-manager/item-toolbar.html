@@ -12,11 +12,23 @@
                 class="btn btn-sm btn-default" 
                 ng-show="config.allowedActions.rename && filesystem == 'default' && onPrivateData()" 
                 ng-click="touch(item)" 
-                title="{{'Rename / Move' | translate}}">
+                title="{{'Move' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-edit"></i>
             </span>
-            <span>{{'Rename / Move' | translate}}</span>
+            <span>{{'Rename' | translate}}</span>
+        </button>
+
+        <button data-target="#move"
+                data-toggle="modal" 
+                class="btn btn-sm btn-default" 
+                ng-show="config.allowedActions.rename && filesystem == 'default' && onPrivateData()" 
+                ng-click="touch(item)" 
+                title="{{'Move' | translate}}">
+            <span class="action-label">
+                <i class="glyphicon glyphicon-transfer"></i>
+            </span>
+            <span>{{'Move' | translate}}</span>
         </button>
 
         <button data-target="#copy"  
