@@ -54,7 +54,9 @@ def watch_job_status(data):
         if job_status in ['FINISHED', 'FAILED']:
             # job finished, no additional tasks; notify
             logger.debug('JOB FINALIZED: id=%s status=%s' % (job_id, job_status))
+
             if job_status == 'FINISHED':
+                event_data['status']='INDEXING'
                 db_hash = job['archivePath'].replace(job['owner'], '')
                 event_data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
 

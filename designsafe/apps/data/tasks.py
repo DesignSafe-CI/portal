@@ -6,9 +6,10 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from designsafe.libs.elasticsearch.api import Object
-from dsapi.agave import utils as agave_utils 
+from dsapi.agave import utils as agave_utils
 from dsapi.agave.daos import AgaveMetaFolderFile, FileManager
 from designsafe.apps.data.apps import DataEvent
+from designsafe.apps.signals.signals import generic_event
 from agavepy.agave import Agave
 import logging
 
@@ -22,7 +23,7 @@ def index_job_outputs(data):
     job_owner = data['job_owner']
     job_id = data['job_id']
 
-    if data['status'] in ['FINISHED', 'FAILED']:
+    if data['status'] == 'INDEXING':
         try:
             user = get_user_model().objects.get(username=job_owner)
             if user.agave_oauth.expired:
@@ -42,6 +43,10 @@ def index_job_outputs(data):
                 o = Object(**fo.to_dict())
                 o.save()
 
+            data['status']='FINISHED'
+            generic_event.send_robust(None, event_type='job', event_data=data,
+                                      event_users=[username])
+
         except ObjectDoesNotExist:
             logger.exception('Unable to locate local user=%s' % job_owner)
 
@@ -59,6 +64,7 @@ def share(system_id, path, username, permission, me):
                   username = username, permission = permission,
                   me = me)
         logger.debug('Successfully updated permissions: {}'.format(rep))
+
         DataEvent.send_generic_event({
                   'username_from': me,
                   'username_to': username,
@@ -67,7 +73,7 @@ def share(system_id, path, username, permission, me):
                   'path': path,
                   'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
                   'html':[
-                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
+                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'},
                       { 'label': 'Shared with', 'value': username},
                       { 'label': 'Permissions set', 'value': permission},
                       {'label': 'Message' , 'value': 'Your files are being shared.'},
@@ -75,6 +81,7 @@ def share(system_id, path, username, permission, me):
                       ]
                   },
                   [me])
+
         DataEvent.send_generic_event({
                   'username_from': request.user.username,
                   'username_to': user,
@@ -83,7 +90,7 @@ def share(system_id, path, username, permission, me):
                   'path': self.file_path,
                   'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
                   'html':[
-                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'}, 
+                      {'label': '<b>Sharing Sarting</b>', 'value':'share_start'},
                       { 'label': 'Shared with', 'value': user},
                       { 'label': 'Permissions set', 'value': permission},
                       {'label': 'Message' , 'value': 'Your files are being shared.'},
