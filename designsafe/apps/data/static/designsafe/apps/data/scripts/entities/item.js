@@ -14,7 +14,10 @@
                 date: model && model.date,
                 // perms: new Chmod(model && model.rights),
                 perms: {},
-                projectTitle: model && model.projecTitle || '',
+                projectTitle: model && model.projecTitle || undefined,
+                experimentTitle: model && model.experimentTitle || undefined,
+                parentProjectTitle: model && model.parentProjecTitle || undefined,
+                parentExperimentTitle: model && model.parentExperimentTitle || undefined,
                 content: model && model.content || '',
                 filesystem: filesystem || 'default',
                 permissions: model && model.permissions || {},
@@ -28,7 +31,27 @@
                     }
                 },
                 fullPath: function() {
-                    return ('/' + this.path.join('/') + '/' + this.name).replace(/\/\//, '/');
+                    if (this.path.length == 1 && this.path[0] === '/'){
+                        return ('/' + this.name).replace(/\/\//g, '/');
+                    }
+                        return ('/' + this.path.join('/') + '/' + this.name).replace(/\/\//g, '/');
+                },
+                fakePath: function(){
+                    //There's the possiblitiy that this does extra replaces. 
+                    //TODO: Use regular expressions or return this path from the server.
+                    var fullPath = this.fullPath().split('/');
+                    if(filesystem != 'default'){
+                        if (this.projectTitle){
+                            fullPath[1] = this.projectTitle;
+                        }else if(this.experimentTitle){
+                            fullPath[1] = this.parentProjectTitle;
+                            fullPath[2] = this.experimentTitle;
+                        }else{
+                            fullPath[1] = this.parentProjectTitle ? this.parentProjectTitle : fullPath[1];
+                            fullPath[2] = this.parentExperimentTitle ? this.parentExperimentTitle : fullPath[2];
+                        }
+                    }
+                    return fullPath;
                 }
             };
 

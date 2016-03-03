@@ -121,15 +121,20 @@ class Project(DocType):
         doc_type = 'project'
 
 class Experiment(DocType):
-    def search_by_project(self, project):
+    def search_by_project(self, project, fields = None):
         project = re.sub(r'\.groups$', '', project)
         q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
+        if fields is not None:
+            q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
-    def search_by_name(self, name):
-        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+    def search_by_name_and_project(self, project, name, fields = None):
+        project = re.sub(r'\.groups$', '', project)
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}, {"term": {"project._exact":project}}]}} }
+        if fields is not None:
+            q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
@@ -187,13 +192,10 @@ class PublicObject(DocType):
         s.update_from_dict(q)
         return s.execute(), s
 
-    def search_query(self, system_id, username, qs):
-        fields = ["name", "path", "project"]
+    def search_query(self, system_id, username, qs, fields = None):
+        query_fields = ["name", "path", "project"]
         qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
-        if names is not None and len(names) > 0:
-            nq = {"query": {"filtered": {"query": q['query'], "filter": {"terms": {"project._exact":names}}}}}
-            q = nq
         if fields is not None:
             q['fields'] = fields
         s = self.__class__.search()
@@ -201,6 +203,14 @@ class PublicObject(DocType):
 
         return s.execute(), s
 
+    def search_project_folders(self, system_id, username, project_names, fields = None):
+        q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+
+        return s.execute(), s
     def update_from_dict(self, **d):
         if '_id' in d:
             d.pop('_id')
@@ -216,13 +226,30 @@ class PublicObject(DocType):
 
     def to_dict(self, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
-        r, s = Project().search_by_name(self.project, ['title'])
-        if r.hits.total:
-            title = r[0].title
-            if isinstance(title, AttrList):
-                d['projecTitle'] = title[0]
-            else:
-                d['projecTitle'] = title
+        #TODO: This should be done by ES, this is terribly inefficient.
+        paths = self.path.split('/')
+        if self.path == '/':
+            r, s = Project().search_by_name(self.project, ['title'])
+            if r.hits.total:
+                d['projecTitle'] = r[0].title[0]
+        elif re.search('^experiment', self.name.lower()):
+            r, s = Experiment().search_by_name_and_project(self.project, self.name, ['title'])
+            if r.hits.total:
+                d['experimentTitle'] = r[0].title[0]
+            r, s = Project().search_by_name(paths[0], ['title'])
+            if r.hits.total:
+                d['parentProjecTitle'] = r[0].title[0]
+        elif len(paths) == 1:
+            r, s = Project().search_by_name(paths[0], ['title'])
+            if r.hits.total:
+                d['parentProjecTitle'] = r[0].title[0]
+        elif len(paths) >= 2:
+            r, s = Project().search_by_name(paths[0], ['title'])
+            if r.hits.total:
+                d['parentProjecTitle'] = r[0].title[0]
+            r, s = Experiment().search_by_name_and_project(paths[0], paths[1], ['title'])
+            if r.hits.total:
+                d['parentExperimentTitle'] = r[0].title[0]
         return d
 
     class Meta:

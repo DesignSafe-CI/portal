@@ -12,7 +12,10 @@ from designsafe.apps.data import tasks
 from .base import BaseView, BasePrivateJSONView, BasePublicJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager, FileManager
 
-import json, requests, traceback
+import json 
+import requests
+import traceback
+import itertools
 import logging
 from designsafe.libs.elasticsearch.api import Object
 logger = logging.getLogger(__name__)
@@ -93,7 +96,9 @@ class ManageView(BasePrivateJSONView):
         mngr = self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         action = body.get('action', None)
-        path = request.user.username + body.get('path', None)
+        path = body.get('path', None)
+        if not self.special_dir:
+            path = request.user.username + body.get('path', None)
         op = getattr(mngr, action)
         mf, f = op(path = self.file_path, new = path, system_id = self.filesystem, username = request.user.username)
         return self.render_to_json_response(mf.to_dict())
@@ -189,9 +194,16 @@ class MetaSearchMixin(object):
                           self.filesystem, 
                           request.user.username, 
                           is_public = self.is_public)
-        if not res.hits.total:
-            status = 404
-        return self.render_to_json_response([o.to_dict() for o in search.scan()], status = status)
+        res_search = search[0:10]
+        response = [o.to_dict() for o in res_search]
+        import ipdb; ipdb.set_trace()
+        if self.is_public:
+            p_res, p_search = mgr.search_public_meta(request.GET.get('q', None), 
+                              self.filesystem, 
+                              request.user.username)
+            p_res = [o.to_dict() for o in p_search.scan()]
+            response = p_res + response
+        return self.render_to_json_response(response, status = status)
 
 class MetaSearchView(MetaSearchMixin, BasePrivateJSONView):
     pass
