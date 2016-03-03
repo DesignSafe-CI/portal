@@ -4,10 +4,12 @@ from designsafe.apps.data.views.base import BasePrivateTemplate, BasePublicTempl
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-urlpatterns = patterns('designsafe.apps.data.views.base',
-    url(r'^$', BasePublicTemplate.as_view(template_name='data/index.html'), name='index'),
-    url(r'^my/$', BasePrivateTemplate.as_view(template_name='data/my_data.html'), name='my_data'),
-    url(r'^public/$', BasePublicTemplate.as_view(template_name='data/public_data.html'), name='public_data'),
+urlpatterns = patterns(
+    'designsafe.apps.data.views.base',
+    url(r'^my/$', BasePrivateTemplate.as_view(template_name='data/my_data.html'),
+        name='my_data'),
+    url(r'^public/$', BasePublicTemplate.as_view(template_name='data/public_data.html'),
+        name='public_data'),
 
 )
 
