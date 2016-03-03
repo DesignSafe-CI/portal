@@ -12,24 +12,24 @@ urlpatterns = patterns('designsafe.apps.data.views.base',
 )
 
 urlpatterns += patterns('designsafe.apps.data.views.api',
-    url(r'^api/default/listings/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ListingsView.as_view(filesystem='default'), name='listings'),
-    url(r'^api/default/download/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', DownloadView.as_view(filesystem='default'), name='download'),
-    url(r'^api/default/upload/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', UploadView.as_view(filesystem='default'), name='upload'),
+    url(r'^api/default/listings/(?P<file_path>[ \S]+)?$', ListingsView.as_view(filesystem='default'), name='listings'),
+    url(r'^api/default/download/(?P<file_path>[ \S]+)?$', DownloadView.as_view(filesystem='default'), name='download'),
+    url(r'^api/default/upload/(?P<file_path>[ \S]+)?$', UploadView.as_view(filesystem='default'), name='upload'),
     url(r'^api/default/meta/?$', MetaSearchView.as_view(filesystem='default'), name='meta_search'),
-    url(r'^api/default/meta/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', MetadataView.as_view(filesystem='default'), name='metadata'),
-    url(r'^api/default/rename/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
-    url(r'^api/default/move/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
-    url(r'^api/default/copy/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
-    url(r'^api/default/delete/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
-    url(r'^api/default/mkdir/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
-    url(r'^api/default/share/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', ShareView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/meta/(?P<file_path>[ \S]+)?$', MetadataView.as_view(filesystem='default'), name='metadata'),
+    url(r'^api/default/rename/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/move/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/copy/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/delete/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/mkdir/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/share/(?P<file_path>[ \S]+)?$', ShareView.as_view(filesystem='default'), name='manage'),
 )
 
 urlpatterns += patterns('designsafe.apps.data.views.api',
-    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/listings/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', PublicListingsView.as_view(), name='listings'),
-    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/download/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', PublicDownloadView.as_view(), name='download'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/listings/(?P<file_path>[ \S]+)?$', PublicListingsView.as_view(), name='listings'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/download/(?P<file_path>[ \S]+)?$', PublicDownloadView.as_view(), name='download'),
     url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/?$', PublicMetaSearchView.as_view(), name='meta_search'),
-    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/(?P<file_path>[ a-zA-Z\-\_\.0-9\/]+)?$', PublicMetadataView.as_view(), name='metadata'),
+    url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/(?P<file_path>[ \S]+)?$', PublicMetadataView.as_view(), name='metadata'),
 )
 
 def menu_items(**kwargs):
