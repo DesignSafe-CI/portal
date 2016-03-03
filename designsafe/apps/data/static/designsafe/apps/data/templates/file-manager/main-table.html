@@ -116,6 +116,9 @@
                 <span ng-if="filesystem != 'default' && fileNavigator.currentPath.length == 1">
                     {{item.model.experimentTitle}}
                 </span>
+                <span ng-if="filesystem != 'default' && fileNavigator.searchResults && item.model.projectTitle">
+                    {{item.model.projectTitle}}
+                </span>
                 <!--
                 <span ng-if="filesystem != 'default' && (fileNavigator.currentPath.length || fileNavigator.searchResults)">
                     {{item.model.projectTitle | translate}}
