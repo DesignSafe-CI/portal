@@ -132,7 +132,9 @@ def call_api(request, service):
 
                 else:
                     # list jobs
-                    data = agave.jobs.list()
+                    limit = request.GET.get('limit', 10)
+                    offset = request.GET.get('offset', 0)
+                    data = agave.jobs.list(limit=limit, offset=offset)
 
             elif request.method == 'GET':
                 # get specific job info
@@ -142,7 +144,9 @@ def call_api(request, service):
                     db_hash = data['archivePath'].replace(data['owner'], '')
                     data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
                 else:
-                    data = agave.jobs.list()
+                    limit = request.GET.get('limit', 10)
+                    offset = request.GET.get('offset', 0)
+                    data = agave.jobs.list(limit=limit, offset=offset)
             else:
                 return HttpResponse('Unexpected service: %s' % service, status=400)
 

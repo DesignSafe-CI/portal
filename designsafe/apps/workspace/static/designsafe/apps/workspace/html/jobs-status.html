@@ -18,6 +18,12 @@
                 <button class="btn btn-sm btn-default" ng-click="jobDetails(job)"><i class="fa fa-info-circle"></i><span class="hidden-md"> More info</span></button>
             </li>
         </ul>
+        <button class="btn btn-sm btn-block btn-default"
+                ng-disabled="!data.hasMoreJobs"
+                ng-click="loadMore()">
+            <i class="fa fa-refresh" ng-class="{'fa-spin': data.loading}"></i>
+            Load more jobs
+        </button>
     </div>
 </div>
 <button type="button" class="btn btn-xs btn-default workspace-panel-toggle" ng-click="togglePanel()">
