@@ -196,7 +196,6 @@ class MetaSearchMixin(object):
                           is_public = self.is_public)
         res_search = search[0:10]
         response = [o.to_dict() for o in res_search]
-        import ipdb; ipdb.set_trace()
         if self.is_public:
             p_res, p_search = mgr.search_public_meta(request.GET.get('q', None), 
                               self.filesystem, 
