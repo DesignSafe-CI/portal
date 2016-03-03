@@ -57,8 +57,8 @@ def watch_job_status(data):
 
             if job_status == 'FINISHED':
                 event_data['status']='INDEXING'
-                db_hash = job['archivePath'].replace(job['owner'], '')
-                event_data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
+                # db_hash = job['archivePath'].replace(job['owner'], '')
+                # event_data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
 
             generic_event.send_robust(None, event_type='job', event_data=event_data,
                                       event_users=[username])

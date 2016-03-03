@@ -5,6 +5,7 @@ from designsafe.celery import app
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from designsafe.libs.elasticsearch.api import Object
 from dsapi.agave import utils as agave_utils
 from dsapi.agave.daos import AgaveMetaFolderFile, FileManager, AgaveFolderFile
@@ -54,6 +55,8 @@ def index_job_outputs(data):
                 paths.pop()
 
             data['status']='FINISHED'
+            db_hash = data['archivePath'].replace(data['owner'], '')
+            event_data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
             generic_event.send_robust(None, event_type='job', event_data=data,
                                       event_users=[username])
 
