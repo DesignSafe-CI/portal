@@ -5,14 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from designsafe.apps.workspace.tasks import submit_job
+from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from designsafe.apps.licenses.models import LICENSE_TYPES
 from dsapi.agave.daos import FileManager, shared_with_me
+from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
 import json
-import os
 import six
 import logging
 
@@ -32,13 +32,9 @@ def index(request):
 
 @login_required
 def call_api(request, service):
-    task_id = ''
-    token = request.user.agave_oauth.token
-    access_token = token.get('access_token', None)
-    server = os.environ.get('AGAVE_TENANT_BASEURL')
-
     try:
-        agave = Agave(api_server=server, token=access_token)
+        token = request.user.agave_oauth
+        agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
         if service == 'apps':
             app_id = request.GET.get('app_id')
             if app_id:
@@ -117,14 +113,17 @@ def call_api(request, service):
         elif service == 'jobs':
             if request.method == 'DELETE':
                 job_id = request.GET.get('job_id')
-                data = []
                 data = agave.jobs.delete(jobId=job_id)
             elif request.method == 'POST':
                 job_post = json.loads(request.body)
                 job_id = job_post.get('job_id')
-                if job_id: #cancel job / stop job
+
+                # cancel job / stop job
+                if job_id:
                     data = agave.jobs.manage(jobId=job_id, body='{"action":"stop"}')
-                elif job_post: #submit job
+
+                # submit job
+                elif job_post:
                     # parse agave:// URI into "archiveSystem" and "archivePath"
                     if ('archivePath' in job_post and
                             job_post['archivePath'].startswith('agave://')):
@@ -138,21 +137,31 @@ def call_api(request, service):
                                 request.user.username,
                                 datetime.now().strftime('%Y-%m-%d'))
 
-                    data = submit_job(request, agave, job_post)
+                    try:
+                        data = submit_job(request, request.user.username, job_post)
+                    except JobSubmitError as e:
+                        data = e.json()
+                        logger.debug(data)
+                        return HttpResponse(json.dumps(data),
+                                            content_type='application/json',
+                                            status=e.status_code)
 
+                # list jobs (via POST?)
                 else:
-                    # list jobs
                     limit = request.GET.get('limit', 10)
                     offset = request.GET.get('offset', 0)
                     data = agave.jobs.list(limit=limit, offset=offset)
 
             elif request.method == 'GET':
-                # get specific job info
                 job_id = request.GET.get('job_id')
+
+                # get specific job info
                 if job_id:
                     data = agave.jobs.get(jobId=job_id)
                     db_hash = data['archivePath'].replace(data['owner'], '')
                     data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
+
+                # list jobs
                 else:
                     limit = request.GET.get('limit', 10)
                     offset = request.GET.get('offset', 0)
@@ -162,24 +171,27 @@ def call_api(request, service):
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
-    except AgaveException as ae:
-        return HttpResponse(json.dumps(ae.message), status=400,
-            content_type='application/json')
+    except HTTPError as e:
+        return HttpResponse(json.dumps(e.response),
+                            content_type='application/json',
+                            status=400)
+    except AgaveException as e:
+        return HttpResponse(json.dumps(e.message), content_type='application/json',
+                            status=400)
     except Exception as e:
         return HttpResponse(
-            json.dumps({'status': 'error', 'message': '{}'.format(e.message)}), status=400,
-            content_type='application/json')
+            json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+            content_type='application/json', status=400)
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
-        content_type='application/json')
+                        content_type='application/json')
 
 @login_required
 def interactive2(request, hostname, port, password):
     context = {}
-    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
-    if token_key in request.session:
-        context['session'] = {
-            'agave': json.dumps(request.session[token_key])
-        }
+    token = request.user.agave_oauth
+    context['session'] = {
+        'agave': json.dumps(token.token)
+    }
 
     return render(request, 'designsafe/apps/workspace/vnc-desktop2.html', context)

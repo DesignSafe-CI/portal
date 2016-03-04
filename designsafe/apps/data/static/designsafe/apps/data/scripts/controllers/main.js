@@ -63,13 +63,12 @@
             if ($event.keyCode != 13){
                 return;
             }
-            $scope.fileNavigator.search('{"all": "' + $event.currentTarget.value + '"}');
-            $scope.fileNavigator.currentPath = ["Search Results"]; 
+            $location.search('q', $event.currentTarget.value);
         };
+
 
         $scope.searchAdvanced = function(advSearch){
             $scope.fileNavigator.search(JSON.stringify(advSearch.form));
-            $scope.fileNavigator.currentPath = ["Search Results"]; 
         };
 
         $scope.touch = function(item) {
@@ -377,12 +376,32 @@
         $rootScope.$on('angular-filemanager', function(event, systemId, newPath) {
           $location.url(newPath);
         });
+
+        var escapeJSONstring = function(str){
+        	return str.replace(/\\n/g, "\\n")
+					  .replace(/\'/g, "\\\'")
+					  .replace(/\"/g, '\\\"')
+					  .replace(/\&/g, "\\\&")
+					  .replace(/\\r/g, "\\r")
+					  .replace(/\\t/g, "\\t")
+					  .replace(/\\b/g, "\\b")
+					  .replace(/\\f/g, "\\f");
+        };
+
         $rootScope.$on('$locationChangeSuccess',  function(event, next, current){
             var cpath = $scope.fileNavigator.currentPath.join('/');
             var lurl = $location.url().replace(/^\//, '');
+            var qstr = $location.search();
+            console.log('qstr: ', qstr);
             if(lurl != cpath){
-                $scope.fileNavigator.currentPath = lurl.split('/');
-                $scope.fileNavigator.refresh();
+                if(qstr.q){
+                    var val = qstr.q;
+                    console.log('val: ', val);
+                    $scope.fileNavigator.search('{"all": "' + escapeJSONstring(val) + '"}');
+                }else{
+                    $scope.fileNavigator.currentPath = lurl.split('/');
+                    $scope.fileNavigator.refresh();
+                }
             }
         });
     }]);

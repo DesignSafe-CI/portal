@@ -95,7 +95,7 @@ class Project(DocType):
                   "pis.firstName",
                   "pis.lastName",
                   "title"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -148,7 +148,7 @@ class Experiment(DocType):
                   "project",
                   "startDate",
                   "title"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -194,7 +194,7 @@ class PublicObject(DocType):
 
     def search_query(self, system_id, username, qs, fields = None):
         query_fields = ["name", "path", "project"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -229,24 +229,28 @@ class PublicObject(DocType):
         #TODO: This should be done by ES, this is terribly inefficient.
         paths = self.path.split('/')
         if self.path == '/':
-            r, s = Project().search_by_name(self.project, ['title'])
+            r, s = Project().search_by_name(self.project, ['title', 'name'])
             if r.hits.total:
                 d['projecTitle'] = r[0].title[0]
+                d['projectName'] = r[0].name[0]
         elif re.search('^experiment', self.name.lower()):
             r, s = Experiment().search_by_name_and_project(self.project, self.name, ['title'])
             if r.hits.total:
                 d['experimentTitle'] = r[0].title[0]
-            r, s = Project().search_by_name(paths[0], ['title'])
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
             if r.hits.total:
                 d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
         elif len(paths) == 1:
-            r, s = Project().search_by_name(paths[0], ['title'])
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
             if r.hits.total:
                 d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
         elif len(paths) >= 2:
-            r, s = Project().search_by_name(paths[0], ['title'])
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
             if r.hits.total:
                 d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
             r, s = Experiment().search_by_name_and_project(paths[0], paths[1], ['title'])
             if r.hits.total:
                 d['parentExperimentTitle'] = r[0].title[0]
@@ -325,7 +329,7 @@ class Object(DocType):
 
     def search_query(self, system_id, username, qs):
         fields = ["name", "path", "keywords"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)

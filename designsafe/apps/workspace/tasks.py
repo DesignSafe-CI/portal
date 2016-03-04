@@ -7,6 +7,7 @@ from agavepy.agave import Agave, AgaveException
 
 import logging
 import requests
+from requests import ConnectionError, HTTPError, RequestException
 import json
 
 from django.contrib.auth import get_user_model
@@ -14,9 +15,74 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.conf import settings
-from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
+
+
+class JobSubmitError(Exception):
+
+    def __init__(self, *args, **kwargs):
+        self.status = kwargs.pop('status', 'error')
+        self.status_code = kwargs.pop('status_code', 500)
+        self.message = kwargs.pop('message', None)
+
+    def json(self):
+        return {
+            'status': getattr(self, 'status', 'error'),
+            'message': getattr(self, 'message', None)
+        }
+
+
+@app.task
+def submit_job(request, username, job_post, retry=1):
+    logger.info('Submitting job for user=%s: %s' % (username, job_post))
+
+    try:
+        user = get_user_model().objects.get(username=username)
+        token = user.agave_oauth
+        if token.expired:
+            token.refresh()
+        agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
+        response = agave.jobs.submit(body=job_post)
+        logger.debug('Job Submission Response: {}'.format(response))
+        # watch job status
+        task_data = {
+            'username': request.user.username,
+            'job_id': response['id']
+        }
+        watch_job_status.apply_async(args=[task_data], countdown=10)
+        return response
+
+    except ConnectionError as e:
+        logger.warning('ConnectionError while submitting job: %s' % e.response)
+        logger.info('Retry %s for job submission %s' % (retry, job_post))
+        retry += 1
+        # submit_job.delay(user, job_post, countdown=2**retry)
+        raise JobSubmitError(status='error',
+                             status_code=500,
+                             message='We were unable to submit your job at this time due '
+                                     'to a Job Service Interruption. Your job will be '
+                                     'automatically resubmitted when the Job Service is '
+                                     'available.')
+
+    except HTTPError as e:
+        logger.warning('HTTPError while submitting job: %s' % e.response)
+        if e.response.status_code >= 500:
+            logger.info('Retry %s for job submission %s' % (retry, job_post))
+            retry += 1
+            # submit_job.delay(user, job_post, countdown=2**retry)
+            raise JobSubmitError(
+                status='error',
+                status_code=e.response.status_code,
+                message='We were unable to submit your job at this time due '
+                        'to a Job Service Interruption. Your job will be '
+                        'automatically resubmitted when the Job Service is '
+                        'available.')
+
+        err_resp = e.response.json()
+        err_resp['status_code'] = e.response.status_code
+        logger.error(err_resp)
+        raise JobSubmitError(**err_resp)
 
 
 @shared_task
@@ -79,41 +145,6 @@ def watch_job_status(data):
         data['retry'] = retries
         logger.warning('Agave API error. Retry number %s...' % retries)
         watch_job_status.apply_async(args=[data], countdown=2**retries)
-
-
-@app.task
-def submit_job(request, agave, job_post):
-    logger.info('submitting job: {0}'.format(job_post))
-
-    # subscribe to notifications
-    # notify_url = request.build_absolute_uri(reverse('jobs_webhook'))
-    # query = 'uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}' \
-    #         '&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
-    # notify = {
-    #     'url': '%s?%s' % (notify_url, query),
-    #     'event': '*',
-    #     'persistent': True
-    # }
-    # if 'notifications' in job_post:
-    #     job_post['notifications'].append(notify)
-    # else:
-    #     job_post['notifications'] = [notify]
-
-    try:
-        response = agave.jobs.submit(body=job_post)
-
-        task_data = {
-            'username': request.user.username,
-            'job_id': response['id']
-        }
-        watch_job_status.apply_async(args=[task_data], countdown=10)
-    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
-        logger.info('Task HTTPError {0}: {1}'.format(e.response.status_code, e.__class__))
-        submit_job.retry(exc=e("Agave is currently down. Your job will be submitted when "
-                               "it returns."), max_retries=None)
-    logger.info('agave response: {}'.format(response))
-
-    return response
 
 
 @app.task

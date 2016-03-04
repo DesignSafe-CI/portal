@@ -344,6 +344,7 @@ class FileManager(AgaveObject):
         return meta_obj, ret
 
     def search_public_meta(self, q, filesystem, username):
+        logger.debug('Q string: {}'.format(q))
         q = json.loads(q)
         qs = ''
         if 'all' in q:
@@ -367,6 +368,7 @@ class FileManager(AgaveObject):
 
     def search_meta(self, q, filesystem, username, is_public = False):
         #Update this with aggregation for efficiency and easier paginagion.
+        logger.debug('Q string: {}'.format(q))
         q = json.loads(q)
         qs = ''
         if 'all' in q:

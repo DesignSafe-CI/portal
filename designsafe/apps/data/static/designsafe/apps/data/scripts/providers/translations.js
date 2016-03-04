@@ -95,10 +95,16 @@
             fundorgprojid: "Sponsor",
             organization: "Organization",
             description: "Description",
+            sponsor: "Sponsor",
 
             // public data - experiment
             project: "Project",
-            facility: "Facility"
+            facility: "Facility",
+            type: "Experiment Type",
+            component: "Component",
+            equipmentClass: "Equipment Class",
+            material: "Materials"
+
 
 
         });

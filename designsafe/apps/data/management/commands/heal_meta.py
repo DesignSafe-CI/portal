@@ -26,5 +26,6 @@ class Command(BaseCommand):
         for f in agave_utils.fs_walk(agave_client = ag, system_id = system_id, folder = base_path):
             self.stdout.write(f['path'])
             fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
-            o = Object(fo.to_dict())
+            o = Object(**fo.to_dict())
+            self.stdout.write('Id: {}'.format(o._id))
             o.save()

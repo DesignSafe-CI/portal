@@ -125,11 +125,10 @@ class ShareView(BasePrivateJSONView):
                   'path': self.file_path,
                   'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
                   'html':[
-                      {'label': 'Action', 'value': 'Sharing Sarting'}, 
-                      {'label': 'View Files', 'value': '/data/my' + self.file_path}, 
-                      { 'label': 'Shared with', 'value': user},
-                      { 'label': 'Permissions set', 'value': permission},
-                      {'label': 'Message' , 'value': 'Your files are being shared.'},
+                      {'Message''Your files are been shared.'},
+                      {'Action': 'Sharing Sarting'}, 
+                      {'Shared with': user},
+                      {'Permissions set': permission},
                       ]
                   },
                   [request.user.username])

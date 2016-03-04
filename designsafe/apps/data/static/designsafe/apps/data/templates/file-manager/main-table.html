@@ -14,8 +14,8 @@
                 </a>
             </th>
             <th class="">
-                <a href="" ng-click="order('model.date')">
-                    <span class="sortorder" ng-class="{reverse:reverse}">Action</span>
+                <a href="">
+                    <span>Action</span>
                 </a>
             </th>
             <th class="hidden-xs hidden-sm" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
@@ -35,6 +35,12 @@
                     <span>
                         {{"Title" | translate}}
                     </span>
+                </a>
+                <a ng-if = "filesystem != 'default' && fileNavigator.currentPath.length == 0"  ng-click="order('model.projectName')" href="">
+                    <span>
+                        {{"Project Name" | translate}}
+                    </span>
+                    <span class="sortorder" ng-show="predicate[1] === 'model.projectName'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
             <!-- <th class="hidden-sm hidden-xs">
@@ -83,8 +89,11 @@
                     <span ng-if = "!fileNavigator.searchResults && !item.model.projectTitle && item.model.experimentTitle" clas="experiment-title">
                     {{item.model.name}}
                     </span>
-                    <span ng-if = "fileNavigator.searchResults">
+                    <span ng-if = "fileNavigator.searchResults && !item.model.projectTitle">
                     {{item.model.fullPath() | strLimit : 120}}
+                    </span>
+                    <span ng-if = "fileNavigator.searchResults && item.model.projectTitle">
+                    {{item.model.projectTitle}}
                     </span>
                 </a>
                 <!--
@@ -97,13 +106,7 @@
                 </span>
             </td>
             <td class="">
-              <div ng-switch="public">
-                <div ng-switch-when="true">
-                  <div ng-include="config.tplPath + '/item-toolbar-public.html'"></div>
-                </div>
-                <div ng-switch-default>
                   <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
-                </div>
             </td>
             <td class="hidden-sm hidden-xs" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
                 {{item.model.sizeKb()}}kb
@@ -116,8 +119,8 @@
                 <span ng-if="filesystem != 'default' && fileNavigator.currentPath.length == 1">
                     {{item.model.experimentTitle}}
                 </span>
-                <span ng-if="filesystem != 'default' && fileNavigator.searchResults && item.model.projectTitle">
-                    {{item.model.projectTitle}}
+                <span ng-if="filesystem != 'default' && item.model.projectTitle">
+                    {{item.model.projectName}}
                 </span>
                 <!--
                 <span ng-if="filesystem != 'default' && (fileNavigator.currentPath.length || fileNavigator.searchResults)">
