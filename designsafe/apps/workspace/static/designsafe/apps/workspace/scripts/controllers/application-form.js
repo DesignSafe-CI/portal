@@ -65,8 +65,10 @@
               inputs: [],
               parameters: []
           };
+
           /* copy form model to disconnect from $scope */
           _.extend(jobData, angular.copy($scope.form.model));
+
           /* remove falsy input/parameter */
           _.each(jobData.inputs, function(v,k) {
             if (_.isArray(v)) {
@@ -84,8 +86,11 @@
               }
             }
           });
+
+          $scope.data.submitting = true;
           Jobs.submit(jobData).then(
             function(resp) {
+              $scope.data.submitting = false;
               $rootScope.$broadcast('job-submitted', resp.data);
               $scope.data.job = resp.data;
               $scope.form.form[$scope.form.form.length - 1].items[0] = {
@@ -95,7 +100,12 @@
                 onClick: 'resetForm()'
               };
             }, function(err) {
-              window.alert(err.data.message);
+              $scope.data.submitting = false;
+              var error_message = err.data.message || 'Unexpected error';
+
+              var notice = 'Your job submission failed with the following message:\n\n' + error_message +
+                           '\n\nPlease try again. If this problem persists, please submit a support ticket.';
+              window.alert(notice);
             });
         }
       };
