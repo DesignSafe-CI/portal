@@ -55,10 +55,16 @@ def index_job_outputs(data):
                 paths.pop()
 
             data['status']='FINISHED'
-            db_hash = data['archivePath'].replace(data['owner'], '')
-            event_data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
+            data['html'][1]={'Status': 'FINISHED'} #TODO - dynamically find the index
+            # index=next((i for i,x in enumerate(data['html']) if 'Status' in x),None)
+            # logger.info('index of Status: {}'.format(str(index))) #why is this None?
+
+            db_hash = archive_path.replace(job_owner, '')
+            data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
+
             generic_event.send_robust(None, event_type='job', event_data=data,
-                                      event_users=[username])
+                                      event_users=[job_owner])
+            logger.info('data with action link: {}'.format(str(data)))
 
         except ObjectDoesNotExist:
             logger.exception('Unable to locate local user=%s' % job_owner)

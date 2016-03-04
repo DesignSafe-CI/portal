@@ -31,7 +31,11 @@ def watch_job_status(data):
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=user.agave_oauth.token['access_token'])
         job = ag.jobs.get(jobId=job_id)
+
         job_status = job['status']
+        if job_status == 'FINISHED':
+            job_status = 'INDEXING'
+
         job_name = job['name']
 
         event_data = {
@@ -51,14 +55,9 @@ def watch_job_status(data):
             # clear out any past retries
             del data['retry']
 
-        if job_status in ['FINISHED', 'FAILED']:
+        if job_status in ['INDEXING', 'FINISHED', 'FAILED']:
             # job finished, no additional tasks; notify
             logger.debug('JOB FINALIZED: id=%s status=%s' % (job_id, job_status))
-
-            if job_status == 'FINISHED':
-                event_data['status']='INDEXING'
-                # db_hash = job['archivePath'].replace(job['owner'], '')
-                # event_data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
 
             generic_event.send_robust(None, event_type='job', event_data=event_data,
                                       event_users=[username])
