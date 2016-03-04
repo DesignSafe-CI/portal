@@ -65,7 +65,7 @@
                         </td>
                         <td>
                             <div ng-repeat="sponsor in publicMetadata.project.sponsor">
-                                <a ng-href="{{sponsor.url}}">{{sponsor.name}}</a>
+                                <a ng-href="{{sponsor.url}}" target="_blank">{{sponsor.name}}</a>
                             </div>
                         </td>
                     </tr>
@@ -208,14 +208,21 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr ng-if="(experiment.systemId && experiment.path)">
+                                    <tr ng-if="(experiment.systemId && experiment.experimentPath)">
                                         <td>
-                                            {{'title' | translate}}
+                                            {{'files' | translate}}
                                         </td>
                                         <td>
-                                            {{experiment.title}}
+                                          <a fm-draggable data-agave-href = "agave://{{experiment.systemId}}/{{experiment.experimentPath}}"
+                                             href="#/{{experiment.experimentPath}}"
+                                             target="_blank"
+                                             title="some title" class="file-folder">
+                                             <i class="glyphicon glyphicon-folder-close"></i>
+                                              /{{experiment.experimentPath}}
+                                           </a>
                                         </td>
                                     </tr>
+
                                 </tbody>
                             </table>
                         </td>
