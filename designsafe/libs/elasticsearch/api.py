@@ -95,7 +95,7 @@ class Project(DocType):
                   "pis.firstName",
                   "pis.lastName",
                   "title"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -148,7 +148,7 @@ class Experiment(DocType):
                   "project",
                   "startDate",
                   "title"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -194,7 +194,7 @@ class PublicObject(DocType):
 
     def search_query(self, system_id, username, qs, fields = None):
         query_fields = ["name", "path", "project"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -329,7 +329,7 @@ class Object(DocType):
 
     def search_query(self, system_id, username, qs):
         fields = ["name", "path", "keywords"]
-        qs = '*{}*'.format(qs)
+        #qs = '*{}*'.format(qs)
         q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
