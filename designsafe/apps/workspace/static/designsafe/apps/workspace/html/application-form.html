@@ -27,6 +27,13 @@
           sf-model="form.model"
           sf-options="{ supressPropertyTitles: true }"
           ng-submit="onSubmit(appForm)"></form>
+
+    <div ng-if="data.submitting">
+        <span class="label label-info">
+            <i class="fa fa-refresh fa-spin"></i>
+            Submitting job...
+        </span>
+    </div>
 </div>
 
 <div ng-if="data.job" class="alert alert-success">
