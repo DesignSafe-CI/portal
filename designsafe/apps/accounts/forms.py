@@ -363,7 +363,6 @@ class UserRegistrationForm(forms.Form):
         safe_data['password'] = safe_data['confirmPassword'] = '********'
 
         logger.info('Attempting new user registration: %s' % safe_data)
-
         tas_user = TASClient().save_user(None, data)
 
         # create local user

@@ -85,4 +85,4 @@ class AgaveServiceStatus(object):
             else:
                 raise Exception(data)
         except HTTPError:
-            logger.exception('Agave Service Status update failed')
+            logger.warning('Agave Service Status update failed')

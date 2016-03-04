@@ -1,6 +1,7 @@
+from django.conf import settings
 from agavepy.agave import Agave, AgaveException
 from celery import shared_task
-from django.conf import settings
+from requests import HTTPError
 import logging
 import json
 
@@ -19,5 +20,7 @@ def check_or_create_agave_home_dir(username):
         ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
                         filePath='/',
                         body=json.dumps(body))
-    except AgaveException:
-        logger.exception('Failed to create home directory for user=%s' % username)
+    except (HTTPError, AgaveException):
+        logger.exception('Failed to create home directory.',
+                         extra={'user': username,
+                                'systemId': settings.AGAVE_STORAGE_SYSTEM})

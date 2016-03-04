@@ -58,7 +58,7 @@ class TASBackend(ModelBackend):
                 else:
                     raise ValidationError('Authentication Error', 'Your username or password is incorrect.')
             except Exception as e:
-                self.logger.error(e.args)
+                self.logger.warning(e.args)
                 if re.search(r'PendingEmailConfirmation', e.args[1]):
                     raise ValidationError('Please confirm your email address before logging in.')
                 else:

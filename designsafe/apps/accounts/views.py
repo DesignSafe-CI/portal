@@ -253,7 +253,6 @@ def register(request):
                 )
                 return HttpResponseRedirect('/')
             except Exception as e:
-                logger.exception('Error saving user!')
                 logger.info('error: {}'.format(e))
 
                 error_type = e.args[1] if len(e.args) > 1 else ''
@@ -278,10 +277,13 @@ def register(request):
                         'requirements.')
                     account_form._errors.setdefault('password', [err_msg])
                 else:
+
+                    safe_data = account_form.cleaned_data.copy()
+                    safe_data['password'] = safe_data['confirmPassword'] = '********'
+                    logger.exception('User Registration Error!', extra=safe_data)
                     err_msg = (
                         'An unexpected error occurred. If this problem persists '
                         'please create a support ticket.')
-
                 messages.error(request, err_msg)
         else:
             messages.error(request, 'There were errors processing your registration. '
@@ -404,7 +406,6 @@ def _process_password_reset_request(request, form):
             resp = tas.request_password_reset(user['username'], source='DesignSafe')
             logger.debug(resp)
         except Exception as e:
-            logger.debug(e)
             logger.exception('Failed password reset request')
 
         return True
@@ -417,9 +418,9 @@ def _process_password_reset_confirm(request, form):
         data = form.cleaned_data
         try:
             tas = TASClient()
-            return tas.confirm_password_reset(data['username'], data['code'], data['password'], source='DesignSafe')
+            return tas.confirm_password_reset(data['username'], data['code'],
+                                              data['password'], source='DesignSafe')
         except Exception as e:
-            logger.exception('Password reset failed')
             if len(e.args) > 1:
                 if re.search('account does not match', e.args[1]):
                     form.add_error('username', e.args[1])
@@ -430,6 +431,7 @@ def _process_password_reset_confirm(request, form):
                 elif re.search('expired', e.args[1]):
                     form.add_error('code', e.args[1])
                 else:
+                    logger.exception('Password reset failed')
                     form.add_error('__all__', 'An unexpected error occurred. '
                                               'Please try again')
             else:

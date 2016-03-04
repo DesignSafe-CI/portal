@@ -104,4 +104,4 @@ def share(system_id, path, username, permission, me):
                   },
                   [username])
     except ObjectDoesNotExist:
-        logger.exception('Unable to locate local user=%s' % job_owner)
+        logger.exception('Unable to locate local user=%s' % username)

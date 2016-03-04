@@ -316,10 +316,12 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'default': {
-            'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: %(message)s'
+            'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'agave': {
-            'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: %(message)s'
+            'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s '
+                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
     },
     'handlers': {
@@ -328,32 +330,23 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'agave': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'agave',
+        'opbeat': {
+            'level': 'ERROR',
+            'class': 'opbeat.contrib.django.handlers.OpbeatHandler',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'opbeat'],
             'level': 'INFO',
             'propagate': True,
         },
         'designsafe': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-        'meetings': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-        'tas': {
-            'handlers': ['console'],
+            'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
         'dsapi':{
-            'handlers': ['console'],
+            'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
     },
