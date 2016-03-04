@@ -791,7 +791,7 @@ class AgaveFolderFile(AgaveObject):
 
     def download_postit(self):
         postit_data = {
-            'url': self.link,
+            'url': self.link + '?force=true',
             'maxUses': 1,
             'method': 'GET',
             'lifetime': 60,

@@ -26,11 +26,11 @@ def index(request):
             context['box_connection'] = box_user
         except BoxOAuthException:
             # authentication failed
-            logger.exception('Box oauth token for user=%s failed to authenticate' % request.user.username)
+            logger.warning('Box oauth token for user=%s failed to authenticate' % request.user.username)
             context['box_connection'] = False
         except BoxException:
             # session layer exception
-            logger.exception('Box API error when testing oauth token for user=%s' % request.user.username)
+            logger.warning('Box API error when testing oauth token for user=%s' % request.user.username)
             context['box_connection'] = False
 
     except BoxUserToken.DoesNotExist:

@@ -36,7 +36,7 @@ def _menu_nodes_for_apps(menu_type):
             except TypeError:
                 logger.warning('Call to %s.cms_menu_nodes should return an iterable!')
             except:
-                logger.exception('Call to %s.cms_menu_nodes failed!' % mod.__name__)
+                logger.warning('Call to %s.cms_menu_nodes failed!' % mod.__name__)
         except:
             continue
     return nodes
