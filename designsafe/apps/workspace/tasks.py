@@ -7,7 +7,7 @@ from agavepy.agave import Agave, AgaveException
 
 import logging
 import requests
-from requests import ConnectionError, HTTPError, RequestException
+from requests import ConnectionError, HTTPError
 import json
 
 from django.contrib.auth import get_user_model
@@ -138,11 +138,30 @@ def watch_job_status(data):
                                       event_users=[username])
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
-    except (AgaveException, RequestException):
+
+    except HTTPError as e:
+        if e.response.status_code == 404:
+            logger.warning('Job not found. Cancelling job watch.',
+                           extra={'job_id': job_id})
+        else:
+            retries = data.get('retry', 0) + 1
+            data['retry'] = retries
+            if retries > 10:
+                logger.error('Agave Job Status max retries exceeded',
+                             extra={'job_id': job_id})
+            else:
+                logger.warning('Agave API error. Retry number %s...' % retries)
+                watch_job_status.apply_async(args=[data], countdown=2**retries)
+
+    except AgaveException:
         retries = data.get('retry', 0) + 1
         data['retry'] = retries
-        logger.warning('Agave API error. Retry number %s...' % retries)
-        watch_job_status.apply_async(args=[data], countdown=2**retries)
+        if retries > 10:
+            logger.error('Agave Job Status max retries exceeded',
+                         extra={'job_id': job_id})
+        else:
+            logger.warning('Agave API error. Retry number %s...' % retries)
+            watch_job_status.apply_async(args=[data], countdown=2**retries)
 
 
 @app.task
