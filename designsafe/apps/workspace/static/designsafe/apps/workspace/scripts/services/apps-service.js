@@ -112,6 +112,14 @@
         });
       }
 
+      schema.properties.requestedTime = {
+        title: 'Max job runtime',
+        description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times.',
+        type: 'string',
+        required: true,
+        'x-schema-form': {placeholder: app.defaultMaxRunTime}
+      };
+
       schema.properties.name = {
         title: 'Job name',
         description: 'A recognizable name for this job',
