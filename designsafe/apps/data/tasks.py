@@ -55,6 +55,7 @@ def index_job_outputs(data):
                 paths.pop()
 
             data['status']='FINISHED'
+            data['event']='FINISHED'
             data['html'][1]={'Status': 'FINISHED'} #TODO - dynamically find the index
             # index=next((i for i,x in enumerate(data['html']) if 'Status' in x),None)
             # logger.info('index of Status: {}'.format(str(index))) #why is this None?
@@ -62,6 +63,8 @@ def index_job_outputs(data):
             db_hash = archive_path.replace(job_owner, '')
             data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
 
+            del data['event_type']
+            del data['users']
             generic_event.send_robust(None, event_type='job', event_data=data,
                                       event_users=[job_owner])
             logger.info('data with action link: {}'.format(str(data)))

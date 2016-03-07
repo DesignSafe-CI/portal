@@ -23,9 +23,9 @@ def ds_event_callback(sender, **kwargs):
 
     logger.info('Event received from {0}'.format(sender))
     logger.info('Event Type: {0}'.format(event_type))
-    logger.info('Event Data: {0}'.format(kwargs))
+    logger.info('Event kwargs: {0}'.format(kwargs))
 
-    if event_type == 'job':
+    if event_type == 'job' and data['status'] == 'INDEXING':
         tasks.index_job_outputs.delay(data)
 
     if users:
