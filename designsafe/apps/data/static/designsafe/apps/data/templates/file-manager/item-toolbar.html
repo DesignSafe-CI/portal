@@ -7,159 +7,159 @@
         <span class="action-label">
             <i class="glyphicon glyphicon-option-horizontal"></i>
         </span>
-        <span class="hidden-xs hidden-sm">Actions</span>
+        <span>Actions</span>
       </button>
       <div class="dropdown-menu dropdown-action-menu ">
         <button data-target="#rename"
-                data-toggle="modal" 
-                class="btn btn-sm btn-default" 
-                ng-show="config.allowedActions.rename && filesystem == 'default' && onPrivateData()" 
-                ng-click="touch(item)" 
+                data-toggle="modal"
+                class="btn btn-sm btn-default"
+                ng-show="config.allowedActions.rename && filesystem == 'default' && onPrivateData()"
+                ng-click="touch(item)"
                 title="{{'Move' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-edit"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Rename' | translate}}</span>
+            <span>{{'Rename' | translate}}</span>
         </button>
 
         <button data-target="#move"
-                data-toggle="modal" 
-                class="btn btn-sm btn-default" 
-                ng-show="config.allowedActions.rename && filesystem == 'default' && onPrivateData()" 
-                ng-click="touch(item)" 
+                data-toggle="modal"
+                class="btn btn-sm btn-default"
+                ng-show="config.allowedActions.rename && filesystem == 'default' && onPrivateData()"
+                ng-click="touch(item)"
                 title="{{'Move' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-transfer"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Move' | translate}}</span>
+            <span>{{'Move' | translate}}</span>
         </button>
 
-        <button data-target="#copy"  
-                data-toggle="modal" 
+        <button data-target="#copy"
+                data-toggle="modal"
                 class="btn btn-sm btn-default"
-                ng-show="config.allowedActions.copy && filesystem == 'default' && onPrivateData()" 
-                ng-click="touch(item)" 
+                ng-show="config.allowedActions.copy && filesystem == 'default' && onPrivateData()"
+                ng-click="touch(item)"
                 title="{{'Copy' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-log-out"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Copy' | translate}}</span>
+            <span>{{'Copy' | translate}}</span>
         </button>
 
-        <button data-target="#edit" 
-                data-toggle="modal" 
+        <button data-target="#edit"
+                data-toggle="modal"
                 class="btn btn-sm btn-default"
-                ng-show="config.allowedActions.edit && item.isEditable() && filesystem == 'default' && onPrivateData()" 
-                ng-click="item.getContent(); touch(item)" 
+                ng-show="config.allowedActions.edit && item.isEditable() && filesystem == 'default' && onPrivateData()"
+                ng-click="item.getContent(); touch(item)"
                 title="{{'Edit' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-pencil"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Edit' | translate}}</span>
+            <span>{{'Edit' | translate}}</span>
         </button>
 
-        <button data-target="#changepermissions" 
-                data-toggle="modal" 
+        <button data-target="#changepermissions"
+                data-toggle="modal"
                 class="btn btn-sm btn-default"
-                ng-show="config.allowedActions.changePermissions && filesystem == 'default' && onPrivateData()" 
-                ng-click="getPermissions(item)" 
+                ng-show="config.allowedActions.changePermissions && filesystem == 'default' && onPrivateData()"
+                ng-click="getPermissions(item)"
                 title="{{'Permissions' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-lock"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Permissions' | translate}}</span>
+            <span>{{'Permissions' | translate}}</span>
         </button>
 
-        <button data-target="#compress" 
-                class="btn btn-sm btn-default" 
-                data-toggle="modal" 
-                ng-show="config.allowedActions.compress && item.isCompressible() && filesystem == 'default' && onPrivateData()" 
-                ng-click="touch(item)" 
+        <button data-target="#compress"
+                class="btn btn-sm btn-default"
+                data-toggle="modal"
+                ng-show="config.allowedActions.compress && item.isCompressible() && filesystem == 'default' && onPrivateData()"
+                ng-click="touch(item)"
                 title="{{'Compress' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-compressed"></i>
             <span>
-            <span class="hidden-xs hidden-sm">{{'Compress' | translate}}</span>
+            <span>{{'Compress' | translate}}</span>
         </button>
 
         <button data-target="#extract"
                 class="btn btn-sm btn-default"
-                data-toggle="modal" 
-                ng-show="config.allowedActions.extract && item.isExtractable() && filesystem == 'default' && onPrivateData()" 
-                ng-click="touch(item); item.tempModel.name=''" 
+                data-toggle="modal"
+                ng-show="config.allowedActions.extract && item.isExtractable() && filesystem == 'default' && onPrivateData()"
+                ng-click="touch(item); item.tempModel.name=''"
                 title="{{'Extract' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-export"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Extract' | translate}}</span>
+            <span>{{'Extract' | translate}}</span>
         </button>
 
-        <button class="btn btn-sm btn-default" 
-                ng-show="config.allowedActions.download && !item.isFolder()" 
-                ng-click="item.download()" 
+        <button class="btn btn-sm btn-default"
+                ng-show="config.allowedActions.download && !item.isFolder()"
+                ng-click="item.download()"
                 title="{{'Download' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-cloud-download"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Download' | translate}}</span>
+            <span>{{'Download' | translate}}</span>
         </button>
 
-        <button class="btn btn-sm btn-default" 
-                data-toggle="modal" 
-                data-target="#preview" 
-                ng-show="config.allowedActions.preview && item.isPreviewable()" 
-                ng-click="preview(item)" 
+        <button class="btn btn-sm btn-default"
+                data-toggle="modal"
+                data-target="#preview"
+                ng-show="config.allowedActions.preview && item.isPreviewable()"
+                ng-click="preview(item)"
                 title="{{'Preivew' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-eye-open"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Preview' | translate}}</span>
+            <span>{{'Preview' | translate}}</span>
         </button>
 
-        <button class="btn btn-sm btn-danger" 
-                data-toggle="modal" 
-                data-target="#delete" 
-                ng-show="config.allowedActions.remove && filesystem == 'default' && onPrivateData()" 
+        <button class="btn btn-sm btn-danger"
+                data-toggle="modal"
+                data-target="#delete"
+                ng-show="config.allowedActions.remove && filesystem == 'default' && onPrivateData()"
                 ng-click="touch(item)" title="{{'Remove' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-trash"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Remove' | translate}}</span>
+            <span>{{'Remove' | translate}}</span>
         </button>
-        
-        <button class="btn btn-sm btn-default" 
-                data-toggle="modal" 
-                data-target="#metadata" 
-                ng-show="config.allowedActions.metadata" 
+
+        <button class="btn btn-sm btn-default"
+                data-toggle="modal"
+                data-target="#metadata"
+                ng-show="config.allowedActions.metadata"
                 ng-click="showMetadata(item)"
-                ng-if = "fielsystem == 'default'" 
+                ng-if = "fielsystem == 'default'"
                 title="{{'Metadata' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-tags"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Show / Edit Metadata' | translate}}</span>
+            <span>{{'Show / Edit Metadata' | translate}}</span>
         </button>
 
-        <button class="btn btn-sm btn-default" 
-                data-toggle="modal" 
-                data-target="#share" 
-                ng-show="config.allowedActions.share && filesystem == 'default' && onPrivateData()" 
-                ng-click = "touch(item)" 
+        <button class="btn btn-sm btn-default"
+                data-toggle="modal"
+                data-target="#share"
+                ng-show="config.allowedActions.share && filesystem == 'default' && onPrivateData()"
+                ng-click = "touch(item)"
                 title="{{'Share' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-send"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'Share' | translate}}</span>
+            <span>{{'Share' | translate}}</span>
         </button>
-        <button data-target="#details" 
-                class="btn btn-sm btn-default" 
-                data-toggle="modal" 
-                ng-click="showPublicMetadata(item)" 
+        <button data-target="#details"
+                class="btn btn-sm btn-default"
+                data-toggle="modal"
+                ng-click="showPublicMetadata(item)"
                 title="{{'details' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-modal-window"></i>
             </span>
-            <span class="hidden-xs hidden-sm">{{'View Metadata' | translate}}</span>
+            <span>{{'View Metadata' | translate}}</span>
 
         </button>
 
