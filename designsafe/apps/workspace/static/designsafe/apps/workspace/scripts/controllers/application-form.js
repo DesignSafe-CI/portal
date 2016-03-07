@@ -1,8 +1,16 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', 'Apps', 'Jobs', function($scope, $rootScope, Apps, Jobs) {
-      $scope.data = {};
+    ['$scope', '$rootScope', '$location', '$anchorScroll', 'Apps', 'Jobs',
+    function($scope, $rootScope, $location, $anchorScroll, Apps, Jobs) {
+
+      $scope.data = {
+        messages: [],
+        submitting: false,
+        needsLicense: false,
+        app: null,
+        form: {}
+      };
 
       $scope.$on('launch-app', function(e, appId) {
         if ($scope.data.app) {
@@ -16,7 +24,6 @@
 
       $scope.resetForm = function() {
         $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
-        $scope.data.job = null;
         $scope.form = {model: {}, readonly: $scope.data.needsLicense};
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [];
@@ -57,6 +64,7 @@
       };
 
       $scope.onSubmit = function(form) {
+        $scope.data.messages = [];
         $scope.$broadcast('schemaFormValidate');
         if (form.$valid) {
           var jobData = {
@@ -92,27 +100,35 @@
             function(resp) {
               $scope.data.submitting = false;
               $rootScope.$broadcast('job-submitted', resp.data);
-              $scope.data.job = resp.data;
-              $scope.form.form[$scope.form.form.length - 1].items[0] = {
-                type: 'button',
-                title: 'Clear Form',
-                style: 'btn-default',
-                onClick: 'resetForm()'
-              };
+              $scope.data.messages.push({
+                type: 'success',
+                header: 'Job Submitted Successfully',
+                body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
+              });
+              $scope.resetForm();
+              refocus();
             }, function(err) {
               $scope.data.submitting = false;
-              var error_message = err.data.message || 'Unexpected error';
-
-              var notice = 'Your job submission failed with the following message:\n\n' + error_message +
-                           '\n\nPlease try again. If this problem persists, please submit a support ticket.';
-              window.alert(notice);
+              $scope.data.messages.push({
+                type: 'danger',
+                header: 'Job Submit Failed',
+                body: 'Your job submission failed with the following message:<br>' +
+                      '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
+                      'Please try again. If this problem persists, please ' +
+                      '<a href="/help" target="_blank">submit a support ticket</a>.'
+              });
+              refocus();
             });
         }
       };
 
+      function refocus() {
+        $location.hash('workspace');
+        $anchorScroll();
+      }
+
       function closeApp() {
         $scope.data.app = null;
-        $scope.data.job = null;
         $scope.data.appLicenseEnabled = false;
       }
 
