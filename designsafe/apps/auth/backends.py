@@ -27,7 +27,7 @@ def on_user_logged_out(sender, request, user, **kwargs):
         login_provider = 'your authentication provider'
 
     logout_message = '<h4>You are Logged Out!</h4>' \
-                     'You are now logged out of DesignSafe-CI! However, you may still ' \
+                     'You are now logged out of DesignSafe! However, you may still ' \
                      'be logged in at %s. To ensure security, you should close your ' \
                      'browser to end all authenticated sessions.' % login_provider
     messages.warning(request, logout_message)

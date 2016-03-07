@@ -116,7 +116,7 @@ def agave_oauth_callback(request):
             if user.last_login is not None:
                 msg_tmpl = 'Login successful. Welcome back, %s %s!'
             else:
-                msg_tmpl = 'Login successful. Welcome to DesignSafe-CI, %s %s!'
+                msg_tmpl = 'Login successful. Welcome to DesignSafe, %s %s!'
             messages.success(request, msg_tmpl % (user.first_name, user.last_name))
         else:
             messages.error(

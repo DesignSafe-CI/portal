@@ -456,14 +456,14 @@ def email_confirmation(request, code=None):
                 if tas.verify_user(user['id'], code, password=password):
                     messages.success(request,
                                      'Congratulations, your account has been activated! '
-                                     'You can now log in to DesignSafe-CI.')
+                                     'You can now log in to DesignSafe.')
                     return HttpResponseRedirect(
                         reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,
                                    'We were unable to activate your account. Please try '
-                                   'again. If this problem persists, please open a '
-                                   'support ticket.')
+                                   'again. If this problem persists, please '
+                                   '<a href="/help">open a support ticket</a>.')
                     form = forms.EmailConfirmationForm(
                         initial={'code': code, 'username': username})
             except:

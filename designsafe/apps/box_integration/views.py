@@ -100,7 +100,7 @@ def disconnect(request):
             token.delete()
             messages.success(
                 request,
-                'Your Box.com account has been disconnected from DesignSafe-CI.')
+                'Your Box.com account has been disconnected from DesignSafe.')
             return HttpResponseRedirect(reverse('box_integration:index'))
         except:
             logger.exception('Disconnect Box.com failed')

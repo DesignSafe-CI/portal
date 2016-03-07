@@ -31,7 +31,7 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                                  'You have not yet agreed to the current Terms of Use. '
                                  'Please <a href="%s">CLICK HERE</a> to review and '
                                  'accept the Terms of Use.<br>Acceptance of the Terms of '
-                                 'Use is required for continued use of DesignSafe-CI '
+                                 'Use is required for continued use of DesignSafe '
                                  'resources.' % accept_url)
         return None
 
