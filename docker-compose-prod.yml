@@ -35,7 +35,7 @@ worker:
     - /var/www/designsafe-ci.org/static
   volumes_from:
     - data
-  command: celery worker -A designsafe -l info --autoscale=10,2
+  command: celery -A designsafe worker -l info --autoscale=10,2
 
 websocket:
   image: designsafeci/portal
@@ -49,7 +49,7 @@ websocket:
     - /var/www/designsafe-ci.org/static
   volumes_from:
     - data
-  command: uwsgi --ini-file /portal/conf/uwsgi_websocket.ini
+  command: uwsgi --ini /portal/conf/uwsgi_websocket.ini
 
 fiu_ef:
   image: designsafeci/portal
@@ -136,7 +136,9 @@ nginx:
   volumes:
     - /designsafe/certs/www:/etc/ssl/designsafe-ci.org
     - /designsafe/certs/ef:/etc/ssl/ef.designsafe-ci.org
+    - /designsafe/certs/dhparam.pem:/etc/ssl/dhparam.pem
     - /designsafe/portal/conf/nginx-prod.conf:/etc/nginx/nginx.conf
+    - /designsafe/portal/conf/gzip.conf:/etc/nginx/gzip.conf
     - /designsafe/portal/conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
   volumes_from:
     - data

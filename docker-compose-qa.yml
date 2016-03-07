@@ -2,9 +2,13 @@ data:
   image: buildpack-deps:trusty
   volumes:
     - /designsafe/media:/var/www/designsafe-ci.org/media
+    - /designsafe/redis_data:/data
 
 redis:
   image: redis
+  command: redis-server --appendonly yes
+  volumes_from:
+    - data
 
 django:
   image: designsafeci/portal
@@ -132,7 +136,9 @@ nginx:
   volumes:
     - /designsafe/certs/www:/etc/ssl/designsafe-ci.org
     - /designsafe/certs/ef:/etc/ssl/ef.designsafe-ci.org
+    - /designsafe/certs/dhparam.pem:/etc/ssl/dhparam.pem
     - /designsafe/portal/conf/nginx-qa.conf:/etc/nginx/nginx.conf
+    - /designsafe/portal/conf/gzip.conf:/etc/nginx/gzip.conf
     - /designsafe/portal/conf/robots.txt:/var/www/designsafe-ci.org/robots.txt
   volumes_from:
     - data

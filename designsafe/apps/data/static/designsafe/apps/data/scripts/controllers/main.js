@@ -80,7 +80,7 @@
             // item = item instanceof Item ? item : new Item();
             item.revert && item.revert();
             $scope.temp = item;
-            $scope.temp.tempModel.name = "";
+            //$scope.temp.tempModel.name = "";
             $scope.temp.tempModel.userToShare = "";
             $scope.uploadFileList = [];
             $scope.dropFiles = [];

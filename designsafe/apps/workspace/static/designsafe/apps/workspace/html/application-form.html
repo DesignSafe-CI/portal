@@ -14,6 +14,12 @@
             section on the My Account page for details on how to enable this license.
         </p>
     </div>
+    <div class="messages">
+        <div ng-repeat="message in data.messages" class="alert alert-{{message.type}}">
+            <h4 ng-if="message.header" ng-bind-html="message.header"></h4>
+            <p ng-bind-html="message.body"></p>
+        </div>
+    </div>
     <h2>Run <em>{{data.app.label}}</em></h2>
     <p>{{data.app.shortDescription}}</p>
     <p ng-if="data.app.helpURI">
@@ -34,12 +40,4 @@
             Submitting job...
         </span>
     </div>
-</div>
-
-<div ng-if="data.job" class="alert alert-success">
-    <h4>Job Submitted Successfully!</h4>
-    <p>
-        Your job <em>{{data.job.name}}</em> has been submitted. Monitor its status on
-        the right.
-    </p>
 </div>

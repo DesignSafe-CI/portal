@@ -11,6 +11,7 @@ import re
 import json
 import logging
 import hashlib
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -207,15 +208,17 @@ class FileManager(AgaveObject):
         logger.info('Moved to: {}'.format(f.path))
 
         logger.info('Moving metadata from path: {}'.format(mf.path + '/' + mf.name))
+        import ipdb; ipdb.set_trace()
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
-                                            username, mf.name + '/' + mf.path)
+                                            username, mf.path + '/' + mf.name)
             cnt = 0
-            while cnt <= objs.hits.total - len(objs):
-                for o in search[cnt:cnt+len(objs)]:
-                    regex = r'^{}'.format(mf.path + '/' + mf.name)
-                    o.update(path = re.sub(regex, new_path, o.path, count = 1))
-                cnt += len(objs)
+            if objs.hits.total:
+                while cnt <= objs.hits.total - len(objs):
+                    for o in search[cnt:cnt+len(objs)]:
+                        regex = r'^{}'.format(mf.path + '/' + mf.name)
+                        o.update(path = re.sub(regex, new_path + '/' + mf.name, o.path, count = 1))
+                    cnt += len(objs)
         mf.update(path = new_path)
 
         logger.info('Moved metadata to: {}'.format(mf.path + '/' + mf.name))
@@ -770,15 +773,10 @@ class AgaveFolderFile(AgaveObject):
         return self
 
     @property
-    def encoded_url(self):
+    def encoded_link(self):
         filepath = self.link.replace(self.agave_client.api_server, "")
         #url = self.agave_client.api_server + urllib.pathname2url(filepath)
-        url = self.agave_client.api_server
-        vals = filepath.split('/')
-        for i, v in enumerate(vals):
-            url += urllib.quote_plus(v)
-            if i < len(vals) - 1:
-                url += '/'
+        url = self.agave_client.api_server + urllib.quote_plus(filepath, '/')
         return url
 
     def download_stream(self, headers):
@@ -791,12 +789,13 @@ class AgaveFolderFile(AgaveObject):
 
     def download_postit(self):
         postit_data = {
-            'url': self.link + '?force=true',
+            'url': self.encoded_link + '?force=true',
             'maxUses': 1,
             'method': 'GET',
             'lifetime': 60,
             'noauth': False
         }
+        logger.debug('postit data: {}'.format(postit_data))
         postit = self.call_operation('postits.create', body = postit_data)
         logger.debug('Postit: {}'.format(postit))
         return postit['_links']['self']['href']
@@ -820,22 +819,24 @@ class AgaveFolderFile(AgaveObject):
         return self
 
     def rename(self, name):
+        name = urllib.quote_plus(name)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
             'body': {"action": "rename", "path": name}
         }
+        logger.debug('Calling files.manage with this: {}'.format(d))
         self.name = name
         res = self.call_operation('files.manage', **d)
         return self
 
     def move(self, path):
+        base_path, file_name = os.path.split(path)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
-            'body': {"action": "move", "path": path + '/' + self.name}
+            'body': {"action": "move", "path": path}
         }
-        logger.debug('d: {}'.format(d))
         res = self.call_operation('files.manage', **d)
         self.path = path
         return self

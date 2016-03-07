@@ -1,0 +1,20 @@
+{% load staticfiles %}
+<div class="callout callout-default">
+    <p class="lead">NEES Users: Accessing DesignSafe</p>
+    <div style="display:flex;">
+        <div style="padding-right:0.5em">
+            <img alt="NEES.org" title="NEES.org logo"
+                 src="{% static 'designsafe/apps/accounts/images/nees.png' %}">
+        </div>
+        <div style="flex-grow:2">
+            <p>
+                <a href="https://nees.org/">NEES</a> users can easily gain access to
+                DesignSafe using their NEEShub account email address. We will then guide
+                you through the steps required to create an account.
+                Welcome to DesignSafe!
+            </p>
+        </div>
+    </div>
+    <a href="{% url 'designsafe_accounts:nees_migration' %}"
+       class="btn btn-default btn-block">Access DesignSafe Now</a>
+</div>

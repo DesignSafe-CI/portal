@@ -79,7 +79,7 @@
 
         Item.prototype.deferredHandler = function(data, deferred, defaultMsg) {
             if (!data || typeof data !== 'object') {
-                this.error = 'Bridge response error, please check the docs';
+                this.error = 'There has been an error in your request. Please try again or <a href="/help">submit a ticket</a>.';
             }
             if (data.result && data.result.error) {
                 this.error = data.result.error;
@@ -116,7 +116,7 @@
             $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function(data) {
                 self.inprocess = false;
             });
@@ -137,7 +137,7 @@
             $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -157,7 +157,7 @@
             $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -178,7 +178,7 @@
             $http.put(url, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_copying'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -199,7 +199,7 @@
             $http.post(url, data).success(function(data){
                 self.deferredHandler(data, deferred);
             }).error(function(data){
-                self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function(){
                 self.inprocess = false;
             });
@@ -220,7 +220,7 @@
             $http.post(fileManagerConfig.compressUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_compressing'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -242,7 +242,7 @@
             $http.post(fileManagerConfig.extractUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_extracting'));
+                self.deferredHandler(data, deferred, data.message);
             })["finally"](function() {
                 self.inprocess = false;
             });
@@ -278,7 +278,7 @@
                 }
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, 'Unknown error downloading file');
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function(data) {
                 self.requesting = false;
                 self.inprocess = false;
@@ -307,7 +307,7 @@
                       item.tempModel.preview.data = URL.createObjectURL(new Blob([filedata]));
                     }
                 }).error(function(err){
-                    self.deferredHandler(err, deferred, 'Unknown error downloading file');
+                    self.deferredHandler(err, deferred, data.message);
                 });
             }
         };
@@ -331,7 +331,7 @@
                 self.tempModel.content = self.model.content = data.result;
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_getting_content'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -347,7 +347,7 @@
             $http.delete(url).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, 'Unknown error removing file');
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function(data) {
                 self.requesting = false;
             });
@@ -370,7 +370,7 @@
             $http.post(fileManagerConfig.editUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_modifying'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -401,7 +401,7 @@
               });
               self.deferredHandler(data, deferred);
           }).error(function(data) {
-              self.deferredHandler(data, deferred, 'Unknown error downloading file');
+              self.deferredHandler(data, deferred, data.message);
           });
 
           return deferred.promise;
@@ -472,7 +472,7 @@
                     self.tempModel.perms[key] = self.model.perms[key];
                     self.requesting = false;
                     self.error = data.message;
-                    self.deferredHandler(data, deferred, 'Unknown error downloading file');
+                    self.deferredHandler(data, deferred, data.message);
                 });
 
               }
@@ -499,7 +499,7 @@
                 self.tempModel.meta.keywords = md.keywords;
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -516,7 +516,7 @@
            $http.get(url).success(function(data) {
                self.deferredHandler(data, deferred);
            }).error(function(data) {
-               self.deferredHandler(data, deferred, $translate.instant('Error getting Metadata info.'));
+               self.deferredHandler(data, deferred, data.message);
            })['finally'](function() {
                self.inprocess = false;
            });
@@ -541,7 +541,7 @@
                 self.deferredHandler(data, deferred);
             })
             .error(function(data){
-                self.deferredHandler(data, deferred, $translate.instant('Error saving metadata.'));
+                self.deferredHandler(data, deferred, data.message);
             })['finally'](function(){
                 self.tempModel.metaForm.keywords = [];
                 self.inprocess = false;

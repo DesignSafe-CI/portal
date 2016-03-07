@@ -2,17 +2,16 @@
 
 {% load bootstrap3 sekizai_tags staticfiles %}
 
-{% block title %}Migrate NEES Account{% endblock %}
+{% block title %}Accessing DesignSafe{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="headline headline-research">NEES Account Migration</h1>
+    <h1 class="headline headline-research">Accessing DesignSafe</h1>
 
     <p class="lead">
-        <a href="https://nees.org/">NEEShub</a> users can use our account migration wizard
-        to easily migrate their NEEShub account to a TACC Account for DesignSafe-CI. We
-        will guide you through the steps to create an account, migrate your profile, and
-        retain ownership of your data. Welcome to DesignSafe-CI!
+        <a href="https://nees.org/">NEES</a> users can easily gain access to DesignSafe
+        using their NEEShub account email address. We will then guide you through the
+        steps required to create an account. Welcome to DesignSafe!
     </p>
 
     <p class="lead">
@@ -22,7 +21,7 @@
     <form method="post" action="{% url 'designsafe_accounts:nees_migration' '1' %}">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <button class="btn btn-primary" type="submit">Begin Account Migration</button>
+        <button class="btn btn-primary" type="submit">Access DesignSafe Now</button>
         <a class="btn btn-link" href="/">Cancel</a>
         <a class="btn btn-link" href="{% url 'login' %}">Already have an account? Log in.</a>
     </form>

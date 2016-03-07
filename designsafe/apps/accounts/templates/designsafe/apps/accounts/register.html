@@ -10,10 +10,10 @@
 
   <div class="row">
     <div class="col-md-5 col-md-push-7">
-      <p class="text-center">
-        <img class="img-responsive" style="max-width:300px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
-      </p>
-      <div class="well well-sm">
+      <div class="callout callout-default">
+        <p class="text-center">
+          <img style="max-width:300px" alt="TACC" src="{% static 'images/tacc-logo-outline.svg'%}">
+        </p>
         <h3>
           Already have an Account? <a href="{% url 'designsafe_auth:login' %}">Log in.</a>
         </h3>
@@ -27,6 +27,8 @@
           had an allocation on a TACC resource.
         </p>
       </div>
+
+      {% include 'designsafe/apps/accounts/nees_migration_block.html' %}
     </div>
     <div class="col-md-7 col-md-pull-5">
 
