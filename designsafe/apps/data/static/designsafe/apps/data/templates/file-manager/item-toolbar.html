@@ -1,12 +1,15 @@
 <div ng-show="!item.inprocess && item.model.name != 'Shared with me'">
-    <div class="dropdown">
-      <button class="btn btn-sm btn-default"
+    <div class="dropdown fm-dropdown">
+      <button class="btn btn-sm btn-default main-btn"
               type="button"
               data-toggle="dropdown"
               title="Action Menu">
-        <i class="glyphicon glyphicon-option-horizontal"></i>
+        <span class="action-label">
+            <i class="glyphicon glyphicon-option-horizontal"></i>
+        </span>
+        <span class="hidden-xs hidden-sm">Actions</span>
       </button>
-      <div class="dropdown-menu dropdown-action-menu">
+      <div class="dropdown-menu dropdown-action-menu ">
         <button data-target="#rename"
                 data-toggle="modal" 
                 class="btn btn-sm btn-default" 
@@ -16,7 +19,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-edit"></i>
             </span>
-            <span>{{'Rename' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Rename' | translate}}</span>
         </button>
 
         <button data-target="#move"
@@ -28,7 +31,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-transfer"></i>
             </span>
-            <span>{{'Move' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Move' | translate}}</span>
         </button>
 
         <button data-target="#copy"  
@@ -40,7 +43,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-log-out"></i>
             </span>
-            <span>{{'Copy' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Copy' | translate}}</span>
         </button>
 
         <button data-target="#edit" 
@@ -52,7 +55,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-pencil"></i>
             </span>
-            <span>{{'Edit' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Edit' | translate}}</span>
         </button>
 
         <button data-target="#changepermissions" 
@@ -64,7 +67,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-lock"></i>
             </span>
-            <span>{{'Permissions' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Permissions' | translate}}</span>
         </button>
 
         <button data-target="#compress" 
@@ -76,7 +79,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-compressed"></i>
             <span>
-            <span>{{'Compress' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Compress' | translate}}</span>
         </button>
 
         <button data-target="#extract"
@@ -88,7 +91,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-export"></i>
             </span>
-            <span>{{'Extract' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Extract' | translate}}</span>
         </button>
 
         <button class="btn btn-sm btn-default" 
@@ -98,7 +101,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-cloud-download"></i>
             </span>
-            <span>{{'Download' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Download' | translate}}</span>
         </button>
 
         <button class="btn btn-sm btn-default" 
@@ -110,7 +113,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-eye-open"></i>
             </span>
-            <span>{{'Preview' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Preview' | translate}}</span>
         </button>
 
         <button class="btn btn-sm btn-danger" 
@@ -121,7 +124,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-trash"></i>
             </span>
-            <span>{{'Remove' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Remove' | translate}}</span>
         </button>
         
         <button class="btn btn-sm btn-default" 
@@ -134,7 +137,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-tags"></i>
             </span>
-            <span>{{'Show / Edit Metadata' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Show / Edit Metadata' | translate}}</span>
         </button>
 
         <button class="btn btn-sm btn-default" 
@@ -146,7 +149,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-send"></i>
             </span>
-            <span>{{'Share' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'Share' | translate}}</span>
         </button>
         <button data-target="#details" 
                 class="btn btn-sm btn-default" 
@@ -156,7 +159,7 @@
             <span class="action-label">
                 <i class="glyphicon glyphicon-modal-window"></i>
             </span>
-            <span>{{'View Metadata' | translate}}</span>
+            <span class="hidden-xs hidden-sm">{{'View Metadata' | translate}}</span>
 
         </button>
 

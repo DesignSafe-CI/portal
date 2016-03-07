@@ -15,7 +15,6 @@
             </th>
             <th class="">
                 <a href="">
-                    <span>Action</span>
                 </a>
             </th>
             <th class="hidden-xs hidden-sm" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
@@ -38,7 +37,7 @@
                 </a>
                 <a ng-if = "filesystem != 'default' && fileNavigator.currentPath.length == 0"  ng-click="order('model.projectName')" href="">
                     <span>
-                        {{"Project Name" | translate}}
+                        {{"Project ID" | translate}}
                     </span>
                     <span class="sortorder" ng-show="predicate[1] === 'model.projectName'" ng-class="{reverse:reverse}"></span>
                 </a>
@@ -105,7 +104,7 @@
                     {{"Downloading" | translate}}...
                 </span>
             </td>
-            <td class="">
+            <td>
                   <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
             </td>
             <td class="hidden-sm hidden-xs" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
