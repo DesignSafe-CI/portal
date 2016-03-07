@@ -74,24 +74,7 @@
     </div>
 
     <div class="col-sm-6 col-md-5 col-md-offset-1">
-      <div class="callout callout-default">
-        <p class="lead">NEES Users: Migrate your NEEShub Account</p>
-        <div style="display:flex;">
-          <div style="padding-right:0.5em">
-            <img alt="NEES.org" title="NEES.org logo" src="{% static 'designsafe/apps/auth/logos/nees.png' %}">
-          </div>
-          <div style="flex-grow:2">
-            <p>
-              <a href="https://nees.org/">NEEShub</a> users can use our account migration
-              wizard to easily migrate their NEEShub account to a TACC Account for
-              DesignSafe-CI. We will guide you through the steps to create an account,
-              migrate your profile, and retain ownership of your data. Welcome to
-              DesignSafe-CI!
-            </p>
-          </div>
-        </div>
-        <a href="{% url 'designsafe_accounts:nees_migration' %}" class="btn btn-default btn-block">Migrate your NEEShub account</a>
-      </div>
+      {% include 'designsafe/apps/accounts/nees_migration_block.html' %}
     </div>
   </div>
 
