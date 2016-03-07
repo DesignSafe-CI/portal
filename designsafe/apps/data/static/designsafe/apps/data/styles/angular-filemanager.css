@@ -180,11 +180,11 @@
     }
 }
 
-@media (max-width: 475px) {
+/*@media (max-width: 475px) {
     .file-manager .table.table-files .btn {
         display: none;
     }
-}
+}*/
 
 .file-manager .nav-sidebar {
     margin-right: -21px;
