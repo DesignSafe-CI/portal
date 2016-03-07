@@ -421,7 +421,7 @@
               <h4 class="">Permissions:</p>
               <ul class="">
                 <li ng-repeat="p in temp.model.permissions">
-                    <b>{{p.username}}<b>  
+                    <b>{{p.username}}<b>
                     <ul>
                         <li ng-repeat="(pkey, pval) in p.permission">
                             {{pkey}} : {{pval}}
@@ -455,7 +455,7 @@
               <span class="label label-warning" ng-show="temp.inprocess">{{'loading' | translate}} ...</span>
               <div ng-show="!temp.inprocess">
                 <div ng-if="temp.tempModel.preview.isPdf">
-                    <object data = "{{temp.tempModel.preview.data}}" >
+                    <object data = "{{temp.tempModel.preview.data}}" width="100%" height="600">
                     </object>
                 </div>
                 <div ng-if="temp.tempModel.preview.isImage">
