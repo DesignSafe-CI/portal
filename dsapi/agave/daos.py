@@ -11,6 +11,7 @@ import re
 import json
 import logging
 import hashlib
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -820,22 +821,24 @@ class AgaveFolderFile(AgaveObject):
         return self
 
     def rename(self, name):
+        name = urllib.quote_plus(name)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
             'body': {"action": "rename", "path": name}
         }
+        logger.debug('Calling files.manage with this: {}'.format(d))
         self.name = name
         res = self.call_operation('files.manage', **d)
         return self
 
     def move(self, path):
+        base_path, file_name = os.path.split(path)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
-            'body': {"action": "move", "path": path + '/' + self.name}
+            'body': {"action": "move", "path": path}
         }
-        logger.debug('d: {}'.format(d))
         res = self.call_operation('files.manage', **d)
         self.path = path
         return self
