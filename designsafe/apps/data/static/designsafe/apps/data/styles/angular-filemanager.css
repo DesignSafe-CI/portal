@@ -44,7 +44,7 @@
     border: none;
 }
 
-.file-manager .dropdown-action-menu .btn{
+.file-manager .fm-dropdown .btn{
     margin:5px;
     min-width:170px;
     padding:0;
@@ -52,25 +52,29 @@
     border:solid #efefef 1px;
 }
 
-.file-manager .dropdown-action-menu .btn.btn-default:hover, .file-manager .dropdown-action-menu .btn.btn-default:focus {
+.file-manager .fm-dropdown .btn.main-btn{
+    min-width:initial;
+}
+
+.file-manager .fm-dropdown .btn.btn-default:hover, .file-manager .fm-dropdown .btn.btn-default:focus {
     background:#eee;
 }
 
-.file-manager .dropdown-action-menu .btn i{
+.file-manager .fm-dropdown .btn i{
     float:left;
     display:inline-block;
 }
 
-.file-manager .dropdown-action-menu .btn .action-label{
+.file-manager .fm-dropdown .btn .action-label{
     display:inline-block;
     padding:10px;
     background-color:#eee;
 }
 
-.file-manager .dropdown-action-menu .btn.btn-danger .action-label{
+.file-manager .fm-dropdown .btn.btn-danger .action-label{
     background-color:#d73f3f;
 }
-.file-manager .dropdown-action-menu .btn span{
+.file-manager .fm-dropdown .btn span{
     float:left;
     display:inline-block;
     padding-left:10px;
