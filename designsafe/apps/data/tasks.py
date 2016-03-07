@@ -56,9 +56,10 @@ def index_job_outputs(data):
 
             data['status']='FINISHED'
             data['event']='FINISHED'
-            data['html'][1]={'Status': 'FINISHED'} #TODO - dynamically find the index
-            # index=next((i for i,x in enumerate(data['html']) if 'Status' in x),None)
-            # logger.info('index of Status: {}'.format(str(index))) #why is this None?
+
+            index=next((i for i,x in enumerate(data['html']) if 'Status' in x),None)
+            data['html'][index]={'Status': 'FINISHED'}
+
 
             db_hash = archive_path.replace(job_owner, '')
             data['action_link']={'label': 'View Output', 'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)}
