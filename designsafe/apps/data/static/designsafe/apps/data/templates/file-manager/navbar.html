@@ -3,7 +3,7 @@
         <div class="search-ph" style="overflow:auto">
             <input type="text" class="form-control input-sm" placeholder="{{'search' | translate}}..." ng-model="query" ng-keydown="search($event, query)" style="width:90%; float:left; margin:0px 0px 5px 0px;">
             <!--
-            <button class="btn btn-info btn-sm" ng-click="toggleAdvSearch()" style="float:right;"> 
+            <button class="btn btn-info btn-sm" ng-click="toggleAdvSearch()" style="float:right;">
             <i class="glyphicon glyphicon-cog"></i> Advanced
             </button>
             -->
@@ -17,18 +17,18 @@
                     <input class="form-control" type="text" ng-model="advSearch.form.source" name="meta-source">
                     <label for='meta-key'>Key:</label>
                     <input class="form-control" type="text" ng-model="advSearch.form.key" name="meta-key">
-                    <button class="pull-right btn btn-default btn-sm" ng-click="searchAdvanced(advSearch)" style="margin: 5px 0;">Search</button> 
+                    <button class="pull-right btn btn-default btn-sm" ng-click="searchAdvanced(advSearch)" style="margin: 5px 0;">Search</button>
                 </form>
             </div>
             </div>
         </div>
-        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#newfolder" ng-click="touch()" ng-show="filesystem == 'default'">
+        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#newfolder" ng-click="touch()" ng-show="filesystem == 'default' && !fileNavigator.searchResults">
             <i class="glyphicon glyphicon-plus"></i> {{"create_folder" | translate}}
         </button>
-        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadfile" ng-click="touch()" style="margin: 5px 0;"  ng-show="filesystem == 'default'">
+        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadfile" ng-click="touch()" style="margin: 5px 0;"  ng-show="filesystem == 'default' && !fileNavigator.searchResults">
             <i class="glyphicon glyphicon-upload"></i> {{"upload_file" | translate}}
         </button>
-        <button class="btn btn-default btn-sm" ng-click="refresh()">
+        <button class="btn btn-default btn-sm" ng-click="refresh()" ng-show="!fileNavigator.searchResults">
             <i class="glyphicon glyphicon-refresh"></i> {{"Refresh" | translate}}
         </button>
 
