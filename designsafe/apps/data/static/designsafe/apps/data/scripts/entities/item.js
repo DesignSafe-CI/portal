@@ -38,7 +38,7 @@
                         return ('/' + this.path.join('/') + '/' + this.name).replace(/\/\//g, '/');
                 },
                 fakePath: function(){
-                    //There's the possiblitiy that this does extra replaces. 
+                    //There's the possiblitiy that this does extra replaces.
                     //TODO: Use regular expressions or return this path from the server.
                     var fullPath = this.fullPath().split('/');
                     if(filesystem != 'default'){
@@ -301,7 +301,11 @@
                     responseType: 'arraybuffer',
                     cache: false
                 }).success(function(filedata){
-                    item.tempModel.preview.data = URL.createObjectURL(new Blob([filedata]));
+                    if (item.tempModel.preview.isPdf){
+                      item.tempModel.preview.data = URL.createObjectURL(new Blob([filedata], {type: 'application/pdf'}));
+                    } else {
+                      item.tempModel.preview.data = URL.createObjectURL(new Blob([filedata]));
+                    }
                 }).error(function(err){
                     self.deferredHandler(err, deferred, 'Unknown error downloading file');
                 });
@@ -554,7 +558,7 @@
         };
 
         Item.prototype.isPreviewable = function() {
-            return !this.isFolder() && (this.isImage() || this.isText());
+            return !this.isFolder() && (this.isImage() || this.isText() || this.isPdf());
         };
 
         Item.prototype.isImage = function() {

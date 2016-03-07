@@ -66,7 +66,7 @@ def check_or_create_box_sync_folder(username):
             else:
                 logger.exception('Unable to create sync folder')
     except BoxUserToken.DoesNotExist:
-        logger.exception('Box.com not enabled for user=%s' % username)
+        logger.warning('Box.com not enabled for user=%s' % username)
 
 
 @shared_task
@@ -81,7 +81,7 @@ def check_or_create_agave_sync_folder(username):
         ag.files.manage(systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
                         filePath='/',
                         body=json.dumps(body))
-    except AgaveException:
+    except (HTTPError, AgaveException):
         logger.exception('Failed to create home directory for user=%s' % username)
 
 
@@ -114,7 +114,7 @@ def handle_box_webhook_event(event_data):
         agent = BoxSyncAgent(box_token.user, box_client, agave_client)
         agent.handle_box_event(event)
     except BoxUserToken.DoesNotExist:
-        logger.exception('BoxUserToken not found for box_user_ids=%s; '
+        logger.warning('BoxUserToken not found for box_user_ids=%s; '
                          'unable to handle event %s' % (event.to_user_ids, event))
     except:
         logger.exception('Unexpected exception handling Box event %s' % event)
@@ -173,7 +173,8 @@ class BoxSyncAgent(object):
             if event.event_type == 'moved':
                 self.handle_move_item_event(event)
         except BoxException:
-            logger.exception('Unable to handle event: %s' % event)
+            logger.exception('Unable to handle Box event',
+                             extra={'event': event})
 
     def get_event_item(self, event):
         if event.item_type == 'file':
@@ -266,11 +267,11 @@ class BoxSyncAgent(object):
                     logger.error('Status check for %s timed out! '
                                  'Box File Transfers are not indexed!' % file_path)
                 except Error:
-                    logger.exception('Unexpected exception during Box File Transfer. '
-                                     'Box File Indexing incomplete for %s' % file_path)
+                    logger.exception('Unexpected exception during Box File Transfer.',
+                                     extra={'file_path': file_path, 'event': event})
             else:
-                logger.error('Unable to get download_url for item=%s for user=%s' %
-                             (item.name, self.user))
+                logger.error('Unable to get download_url for Box item',
+                             extra={'item': item.name, 'user': self.user, 'event': event})
 
     def handle_rm_item_event(self, event):
         parent_folder_id = event.parent_folder_id

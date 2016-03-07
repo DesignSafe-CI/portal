@@ -7,13 +7,12 @@ from agavepy.agave import Agave, AgaveException
 
 import logging
 import requests
-from requests import ConnectionError, HTTPError, RequestException
+from requests import ConnectionError, HTTPError
 import json
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -47,7 +46,7 @@ def submit_job(request, username, job_post, retry=1):
         logger.debug('Job Submission Response: {}'.format(response))
         # watch job status
         task_data = {
-            'username': request.user.username,
+            'username': username,
             'job_id': response['id']
         }
         watch_job_status.apply_async(args=[task_data], countdown=10)
@@ -57,7 +56,7 @@ def submit_job(request, username, job_post, retry=1):
         logger.warning('ConnectionError while submitting job: %s' % e.response)
         logger.info('Retry %s for job submission %s' % (retry, job_post))
         retry += 1
-        # submit_job.delay(user, job_post, countdown=2**retry)
+        submit_job.apply_async(args=[username, job_post], countdown=2**retry)
         raise JobSubmitError(status='error',
                              status_code=500,
                              message='We were unable to submit your job at this time due '
@@ -70,7 +69,7 @@ def submit_job(request, username, job_post, retry=1):
         if e.response.status_code >= 500:
             logger.info('Retry %s for job submission %s' % (retry, job_post))
             retry += 1
-            # submit_job.delay(user, job_post, countdown=2**retry)
+            submit_job.apply_async(args=[username, job_post], countdown=2**retry)
             raise JobSubmitError(
                 status='error',
                 status_code=e.response.status_code,
@@ -81,7 +80,7 @@ def submit_job(request, username, job_post, retry=1):
 
         err_resp = e.response.json()
         err_resp['status_code'] = e.response.status_code
-        logger.error(err_resp)
+        logger.warning(err_resp)
         raise JobSubmitError(**err_resp)
 
 
@@ -140,11 +139,30 @@ def watch_job_status(data):
                                       event_users=[username])
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
-    except (AgaveException, RequestException):
+
+    except HTTPError as e:
+        if e.response.status_code == 404:
+            logger.warning('Job not found. Cancelling job watch.',
+                           extra={'job_id': job_id})
+        else:
+            retries = data.get('retry', 0) + 1
+            data['retry'] = retries
+            if retries > 10:
+                logger.error('Agave Job Status max retries exceeded',
+                             extra={'job_id': job_id})
+            else:
+                logger.warning('Agave API error. Retry number %s...' % retries)
+                watch_job_status.apply_async(args=[data], countdown=2**retries)
+
+    except AgaveException:
         retries = data.get('retry', 0) + 1
         data['retry'] = retries
-        logger.warning('Agave API error. Retry number %s...' % retries)
-        watch_job_status.apply_async(args=[data], countdown=2**retries)
+        if retries > 10:
+            logger.error('Agave Job Status max retries exceeded',
+                         extra={'job_id': job_id})
+        else:
+            logger.warning('Agave API error. Retry number %s...' % retries)
+            watch_job_status.apply_async(args=[data], countdown=2**retries)
 
 
 @app.task

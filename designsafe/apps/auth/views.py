@@ -80,7 +80,7 @@ def agave_oauth_callback(request):
     if request.session['auth_state'] != state:
         msg = ('OAuth Authorization State mismatch!? auth_state=%s '
                'does not match returned state=%s' % (request.session['auth_state'], state))
-        logger.error(msg)
+        logger.warning(msg)
         return HttpResponseBadRequest('Authorization State Failed')
 
     if 'code' in request.GET:
@@ -128,7 +128,7 @@ def agave_oauth_callback(request):
     else:
         if 'error' in request.GET:
             error = request.GET['error']
-            logger.error('Authorization failed: %s' % error)
+            logger.warning('Authorization failed: %s' % error)
 
         messages.error(
             request, 'Authentication failed! Did you forget your password? '

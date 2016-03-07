@@ -45,7 +45,7 @@
             extractAsync: true,
 
             isEditableFilePattern: /\.(txt|html?|aspx?|ini|pl|py|md|css|js|log|htaccess|htpasswd|json|sql|xml|xslt?|sh|rb|as|bat|cmd|coffee|php[3-6]?|java|c|cbl|go|h|scala|vb)$/i,
-            isPreviewableFilePattern: /\.(txt|jpe?g|gif|bmp|png|svg|tiff?|tcl)$/i,
+            isPreviewableFilePattern: /\.(txt|jpe?g|gif|bmp|png|svg|tiff?|tcl|pdf)$/i,
             isImageFilePattern: /\.(jpe?g|gif|bmp|png|svg|tiff?)$/i,
             isExtractableFilePattern: /\.(gz|tar|rar|g?zip)$/i,
             isPdfFilePattern: /\.pdf$/i,
