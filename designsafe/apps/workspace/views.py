@@ -124,13 +124,18 @@ def call_api(request, service):
 
                 # submit job
                 elif job_post:
-                    # parse agave:// URI into "archiveSystem" and "archivePath"
-                    if ('archivePath' in job_post and
-                            job_post['archivePath'].startswith('agave://')):
-                        parsed = urlparse(job_post['archivePath'])
-                        # strip leading slash
-                        job_post['archivePath'] = parsed.path[1:]
-                        job_post['archiveSystem'] = parsed.netloc
+                    if 'archivePath' in job_post:
+                        archive_path = job_post['archivePath']
+                        # parse agave:// URI into "archiveSystem" and "archivePath"
+                        if archive_path.startswith('agave://'):
+                            parsed = urlparse(archive_path)
+                            # strip leading slash
+                            job_post['archivePath'] = parsed.path[1:]
+                            job_post['archiveSystem'] = parsed.netloc
+                        elif not archive_path.startswith(request.user.username):
+                            archive_path = '%s/%s' % (
+                                request.user.username, archive_path)
+                            job_post['archivePath'] = archive_path
                     else:
                         job_post['archivePath'] = \
                             '%s/archive/jobs/%s/${JOB_NAME}-${JOB_ID}' % (
