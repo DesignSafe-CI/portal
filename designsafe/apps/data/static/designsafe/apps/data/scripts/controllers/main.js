@@ -400,6 +400,7 @@
                     $scope.fileNavigator.search('{"all": "' + escapeJSONstring(val) + '"}');
                 }else{
                     $scope.fileNavigator.currentPath = lurl.split('/');
+                    $scope.fileNavigator.fakePath = undefined;
                     $scope.fileNavigator.refresh();
                 }
             }
