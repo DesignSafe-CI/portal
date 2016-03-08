@@ -124,10 +124,15 @@ class FileManager(AgaveObject):
             mf.systemId = system_id
             mf.system_tags = [{"shared": "true"}]
             mf.permissions = [{'username': username, 'permission': {'read': True}}]
+            mf.length = 32768
             id_str = username + '-magic-' + shared_with_me
             mf._id = hashlib.md5(id_str).hexdigest()
             mf.save()
             logger.debug('Shared folder created: {}'.format(mf._id))
+        else:
+            o = res[0]
+            if getattr(o, 'length', None) is None or o.length == 0:
+                o.update(length = 32768)
 
     def list_path(self, system_id, path, username, special_dir, is_public = False):
         if special_dir == shared_with_me and path == '/':
