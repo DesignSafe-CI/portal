@@ -3,6 +3,7 @@ from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.utils import AttrList
+from elasticsearch import TransportError
 import logging
 import six
 import re
@@ -190,7 +191,11 @@ class PublicObject(DocType):
         q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
         s = self.__class__.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        try:
+            res = s.execute()
+        except TransportError:
+            res = s.execute()
+        return res, s
 
     def search_query(self, system_id, username, qs, fields = None):
         query_fields = ["name", "path", "project"]
@@ -325,7 +330,11 @@ class Object(DocType):
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        try:
+            res = s.execute()
+        except TransportError:
+            res = s.execute()
+        return res, s
 
     def search_query(self, system_id, username, qs):
         fields = ["name", "path", "keywords"]
@@ -388,7 +397,11 @@ class Object(DocType):
             q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}] }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        try:
+            res = s.execute()
+        except TransportError:
+            res = s.execute()
+        return res, s
 
     def update_from_dict(self, **d):
         if '_id' in d:

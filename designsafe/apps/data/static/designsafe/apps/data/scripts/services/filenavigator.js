@@ -60,7 +60,7 @@
 
         FileNavigator.prototype.deferredHandler = function(data, deferred, defaultMsg) {
             if (!data || typeof data !== 'object') {
-                this.error = 'Bridge response error, please check the docs';
+                this.error = 'There was an error handling your request. Please try again.';
             }
             if (!this.error && data.result && data.result.error) {
                 this.error = data.result.error;
