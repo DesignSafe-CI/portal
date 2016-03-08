@@ -60,24 +60,18 @@ def generic_webhook_handler(request):
                 'value': body,
                 'associationIds': [job_uuid],
             }
-            logger.info('refreshing for user={}'.format(job_owner))
             user = get_user_model().objects.get(username=job_owner)
             token = user.agave_oauth
             if token.expired:
                 token.refresh()
             agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
-            logger.info('token.access_token={}'.format(token.access_token))
-            logger.info('SENDING BODY={}'.format(agave_job_meta))
-            meta_uuid = agave.meta.addMetadata(body=json.dumps(agave_job_meta))
-            logger.info('JOB NOTIFICATION agave meta response: {}'.format(meta_uuid))
-
+            agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
         except AgaveException as e:
-            logger.info('AGAVE EXCEPTION {}'.format(e))
             return HttpResponse(json.dumps(e.message), content_type='application/json',
                 status=400)
         except Exception as e:
-            logger.exception('EXCEPTION BOO! {}'.format(e))
+            logger.exception('Could not add interactive connection data to metadata {}'.format(e))
 
         return HttpResponse('OK')
     else:
