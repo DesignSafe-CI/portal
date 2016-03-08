@@ -1,6 +1,6 @@
 {
   "name": "designsafe-portal",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "",
   "private": true,
   "main": "manage.py",
@@ -8,6 +8,15 @@
     "test": "./bin/run-tests.sh"
   },
   "author": "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>",
+  "contributors": [
+    "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>",
+    "Steve Mock <mock@tacc.utexas.edu>",
+    "Josue Balandrano Coronel <jcoronel@tacc.utexas.edu",
+    "Manuel Rojas <mrojas@tacc.utexas.edu>",
+    "Marjo Poindexter <marjo@tacc.utexas.edu>",
+    "Hedda Prochaska <hedda@tacc.utexas.edu>",
+    "Alex Rocha <rochaa@tacc.utexas.edu>"
+  ],
   "license": "MIT",
   "devDependencies": {
     "jasmine-core": "^2.4.1",

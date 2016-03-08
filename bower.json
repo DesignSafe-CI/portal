@@ -1,8 +1,14 @@
 {
   "name": "designsafe-ci-portal",
-  "version": "0.0.0",
+  "version": "0.9.0",
   "authors": [
-    "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>"
+    "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>",
+    "Steve Mock <mock@tacc.utexas.edu>",
+    "Josue Balandrano Coronel <jcoronel@tacc.utexas.edu",
+    "Manuel Rojas <mrojas@tacc.utexas.edu>",
+    "Marjo Poindexter <marjo@tacc.utexas.edu>",
+    "Hedda Prochaska <hedda@tacc.utexas.edu>",
+    "Alex Rocha <rochaa@tacc.utexas.edu>"
   ],
   "description": "DesignSafe-CI Portal",
   "license": "MIT",
