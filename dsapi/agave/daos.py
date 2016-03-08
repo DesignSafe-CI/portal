@@ -208,7 +208,6 @@ class FileManager(AgaveObject):
         logger.info('Moved to: {}'.format(f.path))
 
         logger.info('Moving metadata from path: {}'.format(mf.path + '/' + mf.name))
-        import ipdb; ipdb.set_trace()
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
                                             username, mf.path + '/' + mf.name)
