@@ -1,6 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
-## v1.0.0-alpha-1
+## v0.9.0
+
+March 7, 2016
+
+First public release of the DesignSafe-CI Portal
+
+## v0.9.0-alpha-1
 
 February 15, 2016
 
