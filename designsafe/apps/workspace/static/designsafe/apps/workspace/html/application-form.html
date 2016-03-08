@@ -2,6 +2,7 @@
     <div class="jumbotron">
         <h1>Select an app</h1>
         <p>Select an application from the tray above.</p>
+        <p>This initial version of the <em>Discovery Workspace</em> allows users to perform simulations and analyze data using popular open source simulation codes OpenSees, ADCIRC, and OpenFOAM, as well as commercial tools such as MATLAB (software license verification required). The selection of codes and tools will continue to be expanded.</p>
     </div>
 </div>
 <div ng-if="data.app" class="app-form-wrapper">
@@ -21,7 +22,7 @@
         </div>
     </div>
     <h2>Run <em>{{data.app.label}}</em></h2>
-    <p>{{data.app.shortDescription}}</p>
+    <p>{{data.app.longDescription}}</p>
     <p ng-if="data.app.helpURI">
         <a href="{{data.app.helpURI}}" target="_blank">
             <i class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
