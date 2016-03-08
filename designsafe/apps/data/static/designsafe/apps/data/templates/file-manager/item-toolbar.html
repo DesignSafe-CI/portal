@@ -132,7 +132,7 @@
                 data-target="#metadata"
                 ng-show="config.allowedActions.metadata"
                 ng-click="showMetadata(item)"
-                ng-if = "fielsystem == 'default'"
+                ng-if = "filesystem == 'default'"
                 title="{{'Metadata' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-tags"></i>
@@ -155,6 +155,7 @@
                 class="btn btn-sm btn-default"
                 data-toggle="modal"
                 ng-click="showPublicMetadata(item)"
+                ng-show="!onPrivateData()"
                 title="{{'details' | translate}}">
             <span class="action-label">
                 <i class="glyphicon glyphicon-modal-window"></i>
