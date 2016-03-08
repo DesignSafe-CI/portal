@@ -11,6 +11,7 @@
     $scope.jobDetails = function(job) {
       Jobs.get(job.id).then(function(resp) {
         console.log(resp.data);
+        if(resp.data._embedded) {console.log(resp.data._embedded);}
 
         $uibModal.open({
           templateUrl: 'local/job-details-modal.html',
