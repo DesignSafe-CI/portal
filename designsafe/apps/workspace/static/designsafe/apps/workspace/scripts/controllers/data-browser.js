@@ -67,6 +67,22 @@
       });
     }
 
+    $scope.displayName = function displayName(file) {
+      if (file.systemId === 'nees.public') {
+        if (file.name === '.' ) {
+          return '..';
+        } else {
+          return file.projecTitle || file.name;
+        }
+      } else {
+        if (file.name === '.' ) {
+          return '..';
+        } else {
+          return file.name;
+        }
+      }
+    };
+
     $scope.chooseFile = function(file) {
       if ($scope.data.wants) {
         Files.provideFile($scope.data.wants.requestKey, file);

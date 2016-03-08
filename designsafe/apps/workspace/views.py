@@ -88,6 +88,11 @@ def call_api(request, service):
                                        )
                 data = [f.to_dict() for f in listing]
 
+                # filter out empty projects
+                if system_id == 'nees.public' and file_path == '/':
+                    data = [f for f in data if 'projecTitle' in f and
+                            not f['projecTitle'].startswith('EMPTY PROJECT')]
+
                 # TODO type of "Shared with me" should be "dir" not "folder"
                 for d in data:
                     d.update((k, 'dir') for k, v in six.iteritems(d)
@@ -107,6 +112,7 @@ def call_api(request, service):
                         'systemId': system_id,
                         'type': 'dir',
                     }] + data
+
             except:
                 data = []
 

@@ -40,8 +40,7 @@
                                 ng-click="chooseFile(f)">Select</button>
                         <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
                             <i class="fa fa-{{getFileIcon(f)}}"></i>
-                            <span ng-if="f.name === '.'">..</span>
-                            <span ng-if="f.name !== '.'">{{f.name}}</span>
+                            <span>{{displayName(f)}}</span>
                         </a>
                     </td>
                     <td>{{f.length|bytes:0}}</td>
