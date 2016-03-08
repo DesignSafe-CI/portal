@@ -84,6 +84,8 @@
             $scope.temp.tempModel.userToShare = "";
             $scope.uploadFileList = [];
             $scope.dropFiles = [];
+            $scope.fileUploader.filesUploaded = [];
+            $scope.fileUploader.filesError = [];
         };
 
         $scope.smartClick = function(item, $event) {
@@ -349,7 +351,8 @@
                 $scope.dropFiles = [];
                 $scope.uploadFileList = [];
             }, function(data) {
-                var errorMsg = data.result && data.result.error || $translate.instant('error_uploading_files');
+                console.log('upload errror data: ', data);
+                var errorMsg = data.message || $translate.instant('error_uploading_files');
                 $scope.temp.error = errorMsg;
             });
         };
