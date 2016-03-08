@@ -27,7 +27,15 @@ class BaseView(AgaveMixin, View):
         try:
             return super(BaseView, self).dispatch(request, *args, **kwargs)
         except (ConnectionError, HTTPError) as e:
-            logger.error('{}'.format(e.response.json()['message']),
+            message = e.message
+            if e.response is not None:
+                try:
+                    res_json = e.response.json()
+                    if 'message' in res_json:
+                        message = res_json['message']
+                except ValueError:
+                    message = e.message
+            logger.error('{}'.format(message),
                 exc_info = True,
                 extra = {
                     'filesystem': self.filesystem,
@@ -35,10 +43,6 @@ class BaseView(AgaveMixin, View):
                     'username': request.user.username
                 }
                 )
-            if 'message' in e.response.json():
-                message = e.response.json()['message']
-            else:
-                message = e.message
             return HttpResponse('{{"error": "{}", "message":"{}"}}'.format(e.response.status_code, message), status = 400, content_type = 'application/json')
 
     def set_context_props(self, request, **kwargs):
