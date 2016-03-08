@@ -4,7 +4,7 @@
 
         function deferredHandler(data, deferred, errorMessage) {
             if (!data || typeof data !== 'object') {
-                return deferred.reject('Bridge response error, please check the docs');
+                return deferred.reject('There was an error handling your rquest. Please try again.');
             }
             if (data.result && data.result.error) {
                 return deferred.reject(data);
@@ -21,36 +21,53 @@
         this.requesting = false;
         this.upload = function(fileList, path, filesystem) {
 
+            var self = this;
             if (! window.FormData) {
+                self.error = 'Unsupported browser version';
                 throw new Error('Unsupported browser version');
             }
-            var self = this;
             var formData = new window.FormData();
+            var promises = [];
             var deferred = $q.defer();
+            var fileObj = {};
             path = path.join('/');
-
-            for (var i = 0; i < fileList.length; i++) {
-                var fileObj = fileList.item && fileList.item(i) || fileList[i];
-                formData.append(fileObj.name, fileObj);
-            }
-
+            var errFunc = function(data){
+                        self.requesting = false;
+                        deferredHandler(data, deferred, 'Error uploadin files. Please try again.');
+                    };
             self.requesting = true;
             var url = fileManagerConfig.baseUrl + filesystem + '/' + fileManagerConfig.uploadUrl + path;
-            $http(
-              {
-                method: 'POST',
-                url: url,
-                data: formData,
-                headers: {'Content-Type': undefined}
-              }
-            ).success(function(data) {
+            for (var i = 0; i < fileList.length; i++) {
+                fileObj = fileList.item && fileList.item(i) || fileList[i];
+                formData = new window.FormData();
+                formData.append(fileObj.name, fileObj);
+                promises.push($http({
+                        method: 'POST',
+                        url: url,
+                        data: formData,
+                        headers : {'Content-Type': undefined}
+                    }).error(errFunc));
+            }
+            $q.all(promises).then(function(data){
                 deferredHandler(data, deferred);
-            }).error(function(data) {
-                deferredHandler(data, deferred, 'Unknown error uploading files');
-            })['finally'](function(data) {
                 self.requesting = false;
-
             });
+
+            //$http(
+            //  {
+            //    method: 'POST',
+            //    url: url,
+            //    data: formData,
+            //    headers: {'Content-Type': undefined}
+            //  }
+            //).success(function(data) {
+            //    deferredHandler(data, deferred);
+            //}).error(function(data) {
+            //    deferredHandler(data, deferred, 'Unknown error uploading files');
+            //})['finally'](function(data) {
+            //    self.requesting = false;
+
+            //});
 
             return deferred.promise;
         };
