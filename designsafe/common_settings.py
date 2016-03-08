@@ -349,6 +349,14 @@ LOGGING = {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
+        'celery':{
+            'handlers': ['console', 'opbeat'],
+            'level': 'INFO',
+        },
+        'opbeat':{
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
     },
 }
 
