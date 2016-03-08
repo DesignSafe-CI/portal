@@ -13,7 +13,7 @@
                     <span class="sortorder" ng-show="predicate[1] === 'model.projectTitle'" ng-class="{reverse:reverse}"></span>
                 </a>
             </th>
-            <th class="">
+            <th class="col-sm-2">
                 <a href="">
                 </a>
             </th>
@@ -104,7 +104,7 @@
                     {{"Downloading" | translate}}...
                 </span>
             </td>
-            <td>
+            <td class="col-sm-2">
                   <div ng-include="config.tplPath + '/item-toolbar.html'"></div>
             </td>
             <td class="hidden-sm hidden-xs" ng-if="(filesystem == 'default') || (filesystem != 'default' && fileNavigator.currentPath.length || fileNavigator.searchResults)">
