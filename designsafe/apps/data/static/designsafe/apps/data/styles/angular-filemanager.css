@@ -45,11 +45,11 @@
 }
 
 .file-manager .fm-dropdown .btn{
-    margin:5px;
-    min-width:170px;
-    padding:0;
-    box-shadow:none;
-    border:solid #efefef 1px;
+    margin: 0;
+    min-width: 170px;
+    padding: 0;
+    box-shadow: none;
+    border: solid #efefef 1px;
 }
 
 .file-manager .fm-dropdown .btn.main-btn{
@@ -79,6 +79,10 @@
     display:inline-block;
     padding-left:10px;
     padding:6px;
+}
+
+.fm-dropdown-action {
+    cursor: pointer;
 }
 
 .file-manager *, .file-manager *:focus {
