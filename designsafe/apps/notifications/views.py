@@ -11,6 +11,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from agavepy.agave import Agave, AgaveException
+from django.conf import settings
+from django.contrib.auth import get_user_model
 
 import json
 import logging
@@ -38,6 +41,7 @@ def generic_webhook_handler(request):
         host = request.POST.get('host', '')
         port = request.POST.get('port','')
         password = request.POST.get('password','')
+        job_uuid = password
 
         body = {
             'event_type': event_type,
@@ -45,9 +49,36 @@ def generic_webhook_handler(request):
             'host': host,
             'port': port,
             'password': password,
+            'associationIds': job_uuid,
         }
-
         generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)
+
+        # create metadata for VNC connection and save to agave metadata?
+        try:
+            agave_job_meta = {
+                'name':'interactiveJobDetails',
+                'value': body,
+                'associationIds': [job_uuid],
+            }
+            logger.info('refreshing for user={}'.format(job_owner))
+            user = get_user_model().objects.get(username=job_owner)
+            token = user.agave_oauth
+            if token.expired:
+                token.refresh()
+            agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
+            logger.info('token.access_token={}'.format(token.access_token))
+            logger.info('SENDING BODY={}'.format(agave_job_meta))
+            meta_uuid = agave.meta.addMetadata(body=json.dumps(agave_job_meta))
+            logger.info('JOB NOTIFICATION agave meta response: {}'.format(meta_uuid))
+
+
+        except AgaveException as e:
+            logger.info('AGAVE EXCEPTION {}'.format(e))
+            return HttpResponse(json.dumps(e.message), content_type='application/json',
+                status=400)
+        except Exception as e:
+            logger.exception('EXCEPTION BOO! {}'.format(e))
+
         return HttpResponse('OK')
     else:
         return HttpResponse('Unexpected', status=400)
