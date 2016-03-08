@@ -105,6 +105,10 @@
     -moz-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
+    -webkit-flex: 0 0 auto;
+    -moz-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
     align-items: center;
     cursor: pointer;
     border: 1px solid #ddd;
@@ -112,7 +116,7 @@
     margin-right: 0.5em;
     box-shadow: 1px 1px 2px rgba(192,192,192,0.1);
     white-space: nowrap;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .app {
