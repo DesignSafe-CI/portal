@@ -2,21 +2,21 @@
 
 {% load bootstrap3 sekizai_tags staticfiles %}
 
-{% block title %}Migrate NEES Account{% endblock %}
+{% block title %}Create Account{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="headline headline-research">NEES Account Migration</h1>
+    <h1 class="headline headline-research">Create Account</h1>
 
     <p class="lead">
-        We have pre-filled as many fields as possible from the NEEShub user profile you
-        selected to migrate. Please complete any missing data and submit.
+        We have pre-filled as many fields as possible from the NEES User Profile you
+        selected.<br>Please complete any missing data and submit.
     </p>
 
     <form method="post" action="{% url 'designsafe_accounts:nees_migration' '3' %}">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <button class="btn btn-primary" type="submit">Complete Account Migration</button>
+        <button class="btn btn-primary" type="submit">Create Account</button>
         <a class="btn btn-link" href="{% url 'designsafe_accounts:nees_migration' %}">Cancel</a>
     </form>
 </div>

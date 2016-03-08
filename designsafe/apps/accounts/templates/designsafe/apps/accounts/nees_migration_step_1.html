@@ -2,11 +2,11 @@
 
 {% load bootstrap3 sekizai_tags staticfiles %}
 
-{% block title %}Migrate NEES Account{% endblock %}
+{% block title %}Create Account{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="headline headline-research">NEES Account Migration</h1>
+    <h1 class="headline headline-research">Create Account</h1>
 
     <p class="lead">
         We found the following NEEShub user matching the email address
@@ -62,7 +62,7 @@
     <form method="post"  action="{% url 'designsafe_accounts:nees_migration' '2' %}">
         {% csrf_token %}
         <input name="email_address" value="{{email_address}}" type="hidden">
-        <button class="btn btn-primary" type="submit">Yes, Migrate Account</button>
+        <button class="btn btn-primary" type="submit">Create Account</button>
         <a class="btn btn-link" href="{% url 'designsafe_accounts:nees_migration' %}">Cancel</a>
     </form>
 
