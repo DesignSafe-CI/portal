@@ -176,13 +176,14 @@ class FileManager(AgaveObject):
         mf = Object.get(id = f.uuid)
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
-                                            username, mf.name + '/' + mf.path)
+                                            username, mf.path + '/' + mf.name)
             cnt = 0
-            while cnt <= objs.hits.total - len(objs):
-                for o in search[cnt:cnt+len(objs)]:
-                    regex = r'^{}'.format(mf.path + '/' + mf.name)
-                    o.update(path = re.sub(regex, path + '/' + new.split('/')[-1], o.path, count = 1))
-                cnt += len(objs)
+            if objs.hits.total:
+                while cnt <= objs.hits.total - len(objs):
+                    for o in search[cnt:cnt+len(objs)]:
+                        regex = r'^{}'.format(mf.path + '/' + mf.name)
+                        o.update(path = re.sub(regex, path + '/' + new.split('/')[-1], o.path, count = 1))
+                    cnt += len(objs)
         mf.update(name = new.split('/')[-1])
         logger.info('Meta Renamed to: {}'.format(mf.path + '/' + mf.name))
         return mf, f
