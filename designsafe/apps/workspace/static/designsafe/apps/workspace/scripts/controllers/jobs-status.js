@@ -10,14 +10,25 @@
 
     $scope.jobDetails = function(job) {
       Jobs.get(job.id).then(function(resp) {
-        console.log(resp.data);
-        if(resp.data._embedded) {console.log(resp.data._embedded);}
+        $scope.data.interactive = false;
+        if(resp.data.status === 'RUNNING' && resp.data._embedded.metadata) {
+          for(var i=0; i < resp.data._embedded.metadata.length; i++){
+            if(resp.data._embedded.metadata[i].name === 'interactiveJobDetails') {
+              var meta = resp.data._embedded.metadata[i];
+              $scope.data.interactive = true;
+              $scope.data.connection_address = 'https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname='
+                + meta.value.host + '&&port=' + meta.value.port + '&autoconnect=true&password=' + meta.value.password ;
+              break;
+            }
+          }
+        }
 
         $uibModal.open({
           templateUrl: 'local/job-details-modal.html',
           controller: 'JobDetailsModalCtrl',
+          scope: $scope,
           resolve: {
-            job: resp.data
+            job: resp.data,
           }
         });
       });
