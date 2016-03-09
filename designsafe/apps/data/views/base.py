@@ -7,6 +7,7 @@ from requests.exceptions import ConnectionError, HTTPError
 from dsapi.agave.daos import shared_with_me
 from django.conf import settings
 import logging
+import json
 
 from designsafe.apps.notifications.views import get_number_unread_notifications
 
@@ -43,7 +44,13 @@ class BaseView(AgaveMixin, View):
                     'username': request.user.username
                 }
                 )
-            return HttpResponse('{{"error": "{}", "message":"{}"}}'.format(e.response.status_code, message), status = 400, content_type = 'application/json')
+            resp = {}
+            resp['error'] = e.response.status_code
+            resp['message'] = message
+            if request.FILES:
+                f_name, f_val = request.FILES.iteritems().next();
+                resp['file'] = f_name
+            return HttpResponse(json.dumps(resp), status = 400, content_type = 'application/json')
 
     def set_context_props(self, request, **kwargs):
         #import ipdb; ipdb.set_trace();

@@ -42,19 +42,23 @@
             var deferred = $q.defer();
             //var fileObj = {};
             path = path.join('/');
-            var errFunc = function(data, name){
+            var errFunc = function(data){
                         console.log('Error uploading: ', data);
-                        console.log('Error name: ', name);
+                        if(data.file) console.log('Error name: ', data.file);
                         self.requesting = false;
                         //self.filesError.push(name);
+                        self.dropFiles[data.file].uploading = false;
+                        self.dropFiles[data.file].success = false;
+                        self.dropFiles[data.file].fail = true;
                         deferredHandler(data, deferred, 'Error uploading files. Please try again.');
                     };
             var succFunc = function(data){
                 console.log('Success uploading: ', data);
+                console.log('success name: ', data.files[0].name);
                 //self.filesUploaded.push(data.files[0].name);
                 self.dropFiles[data.files[0].name].uploading = false;
                 self.dropFiles[data.files[0].name].success = true;
-                self.dropFiles[fileObj.name].fail = false;
+                self.dropFiles[data.files[0].name].fail = false;
             };
             self.requesting = true;
             var url = fileManagerConfig.baseUrl + filesystem + '/' + fileManagerConfig.uploadUrl + path;
@@ -73,7 +77,7 @@
                         data: formData,
                         headers : {'Content-Type': undefined}
                     }).success(succFunc)
-                    .error(function(data){errFunc(data, fileObj.name);})
+                    .error(errFunc)
                     );
             }
             $q.all(promises).then(function(data){
