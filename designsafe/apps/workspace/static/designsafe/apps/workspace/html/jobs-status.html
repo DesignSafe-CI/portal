@@ -67,6 +67,7 @@
                 <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
             </dd>
             <dd ng-if="job.status !== 'FINISHED'">
+                <a href="{{data.connection_address}}" ng-if="data.interactive" class="btn btn-primary" title="Connect to Interactive Session" target="_blank">Connect</a>
                 <button class="btn btn-warning" type="button" ng-click="cancelJob()">Cancel</button>
                 <button class="btn btn-danger" type="button" ng-click="deleteJob()">Delete</button>
             </dd>
