@@ -1,7 +1,7 @@
 (function(window, angular, $) {
     "use strict";
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-    '$scope', '$translate', '$cookies', '$location', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$attrs',   function($scope, $translate, $cookies, $location, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope) {
+    '$scope', '$translate', '$cookies', '$location', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$timeout',  function($scope, $translate, $cookies, $location, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope, $timeout) {
         $scope.config = fileManagerConfig;
         $scope.appName = fileManagerConfig.appName;
 
@@ -24,7 +24,7 @@
         $scope.uploadFileList = [];
         $scope.viewTemplate = $cookies.viewTemplate || 'main-table.html';
         $scope.advSearch = {};
-        $scope.dropFiles = [];
+        $scope.dropFiles = {};
         $scope.Math = window.Math;
 
         $scope.onPrivateData = function(){
@@ -83,7 +83,7 @@
             //$scope.temp.tempModel.name = "";
             $scope.temp.tempModel.userToShare = "";
             $scope.uploadFileList = [];
-            $scope.dropFiles = [];
+            $scope.fileUploader.dropFiles = {};
             $scope.fileUploader.filesUploaded = [];
             $scope.fileUploader.filesError = [];
         };
@@ -339,17 +339,12 @@
 
         $scope.uploadFiles = function() {
             var filesToSend = [];
-            if(!$scope.uploadFileList.length){
-                filesToSend = $scope.dropFiles;
-            } else {
-                filesToSend = $scope.uploadFileList;
-            }
-            $scope.fileUploader.upload(filesToSend, $scope.fileNavigator.currentPath, $scope.filesystem)
+            $scope.fileUploader.upload($scope.fileUploader.dropFiles, $scope.fileNavigator.currentPath, $scope.filesystem)
             .then(function() {
-                $scope.fileNavigator.refresh($scope.filesystem);
-                $scope.modal('uploadfile', true);
-                $scope.dropFiles = [];
-                $scope.uploadFileList = [];
+                $timeout(function(){
+                    $scope.fileNavigator.refresh($scope.filesystem);
+                    $scope.modal('uploadfile', true);
+                }, 500);
             }, function(data) {
                 console.log('upload errror data: ', data);
                 var errorMsg = data.message || $translate.instant('error_uploading_files');
