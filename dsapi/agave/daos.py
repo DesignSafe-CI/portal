@@ -12,6 +12,7 @@ import json
 import logging
 import hashlib
 import os
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -816,6 +817,7 @@ class AgaveFolderFile(AgaveObject):
             self.agave_client.api_server, self.system, self.path)
         resp = requests.post(url, files = data, headers = headers)
         resp.raise_for_status()
+        time.sleep(.500)
         r = AgaveFolderFile.from_path(agave_client = self.agave_client,
                                 system_id = self.system,
                                 path = self.path + '/' + self.name)
