@@ -69,6 +69,20 @@
                             </div>
                         </td>
                     </tr>
+                    <tr ng-if="publicMetadata.project.publications">
+                        <td>
+                            {{'publications' | translate}}
+                        </td>
+                        <td>
+                            <div ng-repeat="publication in publicMetadata.project.publications">
+                                <strong>{{publication.title}}</strong><br>
+                                <div ng-repeat="author in publication.authors">
+                                  {{author}}
+                                </div>
+                                <br>
+                            </div>
+                        </td>
+                    </tr>
                     <tr ng-if="publicMetadata.project.startDate">
                         <td>
                             {{'startDate' | translate}}
@@ -121,6 +135,14 @@
                                         </td>
                                         <td>
                                             {{experiment.title}}
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="experiment.doi">
+                                        <td>
+                                            {{'doi' | translate}}
+                                        </td>
+                                        <td>
+                                            {{experiment.doi}}
                                         </td>
                                     </tr>
                                     <tr ng-if="experiment.type">

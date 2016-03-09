@@ -96,6 +96,7 @@
             organization: "Organization",
             description: "Description",
             sponsor: "Sponsor",
+            publications: "Publications",
 
             // public data - experiment
             project: "Project",
@@ -103,7 +104,9 @@
             type: "Experiment Type",
             component: "Component",
             equipmentClass: "Equipment Class",
-            material: "Materials"
+            material: "Materials",
+            files: "Files",
+            doi: "DOI"
 
 
 
