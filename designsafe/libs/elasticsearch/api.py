@@ -324,6 +324,10 @@ class Object(DocType):
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
+        try:
+            res = s.execute()
+        except TransportError:
+            res = s.execute()
         return s.execute(), s
 
     def search_exact_folder_path(self, system_id, username, path):
