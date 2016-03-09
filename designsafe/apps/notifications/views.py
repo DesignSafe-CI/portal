@@ -42,6 +42,9 @@ def generic_webhook_handler(request):
         port = request.POST.get('port','')
         password = request.POST.get('password','')
         job_uuid = password
+        vnc_connect_link = \
+            'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
+            'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
 
         body = {
             'event_type': event_type,
@@ -50,13 +53,17 @@ def generic_webhook_handler(request):
             'port': port,
             'password': password,
             'associationIds': job_uuid,
+            'action_link': {
+                'value': vnc_connect_link,
+                'label': 'Connect',
+            }
         }
         generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)
 
         # create metadata for VNC connection and save to agave metadata?
         try:
             agave_job_meta = {
-                'name':'interactiveJobDetails',
+                'name': 'interactiveJobDetails',
                 'value': body,
                 'associationIds': [job_uuid],
             }
