@@ -42,7 +42,11 @@
                 scope.$watch(attrs.ngFile, function(files){
                     if (!files.length){
                         element.val('');
-                    }
+                    } else {
+                        for(var i = 0; i < files.length; i++){
+                            scope.fileUploader.dropFiles[files[i].name] = files[i];
+                        }
+                    } 
                 });
             }
         };
@@ -107,21 +111,17 @@
             e.stopPropagation();
             if(e.preventDefault) e.preventDefault();
 
-            if(!scope.$parent.dropFiles) scope.$parent.dropFiles = [];
+            if(!scope.$parent.fileUploader.dropFiles) scope.$parent.fileUploader.dropFiles = [];
 
             var files = e.dataTransfer.files;
             var f = {};
             console.log('files: ', files);
             for(var i = 0; i < files.length; i++){
                 f = files[i];
-                if (!f.type && f.size%4096 === 0) {
-
-                } else {
-                    scope.dropFiles.push(f);
-                }
+                scope.$parent.fileUploader.dropFiles[f.name] = f;
             }
             scope.$apply();
-            console.log('dropFiles', scope.dropFiles);
+            console.log('dropFiles', scope.fileUploader.dropFiles);
         }
 
         function dragOver(e){

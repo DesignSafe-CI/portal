@@ -34,7 +34,7 @@
               <h4 class="modal-title">{{'Rename / Move' | translate}}</h4>
             </div>
             <div class="modal-body">
-              <p class="alert alert-info">{{'enter_new_name_for' | translate}}<code>{{temp.model.name}}</code></p>
+              <p class="alert alert-info">{{'enter_new_name_for' | translate}}<code>{{temp.model.name|decodeURI}}</code></p>
               <input class="form-control" ng-model="temp.tempModel.name" autofocus="autofocus">
 
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
@@ -60,7 +60,7 @@
               <h4 class="modal-title">{{'Move' | translate}}</h4>
             </div>
             <div class="modal-body">
-              <p class="alert alert-info">Select new path for <code>{{temp.model.name}}</code></p>
+              <p class="alert alert-info">Select new path for <code>{{temp.model.name|decodeURI}}</code></p>
               <div ng-include data-src="'path-selector'" class="clearfix"></div>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
@@ -259,31 +259,27 @@
               <h4 class="modal-title">{{"upload_file" | translate}}</h4>
             </div>
             <div class="modal-body">
-              <label class="radio">{{"files_will_uploaded_to" | translate}} <pre><code>{{'/' + fileNavigator.currentPath.join('/')}}</code></pre></label>
+              <label class="radio">{{"files_will_uploaded_to" | translate}} <pre><code>{{'/' + fileNavigator.currentPath.join('/')|decodeURI}}</code></pre></label>
               <label for="file-upload">Browse files</label>
               <input type="file" class="form-control" ng-file="$parent.uploadFileList" autofocus="autofocus" name = "file-upload" multiple/>
               <div class="file-drop" fm-droppable>Or drop files here
                 <output class="droppable-files">
                     <ul>
-                        <li ng-repeat = "f in dropFiles">
-                            <strong>{{f.name}}</strong> - {{Math.floor(f.size/1024)}} Kb, last modified: {{f.lastModifiedDate.toLocaleDateString()}}
+                        <li ng-repeat = "f in fileUploader.dropFiles">
+                            <strong>{{f.name}}</strong> - {{Math.floor(f.size/1024)}} Kb  
+                            <i class="fa" ng-class="{'fa-refresh': f.uploading, 
+                                                     'fa-check': f.success, 
+                                                     'fa-remove': f.fail, 
+                                                     'fa-spin': f.uploading,
+                                                     'text-success': f.success,
+                                                     'text-danger': f.fail,
+                                                     'text-warning': f.uploading}"></i>
+                            <span ng-if="f.uploading">Uploading...</span>
                         </li>
                     </ul>
                 </output>
               </div>
               <div class="uploaded-files">
-                <output class="uploaded-files-output">
-                    <ul>
-                        <li ng-repeat = "f in fileUploader.filesUploaded">
-                            <strong>{{f}}</strong> <i class="glyphicon glyphicon-ok text-success"></i>
-                        </li>
-                    </ul>
-                    <ul>
-                        <li ng-repeat = "f in fileUploader.filesError">
-                            <strong>{{f}}</strong> <i class="glyphicon glyphicon-remove text-danger"></i>
-                        </li>
-                    </ul>
-                </output>
               </div>
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
@@ -291,7 +287,7 @@
               <div ng-show="!fileUploader.requesting">
                   <button type="button" class="btn btn-default" data-dismiss="modal">{{"cancel" | translate}}</button>
                   <button type="submit" class="btn btn-primary"
-                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && dropFiles.length || uploadFileList.length && !dropFiles.length || uploadFileList.length && dropFiles.length))">{{'upload' | translate}}</button>
+                  ng-disabled="!(!fileUploader.requesting && (!uploadFileList.length && fileUploader.filesLength() || uploadFileList.length && !fileUploader.filesLength() || uploadFileList.length && fileUploader.filesLength()))">{{'upload' | translate}}</button>
               </div>
               <div ng-show="fileUploader.requesting">
                   <span class="label label-warning">{{"uploading" | translate}} ...</span>
@@ -358,7 +354,7 @@
           <span aria-hidden="true">&times;</span>
           <span class="sr-only">{{"close" | translate}}</span>
         </button>
-        <h4 class="modal-title">{{'Metadata for' | translate}} <code>{{temp.tempModel.meta.path}}/{{temp.tempModel.meta.name}}</code></h4>
+        <h4 class="modal-title">{{'Metadata for' | translate}} <code>{{temp.tempModel.meta.path|decodeURI}}/{{temp.tempModel.meta.name|decodeURI}}</code></h4>
       </div>
       <div ng-switch on="temp.inprocess">
         <div class="modal-body" ng-switch-when="true">
@@ -426,7 +422,7 @@
                   <span aria-hidden="true">&times;</span>
                   <span class="sr-only">{{"close" | translate}}</span>
               </button>
-              <h4 class="modal-title">{{'Share' | translate}} <code>{{temp.model.fullPath()}}</code></h4>
+              <h4 class="modal-title">{{'Share' | translate}} <code>{{temp.model.fullPath()|decodeURI}}</code></h4>
             </div>
             <div class="modal-body">
               <p class="alert alert-info">Type in the username to share this file/folder with. Please, make sure the username is correct.</p>
@@ -496,10 +492,10 @@
   <div class="panel panel-primary mt10 mb0">
     <div class="panel-body">
         <div class="detail-sources">
-          <code class="mr5"><b>{{"source" | translate}}:</b> {{temp.model.fullPath()}}</code>
+          <code class="mr5"><b>{{"source" | translate}}:</b> {{temp.model.fullPath()|decodeURI}}</code>
         </div>
         <div class="detail-sources">
-          <code class="mr5"><b>{{"destination" | translate}}:</b>{{temp.tempModel.fullPath()}}</code>
+          <code class="mr5"><b>{{"destination" | translate}}:</b>{{temp.tempModel.fullPath()|decodeURI}}</code>
           <a class="label label-primary" ng-click="$root.openNavigator(temp)">{{'change' | translate}}{{openNavigator}}</a>
         </div>
     </div>
