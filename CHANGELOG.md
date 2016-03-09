@@ -1,5 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.2
+
+March 9, 2016
+
+Bug fixes:
+
+- Fixed a bug when moving/renaming files
+
+Improvements:
+
+- Multi-file uploads are done in parallel
+- Data depot browser "Actions" menu updated
+- Added "Connect" links in Job Status and Notification for VNC-type jobs such as MATLAB
+- Updated text/working/typos throughout site
+
 ## v0.9.0
 
 March 7, 2016
