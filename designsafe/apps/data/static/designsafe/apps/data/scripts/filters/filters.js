@@ -18,4 +18,11 @@
                 (input.toLocaleString || input.toString).apply(input);
         };
     }]);
+
+	app.filter('decodeURI', function() {
+		return function(input){
+			var str = window.decodeURIComponent(input);
+            return str;
+        };
+	});
 })(angular);
