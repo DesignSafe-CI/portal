@@ -179,6 +179,7 @@ class FileManager(AgaveObject):
         logger.info('Renamed to : {}'.format(f.full_path))
         
         mf = Object.get(id = f.uuid)
+        new_name = new.split('/')[-1];
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
                                             username, mf.path + '/' + mf.name)
@@ -187,9 +188,13 @@ class FileManager(AgaveObject):
                 while cnt <= objs.hits.total - len(objs):
                     for o in search[cnt:cnt+len(objs)]:
                         regex = r'^{}'.format(mf.path + '/' + mf.name)
-                        o.update(path = re.sub(regex, path + '/' + new.split('/')[-1], o.path, count = 1))
+                        o.update(path = re.sub(regex, 
+                                           path + '/' + new_name, 
+                                           o.path, count = 1))
+                        o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
                     cnt += len(objs)
         mf.update(name = new.split('/')[-1])
+        mf.update(agavePath = 'agave://{}/{}'.format(mf.systemId, mf.path + '/' + mf.name))
         logger.info('Meta Renamed to: {}'.format(mf.path + '/' + mf.name))
         return mf, f
 
@@ -223,8 +228,10 @@ class FileManager(AgaveObject):
                     for o in search[cnt:cnt+len(objs)]:
                         regex = r'^{}'.format(mf.path + '/' + mf.name)
                         o.update(path = re.sub(regex, new_path + '/' + mf.name, o.path, count = 1))
+                        o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
                     cnt += len(objs)
         mf.update(path = new_path)
+        mf.update(agavePath = 'agave://{}/{}'.format(mf.systemId, mf.path + '/' + mf.name))
 
         logger.info('Moved metadata to: {}'.format(mf.path + '/' + mf.name))
         return mf, f
