@@ -134,7 +134,11 @@
                     }
                 });
                 if (!self.fakePath){
-                    self.fakePath = self.fileList[0].model.fakePath().slice(0, -1).splice(1);
+                    if(self.fileList.length > 0){
+                        self.fakePath = self.fileList[0].model.fakePath().slice(0, -1).splice(1);
+                    } else {
+                        self.fakePath = self.currentPath;
+                    }
                 }
                 self.buildTree(path);
             });

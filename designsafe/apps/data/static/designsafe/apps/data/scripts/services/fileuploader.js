@@ -28,37 +28,35 @@
                 self.error = 'Unsupported browser version';
                 throw new Error('Unsupported browser version');
             }
-            var formData = new window.FormData();
+            //var formData = new window.FormData();
             var promises = [];
             var deferred = $q.defer();
-            var fileObj = {};
+            //var fileObj = {};
             path = path.join('/');
-            var errFunc = function(data, name){
+            var errFunc = function(data){
+                        console.log('Error uploading: ', data);
                         self.requesting = false;
                         //self.filesError.push(name);
                         deferredHandler(data, deferred, 'Error uploadin files. Please try again.');
                     };
-            var succFunc = function(data, name){
-                console.log('succ name: ', name);
+            var succFunc = function(data){
+                console.log('Success uploading: ', data);
                 self.filesUploaded.push(data.files[0].name);
             };
             self.requesting = true;
             var url = fileManagerConfig.baseUrl + filesystem + '/' + fileManagerConfig.uploadUrl + path;
             //TODO: This needs to be a better factory.
             for (var i = 0; i < fileList.length; i++) {
-                fileObj = fileList.item && fileList.item(i) || fileList[i];
-                formData = new window.FormData();
+                var fileObj = fileList.item && fileList.item(i) || fileList[i];
+                var formData = new window.FormData();
                 formData.append(fileObj.name, fileObj);
-                var name = fileObj.name;
                 promises.push($http({
                         method: 'POST',
                         url: url,
                         data: formData,
                         headers : {'Content-Type': undefined}
-                    }).success(function(data){
-                        succFunc(data, name);})
-                    .error(function(data){
-                        errFunc(data, name);})
+                    }).success(succFunc)
+                    .error(errFunc)
                     );
             }
             $q.all(promises).then(function(data){
