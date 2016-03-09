@@ -4,7 +4,7 @@
 
         function deferredHandler(data, deferred, errorMessage) {
             if (!data || typeof data !== 'object') {
-                return deferred.reject('There was an error handling your rquest. Please try again.');
+                return deferred.reject('There was an error handling your request. Please try again.');
             }
             if (data.result && data.result.error) {
                 return deferred.reject(data);
