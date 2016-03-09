@@ -23,7 +23,7 @@ jQuery(function($) {
     var id = parseInt(this.value);
     if (id > 0) {
       $.ajax({
-        url: '../departments.json',
+        url: '/account/departments.json',
         dataType: 'json',
         data: {institutionId: id}
       })
