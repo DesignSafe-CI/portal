@@ -255,7 +255,7 @@ class BoxSyncAgent(object):
                     async_resp = AgaveAsyncResponse(self.agave_client, import_resp)
                     async_status = async_resp.result(600)
                     if async_status == 'FAILED':
-                        logger.warning('Box File Transfer failed: %s' % file_path)
+                        logger.error('Box File Transfer failed: %s' % file_path)
                         # TODO notify the user it failed to transfer!
                     else:
                         logger.info('Indexing Box File Transfer %s' % file_path)
