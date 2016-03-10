@@ -44,6 +44,9 @@
           properties: {}
         };
         _.each(params, function(param) {
+          if (! param.value.visible) {
+            return;
+          }
           var field = {
             title: param.details.label,
             description: param.details.description,
@@ -89,6 +92,9 @@
           properties: {}
         };
         _.each(inputs, function(input) {
+          if (! input.value.visible) {
+            return;
+          }
           var field = {
             title: input.details.label,
             description: input.details.description
