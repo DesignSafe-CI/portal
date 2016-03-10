@@ -458,6 +458,11 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 ###
+# Analytics
+#
+GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
+
+###
 # Agave Integration
 #
 # Agave Tenant Configuration

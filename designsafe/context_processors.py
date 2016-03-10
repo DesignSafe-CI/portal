@@ -3,13 +3,13 @@ from django.contrib.messages.api import get_messages
 from django.contrib.messages.constants import DEFAULT_LEVELS
 
 
-def analytics( request ):
+def analytics(request):
     """
     Use the variables returned in this function to
     render your Google Analytics tracking code template.
     """
     context = {}
-    ga_prop_id = getattr( settings, 'GOOGLE_ANALYTICS_PROPERTY_ID', False )
+    ga_prop_id = getattr(settings, 'GOOGLE_ANALYTICS_PROPERTY_ID', False)
     if not settings.DEBUG and ga_prop_id:
         context['GOOGLE_ANALYTICS_PROPERTY_ID'] = ga_prop_id
     return context
