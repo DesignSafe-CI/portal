@@ -154,7 +154,7 @@ def call_api(request, service):
                                 request.user.username,
                                 datetime.now().strftime('%Y-%m-%d'))
 
-                    lic_type = _app_license_type(app_id)
+                    lic_type = _app_license_type(job_post['appId'])
                     if lic_type is not None:
                         lic = request.user.licenses.filter(license_type=lic_type).first()
                         job_post['parameters']['_license'] = lic.license_as_str()
