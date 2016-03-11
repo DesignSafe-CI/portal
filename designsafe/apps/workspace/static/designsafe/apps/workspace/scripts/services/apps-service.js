@@ -47,6 +47,9 @@
           if (! param.value.visible) {
             return;
           }
+          if (param.id.startsWith('_')) {
+            return;
+          }
           var field = {
             title: param.details.label,
             description: param.details.description,
@@ -93,6 +96,9 @@
         };
         _.each(inputs, function(input) {
           if (! input.value.visible) {
+            return;
+          }
+          if (input.id.startsWith('_')) {
             return;
           }
           var field = {
