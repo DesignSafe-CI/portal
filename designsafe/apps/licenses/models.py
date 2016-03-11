@@ -42,4 +42,4 @@ class MATLABLicense(BaseLicense):
         return u"%s: %s" % (self.license_type, self.user.username)
 
     def license_as_str(self):
-        return license_file_content.encode('utf-8')
+        return self.license_file_content.encode('utf-8')
