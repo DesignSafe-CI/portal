@@ -24,6 +24,9 @@ class BaseLicense(models.Model):
     class Meta:
         abstract = True
 
+    def license_as_str(self):
+        return ''
+
 
 class MATLABLicense(BaseLicense):
     license_file_content = models.TextField(help_text='This should be entire contents of'
@@ -37,3 +40,6 @@ class MATLABLicense(BaseLicense):
 
     def __unicode__(self):
         return u"%s: %s" % (self.license_type, self.user.username)
+
+    def license_as_str(self):
+        return license_file_content.encode('utf-8')

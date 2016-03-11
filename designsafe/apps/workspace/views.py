@@ -30,6 +30,13 @@ def index(request):
     context['unreadNotifications'] = get_number_unread_notifications(request)
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
+
+def _app_license_type(app_id):
+    app_lic_type = app_id.split('-')[0].upper()
+    lic_type = next((t[0] for t in LICENSE_TYPES if t[0] == app_lic_type), None)
+    return lic_type
+
+
 @login_required
 def call_api(request, service):
     try:
@@ -39,13 +46,12 @@ def call_api(request, service):
             app_id = request.GET.get('app_id')
             if app_id:
                 data = agave.apps.get(appId=app_id)
-                app_lic_type = app_id.split('-')[0].upper()
-                lic_type = next((t[0] for t in LICENSE_TYPES
-                                        if t[0] == app_lic_type), None)
-                data['license'] = {'type': lic_type}
+                lic_type = _app_license_type(app_id)
+                data['license'] = {
+                    'type': lic_type
+                }
                 if lic_type is not None:
-                    lic = next((l for l in request.user.licenses.all()
-                                if l.license_type == lic_type), None)
+                    lic = request.user.licenses.filter(license_type=lic_type).first()
                     data['license']['enabled'] = lic is not None
 
             else:
@@ -147,6 +153,11 @@ def call_api(request, service):
                             '%s/archive/jobs/%s/${JOB_NAME}-${JOB_ID}' % (
                                 request.user.username,
                                 datetime.now().strftime('%Y-%m-%d'))
+
+                    lic_type = _app_license_type(app_id)
+                    if lic_type is not None:
+                        lic = request.user.licenses.filter(license_type=lic_type).first()
+                        job_post['parameters']['_license'] = lic.license_as_str()
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
