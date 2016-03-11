@@ -70,8 +70,8 @@
           var jobData = {
               appId: $scope.data.app.id,
               archive: true,
-              inputs: [],
-              parameters: []
+              inputs: {},
+              parameters: {}
           };
 
           /* copy form model to disconnect from $scope */
