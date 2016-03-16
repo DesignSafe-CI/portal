@@ -421,5 +421,5 @@ class Object(DocType):
             return super(Object, self).save(**kwargs)
 
     class Meta:
-        index = 'designsafe'
+        index = 'designsafe_a'
         doc_type = 'objects'

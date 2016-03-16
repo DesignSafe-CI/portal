@@ -85,12 +85,13 @@ class FileManager(AgaveObject):
             objs, search = Object().search_partial_path(system_id, 
                                             me, mf.full_path)
             cnt = 0
-            while cnt <= objs.hits.total - len(objs):
-                for o in search[cnt:cnt+len(objs)]:
-                    pems = self.call_operation('files.listPermissions', 
-                                filePath = o.path + '/' + o.name, systemId = system_id)
-                    o.update(permissions = pems)
-                cnt = cnt + len(objs)
+            if objs.hits.total:
+                while cnt <= objs.hits.total - len(objs):
+                    for o in search[cnt:cnt+len(objs)]:
+                        pems = self.call_operation('files.listPermissions', 
+                                    filePath = o.path + '/' + o.name, systemId = system_id)
+                        o.update(permissions = pems)
+                    cnt = cnt + len(objs)
 
         #Update permissions for every metadata object to reach the desired file.
         l = len(paths)
@@ -833,7 +834,8 @@ class AgaveFolderFile(AgaveObject):
         return self
 
     def rename(self, name):
-        name = urllib.quote_plus(name)
+        #name = urllib.quote_plus(name)
+        name = urllib.unquote(name)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
