@@ -105,8 +105,6 @@ class Project(DocType):
         return s.execute(), s
 
     def update_from_dict(self, **d):
-        if '_id' in d:
-            d.pop('_id')
         self.update(**d)
         return self
 
@@ -328,7 +326,14 @@ class Object(DocType):
             res = s.execute()
         except TransportError:
             res = s.execute()
-        return s.execute(), s
+        return res, s
+
+    def get_exact_path(self, system_id, username, path, name):
+        res, s = self.search_exact_path(system_id, username, path, name)
+        if res.hits.total:
+            return res[0]
+        else:
+            return None
 
     def search_exact_folder_path(self, system_id, username, path):
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
@@ -414,11 +419,11 @@ class Object(DocType):
         return self
 
     def save(self, **kwargs):
-        o = self.__class__.get(id = self._id, ignore = 404)
-        if o is not None:
-            return self.update(**self.to_dict())
-        else:
-            return super(Object, self).save(**kwargs)
+        if getattr(self, '_id', None) is not None:
+            o = self.__class__.get(id = self._id, ignore = 404)
+            if o is not None:
+                return self.update(**self.to_dict())
+        return super(Object, self).save(**kwargs)
 
     class Meta:
         index = 'designsafe_a'

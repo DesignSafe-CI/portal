@@ -34,8 +34,14 @@ class BaseView(AgaveMixin, View):
                     res_json = e.response.json()
                     if 'message' in res_json:
                         message = res_json['message']
+                        error = e.response.status_code
                 except ValueError:
                     message = e.message
+                    error = 400
+            else:
+                message = e.message
+                error = 400
+
             logger.error('{}'.format(message),
                 exc_info = True,
                 extra = {
@@ -45,7 +51,7 @@ class BaseView(AgaveMixin, View):
                 }
                 )
             resp = {}
-            resp['error'] = e.response.status_code
+            resp['error'] = error
             resp['message'] = message
             if request.FILES:
                 f_name, f_val = request.FILES.iteritems().next();
