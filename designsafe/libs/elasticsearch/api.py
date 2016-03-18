@@ -241,7 +241,7 @@ class PublicObject(DocType):
         else:
             return super(PublicObject, self).save(**kwargs)
 
-    def to_dict(self, *args, **kwargs):
+    def to_dict(self, get_id = False, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
         #TODO: This should be done by ES, this is terribly inefficient.
         paths = self.path.split('/')
@@ -271,6 +271,9 @@ class PublicObject(DocType):
             r, s = Experiment().search_by_name_and_project(paths[0], paths[1], ['title'])
             if r.hits.total:
                 d['parentExperimentTitle'] = r[0].title[0]
+
+        if get_id:
+            d['_id'] = self._id
         return d
 
     class Meta:
@@ -450,6 +453,12 @@ class Object(DocType):
             if o is not None:
                 return self.update(**self.to_dict())
         return super(Object, self).save(**kwargs)
+
+    def to_dict(self, get_id = False, *args, **kwargs):
+        d = super(Object, self).to_dict(*args, **kwargs)
+        if get_id:
+            d['_id'] = self._id
+        return d
 
     class Meta:
         index = 'designsafe_a'

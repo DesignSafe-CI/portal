@@ -765,7 +765,7 @@ class AgaveFolderFile(AgaveObject):
         }
         return o
 
-    def to_dict(self):
+    def to_dict(self, **kwargs):
         d = {
             'lastModified': self.last_modified,
             'length': self.length,
@@ -1232,7 +1232,7 @@ class AgaveMetaFolderFile(AgaveObject):
             }
         }
 
-    def to_dict(self):
+    def to_dict(self, **kwargs):
         d = {
             '_id': self.uuid,
             'uuid': self.uuid,
