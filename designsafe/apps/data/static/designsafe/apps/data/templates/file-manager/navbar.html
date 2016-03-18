@@ -31,7 +31,6 @@
         <button class="btn btn-default btn-sm" ng-click="refresh()" ng-show="!fileNavigator.searchResults">
             <i class="glyphicon glyphicon-refresh"></i> {{"Refresh" | translate}}
         </button>
-
         <!-- <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropDownMenuLang" data-toggle="dropdown" aria-expanded="true">
             <i class="glyphicon glyphicon-globe"></i> {{"language" | translate}} <span class="caret"></span>
         </button> -->
@@ -49,5 +48,8 @@
             <i class="glyphicon glyphicon-th-list"></i>
         </button>
 
+        <p ng-show="fileNavigator.agaveFallback" class="alert alert-warning">
+           We're currently indexing these files. You can still navigate, preview and download these files. There might be some actions unavailable. Thank you for your patience.
+        </p>
     </div>
   </div>
