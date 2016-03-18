@@ -74,7 +74,9 @@ def advanced_search(index, user, search_terms):
     return response, s
 
 class Project(DocType):
+    
     def search_by_name(self, name, fields = None):
+        #TODO: This should be a classmeethod
         name = re.sub(r'\.groups$', '', name)
         q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
         if fields is not None:
@@ -84,6 +86,7 @@ class Project(DocType):
         return s.execute(), s
 
     def search_query(self, system_id, username, qs, fields = None):
+        #TODO: This should be a classmeethod
         query_fields = ["description",
                   "endDate",
                   "equipment.component",
@@ -120,7 +123,9 @@ class Project(DocType):
         doc_type = 'project'
 
 class Experiment(DocType):
+
     def search_by_project(self, project, fields = None):
+        #TODO: This should be a classmeethod
         project = re.sub(r'\.groups$', '', project)
         q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
         if fields is not None:
@@ -130,6 +135,7 @@ class Experiment(DocType):
         return s.execute(), s
 
     def search_by_name_and_project(self, project, name, fields = None):
+        #TODO: This should be a classmeethod
         project = re.sub(r'\.groups$', '', project)
         q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}, {"term": {"project._exact":project}}]}} }
         if fields is not None:
@@ -139,6 +145,7 @@ class Experiment(DocType):
         return s.execute(), s
 
     def search_query(self, system_id, username, qs, fields = None):
+        #TODO: This should be a classmeethod
         search_fields = ["description",
                   "facility.country"
                   "facility.name",
@@ -174,28 +181,34 @@ class Experiment(DocType):
 
 class PublicObject(DocType):
     def search_partial_path(self, system_id, username, path):
+        #TODO: This should be a classmeethod
         q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_path(self, system_id, username, path, name):
+        #TODO: This should be a classmeethod
         q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_folder_path(self, system_id, path):
+        #TODO: This should be a classmeethod
         q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
         s = self.__class__.search()
         s.update_from_dict(q)
         try:
             res = s.execute()
-        except TransportError:
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
             res = s.execute()
         return res, s
 
     def search_query(self, system_id, username, qs, fields = None):
+        #TODO: This should be a classmeethod
         query_fields = ["name", "path", "project"]
         #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
@@ -207,6 +220,7 @@ class PublicObject(DocType):
         return s.execute(), s
 
     def search_project_folders(self, system_id, username, project_names, fields = None):
+        #TODO: This should be a classmeethod
         q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
         if fields is not None:
             q['fields'] = fields
@@ -313,22 +327,27 @@ class Object(DocType):
                 }
             }
         '''
+        #TODO: This should be a classmeethod
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         return s.execute(), s
 
     def search_exact_path(self, system_id, username, path, name):
+        #TODO: This should be a classmeethod
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         try:
             res = s.execute()
-        except TransportError:
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
             res = s.execute()
         return res, s
 
     def get_exact_path(self, system_id, username, path, name):
+        #TODO: This should be a classmeethod
         res, s = self.search_exact_path(system_id, username, path, name)
         if res.hits.total:
             return res[0]
@@ -336,16 +355,20 @@ class Object(DocType):
             return None
 
     def search_exact_folder_path(self, system_id, username, path):
+        #TODO: This should be a classmeethod
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
         s = self.__class__.search()
         s.update_from_dict(q)
         try:
             res = s.execute()
-        except TransportError:
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
             res = s.execute()
         return res, s
 
     def search_query(self, system_id, username, qs):
+        #TODO: This should be a classmeethod
         fields = ["name", "path", "keywords"]
         #qs = '*{}*'.format(qs)
         q = { "query": { "filtered": { "query": { "query_string": { "fields":fields, "query": qs}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
@@ -399,6 +422,7 @@ class Object(DocType):
                 }
             }
         '''
+        #TODO: This should be a classmeethod
 
         if not self_root:
             q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term": {"systemId": system_id}}], "must_not":{"term": {"name._exact":username}}  }},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}}}}}}}
@@ -408,7 +432,9 @@ class Object(DocType):
         s.update_from_dict(q)
         try:
             res = s.execute()
-        except TransportError:
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
             res = s.execute()
         return res, s
 

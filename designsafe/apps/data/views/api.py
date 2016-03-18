@@ -36,19 +36,24 @@ class ListingsMixin(object):
                       special_dir = self.special_dir,
                       is_public = self.is_public)
         response = [o.to_dict() for o in l]
-        if response:
-            #If there are thing in the folder
+        if getattr(settings, 'AGAVE_FAILBACK', None):
             status = 200
         else:
-            #If the folder is empty check if the metadata exists
-            meta_obj, ret = mgr.get(system_id = self.filesystem,
-                    path = self.file_path,
-                    username = request.user.username,
-                    is_public = self.is_public)
-            if meta_obj:
+            #TODO: Remove this if we're always gonna failback to agvefs direct calls.
+            if response:
+                #If there are things in the folder
                 status = 200
             else:
-                status = 404
+                #If the folder is empty check if the metadata exists
+                #TODO: this should be done in dsapi
+                meta_obj, ret = mgr.get(system_id = self.filesystem,
+                        path = self.file_path,
+                        username = request.user.username,
+                        is_public = self.is_public)
+                if meta_obj:
+                    status = 200
+                else:
+                    status = 404
         return self.render_to_json_response(response, status = status)
 
 

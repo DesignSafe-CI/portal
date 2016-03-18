@@ -390,7 +390,6 @@
             var cpath = $scope.fileNavigator.currentPath.join('/');
             var lurl = $location.url().replace(/^\//, '');
             var qstr = $location.search();
-            console.log('qstr: ', qstr);
             if(lurl != cpath){
                 if(qstr.q){
                     var val = qstr.q;
