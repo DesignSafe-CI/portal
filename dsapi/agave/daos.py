@@ -281,7 +281,7 @@ class FileManager(AgaveObject):
                 if aff.full_path == new:
                     mf = o
         else:
-            mf = AgaveFolderFile.from_path(agave_client = self.agave_client,
+            nf = AgaveFolderFile.from_path(agave_client = self.agave_client,
                             system_id = system_id,
                             path = new)
             mf = Object(**nf.to_dict())
@@ -878,6 +878,7 @@ class AgaveFolderFile(AgaveObject):
             'filePath': self.full_path,
             'body': {"action": "copy", "path": name}
         }
+        logger.debug('calling files.manage with: {}'.format(d))
         res = self.call_operation('files.manage', **d)
         return res
 
