@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
+import logging
 
+logger = logging.getLogger(__name__)
 
 LICENSE_TYPES = (
     ('MATLAB', 'MATLAB'),
@@ -42,4 +44,5 @@ class MATLABLicense(BaseLicense):
         return u"%s: %s" % (self.license_type, self.user.username)
 
     def license_as_str(self):
+        self.license_file_content = self.license_file_content.replace('\r\n','\n')
         return self.license_file_content.encode('utf-8')
