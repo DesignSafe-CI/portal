@@ -341,10 +341,7 @@ def profile_edit(request):
 
         form = forms.UserProfileForm(initial=tas_user)
 
-    context = {
-        'form': form,
-        'user': tas_user,
-        }
+    context = {'form': form}
     return render(request, 'designsafe/apps/accounts/profile_edit.html', context)
 
 
