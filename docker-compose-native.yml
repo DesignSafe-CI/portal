@@ -1,0 +1,142 @@
+data:
+  image: buildpack-deps:trusty
+  volumes:
+    - /designsafe/static:/var/www/designsafe-ci.org/static
+    - /designsafe/media:/var/www/designsafe-ci.org/media
+    - /designsafe/redis_data:/data
+
+redis:
+  image: redis
+  command: redis-server --appendonly yes
+  volumes_from:
+    - data
+
+worker:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  log_driver: syslog
+  log_opt:
+    syslog-tag: worker
+  links:
+    - redis:redis
+  volumes_from:
+    - data
+  command: celery -A designsafe worker -l info --autoscale=10,2
+
+websocket:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  log_driver: syslog
+  log_opt:
+    syslog-tag: websocket
+  ports:
+    - 9000:9000
+  links:
+    - redis:redis
+  volumes_from:
+    - data
+  command: uwsgi --ini /portal/conf/uwsgi_websocket.ini
+
+django:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  log_driver: syslog
+  log_opt:
+    syslog-tag: main
+  ports:
+    - 8000:8000
+  links:
+    - redis:redis
+  volumes_from:
+    - data
+
+fiu_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.fiu_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: fiu_ef
+  ports:
+    - 8001:8000
+  volumes_from:
+    - data
+
+lehigh_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.lehigh_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: lehigh_ef
+  ports:
+    - 8002:8000
+  volumes_from:
+    - data
+
+oregonstate_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.oregonstate_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: oregonstate_ef
+  ports:
+    - 8003:8000
+  volumes_from:
+    - data
+
+ucdavis_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.ucdavis_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: ucdavis_ef
+  ports:
+    - 8004:8000
+  volumes_from:
+    - data
+
+ucsd_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.ucsd_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: ucsd_ef
+  ports:
+    - 8005:8000
+  volumes_from:
+    - data
+
+ufl_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.ufl_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: ufl_ef
+  ports:
+    - 8006:8000
+  volumes_from:
+    - data
+
+utexas_ef:
+  image: designsafeci/portal
+  env_file: designsafe.env
+  environment:
+    DJANGO_SETTINGS_MODULE: designsafe.sites.utexas_ef
+  log_driver: syslog
+  log_opt:
+    syslog-tag: utexas_ef
+  ports:
+    - 8007:8000
+  volumes_from:
+    - data
