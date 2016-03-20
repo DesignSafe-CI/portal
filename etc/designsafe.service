@@ -1,12 +1,12 @@
 [Unit]
 Description=DesignSafe Portal
-Requires=docker.service
+Requires=nginx.service docker.service
 After=docker.service
 
 [Service]
 User=portal
 ExecStart=/usr/local/bin/docker-compose -f /designsafe/docker-compose.yml up
-ExecStop=/usr/local/bin/docker-compose -f /designsafe/docker-compose.yml stop
+ExecStop=/usr/local/bin/docker-compose -f /designsafe/docker-compose.yml stop ; /usr/local/bin/docker-compose -f /designsafe/docker-compose.yml rm -f redis worker websocket django
 Restart=always
 
 [Install]

@@ -1,55 +1,3 @@
-data:
-  image: buildpack-deps:trusty
-  volumes:
-    - /designsafe/static:/var/www/designsafe-ci.org/static
-    - /designsafe/media:/var/www/designsafe-ci.org/media
-    - /designsafe/redis_data:/data
-
-#redis:
-#  image: redis
-#  command: redis-server --appendonly yes
-#  volumes_from:
-#    - data
-#
-#worker:
-#  image: designsafeci/portal
-#  env_file: designsafe.env
-#  log_driver: syslog
-#  log_opt:
-#    syslog-tag: worker
-#  links:
-#    - redis:redis
-#  volumes_from:
-#    - data
-#  command: celery -A designsafe worker -l info --autoscale=10,2
-#
-#websocket:
-#  image: designsafeci/portal
-#  env_file: designsafe.env
-#  log_driver: syslog
-#  log_opt:
-#    syslog-tag: websocket
-#  ports:
-#    - 9000:9000
-#  links:
-#    - redis:redis
-#  volumes_from:
-#    - data
-#  command: uwsgi --ini /portal/conf/uwsgi_websocket.ini
-#
-#django:
-#  image: designsafeci/portal
-#  env_file: designsafe.env
-#  log_driver: syslog
-#  log_opt:
-#    syslog-tag: main
-#  ports:
-#    - 8000:8000
-#  links:
-#    - redis:redis
-#  volumes_from:
-#    - data
-
 fiu_ef:
   image: designsafeci/portal
   env_file: designsafe.env
@@ -61,7 +9,7 @@ fiu_ef:
   ports:
     - 8001:8000
   volumes_from:
-    - data
+    - designsafe_data_1
 
 lehigh_ef:
   image: designsafeci/portal
@@ -74,7 +22,7 @@ lehigh_ef:
   ports:
     - 8002:8000
   volumes_from:
-    - data
+    - designsafe_data_1
 
 oregonstate_ef:
   image: designsafeci/portal
@@ -87,7 +35,7 @@ oregonstate_ef:
   ports:
     - 8003:8000
   volumes_from:
-    - data
+    - designsafe_data_1
 
 ucdavis_ef:
   image: designsafeci/portal
@@ -100,7 +48,7 @@ ucdavis_ef:
   ports:
     - 8004:8000
   volumes_from:
-    - data
+    - designsafe_data_1
 
 ucsd_ef:
   image: designsafeci/portal
@@ -113,7 +61,7 @@ ucsd_ef:
   ports:
     - 8005:8000
   volumes_from:
-    - data
+    - designsafe_data_1
 
 ufl_ef:
   image: designsafeci/portal
@@ -126,7 +74,7 @@ ufl_ef:
   ports:
     - 8006:8000
   volumes_from:
-    - data
+    - designsafe_data_1
 
 utexas_ef:
   image: designsafeci/portal
@@ -139,4 +87,4 @@ utexas_ef:
   ports:
     - 8007:8000
   volumes_from:
-    - data
+    - designsafe_data_1

@@ -1,0 +1,13 @@
+[Unit]
+Description=DesignSafe EF Sites
+Requires=nginx.service docker.service
+After=docker.service
+
+[Service]
+User=portal
+ExecStart=/usr/local/bin/docker-compose -f /designsafe/docker-compose-ef.yml up
+ExecStop=/usr/local/bin/docker-compose -f /designsafe/docker-compose-ef.yml stop ; /usr/local/bin/docker-compose -f /designsafe/docker-compose-ef.yml rm -f
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
