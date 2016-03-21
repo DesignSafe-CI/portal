@@ -9,6 +9,7 @@
             this.requesting = false;
             this.searchResults = false;
             this.fileList = [];
+            this.agaveFallback = false;
 
              if (path === '/'){
               this.currentPath = [];
@@ -105,7 +106,12 @@
             }).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
-                self.deferredHandler(data, deferred, 'Unknown error listing, check the response');
+                //self.deferredHandler(data, deferred, 'Unknown error listing, check the response');
+                if(data.message){
+                    self.deferredHandler(data, deferred, data.message);
+                } else {
+                    self.deferredHandler(data, deferred, 'Unknown error listing, please try again.');
+                }
             })['finally'](function(data) {
                 self.requesting = false;
             });
@@ -119,6 +125,12 @@
             return self.list(self.filesystem).then(function(data) {
                 $rootScope.$broadcast('angular-filemanager', self.filesystem, decodeURIComponent(path));
                 self.fileList = (data.result || []).map(function(file) {
+                    file.agaveFallback = false;
+                    self.agaveFallback = false;
+                    if (!file._id || file._id === null){
+                        self.agaveFallback = true;
+                        file.agaveFallback = true;
+                    }
                     return new Item(file, self.currentPath, self.filesystem);
                 });
                 self.fileList = self.fileList.filter(function(o){

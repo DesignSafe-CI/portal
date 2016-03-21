@@ -35,20 +35,25 @@ class ListingsMixin(object):
                       username = request.user.username,
                       special_dir = self.special_dir,
                       is_public = self.is_public)
-        response = [o.to_dict() for o in l]
-        if response:
-            #If there are thing in the folder
+        response = [o.to_dict(get_id = True) for o in l]
+        if getattr(settings, 'AGAVE_FAILBACK', None):
             status = 200
         else:
-            #If the folder is empty check if the metadata exists
-            meta_obj, ret = mgr.get(system_id = self.filesystem,
-                    path = self.file_path,
-                    username = request.user.username,
-                    is_public = self.is_public)
-            if meta_obj:
+            #TODO: Remove this if we're always gonna failback to agvefs direct calls.
+            if response:
+                #If there are things in the folder
                 status = 200
             else:
-                status = 404
+                #If the folder is empty check if the metadata exists
+                #TODO: this should be done in dsapi
+                meta_obj, ret = mgr.get(system_id = self.filesystem,
+                        path = self.file_path,
+                        username = request.user.username,
+                        is_public = self.is_public)
+                if meta_obj:
+                    status = 200
+                else:
+                    status = 404
         return self.render_to_json_response(response, status = status)
 
 
@@ -84,7 +89,7 @@ class UploadView(BasePrivateJSONView):
         mgr = FileManager(self.agave_client)
         mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
         return self.render_to_json_response({'files': [o.as_json() for o in fs], 
-                                             'filesMeta': [o.to_dict() for o in mfs]})
+                                             'filesMeta': [o.to_dict(get_id = True) for o in mfs]})
 
 class ManageView(BasePrivateJSONView):
     def set_context_props(self, request, **kwargs):
@@ -101,13 +106,13 @@ class ManageView(BasePrivateJSONView):
             path = request.user.username + body.get('path', None)
         op = getattr(mngr, action)
         mf, f = op(path = self.file_path, new = path, system_id = self.filesystem, username = request.user.username)
-        return self.render_to_json_response(mf.to_dict())
+        return self.render_to_json_response(mf.to_dict(get_id = True))
 
     def delete(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         mf = FileManager(agave_client = self.agave_client)
         o = mf.delete(self.filesystem, self.file_path, request.user.username)
-        return self.render_to_json_response(o.to_dict())
+        return self.render_to_json_response(o.to_dict(get_id = True))
 
 class ShareView(BasePrivateJSONView):
     def post(self, request, *args, **kwargs):
@@ -173,7 +178,7 @@ class MetadataMixin(object):
         if 'keywords' in meta:
             meta['keywords'] = list(set(meta['keywords']))
         meta_obj.update(**meta)
-        return self.render_to_json_response(meta_obj.to_dict())
+        return self.render_to_json_response(meta_obj.to_dict(get_id = True))
 
 class MetadataView(MetadataMixin, BasePrivateJSONView):
     pass
@@ -194,12 +199,12 @@ class MetaSearchMixin(object):
                           request.user.username, 
                           is_public = self.is_public)
         res_search = search[0:10]
-        response = [o.to_dict() for o in res_search]
+        response = [o.to_dict(get_id = True) for o in res_search]
         if self.is_public:
             p_res, p_search = mgr.search_public_meta(request.GET.get('q', None), 
                               self.filesystem, 
                               request.user.username)
-            p_res = [o.to_dict() for o in p_search.scan()]
+            p_res = [o.to_dict(get_id = True) for o in p_search.scan()]
             response = p_res + response
         return self.render_to_json_response(response, status = status)
 

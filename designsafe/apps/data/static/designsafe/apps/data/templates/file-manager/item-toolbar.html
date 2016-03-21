@@ -32,7 +32,7 @@
                 </a>
             </li>
 
-            <li ng-if="config.allowedActions.edit && item.isEditable() && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.edit && item.isEditable() && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#edit"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="item.getContent(); touch(item)"
@@ -44,7 +44,7 @@
                 </a>
             </li>
 
-            <li ng-if="config.allowedActions.metadata && filesystem == 'default'">
+            <li ng-if="config.allowedActions.metadata && filesystem == 'default' && !fileNavigator.agaveFallback">
                 <a data-toggle="modal" class="fm-dropdown-action"
                    data-target="#metadata"
                    ng-click="showMetadata(item)"
@@ -56,7 +56,7 @@
                 </a>
             </li>
 
-            <li ng-if="!onPrivateData()">
+            <li ng-if="!onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#details"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="showPublicMetadata(item)"
@@ -69,9 +69,9 @@
                 </a>
             </li>
 
-            <li class="divider" role="separator" ng-if="(config.allowedActions.share || config.allowedActions.changePermissions) && filesystem == 'default' && onPrivateData()"></li>
+            <li class="divider" role="separator" ng-if="(config.allowedActions.share || config.allowedActions.changePermissions) && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback"></li>
 
-            <li ng-if="config.allowedActions.share && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.share && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-toggle="modal" class="fm-dropdown-action"
                    data-target="#share"
                    ng-click="touch(item)"
@@ -83,7 +83,7 @@
                 </a>
             </li>
 
-            <li ng-if="config.allowedActions.changePermissions && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.changePermissions && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#changepermissions"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="getPermissions(item)"
@@ -97,7 +97,7 @@
 
             <li class="divider" role="separator" ng-if="(config.allowedActions.copy || config.allowedActions.rename) && filesystem == 'default' && onPrivateData()"></li>
 
-            <li ng-if="config.allowedActions.copy && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.copy && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#copy"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="touch(item)"
@@ -109,7 +109,7 @@
                 </a>
             </li>
 
-            <li ng-if="config.allowedActions.rename && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.rename && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#move"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="touch(item)"
@@ -124,7 +124,7 @@
             <li>
                 <a data-target="#rename"
                    data-toggle="modal" class="fm-dropdown-action"
-                   ng-if="config.allowedActions.rename && filesystem == 'default' && onPrivateData()"
+                   ng-if="config.allowedActions.rename && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback"
                    ng-click="touch(item)"
                    title="{{'Move' | translate}}">
                     <span class="action-label">
@@ -134,9 +134,9 @@
                 </a>
             </li>
 
-            <li ng-if="((config.allowedActions.compress && item.isCompressible()) || (config.allowedActions.extract && item.isExtractable())) && filesystem == 'default' && onPrivateData()" class="divider" role="separator"></li>
+            <li ng-if="((config.allowedActions.compress && item.isCompressible()) || (config.allowedActions.extract && item.isExtractable())) && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback" class="divider" role="separator"></li>
 
-            <li ng-if="config.allowedActions.compress && item.isCompressible() && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.compress && item.isCompressible() && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#compress"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="touch(item)"
@@ -148,7 +148,7 @@
                 </a>
             </li>
 
-            <li ng-if="config.allowedActions.extract && item.isExtractable() && filesystem == 'default' && onPrivateData()">
+            <li ng-if="config.allowedActions.extract && item.isExtractable() && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-target="#extract"
                    data-toggle="modal" class="fm-dropdown-action"
                    ng-click="touch(item); item.tempModel.name=''"
@@ -160,9 +160,9 @@
                 </a>
             </li>
 
-            <li class="divider" role="separator" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData()"></li>
+            <li class="divider" role="separator" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback"></li>
 
-            <li class="" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData()">
+            <li class="" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
                 <a data-toggle="modal" class="fm-dropdown-action"
                    data-target="#delete"
                    ng-click="touch(item)" title="{{'Remove' | translate}}">

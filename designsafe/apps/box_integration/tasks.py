@@ -232,7 +232,11 @@ class BoxSyncAgent(object):
                         logger.exception('Failed to create local path for sync')
 
                     if aff is not None:
-                        meta = Object.get(id=aff.uuid, ignore=404)
+                        #meta = Object.get(id=aff.uuid, ignore=404)
+                        meta = Object().get_exact_path(aff.system, 
+                                            self.user.username, 
+                                            aff.path, 
+                                            aff.name )
                         if meta is None:
                             meta = Object(**aff.to_dict())
                             meta.save()

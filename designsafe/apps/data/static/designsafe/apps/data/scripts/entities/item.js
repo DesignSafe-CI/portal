@@ -22,6 +22,7 @@
                 content: model && model.content || '',
                 filesystem: filesystem || 'default',
                 permissions: model && model.permissions || {},
+                agaveFallback : model && model.agaveFallback || false,
                 recursive: false,
                 sizeKb: function() {
                     // return Math.round(this.size / 1024, 1);
