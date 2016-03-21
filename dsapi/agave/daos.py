@@ -1,4 +1,3 @@
-from django.conf import settings
 from agavepy.agave import AgaveException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from requests.exceptions import HTTPError
@@ -162,7 +161,7 @@ class FileManager(AgaveObject):
             else:
                 res, s = Object().search_exact_folder_path(system_id, username, path)
                 ret = s.scan()
-                if not res.hits.total and getattr(settings, 'AGAVE_FAILBACK', None):
+                if not res.hits.total:
                     logger.warning('Failing back to Agave FS')
                     listing = self.call_operation('files.list', systemId = system_id,
                                         filePath = path)
