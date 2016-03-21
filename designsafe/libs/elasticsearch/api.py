@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
 
 try:
+    default_index = es_settings['default_index']
     cluster = es_settings['cluster']
     hosts = cluster['hosts']
 except KeyError:
@@ -461,5 +462,5 @@ class Object(DocType):
         return d
 
     class Meta:
-        index = 'designsafe_a'
+        index = default_index
         doc_type = 'objects'
