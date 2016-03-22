@@ -1,5 +1,19 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.3
+
+Bug fixes:
+
+- Fixed a bug when two files/folders exists with the same name but different case
+- Fixed a bug when sharing files/folders with spaces in the path
+- Fixed a bug where download/preview was failing due to the files URL being double-encoded
+- Fixed an issue where the portal would show as "logged out" when editing profile
+
+Improvements:
+
+- Added a fallback to Agave Files List when a path is loaded in the data browser but it has
+  not been indexed yet.
+
 ## v0.9.2
 
 March 9, 2016
