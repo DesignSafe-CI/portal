@@ -205,7 +205,8 @@ def index_job_outputs(user, job):
         fo = AgaveFolderFile.from_path(ag, system_id, path)
         logger.debug('Indexing: {}'.format(fo.full_path))
         o = Object().get_exact_path(system_id = system_id,
-                        username = user, path = fo.path, name = fo.name)
+                        username = user.username, path = fo.path, 
+                        name = fo.name)
         if o is None:
             o = Object(**fo.to_dict())
         o.save()
@@ -215,7 +216,8 @@ def index_job_outputs(user, job):
         fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
         logger.debug('Indexing: {}'.format(fo.full_path))
         o = Object().get_exact_path(system_id = system_id,
-                        username = user, path = fo.path, name = fo.name)
+                        username = user.username, path = fo.path, 
+                        name = fo.name)
         if o is None:
             o = Object(**fo.to_dict())
         o.save()
