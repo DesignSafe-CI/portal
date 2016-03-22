@@ -460,7 +460,7 @@ class Object(DocType):
                         username = username, path = self.path,
                         name = self.name)
             if o is not None:
-                return o.save()
+                return o
         return super(Object, self).save(**kwargs)
 
     def to_dict(self, get_id = False, *args, **kwargs):
