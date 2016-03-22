@@ -204,14 +204,20 @@ def index_job_outputs(user, job):
         path = '/'.join(paths)
         fo = AgaveFolderFile.from_path(ag, system_id, path)
         logger.debug('Indexing: {}'.format(fo.full_path))
-        o = Object(**fo.to_dict())
+        o = Object().get_exact_path(system_id = system_id,
+                        username = user, path = fo.path, name = fo.name)
+        if o is None:
+            o = Object(**fo.to_dict())
         o.save()
         paths.pop()
 
     for f in agave_utils.fs_walk(ag, system_id, archive_path):
         fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
         logger.debug('Indexing: {}'.format(fo.full_path))
-        o = Object(**fo.to_dict())
+        o = Object().get_exact_path(system_id = system_id,
+                        username = user, path = fo.path, name = fo.name)
+        if o is None:
+            o = Object(**fo.to_dict())
         o.save()
 
 # @shared_task
