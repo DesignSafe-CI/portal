@@ -4,7 +4,7 @@ from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from boxsdk import Client
-from dsapi.agave.daos import AgaveFolderFile
+from dsapi.agave.daos import AgaveFolderFile, FileManager
 from boxsdk.exception import BoxAPIException, BoxException
 from designsafe.libs.elasticsearch.api import Object
 from designsafe.apps.box_integration import util
@@ -12,8 +12,6 @@ from designsafe.apps.box_integration.models import BoxUserToken
 import logging
 import requests
 from requests.exceptions import HTTPError
-import json
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +33,7 @@ def check_connection(username):
     user = get_user_model().objects.get(username=username)
     token = BoxUserToken.objects.get(user=user)
     client = Client(util.get_box_oauth(token))
-    box_user = client.user(user_id='me').get()
+    box_user = client.user(user_id=u'me').get()
     return box_user
 
 
@@ -74,15 +72,32 @@ def check_or_create_agave_sync_folder(username):
     logger.info(
         "Checking BoxSync directory for user=%s on BoxSync storage systemId=%s" %
         (username, settings.BOX_SYNC_AGAVE_SYSTEM))
+    sync_dir_name = '%s/%s' % (username, settings.BOX_SYNC_FOLDER_NAME)
+
+    sync_dir = None
+    ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+               token=settings.AGAVE_SUPER_TOKEN)
     try:
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token=settings.AGAVE_SUPER_TOKEN)
-        body = {'action': 'mkdir', 'path': username}
-        ag.files.manage(systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
-                        filePath='/',
-                        body=json.dumps(body))
-    except (HTTPError, AgaveException):
-        logger.exception('Failed to create home directory for user=%s' % username)
+        sync_dir = AgaveFolderFile.from_path(ag, settings.BOX_SYNC_AGAVE_SYSTEM,
+                                             sync_dir_name)
+        o = Object().get_exact_path(system_id=settings.BOX_SYNC_AGAVE_SYSTEM,
+                                    username=username, path=sync_dir.path,
+                                    name=sync_dir.name)
+        if o is None:
+            o = Object()
+        o.update_from_dict(**sync_dir)
+        o.save()
+    except HTTPError:
+        pass
+
+    if sync_dir is None:
+        try:
+            fm = FileManager(agave_client=ag)
+            fm.mkdir(path=username, new=settings.BOX_SYNC_FOLDER_NAME,
+                     system_id=settings.BOX_SYNC_AGAVE_SYSTEM, username=username)
+        except HTTPError:
+            logger.exception('Failed to create BoxSync directory for user',
+                             extra={'username': username})
 
 
 @shared_task
@@ -115,7 +130,7 @@ def handle_box_webhook_event(event_data):
         agent.handle_box_event(event)
     except BoxUserToken.DoesNotExist:
         logger.warning('BoxUserToken not found for box_user_ids=%s; '
-                         'unable to handle event %s' % (event.to_user_ids, event))
+                       'unable to handle event %s' % (event.to_user_ids, event))
     except:
         logger.exception('Unexpected exception handling Box event %s' % event)
 
@@ -133,7 +148,7 @@ class BoxWebhookEvent(object):
         self.to_user_ids = event_data['to_user_ids']
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return self.__unicode__().encode('utf-8')
 
     def __unicode__(self):
         return u'BoxWebhookEvent[event_type="%s" item_type="%s" ' \
@@ -144,7 +159,9 @@ class BoxWebhookEvent(object):
         tokens = BoxUserToken.objects.filter(box_user_id__in=self.to_user_ids)
         if tokens:
             client = Client(util.get_box_oauth(tokens[0]))
-            if self.item_type == 'file':
+            if self.event_type is 'deleted':
+                item = client.folder(self.item_parent_folder_id)
+            elif self.item_type == 'file':
                 item = client.file(self.item_id)
             else:
                 item = client.folder(self.item_id)
@@ -222,21 +239,19 @@ class BoxSyncAgent(object):
                             self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
                     except HTTPError:
                         # mkdir
-                        body = {'action': 'mkdir', 'path': sub_path}
-                        self.agave_client.files.manage(
-                            systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
-                            filePath='/', body=body)
+                        fm = FileManager(agave_client=self.agave_client)
+                        fm.mkdir(path=self.user.username,
+                                 new=settings.BOX_SYNC_FOLDER_NAME,
+                                 system_id=settings.BOX_SYNC_AGAVE_SYSTEM,
+                                 username=self.user.username)
                         aff = AgaveFolderFile.from_path(
                             self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
                     except AgaveException:
                         logger.exception('Failed to create local path for sync')
 
                     if aff is not None:
-                        #meta = Object.get(id=aff.uuid, ignore=404)
-                        meta = Object().get_exact_path(aff.system, 
-                                            self.user.username, 
-                                            aff.path, 
-                                            aff.name )
+                        meta = Object().get_exact_path(aff.system, self.user.username,
+                                                       aff.path, aff.name)
                         if meta is None:
                             meta = Object(**aff.to_dict())
                             meta.save()
