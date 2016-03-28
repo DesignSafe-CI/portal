@@ -159,7 +159,7 @@ class BoxWebhookEvent(object):
         tokens = BoxUserToken.objects.filter(box_user_id__in=self.to_user_ids)
         if tokens:
             client = Client(util.get_box_oauth(tokens[0]))
-            if self.event_type is 'deleted':
+            if self.event_type == 'deleted':
                 item = client.folder(self.item_parent_folder_id)
             elif self.item_type == 'file':
                 item = client.file(self.item_id)
@@ -217,95 +217,120 @@ class BoxSyncAgent(object):
         if resp.status_code == 302:
             return resp.headers['Location']
 
+    def ensure_sync_path(self, path_to_item):
+        full_path_parts = path_to_item.split('/')
+        for i in range(1, len(full_path_parts) + 1):
+            sub_path = '/'.join(full_path_parts[:i])
+            logger.debug('ensure path exists: %s' % sub_path)
+            aff = None
+            try:
+                aff = AgaveFolderFile.from_path(
+                    self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
+            except HTTPError:
+                # mkdir
+                parts = full_path_parts[:i]
+                new_dir = parts.pop()
+                parent_path = '/'.join(parts)
+                logger.debug('Create new directory "%s" at path "%s"' % (new_dir,
+                                                                         parent_path))
+                fm = FileManager(agave_client=self.agave_client)
+                fm.mkdir(path=parent_path,
+                         new=new_dir,
+                         system_id=settings.BOX_SYNC_AGAVE_SYSTEM,
+                         username=self.user.username)
+                aff = AgaveFolderFile.from_path(
+                    self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
+            except AgaveException:
+                logger.exception('Failed to create local path for sync')
+
+            if aff is not None:
+                meta = Object().get_exact_path(aff.system, self.user.username,
+                                               aff.path, aff.name)
+                if meta is None:
+                    meta = Object(**aff.to_dict())
+                    meta.save()
+                else:
+                    meta.update_from_dict(**aff.to_dict())
+
+    def download_new_file(self, item, download_url):
+        sync_path = util.get_sync_path(item)
+        full_path = '%s/%s' % (self.user.username, sync_path)
+        file_path = '%s/%s' % (full_path, item.name)
+        logger.info('Create item=%s for user=%s at path=%s' %
+                    (item.name, self.user, full_path))
+
+        # ensure full sync_path exists
+        self.ensure_sync_path(full_path)
+
+        # schedule file import
+        try:
+            import_resp = self.agave_client.files.importData(
+                systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
+                filePath=full_path,
+                fileName=item.name,
+                urlToIngest=download_url)
+
+            # import is async, so wait for status
+            # TODO If the transfer takes more than 10 mins, this will fail.
+            # TODO If the agave token expires this will fail
+            # TODO If the async_resp.result times out, we should queue another check.
+            try:
+                async_resp = AgaveAsyncResponse(self.agave_client, import_resp)
+                async_status = async_resp.result(600)
+                if async_status == 'FAILED':
+                    logger.error('Box File Transfer failed: %s' % file_path)
+                    # TODO notify the user it failed to transfer!
+                else:
+                    logger.info('Indexing Box File Transfer %s' % file_path)
+                    aff = AgaveFolderFile.from_path(
+                        self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, file_path)
+                    meta = Object(**aff.to_dict())
+                    meta.save()
+            except (TimeoutError, Error):
+                logger.error('AsyncResponse Error on Agave.files.importData from Box',
+                             extra={
+                                 'item': item
+                             })
+        except HTTPError:
+            logger.exception('Agave.files.importData from Box Failed',
+                             extra={
+                                 'item': item
+                             })
+
     def handle_new_item_event(self, event):
         item = self.get_event_item(event)
         if util.check_item_in_sync_path(item):
-            download_url = self.file_download_url(item)
-            if download_url:
-                sync_path = util.get_sync_path(item)
-                full_path = '%s/%s' % (self.user.username, sync_path)
-                file_path = '%s/%s' % (full_path, item.name)
-                logger.info('Create item=%s for user=%s at path=%s' %
-                            (item.name, self.user, full_path))
-
-                # ensure full sync_path exists
-                full_path_parts = full_path.split('/')
-                for i in range(1, len(full_path_parts) + 1):
-                    sub_path = '/'.join(full_path_parts[:i])
-                    logger.debug('ensure path exist: %s' % sub_path)
-                    aff = None
-                    try:
-                        aff = AgaveFolderFile.from_path(
-                            self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
-                    except HTTPError:
-                        # mkdir
-                        fm = FileManager(agave_client=self.agave_client)
-                        fm.mkdir(path=self.user.username,
-                                 new=settings.BOX_SYNC_FOLDER_NAME,
-                                 system_id=settings.BOX_SYNC_AGAVE_SYSTEM,
-                                 username=self.user.username)
-                        aff = AgaveFolderFile.from_path(
-                            self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, sub_path)
-                    except AgaveException:
-                        logger.exception('Failed to create local path for sync')
-
-                    if aff is not None:
-                        meta = Object().get_exact_path(aff.system, self.user.username,
-                                                       aff.path, aff.name)
-                        if meta is None:
-                            meta = Object(**aff.to_dict())
-                            meta.save()
-                        else:
-                            meta.update_from_dict(**aff.to_dict())
-
-                # schedule file import
-                import_resp = self.agave_client.files.importData(
-                    systemId=settings.BOX_SYNC_AGAVE_SYSTEM,
-                    filePath=full_path,
-                    fileName=item.name,
-                    urlToIngest=download_url)
-
-                # import is async, so wait for status
-                # TODO If the transfer takes more than 10 mins, this will fail.
-                # TODO If the agave token expires this will fail
-                # TODO If the async_resp.result times out, we should queue another check.
-                try:
-
-                    async_resp = AgaveAsyncResponse(self.agave_client, import_resp)
-                    async_status = async_resp.result(600)
-                    if async_status == 'FAILED':
-                        logger.error('Box File Transfer failed: %s' % file_path)
-                        # TODO notify the user it failed to transfer!
-                    else:
-                        logger.info('Indexing Box File Transfer %s' % file_path)
-                        aff = AgaveFolderFile.from_path(
-                            self.agave_client, settings.BOX_SYNC_AGAVE_SYSTEM, file_path)
-                        meta = Object(**aff.to_dict())
-                        meta.save()
-                except TimeoutError:
-                    logger.error('Status check for %s timed out! '
-                                 'Box File Transfers are not indexed!' % file_path)
-                except Error:
-                    logger.exception('Unexpected exception during Box File Transfer.',
-                                     extra={'file_path': file_path, 'event': event})
+            if event.item_type == 'file':
+                download_url = self.file_download_url(item)
+                if download_url:
+                    self.download_new_file(item, download_url)
+                else:
+                    logger.error('Unable to get download_url for Box item',
+                                 extra={'item': item.name,
+                                        'user': self.user,
+                                        'event': event})
             else:
-                logger.error('Unable to get download_url for Box item',
-                             extra={'item': item.name, 'user': self.user, 'event': event})
+                sync_path = util.get_sync_path(item)
+                item_path = '%s/%s/%s' % (self.user.username, sync_path, item.name)
+                self.ensure_sync_path(item_path)
 
     def handle_rm_item_event(self, event):
-        parent_folder_id = event.parent_folder_id
-        folder = self.box_client.folder(folder_id=parent_folder_id).get()
+        folder = self.box_client.folder(folder_id=event.item_parent_folder_id).get()
         if util.check_item_in_sync_path(folder):
-            path = util.get_item_path(folder)
-            path += '/%s' % folder.name
-            logger.info(
-                'Deleted item=%s for user=%s from path=%s' %
-                (event.item_name, self.user, path))
+            sync_path = util.get_sync_path(folder)
+            parent_path = '%s/%s/%s' % (self.user.username, sync_path, folder.name)
+            item_path = '%s/%s' % (parent_path, event.item_name)
+            logger.info('Deleting file %s' % item_path)
+            fm = FileManager(agave_client=self.agave_client)
+            fm.delete(system_id=settings.BOX_SYNC_AGAVE_SYSTEM,
+                      path=item_path,
+                      username=self.user.username)
 
     def handle_move_item_event(self, event):
         item = self.get_event_item(event)
         if util.check_item_in_sync_path(item):
             path = util.get_item_path(item)
+            # TODO
             logger.info(
                 'Moved item=%s for user=%s to path %s' %
                 (event.item_name, self.user, path))
