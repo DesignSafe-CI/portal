@@ -24,9 +24,7 @@
 
   function LoggingService(){
       var service = {};
-
       var debug = !!(window.console && window.debug);
-      debug = window.console && window.debug || true; //for testing
 
       // service.log = function(msg, level) {
       //   var level = level || 'info'
@@ -47,16 +45,10 @@
       }
 
       return service;
-
-
   }
 
   function LoggingServiceProvider($injector){
       this.$get = [LoggingService];
-
-      // function LoggingHelper($rootScope){
-      //     return new LoggingService();
-      // }
   }
 
   angular.module('logging')

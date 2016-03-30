@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('JobsStatusCtrl',
-  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs) {
+  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger) {
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
       hasMoreJobs: true,
@@ -50,17 +50,16 @@
     };
 
     $scope.$on('job-submitted', function(e, data) {
-      console.log(data);
+      logger.log(data);
       $scope.refresh();
     });
 
     $scope.$on('jobs-refresh', function(e, data) {
-      console.log('jobs-refresh event detected with data: ', data);
+      logger.log('jobs-refresh event detected with data: ', data);
       $scope.refresh();
     });
 
     $scope.$on('ds.wsBus:default', function update_job(e, msg){
-      console.log('update job msg', msg)
       if('event_type' in msg && msg.event_type === 'VNC') {
         //alert(msg.connection_address)
         $scope.interactive_url = djangoUrl.reverse('designsafe_workspace:interactive2', { 'hostname': msg.host, 'port':msg.port , 'password':msg.password });
@@ -89,7 +88,7 @@
   }]);
 
   angular.module('WorkspaceApp').controller('JobDetailsModalCtrl',
-    [ '$scope', '$uibModalInstance','$http', 'Jobs', 'job', 'djangoUrl',  function($scope, $uibModalInstance, $http, Jobs, job, djangoUrl) {
+    [ '$scope', '$uibModalInstance','$http', 'Jobs', 'job', 'djangoUrl', 'logger', function($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
 
     $scope.job = job;
 
@@ -98,7 +97,7 @@
     };
 
     $scope.deleteJob = function() {
-      console.log('deleteJob button clicked with jobId=',job.id);
+      logger.log('deleteJob button clicked with jobId=',job.id);
       $http.delete(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
         params: {'job_id': job.id},
 
@@ -106,19 +105,19 @@
         $uibModalInstance.dismiss('cancel');
         $scope.$parent.$broadcast('jobs-refresh');
       }, function(error) {
-        console.log('nope!', error); //todo make error handling UI
+        logger.log('nope!', error); //todo make error handling UI
       });
     };
 
     $scope.cancelJob = function() {
-      console.log('cancelJob button clicked with jobId=',job.id);
+      logger.log('cancelJob button clicked with jobId=',job.id);
       $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
         'job_id': job.id, params: {'job_id': job.id, 'action':'cancel', 'body':'{"action":"stop"}'},
       }).then(function(response){
         $uibModalInstance.dismiss('cancel');
         $scope.$parent.$broadcast('jobs-refresh');
       }, function(error) {
-        console.log('nope!', error); //todo make error handling UI
+        logger.log('nope!', error); //todo make error handling UI
       });
     };
 

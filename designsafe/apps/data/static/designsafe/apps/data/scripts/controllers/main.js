@@ -1,7 +1,7 @@
 (function(window, angular, $) {
     "use strict";
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-    '$scope', '$translate', '$cookies', '$location', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$timeout',  function($scope, $translate, $cookies, $location, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope, $timeout) {
+    '$scope', '$translate', '$cookies', '$location', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', '$rootScope', '$timeout', 'logger', function($scope, $translate, $cookies, $location, fileManagerConfig, Item, FileNavigator, FileUploader, $rootScope, $timeout, logger) {
         $scope.config = fileManagerConfig;
         $scope.appName = fileManagerConfig.appName;
 
@@ -149,7 +149,7 @@
               // $scope.modal('changepermissions', true);
             })
             .catch(function(data){
-              console.log(data);
+              logger.log(data);
             });
         };
 
@@ -160,10 +160,10 @@
             }
             item.showMetadata()
             .then(function(data){
-                console.log('getMetadata: ', data);
+                logger.log('getMetadata: ', data);
             })
             .catch(function(data){
-                console.log('getMetadata: ', data);
+                logger.log('getMetadata: ', data);
             });
         };
 
@@ -173,10 +173,10 @@
             item.showPublicMetadata()
             .then(function(data){
                 $scope.publicMetadata = data;
-                console.log('showPublicMetadata: ', data);
+                logger.log('showPublicMetadata: ', data);
             })
             .catch(function(data){
-                console.log('showPublicMetadata: ', data);
+                logger.log('showPublicMetadata: ', data);
             });
         };
 
@@ -194,8 +194,8 @@
         };
 
         $scope.deleteKeyMeta = function(item, key){
-            console.log('item: ', item);
-            console.log('key: ', key);
+            logger.log('item: ', item);
+            logger.log('key: ', key);
             delete item.tempModel.metadata[0].value[key];
         };
 
@@ -204,7 +204,7 @@
                 $scope.modal('metadata', true);
             }).catch(function(err){
                 $scope.modal('metadata', true);
-                console.log('Error saving metadata: ', err);
+                logger.log('Error saving metadata: ', err);
             });
         };
 
@@ -217,12 +217,12 @@
                 $scope.modal('metadata', true);
             }).catch(function(err){
                 $scope.modal('metadata', true);
-                console.log('Error saving metadata: ', err);
+                logger.log('Error saving metadata: ', err);
             });
         };
 
         $scope.delKw = function(item, kw){
-            console.log('item ', item);
+            logger.log('item ', item);
             var index = -1;
             for (var i = 0; i < item.tempModel.meta.keywords.length; i++){
                 if(kw === item.tempModel.meta.keywords[i]){
@@ -233,7 +233,7 @@
             if(index > -1){
                 item.tempModel.meta.keywords.splice(index, 1);
             }
-            console.log('updated meta: ', item.tempModel.meta);
+            logger.log('updated meta: ', item.tempModel.meta);
             if (typeof item.tempModel.metaForm === 'undefined') item.tempModel.metaForm = {};
             item.tempModel.metaForm.keywords = item.tempModel.meta.keywords;
             item.tempModel.meta.keywords = [];
@@ -241,7 +241,7 @@
                 $scope.modal('metadata', true);
             }).catch(function(err){
                 $scope.modal('metadata', true);
-                console.log('Error saving metadata: ', err);
+                logger.log('Error saving metadata: ', err);
             });
         };
 
@@ -346,7 +346,7 @@
                     $scope.modal('uploadfile', true);
                 }, 500);
             }, function(data) {
-                console.log('upload errror data: ', data);
+                logger.log('upload errror data: ', data);
                 var errorMsg = data.message || $translate.instant('error_uploading_files');
                 $scope.temp.error = errorMsg;
             });
@@ -393,7 +393,7 @@
             if(lurl != cpath){
                 if(qstr.q){
                     var val = qstr.q;
-                    console.log('val: ', val);
+                    logger.log('val: ', val);
                     $scope.fileNavigator.search('{"all": "' + escapeJSONstring(val) + '"}');
                 }else{
                     $scope.fileNavigator.currentPath = lurl.split('/');

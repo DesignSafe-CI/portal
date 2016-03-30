@@ -151,6 +151,7 @@ TEMPLATES = [
                 'cms.context_processors.cms_settings',
                 'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
+                'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
                 'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',

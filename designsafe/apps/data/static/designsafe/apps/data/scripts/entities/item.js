@@ -1,6 +1,6 @@
 (function(window, angular, $) {
     "use strict";
-    angular.module('FileManagerApp').factory('item', ['$http', '$q', '$translate', 'fileManagerConfig', 'chmod', function($http, $q, $translate, fileManagerConfig, Chmod) {
+    angular.module('FileManagerApp').factory('item', ['$http', '$q', '$translate', 'fileManagerConfig', 'chmod', 'logger', function($http, $q, $translate, fileManagerConfig, Chmod, logger) {
 
         var Item = function(model, path, filesystem) {
             var rawModel = {
@@ -110,7 +110,7 @@
             self.inprocess = true;
             self.error = '';
             var parentPath = self.tempModel.fullPath().split('/');
-            console.log('path: ', parentPath);
+            logger.log('path: ', parentPath);
             parentPath.pop();
             parentPath = parentPath.join('/');
             var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.createFolderUrl + parentPath;
@@ -493,7 +493,7 @@
             var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.metadataUrl + path;
             $http.get(url).success(function(data) {
                 var md = data;
-                console.log('md: ', md);
+                logger.log('md: ', md);
                 self.tempModel.meta = {};
                 self.tempModel.meta.name = md.name;
                 self.tempModel.meta.path = md.path;
