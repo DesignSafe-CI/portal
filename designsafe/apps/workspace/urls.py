@@ -7,7 +7,6 @@ urlpatterns = patterns(
     'designsafe.apps.workspace.views',
     url(r'^$', 'index', name='index'),
     url(r'^api/(?P<service>[a-z]+?)/$', 'call_api', name='call_api'),
-    url(r'^interactive2/(?P<hostname>.+)/(?P<port>[0-9]+?)/(?P<password>.+)//$', 'interactive2', name='interactive2'),
 )
 
 def menu_items(**kwargs):
