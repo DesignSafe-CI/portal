@@ -20,16 +20,16 @@
     'schemaForm',
     'ng.designsafe',
     'ds.wsBus',
-    'ds.notifications'
+    'ds.notifications',
+    'logging',
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
   angular.module('WorkspaceApp')
-    .run(['WSBusService', function init(WSBusService){
-        console.log(WSBusService.url);
+    .run(['WSBusService', 'logger', function init(WSBusService, logger){
+        logger.log(WSBusService.url);
         WSBusService.init(WSBusService.url);
     }])
     .run(['NotificationService', function init(NotificationService){
-        console.log('workspace app.js running NotificationService')
         NotificationService.init();
     }]);
 })(window, angular, jQuery);

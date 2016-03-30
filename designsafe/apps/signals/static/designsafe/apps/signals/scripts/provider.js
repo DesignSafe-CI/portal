@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    function WSBusService(configURL, $rootScope){
+    function WSBusService(configURL, $rootScope, logger){
         var ws;
         var service = {
             init: init,
@@ -12,20 +12,20 @@
 
         function init(url){
             ws = new WebSocket(url);
-            console.log('wss : ', ws)
+            logger.log('wss : ', ws)
             ws.onopen = function(){
-                console.log('websocket to data, connected');
+                logger.log('websocket to data, connected');
             };
             ws.onmessage = function(e){
                 var res = JSON.parse(e.data);
-                console.log('onmessage e', e)
+                logger.log('onmessage e', e)
                 processWSMessage(res);
             };
             ws.onerror = function(e){
-                console.log('WS error: ', e);
+                logger.log('WS error: ', e);
             };
             ws.onclose = function(e){
-                console.log('connection closed; reopening');
+                logger.log('connection closed; reopening');
                 init(url);
             };
             service.ws = ws;
@@ -38,13 +38,13 @@
 
     function WSBusServiceProvider($injector){
         var configURL = '';
-        this.$get = ['$rootScope', wsBusHelper];
+        this.$get = ['$rootScope', 'logger', wsBusHelper];
 
         this.setUrl = function setUrl(url){
             configURL = url;
         };
-        function wsBusHelper($rootScope){
-            return new WSBusService(configURL, $rootScope);
+        function wsBusHelper($rootScope, logger){
+            return new WSBusService(configURL, $rootScope, logger);
         }
     }
 
