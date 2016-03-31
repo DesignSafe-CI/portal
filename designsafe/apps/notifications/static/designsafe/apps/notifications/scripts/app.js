@@ -13,10 +13,10 @@
         );
   }
 
-  var app = angular.module('NotificationList', ['ng.django.urls','ds.wsBus', 'ds.notifications']).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
+  var app = angular.module('NotificationList', ['ng.django.urls','ds.wsBus', 'ds.notifications', 'logging']).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
 
-  angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', function($scope,$rootScope,notificationFactory) {
+  angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'logger', function($scope,$rootScope,notificationFactory, logger) {
       $scope.data = {};
       $scope.showRawMessage = false;
       $scope.data.notifications = [];
@@ -29,7 +29,7 @@
               $scope.data.notifications[i]['fields']['body'] = angular.fromJson($scope.data.notifications[i]['fields']['body']);
               $scope.data.notifications[i]['fields']['notification_time'] = Date.parse($scope.data.notifications[i]['fields']['notification_time']);
             }
-            console.log($scope.data.notifications)
+            logger.log($scope.data.notifications)
         })
       };
       $scope.list();

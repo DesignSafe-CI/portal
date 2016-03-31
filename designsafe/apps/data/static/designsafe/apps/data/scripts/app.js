@@ -27,17 +27,17 @@
       'ngCookies',
       'ds.wsBus',
       'ds.notifications',
-      'ui.bootstrap'
+      'ui.bootstrap',
+      'logging'
     ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$compileProvider', config]);
 
     // angular.module('FileManagerApp')
     app
-    .run(['WSBusService', function init(WSBusService){
-        console.log(WSBusService.url);
+    .run(['WSBusService', 'logger', function init(WSBusService, logger){
+        logger.log(WSBusService.url);
         WSBusService.init(WSBusService.url);
     }])
-    .run(['NotificationService', function init(NotificationService){
-        console.log('workspace app.js running NotificationService');
+    .run(['NotificationService', 'logger', function init(NotificationService, logger){
         NotificationService.init();
     }]);
 

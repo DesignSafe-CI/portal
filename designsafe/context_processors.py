@@ -37,3 +37,11 @@ def messages(request):
         'messages': unique_msgs,
         'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
     }
+
+def debug(request):
+    context = {}
+    if settings.DEBUG:
+        context = {
+            'debug': True
+        }
+    return context

@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('WorkspaceApp').controller('DataBrowserCtrl',
-    ['$scope', '$controller', '$rootScope', 'Systems', 'Files', function($scope, $controller, $rootScope, Systems, Files) {
+    ['$scope', '$controller', '$rootScope', 'Systems', 'Files', 'logger', function($scope, $controller, $rootScope, Systems, Files, logger) {
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
 
@@ -33,7 +33,7 @@
         $scope.data.dirPath = $scope.data.filePath.split('/');
         $scope.data.loading = false;
       }, function(response) {
-        console.log(error);
+        logger.log(error);
         $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
         $scope.data.loading = false;
       });
@@ -61,7 +61,7 @@
         $scope.data.filesListing = response.data;
         $scope.data.loading = false;
       }, function(error) {
-        console.log(error);
+        logger.log(error);
         $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
         $scope.data.loading = false;
       });

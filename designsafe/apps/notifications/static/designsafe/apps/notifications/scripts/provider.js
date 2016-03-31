@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    function NotificationService($rootScope){
+    function NotificationService($rootScope, logger){
         var service = {
             init: init,
         };
@@ -9,12 +9,11 @@
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
-            console.log('notifications provider initiated')
         }
 
         function processMessage(e, msg){
             //var rScope = $injector.get('$rootScope');
-            console.log('websockets msg', msg);
+            logger.log('websockets msg', msg);
             if (msg.status == 'FINISHED' || msg.status == 'FAILED') {
                 var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
                 notification_badge.removeClass('label-default')
@@ -32,13 +31,13 @@
 
     function NotificationServiceProvider($injector){
         // var configURL = '';
-        this.$get = ['$rootScope', NotificationBusHelper];
+        this.$get = ['$rootScope', 'logger', NotificationBusHelper];
 
         // this.setUrl = function setUrl(url){
             // configURL = url;
         // };
-        function NotificationBusHelper($rootScope){
-            return new NotificationService($rootScope);
+        function NotificationBusHelper($rootScope, logger){
+            return new NotificationService($rootScope, logger);
         }
     }
 

@@ -46,7 +46,7 @@
                         for(var i = 0; i < files.length; i++){
                             scope.fileUploader.dropFiles[files[i].name] = files[i];
                         }
-                    } 
+                    }
                 });
             }
         };
@@ -105,7 +105,7 @@
 (function(angular){
     'use strict';
 
-    function fmDroppable(scope, element){
+    function fmDroppable(scope, element, logger){
 
         function fileSelect(e){
             e.stopPropagation();
@@ -115,13 +115,13 @@
 
             var files = e.dataTransfer.files;
             var f = {};
-            console.log('files: ', files);
+            logger.log('files: ', files);
             for(var i = 0; i < files.length; i++){
                 f = files[i];
                 scope.$parent.fileUploader.dropFiles[f.name] = f;
             }
             scope.$apply();
-            console.log('dropFiles', scope.fileUploader.dropFiles);
+            logger.log('dropFiles', scope.fileUploader.dropFiles);
         }
 
         function dragOver(e){
@@ -136,11 +136,13 @@
         el.addEventListener('drop', fileSelect);
     }
 
-    angular.module('FileManagerApp').directive('fmDroppable', function(){
+    angular.module('FileManagerApp').directive('fmDroppable', ['logger', function(logger){
             return {
                 restring:"A",
                 scope:false,
-                link: fmDroppable
+                link: function(scope, element){
+                    fmDroppable(scope, element, logger);
+                }
             };
-        });
+        }]);
 })(angular);

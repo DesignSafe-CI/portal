@@ -1,6 +1,6 @@
 (function(window, angular) {
     "use strict";
-    angular.module('FileManagerApp').service('fileUploader', ['$http', '$q', 'fileManagerConfig', function ($http, $q, fileManagerConfig) {
+    angular.module('FileManagerApp').service('fileUploader', ['$http', '$q', 'fileManagerConfig', 'logger', function ($http, $q, fileManagerConfig, logger) {
 
         function deferredHandler(data, deferred, errorMessage) {
             if (!data || typeof data !== 'object') {
@@ -43,8 +43,8 @@
             //var fileObj = {};
             path = path.join('/');
             var errFunc = function(data){
-                        console.log('Error uploading: ', data);
-                        if(data.file) console.log('Error name: ', data.file);
+                        logger.log('Error uploading: ', data);
+                        if(data.file) logger.log('Error name: ', data.file);
                         self.requesting = false;
                         //self.filesError.push(name);
                         self.dropFiles[data.file].uploading = false;
@@ -53,8 +53,8 @@
                         deferredHandler(data, deferred, 'Error uploading files. Please try again.');
                     };
             var succFunc = function(data){
-                console.log('Success uploading: ', data);
-                console.log('success name: ', data.files[0].name);
+                logger.log('Success uploading: ', data);
+                logger.log('success name: ', data.files[0].name);
                 //self.filesUploaded.push(data.files[0].name);
                 self.dropFiles[data.files[0].name].uploading = false;
                 self.dropFiles[data.files[0].name].success = true;
