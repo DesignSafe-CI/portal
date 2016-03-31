@@ -2,6 +2,7 @@ from django.conf.urls import url, patterns
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
+# TODO look at linking directly into an app in the workspace
 
 urlpatterns = patterns(
     'designsafe.apps.workspace.views',

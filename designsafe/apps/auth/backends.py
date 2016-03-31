@@ -107,6 +107,7 @@ class AgaveOAuthBackend(ModelBackend):
             self.logger.info('Attempting login via Agave with token "%s"' %
                              token[:8].ljust(len(token), '-'))
 
+            # TODO make this into an AgavePy call
             response = requests.get('%s/profiles/v2/me' % base_url,
                                     headers={'Authorization': 'Bearer %s' % token})
             json_result = response.json()

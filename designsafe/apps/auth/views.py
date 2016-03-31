@@ -75,6 +75,9 @@ def agave_oauth(request):
 
 
 def agave_oauth_callback(request):
+    """
+    http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
+    """
     state = request.GET.get('state')
 
     if request.session['auth_state'] != state:
@@ -96,6 +99,7 @@ def agave_oauth_callback(request):
             'code': code,
             'redirect_uri': redirect_uri,
         }
+        # TODO update to token call in agavepy
         response = requests.post('%s/token' % tenant_base_url,
                                  data=body,
                                  auth=(client_key, client_sec))
@@ -111,7 +115,10 @@ def agave_oauth_callback(request):
                 token = AgaveOAuthToken(**token_data)
                 token.user = user
             token.save()
+
+            # TODO deprecate using token in session
             request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = token.token
+
             login(request, user)
             if user.last_login is not None:
                 msg_tmpl = 'Login successful. Welcome back, %s %s!'

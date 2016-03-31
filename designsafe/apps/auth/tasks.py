@@ -16,6 +16,7 @@ def check_or_create_agave_home_dir(username):
     logger.info("Checking home directory for user=%s on default storage systemId=%s" % (
         username, settings.AGAVE_STORAGE_SYSTEM))
     try:
+        # TODO should use DS Files API for this
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token=settings.AGAVE_SUPER_TOKEN)
         body = {'action': 'mkdir', 'path': username}

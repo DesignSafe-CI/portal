@@ -27,6 +27,10 @@
     };
 
     service.formSchema = function(app) {
+      /**
+       * Generate a JSON.schema for the app ready for angular-schema-form
+       * https://github.com/json-schema-form/angular-schema-form
+       */
       if (typeof app === 'string') {
         app = service.get(app);
       }
