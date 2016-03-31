@@ -52,7 +52,7 @@ slimit==0.8.1
 virtualenv==13.0.1
 wheel==0.24.0
 opbeat
-boxsdk==1.4.0
+boxsdk==1.5.1
 elasticsearch>=2.0.0,<3.0.0
 elasticsearch-dsl>=2.0.0,<3.0.0
 
