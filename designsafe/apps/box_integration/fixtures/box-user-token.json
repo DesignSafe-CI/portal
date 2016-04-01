@@ -1,0 +1,12 @@
+[
+  {
+    "fields": {
+      "access_token": "asdf",
+      "box_user_id": "100000000",
+      "user": 2,
+      "refresh_token": "asdf1234"
+    },
+    "model": "box_integration.boxusertoken",
+    "pk": 1
+  }
+]
