@@ -212,12 +212,3 @@ def call_api(request, service):
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
                         content_type='application/json')
 
-@login_required
-def interactive2(request, hostname, port, password):
-    context = {}
-    token = request.user.agave_oauth
-    context['session'] = {
-        'agave': json.dumps(token.token)
-    }
-
-    return render(request, 'designsafe/apps/workspace/vnc-desktop2.html', context)

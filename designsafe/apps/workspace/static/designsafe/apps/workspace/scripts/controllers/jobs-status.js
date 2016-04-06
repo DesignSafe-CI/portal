@@ -59,10 +59,13 @@
       $scope.refresh();
     });
 
+    /*
+     * Receives the webhook notification from the vnc-type job and opens the
+     * modal dialog in the workspace letting the user know their job is ready
+     * to connect to.
+     */
     $scope.$on('ds.wsBus:default', function update_job(e, msg){
       if('event_type' in msg && msg.event_type === 'VNC') {
-        //alert(msg.connection_address)
-        $scope.interactive_url = djangoUrl.reverse('designsafe_workspace:interactive2', { 'hostname': msg.host, 'port':msg.port , 'password':msg.password });
         $uibModal.open({
           templateUrl: 'local/vncjob-details-modal.html',
           controller: 'VNCJobDetailsModalCtrl',
@@ -82,7 +85,6 @@
         }
       }
     });
-
 
 
   }]);
