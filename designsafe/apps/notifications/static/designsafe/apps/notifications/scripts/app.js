@@ -13,7 +13,7 @@
         );
   }
 
-  var app = angular.module('NotificationList', ['ng.django.urls','ds.wsBus', 'ds.notifications', 'logging']).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
+  var app = angular.module('NotificationList', ['ng.django.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr']).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
 
   angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'logger', function($scope,$rootScope,notificationFactory, logger) {

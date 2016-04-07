@@ -7,5 +7,5 @@
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     }
 
-    angular.module('ds.wsBus', ['logging']).config(config);
+    angular.module('ds.wsBus', ['logging', 'toastr']).config(config);
 })();

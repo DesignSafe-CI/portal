@@ -22,12 +22,14 @@
     'ds.wsBus',
     'ds.notifications',
     'logging',
+    'toastr',
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
   angular.module('WorkspaceApp')
-    .run(['WSBusService', 'logger', function init(WSBusService, logger){
+    .run(['WSBusService', 'logger', 'toastr', function init(WSBusService, logger, toastr){
         logger.log(WSBusService.url);
         WSBusService.init(WSBusService.url);
+        toastr.success('TESTING', 'workspace websockets init');
     }])
     .run(['NotificationService', function init(NotificationService){
         NotificationService.init();
