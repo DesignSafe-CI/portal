@@ -1,6 +1,7 @@
 from agavepy.agave import Agave
 from .daos import *
 import json
+import logging
 logger = logging.getLogger(__name__)
 
 def fs_walk(agave_client, system_id, folder, bottom_up = False, yield_base = True):
