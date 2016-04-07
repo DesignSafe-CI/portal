@@ -6,8 +6,11 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 # Fake values
+
+# Box sync
 BOX_APP_CLIENT_ID = 'boxappclientid'
 BOX_APP_CLIENT_SECRET = 'boxappclientsecret'
+BOX_SYNC_AGAVE_SYSTEM = 'storage.example.com'
 
 # Reconfigure Celery for testing
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
@@ -20,3 +23,11 @@ MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
 
 # No pipeline please
 PIPELINE_ENABLED = False
+
+# Agave
+AGAVE_TENANT_ID = 'example.com'
+AGAVE_TENANT_BASEURL = 'https://api.example.com'
+AGAVE_CLIENT_KEY = 'example_com_client_key'
+AGAVE_CLIENT_SECRET = 'example_com_client_secret'
+AGAVE_SUPER_TOKEN = 'example_com_client_token'
+AGAVE_STORAGE_SYSTEM = 'storage.example.com'
