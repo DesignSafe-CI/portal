@@ -10,7 +10,7 @@ from designsafe.libs.elasticsearch.api import Object
 
 from models import BoxUserToken
 import util
-
+import six
 import logging
 import json
 import requests
@@ -123,7 +123,6 @@ def handle_box_webhook_event(event_data):
         except BoxUserToken.DoesNotExist:
             logger.warn('Received Box event for user without BoxUserToken',
                         extra={'box_event': event_data})
-            pass
 
 
 @shared_task
@@ -133,16 +132,22 @@ def update_box_events_stream(username):
     agent.process_events_stream()
 
 
-def add_update_box_metadata(agave_api, agave_uuid, box_object_id):
+def add_update_box_metadata(agave_api, agave_uuid, box_object_id, **kwargs):
+    value = {
+        'id': box_object_id
+    }
+    for k, v in six.iteritems(kwargs):
+        value[k] = v
+
     query = {'name': 'box_sync_object', 'associationId': [agave_uuid]}
     results = agave_api.meta.listMetadata(q=json.dumps(query))
     if results:
         meta = results[0]
-        meta['value']['id'] = box_object_id
+        meta['value'] = value
         meta = agave_api.meta.updateMetadata(uuid=meta['uuid'], body=json.dumps(meta))
     else:
         meta = {'name': 'box_sync_object',
-                'value': {'id': box_object_id},
+                'value': value,
                 'associationIds': [agave_uuid]
                 }
         meta = agave_api.meta.addMetadata(body=json.dumps(meta))
@@ -300,7 +305,8 @@ class BoxSyncAgent(object):
             store_path = '/'.join(path_parts[1:])
 
             fm = FileManager(self.agave_api)
-            fm.rename(store_path, event['source']['name'], system_id, self.user.username)
+            mf, aff = fm.rename(store_path, event['source']['name'], system_id, self.user.username)
+            add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'])
 
     def process_item_move(self, event):
         """
@@ -327,7 +333,8 @@ class BoxSyncAgent(object):
                 new_path = '/'.join([p['name'] for p in new_path_parts])
 
                 fm = FileManager(self.agave_api)
-                fm.move(store_path, new_path, system_id, self.user.username)
+                mf, aff = fm.move(store_path, new_path, system_id, self.user.username)
+                add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'])
             else:
                 self.process_item_trash(event)
         else:
@@ -335,17 +342,38 @@ class BoxSyncAgent(object):
 
     def process_item_copy(self, event):
         """
-        For all practical purposes, this is the same as create
+        If new path is within the sync path:
+            If the event is for a known synced file:
+                agave.files.copy
+            process_item_create
+
         """
         logger.debug(event)
-        self.process_item_create(event)
+        if self.in_sync_path(event['source']):
+            meta = self.get_box_sync_meta(event['source']['id'])
+            if meta is not None:
+                agave_file_href = meta['_links']['file']['href']
+                href_parts = agave_file_href.split('/files/v2/media/system/')
+                path_parts = href_parts[1].split('/')
+                system_id = path_parts[0]
+                store_path = '/'.join(path_parts[1:])
+
+                new_path_parts = event['source']['path_collection']['entries']
+                new_path_parts[0]['name'] = self.user.username
+                new_path = '/'.join([p['name'] for p in new_path_parts])
+
+                fm = FileManager(self.agave_api)
+                mf, aff = fm.copy(store_path, new_path, system_id, self.user.username)
+                add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'])
+            else:
+                self.process_item_create(event)
 
     def process_item_trash(self, event):
         """
         Look up meta for trashed file
 
         If exists:
-            Delete file, meta
+            call FileManager.delete, update box_sync_object meta to trashed=True
         """
         logger.debug(event)
         meta = self.get_box_sync_meta(event['source']['id'])
@@ -356,12 +384,15 @@ class BoxSyncAgent(object):
             system_id = path_parts[0]
             store_path = '/'.join(path_parts[1:])
             fm = FileManager(self.agave_api)
+            aff = AgaveFolderFile.from_path(self.agave_api, system_id, store_path)
             fm.delete(system_id, store_path, self.user.username)
-            self.agave_api.meta.deleteMetadata(uuid=meta['uuid'])
+            add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'],
+                                    trashed=True)
 
     def process_item_undelete_via_trash(self, event):
-        # TODO
         logger.debug(event)
+        # for now just re-download
+        self.process_item_create(event)
 
     def get_box_sync_meta(self, box_object_id):
         query = {'name': 'box_sync_object', 'value.id': box_object_id}
@@ -400,7 +431,7 @@ class BoxSyncAgent(object):
                 # mkdir
                 parts = store_path_parts[:i]
                 new_dir = parts.pop()
-                parent_path = '/'.join(parts)
+                parent_path = '/'.join([p['name'] for p in parts])
                 logger.debug('Create new directory "%s" at path "%s"' % (new_dir,
                                                                          parent_path))
                 fm = FileManager(agave_client=self.agave_api)
@@ -418,6 +449,7 @@ class BoxSyncAgent(object):
                                                ag_file.name)
                 if meta is None:
                     meta = Object(**ag_file.to_dict())
+                    logger.debug(meta)
                     meta.save()
                 else:
                     meta.update_from_dict(**ag_file.to_dict())
