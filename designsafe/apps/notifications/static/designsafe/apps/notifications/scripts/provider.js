@@ -9,12 +9,24 @@
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
+            toastr.info('will this work', 'Notification testcallback',
+                {
+                    closeButton: true,
+                    closeHtml: '<button>undo</button>',
+                    onHidden: function undo(clicked, toast){
+                        console.log('clicked', clicked)
+                        console.log('toast', toast)
+
+                    }
+            });
         }
 
         function processMessage(e, msg){
             //var rScope = $injector.get('$rootScope');
             logger.log('websockets msg', msg);
-            toastr.info(msg.status, 'Notification processMessage');
+            if (msg.toastrType) {
+                toastr.info(msg.status, 'Notification testcallback')
+            }
             if (msg.status == 'FINISHED' || msg.status == 'FAILED') {
                 var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
                 notification_badge.removeClass('label-default')
