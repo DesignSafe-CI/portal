@@ -192,6 +192,7 @@ class BoxSyncAgent(object):
 
         try:
             stream_pos.stream_position = events['next_stream_position']
+            stream_pos.last_event_processed = e['event_id']
             stream_pos.save()
         except:
             logger.error('Error updating Box events stream position',
