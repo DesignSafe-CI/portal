@@ -83,6 +83,10 @@ def initialize_box_sync(username):
             agave_client=agave_api,
             system_id=settings.BOX_SYNC_AGAVE_SYSTEM,
             path='%s/%s' % (username, settings.BOX_SYNC_FOLDER_NAME))
+
+        # ensure indexed
+        es_agave_sync_folder = Object(**agave_sync_folder.to_dict())
+        es_agave_sync_folder.save()
     except HTTPError as e:
         if e.response.status_code == 404:
             fm = FileManager(agave_api)
@@ -182,7 +186,8 @@ class BoxSyncAgent(object):
         # get_events will sometimes return events we already processed.
         # find the first one we have not processed.
         next_index = next((i for (i, e) in enumerate(events['entries'])
-                           if e['event_id'] == last_event_processed), 0)
+                           if e['event_id'] == last_event_processed), -1)
+        next_index += 1
         for e in events['entries'][next_index:]:
             try:
                 self.process_box_event(e)
