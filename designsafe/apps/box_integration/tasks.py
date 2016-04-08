@@ -174,14 +174,21 @@ class BoxSyncAgent(object):
     def process_events_stream(self):
         stream_pos = self.user.box_stream_pos
         last_stream_pos = stream_pos.stream_position
+        last_event_processed = stream_pos.last_event_processed
         events = self.box_api.events().get_events(limit=self.max_events_to_process,
                                                   stream_position=last_stream_pos,
                                                   stream_type='changes')
-        for e in events['entries']:
+
+        # get_events will sometimes return events we already processed.
+        # find the first one we have not processed.
+        next_index = next((i for (i, e) in enumerate(events['entries'])
+                           if e['event_id'] == last_event_processed), 0)
+        for e in events['entries'][next_index:]:
             try:
                 self.process_box_event(e)
             except:
-                logger.error('Error processing Box Event', extra={'event': e})
+                logger.error('Error processing Box event type=%s' % e['event_type'],
+                             extra={'event': e})
 
         try:
             stream_pos.stream_position = events['next_stream_position']
