@@ -453,14 +453,13 @@ class Object(DocType):
             o = self.__class__.get(id = self._id, ignore = 404)
             if o is not None:
                 return self.update(**self.to_dict())
-        pems = getattr(self, 'permissions', None)
-        if pems:
-            username = pems[0]['username']
-            o = self.get_exact_path(system_id = self.systemId,
-                        username = username, path = self.path,
-                        name = self.name)
-            if o is not None:
-                return o
+
+        o = self.get_exact_path(system_id = self.systemId,
+                    username = username, path = self.path,
+                    name = self.name)
+        if o is not None:
+            self.meta = o.meta
+            return self
         return super(Object, self).save(**kwargs)
 
     def to_dict(self, get_id = False, *args, **kwargs):

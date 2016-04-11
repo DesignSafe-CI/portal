@@ -82,29 +82,44 @@ class AgaveObject(object):
         return path, name
 
 class FileManager(AgaveObject):
+    def index(self, system_id, path, username):
+        fo = AgaveFolderFile(self.agave_client, system_id, path)
+        o = Object(**fo.to_dict())
+
     def share(self, system_id, me, path, username, permission):
         paths = path.split('/')
         ret = {}
         mf = AgaveFolderFile.from_path(self.agave_client,
                                     system_id, path)
         #If it's a folder upate permissions for every metadata of every file in the folder.
+        permission_body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username)
         if mf.format == 'folder':
-            self.call_operation('files.updatePermissions',
-                                filePath = urllib.unqote(path),
-                                systemId = system_id,
-                                body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
+            try:
+                self.agave_client.files.updatePermissions(
+                                    filePath = urllib.unquote(path),
+                                    systemId = system_id,
+                                    body = permission_body)
+            except AgaveException as e:
+                logger.error('{}: Couldn\'t update permissions {}'.format(e.message, permission_body))
             
             objs, search = Object().search_partial_path(system_id, 
                                             me, mf.full_path)
             logger.debug('share search: {}'.format(search.to_dict()))
-            cnt = 0
             if objs.hits.total:
-                while cnt <= objs.hits.total - len(objs):
-                    for o in search[cnt:cnt+len(objs)]:
-                        pems = self.call_operation('files.listPermissions', 
-                                    filePath = urllib.unquote(o.path + '/' + o.name), systemId = system_id)
+                for o in search.scan():
+                    #pems = self.call_operation('files.listPermissions', 
+                    #            filePath = urllib.unquote(o.path + '/' + o.name), systemId = system_id)
+                    pems = o.permissions
+                    if not filter(lambda x: x.username == username, pems):
+                        pems.append({
+                            'username': username,
+                            'permission': {
+                                'read': True,
+                                'write': False,
+                                'execute': False
+                            }
+                        })
                         o.update(permissions = pems)
-                    cnt = cnt + len(objs)
 
         #Update permissions for every metadata object to reach the desired file.
         l = len(paths)
@@ -119,9 +134,19 @@ class FileManager(AgaveObject):
                                 filePath = urllib.unquote('/'.join(paths)),
                                 systemId = system_id,
                                 body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
-                pems = self.call_operation('files.listPermissions', 
-                                filePath = urllib.unquote(o.path + '/' + o.name, systemId = system_id))
-                o.update(permissions = pems)
+                #pems = self.call_operation('files.listPermissions', 
+                #                filePath = urllib.unquote(o.path + '/' + o.name, systemId = system_id))
+                pems = o.permissions
+                if not filter(lambda x: x.username == username, pems):
+                    pems.append({
+                        'username': username,
+                        'permission': {
+                            'read': True,
+                            'execute': False,
+                            'write': False
+                        }
+                    })
+                    o.update(permissions = pems)
                 if i == 0:
                     ret = o
             paths.pop()
@@ -211,16 +236,13 @@ class FileManager(AgaveObject):
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
                                             username, mf.path + '/' + mf.name)
-            cnt = 0
             if objs.hits.total:
-                while cnt <= objs.hits.total - len(objs):
-                    for o in search[cnt:cnt+len(objs)]:
-                        regex = r'^{}'.format(mf.path + '/' + mf.name)
-                        o.update(path = re.sub(regex, 
-                                           path + '/' + new_name, 
-                                           o.path, count = 1))
-                        o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
-                    cnt += len(objs)
+                for o in search.scan():
+                    regex = r'^{}'.format(mf.path + '/' + mf.name)
+                    o.update(path = re.sub(regex, 
+                                       path + '/' + new_name, 
+                                       o.path, count = 1))
+                    o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
         mf.update(name = new_name)
         mf.update(agavePath = 'agave://{}/{}'.format(mf.systemId, mf.path + '/' + mf.name))
         logger.info('Meta Renamed to: {}'.format(mf.path + '/' + mf.name))
@@ -247,14 +269,11 @@ class FileManager(AgaveObject):
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
                                             username, mf.path + '/' + mf.name)
-            cnt = 0
             if objs.hits.total:
-                while cnt <= objs.hits.total - len(objs):
-                    for o in search[cnt:cnt+len(objs)]:
-                        regex = r'^{}'.format(mf.path + '/' + mf.name)
-                        o.update(path = re.sub(regex, new_path + '/' + mf.name, o.path, count = 1))
-                        o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
-                    cnt += len(objs)
+                for o in search.scan():
+                    regex = r'^{}'.format(mf.path + '/' + mf.name)
+                    o.update(path = re.sub(regex, new_path + '/' + mf.name, o.path, count = 1))
+                    o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
         mf.update(path = new_path)
         mf.update(agavePath = 'agave://{}/{}'.format(mf.systemId, mf.path + '/' + mf.name))
 
