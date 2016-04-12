@@ -42,7 +42,6 @@ class ListingsMixin(object):
             response = [o.to_dict(pems = False) for o in l]
         return self.render_to_json_response(response, status = 200)
 
-
 class ListingsView(ListingsMixin, BasePrivateJSONView):
     pass
 class PublicListingsView(ListingsMixin, BasePublicJSONView):

@@ -124,8 +124,9 @@ class FileManager(AgaveObject):
         if bottom_up:
             yield (path, folders, files)
 
-    def index(self, system_id, path, username):
-        for root, folders, files in self.walk_levels(system_id, path, True):
+    def index(self, system_id, path, username, bottom_up = False, levels = 0):
+        cnt = 0
+        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
             objs = folders + files
             objs_names = [o.name for o in objs]
             r, s = Object().search_partial_path(system_id, username, root)
@@ -160,14 +161,20 @@ class FileManager(AgaveObject):
 
             for d in docs_to_delete:
                 d.delete()
+            cnt += 1
+            if levels and cnt >= levels:
+                break
 
-    def index_permissions(self, system_id, path, username, bottom_up = False, levels = 0):
+    def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
         cnt = 0
-        for root, folders, files in self.walk_levels(system_id, path, True):
+        for root, folders, files in self.walk_levels(system_id, path, bottom_up):
             objs = folder + files
             for o in objs:
                 d = Object(**o.to_dict())
                 d.save()
+            cnt += 1
+            if levels and cnt >= levels:
+                break
         
     def share(self, system_id, me, path, username, permission):
         paths = path.split('/')

@@ -73,6 +73,31 @@ logger = logging.getLogger(__name__)
 #
 #         except ObjectDoesNotExist:
 #             logger.exception('Unable to locate local user=%s' % job_owner)
+@app.task
+def index(system_id, path, username):
+    try:
+        user = get_user_model().objects.get(username = me)
+        if user.agave_oauth.expired:
+            user.agave_oauth.refresh()
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token = user.agave_oauth.token['access_token'])
+        mngr = FileManager(agave_client = ag)
+        mngr.index(system_id, path, username)
+    except ObjectDoesNotExist:
+        logger.exception('Unable to locate local user=%s' % username)
+
+@app.task
+def index_permissions(system_id, path, username):
+    try:
+        user = get_user_model().objects.get(username = me)
+        if user.agave_oauth.expired:
+            user.agave_oauth.refresh()
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token = user.agave_oauth.token['access_token'])
+        mngr = FileManager(agave_client = ag)
+        mngr.index_permissions(system_id, path, username)
+    except ObjectDoesNotExist:
+        logger.exception('Unable to locate local user=%s' % username)
 
 @app.task
 def share(system_id, path, username, permission, me):
