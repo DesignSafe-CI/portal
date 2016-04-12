@@ -78,7 +78,7 @@
             return deferred.resolve(data);
         };
 
-        FileNavigator.prototype.list = function() {
+        FileNavigator.prototype.list = function(btn) {
             //TODO: Paginate results
             var self = this;
             var deferred = $q.defer();
@@ -97,6 +97,9 @@
             self.searchResults = false;
 
             var url = fileManagerConfig.baseUrl + self.filesystem + '/' + fileManagerConfig.listUrl + data.params.path;
+            if (btn){
+                url += '?refresh=true';
+            }
 
             $http(
               {
@@ -118,11 +121,11 @@
             return deferred.promise;
         };
 
-        FileNavigator.prototype.refresh = function() {
+        FileNavigator.prototype.refresh = function(btn) {
             var self = this;
             var path = self.currentPath.join('/');
 
-            return self.list(self.filesystem).then(function(data) {
+            return self.list(btn).then(function(data) {
                 $rootScope.$broadcast('angular-filemanager', self.filesystem, decodeURIComponent(path));
                 self.fileList = (data.result || []).map(function(file) {
                     file.agaveFallback = false;

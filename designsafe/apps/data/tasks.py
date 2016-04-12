@@ -74,28 +74,30 @@ logger = logging.getLogger(__name__)
 #         except ObjectDoesNotExist:
 #             logger.exception('Unable to locate local user=%s' % job_owner)
 @app.task
-def index(system_id, path, username):
+def index(system_id, path, username, pems = False, bottom_up = False, levels = 0):
     try:
-        user = get_user_model().objects.get(username = me)
+        user = get_user_model().objects.get(username = username)
         if user.agave_oauth.expired:
             user.agave_oauth.refresh()
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token = user.agave_oauth.token['access_token'])
         mngr = FileManager(agave_client = ag)
-        mngr.index(system_id, path, username)
+        mngr.index(system_id, path, username, bottom_up = bottom_up, levels = levels)
+        if pems:
+            index_permissions.delay(system_id, path, username, bottom_up = bottom_up, levels = levels)
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user=%s' % username)
 
 @app.task
-def index_permissions(system_id, path, username):
+def index_permissions(system_id, path, username, bottom_up = False, levels = 0):
     try:
-        user = get_user_model().objects.get(username = me)
+        user = get_user_model().objects.get(username = username)
         if user.agave_oauth.expired:
             user.agave_oauth.refresh()
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                    token = user.agave_oauth.token['access_token'])
         mngr = FileManager(agave_client = ag)
-        mngr.index_permissions(system_id, path, username)
+        mngr.index_permissions(system_id, path, username, bottom_up = bottom_up, levels = levels)
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user=%s' % username)
 

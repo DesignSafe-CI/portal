@@ -31,6 +31,10 @@ class ListingsMixin(object):
         if self.file_path == request.user.username:
             mgr.check_shared_folder(system_id = self.filesystem,
                                     username = request.user.username)
+
+        if request.GET.get('refresh', None):
+            mgr.index(self.filesystem, self.file_path, request.user.username, levels = 1)       
+
         l = mgr.list_path(system_id = self.filesystem,
                       path = self.file_path,
                       username = request.user.username,
@@ -39,7 +43,9 @@ class ListingsMixin(object):
         if isinstance(l, GeneratorType):
             response = [o.to_dict(get_id = True) for o in l]
         else:
+            tasks.index.delay(self.filesystem, self.file_path, request.user.username, pems = True, levels = 1)
             response = [o.to_dict(pems = False) for o in l]
+
         return self.render_to_json_response(response, status = 200)
 
 class ListingsView(ListingsMixin, BasePrivateJSONView):
@@ -98,6 +104,21 @@ class ManageView(BasePrivateJSONView):
         mf = FileManager(agave_client = self.agave_client)
         o = mf.delete(self.filesystem, self.file_path, request.user.username)
         return self.render_to_json_response(o.to_dict(get_id = True))
+
+class MoveToTrashView(BasePrivateJSONView):
+    def set_context_props(self, request, **kwargs):
+        super(MoveToTrashView, self).set_context_props(request, **kwargs)
+        mngr = FileManager(agave_client = self.agave_client)
+        return mngr
+
+    def post(self, request, *args, **kwargs):
+        mngr = self.set_context_props(request, **kwargs)
+        body = json.loads(request.body)
+        path = body.get('path', None)
+        if not self.special_dir:
+            path = request.user.username + path
+        mf, f = mngr.move_to_trash(self.filesystem, path, request.user.username)
+        return self.render_to_json_response(mf.to_dict(get_id = True))
 
 class ShareView(BasePrivateJSONView):
     def post(self, request, *args, **kwargs):

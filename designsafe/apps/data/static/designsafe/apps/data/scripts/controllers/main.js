@@ -315,6 +315,13 @@
             }
         };
 
+        $scope.moveToTrash = function(item){
+            item.moveToTrash().then(function(){
+                $scope.fileNavigator.refresh($scope.filesystem);
+                $scope.modal('move-to-trash', true);
+            });
+        };
+
         $scope.share = function(item){
             item.share(item.tempModel.userToShare).then(function(){
                 $scope.fileNavigator.refresh($scope.filesystem);
@@ -364,7 +371,7 @@
         };
 
         $scope.refresh = function(){
-            $scope.fileNavigator.refresh();
+            $scope.fileNavigator.refresh(true);
         };
 
         $scope.changeLanguage($scope.getQueryParam('lang'));

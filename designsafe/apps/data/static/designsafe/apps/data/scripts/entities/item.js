@@ -165,6 +165,25 @@
             return deferred.promise;
         };
 
+        Item.prototype.moveToTrash = function() {
+            var self = this;
+            var deferred = $q.defer();
+            var data = {
+                "path": self.tempModel.fullPath()
+            };
+            self.inprocess = true;
+            self.error = '';
+            var url = fileManagerConfig.baseUrl + self.model.filesystem + '/' + fileManagerConfig.moveToTrashUrl + self.model.fullPath();
+            $http.post(url, data).success(function(data) {
+                self.deferredHandler(data, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, data.message);
+            })['finally'](function() {
+                self.inprocess = false;
+            });
+            return deferred.promise;
+        };
+
         Item.prototype.copy = function() {
             var self = this;
             var deferred = $q.defer();

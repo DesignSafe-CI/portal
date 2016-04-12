@@ -11,6 +11,7 @@
             uploadUrl: "upload/",
             renameUrl: "rename/",
             moveUrl: "move/",
+            moveToTrashUrl: "move-to-trash/",
             copyUrl: "copy/",
             removeUrl: "delete/",
             shareUrl: "share/",

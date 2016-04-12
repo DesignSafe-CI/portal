@@ -25,6 +25,7 @@ urlpatterns += patterns('designsafe.apps.data.views.api',
     url(r'^api/default/delete/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
     url(r'^api/default/mkdir/(?P<file_path>[ \S]+)?$', ManageView.as_view(filesystem='default'), name='manage'),
     url(r'^api/default/share/(?P<file_path>[ \S]+)?$', ShareView.as_view(filesystem='default'), name='manage'),
+    url(r'^api/default/move-to-trash/(?P<file_path>[ \S]+)?$', MoveToTrashView.as_view(filesystem='default'), name='move-to-trash'),
 )
 
 urlpatterns += patterns('designsafe.apps.data.views.api',

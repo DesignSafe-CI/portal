@@ -1,10 +1,12 @@
 from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
-from .mixins import SecureMixin, AgaveMixin, JSONResponseMixin
+from .mixins import SecureMixin, JSONResponseMixin
 from django.views.generic.base import View, TemplateView
 from django.http import HttpResponse
 from requests.exceptions import ConnectionError, HTTPError
 from dsapi.agave.daos import shared_with_me
+from django.contrib.auth import get_user_model
+from agavepy.agave import Agave, AgaveException
 from django.conf import settings
 import logging
 import json
@@ -14,15 +16,40 @@ from designsafe.apps.notifications.views import get_number_unread_notifications
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-class BaseView(AgaveMixin, View):
+class BaseView(View):
     filesystem = None
     def __init__(self, **kwargs):
+        self.token = None
+        self.access_token = None
+        self.agave_url = None
+        self.agave_client = None
         self.filesystem = None
         self.file_path = None
         self.force_homedir = True
         self.special_dir = None
         self.is_public = False
         super(BaseView, self).__init__(**kwargs)
+
+    def set_agave_client(self, api_server = None, token = None, **kwargs):
+        if getattr(self, 'agave_client', None) is None:
+            a = Agave(api_server = api_server, token = token, **kwargs)
+            setattr(self, 'agave_client', a)
+            return a
+        else:
+            return self.agave_client
+
+    def set_agave_props(self, request, **kwargs):
+        if request.user.is_authenticated():
+            me = get_user_model().objects.get(username=request.user.username)
+        else:
+            me = get_user_model().objects.get(username='envision')
+        # shouldn't be necessary; AgaveTokenRefreshMiddleware does this...
+        if me.agave_oauth.expired:
+            me.agave_oauth.refresh()
+        self.token = me.agave_oauth
+        self.access_token = self.token.access_token
+        self.agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+        self.set_agave_client(api_server = self.agave_url, token = self.access_token)
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -90,8 +117,8 @@ class BaseView(AgaveMixin, View):
         if filesystem == 'default' and self.force_homedir:
             self.file_path = request.user.username + '/' + self.file_path
             self.file_path = self.file_path.strip('/')
-
-        super(BaseView, self).set_context_props(request, **kwargs)
+        
+        self.set_agave_props(request, **kwargs)
 
 class BasePrivateView(SecureMixin, BaseView):
     pass

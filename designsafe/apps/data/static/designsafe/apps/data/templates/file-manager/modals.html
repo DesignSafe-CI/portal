@@ -73,6 +73,29 @@
   </div>
 </div>
 
+<div class="modal animated fadeIn" id="move-to-trash">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form ng-submit="moveToTrash(temp)">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                  <span class="sr-only">{{"close" | translate}}</span>
+              </button>
+              <h4 class="modal-title">{{'Move' | translate}}</h4>
+            </div>
+            <div class="modal-body">
+              <p class="alert alert-info">Are you sure you want to move this file to the trash folder?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>
+              <button type="submit" class="btn btn-primary" ng-disabled="temp.inprocess">{{'Move To Trash' | translate}}</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal animated fadeIn" id="details">
   <div class="modal-dialog">
     <div class="modal-content">
