@@ -339,7 +339,9 @@ class Object(DocType):
 
     def search_exact_path(self, system_id, username, path, name):
         #TODO: This should be a classmeethod
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}}}}}}}
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}},"filter":{"bool":{"must_not":{"term":{"deleted":"true"}}}}}}}
+        if username is not None:
+            q['query']['filtered']['filter']['bool']['should'] = [{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}] 
         s = self.__class__.search()
         s.update_from_dict(q)
         try:
@@ -451,14 +453,15 @@ class Object(DocType):
     def save(self, **kwargs):
         if getattr(self, '_id', None) is not None:
             o = self.__class__.get(id = self._id, ignore = 404)
-            if o is not None:
-                return self.update(**self.to_dict())
-
-        o = self.get_exact_path(system_id = self.systemId,
-                    username = username, path = self.path,
-                    name = self.name)
+        else:
+            o = self.get_exact_path(system_id = self.systemId,
+                        username = None, path = self.path,
+                        name = self.name)
         if o is not None:
-            self.meta = o.meta
+            setattr(self.meta, 'index', o.meta.index)
+            setattr(self.meta, 'doc_type', o.meta.doc_type)
+            setattr(self.meta, 'id', o.meta.id)
+            self.update(**self.to_dict())
             return self
         return super(Object, self).save(**kwargs)
 

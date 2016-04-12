@@ -1,31 +1,25 @@
 from django.core.management.base import BaseCommand, CommandError
-from dsapi.agave import utils as agave_utils
+from dsapi.agave.daos import AgaveFilesManager
 from agavepy.agave import Agave
 from django.contrib.auth import get_user_model
 from designsafe.libs.elasticsearch.api import Object
+from django.conf import settings
 
 class Command(BaseCommand):
     help = 'Creates/updates missing metadata object for existing files/folders'
     def add_arguments(self, parser):
-        parser.add_argument('system_id', type=str)
-        parser.add_argument('username', type=str)
-        parser.add_argument('base_path', type=str)
+        parser.add_argument('username', help="Username to impersonate when doing Agave calls")
+        parser.add_argument('-s', '--system', help="SystemId to use, defaults to settings.AGAVE_STORAGE_SYSTEM")
+        parser.add_argument('-b', '--base_path', type="Base path to start indexing. Defaults at the user's home directory.")
 
     def handle(self, *args, **options):
-        system_id = options['system_id']
+        system_id = options['system_id'] or settings.AGAVE_STORAGE_SYSTEM
         username = options['username']
-        base_path = options['base_path']
-        self.stdout.write('username: {}'.format(username))
-        me = get_user_model().objects.get(username=username)
-        me.agave_oauth.refresh()
-
-        ag = Agave(api_server='https://agave.designsafe-ci.org/',
-               token=me.agave_oauth.access_token)
-        
-        self.stdout.write('Cheking metadata...')
-        for f in agave_utils.fs_walk(agave_client = ag, system_id = system_id, folder = base_path):
-            self.stdout.write(f['path'])
-            fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
-            o = Object(**fo.to_dict())
-            self.stdout.write('Id: {}'.format(o._id))
-            o.save()
+        base_path = options['base_path'] or username
+        user = get_user_model().objects.get(username = username)
+        if user.agave_oauth.expired:
+            user.agave_oauth.refresh()
+        ag = Agave(api_server = settings.AGAVE_TENANT_BASEURL,
+                   token = user.agave_oauth.token['access_token'])
+        mgr = AgaveFilesManager(ag)
+        mgr.index(system_id, base_path, username)

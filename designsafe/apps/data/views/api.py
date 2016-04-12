@@ -11,6 +11,7 @@ from designsafe.apps.data import tasks
 
 from .base import BaseView, BasePrivateJSONView, BasePublicJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager, FileManager
+from types import GeneratorType
 
 import json 
 import requests
@@ -35,26 +36,11 @@ class ListingsMixin(object):
                       username = request.user.username,
                       special_dir = self.special_dir,
                       is_public = self.is_public)
-        response = [o.to_dict(get_id = True) for o in l]
-        if getattr(settings, 'AGAVE_FAILBACK', None):
-            status = 200
+        if isinstance(l, GeneratorType):
+            response = [o.to_dict(get_id = True) for o in l]
         else:
-            #TODO: Remove this if we're always gonna failback to agvefs direct calls.
-            if response:
-                #If there are things in the folder
-                status = 200
-            else:
-                #If the folder is empty check if the metadata exists
-                #TODO: this should be done in dsapi
-                meta_obj, ret = mgr.get(system_id = self.filesystem,
-                        path = self.file_path,
-                        username = request.user.username,
-                        is_public = self.is_public)
-                if meta_obj:
-                    status = 200
-                else:
-                    status = 404
-        return self.render_to_json_response(response, status = status)
+            response = [o.to_dict(pems = False) for o in l]
+        return self.render_to_json_response(response, status = 200)
 
 
 class ListingsView(ListingsMixin, BasePrivateJSONView):
