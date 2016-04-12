@@ -270,6 +270,8 @@ class FileManager(AgaveObject):
             mf.path = username
             mf.name = shared_with_me
             mf.type = 'folder'
+            mf.format = 'folder'
+            mf.delted = False
             mf.fileType = 'folder'
             mf.mimeType = 'text/directory'
             mf.systemId = system_id

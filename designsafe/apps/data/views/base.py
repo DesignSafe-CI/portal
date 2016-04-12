@@ -51,40 +51,6 @@ class BaseView(View):
         self.agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         self.set_agave_client(api_server = self.agave_url, token = self.access_token)
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            return super(BaseView, self).dispatch(request, *args, **kwargs)
-        except (ConnectionError, HTTPError) as e:
-            message = e.message
-            if e.response is not None:
-                try:
-                    res_json = e.response.json()
-                    if 'message' in res_json:
-                        message = res_json['message']
-                        error = e.response.status_code
-                except ValueError:
-                    message = e.message
-                    error = 400
-            else:
-                message = e.message
-                error = 400
-
-            logger.error('{}'.format(message),
-                exc_info = True,
-                extra = {
-                    'filesystem': self.filesystem,
-                    'file_path': self.file_path,
-                    'username': request.user.username
-                }
-                )
-            resp = {}
-            resp['error'] = error
-            resp['message'] = message
-            if request.FILES:
-                f_name, f_val = request.FILES.iteritems().next();
-                resp['file'] = f_name
-            return HttpResponse(json.dumps(resp), status = 400, content_type = 'application/json')
-
     def set_context_props(self, request, **kwargs):
         #import ipdb; ipdb.set_trace();
         #TODO: Getting the filesystem should check in which system is the user in or requesting
@@ -119,6 +85,41 @@ class BaseView(View):
             self.file_path = self.file_path.strip('/')
         
         self.set_agave_props(request, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super(BaseView, self).dispatch(request, *args, **kwargs)
+        except (ConnectionError, HTTPError) as e:
+            message = e.message
+            if e.response is not None:
+                try:
+                    res_json = e.response.json()
+                    if 'message' in res_json:
+                        message = res_json['message']
+                        error = e.response.status_code
+                except ValueError:
+                    message = e.message
+                    error = 400
+            else:
+                message = e.message
+                error = 400
+
+            logger.error('{}'.format(message),
+                exc_info = True,
+                extra = {
+                    'filesystem': self.filesystem,
+                    'file_path': self.file_path,
+                    'username': request.user.username
+                }
+                )
+            resp = {}
+            resp['error'] = error
+            resp['message'] = message
+            if request.FILES:
+                f_name, f_val = request.FILES.iteritems().next();
+                resp['file'] = f_name
+            return HttpResponse(json.dumps(resp), status = 400, content_type = 'application/json')
+
 
 class BasePrivateView(SecureMixin, BaseView):
     pass

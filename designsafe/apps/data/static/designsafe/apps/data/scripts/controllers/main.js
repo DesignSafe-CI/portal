@@ -370,8 +370,8 @@
             return found;
         };
 
-        $scope.refresh = function(){
-            $scope.fileNavigator.refresh(true);
+        $scope.refresh = function(ref){
+            $scope.fileNavigator.refresh(ref);
         };
 
         $scope.changeLanguage($scope.getQueryParam('lang'));
