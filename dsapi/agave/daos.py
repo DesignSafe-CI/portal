@@ -127,7 +127,7 @@ class FileManager(AgaveObject):
         for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
             objs = folders + files
             objs_names = [o.name for o in objs]
-            logger.debug('root: {}'.format(root))
+            #logger.debug('root: {}'.format(root))
             r, s = Object().search_exact_folder_path(system_id, username, root)
             doc_names = []
             docs = []
@@ -140,9 +140,9 @@ class FileManager(AgaveObject):
                     docs_to_delete.append(d)
                 else:
                     seen.add(d)
-            logger.debug('doc_names: {}'.format(doc_names))
+            #logger.debug('doc_names: {}'.format(doc_names))
             objs_to_index = [o for o in objs if o.name not in doc_names]
-            logger.debug('objs_to_index: {}'.format(objs_to_index))
+            #logger.debug('objs_to_index: {}'.format(objs_to_index))
             docs_to_delete += [o for o in docs if o.name not in objs_names and o.name != 'Shared with me']
 
             for o in objs_to_index:
