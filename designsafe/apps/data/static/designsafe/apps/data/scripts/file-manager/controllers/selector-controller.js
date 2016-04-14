@@ -14,8 +14,12 @@
         $scope.fileNavigator = new FileNavigator($scope.filesystem, $scope.path);
 
         $rootScope.select = function(item, temp) {
-            temp.tempModel.path = item.model.fullPath().split('/');
-            $('#selector').modal('hide');
+          if (item.model.root === true){
+             temp.tempModel.path = item.model.path;
+          } else {
+             temp.tempModel.path = item.model.fullPath().split('/');
+          }
+          $('#selector').modal('hide');
         };
 
         $rootScope.openNavigator = function(item) {
