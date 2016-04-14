@@ -155,6 +155,27 @@
                         self.fakePath = self.currentPath;
                     }
                 }
+
+                // prepend root folder to fileList
+                var rootItem = new Item();
+                if (typeof self.fileList[0] !== 'undefined'){
+                  angular.copy(self.fileList[0], rootItem);
+                  var itemAgavePath = rootItem.model.agavePath;
+                  var str = itemAgavePath.substr(itemAgavePath.lastIndexOf('/')) + '$';
+                  var agavePath = itemAgavePath.replace(new RegExp(str), '');
+                  rootItem.model.agavePath = agavePath;
+                } else {
+                  rootItem.model.path = self.currentPath;
+                }
+
+                rootItem.model.name = self.currentPath.length === 0 ? '' : self.currentPath[self.currentPath.length-1];
+                rootItem.model.fileType = 'folder';
+                rootItem.model.type = 'dir';
+                rootItem.model.root = true;
+
+                rootItem.tempModel = rootItem.model;
+
+                self.fileList.unshift(rootItem);
                 self.buildTree(path);
             });
         };
@@ -191,13 +212,16 @@
         };
 
         FileNavigator.prototype.folderClick = function(item) {
-            var self = this;
-            self.currentPath = [];
-            if (item && item.isFolder()) {
-                self.currentPath = item.model.fullPath().split('/').splice(1);
-                self.fakePath = item.model.fakePath().splice(1);
-            }
-            self.refresh();
+          var self = this;
+          if (item && item.isFolder()) {
+             // update if not root dir
+             if (typeof item.model.root === 'undefined'){
+               self.currentPath = [];
+               self.currentPath = item.model.fullPath().split('/').splice(1);
+               self.fakePath = item.model.fakePath().splice(1);
+             }
+           }
+           self.refresh();
         };
 
         FileNavigator.prototype.upDir = function() {
@@ -243,8 +267,8 @@
             var self = this;
             var path = '/';
             self.searchResults = true;
-            self.currentPath = ["Search Results"]; 
-            self.fakePath = ["Search Results"]; 
+            self.currentPath = ["Search Results"];
+            self.fakePath = ["Search Results"];
             return self.searchByTerm(searchTerm).then(function(matches){
                 self.fileList = (matches || []).map(function(file){
                     var path = file.path.split('/');
@@ -273,8 +297,8 @@
         FileNavigator.prototype.searchByTerm = function(searchTerm) {
             var self = this;
             var deferred = $q.defer();
-            self.currentPath = ["Search Results"]; 
-            self.fakePath = ["Search Results"]; 
+            self.currentPath = ["Search Results"];
+            self.fakePath = ["Search Results"];
             var url = fileManagerConfig.baseUrl + self.filesystem + '/' + fileManagerConfig.metadataUrl + '?q=' + searchTerm;
 
             self.requesting = true;
