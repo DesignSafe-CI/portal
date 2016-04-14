@@ -136,6 +136,11 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
                     'label': 'View Output',
                     'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
                 }
+                event_data['toast'] = {
+                      'type': 'info',
+                      'msg': job_name + ' job outputs are available.'
+                }
+
                 logger.debug('Event data with action link %s' % event_data)
 
                 # notify
@@ -205,7 +210,7 @@ def index_job_outputs(user, job):
         fo = AgaveFolderFile.from_path(ag, system_id, path)
         logger.debug('Indexing: {}'.format(fo.full_path))
         o = Object().get_exact_path(system_id = system_id,
-                        username = user.username, path = fo.path, 
+                        username = user.username, path = fo.path,
                         name = fo.name)
         if o is None:
             o = Object(**fo.to_dict())
@@ -216,7 +221,7 @@ def index_job_outputs(user, job):
         fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
         logger.debug('Indexing: {}'.format(fo.full_path))
         o = Object().get_exact_path(system_id = system_id,
-                        username = user.username, path = fo.path, 
+                        username = user.username, path = fo.path,
                         name = fo.name)
         if o is None:
             o = Object(**fo.to_dict())

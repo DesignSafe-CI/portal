@@ -9,23 +9,39 @@
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
-            toastr.info('will this work', 'Notification testcallback',
+            toastr.info('should log the toast once this closes', 'Notification testcallback',
                 {
                     closeButton: true,
-                    closeHtml: '<button>undo</button>',
-                    onHidden: function undo(clicked, toast){
-                        console.log('clicked', clicked)
-                        console.log('toast', toast)
-
-                    }
+                    closeHtml: '<button onclick="alert(\'js in the closehtml!\')">close</button>',
+                    // closeHtml: '<a onclick="alert(\'js in the closehtml!\')">close link</a>',
+                    onHidden: function callback(clicked, toast){
+                        logger.log('clicked', clicked)
+                        logger.log('toast', toast)
+                    },
+                    timeOut: 500000,
+                    extendedTimeOut: 1000000,
+                    tapToDismiss: false
             });
         }
 
         function processMessage(e, msg){
             //var rScope = $injector.get('$rootScope');
             logger.log('websockets msg', msg);
-            if (msg.toastrType) {
-                toastr.info(msg.status, 'Notification testcallback')
+            if (msg.toast) {
+                if(msg.action_link) {
+                    toastr.info(msg.toast.msg,
+                    {
+                        closeButton: true,
+                        closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
+                        onHidden: function undo(clicked, toast){
+                            logger.log('clicked', clicked)
+                            logger.log('toast', toast)
+
+                        }
+                    });
+                } else {
+                    toastr.info(msg.toast.msg);
+                }
             }
             if (msg.status == 'FINISHED' || msg.status == 'FAILED') {
                 var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
