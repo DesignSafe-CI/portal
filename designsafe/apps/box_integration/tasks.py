@@ -1,14 +1,14 @@
 from agavepy.agave import Agave, AgaveException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
-from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from boxsdk import Client, OAuth2
 from dsapi.agave.daos import AgaveFolderFile, FileManager
 from boxsdk.exception import BoxAPIException
 from designsafe.libs.elasticsearch.api import Object
-
-from models import BoxUserToken
+from designsafe.apps.box_integration.models import BoxUserToken
+from celery import shared_task
 import util
 import six
 import logging
@@ -17,6 +17,8 @@ import requests
 from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
+
+TASK_LOCK_EXPIRE = 60 * 10  # lock expires in 10 minutes
 
 
 def check_connection(username):
@@ -129,11 +131,27 @@ def handle_box_webhook_event(event_data):
                         extra={'box_event': event_data})
 
 
-@shared_task
-def update_box_events_stream(username):
-    user = get_user_model().objects.get(username=username)
-    agent = BoxSyncAgent(user)
-    agent.process_events_stream()
+@shared_task(bind=True)
+def update_box_events_stream(self, username):
+
+    task_lock_id = '{0}-lock-{1}'.format(self.name, username)
+
+    # cache.add fails if the key already exists
+    acquire_lock = lambda: cache.add(task_lock_id, 'true', TASK_LOCK_EXPIRE)
+
+    # memcache delete is very slow, but we have to use it to take
+    # advantage of using add() for atomic locking
+    release_lock = lambda: cache.delete(task_lock_id)
+
+    if acquire_lock():
+        try:
+            user = get_user_model().objects.get(username=username)
+            agent = BoxSyncAgent(user)
+            agent.process_events_stream()
+        finally:
+            release_lock()
+
+    logger.warn('Box Events Stream already being updated for user=%s', username)
 
 
 def add_update_box_metadata(agave_api, agave_uuid, box_object_id, **kwargs):
