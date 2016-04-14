@@ -1,0 +1,42 @@
+{% extends "base_angular.html" %}
+{% load cms_tags staticfiles sekizai_tags pipeline %}
+{% block title %}Data Depot Browser: My Data{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">
+        <span class="hl hl-research">Data Depot Browser</span><br>My Data
+    </h1>
+</div>
+<div data-ng-app="FileManagerApp" class="file-manager">
+    <angular-filemanager></angular-filemanager>
+</div>
+
+{% addtoblock "css" %}
+    <!-- <link href="{% static 'vendor/bootswatch-dist/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"> -->
+    <link href="{% static 'designsafe/apps/data/styles/file-manager/angular-filemanager.css' %}" rel="stylesheet" type="text/css">
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+    <script src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+    <script src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+    <script src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+    <script src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
+    <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
+    <script src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+    <script src="{% static 'designsafe/apps/data/scripts/app.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/directives/directives.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/filters/filters.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/providers/config.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/entities/chmod.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/entities/item.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/services/filenavigator.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/services/fileuploader.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/providers/translations.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/controllers/main.js' %}"></script>
+    <script src="{% static 'designsafe/apps/data/scripts/file-manager/controllers/selector-controller.js' %}"></script>
+
+{% endaddtoblock %}
+{% endblock %}

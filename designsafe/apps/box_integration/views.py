@@ -6,9 +6,8 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from .models import BoxUserToken
-from .tasks import (check_connection, check_or_create_box_sync_folder,
-                    check_or_create_agave_sync_folder)
+from .models import BoxUserToken, BoxUserStreamPosition
+from .tasks import check_connection, initialize_box_sync
 import logging
 
 
@@ -73,7 +72,9 @@ def oauth2_callback(request):
         )
         access_token, refresh_token = oauth.authenticate(auth_code)
         client = Client(oauth)
-        box_user = client.user(user_id='me').get()
+
+        # save the token
+        box_user = client.user(user_id=u'me').get()
         token = BoxUserToken(
             user=request.user,
             access_token=access_token,
@@ -81,8 +82,18 @@ def oauth2_callback(request):
             box_user_id=box_user.id,
         )
         token.save()
-        check_or_create_box_sync_folder.delay(request.user.username)
-        check_or_create_agave_sync_folder.delay(request.user.username)
+
+        # save the current events stream position
+        next_stream_pos = client.events().get_latest_stream_position()
+        stream_pos = BoxUserStreamPosition(
+            user=request.user,
+            box_user_id=box_user.id,
+            stream_position=next_stream_pos,
+        )
+        stream_pos.save()
+
+        # schedule init task
+        initialize_box_sync.delay(request.user.username)
     except BoxException as e:
         logger.exception('Unable to complete Box integration setup: %s' % e)
         messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
@@ -96,13 +107,29 @@ def disconnect(request):
     if request.method == 'POST':
         logger.info('Disconnect Box.com requested by user...')
         try:
-            token = BoxUserToken.objects.get(user=request.user)
-            token.delete()
-            messages.success(
-                request,
-                'Your Box.com account has been disconnected from DesignSafe.')
-            return HttpResponseRedirect(reverse('box_integration:index'))
+            box_user_token = request.user.box_user_token
+            box_user_token.delete()
+        except BoxUserToken.DoesNotExist:
+            logger.warn('Disconnect Box; BoxUserToken does not exist.',
+                        extra={'user': request.user})
         except:
-            logger.exception('Disconnect Box.com failed')
+            logger.error('Disconnect Box; BoxUserToken delete error.',
+                         extra={'user': request.user})
+
+        try:
+            stream = request.user.box_stream_pos
+            stream.delete()
+        except BoxUserStreamPosition.DoesNotExist:
+            logger.warn('Disconnect Box; BoxUserStreamPosition does not exist.',
+                         extra={'user': request.user})
+        except:
+            logger.error('Disconnect Box; BoxUserStreamPosition delete error.',
+                         extra={'user': request.user})
+
+        messages.success(
+            request,
+            'Your Box.com account has been disconnected from DesignSafe.')
+
+        return HttpResponseRedirect(reverse('box_integration:index'))
 
     return render(request, 'designsafe/apps/box_integration/disconnect.html')

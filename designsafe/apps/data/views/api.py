@@ -11,6 +11,7 @@ from designsafe.apps.data import tasks
 
 from .base import BaseView, BasePrivateJSONView, BasePublicJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager, FileManager
+from types import GeneratorType
 
 import json
 import requests
@@ -30,32 +31,22 @@ class ListingsMixin(object):
         if self.file_path == request.user.username:
             mgr.check_shared_folder(system_id = self.filesystem,
                                     username = request.user.username)
+
+        if request.GET.get('refresh', None):
+            mgr.index(self.filesystem, self.file_path, request.user.username, levels = 1)       
+
         l = mgr.list_path(system_id = self.filesystem,
                       path = self.file_path,
                       username = request.user.username,
                       special_dir = self.special_dir,
                       is_public = self.is_public)
-        response = [o.to_dict(get_id = True) for o in l]
-        if getattr(settings, 'AGAVE_FAILBACK', None):
-            status = 200
+        if isinstance(l, GeneratorType):
+            response = [o.to_dict(get_id = True) for o in l]
         else:
-            #TODO: Remove this if we're always gonna failback to agvefs direct calls.
-            if response:
-                #If there are things in the folder
-                status = 200
-            else:
-                #If the folder is empty check if the metadata exists
-                #TODO: this should be done in dsapi
-                meta_obj, ret = mgr.get(system_id = self.filesystem,
-                        path = self.file_path,
-                        username = request.user.username,
-                        is_public = self.is_public)
-                if meta_obj:
-                    status = 200
-                else:
-                    status = 404
-        return self.render_to_json_response(response, status = status)
+            tasks.index.delay(self.filesystem, self.file_path, request.user.username, pems = True, levels = 1)
+            response = [o.to_dict(pems = False) for o in l]
 
+        return self.render_to_json_response(response, status = 200)
 
 class ListingsView(ListingsMixin, BasePrivateJSONView):
     pass
@@ -113,6 +104,21 @@ class ManageView(BasePrivateJSONView):
         mf = FileManager(agave_client = self.agave_client)
         o = mf.delete(self.filesystem, self.file_path, request.user.username)
         return self.render_to_json_response(o.to_dict(get_id = True))
+
+class MoveToTrashView(BasePrivateJSONView):
+    def set_context_props(self, request, **kwargs):
+        super(MoveToTrashView, self).set_context_props(request, **kwargs)
+        mngr = FileManager(agave_client = self.agave_client)
+        return mngr
+
+    def post(self, request, *args, **kwargs):
+        mngr = self.set_context_props(request, **kwargs)
+        body = json.loads(request.body)
+        path = body.get('path', None)
+        if not self.special_dir:
+            path = request.user.username + path
+        mf, f = mngr.move_to_trash(self.filesystem, path, request.user.username)
+        return self.render_to_json_response(mf.to_dict(get_id = True))
 
 class ShareView(BasePrivateJSONView):
     def post(self, request, *args, **kwargs):

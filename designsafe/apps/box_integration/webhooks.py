@@ -54,7 +54,7 @@ def box_webhook(request):
             event_data['to_user_ids'] = ast.literal_eval(event_data['to_user_ids'])
 
         logger.debug('Received Box Webhook; event_data=%s' % event_data)
-        handle_box_webhook_event.delay(event_data)
+        handle_box_webhook_event.apply_async(args=(event_data,))
     except AttributeError:
         pass
     except KeyError:

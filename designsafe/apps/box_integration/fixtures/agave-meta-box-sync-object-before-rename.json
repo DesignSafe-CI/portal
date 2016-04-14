@@ -1,0 +1,23 @@
+{
+    "_links": {
+        "file": {
+            "href": "https://api.example.com/files/v2/media/system/storage.example.com/ds_user/DesignSafe-CI-Sync/test_upload.jpg"
+        },
+        "self": {
+            "href": "https://api.example.com/meta/v2/data/2047639947870268955-242ac1113-0001-012"
+        }
+    },
+    "associationIds": [
+        "2288673512521788955-242ac113-0001-002"
+    ],
+    "created": "2016-03-31T09:21:41.749-05:00",
+    "internalUsername": null,
+    "lastUpdated": "2016-03-31T09:21:41.749-05:00",
+    "name": "box_sync_object",
+    "owner": "ds_user",
+    "schemaId": null,
+    "uuid": "2047639947870268955-242ac1113-0001-012",
+    "value": {
+        "id": "8880000002"
+    }
+}

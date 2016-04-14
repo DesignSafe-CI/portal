@@ -6,7 +6,7 @@ class BoxUserToken(models.Model):
     """
     Represents an OAuth Token for a Box.com user
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='box_user_token')
     box_user_id = models.CharField(max_length=48)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
@@ -37,3 +37,9 @@ class BoxUserToken(models.Model):
         """
         return self.access_token, self.refresh_token
 
+
+class BoxUserStreamPosition(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='box_stream_pos')
+    box_user_id = models.CharField(max_length=48)
+    stream_position = models.CharField(max_length=48, default='now')
+    last_event_processed = models.CharField(max_length=48, blank=True)

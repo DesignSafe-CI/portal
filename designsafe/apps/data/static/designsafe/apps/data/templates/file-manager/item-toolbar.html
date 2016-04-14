@@ -162,7 +162,7 @@
 
             <li class="divider" role="separator" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback"></li>
 
-            <li class="" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback">
+            <li class="" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback && (fileNavigator.currentPath.length && fileNavigator.currentPath[0] == '.Trash' )">
                 <a data-toggle="modal" class="fm-dropdown-action"
                    data-target="#delete"
                    ng-click="touch(item)" title="{{'Remove' | translate}}">
@@ -170,6 +170,17 @@
                         <i class="glyphicon glyphicon-trash"></i>
                     </span>
                     <span class="text-danger">{{'Remove' | translate}}</span>
+                </a>
+            </li>
+
+            <li class="" ng-if="config.allowedActions.remove && filesystem == 'default' && onPrivateData() && !fileNavigator.agaveFallback && ( (fileNavigator.currentPath.length && fileNavigator.currentPath[0] != '.Trash') || !fileNavigator.currentPath.length )">
+                <a data-toggle="modal" class="fm-dropdown-action"
+                   data-target="#move-to-trash"
+                   ng-click="touch(item)" title="{{'Move To Trash' | translate}}">
+                    <span class="action-label text-danger">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </span>
+                    <span class="text-danger">{{'Move To Trash' | translate}}</span>
                 </a>
             </li>
 

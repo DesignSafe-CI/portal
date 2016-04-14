@@ -1,0 +1,28 @@
+{
+  "status" : "success",
+  "message" : null,
+  "version" : "2.1.6-r34db685",
+  "result" : {
+    "name" : "test_upload.jpg",
+    "uuid" : "2689338444278338021-242ac112-0001-002",
+    "owner" : "ds_user",
+    "internalUsername" : null,
+    "lastModified" : "2016-04-06T09:23:34.726-05:00",
+    "source" : "https://box.example.com/download/asdf1234qwer5678/test_upload.jpg",
+    "path" : "ds_user/DesignSafe-CI-Sync/test_upload.jpg",
+    "status" : "STAGING_QUEUED",
+    "systemId" : "storage.example.com",
+    "nativeFormat" : "raw",
+    "_links" : {
+      "self" : {
+        "href" : "https://api.example.com/files/v2/media/system/storage.example.com/ds_user/DesignSafe-CI-Sync/test_upload.jpg"
+      },
+      "system" : {
+        "href" : "https://api.example.com/systems/v2/storage.example.com"
+      },
+      "history" : {
+        "href" : "https://api.example.com/files/v2/history/system/storage.example.com/ds_user/DesignSafe-CI-Sync/test_upload.jpg"
+      }
+    }
+  }
+}

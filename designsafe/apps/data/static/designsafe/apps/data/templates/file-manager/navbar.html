@@ -28,7 +28,7 @@
         <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#uploadfile" ng-click="touch()" style="margin: 5px 0;"  ng-show="filesystem == 'default' && !fileNavigator.searchResults">
             <i class="glyphicon glyphicon-upload"></i> {{"upload_file" | translate}}
         </button>
-        <button class="btn btn-default btn-sm" ng-click="refresh()" ng-show="!fileNavigator.searchResults">
+        <button class="btn btn-default btn-sm" ng-click="refresh(true)" ng-show="!fileNavigator.searchResults">
             <i class="glyphicon glyphicon-refresh"></i> {{"Refresh" | translate}}
         </button>
         <!-- <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropDownMenuLang" data-toggle="dropdown" aria-expanded="true">

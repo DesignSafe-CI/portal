@@ -7,7 +7,7 @@ from django.conf import settings
 from designsafe.apps.signals.signals import generic_event
 from designsafe.libs.elasticsearch.api import Object
 from dsapi.agave import utils as agave_utils
-from dsapi.agave.daos import AgaveFolderFile
+from dsapi.agave.daos import AgaveFolderFile, FileManager
 from agavepy.agave import Agave, AgaveException
 from celery import shared_task
 from requests import ConnectionError, HTTPError
@@ -204,28 +204,9 @@ def index_job_outputs(user, job):
                token=user.agave_oauth.access_token)
     system_id = job['archiveSystem']
     archive_path = job['archivePath']
-    paths = archive_path.split('/')
-    for i in range(len(paths)):
-        path = '/'.join(paths)
-        fo = AgaveFolderFile.from_path(ag, system_id, path)
-        logger.debug('Indexing: {}'.format(fo.full_path))
-        o = Object().get_exact_path(system_id = system_id,
-                        username = user.username, path = fo.path,
-                        name = fo.name)
-        if o is None:
-            o = Object(**fo.to_dict())
-        o.save()
-        paths.pop()
 
-    for f in agave_utils.fs_walk(ag, system_id, archive_path):
-        fo = agave_utils.get_folder_obj(agave_client = ag, file_obj = f)
-        logger.debug('Indexing: {}'.format(fo.full_path))
-        o = Object().get_exact_path(system_id = system_id,
-                        username = user.username, path = fo.path,
-                        name = fo.name)
-        if o is None:
-            o = Object(**fo.to_dict())
-        o.save()
+    mgr = FileManager(ag)
+    mgr.index(system_id, archive_path, user.username)
 
 # @shared_task
 # def subscribe_job_notification(request, agave, job_id):

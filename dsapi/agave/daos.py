@@ -40,16 +40,17 @@ class AgaveObject(object):
         response = op(**kwargs)
         return response
 
-    def call_operation(self, operation, **kwargs):
+    def call_operation(self, operation, raise_agave = False, **kwargs):
         a = self.agave_client
         op = self.get_operation(a, operation)
         try:
+            logger.debug('Agave: calling {}, args: {}'.format(operation, kwargs))
             response = self.exec_operation(op, **kwargs)
         except AgaveException as e:
-            logger.error('Agave Error:{}\nArgs:{} '.format(e.message, kwargs),
+            logger.error('Agave: error:{} - calling {}, args:{} '.format(e.message, operation, kwargs),
                 exc_info = True,
                 extra = kwargs)
-            if e.response.status_code == 404:
+            if e.response.status_code == 404 or raise_agave:
                 raise
             else:
                 raise HTTPError(e.message)
@@ -82,29 +83,186 @@ class AgaveObject(object):
         return path, name
 
 class FileManager(AgaveObject):
+
+    def walk(self, system_id, path, bottom_up = False, yield_base = True):
+        files = self.call_operation('files.list', systemId = system_id, 
+                                    filePath = urllib.quote(path))
+        for f in files:
+            aff = AgaveFolderFile(self.agave_client, f)
+            if f['name'] == '.' or f['name'] == '..':
+                if not yield_base:
+                    continue
+            if not bottom_up:
+                yield aff
+            if aff.format == 'folder' and f['name'] != '.':
+                for sf in self.walk(system_id, aff.full_path, bottom_up = bottom_up, yield_base = False):
+                    saff = AgaveFolderFile(sf)
+                    yield saff
+            if bottom_up:
+                yield aff
+
+    def walk_levels(self, system_id, path, bottom_up = False):
+        resp = self.call_operation('files.list', systemId = system_id,
+                                    filePath = urllib.quote(path))
+        folders = []
+        files = []
+        for f in resp:
+            if f['name'] == '.':
+                continue
+            aff = AgaveFolderFile(self.agave_client, f)
+            if aff.format == 'folder':
+                folders.append(aff)
+            else:
+                files.append(aff)
+        if not bottom_up:
+            yield (path, folders, files)
+        for aff in folders:
+            for (spath, sfolders, sfiles) in self.walk_levels(system_id, aff.full_path, bottom_up = bottom_up):
+                yield (spath, sfolders, sfiles)
+
+        if bottom_up:
+            yield (path, folders, files)
+
+    def index(self, system_id, path, username, bottom_up = False, levels = 0, index_full_path = True):
+        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
+            objs = folders + files
+            objs_names = [o.name for o in objs]
+            #logger.debug('root: {}'.format(root))
+            r, s = Object().search_exact_folder_path(system_id, username, root)
+            doc_names = []
+            docs = []
+            docs_to_delete = []
+            seen = set()
+            for d in s.scan():
+                doc_names.append(d.name)
+                docs.append(d)
+                if d.name in seen:
+                    docs_to_delete.append(d)
+                else:
+                    seen.add(d)
+            #logger.debug('doc_names: {}'.format(doc_names))
+            objs_to_index = [o for o in objs if o.name not in doc_names]
+            #logger.debug('objs_to_index: {}'.format(objs_to_index))
+            docs_to_delete += [o for o in docs if o.name not in objs_names and o.name != 'Shared with me']
+
+            for o in objs_to_index:
+                d = o.to_dict(pems = False)
+                pems_user = d['path'].split('/')[0] if d['path'] != '/' else d['name']
+                d['permissions'] = [{
+                    'username': pems_user,
+                    'recursive': True,
+                    'permission': {
+                        'read': True,
+                        'write': True,
+                        'execute': True
+                    }
+                }]
+                do = Object(**d)
+                do.save()
+
+            for d in docs_to_delete:
+                print dir(d)
+                print d.path + '/' + d.name
+                d.delete()
+                if d.format == 'folder':
+                    r, s = Object().search_exact_folder_path(system_id, username, os.path.join(d.path, d.name))
+                    for doc in s.scan():
+                        doc.delete()
+
+            #logger.debug('levels {} cnt {}'.format(levels, cnt))
+            if levels and len(root.split('/')) >= levels:
+                del folders[:]
+
+        if index_full_path:
+            paths = path.split('/')
+            for i in range(len(paths)):
+                path = '/'.join(paths[:-1])
+                name = paths[-1]
+                logger.info('checking {}'.format(paths))
+                if not Object().get_exact_path(system_id, username, path, name):
+                    fo = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
+                    o = Object(**fo.to_dict(pems = False))
+                    o.save()
+                    pems_user = o.path.split('/')[0] if o.path != '/' else o.name
+                    pems = [{
+                        'username': pems_user,
+                        'recursive': True,
+                        'permission': {
+                            'read': True,
+                            'write': True,
+                            'execute': True
+                        }
+                    }]
+                    o.update(permissions = pems)
+                paths.pop()
+
+    def index_full(self, system_id, path, username, bottom_up = False, levels = 0, index_full_path = True):
+        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
+            objs = folders + files
+            for o in objs:
+                d = Object(**o.to_dict())
+                d.save()
+            if levels and len(root.path('/')) >= levels:
+                del folders[:]
+
+        if index_full_path:
+            paths = path.split('/')
+            for i in range(len(paths)):
+                path = '/'.join(paths[:-1])
+                name = paths[-1]
+                fo = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
+                o = Object(**fo.to_dict())
+                o.save()
+                paths.pop()
+
+    def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
+        r, s = Object().search_partial_path(system_id, username, path)
+        objs = sorted(s.can(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
+        if levels:
+            objs = filter(lambda x: len(x.path.split('/')) <= levels)
+        p, n = os.path.split(path)
+        objs.append(Object().get_exact_path(system_id, username, p, n))
+        for o in objs:
+            pems = self.call_operation('files.listPermissions', filePath = urllib.quote(os.path.join(o.path, o.name)), systemId = system_id)
+            o.update(permissions = pems)
+
+        
     def share(self, system_id, me, path, username, permission):
         paths = path.split('/')
         ret = {}
         mf = AgaveFolderFile.from_path(self.agave_client,
                                     system_id, path)
         #If it's a folder upate permissions for every metadata of every file in the folder.
+        permission_body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username)
         if mf.format == 'folder':
-            self.call_operation('files.updatePermissions',
-                                filePath = path,
-                                systemId = system_id,
-                                body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
+            try:
+                self.agave_client.files.updatePermissions(
+                                    filePath = urllib.quote(path),
+                                    systemId = system_id,
+                                    body = permission_body)
+            except AgaveException as e:
+                logger.error('{}: Couldn\'t update permissions {}'.format(e.message, permission_body))
             
             objs, search = Object().search_partial_path(system_id, 
                                             me, mf.full_path)
             logger.debug('share search: {}'.format(search.to_dict()))
-            cnt = 0
             if objs.hits.total:
-                while cnt <= objs.hits.total - len(objs):
-                    for o in search[cnt:cnt+len(objs)]:
-                        pems = self.call_operation('files.listPermissions', 
-                                    filePath = o.path + '/' + o.name, systemId = system_id)
-                        o.update(permissions = pems)
-                    cnt = cnt + len(objs)
+                for o in search.scan():
+                    #pems = self.call_operation('files.listPermissions', 
+                    #            filePath = urllib.unquote(o.path + '/' + o.name), systemId = system_id)
+                    user_pems = filter(lambda x: x['username'] == username, o.permissions)
+                    if not user_pems or (user_pems and not user_pems[0]['read']):
+                        pems = o.permissions
+                        pems.append({
+                            'username': username,
+                            'recursive': True,
+                            'permission': {
+                                'read': True,
+                                'write': False,
+                                'execute': False
+                            }
+                        })
+                        o.update(permissions = pems )
 
         #Update permissions for every metadata object to reach the desired file.
         l = len(paths)
@@ -116,12 +274,24 @@ class FileManager(AgaveObject):
             if res.hits.total:
                 o = res[0]
                 self.call_operation('files.updatePermissions', 
-                                filePath = '/'.join(paths),
+                                filePath = urllib.quote('/'.join(paths)),
                                 systemId = system_id,
                                 body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
-                pems = self.call_operation('files.listPermissions', 
-                                filePath = o.path + '/' + o.name, systemId = system_id)
-                o.update(permissions = pems)
+                #pems = self.call_operation('files.listPermissions', 
+                #                filePath = urllib.unquote(o.path + '/' + o.name, systemId = system_id))
+                user_pems = filter(lambda x: x['username'] == username, o.permissions)
+                if not user_pems or (user_pems and not user_pems[0]['read']):
+                    pems = o.permissions
+                    pems.append({
+                        'username': username,
+                        'recursive': True,
+                        'permission': {
+                            'read': True,
+                            'write': False,
+                            'execute': False
+                        }
+                    })
+                    o.update(permissions = pems )
                 if i == 0:
                     ret = o
             paths.pop()
@@ -134,6 +304,8 @@ class FileManager(AgaveObject):
             mf.path = username
             mf.name = shared_with_me
             mf.type = 'folder'
+            mf.format = 'folder'
+            mf.deleted = False
             mf.fileType = 'folder'
             mf.mimeType = 'text/directory'
             mf.systemId = system_id
@@ -164,7 +336,7 @@ class FileManager(AgaveObject):
                 if not res.hits.total:
                     logger.warning('Failing back to Agave FS')
                     listing = self.call_operation('files.list', systemId = system_id,
-                                        filePath = path)
+                                        filePath = urllib.quote(path))
                     files = [AgaveFolderFile(agave_client = self.agave_client,
                                             file_obj = o) for o in listing if o['name'] != '.']
                     ret = files 
@@ -211,16 +383,13 @@ class FileManager(AgaveObject):
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
                                             username, mf.path + '/' + mf.name)
-            cnt = 0
             if objs.hits.total:
-                while cnt <= objs.hits.total - len(objs):
-                    for o in search[cnt:cnt+len(objs)]:
-                        regex = r'^{}'.format(mf.path + '/' + mf.name)
-                        o.update(path = re.sub(regex, 
-                                           path + '/' + new_name, 
-                                           o.path, count = 1))
-                        o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
-                    cnt += len(objs)
+                for o in search.scan():
+                    regex = r'^{}'.format(mf.path + '/' + mf.name)
+                    o.update(path = re.sub(regex, 
+                                       path + '/' + new_name, 
+                                       o.path, count = 1))
+                    o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
         mf.update(name = new_name)
         mf.update(agavePath = 'agave://{}/{}'.format(mf.systemId, mf.path + '/' + mf.name))
         logger.info('Meta Renamed to: {}'.format(mf.path + '/' + mf.name))
@@ -247,14 +416,11 @@ class FileManager(AgaveObject):
         if mf.format == 'folder':
             objs, search = Object().search_partial_path(system_id, 
                                             username, mf.path + '/' + mf.name)
-            cnt = 0
             if objs.hits.total:
-                while cnt <= objs.hits.total - len(objs):
-                    for o in search[cnt:cnt+len(objs)]:
-                        regex = r'^{}'.format(mf.path + '/' + mf.name)
-                        o.update(path = re.sub(regex, new_path + '/' + mf.name, o.path, count = 1))
-                        o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
-                    cnt += len(objs)
+                for o in search.scan():
+                    regex = r'^{}'.format(mf.path + '/' + mf.name)
+                    o.update(path = re.sub(regex, new_path + '/' + mf.name, o.path, count = 1))
+                    o.update(agavePath = 'agave://{}/{}'.format(o.systemId, o.path + '/' + o.name))
         mf.update(path = new_path)
         mf.update(agavePath = 'agave://{}/{}'.format(mf.systemId, mf.path + '/' + mf.name))
 
@@ -287,15 +453,19 @@ class FileManager(AgaveObject):
             mf.save()
         return mf, f
 
-    def mkdir(self, path, new, system_id, username):
+    def mkdir(self, path, new, system_id, username, raise_if_exists = True):
         #path, name = self.split_filepath(path)
         new_path, new_name = self.split_filepath(urllib.unquote(new))
-        logger.info('path: {} , new: {}'.format(path, new))
         args = {
             'systemId': system_id,
-            'filePath': path,
+            'filePath': urllib.quote(path),
             'body':'{{"action": "mkdir","path": "{}"}}'.format(new_name)
         }
+        d = Object().get_exact_path(system_id, username, new_path, new_name)
+        if d is not None:
+            if raise_if_exists:
+                raise HTTPError('Folder already exists.')
+            return self.get(system_id, os.path.join(new_path, new_name), username, False)
 
         self.call_operation('files.manage', **args)
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
@@ -306,21 +476,36 @@ class FileManager(AgaveObject):
         return mf, f
 
     def delete(self, system_id, path, username):
-        path, name = self.split_filepath(path)
-        res, search = Object().search_exact_path(system_id, username, path, name)
-        if res.hits.total:
-            o = res[0]
-            o.update(deleted = True)
-            return o
+        path, name = self.split_filepath(urllib.unquote(path))
+        o = Object().get_exact_path(system_id, username, path, name)
+        if o is not None:
+            res = o 
+            f = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
+            f.delete()
+            if o.format == 'folder':
+                res, docs = Object().search_partial_path(system_id, username, os.path.join(o.path, o.name))
+                for d in docs.scan():
+                    d.delete()
+            o.delete()
         else:
-            if res.hits.total == 0:
-                logger.error('Folder/File to delete not found')
-                res = [Object()]
-            else:
-                logger.error('Multiple folder/files found')
-                for r in res:
-                    r.update(deleted = True)
-            return res[0]
+            logger.error('Folder/File to delete not found')
+            raise HTTPError('Folder/File to delete not found')
+            res = []
+        return res
+
+    def move_to_trash(self, system_id, path, username):
+        path, name = self.split_filepath(urllib.unquote(path))
+        #get meta obj object to act on.
+        #d, f = self.get(system_id, os.path.join(path, name), username, False)
+        #get or create username/.Trash folder 
+        trash_meta, trash_folder = self.mkdir(username, os.path.join(username, '.Trash'), system_id, username, False)
+        #check if file/folder already in .Trash
+        if Object().get_exact_path(system_id, username, os.path.join(trash_meta.path, trash_meta.name), name) is not None:
+            d, f = self.rename(os.path.join(path, name), os.path.join(path, '%s_%s' % (name, datetime.datetime.now().isoformat())), system_id, username)
+            name = d.name
+
+        ret_d, ret_f = self.move(os.path.join(path, name), os.path.join(trash_meta.path, trash_meta.name, name), system_id, username)
+        return ret_d, ret_f
 
     def get(self, system_id, path , username, is_public):
         path, name = self.split_filepath(path)
@@ -430,12 +615,12 @@ class AgaveFilesManager(AgaveObject):
                                 body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
 
             self.call_operation('files.updatePermissions',
-                                filePath = '/'.join(paths),
+                                filePath = urllib.quote('/'.join(paths)),
                                 systemId = system_id,
                                 body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, username))
         #Update file permission on the actual file/folder
         self.call_operation('files.updatePermissions', 
-                            filePath = '/'.join(paths),
+                            filePath = urllib.quote('/'.join(paths)),
                             systemId = system_id,
                             body = '{{ "permission": "{}", "username": "{}" }}'.format(permission, username))
         #Update permissions for every metadata object to reach the desired file.
@@ -473,7 +658,7 @@ class AgaveFilesManager(AgaveObject):
 
     def list_path(self, system_id = None, path = None):
         res = self.call_operation('files.list', 
-                **{'systemId': system_id, 'filePath': path})
+                **{'systemId': system_id, 'filePath': urllib.quote(path)})
         ret = [AgaveFolderFile(self.agave_client, file_obj = o) for o in res]
         return ret
 
@@ -606,7 +791,7 @@ class AgaveFilesManager(AgaveObject):
         logger.info('path {} new {}'.format(path, new))
         args = {
             'systemId': system_id,
-            'filePath': path,
+            'filePath': urllib.quote(path),
             'body':'{{"action": "mkdir","path": "{}"}}'.format(new)
         }
 
@@ -639,38 +824,29 @@ class AgaveFolderFile(AgaveObject):
         self.last_modified = file_obj['lastModified']
         self.length = file_obj['length']
         self.mime_type = file_obj['mimeType']
-        self.name = file_obj['name']
-        self.path = file_obj['path'].strip('/')
+        self.name = None
+        self.path = None
         self.system = file_obj['system']
         self.type = file_obj['type']
         self.meta_link = None
+        self._permissions = None
 
         if '_links' in file_obj:
             self.link = file_obj['_links']['self']['href']
-        else:
-            self.link = None
-            self.meta_link = None
 
-        if self.name == '.':
-            self.name = self.path.split('/')[-1]
-            self.path = '/'.join(self.path.split('/')[:-1])
-        else:
-            paths = self.path.split('/')
-            self.name = paths[-1]
-            self.path = '/'.join(paths[:-1])
+        tail, head = os.path.split(file_obj['path'])
+        self.path = tail
+        self.name = head
 
         if self.path == '':
             self.path = '/'
+
         self.agave_path = 'agave://{}/{}'.format(self.system, self.full_path)
-        if self.link is not None:
-            self.permissions = self._get_permissions()
-        else:
-            self.permissions = []
 
     @classmethod
     def from_path(cls, agave_client = None, system_id = None, path = None):
         ao = AgaveObject(agave_client = agave_client)
-        res = ao.call_operation('files.list', systemId = system_id, filePath = path)
+        res = ao.call_operation('files.list', systemId = system_id, filePath = urllib.quote(path))
         if len(res) > 0:
             f = res[0]
         else:
@@ -704,7 +880,7 @@ class AgaveFolderFile(AgaveObject):
 			return self._uuid
 		else:
 			try:
-				res = self.call_operation('files.list', filePath = self.full_path, systemId = self.system)
+				res = self.call_operation('files.list', filePath = urllib.quote(self.full_path), systemId = self.system)
 			except HTTPError as e:
 				if e.response.status_code == 404:
 					return self
@@ -717,13 +893,20 @@ class AgaveFolderFile(AgaveObject):
 				self.meta_link = obj['_links']['metadata']['href']
 				self._uuid = json.loads(self.meta_link.split('?q=')[1])['associationIds']
 			return self._uuid
+    
+    @property
+    def permissions(self):
+        if self._permissions is None:
+            pems = self.call_operation('files.listPermissions', filePath = urllib.quote(self.full_path), systemId = self.system)
+            self._permissions = pems
+        return self._permissions
 
     def _get_permissions(self):
         '''
         Return permissions of self.
         '''
         #TODO: This should be a @property and it should be as lazy as possible.
-        ret = self.call_operation('files.listPermissions', filePath = self.full_path, systemId = self.system)
+        ret = self.call_operation('files.listPermissions', filePath = urllib.quote(self.full_path), systemId = self.system)
         return ret
 
     #TODO: Might want to implement corresponding Encoder/Decoder classes
@@ -764,7 +947,7 @@ class AgaveFolderFile(AgaveObject):
         }
         return o
 
-    def to_dict(self, **kwargs):
+    def to_dict(self, pems = True, **kwargs):
         d = {
             'lastModified': self.last_modified,
             'length': self.length,
@@ -772,7 +955,6 @@ class AgaveFolderFile(AgaveObject):
             'mimeType': self.mime_type,
             'name': self.name,
             'path': self.path,
-            'permissions': self.permissions,
             'systemId': self.system,
             'type': self.type,
             'deleted': False,
@@ -782,6 +964,8 @@ class AgaveFolderFile(AgaveObject):
             'keywords': [],
             'systemTags': []
         }
+        if pems:
+            d['permissions'] = self.permissions,
         return d
 
     def _update(self, obj):
@@ -823,7 +1007,7 @@ class AgaveFolderFile(AgaveObject):
     #TODO: Updating a file should be put into a queue.
         data = {
             'fileToUpload': f,
-            'filePath': self.path,
+            'filePath': urllib.quote(self.path),
             'fileName': self.name
         }
         url = '{}/files/v2/media/system/{}/{}'.format(
@@ -849,7 +1033,7 @@ class AgaveFolderFile(AgaveObject):
         name = urllib.unquote(name)
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib.quote(self.full_path),
             'body': {"action": "rename", "path": name}
         }
         logger.debug('Calling files.manage with this: {}'.format(d))
@@ -862,7 +1046,7 @@ class AgaveFolderFile(AgaveObject):
         base_path, file_name = os.path.split(path)
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib.quote(self.full_path),
             'body': {"action": "move", "path": path}
         }
         logger.debug('Calling files.manage d: {}'.format(d))
@@ -874,12 +1058,19 @@ class AgaveFolderFile(AgaveObject):
         name = urllib.unquote(name)
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib.quote(self.full_path),
             'body': {"action": "copy", "path": name}
         }
-        logger.debug('calling files.manage with: {}'.format(d))
+        #logger.debug('calling files.manage with: {}'.format(d))
         res = self.call_operation('files.manage', **d)
         return res
+
+    def delete(self):
+        res = self.call_operation('files.delete', 
+                    systemId = self.system, 
+                    filePath = urllib.quote(self.full_path))
+        return res
+
 
 class AgaveMetaFolderFile(AgaveObject):
     def __init__(self, agave_client = None, meta_obj = None, **kwargs):
@@ -1069,7 +1260,7 @@ class AgaveMetaFolderFile(AgaveObject):
     def upload_file(self, f = None, headers = None):
         data = {
             'fileToUpload': f,
-            'filePath': self.path,
+            'filePath': urllib.quote(self.path),
             'fileName': self.name
         }
         url = '{}/files/v2/media/system/{}/{}'.format(

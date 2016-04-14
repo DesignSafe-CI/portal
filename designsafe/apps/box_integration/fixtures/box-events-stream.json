@@ -1,0 +1,575 @@
+{
+  "next_stream_position": 282934517854141,
+  "chunk_size": 7,
+  "entries": [
+    {
+      "event_type": "ITEM_UPLOAD",
+      "event_id": "e01d2fb7cea87cc352d2208fb3b7124def02050e",
+      "created_at": "2016-03-31T07:15:24-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "active",
+        "content_created_at": "2016-02-23T09:44:56-08:00",
+        "id": "8880000001",
+        "size": 14122,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "file_version": {
+          "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+          "type": "file_version",
+          "id": "61891488093"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "0",
+        "purged_at": null,
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 2,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000000",
+              "name": "DesignSafe-CI-Sync"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000000",
+          "name": "DesignSafe-CI-Sync"
+        },
+        "trashed_at": null,
+        "content_modified_at": "2016-02-23T09:45:57-08:00",
+        "sequence_id": "0",
+        "synced": true,
+        "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+        "name": "test_upload.jpg",
+        "type": "file",
+        "created_at": "2016-03-31T07:15:24-07:00",
+        "modified_at": "2016-03-31T07:15:24-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": "175378185856fd30fc1c64a",
+      "recorded_at": "2016-03-31T07:15:24-07:00",
+      "type": "event"
+    },
+    {
+      "event_type": "ITEM_CREATE",
+      "event_id": "7a22af7fe46dd4ed0ec73899296d80f0f0ef4f9c",
+      "created_at": "2016-03-31T07:17:19-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "active",
+        "content_created_at": "2016-03-31T07:17:19-07:00",
+        "id": "9990000001",
+        "size": 0,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "0",
+        "purged_at": null,
+        "folder_upload_email": null,
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 2,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000000",
+              "name": "DesignSafe-CI-Sync"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000000",
+          "name": "DesignSafe-CI-Sync"
+        },
+        "trashed_at": null,
+        "content_modified_at": "2016-03-31T07:17:19-07:00",
+        "sequence_id": "0",
+        "synced": true,
+        "name": "Projects",
+        "type": "folder",
+        "created_at": "2016-03-31T07:17:19-07:00",
+        "modified_at": "2016-03-31T07:17:19-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": "45349212056fd316f049f6",
+      "recorded_at": "2016-03-31T07:17:19-07:00",
+      "type": "event"
+    },
+    {
+      "event_type": "ITEM_MOVE",
+      "event_id": "4e85bb992b00fbee8ee63d033983ea36cfed9e7f",
+      "created_at": "2016-04-01T13:04:52-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "active",
+        "content_created_at": "2016-02-23T09:44:56-08:00",
+        "id": "8880000001",
+        "size": 14122,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "file_version": {
+          "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+          "type": "file_version",
+          "id": "61891488093"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "1",
+        "purged_at": null,
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 3,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000000",
+              "name": "DesignSafe-CI-Sync"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000001",
+              "name": "Projects"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000001",
+          "name": "Projects"
+        },
+        "trashed_at": null,
+        "content_modified_at": "2016-02-23T09:45:57-08:00",
+        "sequence_id": "1",
+        "synced": true,
+        "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+        "name": "test_upload.jpg",
+        "type": "file",
+        "created_at": "2016-03-31T07:15:24-07:00",
+        "modified_at": "2016-03-31T07:15:24-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": "14719723156fed445e896c",
+      "recorded_at": "2016-04-01T13:04:52-07:00",
+      "type": "event"
+    },
+    {
+      "event_type": "ITEM_COPY",
+      "event_id": "ab0791f0462db1c690246781cb2934f2a9cade4d",
+      "created_at": "2016-04-01T13:05:03-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "active",
+        "content_created_at": "2016-02-23T09:44:56-08:00",
+        "id": "8880000002",
+        "size": 14122,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "file_version": {
+          "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+          "type": "file_version",
+          "id": "62145669445"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "0",
+        "purged_at": null,
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 2,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000000",
+              "name": "DesignSafe-CI-Sync"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000000",
+          "name": "DesignSafe-CI-Sync"
+        },
+        "trashed_at": null,
+        "content_modified_at": "2016-02-23T09:45:57-08:00",
+        "sequence_id": "0",
+        "synced": true,
+        "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+        "name": "test_upload.jpg",
+        "type": "file",
+        "created_at": "2016-04-01T13:05:03-07:00",
+        "modified_at": "2016-04-01T13:05:03-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": "14719723156fed445e896c",
+      "recorded_at": "2016-04-01T13:05:03-07:00",
+      "type": "event"
+    },
+    {
+      "event_type": "ITEM_RENAME",
+      "event_id": "789a8dd58e8d860e55767c7f34fd5127a63abcb2",
+      "created_at": "2016-04-01T13:05:13-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "active",
+        "content_created_at": "2016-02-23T09:44:56-08:00",
+        "id": "8880000002",
+        "size": 14122,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "file_version": {
+          "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+          "type": "file_version",
+          "id": "61891488093"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "2",
+        "purged_at": null,
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 2,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000000",
+              "name": "DesignSafe-CI-Sync"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000000",
+          "name": "DesignSafe-CI-Sync"
+        },
+        "trashed_at": null,
+        "content_modified_at": "2016-02-23T09:45:57-08:00",
+        "sequence_id": "2",
+        "synced": true,
+        "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+        "name": "test_rename.jpg",
+        "type": "file",
+        "created_at": "2016-03-31T07:15:24-07:00",
+        "modified_at": "2016-04-01T13:05:13-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": "14719723156fed445e896c",
+      "recorded_at": "2016-04-01T13:05:13-07:00",
+      "type": "event"
+    },
+    {
+      "event_type": "ITEM_TRASH",
+      "event_id": "f1ad3b7930d4d481b94ab95746f8eb649849db69",
+      "created_at": "2016-04-01T13:04:44-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "trashed",
+        "content_created_at": "2016-02-23T09:44:56-08:00",
+        "id": "8880000002",
+        "size": 14122,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "file_version": {
+          "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+          "type": "file_version",
+          "id": "61891488093"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "2",
+        "purged_at": "2016-05-01T13:04:44-07:00",
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 1,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "1",
+              "name": "Trash"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000000",
+          "name": "DesignSafe-CI-Sync"
+        },
+        "trashed_at": "2016-04-01T13:04:44-07:00",
+        "content_modified_at": "2016-02-23T09:45:57-08:00",
+        "sequence_id": "2",
+        "synced": true,
+        "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+        "name": "test_rename.jpg",
+        "type": "file",
+        "created_at": "2016-03-31T07:15:24-07:00",
+        "modified_at": "2016-04-01T13:05:13-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": "14719723156fed445e896c",
+      "recorded_at": "2016-04-01T13:04:44-07:00",
+      "type": "event"
+    },
+    {
+      "event_type": "ITEM_UNDELETE_VIA_TRASH",
+      "event_id": "9595281e0ac9ce3b741be39eaa3fb5a3261eba4a",
+      "created_at": "2016-04-01T13:05:44-07:00",
+      "created_by": {
+        "login": "ds_user@designsafe-ci.org",
+        "type": "user",
+        "id": "200000000",
+        "name": "DS User"
+      },
+      "source": {
+        "item_status": "active",
+        "content_created_at": "2016-02-23T09:44:56-08:00",
+        "id": "8880000002",
+        "size": 14122,
+        "modified_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "file_version": {
+          "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+          "type": "file_version",
+          "id": "61891488093"
+        },
+        "created_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        },
+        "etag": "2",
+        "purged_at": null,
+        "shared_link": null,
+        "path_collection": {
+          "total_count": 2,
+          "entries": [
+            {
+              "sequence_id": null,
+              "etag": null,
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            },
+            {
+              "sequence_id": "0",
+              "etag": "0",
+              "type": "folder",
+              "id": "9990000000",
+              "name": "DesignSafe-CI-Sync"
+            }
+          ]
+        },
+        "description": "",
+        "parent": {
+          "sequence_id": "0",
+          "etag": "0",
+          "type": "folder",
+          "id": "9990000001",
+          "name": "Projects"
+        },
+        "trashed_at": null,
+        "content_modified_at": "2016-02-23T09:45:57-08:00",
+        "sequence_id": "2",
+        "synced": true,
+        "sha1": "fbc1069e61291abebfda1437a71727224ebad7d5",
+        "name": "test_rename.jpg",
+        "type": "file",
+        "created_at": "2016-03-31T07:15:24-07:00",
+        "modified_at": "2016-04-01T13:05:13-07:00",
+        "owned_by": {
+          "login": "ds_user@designsafe-ci.org",
+          "type": "user",
+          "id": "200000000",
+          "name": "DS User"
+        }
+      },
+      "session_id": null,
+      "recorded_at": "2016-04-01T13:05:45-07:00",
+      "type": "event"
+    }
+  ]
+}

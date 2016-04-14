@@ -1,0 +1,20 @@
+[
+  {
+    "fields": {
+      "stream_position": "0",
+      "box_user_id": "100000000",
+      "user": 1
+    },
+    "model": "box_integration.boxuserstreamposition",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "stream_position": "0",
+      "box_user_id": "200000000",
+      "user": 2
+    },
+    "model": "box_integration.boxuserstreamposition",
+    "pk": 2
+  }
+]
