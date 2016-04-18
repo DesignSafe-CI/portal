@@ -6,9 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = patterns(
     'designsafe.apps.data.views.base',
-    url(r'^my/$', BasePrivateTemplate.as_view(template_name='data/my_data.html'),
+    url(r'^my/$', BasePrivateTemplate.as_view(template_name='data/file-manager/my_data.html'),
         name='my_data'),
-    url(r'^public/$', BasePublicTemplate.as_view(template_name='data/public_data.html'),
+    url(r'^public/$', BasePublicTemplate.as_view(template_name='data/file-manager/public_data.html'),
         name='public_data'),
 
 )

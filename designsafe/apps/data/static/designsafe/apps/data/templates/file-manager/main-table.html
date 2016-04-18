@@ -68,16 +68,17 @@
             </td>
         </tr>
         <!-- <tr ng-repeat="item in fileNavigator.fileList | filter: query | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting> -->
-        <tr ng-repeat="item in fileNavigator.fileList | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting && item.model.name !== '.'">
+        <!-- <tr ng-repeat="item in fileNavigator.fileList | orderBy:predicate:reverse" ng-show="!fileNavigator.requesting && item.model.name !== '.'"> -->
+          <tr ng-repeat="item in fileNavigator.fileList | orderBy:predicate:reverse" ng-if="!fileNavigator.requesting && item.model.name !== '.' && !item.model.root">
             <td >
-                <a fm-draggable data-agave-href = "{{item.model.agavePath}}" 
-                   href="{{item.model.fullPath()}}" ng-click="smartClick(item, $event)" 
+                <a fm-draggable data-agave-href = "{{item.model.agavePath}}"
+                   href="{{item.model.fullPath()}}" ng-click="smartClick(item, $event)"
                    title="{{item.model.name}} ({{item.model.sizeKb()}}kb)" ng-class="{'file-folder-project': item.model.projectTitle,'file-folder-experiment': item.model.experimentTitle}" class="file-folder">
-                    <i class="glyphicon glyphicon-folder-close" 
+                    <i class="glyphicon glyphicon-folder-close"
                         ng-show="!item.model.projectTitle && !item.model.experimentTitle && item.model.type === 'dir'"></i>
-                    <i class="glyphicon glyphicon-briefcase" 
+                    <i class="glyphicon glyphicon-briefcase"
                         ng-show="item.model.projectTitle && item.model.type === 'dir'"></i>
-                    <i class="glyphicon glyphicon-folder-close" 
+                    <i class="glyphicon glyphicon-folder-close"
                         ng-show="item.model.experimentTitle && item.model.type === 'dir'"></i>
                     <i class="glyphicon glyphicon-file" ng-show="item.model.type !== 'dir'"></i>
                     <span ng-if = "!fileNavigator.searchResults && !item.model.projectTitle && !item.model.experimentTitle">
