@@ -132,14 +132,12 @@ class FileManager(AgaveObject):
             doc_names = []
             docs = []
             docs_to_delete = []
-            seen = set()
             for d in s.scan():
-                doc_names.append(d.name)
                 docs.append(d)
-                if d.name in seen:
+                if d.name in doc_names:
                     docs_to_delete.append(d)
                 else:
-                    seen.add(d)
+                    doc_names.append(d.name)
             #logger.debug('doc_names: {}'.format(doc_names))
             objs_to_index = [o for o in objs if o.name not in doc_names]
             #logger.debug('objs_to_index: {}'.format(objs_to_index))
@@ -161,8 +159,8 @@ class FileManager(AgaveObject):
                 do.save()
 
             for d in docs_to_delete:
-                print dir(d)
-                print d.path + '/' + d.name
+                #print dir(d)
+                #print d.path + '/' + d.name
                 d.delete()
                 if d.format == 'folder':
                     r, s = Object().search_exact_folder_path(system_id, username, os.path.join(d.path, d.name))
@@ -811,7 +809,7 @@ class UploadResponse():
         rjson = response.json()['result']
         for key, val in six.iteritems(rjson):
             if key != '_links':
-                logger.debug('setting {}: {}'.format(key, val))
+                #logger.debug('setting {}: {}'.format(key, val))
                 setattr(self, key, val)
         self._links = rjson['_links']
         
@@ -828,7 +826,7 @@ class AgaveFolderFile(AgaveObject):
         self.path = None
         self.system = file_obj['system']
         self.type = file_obj['type']
-        self.meta_link = None
+        self.link = None
         self._permissions = None
 
         if '_links' in file_obj:
