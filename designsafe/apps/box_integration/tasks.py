@@ -178,6 +178,8 @@ def update_box_events_stream(self, username):
 
             user.box_stream_pos.stream_position = events['next_stream_position']
             user.box_stream_pos.save()
+
+            process_user_events_stream.apply_async(args=(username,))
         finally:
             task_release_lock(task_lock_id)
     else:

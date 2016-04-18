@@ -3,6 +3,9 @@
 redis:
   image: redis
 
+memcached:
+  image: memcached
+
 django:
   build: .
   env_file: designsafe.env
@@ -10,6 +13,7 @@ django:
     - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
   links:
     - redis:redis
+    - memcached:memcached
   volumes:
     - .:/portal
     - /var/www/designsafe-ci.org/static
@@ -59,6 +63,7 @@ worker:
     - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
   links:
     - redis:redis
+    - memcached:memcached
   volumes:
     - .:/portal
   dns:
