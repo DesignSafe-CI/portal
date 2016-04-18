@@ -481,7 +481,7 @@ class FileManager(AgaveObject):
             f = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
             f.delete()
             if o.format == 'folder':
-                res, docs = Object().search_partial_path(system_id, username, os.path.join(o.path, o.name))
+                r, docs = Object().search_partial_path(system_id, username, os.path.join(o.path, o.name))
                 for d in docs.scan():
                     d.delete()
             o.delete()
