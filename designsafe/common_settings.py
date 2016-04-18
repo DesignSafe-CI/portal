@@ -102,12 +102,12 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = '/account/'
 
-# CACHES = {
-#   'default': {
-#       'BACKEND': 'redis_cache.RedisCache',
-#       'LOCATION': 'redis:6379',
-#   },
-#}
+CACHES = {
+  'default': {
+      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+      'LOCATION': 'memcached:11211',
+  },
+}
 
 MIDDLEWARE_CLASSES = (
     'djangular.middleware.DjangularUrlMiddleware',
