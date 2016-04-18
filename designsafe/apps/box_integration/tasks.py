@@ -3,13 +3,16 @@ from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.db.utils import IntegrityError
 from boxsdk import Client, OAuth2
 from dsapi.agave.daos import AgaveFolderFile, FileManager
 from boxsdk.exception import BoxAPIException
 from designsafe.libs.elasticsearch.api import Object
-from designsafe.apps.box_integration.models import BoxUserToken
+from designsafe.apps.box_integration.models import BoxUserToken, BoxUserEvent
+from designsafe.apps.box_integration import util
 from celery import shared_task
-import util
+from dateutil import parser
+from datetime import datetime
 import six
 import logging
 import json
@@ -19,6 +22,14 @@ from requests.exceptions import HTTPError
 logger = logging.getLogger(__name__)
 
 TASK_LOCK_EXPIRE = 60 * 10  # lock expires in 10 minutes
+
+
+def task_acquire_lock(key):
+    return cache.add(key, 'true', TASK_LOCK_EXPIRE)
+
+
+def task_release_lock(key):
+    cache.delete(key)
 
 
 def check_connection(username):
@@ -136,22 +147,81 @@ def update_box_events_stream(self, username):
 
     task_lock_id = '{0}-lock-{1}'.format(self.name, username)
 
-    # cache.add fails if the key already exists
-    acquire_lock = lambda: cache.add(task_lock_id, 'true', TASK_LOCK_EXPIRE)
+    if task_acquire_lock(task_lock_id):
+        try:
+            user = get_user_model().objects.get(username=username)
+            box_oauth = OAuth2(
+                client_id=settings.BOX_APP_CLIENT_ID,
+                client_secret=settings.BOX_APP_CLIENT_SECRET,
+                access_token=user.box_user_token.access_token,
+                refresh_token=user.box_user_token.refresh_token,
+                store_tokens=user.box_user_token.update_tokens
+            )
+            box_api = Client(box_oauth)
+            last_stream_pos = user.box_stream_pos.stream_position
+            events = box_api.events().get_events(stream_position=last_stream_pos,
+                                                 stream_type='changes')
 
-    # memcache delete is very slow, but we have to use it to take
-    # advantage of using add() for atomic locking
-    release_lock = lambda: cache.delete(task_lock_id)
+            for entry in events['entries']:
+                try:
+                    persisted = BoxUserEvent()
+                    persisted.user = user
+                    persisted.event_id = entry['event_id']
+                    persisted.event_type = entry['event_type']
+                    persisted.created_at = parser.parse(entry['created_at'])
+                    persisted.source_dict = entry['source']
+                    persisted.from_stream_position = last_stream_pos
+                    persisted.save()
+                except IntegrityError:
+                    logger.info('Event %s already exists for user=%s', entry['event_id'],
+                                username)
 
-    if acquire_lock():
+            user.box_stream_pos.stream_position = events['next_stream_position']
+            user.box_stream_pos.save()
+        finally:
+            task_release_lock(task_lock_id)
+    else:
+        logger.warn('Box Events Stream already being updated for user=%s', username)
+
+        # schedule another for in the future
+        update_box_events_stream.apply_async(args=(username,), countdown=100)
+
+
+def event_item_in_sync_path(item):
+    """
+    We are only concerned with events within the DesignSafe-CI-Sync path. All Box items
+    are rooted at "All Files". The DesignSafe-CI-Sync events items' path will have the
+    path_collection entry index==1 be settings.BOX_SYNC_FOLDER_NAME.
+
+    Args:
+        item: The Box Event Item, i.e. event['source']
+
+    Returns: True if the event is for an item in the sync path, False otherwise.
+
+    """
+    if len(item['path_collection']['entries']) > 1:
+        first_dir = item['path_collection']['entries'][1]
+        if first_dir['name'] == settings.BOX_SYNC_FOLDER_NAME:
+            return True
+    return False
+
+
+@shared_task(bind=True)
+def process_user_events_stream(self, username):
+    task_lock_id = '{0}-lock-{1}'.format(self.name, username)
+
+    if task_acquire_lock(task_lock_id):
         try:
             user = get_user_model().objects.get(username=username)
             agent = BoxSyncAgent(user)
             agent.process_events_stream()
         finally:
-            release_lock()
+            task_release_lock(task_lock_id)
+    else:
+        logger.warn('Box Events Stream already being processed for user=%s', username)
 
-    logger.warn('Box Events Stream already being updated for user=%s', username)
+        # reschedule task
+        process_user_events_stream.apply_async(args=(username,), countdown=100)
 
 
 def add_update_box_metadata(agave_api, agave_uuid, box_object_id, **kwargs):
@@ -194,56 +264,68 @@ class BoxSyncAgent(object):
                                token=user.agave_oauth.access_token)
 
     def process_events_stream(self):
-        stream_pos = self.user.box_stream_pos
-        last_stream_pos = stream_pos.stream_position
-        last_event_processed = stream_pos.last_event_processed
-        events = self.box_api.events().get_events(limit=self.max_events_to_process,
-                                                  stream_position=last_stream_pos,
-                                                  stream_type='changes')
+        events = self.user.box_events.filter(processed=False)
+        for e in events:
+            self.process_box_event(e)
 
-        # get_events will sometimes return events we already processed.
-        # find the first one we have not processed.
-        next_index = next((i for (i, e) in enumerate(events['entries'])
-                           if e['event_id'] == last_event_processed), -1)
-        next_index += 1
-        for e in events['entries'][next_index:]:
-            try:
-                self.process_box_event(e)
-                last_event_processed = e['event_id']
-            except:
-                logger.error('Error processing Box event type=%s' % e['event_type'],
-                             extra={'event': e})
-
-        try:
-            stream_pos.stream_position = events['next_stream_position']
-            stream_pos.last_event_processed = last_event_processed
-            stream_pos.save()
-        except:
-            logger.error('Error updating Box events stream position',
-                         extra={'user': self.user})
-
-        if events['chunk_size'] == self.max_events_to_process:
-            # schedule additional events processing
-            update_box_events_stream.apply_async(args=(self.user.username,))
+        # stream_pos = self.user.box_stream_pos
+        # last_stream_pos = stream_pos.stream_position
+        # last_event_processed = stream_pos.last_event_processed
+        # events = self.box_api.events().get_events(limit=self.max_events_to_process,
+        #                                           stream_position=last_stream_pos,
+        #                                           stream_type='changes')
+        #
+        # # get_events will sometimes return events we already processed.
+        # # find the first one we have not processed.
+        # next_index = next((i for (i, e) in enumerate(events['entries'])
+        #                    if e['event_id'] == last_event_processed), -1)
+        # next_index += 1
+        # for e in events['entries'][next_index:]:
+        #     try:
+        #         self.process_box_event(e)
+        #         last_event_processed = e['event_id']
+        #     except:
+        #         logger.error('Error processing Box event type=%s' % e['event_type'],
+        #                      extra={'event': e})
+        #
+        # try:
+        #     stream_pos.stream_position = events['next_stream_position']
+        #     stream_pos.last_event_processed = last_event_processed
+        #     stream_pos.save()
+        # except:
+        #     logger.error('Error updating Box events stream position',
+        #                  extra={'user': self.user})
+        #
+        # if events['chunk_size'] == self.max_events_to_process:
+        #     # schedule additional events processing
+        #     update_box_events_stream.apply_async(args=(self.user.username,))
 
     def process_box_event(self, event):
-        logger.info('Received Box event type=%s' % event['event_type'])
-        func_name = 'process_%s' % event['event_type'].lower()
+        logger.info('Received Box event type=%s' % event.event_type)
+        func_name = 'process_%s' % event.event_type.lower()
         try:
             func = getattr(self, func_name)
             func(event)
+            event.processed = True
+            event.processed_at = datetime.now()
+            event.save()
         except AttributeError:
-            logger.info('No processor for Box event type=%s' % event['event_type'])
-
-    def in_sync_path(self, item):
-        sync_folder = next((p for p in item['path_collection']['entries']
-                            if p['name'] == settings.BOX_SYNC_FOLDER_NAME), None)
-        return sync_folder is not None
+            logger.info('No processor for Box event type=%s' % event.event_type)
+        except:
+            logger.error('Error processing BoxUserEvent', extra={'event': event})
+            if event.retry:
+                logger.error('Retry processing BoxUserEvent failed for event_id=%s',
+                             event.id, extra={'event': event})
+                event.processed = True
+                event.processed_at = datetime.now()
+            else:
+                event.retry = True
+            event.save()
 
     def process_item_create(self, event):
         logger.debug(event)
-        item = event['source']
-        if self.in_sync_path(item):
+        item = event.source_dict
+        if event_item_in_sync_path(item):
             if item['type'] == 'folder':
                 self.create_folder(event)
             elif item['type'] == 'file':
@@ -251,15 +333,15 @@ class BoxSyncAgent(object):
 
     def process_item_upload(self, event):
         logger.debug(event)
-        item = event['source']
-        if self.in_sync_path(item):
+        item = event.source_dict
+        if event_item_in_sync_path(item):
             if item['type'] == 'folder':
                 self.create_folder(event)
             elif item['type'] == 'file':
                 self.download_file(event)
 
     def create_folder(self, event):
-        item = event['source']
+        item = event.source_dict
         sync_path = item['path_collection']['entries']
         sync_path[0]['name'] = self.user.username
         self.ensure_sync_path(sync_path)
@@ -271,7 +353,7 @@ class BoxSyncAgent(object):
         add_update_box_metadata(self.agave_api, new_dir.uuid, item['id'])
 
     def download_file(self, event):
-        item = event['source']
+        item = event.source_dict
         box_file = self.box_api.file(item['id']).get()
         download_url = self.file_download_url(box_file)
 
@@ -328,8 +410,9 @@ class BoxSyncAgent(object):
             Rename file
         """
         logger.debug(event)
-        if self.in_sync_path(event['source']):
-            meta = self.get_box_sync_meta(event['source']['id'])
+        item = event.source_dict
+        if event_item_in_sync_path(item):
+            meta = self.get_box_sync_meta(item['id'])
             agave_file_href = meta['_links']['file']['href']
             href_parts = agave_file_href.split('/files/v2/media/system/')
             path_parts = href_parts[1].split('/')
@@ -337,8 +420,8 @@ class BoxSyncAgent(object):
             store_path = '/'.join(path_parts[1:])
 
             fm = FileManager(self.agave_api)
-            mf, aff = fm.rename(store_path, event['source']['name'], system_id, self.user.username)
-            add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'])
+            mf, aff = fm.rename(store_path, item['name'], system_id, self.user.username)
+            add_update_box_metadata(self.agave_api, aff.uuid, item['id'])
 
     def process_item_move(self, event):
         """
@@ -351,22 +434,23 @@ class BoxSyncAgent(object):
             process_item_create
         """
         logger.debug(event)
-        meta = self.get_box_sync_meta(event['source']['id'])
+        item = event.source_dict
+        meta = self.get_box_sync_meta(item['id'])
         if meta is not None:
-            if self.in_sync_path(event['source']):
+            if event_item_in_sync_path(item):
                 agave_file_href = meta['_links']['file']['href']
                 href_parts = agave_file_href.split('/files/v2/media/system/')
                 path_parts = href_parts[1].split('/')
                 system_id = path_parts[0]
                 store_path = '/'.join(path_parts[1:])
 
-                new_path_parts = event['source']['path_collection']['entries']
+                new_path_parts = item['path_collection']['entries']
                 new_path_parts[0]['name'] = self.user.username
                 new_path = '/'.join([p['name'] for p in new_path_parts])
 
                 fm = FileManager(self.agave_api)
                 mf, aff = fm.move(store_path, new_path, system_id, self.user.username)
-                add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'])
+                add_update_box_metadata(self.agave_api, aff.uuid, item['id'])
             else:
                 self.process_item_trash(event)
         else:
@@ -381,8 +465,9 @@ class BoxSyncAgent(object):
 
         """
         logger.debug(event)
-        if self.in_sync_path(event['source']):
-            meta = self.get_box_sync_meta(event['source']['id'])
+        item = event.source_dict
+        if event_item_in_sync_path(item):
+            meta = self.get_box_sync_meta(item['id'])
             if meta is not None:
                 agave_file_href = meta['_links']['file']['href']
                 href_parts = agave_file_href.split('/files/v2/media/system/')
@@ -390,13 +475,13 @@ class BoxSyncAgent(object):
                 system_id = path_parts[0]
                 store_path = '/'.join(path_parts[1:])
 
-                new_path_parts = event['source']['path_collection']['entries']
+                new_path_parts = item['path_collection']['entries']
                 new_path_parts[0]['name'] = self.user.username
                 new_path = '/'.join([p['name'] for p in new_path_parts])
 
                 fm = FileManager(self.agave_api)
                 mf, aff = fm.copy(store_path, new_path, system_id, self.user.username)
-                add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'])
+                add_update_box_metadata(self.agave_api, aff.uuid, item['id'])
             else:
                 self.process_item_create(event)
 
@@ -408,7 +493,8 @@ class BoxSyncAgent(object):
             call FileManager.delete, update box_sync_object meta to trashed=True
         """
         logger.debug(event)
-        meta = self.get_box_sync_meta(event['source']['id'])
+        item = event.source_dict
+        meta = self.get_box_sync_meta(item['id'])
         if meta is not None:
             agave_file_href = meta['_links']['file']['href']
             href_parts = agave_file_href.split('/files/v2/media/system/')
@@ -418,12 +504,12 @@ class BoxSyncAgent(object):
             fm = FileManager(self.agave_api)
             aff = AgaveFolderFile.from_path(self.agave_api, system_id, store_path)
             fm.delete(system_id, store_path, self.user.username)
-            add_update_box_metadata(self.agave_api, aff.uuid, event['source']['id'],
+            add_update_box_metadata(self.agave_api, aff.uuid, item['id'],
                                     trashed=True)
 
     def process_item_undelete_via_trash(self, event):
         logger.debug(event)
-        # for now just re-download
+        # for now just re-download?
         self.process_item_create(event)
 
     def get_box_sync_meta(self, box_object_id):

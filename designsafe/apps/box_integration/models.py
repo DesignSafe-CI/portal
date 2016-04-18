@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import json
 
 
 class BoxUserToken(models.Model):
@@ -43,3 +44,30 @@ class BoxUserStreamPosition(models.Model):
     box_user_id = models.CharField(max_length=48)
     stream_position = models.CharField(max_length=48, default='now')
     last_event_processed = models.CharField(max_length=48, blank=True)
+
+
+class BoxUserEvent(models.Model):
+    """
+    An event in a users Box events stream. An individual event_id may be for multiple
+    users, but each user should only have a single entry to each event_id.
+    """
+    event_id = models.CharField(max_length=48)
+    event_type = models.CharField(max_length=48)
+    created_at = models.DateTimeField()
+    source = models.TextField()
+    from_stream_position = models.CharField(max_length=48)
+    processed = models.BooleanField(default=False)
+    processed_at = models.DateTimeField(blank=True, null=True)
+    retry = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='box_events')
+
+    class Meta:
+        unique_together = ('event_id', 'user')
+
+    @property
+    def source_dict(self):
+        return json.loads(self.source)
+
+    @source_dict.setter
+    def source_dict(self, source):
+        self.source = json.dumps(source)
