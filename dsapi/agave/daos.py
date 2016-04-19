@@ -215,7 +215,7 @@ class FileManager(AgaveObject):
 
     def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
         r, s = Object().search_partial_path(system_id, username, path)
-        objs = sorted(s.can(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
+        objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
         if levels:
             objs = filter(lambda x: len(x.path.split('/')) <= levels)
         p, n = os.path.split(path)
@@ -249,7 +249,7 @@ class FileManager(AgaveObject):
                     #pems = self.call_operation('files.listPermissions', 
                     #            filePath = urllib.unquote(o.path + '/' + o.name), systemId = system_id)
                     user_pems = filter(lambda x: x['username'] == username, o.permissions)
-                    if not user_pems or (user_pems and not user_pems[0]['read']):
+                    if not user_pems or (user_pems and not user_pems[0]['permission']['read']):
                         pems = o.permissions
                         pems.append({
                             'username': username,
@@ -278,7 +278,7 @@ class FileManager(AgaveObject):
                 #pems = self.call_operation('files.listPermissions', 
                 #                filePath = urllib.unquote(o.path + '/' + o.name, systemId = system_id))
                 user_pems = filter(lambda x: x['username'] == username, o.permissions)
-                if not user_pems or (user_pems and not user_pems[0]['read']):
+                if not user_pems or (user_pems and not user_pems[0]['permission']['read']):
                     pems = o.permissions
                     pems.append({
                         'username': username,
@@ -353,6 +353,7 @@ class FileManager(AgaveObject):
             f.length = uf.size
 
             fs.append(f)
+            logger.debug('dict: {}'.format(f.to_dict()))
             mf = Object(**f.to_dict())
             mf.save()
             mf.update(deleted = False)
@@ -963,7 +964,7 @@ class AgaveFolderFile(AgaveObject):
             'systemTags': []
         }
         if pems:
-            d['permissions'] = self.permissions,
+            d['permissions'] = self.permissions
         return d
 
     def _update(self, obj):
