@@ -71,3 +71,12 @@ class BoxUserEvent(models.Model):
     @source_dict.setter
     def source_dict(self, source):
         self.source = json.dumps(source)
+
+    def __unicode__(self):
+        return u'BoxUserEvent: {"event_id": "%s", "event_type": "%s", "user": "%s", ' \
+               u'"from_stream_position": "%s", "source": %s}' % \
+               (self.event_id, self.event_type, self.user.username,
+                self.from_stream_position, self.source)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
