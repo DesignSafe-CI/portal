@@ -502,7 +502,7 @@ class FileManager(AgaveObject):
         obj = Object().get_exact_path(system_id, username, os.path.join(trash_meta.path, trash_meta.name), name)
         if  obj is not None:
             if obj.fileType == 'folder':
-                trashed_name = '%s_%s' % (name, datetime.datetime.now().isoformat())
+                trashed_name = '%s_%s' % (name, datetime.datetime.now().isoformat().replace(':', '-'))
             else:
                 ext_index = name.find(obj.fileType) - 1
                 trashed_name = '%s_%s.%s' % (name[:ext_index], datetime.datetime.now().isoformat().replace(':', '-'), obj.fileType)
