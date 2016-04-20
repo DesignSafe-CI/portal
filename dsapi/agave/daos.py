@@ -217,7 +217,7 @@ class FileManager(AgaveObject):
         r, s = Object().search_partial_path(system_id, username, path)
         objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
         if levels:
-            objs = filter(lambda x: len(x.path.split('/')) <= levels)
+            objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
         p, n = os.path.split(path)
         objs.append(Object().get_exact_path(system_id, username, p, n))
         for o in objs:
@@ -499,8 +499,14 @@ class FileManager(AgaveObject):
         #get or create username/.Trash folder 
         trash_meta, trash_folder = self.mkdir(username, os.path.join(username, '.Trash'), system_id, username, False)
         #check if file/folder already in .Trash
-        if Object().get_exact_path(system_id, username, os.path.join(trash_meta.path, trash_meta.name), name) is not None:
-            d, f = self.rename(os.path.join(path, name), os.path.join(path, '%s_%s' % (name, datetime.datetime.now().isoformat())), system_id, username)
+        obj = Object().get_exact_path(system_id, username, os.path.join(trash_meta.path, trash_meta.name), name)
+        if  obj is not None:
+            if obj.fileType == 'folder':
+                trashed_name = '%s_%s' % (name, datetime.datetime.now().isoformat())
+            else:
+                ext_index = name.find(obj.fileType) - 1
+                trashed_name = '%s_%s.%s' % (name[:ext_index], datetime.datetime.now().isoformat().replace(':', '-'), obj.fileType)
+            d, f = self.rename(os.path.join(path, name), os.path.join(path, trashed_name), system_id, username)
             name = d.name
 
         ret_d, ret_f = self.move(os.path.join(path, name), os.path.join(trash_meta.path, trash_meta.name, name), system_id, username)
