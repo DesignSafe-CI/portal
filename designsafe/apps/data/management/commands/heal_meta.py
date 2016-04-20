@@ -33,20 +33,17 @@ class Command(BaseCommand):
         
         if options['trash']:
             r, s = Object().search_marked_deleted(system_id, username, base_path)
-            docs = []
-            for o in s.scan():
-                o.update(deleted = False)
-                docs.append(o)
-            docs_sorted = sorted(docs, key = lambda x: len(x.path.split('/')))
+            docs_sorted = sorted(s.scan(), key = lambda x: len(x.path.split('/')))
             for o in docs_sorted:
                 self.stdout.write('Moving to trash: {}'.format(os.path.join(o.path, o.name)))
                 try:
-                    trash_filepath = os.path.join(o.path.replace(username, username + '/.Trash', 1))
-                    if not o.path.startswith(username + '/.Trash') and not Object().get_exact_path(system_id, username, trash_filepath, o.name): 
+                    trash_filepath = o.path.replace(username, username + '/.Trash', 1)
+                    o.update(deleted = False)
+                    if not o.path.startswith(username + '/.Trash'): 
                         mgr.move_to_trash(system_id, os.path.join(o.path, o.name), username)
                 except HTTPError as e:
                     self.stdout.write('Error {} in path {}'.format(e, os.path.join(o.path, o.name)))
-        if options['pemsindex']:
+        elif options['pemsindex']:
             mgr.index_permissions(system_id, base_path, username, levels = levels)
         elif options['fullindex']:
             mgr.index_full_path(system_id, base_path, username, levels = levels)
