@@ -507,9 +507,12 @@ class FileManager(AgaveObject):
                 ext_index = name.find(obj.fileType) - 1
                 trashed_name = '%s_%s.%s' % (name[:ext_index], datetime.datetime.now().isoformat().replace(':', '-'), obj.fileType)
             d, f = self.rename(os.path.join(path, name), os.path.join(path, trashed_name), system_id, username)
+            d.save()
             name = d.name
 
+
         ret_d, ret_f = self.move(os.path.join(path, name), os.path.join(trash_meta.path, trash_meta.name, name), system_id, username)
+        ret_d.save()
         return ret_d, ret_f
 
     def get(self, system_id, path , username, is_public):

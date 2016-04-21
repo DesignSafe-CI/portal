@@ -30,7 +30,11 @@ class Command(BaseCommand):
         ag = Agave(api_server = settings.AGAVE_TENANT_BASEURL,
                    token = user.agave_oauth.token['access_token'])
         mgr = FileManager(ag)
-        
+
+        if base_path:
+            base_path = base_path.strip('/')
+            username = base_path.split('/')[0]
+
         if options['trash']:
             r, s = Object().search_marked_deleted(system_id, username, base_path)
             docs_sorted = sorted(s.scan(), key = lambda x: len(x.path.split('/')))
