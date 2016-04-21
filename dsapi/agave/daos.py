@@ -219,11 +219,14 @@ class FileManager(AgaveObject):
         if levels:
             objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
         p, n = os.path.split(path)
+        if p == '':
+            p = '/'
         objs.append(Object().get_exact_path(system_id, username, p, n))
         for o in objs:
+            if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
+                continue
             pems = self.call_operation('files.listPermissions', filePath = urllib.quote(os.path.join(o.path, o.name)), systemId = system_id)
             o.update(permissions = pems)
-
         
     def share(self, system_id, me, path, username, permission):
         paths = path.split('/')

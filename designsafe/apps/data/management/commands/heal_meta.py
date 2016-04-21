@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 except HTTPError as e:
                     self.stdout.write('Error {} in path {}'.format(e, os.path.join(o.path, o.name)))
         elif options['pemsindex']:
-            mgr.index_permissions(system_id, base_path, username, levels = levels)
+            mgr.index_permissions(system_id, base_path, username, levels = levels, bottom_up = False)
         elif options['fullindex']:
             mgr.index_full_path(system_id, base_path, username, levels = levels)
         else:
