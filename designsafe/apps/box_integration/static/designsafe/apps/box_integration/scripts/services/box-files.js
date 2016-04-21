@@ -3,8 +3,8 @@
  */
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('BoxFilesApp').factory('BoxFiles',
-  ['$rootScope', '$http', '$q', 'djangoUrl', 'Django', function($rootScope, $http, $q, djangoUrl, Django) {
+  var app = angular.module('BoxFilesApp');
+  app.factory('BoxFiles', ['$rootScope', '$http', '$q', 'djangoUrl', function($rootScope, $http, $q, djangoUrl) {
     var service = {};
 
     /**
@@ -23,6 +23,11 @@
       return path.join('/')
     };
 
+    /**
+     * List of supported preview extensions. Supported file types from Box:
+     * https://box-content.readme.io/reference#get-embed-link
+     * @type {string[]}
+     */
     var preview_extensions = [
       /* Files */
       'as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx',
@@ -95,7 +100,8 @@
      * @param {Object} item - The Box item to copy
      * @param {Object} options - additional options
      * @param {string} options.dir - the destination directory in "My Data"
-     * @returns {HttpPromise} A promise that will be resolved with item (and all of its children) is copied.
+     * @returns {HttpPromise} A promise that will be resolved with item (and all of its
+     *                        children) is copied.
      */
     service.copyToMyData = function(item, options) {
       options = options || {};
