@@ -22,7 +22,7 @@
         </td>
         <td>
             <a href="{{ data.folder | itemurlpath:true }}/{{ item.name }}{{ item.type === 'folder' ? '/' : '' }}#info"
-               ng-click="previewItem($event, item)" class="btn btn-info">
+               ng-click="previewItem($event, item)" class="btn btn-xs btn-info">
                 <i class="fa fa-info-circle"></i>
                 <span class="sr-only">Item Information</span>
             </a>
