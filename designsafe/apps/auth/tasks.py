@@ -24,7 +24,7 @@ def check_or_create_agave_home_dir(username):
 
         # add dir to index
         fm = FileManager(agave_client=ag)
-        fm.index(settings.AGAVE_STORAGE_SYSTEM, username, username)
+        fm.index(settings.AGAVE_STORAGE_SYSTEM, username, username, levels=1)
     except (HTTPError, AgaveException):
         logger.exception('Failed to create home directory.',
                          extra={'user': username,
