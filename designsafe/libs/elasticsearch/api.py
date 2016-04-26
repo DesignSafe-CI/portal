@@ -468,7 +468,6 @@ class Object(DocType):
             setattr(self.meta, 'doc_type', o.meta.doc_type)
             setattr(self.meta, 'id', o.meta.id)
             self.update(**self.to_dict())
-            return self
         return super(Object, self).save(**kwargs)
 
     def to_dict(self, get_id = False, *args, **kwargs):

@@ -22,6 +22,7 @@ MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
                       'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
 
 # No pipeline please
+PIPELINE_COMPILERS = ()
 PIPELINE_ENABLED = False
 
 # Agave

@@ -22,6 +22,7 @@
         //this.filesUploaded = [];
         this.filesError = [];
         this.dropFiles = {};
+        this.b_size = 5;
         this.filesLength = function(){
             var self = this;
             var size = 0, key;
@@ -30,6 +31,35 @@
             }
             return size;
         };
+
+        var batch_upload = function(deferred, promises, size){
+            var self = this;
+            if (!promises || !promises.length){
+                deferred.resolve(promises);
+                console.log('Finished');
+                return;
+            }
+            var proms = [];
+            for (var i = 0; (i < size) && (i < promises.length); i++){
+                try{
+                    var prom = promises[i];
+                    proms.push(prom);
+                }catch(e){
+                    console.log('Failed ', e);
+                    deferred.reject('Failed' + e);
+                }
+            }
+            console.log('Promises: ', proms);
+            $q.all(proms).then(function(result){
+                    promises.splice(0, size);
+                    batch_upload(deferred, promises, size);
+            }, function(e){
+                console.log('Failed ', e);
+                deferred.reject('Failed ' + e);
+            });
+            return deferred.promise;
+        };
+
         this.upload = function(fileList, path, filesystem) {
 
             var self = this;
@@ -80,7 +110,7 @@
                     .error(errFunc)
                     );
             }
-            $q.all(promises).then(function(data){
+            batch_upload(deferred, promises, self.b_size).then(function(data){
                 deferredHandler(data, deferred);
                 self.requesting = false;
             });

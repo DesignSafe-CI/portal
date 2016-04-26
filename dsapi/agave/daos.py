@@ -132,14 +132,12 @@ class FileManager(AgaveObject):
             doc_names = []
             docs = []
             docs_to_delete = []
-            seen = set()
             for d in s.scan():
-                doc_names.append(d.name)
                 docs.append(d)
-                if d.name in seen:
+                if d.name in doc_names:
                     docs_to_delete.append(d)
                 else:
-                    seen.add(d)
+                    doc_names.append(d.name)
             #logger.debug('doc_names: {}'.format(doc_names))
             objs_to_index = [o for o in objs if o.name not in doc_names]
             #logger.debug('objs_to_index: {}'.format(objs_to_index))
@@ -161,8 +159,8 @@ class FileManager(AgaveObject):
                 do.save()
 
             for d in docs_to_delete:
-                print dir(d)
-                print d.path + '/' + d.name
+                #print dir(d)
+                #print d.path + '/' + d.name
                 d.delete()
                 if d.format == 'folder':
                     r, s = Object().search_exact_folder_path(system_id, username, os.path.join(d.path, d.name))
@@ -217,15 +215,18 @@ class FileManager(AgaveObject):
 
     def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
         r, s = Object().search_partial_path(system_id, username, path)
-        objs = sorted(s.can(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
+        objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
         if levels:
-            objs = filter(lambda x: len(x.path.split('/')) <= levels)
+            objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
         p, n = os.path.split(path)
+        if p == '':
+            p = '/'
         objs.append(Object().get_exact_path(system_id, username, p, n))
         for o in objs:
+            if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
+                continue
             pems = self.call_operation('files.listPermissions', filePath = urllib.quote(os.path.join(o.path, o.name)), systemId = system_id)
             o.update(permissions = pems)
-
         
     def share(self, system_id, me, path, username, permission):
         paths = path.split('/')
@@ -251,7 +252,7 @@ class FileManager(AgaveObject):
                     #pems = self.call_operation('files.listPermissions', 
                     #            filePath = urllib.unquote(o.path + '/' + o.name), systemId = system_id)
                     user_pems = filter(lambda x: x['username'] == username, o.permissions)
-                    if not user_pems or (user_pems and not user_pems[0]['read']):
+                    if not user_pems or (user_pems and not user_pems[0]['permission']['read']):
                         pems = o.permissions
                         pems.append({
                             'username': username,
@@ -280,7 +281,7 @@ class FileManager(AgaveObject):
                 #pems = self.call_operation('files.listPermissions', 
                 #                filePath = urllib.unquote(o.path + '/' + o.name, systemId = system_id))
                 user_pems = filter(lambda x: x['username'] == username, o.permissions)
-                if not user_pems or (user_pems and not user_pems[0]['read']):
+                if not user_pems or (user_pems and not user_pems[0]['permission']['read']):
                     pems = o.permissions
                     pems.append({
                         'username': username,
@@ -355,6 +356,7 @@ class FileManager(AgaveObject):
             f.length = uf.size
 
             fs.append(f)
+            logger.debug('dict: {}'.format(f.to_dict()))
             mf = Object(**f.to_dict())
             mf.save()
             mf.update(deleted = False)
@@ -483,7 +485,7 @@ class FileManager(AgaveObject):
             f = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
             f.delete()
             if o.format == 'folder':
-                res, docs = Object().search_partial_path(system_id, username, os.path.join(o.path, o.name))
+                r, docs = Object().search_partial_path(system_id, username, os.path.join(o.path, o.name))
                 for d in docs.scan():
                     d.delete()
             o.delete()
@@ -500,11 +502,20 @@ class FileManager(AgaveObject):
         #get or create username/.Trash folder 
         trash_meta, trash_folder = self.mkdir(username, os.path.join(username, '.Trash'), system_id, username, False)
         #check if file/folder already in .Trash
-        if Object().get_exact_path(system_id, username, os.path.join(trash_meta.path, trash_meta.name), name) is not None:
-            d, f = self.rename(os.path.join(path, name), os.path.join(path, '%s_%s' % (name, datetime.datetime.now().isoformat())), system_id, username)
+        obj = Object().get_exact_path(system_id, username, os.path.join(trash_meta.path, trash_meta.name), name)
+        if  obj is not None:
+            if obj.fileType == 'folder':
+                trashed_name = '%s_%s' % (name, datetime.datetime.now().isoformat().replace(':', '-'))
+            else:
+                ext_index = name.find(obj.fileType) - 1
+                trashed_name = '%s_%s.%s' % (name[:ext_index], datetime.datetime.now().isoformat().replace(':', '-'), obj.fileType)
+            d, f = self.rename(os.path.join(path, name), os.path.join(path, trashed_name), system_id, username)
+            d.save()
             name = d.name
 
+
         ret_d, ret_f = self.move(os.path.join(path, name), os.path.join(trash_meta.path, trash_meta.name, name), system_id, username)
+        ret_d.save()
         return ret_d, ret_f
 
     def get(self, system_id, path , username, is_public):
@@ -811,7 +822,7 @@ class UploadResponse():
         rjson = response.json()['result']
         for key, val in six.iteritems(rjson):
             if key != '_links':
-                logger.debug('setting {}: {}'.format(key, val))
+                #logger.debug('setting {}: {}'.format(key, val))
                 setattr(self, key, val)
         self._links = rjson['_links']
         
@@ -828,7 +839,7 @@ class AgaveFolderFile(AgaveObject):
         self.path = None
         self.system = file_obj['system']
         self.type = file_obj['type']
-        self.meta_link = None
+        self.link = None
         self._permissions = None
 
         if '_links' in file_obj:
@@ -965,7 +976,7 @@ class AgaveFolderFile(AgaveObject):
             'systemTags': []
         }
         if pems:
-            d['permissions'] = self.permissions,
+            d['permissions'] = self.permissions
         return d
 
     def _update(self, obj):

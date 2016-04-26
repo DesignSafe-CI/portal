@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import json
 
 
 class BoxUserToken(models.Model):
@@ -36,10 +37,3 @@ class BoxUserToken(models.Model):
 
         """
         return self.access_token, self.refresh_token
-
-
-class BoxUserStreamPosition(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='box_stream_pos')
-    box_user_id = models.CharField(max_length=48)
-    stream_position = models.CharField(max_length=48, default='now')
-    last_event_processed = models.CharField(max_length=48, blank=True)

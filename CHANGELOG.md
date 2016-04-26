@@ -1,6 +1,25 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.4
+
+April 21, 2016
+
+Bug fixes:
+
+- Fixed timeout/error when sharing large collections of files
+- Fixed problems related to deleting files
+- Fixed issue where sharing permissions displayed incorrect values
+- Fixed errors when uploading a large number of files at once
+
+Improvements:
+
+- Significant improvements to indexing of files/permissions
+- Added a Trash folder; file deletion is now two-step: Move to trash, then permenant delete
+- Added ability to copy/move to the root folder in My Data; previously you could only move to a subfolder
+
 ## v0.9.3
+
+March 21, 2016
 
 Bug fixes:
 

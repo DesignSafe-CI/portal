@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from .models import BoxUserToken, BoxUserStreamPosition
-from .tasks import check_connection, initialize_box_sync
+from designsafe.apps.box_integration.models import BoxUserToken
+from designsafe.apps.box_integration.tasks import check_connection
 import logging
 
 
@@ -82,18 +82,6 @@ def oauth2_callback(request):
             box_user_id=box_user.id,
         )
         token.save()
-
-        # save the current events stream position
-        next_stream_pos = client.events().get_latest_stream_position()
-        stream_pos = BoxUserStreamPosition(
-            user=request.user,
-            box_user_id=box_user.id,
-            stream_position=next_stream_pos,
-        )
-        stream_pos.save()
-
-        # schedule init task
-        initialize_box_sync.delay(request.user.username)
     except BoxException as e:
         logger.exception('Unable to complete Box integration setup: %s' % e)
         messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
@@ -114,16 +102,6 @@ def disconnect(request):
                         extra={'user': request.user})
         except:
             logger.error('Disconnect Box; BoxUserToken delete error.',
-                         extra={'user': request.user})
-
-        try:
-            stream = request.user.box_stream_pos
-            stream.delete()
-        except BoxUserStreamPosition.DoesNotExist:
-            logger.warn('Disconnect Box; BoxUserStreamPosition does not exist.',
-                         extra={'user': request.user})
-        except:
-            logger.error('Disconnect Box; BoxUserStreamPosition delete error.',
                          extra={'user': request.user})
 
         messages.success(

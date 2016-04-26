@@ -55,7 +55,8 @@ opbeat
 boxsdk==1.5.1
 elasticsearch>=2.0.0,<3.0.0
 elasticsearch-dsl>=2.0.0,<3.0.0
+python-dateutil==2.4.2
+python-memcached
 
 # pytas
-#-e git+https://bitbucket.org/taccaci/pytas.git@master#egg=pytas-master
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.2.0#egg=pytas-1.2.0

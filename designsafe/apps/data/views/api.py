@@ -33,7 +33,7 @@ class ListingsMixin(object):
                                     username = request.user.username)
 
         if request.GET.get('refresh', None):
-            mgr.index(self.filesystem, self.file_path, request.user.username, levels = 1)       
+            mgr.index(self.filesystem, self.file_path, request.user.username, levels = 1)
 
         l = mgr.list_path(system_id = self.filesystem,
                       path = self.file_path,
@@ -136,7 +136,7 @@ class ShareView(BasePrivateJSONView):
                   'path': self.file_path,
                   'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
                   'html':[
-                      {'Message''Your files are been shared.'},
+                      {'Message': 'Your files are been shared.'},
                       {'Action': 'Sharing Sarting'},
                       {'Shared with': user},
                       {'Permissions set': permission},

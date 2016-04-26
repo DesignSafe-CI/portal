@@ -86,6 +86,7 @@
             </div>
             <div class="modal-body">
               <p class="alert alert-info">Are you sure you want to move this file to the trash folder?</p>
+              <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>

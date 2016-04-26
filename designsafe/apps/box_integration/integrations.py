@@ -6,21 +6,6 @@ def provide_integrations():
         {
             'label': 'Box.com',
             'href': reverse('box_integration:index'),
-            'description': 'Sync files from your Box.com account to DesignSafe.',
+            'description': 'Access files from your Box.com account in DesignSafe.',
         },
-        # {
-        #     'label': 'Dropbox',
-        #     'href': None,
-        #     'description': '',
-        # },
-        # {
-        #     'label': 'Google Drive',
-        #     'href': None,
-        #     'description': '',
-        # },
-        # {
-        #     'label': 'Amazon S3',
-        #     'href': None,
-        #     'description': '',
-        # },
     ]
