@@ -12,6 +12,10 @@ from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.box_integration.models import BoxUserToken
 from designsafe.apps.box_integration.tasks import check_connection
+from designsafe.apps.box_integration.util import BoxObjectJsonSerializer
+from agavepy.agave import Agave
+from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+from dsapi.agave.daos import FileManager
 import logging
 import json
 
@@ -72,7 +76,6 @@ class BoxFilesJsonView(BoxAPIView):
         return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                      token=agave_oauth.access_token)
 
-
     def get(self, request, item_type, item_id):
         op = getattr(self.box_api, item_type)
         item = op(item_id).get()
@@ -130,7 +133,6 @@ class BoxFilesJsonView(BoxAPIView):
             return HttpResponse(json.dumps(f.as_json()), content_type='application/json')
 
 
-
 @login_required
 def index(request):
     context = {}
@@ -142,11 +144,13 @@ def index(request):
             context['box_connection'] = box_user
         except BoxOAuthException:
             # authentication failed
-            logger.warning('Box oauth token for user=%s failed to authenticate' % request.user.username)
+            logger.warning('Box oauth token for user=%s failed to authenticate' %
+                           request.user.username)
             context['box_connection'] = False
         except BoxException:
             # session layer exception
-            logger.warning('Box API error when testing oauth token for user=%s' % request.user.username)
+            logger.warning('Box API error when testing oauth token for user=%s' %
+                           request.user.username)
             context['box_connection'] = False
 
     except BoxUserToken.DoesNotExist:
@@ -220,7 +224,6 @@ def disconnect(request):
         except:
             logger.error('Disconnect Box; BoxUserToken delete error.',
                          extra={'user': request.user})
-
         messages.success(
             request,
             'Your Box.com account has been disconnected from DesignSafe.')

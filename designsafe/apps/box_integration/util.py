@@ -1,9 +1,8 @@
-from boxsdk import OAuth2, Client
+from boxsdk import Client, OAuth2
 from boxsdk.object.base_object import BaseObject
 from django.conf import settings
 import logging
 import json
-import six
 
 logger = logging.getLogger(__name__)
 
