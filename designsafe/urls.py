@@ -32,6 +32,8 @@ urlpatterns = patterns(
     # terms-and-conditions
     url(r'^terms/', include('termsandconditions.urls')),
 
+    url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
+
     # api urls, just for the samples.
     url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
     url(r'^rw/workspace/', include('designsafe.apps.workspace.urls',

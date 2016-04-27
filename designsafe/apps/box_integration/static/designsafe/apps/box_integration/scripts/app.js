@@ -14,7 +14,6 @@
     'ng.django.urls',
     'ui.bootstrap',
     'ng.designsafe',
-    'logging',
     'django.context'
   ]).config(['$httpProvider', '$locationProvider', config]);
 
