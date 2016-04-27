@@ -6,16 +6,14 @@ from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         HttpResponseServerError)
-from django.core.serializers.json import DjangoJSONEncoder
+                         HttpResponseServerError, Http404)
 from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.box_integration.models import BoxUserToken
-from designsafe.apps.box_integration.tasks import check_connection
+from designsafe.apps.box_integration.tasks import check_connection, copy_box_item
 from designsafe.apps.box_integration.util import BoxObjectJsonSerializer
 from agavepy.agave import Agave
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
-from dsapi.agave.daos import FileManager
 import logging
 import json
 
@@ -46,17 +44,45 @@ class BoxAPIView(View):
 class BoxFilesView(BoxAPIView):
 
     def get(self, request, path=None):
-        folder_id = 0
+        """
+        Box doesn't support listing for a path, only by folder id; we have to start at
+        folder_id=0 and iterate through the folder's children looking for a folder named
+        after the next path component. On finding a folder for the next path component we
+        record it and then repeat for subsequent path components. If any path component
+        cannot be matched, an Http404 is raised.
 
+        Args:
+            request: The request
+            path: The path to initialize the view with.
+
+        Returns:
+            A HttpResponse
+
+        Raises:
+            Http404 if the path is not found
+
+        """
+        folder_id = 0
         if path is not None:
             path_c = path.split('/')
             for c in path_c:
-                children = self.box_api.folder(folder_id).get_items(limit=100, offset=0)
-                for child in children:
-                    if child.type == 'folder':
-                        if child.name == c:
-                            folder_id = child.object_id
-                            break
+                limit = 100
+                offset = 0
+                next_folder_id = None
+                while next_folder_id is None:
+                    children = self.box_api.folder(folder_id).get_items(limit=limit,
+                                                                        offset=offset)
+                    for child in children:
+                        if child.type == 'folder':
+                            if child.name == c:
+                                next_folder_id = child.object_id
+                                break
+                    if len(children) == limit:
+                        offset += limit
+                    elif next_folder_id is None:  # this can happen if path doesn't exist
+                        raise Http404('The Box path "%s" does not exist.' %
+                                      path)
+                folder_id = next_folder_id
 
         folder = self.box_api.folder(folder_id).get()
         context = {
@@ -67,14 +93,6 @@ class BoxFilesView(BoxAPIView):
 
 
 class BoxFilesJsonView(BoxAPIView):
-
-    @property
-    def agave_client(self):
-        agave_oauth = self.request.user.agave_oauth
-        if agave_oauth.expired:
-            agave_oauth.refresh()
-        return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                     token=agave_oauth.access_token)
 
     def get(self, request, item_type, item_id):
         op = getattr(self.box_api, item_type)
@@ -93,44 +111,41 @@ class BoxFilesJsonView(BoxAPIView):
         return HttpResponse(json.dumps(item, cls=BoxObjectJsonSerializer),
                             content_type='application/json')
 
-    def post(self, request, item_type, item_id):
-        op = getattr(self.box_api, item_type)
-        item = op(item_id).get()
+    def put(self, request, item_type, item_id):
 
-        fm = FileManager(self.agave_client)
-        target_dir = '%s/%s' % (request.user.username, request.GET.get('dir', ''))
+        body_unicode = request.body.decode('utf-8')
+        body_data = json.loads(body_unicode)
+        logger.debug(body_data)
+        action = body_data.get('action', None)
+        resp_data = {}
 
-        if item_type == 'file':
-            try:
-                import_resp = self.agave_client.files.importData(
-                    systemId=settings.AGAVE_STORAGE_SYSTEM,
-                    filePath=target_dir,
-                    fileName=item.name,
-                    urlToIngest=item.get_shared_link_download_url())
-                async_resp = AgaveAsyncResponse(self.agave_client, import_resp)
-                async_status = async_resp.result(600)
-                if async_status == 'FAILED':
-                    logger.error('Box File Transfer failed: %s' % target_dir)
-                    return HttpResponseServerError('Transfer from Box failed')
-                else:
-                    file_path = '%s/%s' % (target_dir, item.name)
-                    logger.info(
-                        'Indexing Box File Transfer %s' % file_path)
-                    fm.index(settings.AGAVE_STORAGE_SYSTEM, file_path,
-                             request.user.username)
+        if action == 'copy':
+            op = getattr(self.box_api, item_type)
+            item = op(item_id).get()
 
-                return HttpResponse(json.dumps(import_resp, cls=DjangoJSONEncoder),
-                                    content_type='application/json')
-            except (TimeoutError, Error):
-                logger.error('AsyncResponse Error on Agave.files.importData from Box',
-                             extra={'box_file': item})
-                return HttpResponseServerError('Transfer from Box failed: timeout')
+            target_system = settings.AGAVE_STORAGE_SYSTEM
+            target_dir = '%s/%s' % (request.user.username, body_data.get('dir', ''))
 
-        else:  # item_type == 'folder'
-            mf, f = fm.mkdir(path=target_dir, new=item.name,
-                             system_id=settings.AGAVE_STORAGE_SYSTEM,
-                             username=request.user.username)
-            return HttpResponse(json.dumps(f.as_json()), content_type='application/json')
+            task_args = (request.user.username, item.type, item.object_id, target_system,
+                         target_dir)
+            task = copy_box_item.apply_async(args=task_args, countdown=10)
+
+            logger.debug('Scheduled Box Copy', extra={
+                'username': request.user.username,
+                'context': {
+                    'box_item_type': item_type,
+                    'box_item_id': item_id,
+                    'task_id': task.id
+                }
+            })
+            resp_data['result'] = {'task_id': task.id}
+            resp_data['message'] = 'Item copy scheduled.'
+            resp_status = 202
+        else:
+            resp_data['message'] = 'Unknown item action: {0}'.format(action)
+            resp_status = 400
+        return HttpResponse(json.dumps(resp_data), status=resp_status,
+                            content_type='application/json')
 
 
 @login_required

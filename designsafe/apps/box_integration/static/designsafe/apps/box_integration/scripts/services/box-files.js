@@ -105,15 +105,11 @@
      */
     service.copyToMyData = function(item, options) {
       options = options || {};
-      var params = _.extend({dir: ''}, options);
+      var body = _.extend({dir: ''}, options);
       var args = {item_type: item.type, item_id: item.id};
 
-      if (item.type === 'file') {
-        params.op = 'files.importData';
-        return $http.post(djangoUrl.reverse('box_integration:box_api', args), {params: params});
-      } else {
-        return $q.reject('Folder copy not implemented!');
-      }
+      body.action = 'copy';
+      return $http.put(djangoUrl.reverse('box_integration:box_api', args), body);
     };
 
     /**
