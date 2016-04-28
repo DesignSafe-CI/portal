@@ -14,16 +14,30 @@ class BaseApiView(View):
 
 
 class LoggerApi(BaseApiView):
+    """
+    Logger API for capturing logs from the front-end.
+
+    @see ng-designsafe/services/logging-service.js
+    """
 
     def post(self, request):
+        """
+        Accepts a log message from the front end. Attempts to determine the level at
+        which the message should be logged, and the name of the front-end logger. It
+        then logs the message JSON as appropriate.
+
+        Args:
+            request: {django.http.HttpRequest} the HTTP request
+
+        Returns: HTTP 202
+
+        """
         log_json = request.body.decode('utf-8')
         log_data = json.loads(log_json)
-        level = getLevelName(log_data['level'])
-        if not isinstance(level, int):
-            level = getLevelName('INFO')
-        message = log_data.get('message', None)
-        args = log_data.get('args', [])
-        logger.log(level, message, *args, extra={
+        level = getLevelName(log_data.pop('level', 'INFO'))
+        name = log_data.pop('name');
+
+        logger.log(level, '%s: %s', name, json.dumps(log_data), extra={
             'user': request.user.username,
             'referer': request.META.get('HTTP_REFERER')
         })

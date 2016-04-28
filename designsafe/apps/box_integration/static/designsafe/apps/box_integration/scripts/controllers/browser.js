@@ -4,8 +4,10 @@
 (function(window, angular, $, _) {
   "use strict";
   var app = angular.module('BoxFilesApp');
-  app.controller('BrowserCtrl', ['$scope', '$rootScope', '$location', '$q', '$uibModal', 'logger', 'BoxFiles', 'Django',
-    function($scope, $rootScope, $location, $q, $uibModal, logger, BoxFiles, Django) {
+  app.controller('BrowserCtrl', ['$scope', '$rootScope', '$location', '$q', '$uibModal', 'Logging', 'BoxFiles', 'Django',
+    function($scope, $rootScope, $location, $q, $uibModal, Logging, BoxFiles, Django) {
+
+      var logger = Logging.getLogger('BoxFilesApp.BrowserCtrl');
 
       $scope.data = {
         folder: Django.context.folder,
@@ -77,7 +79,10 @@
 
     }]);
 
-  app.controller('BoxFileModal', function($scope, $sce, $uibModalInstance, logger, BoxFiles, data) {
+  app.controller('BoxFileModal', function($scope, $sce, $uibModalInstance, Logging, BoxFiles, data) {
+
+    var logger = Logging.getLogger('BoxFilesApp.BoxFileModel');
+
     $scope.data = data;
     if (data.expiring_embed_link.url) {
       $scope.data.expiring_embed_link.url = $sce.trustAsResourceUrl(data.expiring_embed_link.url);
