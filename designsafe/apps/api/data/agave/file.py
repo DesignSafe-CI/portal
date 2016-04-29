@@ -18,7 +18,7 @@ class AgaveFile(AgaveObject):
 
     @property
     def id(self):
-        return '{}/{}'.format(self.system, self.name) 
+        return '{}/{}'.format(self.system, self.path) 
 
     def to_dict(self, **kwargs):
         return {

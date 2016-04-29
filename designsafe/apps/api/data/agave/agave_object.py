@@ -43,9 +43,13 @@ class AgaveObject(object):
         return response
 
     def __getattr__(self, name):
-        val = self._source.get(name, None)
-        if val is None:
+        try:
             return super(AgaveObject, self).__getattr__(name)
+        except AttributeError:
+            if name in self._wrap:
+                return self._wrap.get(name)
+            else:
+                raise
 
     def split_filepath(self, path):
         path = path.strip('/')

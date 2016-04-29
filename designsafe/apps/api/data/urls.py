@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from designsafe.apps.api.data.views import DataView
+from designsafe.apps.api.data.views import DataView, DataSearchView
 
 """
 The basic url architecture when calling a Data Api should be:

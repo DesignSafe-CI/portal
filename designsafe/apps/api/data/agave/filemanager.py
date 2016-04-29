@@ -17,11 +17,11 @@ class FileManager(AgaveObject):
         super(FileManager, self).__init__(**kwargs)
         user_obj = request.user
         username = user_obj.username
-        if user_obj.agave_oauth.expired():
+        if user_obj.agave_oauth.expired:
             user_obj.agave_oauth.referer()
 
-        token = me.agave_oauth
-        access_token = self.token.access_token
+        token = user_obj.agave_oauth
+        access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         self.resource = kwargs.get('resource')
         self.system_id = FILESYSTEMS[self.resource]
@@ -33,4 +33,4 @@ class FileManager(AgaveObject):
         listing = self.call_operation('files.list', 
                                 systemId = self.system_id,
                                 filePath = urllib.quote(file_path))
-        return [AgaveFile(wrap = o, resource = self.resource) for o in listing]
+        return [AgaveFile(wrap = o, resource = self.resource) for o in listing if o['name'] != '.']
