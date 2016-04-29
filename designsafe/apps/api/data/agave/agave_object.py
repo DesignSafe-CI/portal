@@ -1,5 +1,6 @@
 from agavepy.agave import AgaveException, Agave
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+from requests.exceptions import HTTPError
 from designsafe.apps.api.exceptions import ApiException
 import logging
 logger = logging.getLogger(__name__)
@@ -26,20 +27,15 @@ class AgaveObject(object):
         try:
             logger.debug('Agave: calling {}, args: {}'.format(operation, kwargs))
             response = self.exec_operation(op, **kwargs)
-        except AgaveException as e:
+        except (AgaveException, HTTPError) as e:
             logger.error('Agave: error:{} - calling {}, args:{} '.format(e.message, operation, kwargs),
                 exc_info = True,
                 extra = kwargs)
             if e.response.status_code == 404 or raise_agave:
                 raise
             else:
-                raise HTTPError(e.message)
+                raise ApiException(e.message, e.response.status_code, extra = kwargs)
             response = None
-        except KeyError as e:
-            if e.message == 'date-time':
-                response = None
-            else:
-                raise
         return response
 
     def __getattr__(self, name):
