@@ -2,11 +2,12 @@ from agavepy.agave import AgaveException, Agave
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
+from designsafe.apps.api.data.abstract.files import AbstractFile
 import os
 import logging
 logger = logging.getLogger(__name__)
 
-class AgaveFile(AgaveObject):
+class AgaveFile(AbstractFile, AgaveObject):
     def __init__(self, resource, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
         self.resource = resource

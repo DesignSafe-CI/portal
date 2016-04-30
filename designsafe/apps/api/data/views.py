@@ -67,9 +67,9 @@ class DataFileManageView(BaseDataView):
     Data View to handle file management. POST, PUT and DELETE Requests.
 
     If the request is POST or PUT it is expecting a JSON object in the body.
-    The JSON object should have at least these keys:
+    The body JSON object should have at least these keys:
     - action: Operation to execute in the file manager.
-    - file_path: File path on which the operation should be executed.
+    - path: File path on which the operation should be executed.
 
     The entire request body will be passed onto the file manager operation being executed as a python dictionary as well as the uploaded file array if present.
     """

@@ -3,6 +3,7 @@ from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
+from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from django.conf import settings
 import urllib
 import os
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 } 
-class FileManager(AgaveObject):
+class FileManager(AbstractFileManager, AgaveObject):
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
         username = user_obj.username
@@ -37,7 +38,7 @@ class FileManager(AgaveObject):
         Returns:
             Dictionary with two keys;
               - resource: File System resource that we're listing
-              - files: Array of Api file-like objects
+              - files: Array of serializabe Api file-like objects
         """
         file_path = file_path.strip('/')
         listing = self.call_operation('files.list', 
@@ -56,3 +57,9 @@ class FileManager(AgaveObject):
 
     def search(self, **kwargs):
         return [{}]
+
+    def download(self, **kwargs):
+        pass
+
+    def file(self, **kwargs):
+        pass
