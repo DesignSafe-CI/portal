@@ -3,7 +3,7 @@ from designsafe.apps.api.data.views import DataView, DataSearchView, DataFileMan
 
 """
 The basic url architecture when calling a Data Api should be:
-api/data/<operation>/<resource>/<filepath>
+api/data/<[listing | file | search]>/<resource>/<filepath>
 
 operation: Can be any of these:
             - listing [GET]. Should return an array of file-like objects.
