@@ -28,13 +28,17 @@ class AgaveObject(object):
             logger.debug('Agave: calling {}, args: {}'.format(operation, kwargs))
             response = self.exec_operation(op, **kwargs)
         except (AgaveException, HTTPError) as e:
-            logger.error('Agave: error:{} - calling {}, args:{} '.format(e.message, operation, kwargs),
+            logger.error(e,
                 exc_info = True,
                 extra = kwargs)
             if e.response.status_code == 404 or raise_agave:
                 raise
             else:
-                raise ApiException(e.message, e.response.status_code, extra = kwargs)
+                d = {'operation': op}
+                d.update(kwargs)
+                raise ApiException(e.message, 
+                            e.response.status_code, 
+                            extra = d)
             response = None
         return response
 
