@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from designsafe.apps.api.data.views import DataView, DataSearchView
+from designsafe.apps.api.data.views import DataView, DataSearchView, DataFileManageView
 
 """
 The basic url architecture when calling a Data Api should be:
@@ -14,7 +14,9 @@ operation: Can be any of these:
 
 """
 urlpatterns = patterns('designsafe.apps.api.data.views',
-    url(r'^(?P<operation>[\w]+)/(?P<resource>[\w]+)/(?P<file_path>[ \S]+)?$', 
-            DataView.as_view(), name='listing'),
-    url(r'^search/$', DataSearchView.as_view(), name='search'),
+    url(r'^listing/(?P<resource>[\w]+)/(?P<file_path>[ \S]+)?$', 
+            DataView.as_view(), name='list'),
+    url(r'^file/(?P<resource>[\w]+)/(?P<file_path>[ \S]+)?$', 
+            DataFileManageView.as_view(), name='file'),
+    url(r'^search/(?P<resource>[\w]+)/?$', DataSearchView.as_view(), name='search'),
 )

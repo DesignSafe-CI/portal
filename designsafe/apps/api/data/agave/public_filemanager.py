@@ -9,9 +9,6 @@ import os
 import logging
 logger = logging.getLogger(__name__)
 
-FILESYSTEMS = {
-    'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-} 
 class FileManager(AgaveObject):
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
@@ -23,7 +20,7 @@ class FileManager(AgaveObject):
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         self.resource = kwargs.get('resource')
-        self.system_id = FILESYSTEMS[self.resource]
+        self.system_id = 'nees.public'
         self.agave_client = Agave(api_server = agave_url, token = access_token)
         self.username = username
 
@@ -44,15 +41,11 @@ class FileManager(AgaveObject):
                                 systemId = self.system_id,
                                 filePath = urllib.quote(file_path))
         files = [AgaveFile(wrap = o, resource = self.resource) for o in listing if o['name'] != '.']
-        home = file_path.split('/')[0]
-        if home == self.username:
-            resource = 'default'
-        else:
-            resource = 'shared'
         return {
-            'resource': resource,
+            'resource': 'public',
             'files': [f.to_dict() for f in files]
         }
+
 
     def search(self, **kwargs):
         return [{}]
