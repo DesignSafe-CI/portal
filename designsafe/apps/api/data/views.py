@@ -25,6 +25,14 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
     def _execute_operation(self, request, **kwargs):
         fm = self._get_file_manager(request, **kwargs)
         op = getattr(fm, kwargs.get('operation'))
+        try:
+            body_json = json.loads(request.body)
+        except ValueError:
+            body_json = {}
+        files = request.FILES or []
+        d = body_json
+        d.update({'files': files})
+        d.update(kwargs)
         resp = op(**kwargs)
         return resp
 
