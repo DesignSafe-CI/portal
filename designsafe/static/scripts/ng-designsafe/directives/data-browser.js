@@ -3,48 +3,23 @@
 
   var module = angular.module('ng.designsafe');
 
-  module.directive('dsDataBrowser', function() {
-    return {
-      restrict: 'E',
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/ds-data-browser.html',
-      scope: {},
-      controller: []
-    };
-  });
+  module.directive('dsDataBrowser', ['Logging', function(Logging) {
+    var logger = Logging.getLogger('ngDesignSafe.dsDataBrowser');
 
-  module.directive('dsDataBrowserSourceSelect', function() {
     return {
       restrict: 'E',
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/ds-data-browser-source-select.html',
-      scope: {},
-      controller: []
-    };
-  });
-
-  module.directive('dsDataBrowserToolbar', function() {
-    return {
-      restrict: 'E',
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/ds-data-browser-toolbar.html',
-      scope: {},
-      controller: []
-    };
-  });
-
-  module.directive('dsDataListDisplay', function() {
-    
-    return {
-      restrict: 'E',
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/ds-data-list-display.html',
+      transclude: true,
+      replace: true,
+      templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser.html',
       scope: {
         source: '=source',  /* the data source to initialize with */
         id: '=id'  /* the id to initialize with */
       },
-      controller: ['$scope', 'Logging', 'DataService', function($scope, Logging, DataService) {
-        var logger = Logging.getLogger('ngDesignSafe.dsDataListDisplay');
+      controller: ['$scope', 'DataService', function($scope, DataService) {
 
         $scope.data = {
-          sources: [],
-          files: []
+          files: [],
+          sources: []
         };
 
         $scope.state = {
@@ -52,8 +27,10 @@
           selected: {},
           hover: {}
         };
-        
-        $scope.getIconClass = function(file, hover) {
+
+        var self = this;
+
+        self.getIconClass = function(file, hover) {
           if ($scope.state.selecting || hover) {
             if ($scope.state.selected[file.id]) {
               return 'fa-check-circle';
@@ -64,9 +41,9 @@
           return file._extra.icon;
         };
 
-        $scope.selectAll = function() {
+        self.selectAll = function() {
           if ($scope.state.selectAll) {
-            $scope.clearSelection();
+            self.clearSelection();
           } else {
             $scope.state.selected = _.chain($scope.data.files)
                                      .pluck('id').map(function (id) { return [id, true]; })
@@ -76,7 +53,7 @@
           }
         };
 
-        $scope.selectFile = function(file) {
+        self.selectFile = function(file) {
           if ($scope.state.selected[file.id]) {
             delete $scope.state.selected[file.id];
           } else {
@@ -84,14 +61,14 @@
           }
 
           if (Object.keys($scope.state.selected).length === 0) {
-            $scope.clearSelection();
+            self.clearSelection();
           } else {
             $scope.state.selecting = true;
             $scope.state.selectAll = false;
           }
         };
 
-        $scope.clearSelection = function() {
+        self.clearSelection = function() {
           $scope.state.selected = {};
           $scope.state.selectAll = $scope.state.selecting = false;
         };
@@ -115,6 +92,68 @@
         );
       }]
     };
+  }]);
+
+  module.directive('dsDataBrowserSourceSelect', ['Logging', function(Logging) {
+
+    var logger = Logging.getLogger('ngDesignSafe.dsDataBrowserSourceSelect');
+
+    return {
+      require: '^^dsDataBrowser',
+      restrict: 'E',
+      replace: true,
+      templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-source-select.html',
+      scope: {},
+      link: function(scope, element, attrs, dbCtrl) {
+        scope.state = scope.$parent.$parent.state;
+        scope.data = scope.$parent.$parent.data;
+        scope.getIconClass = dbCtrl.getIconClass;
+        scope.selectAll = dbCtrl.selectAll;
+        scope.selectFile = dbCtrl.selectFile;
+        scope.clearSelection = dbCtrl.clearSelection;
+      }
+    };
+  }]);
+
+  module.directive('dsDataBrowserToolbar', ['Logging', function(Logging) {
+
+    var logger = Logging.getLogger('ngDesignSafe.dsDataBrowserToolbar');
+
+    return {
+      require: '^^dsDataBrowser',
+      restrict: 'E',
+      replace: true,
+      templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-toolbar.html',
+      scope: {},
+      link: function(scope, element, attrs, dbCtrl) {
+        scope.state = scope.$parent.$parent.state;
+        scope.data = scope.$parent.$parent.data;
+        scope.getIconClass = dbCtrl.getIconClass;
+        scope.selectAll = dbCtrl.selectAll;
+        scope.selectFile = dbCtrl.selectFile;
+        scope.clearSelection = dbCtrl.clearSelection;
+      }
+    };
+  }]);
+
+  module.directive('dsDataListDisplay', ['Logging', function(Logging) {
+    var logger = Logging.getLogger('ngDesignSafe.dsDataListDisplay');
+
+    return {
+      require: '^^dsDataBrowser',
+      restrict: 'E',
+      replace: true,
+      templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-list-display.html',
+      scope: {},
+      link: function(scope, element, attrs, dbCtrl) {
+        scope.state = scope.$parent.$parent.state;
+        scope.data = scope.$parent.$parent.data;
+        scope.getIconClass = dbCtrl.getIconClass;
+        scope.selectAll = dbCtrl.selectAll;
+        scope.selectFile = dbCtrl.selectFile;
+        scope.clearSelection = dbCtrl.clearSelection;
+      }
+    };
     
-  });
+  }]);
 })(window, angular, jQuery, _);
