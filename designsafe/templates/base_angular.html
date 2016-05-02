@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
+
+{% block styles %}
+    <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block scripts %}
     <script src="{%static 'vendor/angular/angular.min.js' %}"></script>
+
     {% addtoblock "js" %}
+        <script type="text/javascript" src="{% static 'djangular/js/django-angular.js' %}"></script>
+
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
+
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/data-browser.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
+
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/data-browser-filters.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
+
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-service.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
 
         <script src="{%static 'designsafe/apps/signals/scripts/module.js' %}"></script>
@@ -14,5 +29,14 @@
         <script src="{%static 'designsafe/apps/notifications/scripts/provider.js' %}"></script>
 
         <script src="{%static 'scripts/logging/logger.js' %}"></script>
+
+        <script type="text/javascript">
+            (function(angular) {
+                var initial = angular.module('django.context', []);
+                initial.value('Django', {
+                    context: {{ angular_init|default:"{}"|safe }}
+                });
+            })(angular);
+        </script>
     {% endaddtoblock %}
 {% endblock %}
