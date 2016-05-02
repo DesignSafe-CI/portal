@@ -1,0 +1,40 @@
+.btn-toolbar-ds {
+    background-color: #f0f0f0;
+    border: 1px solid #dddddd;
+    margin-bottom: 5px;
+    margin-left: 0;
+    padding: 5px 5px 5px 0;
+}
+
+.flo-select-btn {
+    border: 0;
+    background: none;
+    outline: 0;
+}
+
+.ds-data-browser {
+    display: flex;
+    flex-direction: row;
+}
+
+.ds-data-browser-header {}
+
+.ds-data-browser-footer {}
+
+.ds-data-browser-sidebar {
+    flex: 0 0 auto;
+}
+
+.ds-data-browser-sidebar:first-child {
+    margin-right: 5px;
+}
+
+.ds-data-browser-sidebar:last-child {
+    margin-left: 5px;
+}
+
+.ds-data-browser-main {
+    flex: 1 1 auto;
+}
+
+
