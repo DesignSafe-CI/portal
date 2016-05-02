@@ -1,0 +1,30 @@
+<div class="table-responsive">
+    <table class="table table-bordered table-striped" style="background-color: white">
+        <thead>
+        <th>
+            <button class="flo-select-btn" ng-click="selectAll()" ng-mouseenter="state.hover['all'] = true" ng-mouseleave="state.hover['all'] = false">
+                <i class="fa fa-fw" ng-class="{'fa-circle-o': (state.selecting || state.hover['all']) && !state.selectAll, 'fa-check-circle': state.selectAll}"></i>
+                <span class="sr-only">Select all</span>
+            </button>
+            Name
+        </th>
+        <th>Info</th>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="file in $parent.$parent.data.files">
+            <td>
+                <button class="flo-select-btn" ng-click="selectFile(file)" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false">
+                    <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
+                </button>
+                <a href="{{ file|dsFileUrl }}">{{ file.name }}</a>
+            </td>
+            <td>
+                <button class="btn btn-xs btn-info"><i class="fa fa-info-circle"></i>
+                    <span class="sr-only">More info</span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
