@@ -10,6 +10,8 @@ urlpatterns = patterns(
         name='my_data'),
     url(r'^public/$', BasePublicTemplate.as_view(template_name='data/file-manager/public_data.html'),
         name='public_data'),
+    url(r'^test/$', BasePublicTemplate.as_view(template_name='data/file-manager/test.html'),
+        name='data_browser_test'),
 
 )
 

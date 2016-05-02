@@ -1,0 +1,39 @@
+{% extends "base_angular.html" %}
+{% load cms_tags staticfiles sekizai_tags pipeline %}
+{% block title %}Data Depot Browser{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">
+        <span class="hl hl-research">Data Depot Browser</span>
+        <small>Beta</small>
+    </h1>
+
+    <div ng-app="DataDepotBrowser">
+        <ds-data-browser>
+            <div class="ds-data-browser-sidebar">
+                <ds-data-browser-source-select></ds-data-browser-source-select>
+            </div>
+            <div class="ds-data-browser-main">
+                <ds-data-browser-toolbar></ds-data-browser-toolbar>
+                <ds-data-list-display></ds-data-list-display>
+            </div>
+        </ds-data-browser>
+    </div>
+</div>
+
+{% addtoblock "css" %}
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+    <script src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+    <script src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+    <script src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+    <script src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
+    <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
+    <script src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+    <script type="text/javascript" src="{% static 'designsafe/apps/data/scripts/test/app.js' %}"></script>
+{% endaddtoblock %}
+{% endblock %}
