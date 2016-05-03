@@ -73,7 +73,7 @@ class DataFileManageView(BaseDataView):
 
     The entire request body will be passed onto the file manager operation being executed as a python dictionary as well as the uploaded file array if present.
     """
-    def _execute_post_operation(request, **kwargs):
+    def _execute_post_operation(self, request, **kwargs):
         body_json = json.loads(request.body)
         operation = body_json.get('action')
         resp = self._execute_operation(request, operation, **kwargs)
