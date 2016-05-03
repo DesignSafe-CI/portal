@@ -1,0 +1,46 @@
+{% extends "base_angular.html" %}
+{% load cms_tags staticfiles sekizai_tags pipeline %}
+
+{% block head_extra %}
+    <base href="{% url 'box_integration:files' %}">
+{% endblock %}
+
+{% block title %}Box Files{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="headline headline-research">
+            <span class="hl hl-research">Box Files</span>
+        </h1>
+
+        <div data-ng-app="BoxFilesApp" class="box-files">
+            <div ng-controller="BrowserCtrl" ng-include="'{% static "designsafe/apps/box_integration/html/browser.html" %}'"></div>
+        </div>
+    </div>
+
+    {% addtoblock "css" %}
+    {% endaddtoblock %}
+
+    {% addtoblock "js" %}
+        <script type="text/javascript" src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+        <script type="text/javascript" src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+        <script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+        <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
+        <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
+        <script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+        <script type="text/javascript" src="{% static 'djangular/js/django-angular.js' %}"></script>
+        <script type="text/javascript" src="{% static 'designsafe/apps/box_integration/scripts/app.js' %}"></script>
+        <script type="text/javascript" src="{% static 'designsafe/apps/box_integration/scripts/controllers/browser.js' %}"></script>
+        <script type="text/javascript" src="{% static 'designsafe/apps/box_integration/scripts/services/box-files.js' %}"></script>
+        <script type="text/javascript">
+            (function(angular) {
+                var initial = angular.module('django.context', []);
+                initial.value('Django', {
+                    context: {
+                        folder: {{ folder|safe }}
+                    }
+                });
+            })(angular);
+        </script>
+    {% endaddtoblock %}
+{% endblock %}

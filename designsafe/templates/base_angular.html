@@ -3,11 +3,17 @@
 {% block scripts %}
     <script src="{%static 'vendor/angular/angular.min.js' %}"></script>
     {% addtoblock "js" %}
-    <script src="{%static 'designsafe/apps/signals/scripts/module.js' %}"></script>
-    <script src="{%static 'designsafe/apps/signals/scripts/provider.js' %}"></script>
-    <script src="{%static 'designsafe/apps/notifications/scripts/module.js' %}"></script>
-    <script src="{%static 'designsafe/apps/notifications/scripts/provider.js' %}"></script>
-    <script src="{%static 'scripts/logging/logger.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
+
+        <script src="{%static 'designsafe/apps/signals/scripts/module.js' %}"></script>
+        <script src="{%static 'designsafe/apps/signals/scripts/provider.js' %}"></script>
+
+        <script src="{%static 'designsafe/apps/notifications/scripts/module.js' %}"></script>
+        <script src="{%static 'designsafe/apps/notifications/scripts/provider.js' %}"></script>
+
+        <script src="{%static 'scripts/logging/logger.js' %}"></script>
     {% endaddtoblock %}
     <script src="https://npmcdn.com/angular-toastr/dist/angular-toastr.tpls.js"></script>
 {% endblock %}

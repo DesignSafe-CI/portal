@@ -1,8 +1,18 @@
-from boxsdk import OAuth2, Client
+from boxsdk import Client, OAuth2
+from boxsdk.object.base_object import BaseObject
 from django.conf import settings
 import logging
+import json
 
 logger = logging.getLogger(__name__)
+
+
+class BoxObjectJsonSerializer(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, BaseObject):
+            return o._response_object
+        else:
+            return super(BoxObjectJsonSerializer, self).default(o)
 
 
 def get_box_oauth(token):

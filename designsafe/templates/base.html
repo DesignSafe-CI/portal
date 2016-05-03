@@ -9,6 +9,7 @@
       <meta name="description" content="{{ site.description }}">
       <link rel="icon" href="{% static 'favicon.ico' %}">
       <link rel="canonical" href="{{request.get_full_path}}">
+      {% block head_extra %}{% endblock %}
       <!-- styles -->
       <link rel="stylesheet" href="https://npmcdn.com/angular-toastr/dist/angular-toastr.css" />
       {% stylesheet 'vendor' %}
