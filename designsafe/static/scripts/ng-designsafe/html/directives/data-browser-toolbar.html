@@ -1,16 +1,23 @@
-<div class="btn-toolbar btn-toolbar-ds" role="toolbar" aria-label="Data Browser Actions">
-    <div ng-show="state.selecting" class="btn-group">
-        <button class="btn btn-sm btn-link" ng-click="clearSelection()"><i class="fa fa-times-circle"></i> Clear selection</button>
-        <span class="btn btn-sm btn-toolbar-text">{{ state.selected|length }} selected</span>
+<div>
+    <div ng-show="state.selecting" class="btn-toolbar btn-toolbar-ds" role="toolbar" aria-label="Data Browser Actions">
+        <div class="btn-group">
+            <button class="btn btn-sm btn-link" ng-click="clearSelection()"><i class="fa fa-times-circle"></i> Clear selection</button>
+            <span class="btn btn-sm btn-toolbar-text">{{ state.selected|length }} selected</span>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="Download"><i class="fa fa-cloud-download"></i><span class="sr-only">Download</span></button>
+            <button class="btn btn-sm btn-default" title="Preview"><i class="fa fa-binoculars"></i><span class="sr-only">Preview</span></button>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="Copy"><i class="fa fa-copy"></i><span class="sr-only">Copy</span></button>
+            <button class="btn btn-sm btn-default" title="Move"><i class="fa fa-level-up"></i><span class="sr-only">Copy</span></button>
+            <button class="btn btn-sm btn-default" title="Rename"><i class="fa fa-pencil"></i><span class="sr-only">Copy</span></button>
+        </div>
     </div>
-    <div class="btn-group">
-        <button class="btn btn-sm btn-default" title="Download"><i class="fa fa-cloud-download"></i><span class="sr-only">Download</span></button>
-        <button class="btn btn-sm btn-default" title="Preview"><i class="fa fa-binoculars"></i><span class="sr-only">Preview</span></button>
-    </div>
-    <div class="btn-group">
-        <button class="btn btn-sm btn-default" title="Copy"><i class="fa fa-copy"></i><span class="sr-only">Copy</span></button>
-        <button class="btn btn-sm btn-default" title="Move"><i class="fa fa-level-up"></i><span class="sr-only">Copy</span></button>
-        <button class="btn btn-sm btn-default" title="Rename"><i class="fa fa-pencil"></i><span class="sr-only">Copy</span></button>
-    </div>
+    <ol ng-hide="state.selecting" class="breadcrumb">
+        <li ng-repeat="item in data.listing._trail">
+            <a href="#" ng-click="selectTrail($event, item)">{{ item.name }}</a>
+        </li>
+        <li class="active">{{ data.listing.name }}</li>
+    </ol>
 </div>
-

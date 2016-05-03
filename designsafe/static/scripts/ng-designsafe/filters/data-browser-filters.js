@@ -1,4 +1,4 @@
-(function(window, angular, $) {
+(function(window, angular, $, _) {
 
   var mod = angular.module('ng.designsafe');
 
@@ -7,7 +7,14 @@
     return function(file, baseHref) {
       var base = $('base');
 
-      var path = [file.source, file.path, file.name].map(encodeURIComponent).join('/');
+      /*
+       * We want to compact the path to remove "falsy" values. This is because
+       * the path could be empty or null if we are listing the root of the resource.
+       * Then, encode the path components to be URL safe and join with '/'.
+       */
+      var path = _.chain([file.resource, file.path, file.name])
+                  .compact()
+                  .map(encodeURIComponent).value().join('/');
 
       if (baseHref && base.length) {
         path = base.attr('href').slice(0, -1) + path;
@@ -16,4 +23,4 @@
       return path;
     }
   }]);
-})(window, angular, jQuery);
+})(window, angular, jQuery, _);

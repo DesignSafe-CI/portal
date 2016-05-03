@@ -1,6 +1,7 @@
 <div class="ds-data-browser-source-select">
     <div class="list-group">
-        <a href="#" class="list-group-item" ng-repeat="source in data.sources">
+        <a href="#" class="list-group-item" ng-repeat="source in data.sources" ng-click="selectSource(source)">
+            <i class="fa {{ source._extra.icon }}"></i>
             {{ source.name }}
         </a>
     </div>

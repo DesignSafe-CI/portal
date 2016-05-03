@@ -12,12 +12,12 @@
         </thead>
 
         <tbody>
-        <tr ng-repeat="file in $parent.$parent.data.files">
+        <tr ng-repeat="file in $parent.$parent.data.listing.children">
             <td>
                 <button class="flo-select-btn" ng-click="selectFile(file)" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
-                <a href="{{ file|dsFileUrl }}">{{ file.name }}</a>
+                <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file.name }}</a>
             </td>
             <td>
                 <button class="btn btn-xs btn-info"><i class="fa fa-info-circle"></i>

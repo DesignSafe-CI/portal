@@ -17,22 +17,99 @@
     service.listSources = function() {
       return $q.resolve({"data": [
         {
-          "name": "mydata",
-          "default_actions": ["*"]
+          "id": "mydata",
+          "name": "My data",
+          "_extra": {
+            "icon": "fa-hdd-o"
+          },
+          "_actions": ["*"]
         },
         {
-          "name": "shared",
-          "default_actions": ["download", "preview", "copy"]
+          "id": "shared",
+          "name": "Shared with me",
+          "_extra": {
+            "icon": "fa-group"
+          },
+          "_actions": ["download", "preview", "copy"]
         },
         {
-          "name": "public",
-          "default_actions": ["download", "preview", "copy"]
+          "id": "public",
+          "name": "Public data",
+          "_extra": {
+            "icon": "fa-globe"
+          },
+          "_actions": ["download", "preview", "copy"]
         },
         {
-          "name": "box",
-          "default_actions": ["download", "preview", "copy"]
+          "id": "box",
+          "name": "Box.com",
+          "_extra": {
+            "icon": "fa-square"
+          },
+          "_actions": ["download", "preview", "copy"]
         }
       ]})
+    };
+    
+    
+    service.getIcon = function(type, ext) {
+      if (type === 'folder') {
+        return 'fa-folder';
+      }
+
+      var icon;
+      switch (ext.slice(1)) {
+        case 'zip':
+        case 'tar':
+        case 'gz':
+        case 'bz2':
+          icon = 'fa-file-archive-o';
+          break;
+        case 'png':
+        case 'jpg':
+        case 'jpeg':
+        case 'gif':
+        case 'tif':
+        case 'tiff':
+          icon = 'fa-file-image-o';
+          break;
+        case 'pdf':
+          icon = 'fa-file-pdf-o';
+          break;
+        case 'doc':
+        case 'docx':
+          icon = 'fa-file-word-o';
+          break;
+        case 'xls':
+        case 'xlsx':
+          icon = 'fa-file-excel-o';
+          break;
+        case 'ppt':
+        case 'pptx':
+          icon = 'fa-file-powerpoint-o';
+          break;
+        case 'mov':
+        case 'mp4':
+          icon = 'fa-file-video-o';
+          break;
+        case 'mp3':
+        case 'wav':
+          icon = 'fa-file-audio-o';
+          break;
+        case 'txt':
+        case 'out':
+        case 'err':
+          icon = 'fa-file-text-o';
+          break;
+        case 'tcl':
+        case 'sh':
+        case 'json':
+          icon = 'fa-file-code-o';
+          break;
+        default:
+          icon = 'fa-file-o';
+      }
+      return icon;
     };
 
 
@@ -44,82 +121,8 @@
      */
     service.listFiles = function(options) {
       options = options || {};
-      var params = _.extend({"source": "default"}, options);
-
-      return $q.resolve({"data": [
-        {
-          "source": "default",
-          "name": "Trash",
-          "path": "mrhanlon",
-          "type": "folder",
-          "id": "mrhanlon/Trash",
-          "_actions": [],
-          "_pems": [],
-          "_extra": {
-            "icon": "fa-trash-o"
-          }
-        },
-        {
-          "source": "default",
-          "name": "Projects",
-          "path": "mrhanlon",
-          "type": "folder",
-          "id": "mrhanlon/Projects",
-          "_actions": [],
-          "_pems": [],
-          "_extra": {
-            "icon": "fa-folder"
-          }
-        },
-        {
-          "source": "default",
-          "name": "Documents",
-          "path": "mrhanlon",
-          "type": "folder",
-          "id": "mrhanlon/Documents",
-          "_actions": [],
-          "_pems": [],
-          "_extra": {
-            "icon": "fa-folder"
-          }
-        },
-        {
-          "source": "default",
-          "name": "example_data",
-          "path": "mrhanlon",
-          "type": "folder",
-          "id": "mrhanlon/example_data",
-          "_actions": [],
-          "_pems": [],
-          "_extra": {
-            "icon": "fa-folder"
-          }
-        },
-        {
-          "source": "default",
-          "name": "help.pdf",
-          "path": "mrhanlon",
-          "type": "file",
-          "id": "mrhanlon/help.pdf",
-          "_actions": [],
-          "_pems": [],
-          "_extra": {
-            "icon": "fa-file-pdf-o"
-          }
-        },
-        {
-          "source": "default",
-          "name": "test.txt",
-          "path": "mrhanlon",
-          "type": "file",
-          "id": "mrhanlon/test.txt",
-          "_actions": [],
-          "_pems": [],
-          "_extra": {
-            "icon": "fa-file-text-o"
-          }
-        }
-      ]});
+      var params = _.extend({"resource": "default"}, options);
+      return $http.get(djangoUrl.reverse('designsafe_api:list', params));
     };
 
 
