@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class BoxFile(AbstractFile):
 
-    resource = 'box'
+    source = 'box'
 
     def __init__(self, box_item, parent=None):
         super(BoxFile, self).__init__()
@@ -88,15 +88,15 @@ class BoxFile(AbstractFile):
         """
         parts = file_path.split('/')
 
-        assert len(parts) == 2
-        assert parts[0] in ['folder', 'file']
-        assert parts[1].isdigit()
+        assert len(parts) == 2, 'The file path should be in the format {type}/{id}'
+        assert parts[0] in ['folder', 'file'], '{type} must be one of ["folder", "file"]'
+        assert parts[1].isdigit(), '{id} should be digits only'
 
         return parts[0], parts[1]
 
     def to_dict(self, **kwargs):
         return {
-            'resource': self.resource,
+            'source': self.source,
             'id': self.id,
             'type': self.type,
             'path': self.path,
