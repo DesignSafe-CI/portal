@@ -6,6 +6,11 @@
     padding: 5px 5px 5px 0;
 }
 
+.breadcrumb-ds {
+    line-height: 26px;
+    margin-bottom: 5px;
+}
+
 .flo-select-btn {
     border: 0;
     background: none;
@@ -25,12 +30,22 @@
     flex: 0 0 auto;
 }
 
+.ds-data-browser-sidebar {
+    padding: 3px;
+    border: 1px solid #ddd;
+    background-color: #eee;
+}
+
 .ds-data-browser-sidebar:first-child {
     margin-right: 5px;
 }
 
 .ds-data-browser-sidebar:last-child {
     margin-left: 5px;
+}
+
+.ds-data-browser-new {
+    margin: 5px;
 }
 
 .ds-data-browser-main {
