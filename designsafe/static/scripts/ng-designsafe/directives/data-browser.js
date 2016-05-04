@@ -13,13 +13,17 @@
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser.html',
       scope: {
         resource: '=resource',  /* the data source to initialize with */
-        fileId: '=fileId'  /* the id to initialize with */
+        fileId: '=fileId',  /* the id to initialize with; the DataBrowser will fetch this fileId */
+        listing: '=listing',  /* the listing to initialize the DataBrowser with */
+        onPathChanged: '&onPathChanged',
+        onResourceChanged: '&onResourceChanged'
+        
       },
-      controller: ['$scope', 'Django', 'DataService', function($scope, Django, DataService) {
+      controller: ['$scope', 'DataService', function($scope, DataService) {
 
         $scope.data = {
-          listing: Django.context.listing || [],
-          sources: Django.context.sources || []
+          listing: $scope.listing || [],
+          sources: $scope.sources || []
         };
 
         $scope.state = {
@@ -73,8 +77,8 @@
           $scope.state.selectAll = $scope.state.selecting = false;
         };
 
-        self.listFiles = function(options) {
-          options = options || {}
+        self.listPath = function(options) {
+          options = options || {};
 
           if (options.resource) {
             $scope.resource = options.resource;
@@ -84,12 +88,18 @@
             $scope.fileId = options.fileId;
           }
 
-          DataService.listFiles({resource: $scope.resource, file_path: $scope.fileId}).then(
+          DataService.listPath({resource: $scope.resource, file_path: $scope.fileId}).then(
             function(response) {
-              $scope.data.listing = response.data.listing;
+              $scope.data.listing = response.data;
+
+              var handler = $scope.onPathChanged();
+              if (handler) {
+                handler($scope.data.listing);
+              }
             },
             function(error) {
               logger.error(error);
+              // TODO notify user
             }
           );
         };
@@ -97,13 +107,22 @@
         DataService.listSources().then(
           function(response) {
             $scope.data.sources = response.data;
+
+            var handler = $scope.onResourceChanged();
+            if (handler) {
+              handler($scope.data.listing);
+            }
           },
           function(error) {
             logger.error(error);
+            // TODO notify user
           }
         );
 
-        self.listFiles();
+        // Initial listing
+        if (! $scope.data.listing) {
+          self.listPath();
+        }
       }]
     };
   }]);
@@ -153,7 +172,7 @@
         
         scope.selectTrail = function($event, trailItem) {
           $event.preventDefault();
-          dbCtrl.listFiles({fileId: trailItem.id});
+          dbCtrl.listPath({fileId: trailItem.id});
         };
       }
     };
@@ -180,7 +199,7 @@
         scope.browseFile = function($event, file) {
           $event.preventDefault();
           if (file.type === 'folder') {
-            dbCtrl.listFiles({fileId: file.id});
+            dbCtrl.listPath({fileId: file.id});
           }
         };
       }
