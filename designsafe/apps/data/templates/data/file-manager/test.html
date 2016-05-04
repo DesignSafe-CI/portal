@@ -1,6 +1,9 @@
 {% extends "base_angular.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 {% block title %}Data Depot Browser{% endblock %}
+{% block head_extra %}
+    <base href="{% url 'designsafe_data:data_browser_test' %}">
+{% endblock %}
 {% block content %}
 <div class="container">
     <h1 class="headline headline-research">
@@ -9,15 +12,46 @@
     </h1>
 
     <div ng-app="DataDepotBrowser">
-        <ds-data-browser resource="'box'">
-            <div class="ds-data-browser-sidebar">
-                <ds-data-browser-source-select></ds-data-browser-source-select>
-            </div>
-            <div class="ds-data-browser-main">
-                <ds-data-browser-toolbar></ds-data-browser-toolbar>
-                <ds-data-list-display></ds-data-list-display>
-            </div>
-        </ds-data-browser>
+        <div ng-controller="DataDepotBrowserCtrl">
+            <ds-data-browser resource="data.resource" listing="data.listing" on-path-changed="onPathChanged">
+                <div class="ds-data-browser-sidebar">
+                    <div class="ds-data-browser-new">
+                        <div class="btn-group btn-block">
+                            <button class="btn btn-primary btn-block dropdown-toggle"
+                                    ng-disabled="! newFileEnabled()" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false"
+                            >New</button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-folder fa-stack-2x"></i>
+                                            <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                        <span class="">Create Folder</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-file-o fa-stack-2x"></i>
+                                            <i class="fa fa-upload fa-stack-1x"></i>
+                                        </span>
+                                        <span>File Upload</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ds-data-browser-source-select></ds-data-browser-source-select>
+                </div>
+                <div class="ds-data-browser-main">
+                    <ds-data-browser-toolbar></ds-data-browser-toolbar>
+                    <ds-data-list-display></ds-data-list-display>
+                </div>
+            </ds-data-browser>
+        </div>
     </div>
 </div>
 

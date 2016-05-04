@@ -8,6 +8,11 @@ from dsapi.agave.daos import shared_with_me
 from django.contrib.auth import get_user_model
 from agavepy.agave import Agave, AgaveException
 from django.conf import settings
+
+from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
+from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
+from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+
 import logging
 import json
 
@@ -143,4 +148,31 @@ class  BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BasePublicTemplate, self).get_context_data(**kwargs)
         context['unreadNotifications'] = 0
+        return context
+
+
+class DataBrowserTestView(BasePublicTemplate):
+    def get_context_data(self, **kwargs):
+        context = super(DataBrowserTestView, self).get_context_data(**kwargs)
+        context['unreadNotifications'] = 0
+
+        resource = kwargs.pop('resource')
+        file_path = kwargs.pop('file_path', '')
+
+        # TODO get initial listing in a generic way?
+        user_obj = self.request.user
+        fm = None
+        if resource == 'default':
+            fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
+        elif resource == 'public':
+            fm = PublicFileManager(user_obj, resource=resource, **kwargs)
+        elif resource == 'box':
+            fm = BoxFileManager(user_obj, resource=resource, **kwargs)
+
+        listing = fm.listing(file_path)
+
+        context['angular_init'] = json.dumps({
+            'resource': resource,
+            'listing': listing
+        })
         return context

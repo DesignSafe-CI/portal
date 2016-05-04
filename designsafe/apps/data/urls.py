@@ -1,6 +1,6 @@
 from designsafe.apps.data.views.api import *
 from django.conf.urls import url, patterns
-from designsafe.apps.data.views.base import BasePrivateTemplate, BasePublicTemplate
+from designsafe.apps.data.views.base import BasePrivateTemplate, BasePublicTemplate, DataBrowserTestView
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -10,7 +10,7 @@ urlpatterns = patterns(
         name='my_data'),
     url(r'^public/$', BasePublicTemplate.as_view(template_name='data/file-manager/public_data.html'),
         name='public_data'),
-    url(r'^test/(?P<resource>[\w]+)?/?(?P<file_path>[ \S]+)?$', BasePublicTemplate.as_view(template_name='data/file-manager/test.html'),
+    url(r'^test/(?P<resource>[\w]+)?/?(?P<file_path>[ \S]+)?$', DataBrowserTestView.as_view(template_name='data/file-manager/test.html'),
         name='data_browser_test'),
 
 )
