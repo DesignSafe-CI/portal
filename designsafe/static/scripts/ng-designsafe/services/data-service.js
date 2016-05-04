@@ -119,7 +119,7 @@
      * @param options.source {string} the `source` to list.
      * @param options.id {object} the `id` of the file to list. The type and format of `id` varies based on `source`.
      */
-    service.listFiles = function(options) {
+    service.listPath = function(options) {
       options = options || {};
       var params = _.extend({"resource": "default"}, options);
       return $http.get(djangoUrl.reverse('designsafe_api:list', params));
