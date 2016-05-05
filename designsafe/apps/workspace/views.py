@@ -199,8 +199,8 @@ def call_api(request, service):
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:
         logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-            service, e.response))
-        return HttpResponse(json.dumps(e.response),
+            service, e.message))
+        return HttpResponse(json.dumps(e.message),
                             content_type='application/json',
                             status=400)
     except AgaveException as e:
