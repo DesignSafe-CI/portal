@@ -26,12 +26,12 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
             resource: Resource name to decide which class to instantiate.
         """
         user_obj = request.user
-        if resource == 'default':
-            return AgaveFileManager(user_obj, resource = resource, **kwargs)
-        elif resource == 'public':
+        if resource == 'public':
             return PublicFileManager(user_obj, resource = resource, **kwargs)
         elif resource == 'box':
             return BoxFileManager(user_obj, resource = resource, **kwargs)
+        else:
+            return AgaveFileManager(user_obj, resource = resource, **kwargs)
 
     def _execute_operation(self, request, operation, **kwargs):
         """

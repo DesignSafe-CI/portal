@@ -14,9 +14,9 @@ operation: Can be any of these:
 
 """
 urlpatterns = patterns('designsafe.apps.api.data.views',
-    url(r'^listing/(?P<resource>[\w]+)/(?P<file_path>[ \S]+)?$', 
+    url(r'^listing/(?P<resource>[\S]+)/(?P<file_path>[ \S]+)?$',
             DataView.as_view(), name='list'),
-    url(r'^file/(?P<resource>[\w]+)/(?P<file_path>[ \S]+)?$', 
+    url(r'^file/(?P<resource>[\S]+)/(?P<file_path>[ \S]+)?$',
             DataFileManageView.as_view(), name='file'),
-    url(r'^search/(?P<resource>[\w]+)/?$', DataSearchView.as_view(), name='search'),
+    url(r'^search/(?P<resource>[\S]+)/?$', DataSearchView.as_view(), name='search'),
 )

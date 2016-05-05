@@ -12,8 +12,11 @@ logger = logging.getLogger(__name__)
 
 FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
-} 
+}
+
+
 class FileManager(AbstractFileManager, AgaveObject):
+
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
         username = user_obj.username
@@ -24,11 +27,11 @@ class FileManager(AbstractFileManager, AgaveObject):
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         self.resource = kwargs.get('resource')
-        self.system_id = FILESYSTEMS[self.resource]
+        self.system_id = self.resource
         self.agave_client = Agave(api_server = agave_url, token = access_token)
         self.username = username
 
-    def listing(self, file_path, **kwargs):
+    def listing(self, file_path=None, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
@@ -40,20 +43,34 @@ class FileManager(AbstractFileManager, AgaveObject):
               - resource: File System resource that we're listing
               - files: Array of serializabe Api file-like objects
         """
-        file_path = file_path.strip('/')
-        listing = self.call_operation('files.list', 
-                                systemId = self.system_id,
-                                filePath = urllib.quote(file_path))
-        files = [AgaveFile(wrap = o, resource = self.resource) for o in listing if o['name'] != '.']
-        home = file_path.split('/')[0]
-        if home == self.username:
-            resource = 'default'
-        else:
-            resource = 'shared'
-        return {
-            'resource': resource,
-            'files': [f.to_dict() for f in files]
-        }
+
+        if file_path is None or file_path == '':
+            file_path = self.username
+
+        file_path = file_path.strip('/')  # remove leading/trailing /
+
+        listing = self.call_operation('files.list',
+                                      systemId=self.system_id,
+                                      filePath=urllib.quote(file_path))
+
+        # files = [AgaveFile(wrap=o, resource=self.resource)
+        #          for o in listing if o['name'] != '.']
+        # home = file_path.split('/')[0]
+        # if home == self.username:
+        #     resource = 'default'
+        # else:
+        #     resource = 'shared'
+        # return {
+        #     'resource': resource,
+        #     'files': [f.to_dict() for f in files]
+        # }
+
+        root_listing = AgaveFile(wrap=listing[0])
+        if root_listing.name == '.':
+            root_listing.name = root_listing.path.split('/')[-1]
+        list_data = root_listing.to_dict()
+        list_data['children'] = [AgaveFile(wrap=o).to_dict() for o in listing[1:]]
+        return list_data
 
     def search(self, **kwargs):
         return [{}]

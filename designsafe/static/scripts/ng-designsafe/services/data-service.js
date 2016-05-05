@@ -17,7 +17,7 @@
     service.listSources = function() {
       return $q.resolve({"data": [
         {
-          "id": "mydata",
+          "id": "default",
           "name": "My data",
           "_extra": {
             "icon": "fa-hdd-o"

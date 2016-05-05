@@ -12,7 +12,7 @@
        * the path could be empty or null if we are listing the root of the resource.
        * Then, encode the path components to be URL safe and join with '/'.
        */
-      var path = _.chain([file.resource, file.path, file.name])
+      var path = _.chain([file.source, file.path, file.name])
                   .compact()
                   .map(encodeURIComponent).value().join('/');
 

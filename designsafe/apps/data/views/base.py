@@ -156,18 +156,21 @@ class DataBrowserTestView(BasePublicTemplate):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
         context['unreadNotifications'] = 0
 
-        resource = kwargs.pop('resource')
+        resource = kwargs.pop('resource', settings.AGAVE_STORAGE_SYSTEM)
+        if resource is None:
+            resource = settings.AGAVE_STORAGE_SYSTEM
+
         file_path = kwargs.pop('file_path', '')
 
         # TODO get initial listing in a generic way?
         user_obj = self.request.user
         fm = None
-        if resource == 'default':
-            fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
-        elif resource == 'public':
+        if resource == 'public':
             fm = PublicFileManager(user_obj, resource=resource, **kwargs)
         elif resource == 'box':
             fm = BoxFileManager(user_obj, resource=resource, **kwargs)
+        else:
+            fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
 
         listing = fm.listing(file_path)
 

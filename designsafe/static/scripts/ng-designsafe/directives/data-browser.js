@@ -133,13 +133,12 @@
       link: function(scope, element, attrs, dbCtrl) {
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
-        scope.getIconClass = dbCtrl.getIconClass;
-        scope.selectAll = dbCtrl.selectAll;
-        scope.selectFile = dbCtrl.selectFile;
-        scope.clearSelection = dbCtrl.clearSelection;
 
         scope.selectSource = function(source) {
-          logger.debug(source);
+          dbCtrl.listPath({
+            resource: source.id,
+            fileId: null
+          });
         };
       }
     };

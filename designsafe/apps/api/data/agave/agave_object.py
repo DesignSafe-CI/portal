@@ -5,6 +5,7 @@ from designsafe.apps.api.exceptions import ApiException
 import logging
 logger = logging.getLogger(__name__)
 
+
 class AgaveObject(object):
     """
     Main class for agave objects
@@ -43,13 +44,14 @@ class AgaveObject(object):
         return response
 
     def __getattr__(self, name):
-        try:
-            return super(AgaveObject, self).__getattr__(name)
-        except AttributeError:
-            if name in self._wrap:
-                return self._wrap.get(name)
-            else:
-                raise
+        return self._wrap.get(name)
+        # try:
+        #     return super(AgaveObject, self).__getattr__(name)
+        # except AttributeError:
+        #     if name in self._wrap:
+        #         return self._wrap.get(name)
+        #     else:
+        #         raise
 
     def split_filepath(self, path):
         path = path.strip('/')
