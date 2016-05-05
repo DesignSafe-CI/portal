@@ -25,6 +25,13 @@
   app.controller('DataDepotBrowserCtrl', ['$scope', '$location', 'Logging', 'Django', function($scope, $location, Logging, Django) {
     
     var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
+
+    $scope.$on('$locationChangeSuccess', function ($event, newUrl, oldUrl, newState) {
+      if (newUrl !== oldUrl) {
+        logger.log(newState);
+        $scope.data = newState;
+      }
+    });
     
     $scope.onPathChanged = function(listing) {
       var path = [$scope.data.resource, listing.path];
@@ -35,11 +42,12 @@
       if (listing.type === 'folder') {
         path.push('');
       }
+      $location.state(angular.copy($scope.data));
       $location.path(path.join('/'));
     };
 
     $scope.newFileEnabled = function() {
-      return false;
+      return $scope.data.resource === 'default';
     };
     
     $scope.data = {

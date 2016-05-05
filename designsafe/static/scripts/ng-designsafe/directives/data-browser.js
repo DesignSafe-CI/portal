@@ -12,20 +12,13 @@
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser.html',
       scope: {
-        resource: '=resource',  /* the data source to initialize with */
-        fileId: '=fileId',  /* the id to initialize with; the DataBrowser will fetch this fileId */
-        listing: '=listing',  /* the listing to initialize the DataBrowser with */
+        data: '=data',  /* the data to initialize the data browser with; available keys are ['listing', 'resource', 'fileId'] */
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
         
       },
       controller: ['$scope', 'DataService', function($scope, DataService) {
-
-        $scope.data = {
-          listing: $scope.listing || [],
-          sources: $scope.sources || []
-        };
-
+        
         $scope.state = {
           selecting: false,
           selected: {},
@@ -81,14 +74,14 @@
           options = options || {};
 
           if (options.resource) {
-            $scope.resource = options.resource;
+            $scope.data.resource = options.resource;
           }
 
           if (options.fileId) {
-            $scope.fileId = options.fileId;
+            $scope.data.fileId = options.fileId;
           }
 
-          DataService.listPath({resource: $scope.resource, file_path: $scope.fileId}).then(
+          DataService.listPath({resource: $scope.data.resource, file_path: $scope.data.fileId}).then(
             function(response) {
               $scope.data.listing = response.data;
 
