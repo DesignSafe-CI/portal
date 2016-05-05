@@ -163,7 +163,7 @@ def call_api(request, service):
                         data = submit_job(request, request.user.username, job_post)
                     except JobSubmitError as e:
                         data = e.json()
-                        logger.debug(data)
+                        logger.error('Failed to submit job {0}'.format(data))
                         return HttpResponse(json.dumps(data),
                                             content_type='application/json',
                                             status=e.status_code)
