@@ -48,7 +48,8 @@ def submit_job(request, username, job_post, retry=1):
         return response
 
     except ConnectionError as e:
-        logger.warning('ConnectionError while submitting job: %s' % e.response)
+        logger.error('ConnectionError while submitting job: %s' % e.message,
+                     extra={'job': job_post})
         logger.info('Retry %s for job submission %s' % (retry, job_post))
         retry += 1
         submit_job.apply_async(args=[username, job_post], countdown=2**retry)
@@ -60,7 +61,8 @@ def submit_job(request, username, job_post, retry=1):
                                      'available.')
 
     except HTTPError as e:
-        logger.warning('HTTPError while submitting job: %s' % e.response)
+        logger.error('HTTPError while submitting job: %s' % e.message,
+                       extra={'job': job_post})
         if e.response.status_code >= 500:
             logger.info('Retry %s for job submission %s' % (retry, job_post))
             retry += 1

@@ -163,7 +163,7 @@ def call_api(request, service):
                         data = submit_job(request, request.user.username, job_post)
                     except JobSubmitError as e:
                         data = e.json()
-                        logger.debug(data)
+                        logger.error('Failed to submit job {0}'.format(data))
                         return HttpResponse(json.dumps(data),
                                             content_type='application/json',
                                             status=e.status_code)
@@ -198,13 +198,19 @@ def call_api(request, service):
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:
-        return HttpResponse(json.dumps(e.response),
+        logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
+            service, e.message))
+        return HttpResponse(json.dumps(e.message),
                             content_type='application/json',
                             status=400)
     except AgaveException as e:
+        logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+            service, e.message))
         return HttpResponse(json.dumps(e.message), content_type='application/json',
                             status=400)
     except Exception as e:
+        logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+            service, e.message))
         return HttpResponse(
             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
             content_type='application/json', status=400)
