@@ -1,5 +1,6 @@
 from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from .mixins import SecureMixin, JSONResponseMixin
 from django.views.generic.base import View, TemplateView
 from django.http import HttpResponse
@@ -12,6 +13,7 @@ from django.conf import settings
 from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
 from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
 from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+from designsafe.apps.api.data.sources import SourcesApi
 
 import logging
 import json
@@ -158,24 +160,32 @@ class DataBrowserTestView(BasePublicTemplate):
 
         resource = kwargs.pop('resource', settings.AGAVE_STORAGE_SYSTEM)
         if resource is None:
-            resource = settings.AGAVE_STORAGE_SYSTEM
+            resource = 'agave'
 
-        file_path = kwargs.pop('file_path', '')
+        file_path = kwargs.pop('file_path', None)
 
         # TODO get initial listing in a generic way?
         user_obj = self.request.user
-        fm = None
         if resource == 'public':
             fm = PublicFileManager(user_obj, resource=resource, **kwargs)
         elif resource == 'box':
-            fm = BoxFileManager(user_obj, resource=resource, **kwargs)
-        else:
+            fm = BoxFileManager(user_obj, **kwargs)
+        elif resource == 'agave':
             fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
+            if fm.is_shared(file_path):
+                resource = 'shared'
+            else:
+                resource = 'mydata'
+        else:
+            raise Http404('Unknown resource')
 
         listing = fm.listing(file_path)
 
+        sourcesApi = SourcesApi()
+
         context['angular_init'] = json.dumps({
-            'resource': resource,
+            'currentSource': sourcesApi.get(resource),
+            'sources': sourcesApi.list(),
             'listing': listing
         })
         return context

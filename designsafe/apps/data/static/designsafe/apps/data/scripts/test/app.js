@@ -11,7 +11,7 @@
     'ng.designsafe',
     'django.context'
   ]);
-  
+
   function config($httpProvider, $locationProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
@@ -19,42 +19,36 @@
 
     $locationProvider.html5Mode(true);
   }
-  
+
   app.config(['$httpProvider', '$locationProvider', config]);
-  
-  app.controller('DataDepotBrowserCtrl', ['$scope', '$location', 'Logging', 'Django', function($scope, $location, Logging, Django) {
-    
-    var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
 
-    $scope.$on('$locationChangeSuccess', function ($event, newUrl, oldUrl, newState) {
-      if (newUrl !== oldUrl) {
-        logger.log(newState);
-        $scope.data = newState;
-      }
-    });
-    
-    $scope.onPathChanged = function(listing) {
-      var path = [$scope.data.resource, listing.path];
-      if (! (listing.source === 'box' && listing.id === 'folder/0')) {
-        path.push(listing.name);
-      }
-      path = _.compact(path);  // remove any empty path components; some resource roots have these
-      if (listing.type === 'folder') {
-        path.push('');
-      }
+  app.controller('DataDepotBrowserCtrl', ['$scope', '$location', '$filter', 'Logging', 'Django',
+    function($scope, $location, $filter, Logging, Django) {
+
+      var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
+
+      $scope.data = {
+        currentSource: Django.context.currentSource,
+        sources: Django.context.sources,
+        listing: Django.context.listing
+      };
+
+      /* initialize HTML5 history state */
       $location.state(angular.copy($scope.data));
-      $location.path(path.join('/'));
-    };
+      $location.replace();
 
-    $scope.newFileEnabled = function() {
-      return $scope.data.resource === 'default';
-    };
-    
-    $scope.data = {
-      resource: Django.context.resource,
-      listing: Django.context.listing
-    };
-    
-  }]);
+      $scope.$on('$locationChangeSuccess', function ($event, newUrl, oldUrl, newState) {
+        if (newUrl !== oldUrl) {
+          _.extend($scope.data, newState);
+        }
+      });
+
+      $scope.onPathChanged = function(listing) {
+        var path = $filter('dsFileUrl')(listing);
+        $location.state(angular.copy($scope.data));
+        $location.path(path);
+      };
+
+    }]);
 
 })(window, angular, jQuery, _);

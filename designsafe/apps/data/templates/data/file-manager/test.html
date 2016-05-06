@@ -15,35 +15,7 @@
         <div ng-controller="DataDepotBrowserCtrl">
             <ds-data-browser data="data" on-path-changed="onPathChanged">
                 <div class="ds-data-browser-sidebar">
-                    <div class="ds-data-browser-new">
-                        <div class="btn-group btn-block">
-                            <button class="btn btn-primary btn-block dropdown-toggle"
-                                    ng-disabled="! newFileEnabled()" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false"
-                            >New</button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="#">
-                                        <span class="fa-stack fa-lg">
-                                            <i class="fa fa-folder fa-stack-2x"></i>
-                                            <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
-                                        </span>
-                                        <span class="">Create Folder</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-
-                                        <span class="fa-stack fa-lg">
-                                            <i class="fa fa-file-o fa-stack-2x"></i>
-                                            <i class="fa fa-upload fa-stack-1x"></i>
-                                        </span>
-                                        <span>File Upload</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    <ds-data-browser-new></ds-data-browser-new>
                     <ds-data-browser-source-select></ds-data-browser-source-select>
                 </div>
                 <div class="ds-data-browser-main">
