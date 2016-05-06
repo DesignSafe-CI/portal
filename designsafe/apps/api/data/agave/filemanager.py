@@ -64,7 +64,7 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         listing = self.call_operation('files.list',
                                       systemId=system_id,
-                                      filePath=urllib.quote(listing_path))
+                                      filePath=listing_path)
 
         # files = [AgaveFile(wrap=o, resource=self.resource)
         #          for o in listing if o['name'] != '.']
