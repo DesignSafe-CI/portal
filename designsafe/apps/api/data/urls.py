@@ -1,5 +1,8 @@
 from django.conf.urls import patterns, url, include
-from designsafe.apps.api.data.views import DataView, DataSearchView, DataFileManageView
+from designsafe.apps.api.data.views import (SourcesView,
+                                            DataView,
+                                            DataSearchView,
+                                            DataFileManageView)
 
 """
 The basic url architecture when calling a Data Api should be:
@@ -13,10 +16,19 @@ operation: Can be any of these:
                                  More specific action should live in the body.
 
 """
-urlpatterns = patterns('designsafe.apps.api.data.views',
-    url(r'^listing/(?P<resource>[\S]+)/(?P<file_path>[ \S]+)?$',
-            DataView.as_view(), name='list'),
-    url(r'^file/(?P<resource>[\S]+)/(?P<file_path>[ \S]+)?$',
-            DataFileManageView.as_view(), name='file'),
-    url(r'^search/(?P<resource>[\S]+)/?$', DataSearchView.as_view(), name='search'),
+urlpatterns = patterns(
+    'designsafe.apps.api.data.views',
+    url(r'^sources/$', SourcesView.as_view(), name='sources'),
+
+    url(r'^sources/(?P<source_id>[\w.-]+)/$', SourcesView.as_view(), name='sources'),
+
+    url(r'^listing/(?P<resource>[\w.-]+)/?$', DataView.as_view(), name='list'),
+
+    url(r'^listing/(?P<resource>[\w.-]+)/(?P<file_path>[ \S]+)$',
+        DataView.as_view(), name='list'),
+
+    url(r'^file/(?P<resource>[\w.-]+)/?(?P<file_path>[ \S]+)?$',
+        DataFileManageView.as_view(), name='file'),
+
+    url(r'^search/(?P<resource>[\w.-]+)/?$', DataSearchView.as_view(), name='search'),
 )

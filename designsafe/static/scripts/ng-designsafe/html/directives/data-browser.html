@@ -1,3 +1,7 @@
 <div class="ds-data-browser-wrapper">
+    <div class="ds-data-browser-loading" ng-if="state.loading">
+        <i class="fa fa-spin fa-spinner"></i>
+        <span>Loading...</span>
+    </div>
     <div class="ds-data-browser" ng-transclude></div>
 </div>

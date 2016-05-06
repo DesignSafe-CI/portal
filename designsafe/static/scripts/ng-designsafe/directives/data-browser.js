@@ -20,6 +20,7 @@
       controller: ['$scope', 'DataService', function($scope, DataService) {
         
         $scope.state = {
+          loading: false,
           selecting: false,
           selected: {},
           hover: {}
@@ -70,19 +71,13 @@
           $scope.state.selectAll = $scope.state.selecting = false;
         };
 
-        self.listPath = function(options) {
+        self.browseFile = function(options) {
+          $scope.state.loading = true;
           options = options || {};
-
-          if (options.resource) {
-            $scope.data.resource = options.resource;
-          }
-
-          if (options.fileId) {
-            $scope.data.fileId = options.fileId;
-          }
-
-          DataService.listPath({resource: $scope.data.resource, file_path: $scope.data.fileId}).then(
+          options = _.extend({resource: $scope.data.currentSource.resource}, options);
+          DataService.listPath(options).then(
             function(response) {
+              $scope.state.loading = false;
               $scope.data.listing = response.data;
 
               var handler = $scope.onPathChanged();
@@ -91,32 +86,60 @@
               }
             },
             function(error) {
+              $scope.state.loading = false;
               logger.error(error);
               // TODO notify user
             }
           );
         };
 
-        DataService.listSources().then(
-          function(response) {
-            $scope.data.sources = response.data;
-
-            var handler = $scope.onResourceChanged();
-            if (handler) {
-              handler($scope.data.listing);
-            }
-          },
-          function(error) {
-            logger.error(error);
-            // TODO notify user
-          }
-        );
-
-        // Initial listing
         if (! $scope.data.listing) {
-          self.listPath();
+          self.browseFile();
         }
+
+        // self.listSources = function() {
+        //   DataService.listSources().then(
+        //     function (response) {
+        //       $scope.data.sources = response.data;
+        //
+        //       var handler = $scope.onResourceChanged();
+        //       if (handler) {
+        //         handler($scope.data.listing);
+        //       }
+        //     },
+        //     function (error) {
+        //       logger.error(error);
+        //       // TODO notify user
+        //     }
+        //   );
+        // };
+        //
+        // if (! $scope.data.sources) {
+        //   self.listSources();
+        // }
       }]
+    };
+  }]);
+
+  module.directive('dsDataBrowserNew', ['Logging', function(Logging) {
+
+    var logger = Logging.getLogger('ngDesignSafe.daDataBrowserNew');
+
+    return {
+      require: '^^dsDataBrowser',
+      restrict: 'E',
+      replace: true,
+      templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-new.html',
+      scope: {},
+      link: function(scope, element, attrs, dbCtrl) {
+        scope.state = scope.$parent.$parent.state;
+        scope.data = scope.$parent.$parent.data;
+
+        scope.newFileEnabled = function() {
+          return _.contains(scope.data.currentSource._actions, 'WRITE') ||
+            _.contains(scope.data.listing._actions, 'WRITE');
+        };
+      }
     };
   }]);
 
@@ -134,11 +157,14 @@
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
 
-        scope.selectSource = function(source) {
-          dbCtrl.listPath({
-            resource: source.id,
-            fileId: null
-          });
+        scope.getSourcePath = function (source) {
+          return _.compact([source.resource, source.defaultPath]).join('/') + '/';
+        };
+
+        scope.selectSource = function($event, source) {
+          $event.preventDefault();
+          scope.data.currentSource = source;
+          dbCtrl.browseFile({file_path: source.defaultPath});
         };
       }
     };
@@ -157,14 +183,11 @@
       link: function(scope, element, attrs, dbCtrl) {
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
-        scope.getIconClass = dbCtrl.getIconClass;
-        scope.selectAll = dbCtrl.selectAll;
-        scope.selectFile = dbCtrl.selectFile;
         scope.clearSelection = dbCtrl.clearSelection;
         
         scope.selectTrail = function($event, trailItem) {
           $event.preventDefault();
-          dbCtrl.listPath({fileId: trailItem.id});
+          dbCtrl.browseFile({file_path: trailItem.id});
         };
       }
     };
@@ -191,7 +214,7 @@
         scope.browseFile = function($event, file) {
           $event.preventDefault();
           if (file.type === 'folder') {
-            dbCtrl.listPath({fileId: file.id});
+            dbCtrl.browseFile({file_path: file.id});
           }
         };
       }

@@ -17,6 +17,21 @@
     outline: 0;
 }
 
+.ds-data-browser-wrapper {
+    position: relative;
+}
+
+.ds-data-browser-loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px;
+    font-size: 1.5em;
+    border: 1px solid #46B8DA;
+    background-color: #5bc0de;
+    color: #ffffff;
+}
+
 .ds-data-browser {
     display: flex;
     flex-direction: row;

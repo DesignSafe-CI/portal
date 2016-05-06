@@ -34,6 +34,8 @@ class BoxFile(AbstractFile):
             if self._parent:
                 if self._parent.id == 'folder/0':  # Suppress 'All Files' name in path
                     path = ''
+                elif self._parent.path is None or self._parent.path == '':
+                    path = self._parent.name
                 else:
                     path = '/'.join([self._parent.path, self._parent.name])
             else:
@@ -97,6 +99,7 @@ class BoxFile(AbstractFile):
     def to_dict(self, **kwargs):
         return {
             'source': self.source,
+            'system': None,
             'id': self.id,
             'type': self.type,
             'path': self.path,

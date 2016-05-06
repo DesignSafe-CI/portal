@@ -17,6 +17,8 @@ FILESYSTEMS = {
 
 class FileManager(AbstractFileManager, AgaveObject):
 
+    resource = 'agave'
+
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
         username = user_obj.username
@@ -26,10 +28,18 @@ class FileManager(AbstractFileManager, AgaveObject):
         token = user_obj.agave_oauth
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.resource = kwargs.get('resource')
-        self.system_id = self.resource
         self.agave_client = Agave(api_server = agave_url, token = access_token)
         self.username = username
+
+    def is_shared(self, file_path):
+        if file_path is not None and file_path != '':
+            components = file_path.strip('/').split('/')
+            if len(components) > 1 and components[0] == settings.AGAVE_STORAGE_SYSTEM:
+                if components[1] == self.username:
+                    return False
+                else:
+                    return True
+        return False
 
     def listing(self, file_path=None, **kwargs):
         """
@@ -45,13 +55,16 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
 
         if file_path is None or file_path == '':
-            file_path = self.username
-
-        file_path = file_path.strip('/')  # remove leading/trailing /
+            system_id = settings.AGAVE_STORAGE_SYSTEM
+            listing_path = self.username
+        else:
+            components = file_path.strip('/').split('/')  # remove leading/trailing /
+            system_id = components[0]
+            listing_path = '/'.join(components[1:]) if len(components) > 1 else self.username
 
         listing = self.call_operation('files.list',
-                                      systemId=self.system_id,
-                                      filePath=urllib.quote(file_path))
+                                      systemId=system_id,
+                                      filePath=urllib.quote(listing_path))
 
         # files = [AgaveFile(wrap=o, resource=self.resource)
         #          for o in listing if o['name'] != '.']

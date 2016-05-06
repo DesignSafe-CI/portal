@@ -31,6 +31,8 @@ class FileManager(AbstractFileManager):
 
         """
         box_object = self.box_api.folder(u'0')
+        if file_path is None or file_path == '' or file_path == 'All Files':
+            return box_object
         path_c = file_path.split('/')
         for c in path_c:
 
@@ -58,7 +60,7 @@ class FileManager(AbstractFileManager):
             box_object = next_object
         return box_object
 
-    def listing(self, file_path, **kwargs):
+    def listing(self, file_path=None, **kwargs):
         """
         Lists contents of a folder or details of a file.
 

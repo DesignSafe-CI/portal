@@ -4,11 +4,24 @@ from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
 from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
 from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+from designsafe.apps.api.data.sources import SourcesApi
 
 import logging
 import json
 
 logger = logging.getLogger(__name__)
+
+
+class SourcesView(SecureMixin, JSONResponseMixin, BaseApiView):
+
+    def get(self, request, source_id=None, *args, **kwargs):
+        api = SourcesApi()
+
+        if source_id is not None:
+            return self.render_to_json_response(api.get(source_id))
+
+        return self.render_to_json_response(api.list())
+
 
 class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
     """
@@ -26,11 +39,12 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
             resource: Resource name to decide which class to instantiate.
         """
         user_obj = request.user
+        logger.debug(resource)
         if resource == 'public':
             return PublicFileManager(user_obj, resource = resource, **kwargs)
         elif resource == 'box':
             return BoxFileManager(user_obj, resource = resource, **kwargs)
-        else:
+        elif resource == 'agave':
             return AgaveFileManager(user_obj, resource = resource, **kwargs)
 
     def _execute_operation(self, request, operation, **kwargs):
@@ -53,6 +67,7 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
         d.update(kwargs)
         resp = op(**kwargs)
         return resp
+
 
 class DataView(BaseDataView):
     """

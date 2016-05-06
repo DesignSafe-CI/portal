@@ -16,7 +16,7 @@
     </div>
     <ol ng-hide="state.selecting" class="breadcrumb breadcrumb-ds">
         <li ng-repeat="item in data.listing._trail">
-            <a href="#" ng-click="selectTrail($event, item)">{{ item.name }}</a>
+            <a href="{{ item|dsFileUrl }}" ng-click="selectTrail($event, item)">{{ item.name }}</a>
         </li>
         <li class="active">{{ data.listing.name }}</li>
     </ol>

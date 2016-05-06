@@ -32,7 +32,7 @@ class AgaveObject(object):
             logger.error(e,
                 exc_info = True,
                 extra = kwargs)
-            if e.response.status_code == 404 or raise_agave:
+            if e.response.status_code < 500 or raise_agave:
                 raise
             else:
                 d = {'operation': op}

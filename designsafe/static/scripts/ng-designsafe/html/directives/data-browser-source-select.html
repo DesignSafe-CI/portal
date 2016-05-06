@@ -1,9 +1,9 @@
 <div class="ds-data-browser-source-select">
     <div class="list-group">
-        <a href="#" class="list-group-item"
-           ng-class="{'active': data.resource === source.id}"
+        <a href="{{ getSourcePath(source) }}" class="list-group-item"
+           ng-class="{'active': data.currentSource.id === source.id}"
            ng-repeat="source in data.sources"
-           ng-click="selectSource(source)"
+           ng-click="selectSource($event, source)"
         >
             <i class="fa {{ source._extra.icon }}"></i>
             {{ source.name }}

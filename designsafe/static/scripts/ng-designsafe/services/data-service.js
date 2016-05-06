@@ -3,7 +3,8 @@
 
   var module = angular.module('ng.designsafe');
 
-  module.factory('DataService', ['$rootScope', '$http', '$q', 'djangoUrl', 'Logging', function($rootScope, $http, $q, djangoUrl, Logging) {
+  module.factory('DataService', ['$rootScope', '$http', '$q', 'djangoUrl', 'Logging',
+    function($rootScope, $http, $q, djangoUrl, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataService');
 
@@ -15,40 +16,45 @@
      * @returns {HttpPromise} that will be resolved with a list of available data sources.
      */
     service.listSources = function() {
-      return $q.resolve({"data": [
-        {
-          "id": "default",
-          "name": "My data",
-          "_extra": {
-            "icon": "fa-hdd-o"
-          },
-          "_actions": ["*"]
-        },
-        {
-          "id": "shared",
-          "name": "Shared with me",
-          "_extra": {
-            "icon": "fa-group"
-          },
-          "_actions": ["download", "preview", "copy"]
-        },
-        {
-          "id": "public",
-          "name": "Public data",
-          "_extra": {
-            "icon": "fa-globe"
-          },
-          "_actions": ["download", "preview", "copy"]
-        },
-        {
-          "id": "box",
-          "name": "Box.com",
-          "_extra": {
-            "icon": "fa-square"
-          },
-          "_actions": ["download", "preview", "copy"]
-        }
-      ]})
+      return $http.get(djangoUrl.reverse('designsafe_api:sources'));
+      // return $q.resolve({"data": [
+      //   {
+      //     "id": "mydata",
+      //     "systemId": "designsafe.storage.default",
+      //     "defaultPath": "",
+      //     "name": "My data",
+      //     "_extra": {
+      //       "icon": "fa-hdd-o"
+      //     },
+      //     "_actions": ["*"]
+      //   },
+      //   {
+      //     "id": "shared",
+      //     "systemId": "designsafe.storage.default",
+      //     "defaultPath": "shared",
+      //     "name": "Shared with me",
+      //     "_extra": {
+      //       "icon": "fa-group"
+      //     },
+      //     "_actions": ["*"]
+      //   },
+      //   {
+      //     "id": "public",
+      //     "name": "Public data",
+      //     "_extra": {
+      //       "icon": "fa-globe"
+      //     },
+      //     "_actions": ["download", "preview", "copy"]
+      //   },
+      //   {
+      //     "id": "box",
+      //     "name": "Box.com",
+      //     "_extra": {
+      //       "icon": "fa-square"
+      //     },
+      //     "_actions": ["download", "preview", "copy"]
+      //   }
+      // ]});
     };
     
     
@@ -121,8 +127,7 @@
      */
     service.listPath = function(options) {
       options = options || {};
-      var params = _.extend({"resource": "default"}, options);
-      return $http.get(djangoUrl.reverse('designsafe_api:list', params));
+      return $http.get(djangoUrl.reverse('designsafe_api:list', options));
     };
 
 

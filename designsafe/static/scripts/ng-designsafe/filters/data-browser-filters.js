@@ -10,11 +10,12 @@
       /*
        * We want to compact the path to remove "falsy" values. This is because
        * the path could be empty or null if we are listing the root of the resource.
-       * Then, encode the path components to be URL safe and join with '/'.
        */
-      var path = _.chain([file.source, file.path, file.name])
-                  .compact()
-                  .map(encodeURIComponent).value().join('/');
+      var path = _.compact([file.source, file.system, file.path, file.name]).join('/');
+
+      if (file.type && file.type === 'folder') {
+        path += '/';
+      }
 
       if (baseHref && base.length) {
         path = base.attr('href').slice(0, -1) + path;

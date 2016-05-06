@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 class AgaveFile(AbstractFile, AgaveObject):
 
+    source = 'agave'
+
     def __init__(self, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
         self._trail = None
@@ -23,7 +25,7 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def id(self):
-        return self.path
+        return '/'.join([self.system, self.path])
 
     @property
     def trail(self):
@@ -32,10 +34,13 @@ class AgaveFile(AbstractFile, AgaveObject):
             if self.parent_path != '':
                 path_parts = self.parent_path.split('/')
                 for i, c in enumerate(path_parts):
+                    trail_path = path_parts[:i]
                     self._trail.append({
-                        'source': self.system,
-                        'id': '/'.join(path_parts[:i]),
-                        'name': c
+                        'source': self.source,
+                        'system': self.system,
+                        'id': '/'.join([self.system] + trail_path + [c]),
+                        'path': '/'.join(trail_path),
+                        'name': c,
                     })
 
         return self._trail
@@ -46,7 +51,8 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     def to_dict(self, **kwargs):
         return {
-            'source': self.system,
+            'source': self.source,
+            'system': self.system,
             'id': self.id,
             'type': 'folder' if self.type == 'dir' else 'file',
             'path': self.parent_path,
