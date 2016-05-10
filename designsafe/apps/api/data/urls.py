@@ -24,10 +24,10 @@ urlpatterns = patterns(
 
     url(r'^listing/(?P<resource>[\w.-]+)/?$', DataView.as_view(), name='list'),
 
-    url(r'^listing/(?P<resource>[\w.-]+)/(?P<file_path>[ \S]+)$',
+    url(r'^listing/(?P<resource>[\w.-]+)/(?P<file_id>[ \S]+)$',
         DataView.as_view(), name='list'),
 
-    url(r'^file/(?P<resource>[\w.-]+)/?(?P<file_path>[ \S]+)?$',
+    url(r'^file/(?P<resource>[\w.-]+)/?(?P<file_id>[ \S]+)?$',
         DataFileManageView.as_view(), name='file'),
 
     url(r'^search/(?P<resource>[\w.-]+)/?$', DataSearchView.as_view(), name='search'),

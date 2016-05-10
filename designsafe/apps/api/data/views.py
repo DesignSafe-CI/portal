@@ -25,7 +25,7 @@ class SourcesView(SecureMixin, JSONResponseMixin, BaseApiView):
 
 class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
     """
-    Base View which to instatiate corresponding file manager
+    Base View which instatiates corresponding file manager
     and execute correct operation.
     """
     #TODO: More elegant meta-programming.
@@ -41,11 +41,11 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
         user_obj = request.user
         logger.debug(resource)
         if resource == 'public':
-            return PublicFileManager(user_obj, resource = resource, **kwargs)
+            return PublicFileManager(user_obj, **kwargs)
         elif resource == 'box':
-            return BoxFileManager(user_obj, resource = resource, **kwargs)
+            return BoxFileManager(user_obj, **kwargs)
         elif resource == 'agave':
-            return AgaveFileManager(user_obj, resource = resource, **kwargs)
+            return AgaveFileManager(user_obj, **kwargs)
 
     def _execute_operation(self, request, operation, **kwargs):
         """

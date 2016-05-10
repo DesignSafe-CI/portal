@@ -4,7 +4,9 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
+from designsafe.apps.api.data.agave.decorators import file_id_decorator
 from django.conf import settings
+from functools import wraps
 import urllib
 import os
 import logging
@@ -13,7 +15,6 @@ logger = logging.getLogger(__name__)
 FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 }
-
 
 class FileManager(AbstractFileManager, AgaveObject):
 
@@ -28,20 +29,17 @@ class FileManager(AbstractFileManager, AgaveObject):
         token = user_obj.agave_oauth
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = Agave(api_server = agave_url, token = access_token)
+        self.agave_client = Agave(api_server = agave_url, 
+                                  token = access_token)
         self.username = username
 
-    def is_shared(self, file_path):
-        if file_path is not None and file_path != '':
-            components = file_path.strip('/').split('/')
-            if len(components) > 1 and components[0] == settings.AGAVE_STORAGE_SYSTEM:
-                if components[1] == self.username:
-                    return False
-                else:
-                    return True
-        return False
-
-    def listing(self, file_path=None, **kwargs):
+    @staticmethod
+    def is_shared(file_id):
+        file_id = self._parse_file_id(file_id)
+        return file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username
+    
+    @file_id_decorator        
+    def listing(self, system, file_path, file_user, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
@@ -53,30 +51,9 @@ class FileManager(AbstractFileManager, AgaveObject):
               - resource: File System resource that we're listing
               - files: Array of serializabe Api file-like objects
         """
-
-        if file_path is None or file_path == '':
-            system_id = settings.AGAVE_STORAGE_SYSTEM
-            listing_path = self.username
-        else:
-            components = file_path.strip('/').split('/')  # remove leading/trailing /
-            system_id = components[0]
-            listing_path = '/'.join(components[1:]) if len(components) > 1 else self.username
-
         listing = self.call_operation('files.list',
-                                      systemId=system_id,
-                                      filePath=listing_path)
-
-        # files = [AgaveFile(wrap=o, resource=self.resource)
-        #          for o in listing if o['name'] != '.']
-        # home = file_path.split('/')[0]
-        # if home == self.username:
-        #     resource = 'default'
-        # else:
-        #     resource = 'shared'
-        # return {
-        #     'resource': resource,
-        #     'files': [f.to_dict() for f in files]
-        # }
+                                      systemId=system,
+                                      filePath=file_path)
 
         root_listing = AgaveFile(wrap=listing[0])
         if root_listing.name == '.':
