@@ -44,19 +44,36 @@ class AgaveObject(object):
             response = None
         return response
 
-    def __getattr__(self, name):
-        return self._wrap.get(name)
-        # try:
-        #     return super(AgaveObject, self).__getattr__(name)
-        # except AttributeError:
-        #     if name in self._wrap:
-        #         return self._wrap.get(name)
-        #     else:
-        #         raise
-
     def split_filepath(self, path):
         path = path.strip('/')
         path, name =  os.path.split(path)
         if path == '':
             path = '/'
         return path, name
+
+    def __getattr__(self, name):
+        """
+        Overwrite so we can access the wrapped dictionary as class properties.
+        We have to check if the name is a key in the wrapped dictionary
+        because `dict.get` returns `None` if the key doesn't exists. This is not ideal.
+        if a non existent attribute is accessed the value returned is `None` instead of
+        an AttributeError. If the name is not a key in the wrapped dictionary
+        raise an AttributeError exception.
+        """
+        #check if the string has an underscore. Don't pay attention to the first character
+        #we don't care if it starts with an underscore. 
+        if name[1:].find('_') > 0:
+            #convert from underscore to camelcase
+            name = ''.join(l.capitalize() for l in name.split('_'))
+            name = name[0].lower() + name[1:]
+
+        if name in self._wrap:
+            return self._wrap.get(name)
+        else:
+            raise AttributeError('\'Agave File\' object has no attribute \'%s\'' % (name))
+    
+    def __str__(self):
+        return 'Agave File: %s' % (self.path)
+
+    def __unicode__(self):
+        return unicode(self.__str__)

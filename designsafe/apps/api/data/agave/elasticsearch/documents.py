@@ -8,6 +8,7 @@ from designsafe.apps.api.data.agave.file import AgaveFile
 import dateutil.parser
 import datetime
 import logging
+import urllib
 import six
 import re
 import os
@@ -65,6 +66,32 @@ class Object(DocType):
         s.update_from_dict(q)
         return cls._execute_search(s)
 
+    @classmethod
+    def from_agave_file(cls, username, file_obj):
+        o = cls.from_file_path(file_obj.system, username, file_obj.full_path)
+        if o is not None:
+            return o
+
+        o = cls(
+            mimeType = file_obj.mime_type,
+            name = file_obj.name,
+            format = file_obj.format,
+            deleted = False,
+            lastModified = file_obj.lastModified.isoformat(),
+            fileType = file_obj.ext,
+            agavePath = 'agave://{}/{}'.format(file_obj.system, file_obj.full_path),
+            systemTags = [],
+            length = file_obj.length,
+            systemId = file_obj.system,
+            path = file_obj.parent_path,
+            keywords = [],
+            link = file_obj._links['self']['href'],
+            type = file_obj.type,
+            permissions = file_obj.permissions
+        )
+        o.save()
+        return o
+
     @staticmethod        
     def _execute_search(s):
         try:
@@ -74,6 +101,7 @@ class Object(DocType):
                 raise
             res = s.execute()
         return res, s
+
 
     def move(self, username, path):
         if self.type == 'dir':
@@ -124,9 +152,11 @@ class Object(DocType):
             for o in s.scan():
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
                 o.update(path = re.sub(regex, os.path.join(self.path, head), o.path, count = 1))
-                u.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
+                o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
+                logger.debug('Updated document to {}'.format(os.path.join(o.path, o.name)))
         self.update(name = head)
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
+        logger.debug('Updated ocument to {}'.format(os.path.join(self.path, self.name)))
         return self
         
     def to_file_dict(self):

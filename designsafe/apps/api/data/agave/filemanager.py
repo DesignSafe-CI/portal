@@ -4,7 +4,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
-from designsafe.apps.api.data.agave.decorators import file_id_decorator
+from designsafe.apps.api.data.agave.decorators import file_id_parser
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from django.conf import settings
 from functools import wraps
@@ -25,7 +25,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         super(FileManager, self).__init__(**kwargs)
         username = user_obj.username
         if user_obj.agave_oauth.expired:
-            user_obj.agave_oauth.referer()
+            user_obj.agave_oauth.refresh()
 
         token = user_obj.agave_oauth
         access_token = token.access_token
@@ -59,7 +59,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         list_data['children'] = [o.to_file_dict() for o in listing.scan()]
         return list_data
         
-    @file_id_decorator        
+    @file_id_parser
     def listing(self, system, file_path, file_user, **kwargs):
         """
         Lists contents of a folder or details of a file.
@@ -112,30 +112,37 @@ class FileManager(AbstractFileManager, AgaveObject):
         pass
 
     def move(self, system, file_path, file_user, path, **kwargs):
-        f = AgaveFile.from_file_path(file_path, 
+        f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
         f.move(path)
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.move(username, path)
+        esf.move(self.username, path)
         return f.to_dict()
 
     def copy(self, system, file_path, file_user, path, **kwargs):
-        f = AgaveFile.from_file_path(file_path,
+        f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.copy(path)
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.copy(username, path)
+        esf.copy(self.username, path)
         return f.to_dict()
 
     def rename(self, system, file_path, file_user, path, **kwargs):
-        f = AgaveFile.from_file_path(file_path,
+        f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.rename(path)
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.rename(username, path)
+        esf.rename(self.username, path)
         return f.to_dict()
 
-    @file_id_decorator        
+    def mkdir(self, system, file_path, file_user, path, **kwargs):
+        f = AgaveFile.mkdir(system, self.username, file_path, path,
+                    agave_client = self.agave_client)
+        logger.debug('f: {}'.format(f.to_dict()))
+        esf = Object.from_agave_file(self.username, f)
+        return f.to_dict()
+
+    @file_id_parser
     def file(self, system, file_path, file_user, action, path = None, **kwargs):
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)

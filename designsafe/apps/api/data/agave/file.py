@@ -1,4 +1,5 @@
 from agavepy.agave import AgaveException, Agave
+from requests.exceptions import HTTPError
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
@@ -18,6 +19,7 @@ class AgaveFile(AbstractFile, AgaveObject):
     def __init__(self, agave_client = None, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
         self.agave_client = agave_client
+        self._permissions = None
         self._trail = None
         if self.name == '.':
             tail, head = os.path.split(self.path) 
@@ -25,14 +27,53 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @classmethod
     def from_file_path(cls, system, username, file_path, agave_client = None, **kwargs):
-        listing = self.call_operation('files.list',
-                                      systemId=system,
-                                      filePath=file_path)
-        return cls(agave_client = self.agave_client, 
+        try:
+            logger.debug('Agave: calling: files.list, args: {}'.format( 
+                             {'systemId': system, 'filePath': file_path}))
+            listing = agave_client.files.list(systemId=system, filePath= urllib.quote(file_path))
+        except (AgaveException, HTTPError) as e:
+            logger.error(e,
+                exc_info = True,
+                extra = kwargs)
+            d = {'operation': 'files.list'}
+            d.update({'systemId': system, 'filePath': file_path})
+            raise ApiException(e.message,
+                        e.response.status_code,
+                        extra = d)
+
+        return cls(agave_client = agave_client, 
                    wrap = listing[0], **kwargs)
+
+    @classmethod
+    def mkdir(cls, system, username, file_path, path, agave_client = None, **kwargs):
+        file_path = urllib.unquote(file_path)
+        pat = urllib.unquote(path)
+        tail, head = os.path.split(path)
+        body = '{{"action": "mkdir", "path": "{}"}}'.format(head)
+        try:
+            logger.debug('Agave: calling: files.manage, args: {}'.format( 
+                             {'systemId': system, 'filePath': urllib.quote(file_path),
+                              'body': body}))
+            f = agave_client.files.manage(systemId=system, filePath=file_path, 
+                                                body = body)
+        except (AgaveException, HTTPError) as e:
+            logger.error(e,
+                exc_info = True,
+                extra = kwargs)
+            d = {'operation': 'files.list'}
+            d.update({'systemId': system, 'filePath': file_path, 'body': body})
+            raise ApiException(e.message,
+                        e.response.status_code,
+                        extra = d)
+        return cls.from_file_path(system, username, path, agave_client = agave_client)
+
     @property
     def ext(self):
         return os.path.splitext(self.name)[1]
+
+    @property
+    def full_path(self):
+        return self.path
 
     @property
     def id(self):
@@ -44,6 +85,15 @@ class AgaveFile(AbstractFile, AgaveObject):
         if path == '':
             path = '/'
         return path
+
+    @property
+    def permissions(self):
+        if self._permissions is None:
+            pems = self.call_operation('files.listPermissions', 
+                        filePath = urllib.quote(self.full_path), systemId = self.system)
+            self._permissions = pems
+
+        return self._permissions
 
     @property
     def trail(self):
@@ -64,17 +114,21 @@ class AgaveFile(AbstractFile, AgaveObject):
         return self._trail
 
     def copy(self, path):
+        """
+        Copy a file.
+
+        Args:
+            path: String. Path to copy the file into.
+
+        Notes:
+            `path` should be the entire path where the copy should go.
+            TODO: Sanitize path
+        """
         path = urllib.unquote(path)
-        #split path arg. Assuming is in the form /file/to/new_name.txt
-        tail, head = os.path.split(path)
-        #check if we have something in tail.
-        #If we don't then we got just the new file name in the path arg.
-        if tail == '':
-            head = path
         d = {
             'systemId': self.system,
             'filePath': urllib.quote(self.full_path),
-            'body': {"action": "copy", "path": head}
+            'body': {"action": "copy", "path": path}
         }
         res = self.call_operation('files.manage', **d)
         return self
@@ -91,14 +145,27 @@ class AgaveFile(AbstractFile, AgaveObject):
         return self
 
     def rename(self, path):
+        """
+        Rename file
+
+        Args:
+            path: String. New file name
+
+        Notes:
+            `path` should only be the new name of the file
+            and not the entire path. 
+            TODO: Sanitize path.
+        """
         path = urllib.unquote(path)
         d = {
             'systemId': self.system,
-            'fielPath': urllib.quote(self.full_path),
+            'filePath': urllib.quote(self.full_path),
             'body': {"action": "rename", "path": path}
         }
         res = self.call_operation('files.manage', **d)
-        self.name = name
+        tail, head = os.path.split(self.path)
+        self.path = os.path.join(tail, path)
+        self.name = path
         return self
 
     def to_dict(self, **kwargs):

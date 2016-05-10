@@ -65,6 +65,7 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
         d = body_json
         d.update({'files': files})
         d.update(kwargs)
+        d.update(request.GET)
         resp = op(**kwargs)
         return resp
 

@@ -47,7 +47,7 @@ def _parse_file_id(file_id):
 
     return system_id, file_user, file_path
 
-def file_id_decorator(f):
+def file_id_parser(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         system, file_user, file_path = _parse_file_id(kwargs.get('file_id'))
