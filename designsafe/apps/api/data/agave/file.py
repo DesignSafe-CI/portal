@@ -83,11 +83,22 @@ class AgaveFile(AbstractFile, AgaveObject):
         path = urllib.unquote(path)
         d = {
             'systemId': self.system,
-            'filePath': urllib.quote(path),
+            'filePath': urllib.quote(self.full_path),
             'body': {"action": "move", "path": path}
         }
         res = self.call_operation('files.manage', **d)
         self.path = path
+        return self
+
+    def rename(self, path):
+        path = urllib.unquote(path)
+        d = {
+            'systemId': self.system,
+            'fielPath': urllib.quote(self.full_path),
+            'body': {"action": "rename", "path": path}
+        }
+        res = self.call_operation('files.manage', **d)
+        self.name = name
         return self
 
     def to_dict(self, **kwargs):

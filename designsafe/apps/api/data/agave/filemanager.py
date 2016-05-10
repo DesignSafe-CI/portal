@@ -116,7 +116,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                     agave_client = self.agave_client)
         f.move(path)
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.move(path)
+        esf.move(username, path)
         return f.to_dict()
 
     def copy(self, system, file_path, file_user, path, **kwargs):
@@ -124,7 +124,15 @@ class FileManager(AbstractFileManager, AgaveObject):
                     agave_client = self.agave_client)
         f.copy(path)
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.copy(path)
+        esf.copy(username, path)
+        return f.to_dict()
+
+    def rename(self, system, file_path, file_user, path, **kwargs):
+        f = AgaveFile.from_file_path(file_path,
+                    agave_client = self.agave_client)
+        f.rename(path)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.rename(username, path)
         return f.to_dict()
 
     @file_id_decorator        
