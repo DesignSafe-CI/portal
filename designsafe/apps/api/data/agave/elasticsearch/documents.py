@@ -58,6 +58,13 @@ class Object(DocType):
         else:
             return None
 
+    @classmethod
+    def listing_recursive(cls, system, username, file_path):
+        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":file_path}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
+        s = cls.search()
+        s.update_from_dict(q)
+        return cls._execute_search(s)
+
     @staticmethod        
     def _execute_search(s):
         try:
@@ -67,6 +74,19 @@ class Object(DocType):
                 raise
             res = s.execute()
         return res, s
+
+    def move(self, username, path):
+        if self.type == 'dir':
+            res, s = self.__class__.listing_recursive(self.system, username, path)
+            for d in s:
+               for o in s.scan():
+                   regex = r'^{}'.format(os.path.join(self.path, self.name))
+                   o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
+                   o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name))) 
+
+        self.update(path = path)
+        self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
+        return self
 
     def to_file_dict(self):
         try:

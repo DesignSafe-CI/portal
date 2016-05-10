@@ -13,6 +13,7 @@ class AgaveObject(object):
 
     def __init__(self, wrap = {}, **kwargs):
         self._wrap = wrap
+        self.agave_client = None
 
     def get_operation(self, a, op):
         o = reduce(getattr, op.split("."), a)

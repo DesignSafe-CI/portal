@@ -111,5 +111,15 @@ class FileManager(AbstractFileManager, AgaveObject):
     def download(self, **kwargs):
         pass
 
-    def file(self, **kwargs):
-        pass
+    def move(self, system, file_path, file_user, path, **kwargs):
+        f = AgaveFile.from_file_path(file_path, 
+                    agave_client = self.agave_client)
+        f.move(path)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.move(path)
+        return f.to_dict()
+
+    @file_id_decorator        
+    def file(self, system, file_path, file_user, action, path = None, **kwargs):
+        file_op = getattr(self, action)
+        return file_op(system, file_path, file_user, path, **kwargs)

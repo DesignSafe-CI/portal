@@ -5,6 +5,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.abstract.files import AbstractFile
 import os
 import logging
+import urllib
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -14,13 +15,21 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     source = 'agave'
 
-    def __init__(self, **kwargs):
+    def __init__(self, agave_client = None, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
+        self.agave_client = agave_client
         self._trail = None
         if self.name == '.':
             tail, head = os.path.split(self.path) 
             self.name = head
 
+    @classmethod
+    def from_file_path(cls, system, username, file_path, agave_client = None, **kwargs):
+        listing = self.call_operation('files.list',
+                                      systemId=system,
+                                      filePath=file_path)
+        return cls(agave_client = self.agave_client, 
+                   wrap = listing[0], **kwargs)
     @property
     def ext(self):
         return os.path.splitext(self.name)[1]
@@ -53,6 +62,16 @@ class AgaveFile(AbstractFile, AgaveObject):
                     })
 
         return self._trail
+
+    def move(self, path):
+        d = {
+            'systemId': self.system,
+            'filePath': urllib.quote(path),
+            'body': {"action": "move", "path": path}
+        }
+        res = self.call_operation('files.manage', **d)
+        self.path = path
+        return self
 
     def to_dict(self, **kwargs):
         return {
