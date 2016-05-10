@@ -5,6 +5,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.data.agave.decorators import file_id_decorator
+from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from django.conf import settings
 from functools import wraps
 import urllib
@@ -38,29 +39,71 @@ class FileManager(AbstractFileManager, AgaveObject):
         file_id = self._parse_file_id(file_id)
         return file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username
     
+    def _agave_listing(self, system, file_path):
+        listing = self.call_operation('files.list',
+                                      systemId=system,
+                                      filePath=file_path)
+
+        root_listing = AgaveFile(wrap=listing[0])
+        list_data = root_listing.to_dict()
+        if len(listing) > 1:
+            list_data['children'] = [AgaveFile(wrap=o).to_dict() for o in listing[1:]]
+        else:
+            list_data['children'] = []
+        return list_data
+
+    def _es_listing(self, system, username, file_path):
+        res, listing = Object.listing(system, username, file_path)
+        root_listing = Object.from_file_path(system, username, file_path)
+        list_data = root_listing.to_file_dict()
+        list_data['children'] = [o.to_file_dict() for o in listing.scan()]
+        return list_data
+    
     @file_id_decorator        
     def listing(self, system, file_path, file_user, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
         Args:
-            file_path: String of file path to list
+            system: String. System id.
+            file_path: String. 
+            file_user: String. home directory's user of the file we're listing.
 
         Returns:
-            Dictionary with two keys;
-              - resource: File System resource that we're listing
-              - files: Array of serializabe Api file-like objects
-        """
-        listing = self.call_operation('files.list',
-                                      systemId=system,
-                                      filePath=file_path)
+            listing dictionary. A dictionary with the properties of the 
+            parent path file object plus a `children` key with an array 
+            of the listing's file objects.
+            If the `file_id` passed is a file and not a folder the 
+            `children` array will be empty.
 
-        root_listing = AgaveFile(wrap=listing[0])
-        if root_listing.name == '.':
-            root_listing.name = root_listing.path.split('/')[-1]
-        list_data = root_listing.to_dict()
-        list_data['children'] = [AgaveFile(wrap=o).to_dict() for o in listing[1:]]
-        return list_data
+        Examples:
+			A listing dictionary:
+			```{
+				  _pems: [ ],
+				  type: "folder",
+				  path: "",
+				  id: "designsafe.storage.default/path/folder",
+				  size: 32768,
+				  name: "username",
+				  lastModified: "2016-04-26T22:25:30-0500",
+				  system: "designsafe.storage.default",
+				  children: [],
+				  source: "agave",
+				  ext: "",
+				  _actions: [ ],
+				  _trail: [ ]
+				}
+			```
+
+            To loop through the listing's files:
+            >>> listing = fm.listing(**kwargs)
+            >>> for child in listing['children']: 
+            >>>     do_something_cool(child)
+        """
+        listing = self._es_listing(system, self.username, file_path)
+        if not listing:
+            listing = self._agave_listing(system, file_path)
+        return listing
 
     def search(self, **kwargs):
         return [{}]

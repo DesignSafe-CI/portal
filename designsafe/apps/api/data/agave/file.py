@@ -17,6 +17,9 @@ class AgaveFile(AbstractFile, AgaveObject):
     def __init__(self, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
         self._trail = None
+        if self.name == '.':
+            tail, head = os.path.split(self.path) 
+            self.name = head
 
     @property
     def ext(self):
@@ -29,6 +32,8 @@ class AgaveFile(AbstractFile, AgaveObject):
     @property
     def parent_path(self):
         path, name = os.path.split(self.path)
+        if path == '':
+            path = '/'
         return path
 
     @property
