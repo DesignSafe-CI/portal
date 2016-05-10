@@ -29,6 +29,13 @@ class AbstractFileManager:
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    def parse_file_id(self, file_id):
+        """
+        Stuff
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
     def listing(self, file_id, **kwargs):
         """
         Lists contents of a folder or details of a file.
