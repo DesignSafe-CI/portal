@@ -6,7 +6,7 @@
 
   var app = angular.module('DataDepotBrowser', [
     'ngCookies',
-    'ng.django.urls',
+    'djng.urls',
     'ui.bootstrap',
     'ng.designsafe',
     'django.context'

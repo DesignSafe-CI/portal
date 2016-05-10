@@ -11,7 +11,7 @@
 
   angular.module('BoxFilesApp', [
     'ngCookies',
-    'ng.django.urls',
+    'djng.urls',
     'ui.bootstrap',
     'ng.designsafe',
     'django.context'

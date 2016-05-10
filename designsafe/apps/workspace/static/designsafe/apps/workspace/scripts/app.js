@@ -15,7 +15,7 @@
 
   angular.module('WorkspaceApp', [
     'ngCookies',
-    'ng.django.urls',
+    'djng.urls',
     'ui.bootstrap',
     'schemaForm',
     'ng.designsafe',
