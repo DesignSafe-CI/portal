@@ -62,9 +62,10 @@ class FileManager(AbstractFileManager, AgaveObject):
                     'path': '',
                     'name': 'Shared with me'
                 }
+            list_data['children'] = [o.to_file_dict() for o in listing.scan() if o.name != username]
         else:
             list_data = root_listing.to_file_dict()
-        list_data['children'] = [o.to_file_dict() for o in listing.scan()]
+            list_data['children'] = [o.to_file_dict() for o in listing.scan()]
         return list_data
 
     def parse_file_id(self, file_id):
