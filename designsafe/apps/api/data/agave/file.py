@@ -133,7 +133,23 @@ class AgaveFile(AbstractFile, AgaveObject):
         res = self.call_operation('files.manage', **d)
         return self
 
+    def delete(self):
+        res = self.call_operation('files.delete',
+            systemId = self.system,
+            filePath = urllib.quote(self.full_path))
+        return self
+
     def move(self, path):
+        """
+        Move a file to another path.
+
+        Args:
+            path: String. New path to move the file.
+
+        Notes:
+            `path` should be the complete path to move the file into.
+            Should contain the file's name.
+        """
         path = urllib.unquote(path)
         d = {
             'systemId': self.system,

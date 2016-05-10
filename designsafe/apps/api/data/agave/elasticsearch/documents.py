@@ -78,7 +78,7 @@ class Object(DocType):
             format = file_obj.format,
             deleted = False,
             lastModified = file_obj.lastModified.isoformat(),
-            fileType = file_obj.ext,
+            fileType = file_obj.ext or 'folder',
             agavePath = 'agave://{}/{}'.format(file_obj.system, file_obj.full_path),
             systemTags = [],
             length = file_obj.length,
@@ -101,19 +101,6 @@ class Object(DocType):
                 raise
             res = s.execute()
         return res, s
-
-
-    def move(self, username, path):
-        if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
-            for o in s.scan():
-                regex = r'^{}'.format(os.path.join(self.path, self.name))
-                o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
-                o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name))) 
-
-        self.update(path = path)
-        self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
-        return self
 
     def copy(self, username, path):
         path = urllib.unquote(path)
@@ -138,6 +125,30 @@ class Object(DocType):
         doc = Object(**d)
         doc.save()
         return self
+
+    def delete_recursive(self):
+        if self.type == 'dir':
+            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            for o in s.scan():
+                o.delete()
+
+        self.delete()
+        return True
+
+    def move(self, username, path):
+        if self.type == 'dir':
+            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            for o in s.scan():
+                regex = r'^{}'.format(os.path.join(self.path, self.name))
+                o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
+                o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name))) 
+
+        tail, head = os.path.split(path)
+        self.update(path = tail)
+        self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
+        logger.debug('Moved: {}'.format(self.to_dict()))
+        return self
+
 
     def rename(self, username, path):
         path = urllib.unquote(path)

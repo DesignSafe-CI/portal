@@ -111,14 +111,6 @@ class FileManager(AbstractFileManager, AgaveObject):
     def download(self, **kwargs):
         pass
 
-    def move(self, system, file_path, file_user, path, **kwargs):
-        f = AgaveFile.from_file_path(system, self.username, file_path, 
-                    agave_client = self.agave_client)
-        f.move(path)
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.move(self.username, path)
-        return f.to_dict()
-
     def copy(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
@@ -127,19 +119,45 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.copy(self.username, path)
         return f.to_dict()
 
-    def rename(self, system, file_path, file_user, path, **kwargs):
+    def delete(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
-        f.rename(path)
+        f.delete()
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.rename(self.username, path)
+        esf.delete_recursive()
         return f.to_dict()
+
+    def move(self, system, file_path, file_user, path, **kwargs):
+        f = AgaveFile.from_file_path(system, self.username, file_path, 
+                    agave_client = self.agave_client)
+        f.move(path)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.move(self.username, path)
+        return f.to_dict()
+
+    def move_to_trash(self, system, file_path, file_user, path, **kwargs):
+        trash = Object.from_file_path(system, self.username, 
+                                os.path.join(self.username, '.Trash'))
+        if trash is None:
+            f_dict = self.mkdir(system, self.username, file_user, 
+                            os.path.join(self.username, '.Trash'), **kwargs) 
+        tail, head = os.path.split(file_path)
+        ret = self.move(system, file_path, file_user, os.path.join(self.username, '.Trash', head))
+        return ret
 
     def mkdir(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.mkdir(system, self.username, file_path, path,
                     agave_client = self.agave_client)
         logger.debug('f: {}'.format(f.to_dict()))
         esf = Object.from_agave_file(self.username, f)
+        return f.to_dict()
+
+    def rename(self, system, file_path, file_user, path, **kwargs):
+        f = AgaveFile.from_file_path(system, self.username, file_path,
+                    agave_client = self.agave_client)
+        f.rename(path)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.rename(self.username, path)
         return f.to_dict()
 
     @file_id_parser

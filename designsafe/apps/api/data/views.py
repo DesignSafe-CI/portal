@@ -93,7 +93,7 @@ class DataFileManageView(BaseDataView):
         body_json = json.loads(request.body)
         operation = body_json.get('action')
         resp = self._execute_operation(request, operation, **kwargs)
-        return self.render_to_json_response(resp.to_dict())
+        return self.render_to_json_response(resp)
 
     def post(self, request, *args, **kwargs):
         self._execute_post_operation(request, **kwargs)
@@ -102,8 +102,7 @@ class DataFileManageView(BaseDataView):
         self._execute_post_operation(request, **kwargs)
 
     def delete(self, request, *args, **kwargs):
-        resp = self._execute_operation(request, 'delete', **kwargs)        
-        return self.render_to_json_response(resp.to_dict())
+        self._execute_post_operation(request, **kwargs)
 
 class DataSearchView(BaseDataView):
     """
