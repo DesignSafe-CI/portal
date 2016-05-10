@@ -63,7 +63,24 @@ class AgaveFile(AbstractFile, AgaveObject):
 
         return self._trail
 
+    def copy(self, path):
+        path = urllib.unquote(path)
+        #split path arg. Assuming is in the form /file/to/new_name.txt
+        tail, head = os.path.split(path)
+        #check if we have something in tail.
+        #If we don't then we got just the new file name in the path arg.
+        if tail == '':
+            head = path
+        d = {
+            'systemId': self.system,
+            'filePath': urllib.quote(self.full_path),
+            'body': {"action": "copy", "path": head}
+        }
+        res = self.call_operation('files.manage', **d)
+        return self
+
     def move(self, path):
+        path = urllib.unquote(path)
         d = {
             'systemId': self.system,
             'filePath': urllib.quote(path),

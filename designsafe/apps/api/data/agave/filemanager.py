@@ -58,7 +58,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         list_data = root_listing.to_file_dict()
         list_data['children'] = [o.to_file_dict() for o in listing.scan()]
         return list_data
-    
+        
     @file_id_decorator        
     def listing(self, system, file_path, file_user, **kwargs):
         """
@@ -77,23 +77,23 @@ class FileManager(AbstractFileManager, AgaveObject):
             `children` array will be empty.
 
         Examples:
-			A listing dictionary:
-			```{
-				  _pems: [ ],
-				  type: "folder",
-				  path: "",
-				  id: "designsafe.storage.default/path/folder",
-				  size: 32768,
-				  name: "username",
-				  lastModified: "2016-04-26T22:25:30-0500",
-				  system: "designsafe.storage.default",
-				  children: [],
-				  source: "agave",
-				  ext: "",
-				  _actions: [ ],
-				  _trail: [ ]
-				}
-			```
+            A listing dictionary:
+            ```{
+                  _pems: [ ],
+                  type: "folder",
+                  path: "",
+                  id: "designsafe.storage.default/path/folder",
+                  size: 32768,
+                  name: "username",
+                  lastModified: "2016-04-26T22:25:30-0500",
+                  system: "designsafe.storage.default",
+                  children: [],
+                  source: "agave",
+                  ext: "",
+                  _actions: [ ],
+                  _trail: [ ]
+                }
+            ```
 
             To loop through the listing's files:
             >>> listing = fm.listing(**kwargs)
@@ -117,6 +117,14 @@ class FileManager(AbstractFileManager, AgaveObject):
         f.move(path)
         esf = Object.from_file_path(system, self.username, file_path)
         esf.move(path)
+        return f.to_dict()
+
+    def copy(self, system, file_path, file_user, path, **kwargs):
+        f = AgaveFile.from_file_path(file_path,
+                    agave_client = self.agave_client)
+        f.copy(path)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.copy(path)
         return f.to_dict()
 
     @file_id_decorator        

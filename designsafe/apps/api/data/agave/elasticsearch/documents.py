@@ -77,16 +77,39 @@ class Object(DocType):
 
     def move(self, username, path):
         if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, path)
-            for d in s:
-               for o in s.scan():
-                   regex = r'^{}'.format(os.path.join(self.path, self.name))
-                   o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
-                   o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name))) 
+            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            for o in s.scan():
+                regex = r'^{}'.format(os.path.join(self.path, self.name))
+                o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
+                o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name))) 
 
         self.update(path = path)
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
         return self
+
+    def copy(self, username, path):
+        path = urllib.unquote(path)
+        #split path arg. Assuming is in the form /file/to/new_name.txt
+        tail, head = os.path.split(path)
+        #check if we have something in tail.
+        #If we don't then we got just the new file name in the path arg.
+        if tail == '':
+            head = path
+        if self.type == 'dir':
+            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            for o in s.scan():
+                d = o.to_dict()
+                regex = r'^{}'.format(os.path.join(self.path, self.name))
+                d['path'] = re.sub(regex, os.path.join(self.path, head), d['path'], count = 1)
+                d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
+                doc = Object(**d)
+                doc.save()
+        d = self.to_dict()
+        d['name'] = head
+        d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
+        doc = Object(**d)
+        doc.save()
+                
 
     def to_file_dict(self):
         try:
