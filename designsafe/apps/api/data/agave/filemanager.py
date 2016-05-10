@@ -95,12 +95,14 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         """
         if file_id is None or file_id == '':
-            return settings.AGAVE_STORAGE_SYSTEM, self.username, self.username
-        
-        components = file_id.strip('/').split('/')
-        system_id = components[0] if len(components) >= 1 else None
-        file_path = '/'.join(components[1:]) if len(components) >= 2 else self.username
-        file_user = components[1] if len(components) >= 2 else self.username
+            system_id = settings.AGAVE_STORAGE_SYSTEM
+            file_path = self.username
+            file_user = self.username
+        else: 
+            components = file_id.strip('/').split('/')
+            system_id = components[0] if len(components) >= 1 else None
+            file_path = '/'.join(components[1:]) if len(components) >= 2 else self.username
+            file_user = components[1] if len(components) >= 2 else self.username
 
         return system_id, file_user, file_path
         
