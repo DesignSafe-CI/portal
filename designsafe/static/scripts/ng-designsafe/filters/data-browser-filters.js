@@ -11,7 +11,12 @@
        * We want to compact the path to remove "falsy" values. This is because
        * the path could be empty or null if we are listing the root of the resource.
        */
-      var path = _.compact([file.source, file.system, file.path, file.name]).join('/');
+      var components = [file.source, file.system];
+      if (file.path && file.path !== '/') {
+        components.push(file.path);
+      }
+      components.push(file.name);
+      var path = components.join('/');
 
       if (file.type && file.type === 'folder') {
         path += '/';
