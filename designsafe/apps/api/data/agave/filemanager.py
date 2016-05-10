@@ -8,7 +8,6 @@ from designsafe.apps.api.data.agave.decorators import file_id_parser
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from django.conf import settings
 from functools import wraps
-import urllib
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -34,10 +33,9 @@ class FileManager(AbstractFileManager, AgaveObject):
                                   token = access_token)
         self.username = username
 
-    @staticmethod
-    def is_shared(file_id):
+    def is_shared(self, file_id):
         file_id = self._parse_file_id(file_id)
-        return file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username
+        return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username)
     
     def _agave_listing(self, system, file_path):
         listing = self.call_operation('files.list',
@@ -58,9 +56,55 @@ class FileManager(AbstractFileManager, AgaveObject):
         list_data = root_listing.to_file_dict()
         list_data['children'] = [o.to_file_dict() for o in listing.scan()]
         return list_data
+
+    def _parse_file_id(self, file_id):
+        """
+        Returns `system_id`, `file_user` and `file_path` from a
+        `file_id` string.
+
+        Examples:
+            `file_id` can look like this:
+              `designsafe.storage.default`:
+              Points to the root folder in the 
+              `designsafe.storage.default` filesystem.
+
+              `designsafe.stroage.default/username`:
+              Points to the home directory of the user `username`.
+
+              `designsafe.storage.default/username/folder`:
+              Points to the folder `folder` in the home directory
+              of the user `username`.
+
+              `designsafe.stroage.default/username/folder/file.txt`:
+              Points to the file `file.txt` in the home directory
+              of the username `username`
         
-    @file_id_parser
-    def listing(self, system, file_path, file_user, **kwargs):
+        Args:
+            file_id: String with the format 
+            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+
+        Returns:
+            A list with three elements
+            index 0 `system_id`: String. Filesystem id 
+            index 1 `file_user`: String. Home directory's username of the 
+                                 file the `file_id` points to.
+            index 2 `file_path`: String. Complete file path.
+
+        Raises:
+            ValueError: If the object is not in the desired format.
+
+        """
+        if file_id is None or file_id == '':
+            raise ValueError('Could not split \'%s\' object' % file_id)
+        
+        components = file_id.strip('/').split('/')
+        system_id = components[0] if len(components) >= 1 else None
+        file_path = '/'.join(components[1:]) if len(components) >= 2 else '/'
+        file_user = components[1] if len(components) >= 2 else None
+
+        return system_id, file_user, file_path
+        
+    def listing(self, file_id, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
@@ -100,6 +144,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>> for child in listing['children']: 
             >>>     do_something_cool(child)
         """
+        system, file_user, file_path = self._parse_file_id(file_id)
+
         listing = self._es_listing(system, self.username, file_path)
         if not listing:
             listing = self._agave_listing(system, file_path)
@@ -126,6 +172,12 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.delete_recursive()
         return f.to_dict()
+
+    def file(self, file_id, action, path = None, **kwargs):
+        system, file_user, file_path = self._parse_file_id(file_id)
+
+        file_op = getattr(self, action)
+        return file_op(system, file_path, file_user, path, **kwargs)
 
     def move(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.from_file_path(system, self.username, file_path, 
@@ -160,7 +212,3 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.rename(self.username, path)
         return f.to_dict()
 
-    @file_id_parser
-    def file(self, system, file_path, file_user, action, path = None, **kwargs):
-        file_op = getattr(self, action)
-        return file_op(system, file_path, file_user, path, **kwargs)

@@ -8,7 +8,6 @@ from designsafe.apps.api.data.agave.file import AgaveFile
 import dateutil.parser
 import datetime
 import logging
-import urllib
 import six
 import re
 import os
@@ -47,6 +46,7 @@ class Object(DocType):
     @classmethod
     def from_file_path(cls, system, username, file_path):
         path, name = os.path.split(file_path)
+        path = path or '/'
         q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"must_not":{"term":{"deleted":"true"}}}}}}}
         if username is not None:
             q['query']['filtered']['filter']['bool']['should'] = [{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}] 
@@ -103,7 +103,6 @@ class Object(DocType):
         return res, s
 
     def copy(self, username, path):
-        path = urllib.unquote(path)
         #split path arg. Assuming is in the form /file/to/new_name.txt
         tail, head = os.path.split(path)
         #check if we have something in tail.
@@ -151,7 +150,6 @@ class Object(DocType):
 
 
     def rename(self, username, path):
-        path = urllib.unquote(path)
         #split path arg. Assuming is in the form /file/to/new_name.txt
         tail, head = os.path.split(path)
         #check if we have something in tail.

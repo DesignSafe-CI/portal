@@ -15,7 +15,7 @@ Tests are based on the next snippets:
 `>>> fm.file(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', action = 'rename', path = 'DOC19_rename.jpg')`
 
 #Test copy
-`>>> fm.file(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', action = 'copy', path = 'xirdneh/DOC19_rename.jpg')`
+`>>> fm.file(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', action = 'copy', path = 'xirdneh/DOC19_copy.jpg')`
 
 #Test move
 `>>> fm.file(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', action = 'move', path = 'xirdneh/mkdir_test/DOC19.jpg')`
