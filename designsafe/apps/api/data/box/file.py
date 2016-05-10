@@ -73,14 +73,14 @@ class BoxFile(AbstractFile):
             return []
 
     @staticmethod
-    def parse_file_path(file_path):
+    def parse_file_id(file_id):
         """
-        Parses out the file_path that the Data Browser uses. For Box objects, this is in
+        Parses out the file_id that the Data Browser uses. For Box objects, this is in
         the format {type}/{id}, where {type} is in ['folder', 'file'] and {id} is the
         numeric id of the Box object.
 
         Args:
-            file_path: The file_path in the format {type}/{id}
+            file_id: The file_id in the format {type}/{id}
 
         Returns:
             Tuple of ({type}, {id})
@@ -88,7 +88,7 @@ class BoxFile(AbstractFile):
         Raises:
             AssertionError
         """
-        parts = file_path.split('/')
+        parts = file_id.split('/')
 
         assert len(parts) == 2, 'The file path should be in the format {type}/{id}'
         assert parts[0] in ['folder', 'file'], '{type} must be one of ["folder", "file"]'

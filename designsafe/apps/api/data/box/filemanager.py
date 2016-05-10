@@ -60,12 +60,12 @@ class FileManager(AbstractFileManager):
             box_object = next_object
         return box_object
 
-    def listing(self, file_path=None, **kwargs):
+    def listing(self, file_id=None, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
         Args:
-            file_path: The type/id of the Box Object. This should be formatted {type}/{id}
+            file_id: The type/id of the Box Object. This should be formatted {type}/{id}
             where {type} is one of ['folder', 'file'] and {id} is the numeric Box ID for
             the object.
 
@@ -76,13 +76,13 @@ class FileManager(AbstractFileManager):
         """
 
         try:
-            if file_path:
-                file_path = file_path.strip('/')
+            if file_id:
+                file_id = file_id.strip('/')
                 try:
-                    file_type, file_id = BoxFile.parse_file_path(file_path)
+                    file_type, file_id = BoxFile.parse_file_id(file_id)
                 except AssertionError:
                     # file path is hierarchical; need to find the BoxObject here
-                    box_object = self.box_object_for_file_hierarchy_path(file_path)
+                    box_object = self.box_object_for_file_hierarchy_path(file_id)
                     file_type = box_object._item_type
                     file_id = box_object.object_id
             else:
@@ -107,10 +107,10 @@ class FileManager(AbstractFileManager):
         except BoxAPIException:
             raise
 
-    def file(self, file_path, action, path = None, **kwargs):
+    def file(self, file_id, action, path = None, **kwargs):
         pass
 
-    def download(self, file_path, **kwargs):
+    def download(self, file_id, **kwargs):
         pass
 
     def search(self, q, **kwargs):
