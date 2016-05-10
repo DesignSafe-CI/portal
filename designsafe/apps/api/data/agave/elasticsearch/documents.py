@@ -175,7 +175,7 @@ class Object(DocType):
             lm = datetime.datetime.now()
 
         wrap = {
-            'format': self.format,
+            'format': getattr(self, 'format', 'folder'),
             'lastModified': lm,
             'length': self.length,
             'mimeType': self.mimeType,

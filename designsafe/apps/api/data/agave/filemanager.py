@@ -95,12 +95,15 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         """
         if file_id is None or file_id == '':
-            raise ValueError('Could not split \'%s\' object' % file_id)
-        
-        components = file_id.strip('/').split('/')
-        system_id = components[0] if len(components) >= 1 else None
-        file_path = '/'.join(components[1:]) if len(components) >= 2 else '/'
-        file_user = components[1] if len(components) >= 2 else None
+            #raise ValueError('Could not split \'%s\' object' % file_id)
+            system_id = settings.AGAVE_STORAGE_SYSTEM
+            file_path = self.username
+            file_user = self.username
+        else: 
+            components = file_id.strip('/').split('/')
+            system_id = components[0] if len(components) >= 1 else None
+            file_path = '/'.join(components[1:]) if len(components) >= 2 else '/'
+            file_user = components[1] if len(components) >= 2 else None
 
         return system_id, file_user, file_path
         
