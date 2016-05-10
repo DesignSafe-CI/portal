@@ -53,7 +53,17 @@ class FileManager(AbstractFileManager, AgaveObject):
     def _es_listing(self, system, username, file_path):
         res, listing = Object.listing(system, username, file_path)
         root_listing = Object.from_file_path(system, username, file_path)
-        list_data = root_listing.to_file_dict()
+        if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
+            list_data = {
+                    '_tail': [],
+                    '_actions': [],
+                    '_pems': [],
+                    'id': '$share',
+                    'path': '',
+                    'name': 'Shared with me'
+                }
+        else:
+            list_data = root_listing.to_file_dict()
         list_data['children'] = [o.to_file_dict() for o in listing.scan()]
         return list_data
 
@@ -147,7 +157,9 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>     do_something_cool(child)
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-        logger.debug('{} {} {}'.format(system, file_user, file_path))
+        if file_path.lower() == '$share':
+            file_path = '/'
+            file_user = self.username
         listing = self._es_listing(system, self.username, file_path)
         if not listing:
             listing = self._agave_listing(system, file_path)
