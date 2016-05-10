@@ -175,12 +175,12 @@ class Object(DocType):
             lm = datetime.datetime.now()
 
         wrap = {
-            'format': self.format,
+            'format': getattr(self, 'format', None),
             'lastModified': lm,
             'length': self.length,
             'mimeType': self.mimeType,
             'name': self.name,
-            'path': os.path.join(self.path, self.name),
+            'path': os.path.join(self.path, self.name).strip('/'),
             'permissions': self.permissions,
             'system': self.systemId,
             'type': self.type,

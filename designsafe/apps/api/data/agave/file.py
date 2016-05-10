@@ -97,7 +97,7 @@ class AgaveFile(AbstractFile, AgaveObject):
     def trail(self):
         if self._trail is None:
             self._trail = []
-            if self.parent_path != '':
+            if self.parent_path != '' and self.parent_path != '/':
                 path_parts = self.parent_path.split('/')
                 for i, c in enumerate(path_parts):
                     trail_path = path_parts[:i]

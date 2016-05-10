@@ -27,17 +27,17 @@ class BoxFile(AbstractFile):
         return self._item.name
 
     @property
-    def path(self):
+    def parent_path(self):
         try:
             path = '/'.join([e['name'] for e in self._item.path_collection['entries'][1:]])
         except AttributeError:
             if self._parent:
                 if self._parent.id == 'folder/0':  # Suppress 'All Files' name in path
                     path = ''
-                elif self._parent.path is None or self._parent.path == '':
+                elif self._parent.parent_path is None or self._parent.parent_path == '':
                     path = self._parent.name
                 else:
-                    path = '/'.join([self._parent.path, self._parent.name])
+                    path = '/'.join([self._parent.parent_path, self._parent.name])
             else:
                 path = None
         return path
@@ -102,7 +102,7 @@ class BoxFile(AbstractFile):
             'system': None,
             'id': self.id,
             'type': self.type,
-            'path': self.path,
+            'path': self.parent_path,
             'name': self.name,
             'ext': self.ext,
             'size': self.size,

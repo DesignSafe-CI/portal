@@ -16,6 +16,21 @@ class FileManager(AbstractFileManager):
         super(FileManager, self).__init__()
         self.box_api = util.get_box_client(user_obj)
 
+    def parse_file_id(self, file_id):
+        if file_id is not None:
+            file_id = file_id.strip('/')
+            try:
+                file_type, file_id = BoxFile.parse_file_id(file_id)
+            except AssertionError:
+                # file path is hierarchical; need to find the BoxObject here
+                box_object = self.box_object_for_file_hierarchy_path(file_id)
+                file_type = box_object._item_type
+                file_id = box_object.object_id
+        else:
+            file_type, file_id = u'folder', u'0'
+
+        return file_type, file_id
+
     def box_object_for_file_hierarchy_path(self, file_path):
         """
         Resolves a hierarchical path to a box_object. For example, given the file_path
@@ -76,17 +91,7 @@ class FileManager(AbstractFileManager):
         """
 
         try:
-            if file_id:
-                file_id = file_id.strip('/')
-                try:
-                    file_type, file_id = BoxFile.parse_file_id(file_id)
-                except AssertionError:
-                    # file path is hierarchical; need to find the BoxObject here
-                    box_object = self.box_object_for_file_hierarchy_path(file_id)
-                    file_type = box_object._item_type
-                    file_id = box_object.object_id
-            else:
-                file_type, file_id = u'folder', u'0'
+            file_type, file_id = self.parse_file_id(file_id)
 
             box_op = getattr(self.box_api, file_type)
             box_item = box_op(file_id).get()
