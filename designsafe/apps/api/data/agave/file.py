@@ -19,13 +19,17 @@ class AgaveFile(AbstractFile, AgaveObject):
         self._trail = None
 
     @property
-    def parent_path(self):
-        path, name = os.path.split(self.path)
-        return path
+    def ext(self):
+        return os.path.splitext(self.name)[1]
 
     @property
     def id(self):
-        return '/'.join([self.system, self.path])
+        return os.path.join(self.system, self.path)
+
+    @property
+    def parent_path(self):
+        path, name = os.path.split(self.path)
+        return path
 
     @property
     def trail(self):
@@ -44,10 +48,6 @@ class AgaveFile(AbstractFile, AgaveObject):
                     })
 
         return self._trail
-
-    @property
-    def ext(self):
-        return os.path.splitext(self.name)[1]
 
     def to_dict(self, **kwargs):
         return {
