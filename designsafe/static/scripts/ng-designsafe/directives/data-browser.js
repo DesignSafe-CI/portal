@@ -164,7 +164,7 @@
         scope.selectSource = function($event, source) {
           $event.preventDefault();
           scope.data.currentSource = source;
-          dbCtrl.browseFile({file_path: source.defaultPath});
+          dbCtrl.browseFile({file_id: source.defaultPath});
         };
       }
     };
@@ -187,7 +187,7 @@
         
         scope.selectTrail = function($event, trailItem) {
           $event.preventDefault();
-          dbCtrl.browseFile({file_path: trailItem.id});
+          dbCtrl.browseFile({file_id: trailItem.id});
         };
       }
     };
@@ -214,7 +214,7 @@
         scope.browseFile = function($event, file) {
           $event.preventDefault();
           if (file.type === 'folder') {
-            dbCtrl.browseFile({file_path: file.id});
+            dbCtrl.browseFile({file_id: file.id});
           }
         };
       }

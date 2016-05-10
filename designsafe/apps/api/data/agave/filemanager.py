@@ -34,7 +34,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         self.username = username
 
     def is_shared(self, file_id):
-        file_id = self._parse_file_id(file_id)
+        file_id = self.parse_file_id(file_id)
         return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username)
     
     def _agave_listing(self, system, file_path):
@@ -57,7 +57,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         list_data['children'] = [o.to_file_dict() for o in listing.scan()]
         return list_data
 
-    def _parse_file_id(self, file_id):
+    def parse_file_id(self, file_id):
         """
         Returns `system_id`, `file_user` and `file_path` from a
         `file_id` string.
@@ -144,7 +144,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>> for child in listing['children']: 
             >>>     do_something_cool(child)
         """
-        system, file_user, file_path = self._parse_file_id(file_id)
+        system, file_user, file_path = self.parse_file_id(file_id)
 
         listing = self._es_listing(system, self.username, file_path)
         if not listing:
@@ -174,7 +174,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
 
     def file(self, file_id, action, path = None, **kwargs):
-        system, file_user, file_path = self._parse_file_id(file_id)
+        system, file_user, file_path = self.parse_file_id(file_id)
 
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
