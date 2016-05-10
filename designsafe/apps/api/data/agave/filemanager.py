@@ -55,14 +55,16 @@ class FileManager(AbstractFileManager, AgaveObject):
         root_listing = Object.from_file_path(system, username, file_path)
         if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
             list_data = {
-                    '_tail': [],
-                    '_actions': [],
-                    '_pems': [],
-                    'id': '$share',
-                    'path': '',
-                    'name': 'Shared with me'
-                }
-            list_data['children'] = [o.to_file_dict() for o in listing.scan() if o.name != username]
+                '_tail': [],
+                '_actions': [],
+                '_pems': [],
+                'source': self.resource,
+                'id': '$share',
+                'system': settings.AGAVE_STORAGE_SYSTEM,
+                'path': '',
+                'name': '$SHARE',
+                'children': [o.to_file_dict() for o in listing.scan() if o.name != username]
+            }
         else:
             list_data = root_listing.to_file_dict()
             list_data['children'] = [o.to_file_dict() for o in listing.scan()]

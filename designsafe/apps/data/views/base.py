@@ -173,7 +173,7 @@ class DataBrowserTestView(BasePublicTemplate):
         elif resource == 'agave':
             fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
             if fm.is_shared(file_path):
-                resource = 'shared'
+                resource = '$share'
             else:
                 resource = 'mydata'
         else:

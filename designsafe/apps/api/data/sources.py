@@ -14,9 +14,9 @@ class SourcesApi(object):
             "_actions": ["READ", "WRITE", "EXECUTE"]
         },
         {
-            "id": "shared",
+            "id": "$share",
             "resource": "agave",
-            "defaultPath": '/'.join([settings.AGAVE_STORAGE_SYSTEM, 'shared']),
+            "defaultPath": '/'.join([settings.AGAVE_STORAGE_SYSTEM, '$share']),
             "name": "Shared with me",
             "_extra": {
                 "icon": "fa-group"
