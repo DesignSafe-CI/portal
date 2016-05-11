@@ -78,6 +78,7 @@ class DataView(BaseDataView):
         resp = self._execute_operation(request, 'listing', **kwargs)        
         return self.render_to_json_response(resp)
 
+
 class DataFileManageView(BaseDataView):
     """
     Data View to handle file management. POST, PUT and DELETE Requests.
@@ -92,17 +93,19 @@ class DataFileManageView(BaseDataView):
     def _execute_post_operation(self, request, **kwargs):
         body_json = json.loads(request.body)
         operation = body_json.get('action')
-        resp = self._execute_operation(request, operation, **kwargs)
-        return self.render_to_json_response(resp)
+        return self._execute_operation(request, operation, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self._execute_post_operation(request, **kwargs)
+        resp = self._execute_post_operation(request, **kwargs)
+        return self.render_to_json_response(resp)
 
     def put(self, request, *args, **kwargs):
-        self._execute_post_operation(request, **kwargs)
+        resp = self._execute_post_operation(request, **kwargs)
+        return self.render_to_json_response(resp)
 
     def delete(self, request, *args, **kwargs):
-        self._execute_post_operation(request, **kwargs)
+        resp = self._execute_post_operation(request, **kwargs)
+        return self.render_to_json_response(resp)
 
 class DataSearchView(BaseDataView):
     """

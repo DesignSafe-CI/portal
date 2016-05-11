@@ -192,7 +192,14 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
-        return f.download_postit
+        return f.create_postit()
+
+    def preview(self, file_id, **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, self.username, file_path,
+                    agave_client = self.agave_client)
+        return f.create_postit(force=False)
 
     def file(self, file_id, action, path = None, **kwargs):
         system, file_user, file_path = self.parse_file_id(file_id)

@@ -68,6 +68,19 @@ class AgaveFile(AbstractFile, AgaveObject):
                         extra = d)
         return cls.from_file_path(system, username, path, agave_client = agave_client)
 
+    def create_postit(self, force=True):
+        url = self._links['self']['href']
+        if force:
+            url += '?force=true'
+        body = {
+            'url': url,
+            'maxUses': 1,
+            'method': 'GET',
+            'lifetime': 60,
+            'noauth': False
+        }
+        return self.call_operation('postits.create', body=body)
+
     @property
     def download_postit(self):
         postit_data = {

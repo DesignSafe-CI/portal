@@ -17,7 +17,7 @@
         onResourceChanged: '&onResourceChanged'
         
       },
-      controller: ['$scope', 'DataService', function($scope, DataService) {
+      controller: ['$scope', '$uibModal', 'DataService', function($scope, $uibModal, DataService) {
         
         $scope.state = {
           loading: false,
@@ -70,11 +70,60 @@
           $scope.state.selected = {};
           $scope.state.selectAll = $scope.state.selecting = false;
         };
+        
+        self.previewFile = function(file) {
+          $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-preview.html',
+            controller: function($scope, $sce, $uibModalInstance, DataService, file) {
+              $scope.data = {
+                file: file
+              };
+
+              $scope.data.previewUrl = {loading: true};
+              DataService.preview({resource: file.source, file_id: file.id}).then(
+                function(resp) {
+                  $scope.data.previewUrl.loading = false;
+                  $scope.data.previewUrl.href = $sce.trustAsResourceUrl(resp.data._links.self.href);
+                },
+                function() {
+                  $scope.data.previewUrl.loading = false;
+                  $scope.data.previewUrl.href = false;
+                });
+
+              $scope.data.downloadUrl = {loading: true};
+              DataService.download({resource: file.source, file_id: file.id}).then(
+                function(resp) {
+                  $scope.data.downloadUrl.loading = false;
+                  $scope.data.downloadUrl.href = $sce.trustAsResourceUrl(resp.data._links.self.href);
+                },
+                function() {
+                  $scope.data.downloadUrl.loading = false;
+                  $scope.data.downloadUrl.href = false;
+                });
+
+              // $scope.copyToMyData = function($event, item) {
+              //   $event.preventDefault();
+              //
+              //   DataService.copyToMyData(item)
+              //   .then(function(response) {
+              //     logger.debug(response);
+              //   }, function(error) {
+              //     logger.error(error);
+              //   });
+              // };
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+              };
+            },
+            size: 'lg',
+            resolve: {file: file}
+          });
+        };
 
         self.browseFile = function(options) {
           $scope.state.loading = true;
           options = options || {};
-          options = _.extend({resource: $scope.data.currentSource.resource}, options);
           DataService.listPath(options).then(
             function(response) {
               $scope.state.loading = false;
@@ -96,27 +145,6 @@
         if (! $scope.data.listing) {
           self.browseFile();
         }
-
-        // self.listSources = function() {
-        //   DataService.listSources().then(
-        //     function (response) {
-        //       $scope.data.sources = response.data;
-        //
-        //       var handler = $scope.onResourceChanged();
-        //       if (handler) {
-        //         handler($scope.data.listing);
-        //       }
-        //     },
-        //     function (error) {
-        //       logger.error(error);
-        //       // TODO notify user
-        //     }
-        //   );
-        // };
-        //
-        // if (! $scope.data.sources) {
-        //   self.listSources();
-        // }
       }]
     };
   }]);
@@ -164,7 +192,7 @@
         scope.selectSource = function($event, source) {
           $event.preventDefault();
           scope.data.currentSource = source;
-          dbCtrl.browseFile({file_id: source.defaultPath});
+          dbCtrl.browseFile({resource: source.resource, file_id: source.defaultPath});
         };
       }
     };
@@ -187,7 +215,7 @@
         
         scope.selectTrail = function($event, trailItem) {
           $event.preventDefault();
-          dbCtrl.browseFile({file_id: trailItem.id});
+          dbCtrl.browseFile({resource: trailItem.source, file_id: trailItem.id});
         };
       }
     };
@@ -202,7 +230,9 @@
       restrict: 'E',
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-list-display.html',
-      scope: {},
+      scope: {
+        enablePreview: '=preview'
+      },
       link: function(scope, element, attrs, dbCtrl) {
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
@@ -214,7 +244,9 @@
         scope.browseFile = function($event, file) {
           $event.preventDefault();
           if (file.type === 'folder') {
-            dbCtrl.browseFile({file_id: file.id});
+            dbCtrl.browseFile({resource: file.source, file_id: file.id});
+          } else if (scope.enablePreview) {
+            dbCtrl.previewFile(file);
           }
         };
       }

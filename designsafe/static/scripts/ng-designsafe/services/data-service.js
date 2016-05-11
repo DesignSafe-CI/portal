@@ -17,44 +17,6 @@
      */
     service.listSources = function() {
       return $http.get(djangoUrl.reverse('designsafe_api:sources'));
-      // return $q.resolve({"data": [
-      //   {
-      //     "id": "mydata",
-      //     "systemId": "designsafe.storage.default",
-      //     "defaultPath": "",
-      //     "name": "My data",
-      //     "_extra": {
-      //       "icon": "fa-hdd-o"
-      //     },
-      //     "_actions": ["*"]
-      //   },
-      //   {
-      //     "id": "shared",
-      //     "systemId": "designsafe.storage.default",
-      //     "defaultPath": "shared",
-      //     "name": "Shared with me",
-      //     "_extra": {
-      //       "icon": "fa-group"
-      //     },
-      //     "_actions": ["*"]
-      //   },
-      //   {
-      //     "id": "public",
-      //     "name": "Public data",
-      //     "_extra": {
-      //       "icon": "fa-globe"
-      //     },
-      //     "_actions": ["download", "preview", "copy"]
-      //   },
-      //   {
-      //     "id": "box",
-      //     "name": "Box.com",
-      //     "_extra": {
-      //       "icon": "fa-square"
-      //     },
-      //     "_actions": ["download", "preview", "copy"]
-      //   }
-      // ]});
     };
     
     
@@ -149,14 +111,20 @@
      *
      * @param options
      */
-    service.download = function(options) {};
+    service.download = function(options) {
+      options = options || {};
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'download'});
+    };
 
 
     /**
      *
      * @param options
      */
-    service.preview = function(options) {};
+    service.preview = function(options) {
+      options = options || {};
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'preview'});
+    };
 
 
     /**

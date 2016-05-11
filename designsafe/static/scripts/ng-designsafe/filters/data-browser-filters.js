@@ -29,4 +29,10 @@
       return path;
     }
   }]);
+
+  mod.filter('dsFileIcon', ['DataService', function(DataService) {
+    return function(file) {
+      return DataService.getIcon(file.type, file.ext);
+    }
+  }]);
 })(window, angular, jQuery, _);
