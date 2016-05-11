@@ -16,7 +16,7 @@
         components.push(file.path);
       }
       components.push(file.name);
-      var path = components.join('/');
+      var path = _.compact(components).join('/');
 
       if (file.type && file.type === 'folder') {
         path += '/';
