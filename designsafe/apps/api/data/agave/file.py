@@ -5,6 +5,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.abstract.files import AbstractFile
 import os
+import time
 import logging
 from datetime import datetime
 
@@ -18,8 +19,10 @@ class AgaveFile(AbstractFile, AgaveObject):
     def __init__(self, agave_client = None, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
         self.agave_client = agave_client
-        self._permissions = None
         self._trail = None
+        if self._wrap and 'permissions' in self._wrap:
+            self._permissions = self._wrap['permissions']
+
         if self.name == '.':
             tail, head = os.path.split(self.path) 
             self.name = head
@@ -64,6 +67,21 @@ class AgaveFile(AbstractFile, AgaveObject):
                         e.response.status_code,
                         extra = d)
         return cls.from_file_path(system, username, path, agave_client = agave_client)
+
+    @property
+    def download_postit(self):
+        postit_data = {
+            'url': self._links['self']['href'] + '?force=true',
+            'maxUses': 1,
+            'method': 'GET',
+            'lifetime': 60,
+            'noauth': False
+        }
+
+        logger.debug('postit data: {}'.format(postit_data))
+        postit = self.call_operation('postits.create', body = postit_data)
+        logger.debug('Postit: {}'.format(postit))
+        return postit['_links']['self']['href']
 
     @property
     def ext(self):

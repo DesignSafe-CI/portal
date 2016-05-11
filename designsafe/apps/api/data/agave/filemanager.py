@@ -171,9 +171,6 @@ class FileManager(AbstractFileManager, AgaveObject):
     def search(self, **kwargs):
         return [{}]
 
-    def download(self, **kwargs):
-        pass
-
     def copy(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
@@ -189,6 +186,13 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.delete_recursive()
         return f.to_dict()
+
+    def download(self, file_id, **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, self.username, file_path, 
+                    agave_client = self.agave_client)
+        return f.download_postit
 
     def file(self, file_id, action, path = None, **kwargs):
         system, file_user, file_path = self.parse_file_id(file_id)
