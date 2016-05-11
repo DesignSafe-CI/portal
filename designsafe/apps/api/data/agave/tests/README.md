@@ -11,6 +11,19 @@ Tests are based on the next snippets:
     >>> fm = filemanager.FileManager(user)
 ```
 
+**To get an agave client**
+```
+    >>> from agavepy.agave import Agave  
+    >>> token = user.agave_oauth 
+    >>> access_token = token.access_token
+    >>> ac = Agave(api_server = 'https://agave.designsafe-ci.org', token = access_token)  
+```
+
+**To get an AgaveFile**
+```
+    >>> af = AgaveFile.from_file_path('designsafe.storage.default', 'xirdneh', 'xirdneh/DOC19_copy.jpg', agave_client = ac) 
+```
+
 #Test rename
 `>>> fm.file(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', action = 'rename', path = 'DOC19_rename.jpg')`
 
@@ -28,3 +41,10 @@ Tests are based on the next snippets:
 
 #Test delete
 `>>> fm.file(file_id = 'designsafe.storage.default/xirdneh/.Trash/DOC19.jpg', action = 'delete')`
+
+#Test download
+`>>> fm.download(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg')
+
+#Test share
+`>>> fm.share(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', user = 'v2_share', permission = 'READ')`
+

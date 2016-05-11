@@ -171,9 +171,6 @@ class FileManager(AbstractFileManager, AgaveObject):
     def search(self, **kwargs):
         return [{}]
 
-    def download(self, **kwargs):
-        pass
-
     def copy(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
@@ -189,6 +186,13 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.delete_recursive()
         return f.to_dict()
+
+    def download(self, file_id, **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, self.username, file_path, 
+                    agave_client = self.agave_client)
+        return f.download_postit
 
     def file(self, file_id, action, path = None, **kwargs):
         system, file_user, file_path = self.parse_file_id(file_id)
@@ -228,4 +232,158 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.rename(self.username, path)
         return f.to_dict()
+    
+    def share(self, file_id, user = '', permission = 'READ', **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, self.username, file_path,
+                    agave_client = self.agave_client)
+        f.share(user, permission)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.share(self.username, user, permission)
+        return f.to_dict()
+
+class AgaveIndexer(AgaveObject):
+    def walk(self, system_id, path, bottom_up = False, yield_base = True):
+        files = self.call_operation('files.list', systemId = system_id, 
+                                    filePath = path)
+        for f in files:
+            aff = AgaveFile(agave_client = self.agave_client, wrap = f)
+            if f['name'] == '.' or f['name'] == '..':
+                if not yield_base:
+                    continue
+            if not bottom_up:
+                yield aff
+            if aff.format == 'folder' and f['name'] != '.':
+                for sf in self.walk(system_id, aff.full_path, bottom_up = bottom_up, yield_base = False):
+                    yield sf
+            if bottom_up:
+                yield aff
+
+    def walk_levels(self, system_id, path, bottom_up = False):
+        resp = self.call_operation('files.list', systemId = system_id,
+                                    filePath = path)
+        folders = []
+        files = []
+        for f in resp:
+            if f['name'] == '.':
+                continue
+            aff = AgaveFolderFile(self.agave_client, f)
+            if aff.format == 'folder':
+                folders.append(aff)
+            else:
+                files.append(aff)
+        if not bottom_up:
+            yield (path, folders, files)
+        for aff in folders:
+            for (spath, sfolders, sfiles) in self.walk_levels(system_id, aff.full_path, bottom_up = bottom_up):
+                yield (spath, sfolders, sfiles)
+
+        if bottom_up:
+            yield (path, folders, files)
+
+    def index(self, system_id, path, username, bottom_up = False, levels = 0, index_full_path = True):
+        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
+            objs = folders + files
+            objs_names = [o.name for o in objs]
+            #logger.debug('root: {}'.format(root))
+            r, s = Object().search_exact_folder_path(system_id, username, root)
+            doc_names = []
+            docs = []
+            docs_to_delete = []
+            for d in s.scan():
+                docs.append(d)
+                if d.name in doc_names:
+                    docs_to_delete.append(d)
+                else:
+                    doc_names.append(d.name)
+            #logger.debug('doc_names: {}'.format(doc_names))
+            objs_to_index = [o for o in objs if o.name not in doc_names]
+            #logger.debug('objs_to_index: {}'.format(objs_to_index))
+            docs_to_delete += [o for o in docs if o.name not in objs_names and o.name != 'Shared with me']
+
+            for o in objs_to_index:
+                d = o.to_dict(pems = False)
+                pems_user = d['path'].split('/')[0] if d['path'] != '/' else d['name']
+                d['permissions'] = [{
+                    'username': pems_user,
+                    'recursive': True,
+                    'permission': {
+                        'read': True,
+                        'write': True,
+                        'execute': True
+                    }
+                }]
+                do = Object(**d)
+                do.save()
+
+            for d in docs_to_delete:
+                #print dir(d)
+                #print d.path + '/' + d.name
+                d.delete()
+                if d.format == 'folder':
+                    r, s = Object().search_exact_folder_path(system_id, username, os.path.join(d.path, d.name))
+                    for doc in s.scan():
+                        doc.delete()
+
+            #logger.debug('levels {} cnt {}'.format(levels, cnt))
+            if levels and len(root.split('/')) >= levels:
+                del folders[:]
+
+        if index_full_path:
+            paths = path.split('/')
+            for i in range(len(paths)):
+                path = '/'.join(paths[:-1])
+                name = paths[-1]
+                logger.info('checking {}'.format(paths))
+                if not Object().get_exact_path(system_id, username, path, name):
+                    fo = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
+                    o = Object(**fo.to_dict(pems = False))
+                    o.save()
+                    pems_user = o.path.split('/')[0] if o.path != '/' else o.name
+                    pems = [{
+                        'username': pems_user,
+                        'recursive': True,
+                        'permission': {
+                            'read': True,
+                            'write': True,
+                            'execute': True
+                        }
+                    }]
+                    o.update(permissions = pems)
+                paths.pop()
+
+    def index_full(self, system_id, path, username, bottom_up = False, levels = 0, index_full_path = True):
+        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
+            objs = folders + files
+            for o in objs:
+                d = Object(**o.to_dict())
+                d.save()
+            if levels and len(root.path('/')) >= levels:
+                del folders[:]
+
+        if index_full_path:
+            paths = path.split('/')
+            for i in range(len(paths)):
+                path = '/'.join(paths[:-1])
+                name = paths[-1]
+                fo = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
+                o = Object(**fo.to_dict())
+                o.save()
+                paths.pop()
+
+    def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
+        r, s = Object().search_partial_path(system_id, username, path)
+        objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
+        if levels:
+            objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
+        p, n = os.path.split(path)
+        if p == '':
+            p = '/'
+        objs.append(Object().get_exact_path(system_id, username, p, n))
+        for o in objs:
+            if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
+                continue
+            pems = self.call_operation('files.listPermissions', filePath = urllib.quote(os.path.join(o.path, o.name)), systemId = system_id)
+            o.update(permissions = pems)
 

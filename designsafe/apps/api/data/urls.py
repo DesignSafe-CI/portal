@@ -22,13 +22,16 @@ urlpatterns = patterns(
 
     url(r'^sources/(?P<source_id>[\w.-]+)/$', SourcesView.as_view(), name='sources'),
 
-    url(r'^listing/(?P<resource>[\w.-]+)/?$', DataView.as_view(), name='list'),
-
-    url(r'^listing/(?P<resource>[\w.-]+)/(?P<file_id>[ \S]+)$',
-        DataView.as_view(), name='list'),
+    #url(r'^listing/(?P<resource>[\w.-]+)/?$', DataView.as_view(), name='list'),
 
     url(r'^file/(?P<resource>[\w.-]+)/?(?P<file_id>[ \S]+)?$',
         DataFileManageView.as_view(), name='file'),
+
+    url(r'^download/(?P<resource>[\w.-]+)/?(?P<file_id>[ \S]+)?$',
+        DataDownloadView.as_view(), name='download'),
+
+    url(r'^listing/(?P<resource>[\w.-]+)(/(?P<file_id>[ \S]+))?$',
+        DataView.as_view(), name='list'),
 
     url(r'^search/(?P<resource>[\w.-]+)/?$', DataSearchView.as_view(), name='search'),
 )
