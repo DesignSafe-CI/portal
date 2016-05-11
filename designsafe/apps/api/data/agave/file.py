@@ -28,7 +28,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             self.name = head
 
     @classmethod
-    def from_file_path(cls, system, username, file_path, agave_client = None, **kwargs):
+    def from_file_path(cls, system, username = None, file_path = None, agave_client = None, **kwargs):
         try:
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                              {'systemId': system, 'filePath': file_path}))
@@ -104,6 +104,23 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def permissions(self):
+        """
+        Agave file permissions
+
+        Returns:
+            Array of dicts with permissions details.
+
+        Notes:
+            The permissions are stored in the instance. If there are no permissions
+            an agave call to `files.listPermissions` is executed and the result
+            is stored in the instance and returned.
+            If it's necessary to force a reload on the permissions then
+            the attribute `_permissions` can be set to None.
+
+            >>> f._permissions = None
+            >>> #Next time we access .permissions a call to agave will be made.
+            >>> print f.permissions #reloaded permissions from agave.
+        """
         if self._permissions is None:
             pems = self.call_operation('files.listPermissions', 
                         filePath = self.full_path, systemId = self.system)
@@ -113,6 +130,29 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def trail(self):
+        """
+        A trail is a list of dictionary objects. Each of these dict objects
+        have enough information of the folder breadcrumb of the current file
+        to access it throuh another API call.
+
+        Examples:
+            Get the AgaveFile class instance of the parent directory:
+            >>> f = AgaveFile.from_file_path(system = 'system.id',
+            >>>              file_path = 'path/to/file.txt', agave_client = ac)
+            >>> parent_trail = f.trail[-1]
+            >>> parent_folder = AgaveFile.from_file_path(system = parent_trail['system'], 
+            >>>             file_path = parent_trail['path'], agave_client = ac)
+            
+            Construct the parent folder agave URI to submit as a job input
+            >>> f = AgaveFile.from_file_path(system = 'system.id',
+            >>>              file_path = 'path/to/file.txt', agave_client = ac)
+            >>> parent_trail = f.trail[-1]
+            >>> agave_uri = '{}://{}/{}'.format(parent_trail['source'], parent_trail['system'],
+            >>>                                 parent_trail['path'])
+
+        Returns:
+            A list of dicts
+        """
         if self._trail is None:
             self._trail = []
             if self.parent_path != '' and self.parent_path != '/':
@@ -136,6 +176,9 @@ class AgaveFile(AbstractFile, AgaveObject):
         Args:
             path: String. Path to copy the file into.
 
+        Returns:
+            Class instance for chainability
+
         Notes:
             `path` should be the entire path where the copy should go.
             TODO: Sanitize path
@@ -149,6 +192,12 @@ class AgaveFile(AbstractFile, AgaveObject):
         return self
 
     def delete(self):
+        """
+        Deletes a file
+        
+        Returns:
+            Class instance for chainability
+        """
         res = self.call_operation('files.delete',
             systemId = self.system,
             filePath = self.full_path)
@@ -160,6 +209,9 @@ class AgaveFile(AbstractFile, AgaveObject):
 
         Args:
             path: String. New path to move the file.
+
+        Returns:
+            Class instance for chainability
 
         Notes:
             `path` should be the complete path to move the file into.
@@ -182,6 +234,9 @@ class AgaveFile(AbstractFile, AgaveObject):
         Args:
             path: String. New file name
 
+        Returns:
+            Class instance for chainability
+
         Notes:
             `path` should only be the new name of the file
             and not the entire path. 
@@ -197,6 +252,30 @@ class AgaveFile(AbstractFile, AgaveObject):
         self.path = os.path.join(tail, path)
         self.name = path
         return self
+
+    def share(self, user_to_share, permission):
+        """
+        Share file(s)
+
+        Args:
+            user_to_share: String. User to share the file(s) with.
+            permission: String. Permission to set [READ | WRITE | EXECUTE | ALL]
+
+        Returns:
+            Class instance for chainability
+        """
+        permission_body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, user_to_share)
+        try:
+            self.call_operation('files.updatePermissions',
+                                filePath = self.full_path,
+                                systemId = self.system,
+                                body = permission_body, 
+                                raise_agave = True)
+        except (AgaveException, HTTPError) as e:
+            logger.error('{}: Couldn\'t update permissions {}'.format(e.message, permission_body))
+
+        return self
+
 
     def to_dict(self, **kwargs):
         return {

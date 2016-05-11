@@ -232,4 +232,13 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.rename(self.username, path)
         return f.to_dict()
+    
+    def share(self, file_id, user = '', permission = 'READ', **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
 
+        f = AgaveFile.from_file_path(system, self.username, file_path,
+                    agave_client = self.agave_client)
+        f.share(user, permission)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.share(self.username, user, permission)
+        return f.to_dict()

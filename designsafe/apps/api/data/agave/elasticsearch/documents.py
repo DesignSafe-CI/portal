@@ -167,6 +167,40 @@ class Object(DocType):
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
         logger.debug('Updated ocument to {}'.format(os.path.join(self.path, self.name)))
         return self
+
+    def share(self, username, user_to_share, permission):
+        if self.type == 'dir':
+            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.naem))
+            for o in s.scan():
+                o.update_pems(user_to_share, permission)
+        
+        path_comps = os.path.join(self.path, self.name).split('/')
+        path_comps.pop()
+        for i in range(len(path_comps)):
+            doc_path = '.'.join(path_comps)
+            doc = Object.from_file_path(self.systemId, username, doc_path)
+            doc.update_pems(user_to_share, permission)
+            path_comps.pop()
+
+        self.update_pems(user_to_share, permission)
+        return self
+
+    def update_pems(self, user_to_share, pem):
+        pems = getattr(self, 'permissions', [])
+        pem_to_add = {
+                'username': user_to_share,
+                'recursive': True,
+                'permission': {
+                    'read': True if pem in ['READ', 'ALL'] else False,
+                    'write': True if pem in ['WRITE', 'ALL'] else False,
+                    'execute': True if pem in ['EXECUTE', 'ALL'] else False
+                }
+            }
+        user_pems = filter(lambda x: x['username'] != user_to_share, pems)
+        user_pems.append(pem_to_add)
+        self.update(permissions = user_pems)
+        self.save()
+        return self
         
     def to_file_dict(self):
         try:
