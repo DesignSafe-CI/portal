@@ -32,7 +32,6 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
     and execute correct operation.
     """
     #TODO: More elegant meta-programming.
-    #TODO: Better way to check if it's an operation not permitted and to add operations.
     def _get_file_manager(self, request, resource, **kwargs):
         """
         Instantiates the correct file manager class
@@ -132,6 +131,6 @@ class DataSearchView(BaseDataView):
         fm = self._get_file_manager(request, **kwargs)
         d = {}
         d.update(kwargs)
-        d.update(request.GET)
+        d.update(request.GET.dict())
         resp = fm.search(**kwargs)
         return self.render_to_json_response([o.to_dict() for o in resp])

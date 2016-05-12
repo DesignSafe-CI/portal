@@ -21,6 +21,15 @@ class FileManager(AbstractFileManager, AgaveObject):
     resource = 'agave'
 
     def __init__(self, user_obj, **kwargs):
+        """Intializes an instance of the class.
+
+        the `__init__` method of the superclass is called because
+        this class subclasses AgaveObject which sets `self.agave_client`
+        AND `self._wrap`. The latter is not used in this class.
+        Here we're only initializing the agave client.
+
+        :param str user_obj: The user object from the django user model.
+        """
         super(FileManager, self).__init__(**kwargs)
         username = user_obj.username
         if user_obj.agave_oauth.expired:
@@ -34,10 +43,45 @@ class FileManager(AbstractFileManager, AgaveObject):
         self.username = username
 
     def is_shared(self, file_id):
+        """Checks if the `file_id` is shared for the file manager's user.
+
+        TODO: Should this be a static method? or an AgaveFile's 
+              method `AgaveFile.check_shared(user, file_id)`
+
+        :param str file_id: File identificator
+
+        :return: True if the file is shared with the current user. 
+                 Otherwise False
+        :rtype: bool
+
+        Notes:
+        -----
+
+            The check is if the file is in the default agave storage system
+            and if the file lives in the user's home directory. If both of
+            these checks are False then it is assumed is a shared file for
+            the user.
+        """
         file_id = self.parse_file_id(file_id)
         return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username)
     
     def _agave_listing(self, system, file_path):
+        """Returns a "listing" dict constructed with the response from Agave.
+
+        :param str sytem: System id
+        :param str file_path: Path to list
+
+        :returns: A dict with information of the listed file and, when possible, 
+        a list of :class:`~designsafe.apps.api.data.agave.files.AgaveFile` objects
+        dict in the key ``children``
+        :rtype: dict
+
+        Notes:
+        -----
+
+            This should not be called directly. See :method:`listing(file_id)`
+            for more information.
+        """
         listing = AgaveFile.listing(system, file_path, self.agave_client)
         #logger.debug('listing: {}'.format(listing))
 
@@ -50,6 +94,24 @@ class FileManager(AbstractFileManager, AgaveObject):
         return list_data
 
     def _es_listing(self, system, username, file_path):
+        """Returns a "listing" dict constructed with the response from Elasticsearch.
+
+        :param str system: system id
+        :param str username: username which is requesting the listing. 
+                             This is to check the permissions in the ES docs.
+        :param str file_path: path to list
+
+        :returns: A dict with information of the listed file and, when possible, 
+        a list of :class:`~designsafe.apps.api.data.agave.elasticsearch.documents.Object` objects
+        dict in the key ``children``
+        :rtype: dict
+
+        Notes:
+        -----
+
+            This should not be called directly. See :method:`listing(file_id)`
+            for more information.
+        """
         res, listing = Object.listing(system, username, file_path)
         root_listing = Object.from_file_path(system, username, file_path)
 
@@ -71,11 +133,23 @@ class FileManager(AbstractFileManager, AgaveObject):
         return list_data
 
     def parse_file_id(self, file_id):
-        """
-        Returns `system_id`, `file_user` and `file_path` from a
-        `file_id` string.
+        """Parses a `file_id`.
+
+        :param str file_id: String with the format 
+        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+
+        :returns: a list with three elements
+
+            * index 0 `system_id`: String. Filesystem id 
+            * index 1 `file_user`: String. Home directory's username of the 
+                                 file the `file_id` points to.
+            * index 2 `file_path`: String. Complete file path.
+        :rtype: list
+
+        :raises ValueError: if the object is not in the desired format
 
         Examples:
+        --------
             `file_id` can look like this:
               `designsafe.storage.default`:
               Points to the root folder in the 
@@ -91,21 +165,6 @@ class FileManager(AbstractFileManager, AgaveObject):
               `designsafe.stroage.default/username/folder/file.txt`:
               Points to the file `file.txt` in the home directory
               of the username `username`
-        
-        Args:
-            file_id: String with the format 
-            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
-
-        Returns:
-            A list with three elements
-            index 0 `system_id`: String. Filesystem id 
-            index 1 `file_user`: String. Home directory's username of the 
-                                 file the `file_id` points to.
-            index 2 `file_path`: String. Complete file path.
-
-        Raises:
-            ValueError: If the object is not in the desired format.
-
         """
         if file_id is None or file_id == '':
             system_id = settings.AGAVE_STORAGE_SYSTEM
@@ -123,17 +182,15 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
         Lists contents of a folder or details of a file.
 
-        Args:
-            system: String. System id.
-            file_path: String. 
-            file_user: String. home directory's user of the file we're listing.
+        :param str file_id: id representing the file. Format:
+        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
 
-        Returns:
-            listing dictionary. A dictionary with the properties of the 
-            parent path file object plus a `children` key with an array 
-            of the listing's file objects.
-            If the `file_id` passed is a file and not a folder the 
-            `children` array will be empty.
+        :returns:listing dict. A dict with the properties of the 
+        parent path file object plus a `childrens` key with a list
+        of :class:`~.
+        If the `file_id` passed is a file and not a folder the 
+        `children` list will be empty.
+        :rtype: dict
 
         Examples:
             A listing dictionary:
@@ -173,6 +230,28 @@ class FileManager(AbstractFileManager, AgaveObject):
         return [{}]
 
     def copy(self, system, file_path, file_user, path, **kwargs):
+        """Copies a file
+
+        Copies a file in both the Agave filesystem and the 
+        Elasticsearch index.
+            
+        :param str system: system id
+        :param str file_path: full path to the file to copy
+        :param str file_user: username of the owner of the file
+        :param str path: full path to the resulting copied file
+
+        :returns: dict representation of the original 
+        :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+
+        Examples:
+        --------
+            Copy a file. `fm` is an instance of FileManager
+            >>> fm.copy(system = 'designsafe.storage.default' 
+            >>>         file_path = 'username/file.jpg', 
+            >>>         file_user = 'username', 
+            >>>         path = 'username/file_copy.jpg')
+        """
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.copy(path)
@@ -180,7 +259,27 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.copy(self.username, path)
         return f.to_dict()
 
-    def delete(self, system, file_path, file_user, path, **kwargs):
+    def delete(self, system, file_path, file_user, **kwargs):
+        """Deletes a file
+
+        Deletes a file in both the Agave filesystem and the
+        Elasticsearch index.
+
+        :param str system: system id
+        :param str file_path: full path to the file to copy
+        :param str file_user: username of the owner of the file
+
+        :returns: dict representation of the target 
+        :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+        
+        Examples:
+        --------
+            Delete a file. `fm` is an instance of FileManager
+            >>> fm.delete(system = 'designsafe.storage.default' 
+            >>>         file_path = 'username/.Trash/file.jpg', 
+            >>>         file_user = 'username')
+        """
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.delete()
@@ -189,6 +288,16 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
 
     def download(self, file_id, **kwargs):
+        """Get the download link for a file
+
+        :param str file_id: String with the format 
+        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+
+        :returns: a dict with a single key `href` which has the direct
+            noauth link to download a file
+        :rtype: dict
+
+        """
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path, 
@@ -197,12 +306,50 @@ class FileManager(AbstractFileManager, AgaveObject):
         return {'href': postit['_links']['self']['href']}
 
     def file(self, file_id, action, path = None, **kwargs):
+        """Main routing method for file actions
+        
+        :param str file_id: String with the format 
+            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        :param str action: action to execute. Must be a valid method name
+        :param str path: target path to use. Optional
+
+        :returns: see the independent methods for the returned value. Usually
+            the return value is a dict representation of the file to which the
+            operation is being applied.
+
+        Notes:
+        -----
+            This method should be used when doing any of these file operations:
+
+                * copy
+                * delete
+                * move
+                * move_to_trash
+                * mkdir
+                * rename
+                 
+            The `action` param should be any of the previous operations.                 
+        """
         system, file_user, file_path = self.parse_file_id(file_id)
 
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
 
     def move(self, system, file_path, file_user, path, **kwargs):
+        """Move a file
+
+        Moves a file both in the Agave filesystem and the
+        Elasticsearch index.
+
+        :param str system: system id
+        :param str file_path: full path to the file to move
+        :param str file_user: username of the owner of the file
+        :param str path: full path to move the file
+
+        :returns: dict representation of the  
+            :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+        """
         f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
         f.move(path)
@@ -210,7 +357,20 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.move(self.username, path)
         return f.to_dict()
 
-    def move_to_trash(self, system, file_path, file_user, path, **kwargs):
+    def move_to_trash(self, system, file_path, file_user, **kwargs):
+        """Move a file into the trash folder
+
+        Moves a file both in the Agave filesystem and the
+        Elasticsearch index.
+
+        :param str system: system id
+        :param str file_path: full path to the file to move
+        :param str file_user: username of the owner of the file
+
+        :returns: dict representation of the  
+            :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+        """
         trash = Object.from_file_path(system, self.username, 
                                 os.path.join(self.username, '.Trash'))
         if trash is None:
@@ -221,6 +381,29 @@ class FileManager(AbstractFileManager, AgaveObject):
         return ret
 
     def mkdir(self, system, file_path, file_user, path, **kwargs):
+        """Creatd a directory
+
+        Creates a directory both in the Agave filesystem and the
+        Elasticsearch index.
+
+        :param str system: system id
+        :param str file_path: full path to where the directory will be created
+        :param str file_user: username of the owner of the file
+        :param str path: full path to the directory to create
+
+        :returns: dict representation of the  
+            :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+
+        Examples:
+        --------
+            Creating a directory `mkdir_test` in the $HOME directory
+            of the user `username`
+            >>> fm.mkdir(system = 'designsafe.storage.default'
+            >>>          file_path = 'username', 
+            >>>          file_user = 'username',
+            >>>          path = 'username/mkdir_test')
+        """
         f = AgaveFile.mkdir(system, self.username, file_path, path,
                     agave_client = self.agave_client)
         logger.debug('f: {}'.format(f.to_dict()))
@@ -257,6 +440,24 @@ class FileManager(AbstractFileManager, AgaveObject):
             return None
 
     def rename(self, system, file_path, file_user, path, **kwargs):
+        """Renames a file
+
+        Renames a file both in the Agave filesystem and the
+        Elasticsearch index.
+
+        :param str system: system id
+        :param str file_path: full path to the file
+        :param str file_user: username of the owner of the file
+        :param str path: new name for the file
+
+        :returns: dict representation of the  
+            :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+
+        Notes:
+        ------
+            `path` should only be the name the file will be renamed with.
+        """
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.rename(path)
@@ -265,6 +466,21 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
     
     def share(self, file_id, user = '', permission = 'READ', **kwargs):
+        """Update permissions for a file
+
+        The default functionality is to set READ permission on the file
+        for the specified user
+
+        :param str file_id: string with the format
+            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        :param str permission: permission to set on the file [READ | WRITE |
+            EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
+
+        Notes:
+        -----
+            If the target file is a directory then it will set the permissions
+            recursively
+        """
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
