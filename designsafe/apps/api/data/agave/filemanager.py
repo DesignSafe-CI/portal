@@ -39,16 +39,20 @@ class FileManager(AbstractFileManager, AgaveObject):
     
     def _agave_listing(self, system, file_path):
         listing = AgaveFile.listing(system, file_path, self.agave_client)
-        logger.debug('listing: {}'.format(listing))
+        #logger.debug('listing: {}'.format(listing))
+
         root_file = filter(lambda x: x.full_path == file_path, listing)
-        logger.debug('root_file: {}'.format(root_file[0]))
+        #logger.debug('root_file: {}'.format(root_file[0]))
+
         list_data = root_file[0].to_dict()
         list_data['children'] = [o.to_dict() for o in listing if o.full_path != file_path]
+
         return list_data
 
     def _es_listing(self, system, username, file_path):
         res, listing = Object.listing(system, username, file_path)
         root_listing = Object.from_file_path(system, username, file_path)
+
         if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
             list_data = {
                 '_tail': [],
@@ -192,35 +196,6 @@ class FileManager(AbstractFileManager, AgaveObject):
         postit = f.create_postit(force=True)
         return {'href': postit['_links']['self']['href']}
 
-    def preview(self, file_id, **kwargs):
-        logger.debug(kwargs)
-        system, file_user, file_path = self.parse_file_id(file_id)
-
-        f = AgaveFile.from_file_path(system, self.username, file_path,
-                    agave_client = self.agave_client)
-
-        if f.previewable:
-            fmt = kwargs.get('format', 'json')
-            if fmt == 'html':
-                context = {}
-                if f.ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
-                    postit = f.create_postit(force=False)
-                    context['image_preview'] = postit['_links']['self']['href']
-                elif f.ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
-                    content = f.download()
-                    context['text_preview'] = content
-                elif f.ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
-                    postit = f.create_postit(force=False)
-                    context['object_preview'] = postit['_links']['self']['href']
-                return 'designsafe/apps/api/data/agave/preview.html', context
-            else:
-                preview_url = reverse('designsafe_api:file',
-                                      args=[self.resource, file_id]
-                                      ) + '?action=preview&format=html'
-                return {'href': preview_url}
-        else:
-            return None
-
     def file(self, file_id, action, path = None, **kwargs):
         system, file_user, file_path = self.parse_file_id(file_id)
 
@@ -251,6 +226,35 @@ class FileManager(AbstractFileManager, AgaveObject):
         logger.debug('f: {}'.format(f.to_dict()))
         esf = Object.from_agave_file(self.username, f)
         return f.to_dict()
+
+    def preview(self, file_id, **kwargs):
+        logger.debug(kwargs)
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, self.username, file_path,
+                    agave_client = self.agave_client)
+
+        if f.previewable:
+            fmt = kwargs.get('format', 'json')
+            if fmt == 'html':
+                context = {}
+                if f.ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
+                    postit = f.create_postit(force=False)
+                    context['image_preview'] = postit['_links']['self']['href']
+                elif f.ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
+                    content = f.download()
+                    context['text_preview'] = content
+                elif f.ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
+                    postit = f.create_postit(force=False)
+                    context['object_preview'] = postit['_links']['self']['href']
+                return 'designsafe/apps/api/data/agave/preview.html', context
+            else:
+                preview_url = reverse('designsafe_api:file',
+                                      args=[self.resource, file_id]
+                                      ) + '?action=preview&format=html'
+                return {'href': preview_url}
+        else:
+            return None
 
     def rename(self, system, file_path, file_user, path, **kwargs):
         f = AgaveFile.from_file_path(system, self.username, file_path,
