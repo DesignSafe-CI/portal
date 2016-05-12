@@ -38,16 +38,12 @@ class FileManager(AbstractFileManager, AgaveObject):
         return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username)
     
     def _agave_listing(self, system, file_path):
-        listing = self.call_operation('files.list',
-                                      systemId=system,
-                                      filePath=file_path)
-
-        root_listing = AgaveFile(wrap=listing[0])
-        list_data = root_listing.to_dict()
-        if len(listing) > 1:
-            list_data['children'] = [AgaveFile(wrap=o).to_dict() for o in listing[1:]]
-        else:
-            list_data['children'] = []
+        listing = AgaveFile.listing(system, file_path, self.agave_client)
+        logger.debug('listing: {}'.format(listing))
+        root_file = filter(lambda x: x.full_path == file_path, listing)
+        logger.debug('root_file: {}'.format(root_file[0]))
+        list_data = root_file[0].to_dict()
+        list_data['children'] = [o.to_dict() for o in listing if o.full_path != file_path]
         return list_data
 
     def _es_listing(self, system, username, file_path):
@@ -160,12 +156,13 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>     do_something_cool(child)
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-        if file_path.lower() == '$share':
-            file_path = '/'
-            file_user = self.username
-        listing = self._es_listing(system, self.username, file_path)
-        if not listing:
-            listing = self._agave_listing(system, file_path)
+        #if file_path.lower() == '$share':
+        #    file_path = '/'
+        #    file_user = self.username
+        #listing = self._es_listing(system, self.username, file_path)
+        #if not listing:
+        #    listing = self._agave_listing(system, file_path)
+        listing = self._agave_listing(system, file_path)
         return listing
 
     def search(self, **kwargs):

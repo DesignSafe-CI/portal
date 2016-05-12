@@ -68,6 +68,24 @@ class AgaveFile(AbstractFile, AgaveObject):
                    wrap = listing[0], **kwargs)
 
     @classmethod
+    def listing(cls, system, file_path, agave_client):
+        try:
+            logger.debug('Agave: calling: files.list, args: {}'.format( 
+                         {'systemId': system, 'filePath': file_path}))
+            listing = agave_client.files.list(systemId = system, filePath = file_path)
+        except (AgaveException, HTTPError) as e:
+            logger.error(e,
+                exc_info = True,
+                extra = kwargs)
+            d = {'operation': 'files.list'}
+            d.update({'systemId': system, 'filePath': file_path})
+            raise ApiException(e.message,
+                        e.response.status_code,
+                        extra = d)
+        
+        return [AgaveFile(wrap = o, agave_client = agave_client) for o in listing]
+
+    @classmethod
     def mkdir(cls, system, username, file_path, path, agave_client = None, **kwargs):
         pat = path
         tail, head = os.path.split(path)
@@ -339,3 +357,12 @@ class AgaveFile(AbstractFile, AgaveObject):
             '_actions': [],
             '_pems': [],
         }
+
+    def __repr__(self):
+        return 'AgaveFile(wrap={{ "system": "{}", "path": "{}", "name": "{}"}})'.format(getattr(self, 'system', ''), getattr(self, 'path', ''), getattr(self, 'name', ''))
+    
+    def __str__(self):
+        return '{}://{}/{}'.format(self.source, getattr(self, 'system', ''), getattr(self, 'path', ''))
+
+    def __unicode__(self):
+        return unicode(self.__str__)
