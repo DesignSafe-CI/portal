@@ -4,9 +4,9 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
-from designsafe.apps.api.data.agave.decorators import file_id_parser
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from functools import wraps
 import os
 import logging
@@ -192,14 +192,37 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
-        return f.create_postit()
+        postit = f.create_postit(force=True)
+        return {'href': postit['_links']['self']['href']}
 
     def preview(self, file_id, **kwargs):
+        logger.debug(kwargs)
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
-        return f.create_postit(force=False)
+
+        if f.previewable:
+            fmt = kwargs.get('format', 'json')
+            if fmt == 'html':
+                context = {}
+                if f.ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
+                    postit = f.create_postit(force=False)
+                    context['image_preview'] = postit['_links']['self']['href']
+                elif f.ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
+                    content = f.download()
+                    context['text_preview'] = content
+                elif f.ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
+                    postit = f.create_postit(force=False)
+                    context['object_preview'] = postit['_links']['self']['href']
+                return 'designsafe/apps/api/data/agave/preview.html', context
+            else:
+                preview_url = reverse('designsafe_api:file',
+                                      args=[self.resource, file_id]
+                                      ) + '?action=preview&format=html'
+                return {'href': preview_url}
+        else:
+            return None
 
     def file(self, file_id, action, path = None, **kwargs):
         system, file_user, file_path = self.parse_file_id(file_id)

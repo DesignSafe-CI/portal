@@ -1,3 +1,6 @@
+from django.http.response import HttpResponseBadRequest
+from django.shortcuts import render
+
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 
@@ -65,8 +68,8 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
         d = body_json
         d.update({'files': files})
         d.update(kwargs)
-        d.update(request.GET)
-        resp = op(**kwargs)
+        d.update(request.GET.dict())
+        resp = op(**d)
         return resp
 
 
@@ -92,8 +95,21 @@ class DataFileManageView(BaseDataView):
     """
     def _execute_post_operation(self, request, **kwargs):
         body_json = json.loads(request.body)
-        operation = body_json.get('action')
-        return self._execute_operation(request, operation, **kwargs)
+        operation = body_json.get('action', None)
+        if operation is not None:
+            return self._execute_operation(request, operation, **kwargs)
+
+        return HttpResponseBadRequest('Invalid action')
+
+    def get(self, request, *args, **kwargs):
+        operation = request.GET.get('action')
+        fmt = request.GET.get('format', 'json')
+        resp = self._execute_operation(request, operation, **kwargs)
+        if fmt == 'html':
+            logger.debug(resp)
+            return render(request, resp[0], resp[1])
+        else:
+            return self.render_to_json_response(resp)
 
     def post(self, request, *args, **kwargs):
         resp = self._execute_post_operation(request, **kwargs)

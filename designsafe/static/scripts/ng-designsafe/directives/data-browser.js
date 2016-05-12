@@ -83,7 +83,11 @@
               DataService.preview({resource: file.source, file_id: file.id}).then(
                 function(resp) {
                   $scope.data.previewUrl.loading = false;
-                  $scope.data.previewUrl.href = $sce.trustAsResourceUrl(resp.data._links.self.href);
+                  if (resp.data) {
+                    $scope.data.previewUrl.href = $sce.trustAsResourceUrl(resp.data.href);
+                  } else {
+                    $scope.data.previewUrl.href = false;
+                  }
                 },
                 function() {
                   $scope.data.previewUrl.loading = false;
@@ -94,7 +98,11 @@
               DataService.download({resource: file.source, file_id: file.id}).then(
                 function(resp) {
                   $scope.data.downloadUrl.loading = false;
-                  $scope.data.downloadUrl.href = $sce.trustAsResourceUrl(resp.data._links.self.href);
+                  if (resp.data) {
+                    $scope.data.downloadUrl.href = $sce.trustAsResourceUrl(resp.data.href);
+                  } else {
+                    $scope.data.downloadUrl.href = false;
+                  }
                 },
                 function() {
                   $scope.data.downloadUrl.loading = false;

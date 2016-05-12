@@ -1,13 +1,13 @@
-from agavepy.agave import AgaveException, Agave
-from requests.exceptions import HTTPError
-from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
-from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.data.agave.agave_object import AgaveObject
-from designsafe.apps.api.data.abstract.files import AbstractFile
-import os
-import time
 import logging
+import os
 from datetime import datetime
+
+from agavepy.agave import AgaveException
+from requests.exceptions import HTTPError
+
+from designsafe.apps.api.data.abstract.files import AbstractFile
+from designsafe.apps.api.data.agave.agave_object import AgaveObject
+from designsafe.apps.api.exceptions import ApiException
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +15,26 @@ logger = logging.getLogger(__name__)
 class AgaveFile(AbstractFile, AgaveObject):
 
     source = 'agave'
+
+    SUPPORTED_IMAGE_PREVIEW_EXTS = [
+        '.png', '.gif', '.jpg', '.jpeg',
+    ]
+
+    SUPPORTED_TEXT_PREVIEW_EXTS = [
+        '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css',
+        '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml', '.hh', '.htm', '.html',
+        '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.php', '.pl',
+        '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml', '.sql',
+        '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.tcl',
+    ]
+
+    SUPPORTED_OBJECT_PREVIEW_EXTS = [
+        '.pdf',
+    ]
+
+    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
+                                    SUPPORTED_TEXT_PREVIEW_EXTS +
+                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
 
     def __init__(self, agave_client = None, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
@@ -68,6 +88,10 @@ class AgaveFile(AbstractFile, AgaveObject):
                         extra = d)
         return cls.from_file_path(system, username, path, agave_client = agave_client)
 
+    @property
+    def previewable(self):
+        return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
+
     def create_postit(self, force=True):
         url = self._links['self']['href']
         if force:
@@ -80,6 +104,15 @@ class AgaveFile(AbstractFile, AgaveObject):
             'noauth': False
         }
         return self.call_operation('postits.create', body=body)
+
+    def download(self):
+        # TODO can't apply range headers in AgavePy. Use requests raw?
+        resp = self.call_operation('files.download',
+                                   systemId=self.system,
+                                   filePath=self.full_path,
+                                   # headers={'Range': 'bytes=0-4096'},
+                                   )
+        return resp.content
 
     @property
     def download_postit(self):
