@@ -115,8 +115,15 @@ class FileManager(AbstractFileManager):
     def file(self, file_id, action, path = None, **kwargs):
         pass
 
+    def preview(self, file_id, **kwargs):
+        file_type, file_id = self.parse_file_id(file_id)
+        embed_url = self.box_api.file(file_id).get(fields=['expiring_embed_link'])
+        return {'href': embed_url._response_object['expiring_embed_link']['url']}
+
     def download(self, file_id, **kwargs):
-        pass
+        file_type, file_id = self.parse_file_id(file_id)
+        download_url = self.box_api.file(file_id).get_shared_link_download_url()
+        return {'href': download_url}
 
     def search(self, q, **kwargs):
         pass

@@ -10,6 +10,27 @@ class BoxFile(AbstractFile):
 
     source = 'box'
 
+    SUPPORTED_PREVIEW_EXTENSIONS = [
+      # FILES
+      '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
+      '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
+      '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
+      '.pdf', '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
+      '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
+      '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
+
+      # IMAGES
+      '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
+      '.dcm', '.dicm', '.dicom', '.svs', '.tga',
+
+      # AUDIO
+      '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
+
+      # VIDEO
+      '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
+      '.ogg', '.mts', '.qt', '.wmv',
+    ]
+
     def __init__(self, box_item, parent=None):
         super(BoxFile, self).__init__()
         self._item = box_item
@@ -71,6 +92,10 @@ class BoxFile(AbstractFile):
                     for e in self._item.path_collection['entries']]
         except AttributeError as e:
             return []
+
+    @property
+    def previewable(self):
+        return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
 
     @staticmethod
     def parse_file_id(file_id):

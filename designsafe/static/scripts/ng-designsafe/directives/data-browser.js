@@ -84,7 +84,7 @@
                 function(resp) {
                   $scope.data.previewUrl.loading = false;
                   if (resp.data) {
-                    $scope.data.previewUrl.href = $sce.trustAsResourceUrl(resp.data.href);
+                    $scope.data.previewUrl.href = $sce.trustAs('resourceUrl', resp.data.href);
                   } else {
                     $scope.data.previewUrl.href = false;
                   }
@@ -99,7 +99,7 @@
                 function(resp) {
                   $scope.data.downloadUrl.loading = false;
                   if (resp.data) {
-                    $scope.data.downloadUrl.href = $sce.trustAsResourceUrl(resp.data.href);
+                    $scope.data.downloadUrl.href = $sce.trustAs('resourceUrl', resp.data.href);
                   } else {
                     $scope.data.downloadUrl.href = false;
                   }

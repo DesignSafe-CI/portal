@@ -23,9 +23,10 @@ class AgaveFile(AbstractFile, AgaveObject):
     SUPPORTED_TEXT_PREVIEW_EXTS = [
         '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css',
         '.csv', '.cxx', '.diff', '.groovy', '.h', '.haml', '.hh', '.htm', '.html',
-        '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.php', '.pl',
-        '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml', '.sql',
-        '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.tcl',
+        '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
+        '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
+        '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
+        '.json', '.out', '.err',
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
