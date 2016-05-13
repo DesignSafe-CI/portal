@@ -157,6 +157,7 @@ class Object(DocType):
         d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
         doc = Object(**d)
         doc.save()
+        self.save()
         return self
 
     def delete_recursive(self):
@@ -183,6 +184,7 @@ class Object(DocType):
         self.update(path = tail)
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
         logger.debug('Moved: {}'.format(self.to_dict()))
+        self.save()
         return self
 
 
@@ -203,6 +205,7 @@ class Object(DocType):
         self.update(name = head)
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
         logger.debug('Updated ocument to {}'.format(os.path.join(self.path, self.name)))
+        self.save()
         return self
 
     def share(self, username, user_to_share, permission):
@@ -220,6 +223,7 @@ class Object(DocType):
             path_comps.pop()
 
         self.update_pems(user_to_share, permission)
+        self.save()
         return self
 
     def update_pems(self, user_to_share, pem):
