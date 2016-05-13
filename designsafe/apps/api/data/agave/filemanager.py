@@ -230,6 +230,7 @@ class FileManager(AbstractFileManager, AgaveObject):
     def search(self, **kwargs):
         return [{}]
 
+    #def copy(self, file_id, target_file_id, **kwargs):
     def copy(self, system, file_path, file_user, path, **kwargs):
         """Copies a file
 
@@ -253,6 +254,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>         file_user = 'username', 
             >>>         path = 'username/file_copy.jpg')
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.copy(path)
@@ -260,6 +263,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.copy(self.username, path)
         return f.to_dict()
 
+    #def delete(self, file_id, **kwargs):
     def delete(self, system, file_path, file_user, **kwargs):
         """Deletes a file
 
@@ -281,6 +285,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>         file_path = 'username/.Trash/file.jpg', 
             >>>         file_user = 'username')
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.delete()
@@ -306,6 +312,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         postit = f.create_postit(force=True)
         return {'href': postit['_links']['self']['href']}
 
+    #TODO: we don't need this method anymore
     def file(self, file_id, action, path = None, **kwargs):
         """Main routing method for file actions
         
@@ -336,6 +343,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
 
+    #def move(self, file_id, target_file_id, remote_resource = None, **kwargs)
     def move(self, system, file_path, file_user, path, **kwargs):
         """Move a file
 
@@ -351,6 +359,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
         f.move(path)
@@ -358,6 +368,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.move(self.username, path)
         return f.to_dict()
 
+    #def move_to_trash(self, file_id, **kwargs):
     def move_to_trash(self, system, file_path, file_user, **kwargs):
         """Move a file into the trash folder
 
@@ -372,6 +383,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
+
         trash = Object.from_file_path(system, self.username, 
                                 os.path.join(self.username, '.Trash'))
         if trash is None:
@@ -381,6 +394,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         ret = self.move(system, file_path, file_user, os.path.join(self.username, '.Trash', head))
         return ret
 
+    #def mkdir(self, file_id, **kwargs):
     def mkdir(self, system, file_path, file_user, path, **kwargs):
         """Creatd a directory
 
@@ -404,7 +418,10 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>          file_path = 'username', 
             >>>          file_user = 'username',
             >>>          path = 'username/mkdir_test')
-        """
+        """ 
+        #system, file_user, file_path = self.parse_file_id(file_id)
+        #tail, target_name = os.path.split(file_path)[1]
+        #f = AgaveFile.mkdir(system, self.username, file_path, target_name,
         f = AgaveFile.mkdir(system, self.username, file_path, path,
                     agave_client = self.agave_client)
         logger.debug('f: {}'.format(f.to_dict()))
@@ -440,6 +457,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         else:
             return None
 
+    #def rename(Self, file_id, target_name, **kwargs):
     def rename(self, system, file_path, file_user, path, **kwargs):
         """Renames a file
 
@@ -459,6 +477,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         ------
             `path` should only be the name the file will be renamed with.
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.rename(path)
