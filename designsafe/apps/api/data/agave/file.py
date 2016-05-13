@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class AgaveFile(AbstractFile, AgaveObject):
+    """
+    Agave File class
+    """
 
     source = 'agave'
 
