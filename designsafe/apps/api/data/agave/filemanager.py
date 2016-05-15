@@ -335,14 +335,29 @@ class FileManager(AbstractFileManager, AgaveObject):
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
 
-    def move(self, system, file_path, file_user, path, **kwargs):
+    def import_file(self, file_id, import_url):
+
+        """
+        Import a file from an external source
+
+        Args:
+            file_id:
+            import_url:
+
+        Returns:
+
+        """
+        pass
+
+    def move(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Move a file
 
         Moves a file both in the Agave filesystem and the
         Elasticsearch index.
 
-        :param str system: system id
-        :param str file_path: full path to the file to move
+        :param str file_id: the file id in the format
+            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        :param str dest_path: full path to the file to move
         :param str file_user: username of the owner of the file
         :param str path: full path to move the file
 
@@ -350,12 +365,28 @@ class FileManager(AbstractFileManager, AgaveObject):
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
         """
+        system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path, 
-                    agave_client = self.agave_client)
-        f.move(path)
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.move(self.username, path)
-        return f.to_dict()
+                                     agave_client = self.agave_client)
+
+        if dest_resource == self.resource:
+            dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
+            if dest_system == system:
+                f.move(dest_file_path)
+                esf = Object.from_file_path(system, self.username, file_path)
+                esf.move(self.username, dest_file_path)
+                return f.to_dict()
+            else:
+                raise ApiException('Moving between systems is not supported; use COPY.',
+                                   extra={'file_id': file_id,
+                                          'dest_resource': dest_resource,
+                                          'dest_file_id': dest_file_id})
+        else:
+            raise ApiException('Moving to a remote resource is not supported; use COPY',
+                               extra={'file_id': file_id,
+                                      'dest_resource': dest_resource,
+                                      'dest_file_id': dest_file_id})
 
     def move_to_trash(self, system, file_path, file_user, **kwargs):
         """Move a file into the trash folder

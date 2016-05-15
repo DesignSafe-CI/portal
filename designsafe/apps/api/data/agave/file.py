@@ -74,9 +74,7 @@ class AgaveFile(AbstractFile, AgaveObject):
                          {'systemId': system, 'filePath': file_path}))
             listing = agave_client.files.list(systemId = system, filePath = file_path)
         except (AgaveException, HTTPError) as e:
-            logger.error(e,
-                exc_info = True,
-                extra = kwargs)
+            logger.error(e, exc_info = True,)
             d = {'operation': 'files.list'}
             d.update({'systemId': system, 'filePath': file_path})
             raise ApiException(e.message,
@@ -267,11 +265,11 @@ class AgaveFile(AbstractFile, AgaveObject):
             `path` should be the complete path to move the file into.
             Should contain the file's name.
         """
-        path = path
+        dest_full_path = os.path.join(path, self.name)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
-            'body': {"action": "move", "path": path}
+            'body': {"action": "move", "path": dest_full_path}
         }
         res = self.call_operation('files.manage', **d)
         self.path = path
