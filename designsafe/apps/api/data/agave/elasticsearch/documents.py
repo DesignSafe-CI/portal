@@ -110,7 +110,7 @@ class Object(DocType):
         if tail == '':
             head = path
         if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 d = o.to_dict()
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
@@ -127,7 +127,7 @@ class Object(DocType):
 
     def delete_recursive(self):
         if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 o.delete()
 
@@ -136,7 +136,7 @@ class Object(DocType):
 
     def move(self, username, path):
         if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
                 o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
@@ -157,7 +157,7 @@ class Object(DocType):
         if tail == '':
             head = path       
         if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.name))
+            res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
                 o.update(path = re.sub(regex, os.path.join(self.path, head), o.path, count = 1))
