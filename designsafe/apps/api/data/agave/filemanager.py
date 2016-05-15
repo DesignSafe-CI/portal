@@ -56,12 +56,13 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         Notes:
         -----
-
+        
             The check is if the file is in the default agave storage system
             and if the file lives in the user's home directory. If both of
             these checks are False then it is assumed is a shared file for
             the user.
         """
+
         file_id = self.parse_file_id(file_id)
         return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username)
     
@@ -79,7 +80,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Notes:
         -----
 
-            This should not be called directly. See :method:`listing(file_id)`
+            This should not be called directly. See py:meth:`listing(file_id)`
             for more information.
         """
         listing = AgaveFile.listing(system, file_path, self.agave_client)
@@ -109,7 +110,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Notes:
         -----
 
-            This should not be called directly. See :method:`listing(file_id)`
+            This should not be called directly. See py:meth:`listing(file_id)`
             for more information.
         """
         res, listing = Object.listing(system, username, file_path)
@@ -229,6 +230,7 @@ class FileManager(AbstractFileManager, AgaveObject):
     def search(self, **kwargs):
         return [{}]
 
+    #def copy(self, file_id, target_file_id, **kwargs):
     def copy(self, system, file_path, file_user, path, **kwargs):
         """Copies a file
 
@@ -252,6 +254,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>         file_user = 'username', 
             >>>         path = 'username/file_copy.jpg')
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.copy(path)
@@ -259,6 +263,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.copy(self.username, path)
         return f.to_dict()
 
+    #def delete(self, file_id, **kwargs):
     def delete(self, system, file_path, file_user, **kwargs):
         """Deletes a file
 
@@ -280,6 +285,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>         file_path = 'username/.Trash/file.jpg', 
             >>>         file_user = 'username')
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.delete()
@@ -305,6 +312,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         postit = f.create_postit(force=True)
         return {'href': postit['_links']['self']['href']}
 
+    #TODO: we don't need this method anymore
     def file(self, file_id, action, path = None, **kwargs):
         """Main routing method for file actions
         
@@ -367,15 +375,16 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
         system, file_user, file_path = self.parse_file_id(file_id)
 
-        f = AgaveFile.from_file_path(system, self.username, file_path, 
+        f = AgaveFile.from_file_path(system, file_user, file_path,
                                      agave_client = self.agave_client)
 
         if dest_resource == self.resource:
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
             if dest_system == system:
+                logger.debug('moving {} to {}'.format(file_id, dest_file_path))
                 f.move(dest_file_path)
-                esf = Object.from_file_path(system, self.username, file_path)
-                esf.move(self.username, dest_file_path)
+                esf = Object.from_file_path(system, file_user, file_path)
+                esf.move(file_user, dest_file_path)
                 return f.to_dict()
             else:
                 raise ApiException('Moving between systems is not supported; use COPY.',
@@ -388,7 +397,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                                       'dest_resource': dest_resource,
                                       'dest_file_id': dest_file_id})
 
-    def move_to_trash(self, system, file_path, file_user, **kwargs):
+    def move_to_trash(self, file_id, **kwargs):
         """Move a file into the trash folder
 
         Moves a file both in the Agave filesystem and the
@@ -402,41 +411,45 @@ class FileManager(AbstractFileManager, AgaveObject):
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
         """
-        trash = Object.from_file_path(system, self.username, 
-                                os.path.join(self.username, '.Trash'))
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        user_home_id = os.path.join(system, self.username)
+        trash_dir_id = os.path.join(user_home_id, '.Trash')
+        trash_path = os.path.join(self.username, '.Trash')
+
+        trash = Object.from_file_path(system, self.username, trash_path)
         if trash is None:
-            f_dict = self.mkdir(system, self.username, file_user, 
-                            os.path.join(self.username, '.Trash'), **kwargs) 
+            self.mkdir(user_home_id, '.Trash', **kwargs)
+
         tail, head = os.path.split(file_path)
-        ret = self.move(system, file_path, file_user, os.path.join(self.username, '.Trash', head))
+        trash_path = os.path.join(trash_dir_id, head)
+        ret = self.move(file_id, self.resource, trash_path)
         return ret
 
-    def mkdir(self, system, file_path, file_user, path, **kwargs):
-        """Creatd a directory
+    def mkdir(self, file_id, dir_name, **kwargs):
+        """Create a directory
 
         Creates a directory both in the Agave filesystem and the
         Elasticsearch index.
 
-        :param str system: system id
-        :param str file_path: full path to where the directory will be created
-        :param str file_user: username of the owner of the file
-        :param str path: full path to the directory to create
+        :param str file_id: the file_id of the path where the directory should be created
+        :param str dir_name: the name of the directory to create
 
         :returns: dict representation of the  
-            :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+            :class:`designsafe.apps.api.data.agave.file.AgaveFile` instance
         :rtype: dict
 
         Examples:
         --------
             Creating a directory `mkdir_test` in the $HOME directory
             of the user `username`
-            >>> fm.mkdir(system = 'designsafe.storage.default'
-            >>>          file_path = 'username', 
-            >>>          file_user = 'username',
-            >>>          path = 'username/mkdir_test')
+            >>> fm.mkdir(file_id = 'designsafe.storage.default/username',
+            >>>          dir_name = 'mkdir_test')
         """
-        f = AgaveFile.mkdir(system, self.username, file_path, path,
-                    agave_client = self.agave_client)
+
+        system, file_user, file_path = self.parse_file_id(file_id)
+        f = AgaveFile.mkdir(system, file_user, file_path, dir_name,
+                            agave_client = self.agave_client)
         logger.debug('f: {}'.format(f.to_dict()))
         esf = Object.from_agave_file(self.username, f)
         return f.to_dict()
@@ -470,6 +483,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         else:
             return None
 
+    #def rename(Self, file_id, target_name, **kwargs):
     def rename(self, system, file_path, file_user, path, **kwargs):
         """Renames a file
 
@@ -489,6 +503,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         ------
             `path` should only be the name the file will be renamed with.
         """
+        #system, file_user, file_path = self.parse_file_id(file_id)
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.rename(path)
@@ -522,7 +537,95 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
 
 class AgaveIndexer(AgaveObject):
+    """Indexer class for all indexing needs.
+    
+    This class helps when indexing files/folders into elasticsearch.
+    A file/folder needs to be indexed after any change except for content changes.
+    Meaning, when a file/folder is created, renamed, moved, etc.
+
+    It is recommended to call any of this class' methods in a celery task.
+    This is because most of the indexing operations take a 
+    considerable amount of time.
+
+    **Disclaimer:** A class is used to pack all this functionality together.
+    This is not necessary and these methods should, probably, live in a separate
+    module. The decision to leave this class here, for now, is because of the close
+    relation the indexing operations have with the :class:`filemanager` operations.
+
+    Generators
+    ---------
+
+        There are two generators implemented in this class 
+        :meth:`walk` and :meth:`walk_levels`. The functionality of these generators
+        is based on :meth:`os.walk` and their intended use is the same.
+        
+        :met:`walk_levels` is similar to :met:`os.walk`. This is the prefered
+        method to walk an Agave filesystem. 
+
+        :meth:`walk` differs from the regular :meth:`os.walk` in that it returns
+        a single file on every iteration instead of lists of `files` and `folders`.
+        This implementation is mainly legacy and was the first approach to walking
+        an agave filesyste that we tried. It is recommended to use 
+        :meth:`walk_levels` since it is more efficient. :met:`walk` can 
+        still be used, preferably, if the folder to walk is small.
+
+    Indexing
+    --------
+
+        There are three different methods for indexing :meth:`index`, :meth:`index_full`
+        and :met:`index_permissions`. The speration is necessary due to the number of
+        calls necessary to get all the information needed. If we want to retrieve
+        all the information for a specific file from agave (file information and 
+        permissions) we need to to a `files.listing` call and a `files.pems` call.
+
+        Retrieving the permissions is a separate call because Agave calculates
+        the permissions of a file based on different rules stored in the database. 
+        This need for two calls drives us to use **"optimistic permissions"** when ever
+        possible. **"optimistic permissions"** is when we assume who the owner of the
+        file is going to be and create a permission object with the owner's username
+        instead of making another call to Agave. The owner's username is extracted
+        from the target file path. We assume a file path of $HOME/path/to/file.txt
+        where $HOME will always be the username of the owner.
+    """
+
     def walk(self, system_id, path, bottom_up = False, yield_base = True):
+        """Walk a path in an agave filesystem.
+
+        This generator will yield single :class:`~designsafe.apps.api.agave.file.AgaveFile` 
+        object at a time. A call to `files.list` is done for every sub-level of `path`.
+        For a more efficient approach see :meth:`walk_levels`.
+
+        :param str system_id: system id
+        :param str path: path to walk
+        :param bool bottom_up: if `True` walk the path bottom to top. Default `False`
+            will walk the path top to bottom
+        :param bool yield_base: if 'True' will yield an 
+            :class:`~designsafe.apps.api.agave.file.AgaveFile` object of the 
+            path walked in the first iteration. After the first iteration it will
+            yield the children objects. Default 'True'.
+
+        :returns: childrens of the given file path
+        :rtype: :class:`~designsafe.apps.api.agave.file.AgaveFile`
+
+        Pseudocode:
+        -----------
+
+        1. call `files.list` on `path`
+        2. for each file in the listing
+            
+            2.1. instantiate :class:`~designsafe.apps.api.agave.file.AgaveFile`
+            2.2. check if we need to yield the parent folder
+            2.3. yield the :class:`~designsafe.apps.api.agave.file.AgaveFile`
+                instance if walking top to bottom
+            2.4. if it is a folder
+
+                2.4.1. call :met:`walk` with the folder's path
+                2.4.1. yield the object
+            
+            2.3. yield the :class:`~designsafe.apps.api.agave.file.AgaveFile`
+                instance if walking bottom to top
+
+        """
         files = self.call_operation('files.list', systemId = system_id, 
                                     filePath = path)
         for f in files:
@@ -539,6 +642,72 @@ class AgaveIndexer(AgaveObject):
                 yield aff
 
     def walk_levels(self, system_id, path, bottom_up = False):
+        """Walk a path in an agave filesystem.
+        
+        This generator walks the agavefilesystem making a call to `files.list`
+        for each sub-level of the given path. This generator differs from 
+        :meth:`walk` in that it returns all files and folders in a level
+        instead of a single file at a time. This behaviour is closer to
+        that of :meth:`os.walk`
+        
+        :param str system_id: system id
+        :param str path: path to walk
+        :param bool bottom_up: if `True` walk the path bottom to top. Default `False`
+            will walk the path top to bottom
+
+        :returns: A triple with the root fiele path string, a list with all the
+            folders in the current level and a list with all the files in the 
+            current level.
+        :rtype: (`str` root, 
+            [:class:`~designsafe.apps.api.agave.file.AgaveFile`] folders, 
+            [:class:`~designsafe.apps.api.agave.file.AgaveFile`] files)
+        
+         
+        Pseudocode:
+        -----------
+        
+        1. call `files.list` on `path`
+        2. for each file in the listing
+            
+            2.1. instantiate :class:`~designsafe.apps.api.agave.file.AgaveFile`
+            2.2. append object to the corresponding folders or files list
+        
+        3. if is a top to bottom walk then yield (path, folders, files)
+        4. for every folder in `folders`
+            
+            4.1. yield returned triple from calling :meth:`walk_levels` 
+                using the folder's path
+        
+        5. if is a bottom to top walk then yield (path, folders, files)
+
+        Notes:
+        ------
+            
+            Similar to :meth:`os.walk` the `files` and `folders` list can be
+            modified inplace to modify future iterations. Modifying the
+            `files` and `folders` lists inplace can be used to tell the
+            generator of any modifications done with every iteration.
+            This only makes sense when `bottom_up` is `False`. Any inplace 
+            change to the `files` or `folders` list when `bottom_up` is 
+            `True` it will not affect the behaviour of the yielded objects.
+
+        Examples:
+        ---------
+
+            Only walk a specific number of levels
+
+            >>> levels = 2
+            >>> for root, folders, files in self.walk_levels('designsafe.storage.default', 
+            ... 'username'):
+            >>>     #do cool things
+            >>>     #first check if we are at the necessary level
+            >>>     if levels and len(root.split('/')) >= levels:
+            ...         #delete everything from the folders list
+            ...         #so the generator will stop recursing
+            ...         del folders[:]
+
+        """
+
         resp = self.call_operation('files.list', systemId = system_id,
                                     filePath = path)
         folders = []
@@ -560,108 +729,216 @@ class AgaveIndexer(AgaveObject):
         if bottom_up:
             yield (path, folders, files)
 
-    def index(self, system_id, path, username, bottom_up = False, levels = 0, index_full_path = True):
+    def _dedup_and_discover(self, system_id, username, root, files, folders):
+        """Deduping and discovery of Agave Files in Elasticsearch (ES)
+
+        This helper function process a list of folders and files to discover
+        new file objects that haven't been indexed in ES. Also, dedups 
+        objects saved to the ES index.
+
+        :pram str system_id: system id
+        :param str username: the owner's username of the path being indexed
+        :param str root: root path
+        :param list files: a list of :class:`~designsafe.apps.api.data.agave.file.AgaveFile` objects
+        :param list folders: a list of :class:`~designsafe.apps.api.data.agave.file.AgaveFile` objects
+
+        :returns: `(objs_to_index, docs_to_delete)` A tuple with two lists 
+            `objs_to_index` is a list of :class:`~designsafe.apps.api.data.agave.file.AgaveFile` 
+            objects for which no ES object was found with the same `path` + `name`.
+            `docs_to_delete` is a list of 
+            :class:`~designsafe.apps.api.agave.elasticsearch.document.Object` objects
+            which appear repeated in the ES index.
+        :rtype: tuple of lists
+
+        Pseudocode
+        ----------
+            
+            1. construct a list of all the file names. This is so we can use it
+                to compare the documents retrieved from ES. We use only the 
+                file name because we are operating on a specific filesystem level
+                meaning that the path is always going to be the same.
+            2. get all the documents that are direct children of the root path given.
+            3. for each document retrieved from ES
+
+                3.1. append document to the list of documents
+                3.2. if the name of the document is already in the list of 
+                    document names then we assume is a duplicate and append it
+                    to the list of documents to delete.
+                    If the name of the document is not in the list of document
+                    names then append it
+            
+            4. create the `objs_to_index` list by getting all the file objects 
+                which names do not appear in the list of document names. Meaning,
+                we are getting all the file objects that we do not have in the
+                ES index.
+            5. create the `docs_to_delete` list by appending all the documents
+                which names do not appear in the file object names list to the
+                previously creatd duplicated documents list. Meaning, we are
+                appending all the ES documents for which there are no file in the
+                agave filesystem.
+        """
+
+        objs = folders + files
+        objs_names = [o.name for o in objs]
+        r, s = Object.listing(system_id, username, root)
+        docs = []
+        doc_names = [] 
+        docs_to_delete = []
+
+        for d in s.scan():
+            docs.append(d)
+            if d.name in doc_names:
+                docs_to_delete.append(d)
+            else:
+                doc_names.append(d.name)
+
+        objs_to_index = [o for o in objs if o.name not in doc_names]
+        docs_to_delete += [o for o in docs if o.name not in objs_names]
+        return objs_to_index, docs_to_delete
+
+    def index(self, system_id, path, username, bottom_up = False, 
+              levels = 0, index_full_path = True, full_indexing = False,
+              pems_indexing = False):
+        """Indexes a file path
+
+        This method walks an agave file path and indexes the file's information
+        into Elasticsearch (ES).
+
+        :param str system_id: system id
+        :param str path: path to index
+        :param str username: username making the request, this will be 
+            used for "optimistic permissions"
+        :param bool bottom_up: if `True` then the path walk will occur from the 
+            bottom to the top. Default `False`
+        :param int levels: number of levels deep to index. Default `0` which means
+            to index all the levels.
+        :param bool index_full_path: if `True` each of the parent folders will get
+            indexed. Default `True`
+        :param bool full_indexing: if `True` it will update all the corresponding
+            ES documents based on the existing files. **Warning** if this is set
+            no deduping or discovery is performed. Default `False`
+        :param bool pems_indexing: if `True` "optimistic permissions" will not be
+            used and the response to `files.listPermissions` will get indexed.
+
+        :returns: a tuple with the count of documents created and documents deleted
+        :rtype: list
+
+        Pseudocode
+        ----------
+            
+            1. use `walk_levels` to get the lists of files and folders
+            2. if `full_indexing` is **not** `True`
+
+                2.1 call `_dedup_and_discover` to get file objects to index
+                    and ES documents to delete
+                2.2 for each object to index
+
+                    2.2.1 create ES document
+                
+                2.3 for each document to delete
+
+                    2.3.1 delete ES document recursevly.
+
+            3. if `full_indexing` is `True`
+
+                3.1 for every file and folder in this level
+
+                    3.1.1 get or create ES document and update its data
+
+            4. if `index_full_path` is `True`
+                
+                4.1 split indexing path by `/` store it in `path_comp`
+                4.2 for every string in `path_comp`
+
+                    4.2.1 get agave file object
+                    4.2.2 get or create ES document
+
+        Notes
+        -----
+            
+            The documents indexed count returnes does not represent the new documents
+            created. It represent all the documents that were created and/or updated.
+            Meaning, all the documents touched.
+        """
+        docs_indexed = 0
+        docs_deleted = 0
         for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
-            objs = folders + files
-            objs_names = [o.name for o in objs]
-            #logger.debug('root: {}'.format(root))
-            r, s = Object().search_exact_folder_path(system_id, username, root)
-            doc_names = []
-            docs = []
-            docs_to_delete = []
-            for d in s.scan():
-                docs.append(d)
-                if d.name in doc_names:
-                    docs_to_delete.append(d)
-                else:
-                    doc_names.append(d.name)
-            #logger.debug('doc_names: {}'.format(doc_names))
-            objs_to_index = [o for o in objs if o.name not in doc_names]
-            #logger.debug('objs_to_index: {}'.format(objs_to_index))
-            docs_to_delete += [o for o in docs if o.name not in objs_names and o.name != 'Shared with me']
+            if not full_indexing:
+                objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
+                                                    username, root, files, folders)
+                for o in objs_to_index:
+                    doc = Object.from_agave_file(username, o, get_pems = pems_indexing)
+                    docs_indexed += 1
+                for d in docs_to_delete:
+                    docs_delete += d.delete_recursive()
+            else:
+                for o in folders + files:
+                    doc = Object.from_agave_file(username, o, 
+                                    auto_update = True, get_pems = pems_indexing)
+                    docs_indexed += 1
 
-            for o in objs_to_index:
-                d = o.to_dict(pems = False)
-                pems_user = d['path'].split('/')[0] if d['path'] != '/' else d['name']
-                d['permissions'] = [{
-                    'username': pems_user,
-                    'recursive': True,
-                    'permission': {
-                        'read': True,
-                        'write': True,
-                        'execute': True
-                    }
-                }]
-                do = Object(**d)
-                do.save()
-
-            for d in docs_to_delete:
-                #print dir(d)
-                #print d.path + '/' + d.name
-                d.delete()
-                if d.format == 'folder':
-                    r, s = Object().search_exact_folder_path(system_id, username, os.path.join(d.path, d.name))
-                    for doc in s.scan():
-                        doc.delete()
-
-            #logger.debug('levels {} cnt {}'.format(levels, cnt))
             if levels and len(root.split('/')) >= levels:
                 del folders[:]
 
         if index_full_path:
-            paths = path.split('/')
-            for i in range(len(paths)):
-                path = '/'.join(paths[:-1])
-                name = paths[-1]
-                logger.info('checking {}'.format(paths))
-                if not Object().get_exact_path(system_id, username, path, name):
-                    fo = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
-                    o = Object(**fo.to_dict(pems = False))
-                    o.save()
-                    pems_user = o.path.split('/')[0] if o.path != '/' else o.name
-                    pems = [{
-                        'username': pems_user,
-                        'recursive': True,
-                        'permission': {
-                            'read': True,
-                            'write': True,
-                            'execute': True
-                        }
-                    }]
-                    o.update(permissions = pems)
+            path_comp = path.split('/')
+            for i in range(len(path_comp)):
+                file_path = '/'.join(path_comp)
+                path, name = os.path.split(path)
+                af = AgaveFile.from_file_path(system_id, username, file_path, 
+                                        agave_client = self.agave_client)
+                doc = Object.from_agave_file(username, af, 
+                                    auto_update = full_indexing, get_pems = pems_indexing)
+                docs_indexed += 1
                 paths.pop()
-
-    def index_full(self, system_id, path, username, bottom_up = False, levels = 0, index_full_path = True):
-        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
-            objs = folders + files
-            for o in objs:
-                d = Object(**o.to_dict())
-                d.save()
-            if levels and len(root.path('/')) >= levels:
-                del folders[:]
-
-        if index_full_path:
-            paths = path.split('/')
-            for i in range(len(paths)):
-                path = '/'.join(paths[:-1])
-                name = paths[-1]
-                fo = AgaveFolderFile.from_path(self.agave_client, system_id, os.path.join(path, name))
-                o = Object(**fo.to_dict())
-                o.save()
-                paths.pop()
+        return docs_indexed, docs_deleted
 
     def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
-        r, s = Object().search_partial_path(system_id, username, path)
+        """Indexes the permissions
+
+        This method works from the indexed documents. It searches for all the 
+        Elasticsearch (ES) documents that are children of the given `path` and updates
+        the permissions doing a `files.listPermissions` call to agave. This means that
+        this method does not creates ES documents or do any deduping. 
+
+        :param str system_id: system id
+        :param str path: path to walk
+        :param str username: username who is making the request
+        :param bool bottom_up: if `True` iterate through the ES documents from the bottom
+            to the top based on path length
+        :param int levels: number of levels to iterate through. If `bottom_up` is set
+            to `True` this does not do anything.
+
+        :returns: count of documents updated
+        :rtype: int
+
+        Notes
+        -----
+            
+            In order to get all the documents that are children of the given path
+            we use a search that searches on `path._path` property of the document
+            this is set with a hierarchy tokenizer. 
+            
+            This means that with one search we can get all the children documents 
+            of a given path in one call, but they are not necessarily going 
+            to be sorted. In order to sort the files we sort them by the length
+            of their paths. This is not necessarily correct but it is good enough
+            for updating permissions.
+        """
+        cnt = 0
+        r, s = Object().listing_recursive(system_id, username, path)
         objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
         if levels:
             objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
         p, n = os.path.split(path)
         if p == '':
             p = '/'
-        objs.append(Object().get_exact_path(system_id, username, p, n))
+        objs.append(Object.from_file_path(system_id, username, p, n))
         for o in objs:
             if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
                 continue
             pems = self.call_operation('files.listPermissions', filePath = urllib.quote(os.path.join(o.path, o.name)), systemId = system_id)
             o.update(permissions = pems)
+            cnt += 1
 
+        return cnt

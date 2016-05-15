@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class AgaveFile(AbstractFile, AgaveObject):
+    """
+    Agave File class
+    """
 
     source = 'agave'
 
@@ -84,26 +87,21 @@ class AgaveFile(AbstractFile, AgaveObject):
         return [AgaveFile(wrap = o, agave_client = agave_client) for o in listing]
 
     @classmethod
-    def mkdir(cls, system, username, file_path, path, agave_client = None, **kwargs):
-        pat = path
-        tail, head = os.path.split(path)
-        body = '{{"action": "mkdir", "path": "{}"}}'.format(head)
+    def mkdir(cls, system, username, file_path, dir_name, agave_client = None, **kwargs):
+        body = '{{"action": "mkdir", "path": "{}"}}'.format(dir_name)
         try:
             logger.debug('Agave: calling: files.manage, args: {}'.format( 
                              {'systemId': system, 'filePath': file_path,
                               'body': body}))
-            f = agave_client.files.manage(systemId=system, filePath=file_path, 
-                                                body = body)
+            f = agave_client.files.manage(systemId=system, filePath=file_path, body=body)
         except (AgaveException, HTTPError) as e:
-            logger.error(e,
-                exc_info = True,
-                extra = kwargs)
+            logger.error(e, exc_info=True, extra=kwargs)
             d = {'operation': 'files.list'}
             d.update({'systemId': system, 'filePath': file_path, 'body': body})
-            raise ApiException(e.message,
-                        e.response.status_code,
-                        extra = d)
-        return cls.from_file_path(system, username, path, agave_client = agave_client)
+            raise ApiException(e.message, e.response.status_code, extra = d)
+
+        dir_path = os.path.join(file_path, dir_name)
+        return cls.from_file_path(system, username, dir_path, agave_client=agave_client)
 
     @property
     def previewable(self):
@@ -265,11 +263,10 @@ class AgaveFile(AbstractFile, AgaveObject):
             `path` should be the complete path to move the file into.
             Should contain the file's name.
         """
-        dest_full_path = os.path.join(path, self.name)
         d = {
             'systemId': self.system,
             'filePath': self.full_path,
-            'body': {"action": "move", "path": dest_full_path}
+            'body': {"action": "move", "path": path}
         }
         res = self.call_operation('files.manage', **d)
         self.path = path

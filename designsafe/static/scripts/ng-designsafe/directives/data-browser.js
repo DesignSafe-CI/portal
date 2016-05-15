@@ -70,6 +70,44 @@
           $scope.state.selected = {};
           $scope.state.selectAll = $scope.state.selecting = false;
         };
+
+        self.createFolder = function() {
+          var instance = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-create-folder.html',
+            controller: ['$scope', '$uibModalInstance', 'DataService', function($scope, $uibModalInstance) {
+              $scope.form = {
+                folderName: 'Untitled_folder'
+              };
+
+              $scope.doCreateFolder = function($event) {
+                $event.preventDefault();
+                $uibModalInstance.close($scope.form.folderName);
+              };
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+              };
+            }]
+          });
+
+          instance.result.then(function(folderName) {
+            $scope.state.loading = true;
+            DataService.mkdir({
+              file_id: $scope.data.listing.id,
+              resource: $scope.data.listing.source,
+              dir_name: folderName
+            }).then(function(resp) {
+              $scope.data.listing.children.push(resp.data);
+              $scope.state.loading = false;
+            }, function(err) {
+              // TODO notify user mkdir errored
+              logger.error(err);
+              $scope.state.loading = false;
+            })
+          });
+        };
+
+        self.uploadFiles = function() {};
         
         self.previewFile = function(file) {
           $uibModal.open({
@@ -175,6 +213,9 @@
           return _.contains(scope.data.currentSource._actions, 'WRITE') ||
             _.contains(scope.data.listing._actions, 'WRITE');
         };
+
+        scope.createFolder = dbCtrl.createFolder;
+        scope.uploadFiles = dbCtrl.uploadFiles;
       }
     };
   }]);
@@ -206,7 +247,7 @@
     };
   }]);
 
-  module.directive('dsDataBrowserToolbar', ['Logging', function(Logging) {
+  module.directive('dsDataBrowserToolbar', ['Logging', 'DataService', function(Logging, DataService) {
 
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowserToolbar');
 
@@ -225,13 +266,61 @@
           $event.preventDefault();
           dbCtrl.browseFile({resource: trailItem.source, file_id: trailItem.id});
         };
+
+        scope.trashSelected = function() {
+          _.each(scope.state.selected, function(val, key) {
+            var file = _.findWhere(scope.data.listing.children, {id: key});
+            var fileEl = $('tr[data-file-id="' + file.id + '"]');
+            fileEl.addClass('ds-data-browser-processing');
+            DataService.trash({file_id: file.id, resource: file.source}).then(
+              function(resp) {
+                scope.data.listing.children = _.reject(scope.data.listing.children, function(file) {
+                  return file.id === key;
+                });
+              },
+              function(err) {
+                // TODO notify user
+                logger.error(err);
+                fileEl.addClass('ds-data-browser-processing-danger');
+                setTimeout(function() {
+                  fileEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
+                }, 3000);
+              }
+            );
+
+          });
+        };
       }
     };
   }]);
 
-  module.directive('dsDataListDisplay', ['Logging', function(Logging) {
+  module.directive('dsDataListDisplay', ['Logging', 'DataService', function(Logging, DataService) {
     
     var logger = Logging.getLogger('ngDesignSafe.dsDataListDisplay');
+
+    function updateDragEl(options) {
+      options = _.extend({dragging: false, action: 'move', icon: 'arrows'}, options);
+
+      var action = options.action;
+      var $el = $('.ds-drag-el');
+      if ($el.length === 0) {
+        $el = $('<div class="ds-drag-el">');
+        $el.html('<div class="drag-action"></div><div class="drag-info"></div>');
+        $el.appendTo('body');
+      }
+
+      $('.drag-action', $el).html('<i class="fa fa-' + options.icon + '"></i> ' + options.action);
+      if (options.dragInfo) {
+        $('.drag-info', $el).html(options.dragInfo);
+      }
+
+      if (options.dragging) {
+        $el.show();
+      } else {
+        $el.hide();
+      }
+      return $el[0];
+    }
 
     return {
       require: '^^dsDataBrowser',
@@ -242,6 +331,7 @@
         enablePreview: '=preview'
       },
       link: function(scope, element, attrs, dbCtrl) {
+
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
         scope.getIconClass = dbCtrl.getIconClass;
@@ -255,6 +345,110 @@
             dbCtrl.browseFile({resource: file.source, file_id: file.id});
           } else if (scope.enablePreview) {
             dbCtrl.previewFile(file);
+          }
+        };
+
+        scope.dragStart = function (e, file) {
+          var dragInfo = '<i class="fa ' + DataService.getIcon(file.type, file.ext) + '"></i> ' + file.name;
+          var effect = e.altKey ? 'copy' : 'move';
+          var dragEl = updateDragEl({
+            dragging: true,
+            icon: effect === 'move' ? 'arrows' : 'copy',
+            action: effect,
+            dragInfo: dragInfo});
+
+          var fileURI = file.source + '://' + file.id;
+          e.dataTransfer.setDragImage(dragEl, 50, 50);
+          e.dataTransfer.effectAllowed = effect;
+          e.dataTransfer.setData('text/json', JSON.stringify(file));
+          e.dataTransfer.setData('text/uri-list', fileURI);
+          e.dataTransfer.setData('text/plain', fileURI);
+        };
+        
+        scope.dragEnter = function(e, file) {
+          if (file.type === 'folder') {
+            $(e.target, element).closest('tr').addClass('ds-droppable');
+          }
+        };
+        
+        scope.dragLeave = function(e, file) {
+          $(e.target, element).closest('tr').removeClass('ds-droppable');
+        };
+
+        scope.dragOver = function(e, file) {
+          if (file.type === 'folder') {
+            $(e.target, element).closest('tr').addClass('ds-droppable');
+            e.preventDefault();
+          }
+        };
+
+        scope.dragEnd = function() {
+          updateDragEl();
+        };
+
+        scope.dragDrop = function(e, file) {
+          var data = JSON.parse(e.dataTransfer.getData('text/json'));
+          var source =  data.id;
+          var dest = file.id;
+          var dragAction;
+          var sourceEl;
+
+          if (source !== dest) {
+            dragAction = e.dataTransfer.effectAllowed;
+            sourceEl = $('tr[data-file-id="' + source + '"]', element);
+            sourceEl.addClass('ds-data-browser-processing');
+            
+            var opts = {
+              src_resource: data.source,
+              src_file_id: data.id,
+              dest_resource: file.source,
+              dest_file_id: file.id
+            };
+            if (dragAction === 'move') {
+              DataService.move(opts).then(
+                function (resp) {
+                  logger.log(resp);
+                  sourceEl.addClass('ds-data-browser-processing-success');
+                  sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
+                    scope.data.listing.children = _.reject(scope.data.listing.children, function (child) {
+                      return child.id === source;
+                    });
+                    scope.$apply();
+                  });
+                },
+                function (err) {
+                  logger.error(err);
+                  // TODO
+                  // window.alert('ERROR: Unable to move ' + source + ' to ' + dest + '.');
+                  sourceEl.addClass('ds-data-browser-processing-danger');
+
+                  setTimeout(function() {
+                    sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
+                  }, 3000);
+                }
+              );
+            } else if (dragAction === 'copy') {
+              DataService.copy(opts).then(
+                function (resp) {
+                  sourceEl.addClass('ds-data-browser-processing-success');
+
+                  setTimeout(function() {
+                    sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-success');
+                  }, 3000);
+                },
+                function (err) {
+                  logger.error(err);
+                  // TODO
+                  // window.alert('ERROR: Unable to copy ' + source + ' to ' + dest + '.');
+                  sourceEl.addClass('ds-data-browser-processing-danger');
+
+                  setTimeout(function() {
+                    sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
+                  }, 3000);
+                }
+              );
+            }
+
           }
         };
       }

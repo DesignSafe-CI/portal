@@ -96,8 +96,22 @@
     /**
      *
      * @param options
+     * @param options.file_id The file_id of path in which to create the directory
+     * @param options.resource The resource on which file_id is sourced
+     * @param options.dir_name The name of the new directory
      */
-    service.getFile = function(options) {};
+    service.mkdir = function(options) {
+      options = options || {};
+      var params = {
+        'file_id': options.file_id,
+        'resource': options.resource
+      };
+      var body = {
+        'action': 'mkdir',
+        'dir_name': options.dir_name
+      };
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+    };
 
 
     /**
@@ -130,8 +144,13 @@
     /**
      *
      * @param options
+     * @param options.resource
+     * @param options.file_id
      */
-    service.trash = function(options) {};
+    service.trash = function(options) {
+      options = options || {};
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'move_to_trash'});
+    };
 
 
     /**
@@ -144,15 +163,45 @@
     /**
      *
      * @param options
+     * @param options.src_resource
+     * @param options.src_file_id
+     * @param options.dest_resource
+     * @param options.dest_file_id
      */
-    service.move = function(options) {};
+    service.move = function(options) {
+      var params = {
+        resource: options.src_resource,
+        file_id: options.src_file_id
+      };
+      var body = {
+        action: 'move',
+        dest_resource: options.dest_resource,
+        dest_file_id: options.dest_file_id
+      };
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+    };
 
 
     /**
      *
      * @param options
+     * @param options.src_resource
+     * @param options.src_file_id
+     * @param options.dest_resource
+     * @param options.dest_file_id
      */
-    service.copy = function(options) {};
+    service.copy = function(options) {
+      var params = {
+        resource: options.src_resource,
+        file_id: options.src_file_id
+      };
+      var body = {
+        action: 'move',
+        dest_resource: options.dest_resource,
+        dest_file_id: options.dest_file_id
+      };
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+    };
 
 
     /**

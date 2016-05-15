@@ -8,11 +8,15 @@
             </button>
             Name
         </th>
+        <th>Last modified</th>
         <th>Info</th>
         </thead>
 
         <tbody>
-        <tr ng-repeat="file in data.listing.children | orderBy:'name'">
+        <tr ng-repeat="file in data.listing.children | orderBy:'name'" data-file-id="{{ file.id }}"
+            ds-draggable transfer="file" drag-start="dragStart" drag-enter="dragEnter" drag-over="dragOver"
+            drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"
+        >
             <td>
                 <button class="flo-select-btn" ng-click="selectFile(file)" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
@@ -20,9 +24,22 @@
                 <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file.name }}</a>
             </td>
             <td>
+                {{ file.lastModified|date:"medium" }}
+            </td>
+            <td>
                 <button class="btn btn-xs btn-info"><i class="fa fa-info-circle"></i>
                     <span class="sr-only">More info</span>
                 </button>
+            </td>
+        </tr>
+        <tr ng-hide="data.listing.children.length">
+            <td colspan="3">
+                <p class="lead text-center text-muted">
+                    <br>
+                    There is nothing here!
+                    <br>
+                    <i class="fa fa-folder-open-o fa-2x"></i>
+                </p>
             </td>
         </tr>
         </tbody>

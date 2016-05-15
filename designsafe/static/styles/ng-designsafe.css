@@ -67,4 +67,46 @@
     flex: 1 1 auto;
 }
 
+.ds-droppable {
+    background-color: #d9edf7 !important;
+}
 
+.ds-drag-el {
+    position: absolute;
+    top: -1000em;
+    left: -1000em;
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: row;
+}
+
+.ds-drag-el .drag-action {
+    padding: .5em;
+    background-color: #5bc0de;
+    border: 1px solid #46B8DA;
+    color: #fff;
+}
+
+.ds-drag-el .drag-info {
+    padding: .5em .75em;
+    border: 1px solid #46B8DA;
+    background-color: #fff;
+}
+
+.ds-data-browser-processing * {
+    color: #eee;
+    border-color: #eee;
+    background-color: #ccc;
+}
+
+.ds-data-browser-processing-success * {
+    background-color: #d6e9c6;
+    border-color: #d6e9c6;
+    color: #3c763d;
+}
+
+.ds-data-browser-processing-danger * {
+    background-color: #ebccd1;
+    border-color: #ebccd1;
+    color: #a94442;
+}

@@ -67,9 +67,28 @@ class Object(DocType):
         return cls._execute_search(s)
 
     @classmethod
-    def from_agave_file(cls, username, file_obj):
+    def from_agave_file(cls, username, file_obj, auto_update = False, get_pems = False):
         o = cls.from_file_path(file_obj.system, username, file_obj.full_path)
         if o is not None:
+            if auto_update:
+                o.update(
+                    mimeType = file_obj.mime_type,
+                    name = file_obj.name,
+                    format = file_obj.format,
+                    deleted = False,
+                    lastModified = file_obj.lastModified.isoformat(),
+                    fileType = file_obj.ext or 'folder',
+                    agavePath = 'agave://{}/{}'.format(file_obj.system, file_obj.full_path),
+                    systemTags = [],
+                    length = file_obj.length,
+                    systemId = file_obj.system,
+                    path = file_obj.parent_path,
+                    keywords = [],
+                    link = file_obj._links['self']['href'],
+                    type = file_obj.type
+                )
+            if get_pems:
+                o.update(permissions = file_obj.permissions)
             return o
 
         o = cls(
@@ -86,10 +105,25 @@ class Object(DocType):
             path = file_obj.parent_path,
             keywords = [],
             link = file_obj._links['self']['href'],
-            type = file_obj.type,
-            permissions = file_obj.permissions
+            type = file_obj.type
         )
         o.save()
+        if get_pems:
+            pems = file_obj.permissions
+        else:
+            path = file_obj.path
+            pems_user = path.strip('/').split('/')[0]
+            pems = [{
+                'username': pems_user,
+                'recursive': True,
+                'permission': {
+                    'read': True,
+                    'write': True,
+                    'execute': True
+                }
+            }]
+
+        o.update(permissions = pems)
         return o
 
     @staticmethod        
@@ -123,16 +157,20 @@ class Object(DocType):
         d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
         doc = Object(**d)
         doc.save()
+        self.save()
         return self
 
     def delete_recursive(self):
+        cnt = 0
         if self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 o.delete()
+                cnt += 1
 
         self.delete()
-        return True
+        cnt += 1
+        return cnt
 
     def move(self, username, path):
         if self.type == 'dir':
@@ -146,6 +184,7 @@ class Object(DocType):
         self.update(path = tail)
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
         logger.debug('Moved: {}'.format(self.to_dict()))
+        self.save()
         return self
 
 
@@ -166,6 +205,7 @@ class Object(DocType):
         self.update(name = head)
         self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
         logger.debug('Updated ocument to {}'.format(os.path.join(self.path, self.name)))
+        self.save()
         return self
 
     def share(self, username, user_to_share, permission):
@@ -183,6 +223,7 @@ class Object(DocType):
             path_comps.pop()
 
         self.update_pems(user_to_share, permission)
+        self.save()
         return self
 
     def update_pems(self, user_to_share, pem):
