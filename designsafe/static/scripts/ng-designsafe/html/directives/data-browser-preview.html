@@ -12,17 +12,14 @@
         </div>
 
         <div ng-if="! data.previewUrl.loading && data.previewUrl.href" class="embed-responsive embed-responsive-4by3">
-            <iframe class="embed-responsive-item" src="{{ data.previewUrl.href }}"></iframe>
+            <iframe class="embed-responsive-item" ng-src="{{ data.previewUrl.href }}"></iframe>
         </div>
 
         <div class="caption text-center">
             <h4>{{ data.file.name }}</h4>
-            <p>
-                <span>{{ data.file.size|bytes }}</span><br>
-                <span ng-if="data.file.type === 'folder' && data.file.children">{{ data.file.children.length }} items</span><br>
-                <span>Created on {{ data.file.lastModified|date:'short' }}</span>
-
-            </p>
+            <div>{{ data.file.size|bytes }}</div>
+            <div ng-if="data.file.type === 'folder' && data.file.children">{{ data.file.children.length }} items</div>
+            <div>Created on {{ data.file.lastModified|date:'short' }}</div>
         </div>
     </div>
     <div class="actions text-center">
