@@ -405,13 +405,34 @@ class FileManager(AbstractFileManager, AgaveObject):
         Moves a file both in the Agave filesystem and the
         Elasticsearch index.
 
-        :param str system: system id
-        :param str file_path: full path to the file to move
-        :param str file_user: username of the owner of the file
+        :param str file_id: the file id in the format
+            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
 
         :returns: dict representation of the  
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
+
+        Pseudocode:
+        -----------
+
+            1. parse file_id into `system`, `file_user` and `file_path`
+            2. construct trash file path e.g. ('agave.system.id/user_home/.Trash')
+            3. check on the ES cache if the trash folder exists.
+                If the trash folder doesn't exists create it
+            4. IF there is a file in the trash folder with the same name as
+                the file we want to move (checking the ES cache for this)
+
+                4.1 IF the file we want to move is a folder
+                    
+                    4.1.2 change target name to <folder_name>_<datetime>
+                
+                4.2 ELSE the file is not a folder
+
+                    4.2.1 change target name to <file_naem>_<datetime>.<ext>
+            
+            5. ELSE use original file name as the target name
+            6. move file calling `self.move`
+
         """
         system, file_user, file_path = self.parse_file_id(file_id)
 
@@ -422,9 +443,24 @@ class FileManager(AbstractFileManager, AgaveObject):
         trash = Object.from_file_path(system, self.username, trash_path)
         if trash is None:
             self.mkdir(user_home_id, '.Trash', **kwargs)
+        
+        path_comps = os.path.split(file_path)
+        o = Objects.from_agave_file(system, self.username, 
+                                os.path.join(trash_path, path_comps[1]))
 
-        tail, head = os.path.split(file_path)
-        trash_path = os.path.join(trash_dir_id, head)
+        if o is not None:
+            if o.type == 'dir':
+                trash_path = '%s_%s' % (name, 
+                    datetime.datetime.now().isoformat().replace(':', '-'))
+            else:
+
+                trash_path = '%s_%s.%s' % (o.name.replace(o.ext, ''), 
+                                datetime.datetime.now.isoformat().replace(':', '-'),
+                                o.ext)
+        else:
+            tail, head = os.path.split(file_path)
+            trash_path = os.path.join(trash_dir_id, head)
+
         ret = self.move(file_id, self.resource, trash_path)
         return ret
 

@@ -172,6 +172,10 @@ class Object(DocType):
         cnt += 1
         return cnt
 
+    @property
+    def ext(self):
+        return os.path.pslitext(self.name)[1]
+
     def move(self, username, path):
         if self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
