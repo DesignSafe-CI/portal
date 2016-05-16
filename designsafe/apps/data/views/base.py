@@ -153,7 +153,7 @@ class  BasePublicTemplate(TemplateView):
         return context
 
 
-class DataBrowserTestView(BasePublicTemplate):
+class DataBrowserTestView(SecureMixin, BasePublicTemplate):
     def get_context_data(self, **kwargs):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
         context['unreadNotifications'] = 0
