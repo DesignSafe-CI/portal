@@ -84,8 +84,8 @@
     /**
      *
      * @param options {object}
-     * @param options.source {string} the `source` to list.
-     * @param options.id {object} the `id` of the file to list. The type and format of `id` varies based on `source`.
+     * @param options.resource {string} the `source` to list.
+     * @param options.file_id {object} the `id` of the file to list. The type and format of `id` varies based on `source`.
      */
     service.listPath = function(options) {
       options = options || {};

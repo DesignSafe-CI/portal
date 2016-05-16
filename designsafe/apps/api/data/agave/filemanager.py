@@ -218,13 +218,12 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>     do_something_cool(child)
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-        #if file_path.lower() == '$share':
-        #    file_path = '/'
-        #    file_user = self.username
-        #listing = self._es_listing(system, self.username, file_path)
-        #if not listing:
-        #    listing = self._agave_listing(system, file_path)
-        listing = self._agave_listing(system, file_path)
+        if file_path.lower() == '$share':
+           file_path = '/'
+           file_user = self.username
+        listing = self._es_listing(system, file_user, file_path)
+        if not listing:
+           listing = self._agave_listing(system, file_path)
         return listing
 
     def search(self, **kwargs):
@@ -281,7 +280,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Examples:
         --------
             Delete a file. `fm` is an instance of FileManager
-            >>> fm.delete(system = 'designsafe.storage.default' 
+            >>> fm.delete(system = 'designsafe.storage.default',
             >>>         file_path = 'username/.Trash/file.jpg', 
             >>>         file_user = 'username')
         """
@@ -309,8 +308,11 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
-        postit = f.create_postit(force=True)
-        return {'href': postit['_links']['self']['href']}
+        if f.type == 'file':
+            postit = f.create_postit(force=True)
+            return {'href': postit['_links']['self']['href']}
+        else:
+            return None
 
     #TODO: we don't need this method anymore
     def file(self, file_id, action, path = None, **kwargs):

@@ -19,7 +19,7 @@
             <h4>{{ data.file.name }}</h4>
             <p>
                 <span>{{ data.file.size|bytes }}</span><br>
-                <span ng-if="data.file.type === 'folder'">{{ data.file.children.length }} items</span><br  ng-if="data.file.type === 'folder'">
+                <span ng-if="data.file.type === 'folder' && data.file.children">{{ data.file.children.length }} items</span><br>
                 <span>Created on {{ data.file.lastModified|date:'short' }}</span>
 
             </p>

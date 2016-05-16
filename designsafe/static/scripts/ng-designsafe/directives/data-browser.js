@@ -108,8 +108,8 @@
         };
 
         self.uploadFiles = function() {};
-        
-        self.previewFile = function(file) {
+
+        self.displayPreview = function(file) {
           $uibModal.open({
             templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-preview.html',
             controller: function($scope, $sce, $uibModalInstance, DataService, file) {
@@ -147,17 +147,6 @@
                   $scope.data.downloadUrl.href = false;
                 });
 
-              // $scope.copyToMyData = function($event, item) {
-              //   $event.preventDefault();
-              //
-              //   DataService.copyToMyData(item)
-              //   .then(function(response) {
-              //     logger.debug(response);
-              //   }, function(error) {
-              //     logger.error(error);
-              //   });
-              // };
-
               $scope.cancel = function () {
                 $uibModalInstance.dismiss('cancel');
               };
@@ -166,8 +155,24 @@
             resolve: {file: file}
           });
         };
+        
+        self.previewFile = function(file) {
+          $scope.state.loading = true;
+          DataService.listPath({resource: file.source, file_id: file.id}).then(
+            function(resp) {
+              self.displayPreview(resp.data);
+              $scope.state.loading = false;
+            },
+            function(err) {
+              // TODO notify user preview failed
+              logger.error(err);
+              $scope.state.loading = false;
+            }
+          );
+        };
 
         self.browseFile = function(options) {
+          self.clearSelection();
           $scope.state.loading = true;
           options = options || {};
           DataService.listPath(options).then(
@@ -338,6 +343,8 @@
         scope.selectAll = dbCtrl.selectAll;
         scope.selectFile = dbCtrl.selectFile;
         scope.clearSelection = dbCtrl.clearSelection;
+
+        scope.previewFile = dbCtrl.previewFile;
 
         scope.browseFile = function($event, file) {
           $event.preventDefault();
