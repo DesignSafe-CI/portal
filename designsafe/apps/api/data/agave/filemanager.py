@@ -445,21 +445,23 @@ class FileManager(AbstractFileManager, AgaveObject):
             self.mkdir(user_home_id, '.Trash', **kwargs)
         
         path_comps = os.path.split(file_path)
-        o = Objects.from_agave_file(system, self.username, 
+        o = Objects.from_file_path(system, self.username, 
                                 os.path.join(trash_path, path_comps[1]))
 
         if o is not None:
             if o.type == 'dir':
-                trash_path = '%s_%s' % (name, 
+                trash_name = '%s_%s' % (name, 
                     datetime.datetime.now().isoformat().replace(':', '-'))
             else:
-
-                trash_path = '%s_%s.%s' % (o.name.replace(o.ext, ''), 
+                trash_name = '%s_%s.%s' % (o.name.replace(o.ext, ''), 
                                 datetime.datetime.now.isoformat().replace(':', '-'),
                                 o.ext)
-        else:
-            tail, head = os.path.split(file_path)
-            trash_path = os.path.join(trash_dir_id, head)
+
+            self.rename(os.path.join(system, o.full_path), trash_name)
+            file_path = os.path.join(o.path, trash_name)
+
+        tail, head = os.path.split(file_path)
+        trash_path = os.path.join(trash_dir_id, head)
 
         ret = self.move(file_id, self.resource, trash_path)
         return ret
@@ -521,17 +523,14 @@ class FileManager(AbstractFileManager, AgaveObject):
         else:
             return None
 
-    #def rename(Self, file_id, target_name, **kwargs):
-    def rename(self, system, file_path, file_user, path, **kwargs):
+    def rename(Self, file_id, target_name, **kwargs):
         """Renames a file
 
         Renames a file both in the Agave filesystem and the
         Elasticsearch index.
 
-        :param str system: system id
-        :param str file_path: full path to the file
-        :param str file_user: username of the owner of the file
-        :param str path: new name for the file
+        :param str file_id: string representing the file id
+        :param str target_name: name used to rename the file
 
         :returns: dict representation of the  
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
@@ -541,12 +540,13 @@ class FileManager(AbstractFileManager, AgaveObject):
         ------
             `path` should only be the name the file will be renamed with.
         """
-        #system, file_user, file_path = self.parse_file_id(file_id)
+        system, file_user, file_path = self.parse_file_id(file_id)
+
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
-        f.rename(path)
+        f.rename(target_name)
         esf = Object.from_file_path(system, self.username, file_path)
-        esf.rename(self.username, path)
+        esf.rename(self.username, target_name)
         return f.to_dict()
     
     def share(self, file_id, user = '', permission = 'READ', **kwargs):
