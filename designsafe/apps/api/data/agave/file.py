@@ -15,6 +15,32 @@ logger = logging.getLogger(__name__)
 class AgaveFile(AbstractFile, AgaveObject):
     """
     Agave File class
+
+    This class takes care of everything needed to correctly
+    call the agave filesystem endpoint. This class also wraps
+    a dict with all the information for a file.
+
+    :attr object agave_client: :class:`~agavepy.agave.Agave` object to call Agave.
+    :attr list _trail: list of dict with information of the path trail for a file.
+    :attr dict _wrap: dict where the data is stored.
+
+    Wrap:
+    -----
+
+        This class wraps a dict object which holds all the data for a file.
+        The dict object is a response from an agave call to `files.listing`.
+        This wrapping makes the code look cleaner and more efficient. 
+        Accessing the data in the wrapped dict object works just by using 
+        a dict's key as if it were an attribute of this class. This is done
+        by overwriting the `__getattr__` method, done in 
+        :class:`~designsafe.apps.api.agave.agave_object.AgaveObject`.
+        This means that if the dict object stored in `_wrap` has a key `lastModified`
+        then one could access this value using `af.lastModified` or `af._wrap['lastModified']`
+
+        There is some extra sugar on the `_wrap` dict access implementation. A underscore
+        to camelcase conversion happens in order to be able to acces values using
+        a more pythonic way. This means that one could also access the `lastModified` value
+        by using `af.last_modified`.
     """
 
     source = 'agave'
