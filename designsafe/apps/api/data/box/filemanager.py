@@ -117,13 +117,17 @@ class FileManager(AbstractFileManager):
 
     def preview(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
-        embed_url = self.box_api.file(file_id).get(fields=['expiring_embed_link'])
-        return {'href': embed_url._response_object['expiring_embed_link']['url']}
+        if file_type == 'file':
+            embed_url = self.box_api.file(file_id).get(fields=['expiring_embed_link'])
+            return {'href': embed_url._response_object['expiring_embed_link']['url']}
+        return None
 
     def download(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
-        download_url = self.box_api.file(file_id).get_shared_link_download_url()
-        return {'href': download_url}
+        if file_type == 'file':
+            download_url = self.box_api.file(file_id).get_shared_link_download_url()
+            return {'href': download_url}
+        return None
 
     def search(self, q, **kwargs):
         pass
