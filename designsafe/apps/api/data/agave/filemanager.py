@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from functools import wraps
 import os
 import logging
+import datetime
 logger = logging.getLogger(__name__)
 
 FILESYSTEMS = {
@@ -229,8 +230,7 @@ class FileManager(AbstractFileManager, AgaveObject):
     def search(self, **kwargs):
         return [{}]
 
-    #def copy(self, file_id, target_file_id, **kwargs):
-    def copy(self, system, file_path, file_user, path, **kwargs):
+    def copy(self, file_id, target_file_id, **kwargs):
         """Copies a file
 
         Copies a file in both the Agave filesystem and the 
@@ -253,7 +253,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>         file_user = 'username', 
             >>>         path = 'username/file_copy.jpg')
         """
-        #system, file_user, file_path = self.parse_file_id(file_id)
+        system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
@@ -262,8 +262,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.copy(self.username, path)
         return f.to_dict()
 
-    #def delete(self, file_id, **kwargs):
-    def delete(self, system, file_path, file_user, **kwargs):
+    def delete(self, file_id, **kwargs):
         """Deletes a file
 
         Deletes a file in both the Agave filesystem and the
@@ -284,7 +283,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>         file_path = 'username/.Trash/file.jpg', 
             >>>         file_user = 'username')
         """
-        #system, file_user, file_path = self.parse_file_id(file_id)
+        system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
@@ -367,23 +366,24 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         :param str file_id: the file id in the format
             <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
-        :param str dest_path: full path to the file to move
-        :param str file_user: username of the owner of the file
-        :param str path: full path to move the file
+        :param str dest_resource: destination resource
+        :param str file_id: destination file id
 
         :returns: dict representation of the  
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
+
+        .. note:: this method only moves files from folder to folder
+            in the same file system. For moving files between file systems
+            see py:meth:`copy`
         """
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, file_user, file_path,
                                      agave_client = self.agave_client)
-
         if dest_resource == self.resource:
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
             if dest_system == system:
-                logger.debug('moving {} to {}'.format(file_id, dest_file_path))
                 f.move(dest_file_path)
                 esf = Object.from_file_path(system, file_user, file_path)
                 esf.move(file_user, dest_file_path)
@@ -445,16 +445,16 @@ class FileManager(AbstractFileManager, AgaveObject):
             self.mkdir(user_home_id, '.Trash', **kwargs)
         
         path_comps = os.path.split(file_path)
-        o = Objects.from_file_path(system, self.username, 
+        o = Object.from_file_path(system, self.username, 
                                 os.path.join(trash_path, path_comps[1]))
 
         if o is not None:
             if o.type == 'dir':
-                trash_name = '%s_%s' % (name, 
+                trash_name = '%s_%s' % (o.name, 
                     datetime.datetime.now().isoformat().replace(':', '-'))
             else:
-                trash_name = '%s_%s.%s' % (o.name.replace(o.ext, ''), 
-                                datetime.datetime.now.isoformat().replace(':', '-'),
+                trash_name = '%s_%s%s' % (o.name.replace(o.ext, ''), 
+                                datetime.datetime.now().isoformat().replace(':', '-'),
                                 o.ext)
 
             self.rename(os.path.join(system, o.full_path), trash_name)
