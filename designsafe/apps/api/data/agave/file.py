@@ -194,7 +194,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             >>> #Next time we access .permissions a call to agave will be made.
             >>> print f.permissions #reloaded permissions from agave.
         """
-        if self._permissions is None:
+        if not self._permissions:
             pems = self.call_operation('files.listPermissions', 
                         filePath = self.full_path, systemId = self.system)
             self._permissions = pems
