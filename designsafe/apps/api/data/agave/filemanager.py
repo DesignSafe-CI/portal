@@ -219,11 +219,11 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
         system, file_user, file_path = self.parse_file_id(file_id)
         if file_path.lower() == '$share':
-           file_path = '/'
-           file_user = self.username
-        listing = self._es_listing(system, file_user, file_path)
+            file_path = '/'
+            file_user = self.username
+        listing = self._es_listing(system, self.username, file_path)
         if not listing:
-           listing = self._agave_listing(system, file_path)
+            listing = self._agave_listing(system, file_path)
         return listing
 
     def search(self, **kwargs):
