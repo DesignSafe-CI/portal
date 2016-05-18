@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+import dateutil.parser
 
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
@@ -70,7 +71,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         super(AgaveFile, self).__init__(**kwargs)
         self.agave_client = agave_client
         self._trail = None
-        if self._wrap and 'permissions' in self._wrap:
+        if self._wrap and 'permissions' in self._wrap and not isinstance(self._wrap['permissions'], basestring):
             self._permissions = self._wrap['permissions']
 
         if self.name == '.':
@@ -260,8 +261,20 @@ class AgaveFile(AbstractFile, AgaveObject):
             'filePath': self.full_path,
             'body': {"action": "copy", "path": path}
         }
-        res = self.call_operation('files.manage', **d)
-        return self
+        copy_wrap = self.call_operation('files.manage', **d)
+        
+        tail, head = os.path.split(path)
+        copy_wrap['length'] = self.length
+        copy_wrap['lastModified'] = dateutil.parser.parse(copy_wrap['lastModified'])
+        copy_wrap['format'] = unicode(self.format)
+        copy_wrap['type'] = unicode(self.type)
+        copy_wrap['system'] = unicode(self.system)
+        copy_wrap['mimeType'] = unicode(self.mime_type)
+        copy_wrap['name'] = unicode(head)
+        copy_wrap['path'] = unicode(path)
+        copy_wrap['permissions'] = []
+        ret = AgaveFile(wrap = copy_wrap, agave_client = self.agave_client)
+        return ret
 
     def delete(self):
         """

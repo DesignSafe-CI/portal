@@ -591,13 +591,13 @@ class AgaveIndexer(AgaveObject):
     relation the indexing operations have with the :class:`filemanager` operations.
 
     Generators
-    ---------
+    -----------
 
         There are two generators implemented in this class 
         :meth:`walk` and :meth:`walk_levels`. The functionality of these generators
         is based on :meth:`os.walk` and their intended use is the same.
         
-        :met:`walk_levels` is similar to :met:`os.walk`. This is the prefered
+        :meth:`walk_levels` is similar to :meth:`os.walk`. This is the prefered
         method to walk an Agave filesystem. 
 
         :meth:`walk` differs from the regular :meth:`os.walk` in that it returns
@@ -607,8 +607,7 @@ class AgaveIndexer(AgaveObject):
         :meth:`walk_levels` since it is more efficient. :met:`walk` can 
         still be used, preferably, if the folder to walk is small.
 
-    Indexing
-    --------
+    **Indexing**:
 
         There are three different methods for indexing :meth:`index`, :meth:`index_full`
         and :met:`index_permissions`. The speration is necessary due to the number of

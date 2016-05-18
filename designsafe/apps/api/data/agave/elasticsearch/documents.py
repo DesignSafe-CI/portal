@@ -267,15 +267,12 @@ class Object(DocType):
         :returns: instance of this class
         :rtype: :class:`Object`
 
-        .. note:: this method returns the same instance of the class.
-            This is to account for chainability. This also means
-            that in order to get the document representing the resulting
-            file another instance of this class should be constructed
-            by hand.
+        .. note:: this method returns the copied document.
 
         Examples:
         ---------
             Copy a file and print the resulting copied file path
+
             >>> origin_doc = Object.from_file_path('agave.system.id', 
             ...                 'username', 'username/path/file.txt')
             >>> origin_doc.copy('username', 'file_copy.txt')
@@ -305,7 +302,7 @@ class Object(DocType):
         doc = Object(**d)
         doc.save()
         self.save()
-        return self
+        return doc
 
     def delete_recursive(self):
         """Delete a file recursively.
