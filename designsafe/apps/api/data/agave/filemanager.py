@@ -41,7 +41,11 @@ class FileManager(AbstractFileManager, AgaveObject):
         self.agave_client = Agave(api_server = agave_url,
                                   token = access_token)
         self.username = username
+<<<<<<< HEAD
         self._user = user_obj
+=======
+        self.indexer = AgaveIndexer()
+>>>>>>> 3fc735a... Adding agave file tests
 
     def is_shared(self, file_id):
         """Checks if the `file_id` is shared for the file manager's user.
@@ -241,19 +245,18 @@ class FileManager(AbstractFileManager, AgaveObject):
         :param str dest_file_id:
 
         :returns: dict representation of the original 
-        :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+            :class:`~designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
 
         **Examples**
             Copy a file. `fm` is an instance of FileManager
+
             >>> fm.copy(file_id='designsafe.storage.default/username/file.jpg',
-            >>>         dest_resource='agave',
-            >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
+            ...         dest_resource='agave',
+            ...         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
         system, file_user, file_path = self.parse_file_id(file_id)
         
-        target_system, target_file_user, target_file_path = self.parse_file_id(target_file_id)
-
         f = AgaveFile.from_file_path(system, file_user, file_path,
                                      agave_client = self.agave_client)
 
@@ -261,15 +264,15 @@ class FileManager(AbstractFileManager, AgaveObject):
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
 
             if dest_system == system:
-                dest_file_uri = os.path.join(dest_file_path, f.name)
+                dest_file_uri = os.path.join(dest_file_path)
             else:
                 dest_file_uri = 'agave://{}'.format(
-                    os.path.join(dest_system, dest_file_path, f.name))
+                    os.path.join(dest_system, dest_file_path))
 
             logger.debug('copying {} to {}'.format(file_id, dest_file_uri))
             copied_file = f.copy(dest_file_uri)
-            esf = Object.from_agave_file(dest_file_user, copied_file, True, True)
-            esf.save()
+            esf = Object.from_file_path(system, file_user, file_path)
+            esf.copy(dest_file_user, dest_file_uri)
             return copied_file.to_dict()
 
         else:
@@ -278,7 +281,10 @@ class FileManager(AbstractFileManager, AgaveObject):
             if remote_fm:
                 postit = f.create_postit(lifetime=300)
                 import_url = postit['_links']['self']['href']
-                remote_fm(self._user).import_file(dest_file_id, f.name, import_url)
+                rmf = remote_fm(self._user)
+                logger.debug('rmf: {}'.format(rmf))
+                res = rmf.import_file(dest_file_id, f.name, import_url)
+                logger.debug('res: {}'.format(res))
             else:
                 raise ApiException('Unknown destination resource', status=400,
                                    extra={'file_id': file_id,
@@ -656,18 +662,17 @@ class AgaveIndexer(AgaveObject):
 
         :param str system_id: system id
         :param str path: path to walk
-        :param bool bottom_up: if `True` walk the path bottom to top. Default `False`
-            will walk the path top to bottom
+        :param bool bottom_up: if `True` walk the path bottom to top. 
+            Default `False` will walk the path top to bottom
         :param bool yield_base: if 'True' will yield an 
             :class:`~designsafe.apps.api.agave.file.AgaveFile` object of the 
-            path walked in the first iteration. After the first iteration it will
-            yield the children objects. Default 'True'.
+            path walked in the first iteration. After the first iteration it 
+            will yield the children objects. Default 'True'.
 
         :returns: childrens of the given file path
-        :rtype: :class:`~designsafe.apps.api.agave.file.AgaveFile`
+        :rtype: :class:`~designsafe.apps.api.data.agave.file.AgaveFile`
 
-        Pseudocode:
-        -----------
+        **Pseudocode**
 
         1. call `files.list` on `path`
         2. for each file in the listing

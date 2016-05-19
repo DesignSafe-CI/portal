@@ -1,0 +1,61 @@
+[ {
+    "username" : "ds_admin",
+    "internalUsername" : null,
+    "permission" : {
+      "read" : true,
+      "write" : true,
+      "execute" : true
+    },
+    "recursive" : true,
+    "_links" : {
+      "self" : {
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/xirdneh"
+      },
+      "file" : {
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+      },
+      "profile" : {
+        "href" : "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+      }
+    }
+  }, {
+    "username" : "envision",
+    "internalUsername" : null,
+    "permission" : {
+      "read" : true,
+      "write" : false,
+      "execute" : false
+    },
+    "recursive" : false,
+    "_links" : {
+      "self" : {
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/xirdneh"
+      },
+      "file" : {
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+      },
+      "profile" : {
+        "href" : "https://agave.designsafe-ci.org/profiles/v2/envision"
+      }
+    }
+  },{
+    "username" : "xirdneh",
+    "internalUsername" : null,
+    "permission" : {
+      "read" : true,
+      "write" : true,
+      "execute" : true
+    },
+    "recursive" : true,
+    "_links" : {
+      "self" : {
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/xirdneh"
+      },
+      "file" : {
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+      },
+      "profile" : {
+        "href" : "https://agave.designsafe-ci.org/profiles/v2/xirdneh"
+      }
+    }
+  } ]
