@@ -41,11 +41,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         self.agave_client = Agave(api_server = agave_url,
                                   token = access_token)
         self.username = username
-<<<<<<< HEAD
         self._user = user_obj
-=======
         self.indexer = AgaveIndexer()
->>>>>>> 3fc735a... Adding agave file tests
 
     def is_shared(self, file_id):
         """Checks if the `file_id` is shared for the file manager's user.
