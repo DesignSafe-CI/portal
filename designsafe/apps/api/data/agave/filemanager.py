@@ -18,7 +18,6 @@ FILESYSTEMS = {
 }
 
 class FileManager(AbstractFileManager, AgaveObject):
-
     resource = 'agave'
 
     def __init__(self, user_obj, **kwargs):
@@ -245,14 +244,15 @@ class FileManager(AbstractFileManager, AgaveObject):
         :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
 
-        Examples:
-        --------
+        **Examples**
             Copy a file. `fm` is an instance of FileManager
             >>> fm.copy(file_id='designsafe.storage.default/username/file.jpg',
             >>>         dest_resource='agave',
             >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
         system, file_user, file_path = self.parse_file_id(file_id)
+        
+        target_system, target_file_user, target_file_path = self.parse_file_id(target_file_id)
 
         f = AgaveFile.from_file_path(system, file_user, file_path,
                                      agave_client = self.agave_client)
@@ -517,7 +517,6 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
 
     def preview(self, file_id, **kwargs):
-        logger.debug(kwargs)
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
@@ -614,7 +613,7 @@ class AgaveIndexer(AgaveObject):
 
     Generators
     -----------
-
+        
         There are two generators implemented in this class 
         :meth:`walk` and :meth:`walk_levels`. The functionality of these generators
         is based on :meth:`os.walk` and their intended use is the same.
@@ -646,6 +645,7 @@ class AgaveIndexer(AgaveObject):
         from the target file path. We assume a file path of $HOME/path/to/file.txt
         where $HOME will always be the username of the owner.
     """
+
 
     def walk(self, system_id, path, bottom_up = False, yield_base = True):
         """Walk a path in an agave filesystem.
