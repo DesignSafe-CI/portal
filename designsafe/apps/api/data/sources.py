@@ -21,7 +21,7 @@ class SourcesApi(object):
             "_extra": {
                 "icon": "fa-group"
             },
-            "_actions": ["READ"]
+            "_actions": ["READ", "WRITE", "EXECUTE"]
         },
         {
             "id": "public",
@@ -41,7 +41,7 @@ class SourcesApi(object):
             "_extra": {
                 "icon": "fa-square"
             },
-            "_actions": ["READ"]
+            "_actions": ["READ", "WRITE", "EXECUTE"]
         }
     ]
 

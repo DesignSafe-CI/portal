@@ -44,7 +44,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         by using `af.last_modified`.
     """
 
-    source = 'agave'
+    DEFAULT_SOURCE = 'agave'
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
         '.png', '.gif', '.jpg', '.jpeg',
@@ -69,6 +69,7 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     def __init__(self, agave_client = None, **kwargs):
         super(AgaveFile, self).__init__(**kwargs)
+        self.source = kwargs.pop('source', self.DEFAULT_SOURCE)
         self.agave_client = agave_client
         self._trail = None
         if self._wrap and 'permissions' in self._wrap and not isinstance(self._wrap['permissions'], basestring):
@@ -94,11 +95,10 @@ class AgaveFile(AbstractFile, AgaveObject):
                         e.response.status_code,
                         extra = d)
 
-        return cls(agave_client = agave_client, 
-                   wrap = listing[0], **kwargs)
+        return cls(agave_client = agave_client, wrap = listing[0], **kwargs)
 
     @classmethod
-    def listing(cls, system, file_path, agave_client):
+    def listing(cls, system, file_path, agave_client, **kwargs):
         try:
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                          {'systemId': system, 'filePath': file_path}))
@@ -111,7 +111,7 @@ class AgaveFile(AbstractFile, AgaveObject):
                         e.response.status_code,
                         extra = d)
         
-        return [AgaveFile(wrap = o, agave_client = agave_client) for o in listing]
+        return [cls(wrap = o, agave_client = agave_client, **kwargs) for o in listing]
 
     @classmethod
     def mkdir(cls, system, username, file_path, dir_name, agave_client = None, **kwargs):
@@ -128,21 +128,22 @@ class AgaveFile(AbstractFile, AgaveObject):
             raise ApiException(e.message, e.response.status_code, extra = d)
 
         dir_path = os.path.join(file_path, dir_name)
-        return cls.from_file_path(system, username, dir_path, agave_client=agave_client)
+        return cls.from_file_path(system, username, dir_path, agave_client=agave_client,
+                                  **kwargs)
 
     @property
     def previewable(self):
         return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
 
-    def create_postit(self, force=True):
+    def create_postit(self, force=True, max_uses=1, lifetime=60):
         url = self._links['self']['href']
         if force:
             url += '?force=true'
         body = {
             'url': url,
-            'maxUses': 1,
+            'maxUses': max_uses,
             'method': 'GET',
-            'lifetime': 60,
+            'lifetime': lifetime,
             'noauth': False
         }
         return self.call_operation('postits.create', body=body)
@@ -166,11 +167,11 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def id(self):
-        return os.path.join(self.system, self.path)
+        return os.path.join(self.system, self.path.strip('/'))
 
     @property
     def parent_path(self):
-        path, name = os.path.split(self.path)
+        path, name = os.path.split(self.path.strip('/'))
         if path == '':
             path = '/'
         return path

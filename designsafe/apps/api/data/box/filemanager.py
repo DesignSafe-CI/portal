@@ -3,7 +3,12 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.box.file import BoxFile
 from designsafe.apps.box_integration import util
 from boxsdk.exception import BoxAPIException
+from boxsdk.config import API
 import logging
+import json
+import requests
+from requests_toolbelt.downloadutils import tee
+from requests_toolbelt.streaming_iterator import StreamingIterator
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +133,21 @@ class FileManager(AbstractFileManager):
             download_url = self.box_api.file(file_id).get_shared_link_download_url()
             return {'href': download_url}
         return None
+
+    def import_file(self, file_id, import_file_name, import_url, **kwargs):
+        file_type, file_id = self.parse_file_id(file_id)
+        if file_type == 'folder':
+            try:
+                r = requests.get(import_url, stream=True)
+                self.box_api.folder(file_id).upload_stream(r.raw, import_file_name)
+            except BoxAPIException as e:
+                return ApiException('Failed to import file: {}'.format(e.message),
+                                    status=400,
+                                    extra={
+                                        'file_id': file_id,
+                                        'import_file_name': import_file_name,
+                                        'import_url': import_url
+                                    })
 
     def search(self, q, **kwargs):
         pass

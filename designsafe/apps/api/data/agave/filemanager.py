@@ -32,6 +32,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         :param str user_obj: The user object from the django user model.
         """
         super(FileManager, self).__init__(**kwargs)
+        self._user = user_obj
         username = user_obj.username
         if user_obj.agave_oauth.expired:
             user_obj.agave_oauth.refresh()
@@ -174,13 +175,13 @@ class FileManager(AbstractFileManager, AgaveObject):
             file_user = self.username
         else: 
             components = file_id.strip('/').split('/')
-            system_id = components[0] if len(components) >= 1 else None
+            system_id = components[0] if len(components) >= 1 else settings.AGAVE_STORAGE_SYSTEM
             file_path = '/'.join(components[1:]) if len(components) >= 2 else self.username
             file_user = components[1] if len(components) >= 2 else self.username
 
         return system_id, file_user, file_path
         
-    def listing(self, file_id, **kwargs):
+    def listing(self, file_id=None, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
@@ -230,16 +231,15 @@ class FileManager(AbstractFileManager, AgaveObject):
     def search(self, **kwargs):
         return [{}]
 
-    def copy(self, file_id, target_file_id, **kwargs):
+    def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Copies a file
 
         Copies a file in both the Agave filesystem and the 
         Elasticsearch index.
-            
-        :param str system: system id
-        :param str file_path: full path to the file to copy
-        :param str file_user: username of the owner of the file
-        :param str path: full path to the resulting copied file
+
+        :param str file_id:
+        :param str dest_resource:
+        :param str dest_file_id:
 
         :returns: dict representation of the original 
         :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
@@ -248,19 +248,42 @@ class FileManager(AbstractFileManager, AgaveObject):
         Examples:
         --------
             Copy a file. `fm` is an instance of FileManager
-            >>> fm.copy(system = 'designsafe.storage.default' 
-            >>>         file_path = 'username/file.jpg', 
-            >>>         file_user = 'username', 
-            >>>         path = 'username/file_copy.jpg')
+            >>> fm.copy(file_id='designsafe.storage.default/username/file.jpg',
+            >>>         dest_resource='agave',
+            >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
         system, file_user, file_path = self.parse_file_id(file_id)
 
-        f = AgaveFile.from_file_path(system, self.username, file_path,
-                    agave_client = self.agave_client)
-        f.copy(path)
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.copy(self.username, path)
-        return f.to_dict()
+        f = AgaveFile.from_file_path(system, file_user, file_path,
+                                     agave_client = self.agave_client)
+
+        if dest_resource == self.resource:
+            dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
+
+            if dest_system == system:
+                dest_file_uri = os.path.join(dest_file_path, f.name)
+            else:
+                dest_file_uri = 'agave://{}'.format(
+                    os.path.join(dest_system, dest_file_path, f.name))
+
+            logger.debug('copying {} to {}'.format(file_id, dest_file_uri))
+            copied_file = f.copy(dest_file_uri)
+            esf = Object.from_agave_file(dest_file_user, copied_file, True, True)
+            esf.save()
+            return copied_file.to_dict()
+
+        else:
+            from designsafe.apps.api.data import lookup_file_manager
+            remote_fm = lookup_file_manager(dest_resource)
+            if remote_fm:
+                postit = f.create_postit(lifetime=300)
+                import_url = postit['_links']['self']['href']
+                remote_fm(self._user).import_file(dest_file_id, f.name, import_url)
+            else:
+                raise ApiException('Unknown destination resource', status=400,
+                                   extra={'file_id': file_id,
+                                          'dest_resource': dest_resource,
+                                          'dest_file_id': dest_file_id})
 
     def delete(self, file_id, **kwargs):
         """Deletes a file
@@ -344,18 +367,16 @@ class FileManager(AbstractFileManager, AgaveObject):
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
 
-    def import_file(self, file_id, import_url):
-
+    def import_file(self, file_id, import_file_name, import_url):
         """
-        Import a file from an external source
+        Import a file from a URL, for example from a different data resource.
 
-        Args:
-            file_id:
-            import_url:
-
-        Returns:
-
+        :param file_id: The file_id of the destination.
+        :param import_file_name: The name to give the imported file.
+        :param import_url: The URL of the remote file.
+        :return:
         """
+
         pass
 
     def move(self, file_id, dest_resource, dest_file_id, **kwargs):
@@ -386,7 +407,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             if dest_system == system:
                 f.move(dest_file_path)
                 esf = Object.from_file_path(system, file_user, file_path)
-                esf.move(file_user, dest_file_path)
+                esf.move(dest_file_user, dest_file_path)
                 return f.to_dict()
             else:
                 raise ApiException('Moving between systems is not supported; use COPY.',
@@ -438,8 +459,9 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         user_home_id = os.path.join(system, self.username)
         trash_dir_id = os.path.join(user_home_id, '.Trash')
-        trash_path = os.path.join(self.username, '.Trash')
 
+        # Ensure $HOME/.Trash exists
+        trash_path = os.path.join(self.username, '.Trash')
         trash = Object.from_file_path(system, self.username, trash_path)
         if trash is None:
             self.mkdir(user_home_id, '.Trash', **kwargs)
@@ -523,7 +545,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         else:
             return None
 
-    def rename(Self, file_id, target_name, **kwargs):
+    def rename(self, file_id, target_name, **kwargs):
         """Renames a file
 
         Renames a file both in the Agave filesystem and the
@@ -542,7 +564,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
         system, file_user, file_path = self.parse_file_id(file_id)
 
-        f = AgaveFile.from_file_path(system, self.username, file_path,
+        f = AgaveFile.from_file_path(system, file_user, file_path,
                     agave_client = self.agave_client)
         f.rename(target_name)
         esf = Object.from_file_path(system, self.username, file_path)

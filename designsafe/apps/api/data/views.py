@@ -4,9 +4,7 @@ from django.shortcuts import render
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 
-from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
-from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
-from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
 
 import logging
@@ -41,13 +39,9 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
             resource: Resource name to decide which class to instantiate.
         """
         user_obj = request.user
-        logger.debug(resource)
-        if resource == 'public':
-            return PublicFileManager(user_obj, **kwargs)
-        elif resource == 'box':
-            return BoxFileManager(user_obj, **kwargs)
-        elif resource == 'agave':
-            return AgaveFileManager(user_obj, **kwargs)
+        fm_cls = lookup_file_manager(resource)
+        if fm_cls:
+            return fm_cls(user_obj, **kwargs)
 
     def _execute_operation(self, request, operation, **kwargs):
         """

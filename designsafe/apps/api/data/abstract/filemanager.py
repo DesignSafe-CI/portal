@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
+
 class AbstractFileManager:
     """
     Abstract Class to implement a data File Manager for different resources.
