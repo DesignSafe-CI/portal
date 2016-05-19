@@ -278,10 +278,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             if remote_fm:
                 postit = f.create_postit(lifetime=300)
                 import_url = postit['_links']['self']['href']
-                rmf = remote_fm(self._user)
-                logger.debug('rmf: {}'.format(rmf))
-                res = rmf.import_file(dest_file_id, f.name, import_url)
-                logger.debug('res: {}'.format(res))
+                remote_fm(self._user).import_file(dest_file_id, f.name, import_url)
             else:
                 raise ApiException('Unknown destination resource', status=400,
                                    extra={'file_id': file_id,
