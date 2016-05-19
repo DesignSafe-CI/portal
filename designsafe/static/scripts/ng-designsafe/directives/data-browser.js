@@ -17,20 +17,19 @@
         onResourceChanged: '&onResourceChanged'
         
       },
-      controller: ['$scope', '$uibModal', 'DataService', function($scope, $uibModal, DataService) {
+      controller: ['$scope', '$element', '$uibModal', 'DataService', function($scope, $element, $uibModal, DataService) {
         
         $scope.state = {
           loading: false,
           selecting: false,
-          selected: {},
-          hover: {}
+          selected: []
         };
 
         var self = this;
 
         self.getIconClass = function(file, hover) {
           if ($scope.state.selecting || hover) {
-            if ($scope.state.selected[file.id]) {
+            if (_.contains($scope.state.selected, file.id)) {
               return 'fa-check-circle';
             } else {
               return 'fa-circle-o';
@@ -43,22 +42,19 @@
           if ($scope.state.selectAll) {
             self.clearSelection();
           } else {
-            $scope.state.selected = _.chain($scope.data.listing.children)
-              .pluck('id').map(function (id) { return [id, true]; })
-              .object()
-              .value();
+            $scope.state.selected = _.pluck($scope.data.listing.children, 'id');
             $scope.state.selectAll = $scope.state.selecting = true;
           }
         };
 
         self.selectFile = function(file) {
-          if ($scope.state.selected[file.id]) {
-            delete $scope.state.selected[file.id];
+          if (_.contains($scope.state.selected, file.id)) {
+            $scope.state.selected = _.without($scope.state.selected, file.id);
           } else {
-            $scope.state.selected[file.id] = true;
+            $scope.state.selected.push(file.id);
           }
 
-          if (Object.keys($scope.state.selected).length === 0) {
+          if ($scope.state.selected.length === 0) {
             self.clearSelection();
           } else {
             $scope.state.selecting = true;
@@ -67,7 +63,7 @@
         };
 
         self.clearSelection = function() {
-          $scope.state.selected = {};
+          $scope.state.selected = [];
           $scope.state.selectAll = $scope.state.selecting = false;
         };
 
@@ -107,7 +103,9 @@
           });
         };
 
-        self.uploadFiles = function() {};
+        self.uploadFiles = function() {
+          window.alert('TODO!!!');
+        };
 
         self.displayPreview = function(file) {
           $uibModal.open({
@@ -154,6 +152,61 @@
             size: 'lg',
             resolve: {file: file}
           });
+        };
+
+        self.moveFile = function(options) {
+          var sourceEl = $('tr[data-file-id="' + options.src_file_id + '"]', $element);
+          sourceEl.addClass('ds-data-browser-processing');
+          DataService.move(options).then(
+            function (resp) {
+              logger.log(resp);
+              sourceEl.addClass('ds-data-browser-processing-success');
+              sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
+                scope.data.listing.children = _.reject(scope.data.listing.children, function (child) {
+                  return child.id === source;
+                });
+                scope.$apply();
+              });
+            },
+            function (err) {
+              logger.error(err);
+              // TODO
+              // window.alert('ERROR: Unable to move ' + source + ' to ' + dest + '.');
+              sourceEl.addClass('ds-data-browser-processing-danger');
+
+              setTimeout(function() {
+                sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
+              }, 3000);
+            }
+          );
+        };
+
+        self.copyFile = function(options) {
+          var sourceEl = $('tr[data-file-id="' + options.src_file_id + '"]', $element);
+          sourceEl.addClass('ds-data-browser-processing');
+          DataService.copy(options).then(
+            function (resp) {
+              sourceEl.addClass('ds-data-browser-processing-success');
+
+              setTimeout(function() {
+                sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-success');
+              }, 3000);
+            },
+            function (err) {
+              logger.error(err);
+              // TODO
+              // window.alert('ERROR: Unable to copy ' + source + ' to ' + dest + '.');
+              sourceEl.addClass('ds-data-browser-processing-danger');
+
+              setTimeout(function() {
+                sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
+              }, 3000);
+            }
+          );
+        };
+
+        self.renameFile = function(options) {
+          window.alert('TODO!!!');
         };
         
         self.previewFile = function(file) {
@@ -234,8 +287,11 @@
       restrict: 'E',
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-source-select.html',
-      scope: {},
+      scope: {
+        widget: '@'
+      },
       link: function(scope, element, attrs, dbCtrl) {
+        scope.widget = scope.widget || 'list';
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
 
@@ -252,7 +308,7 @@
     };
   }]);
 
-  module.directive('dsDataBrowserToolbar', ['Logging', 'DataService', function(Logging, DataService) {
+  module.directive('dsDataBrowserToolbar', ['$uibModal', 'Logging', 'DataService', function($uibModal, Logging, DataService) {
 
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowserToolbar');
 
@@ -273,12 +329,12 @@
         };
 
         scope.trashSelected = function() {
-          _.each(scope.state.selected, function(val, key) {
-            var file = _.findWhere(scope.data.listing.children, {id: key});
+          _.each(scope.state.selected, function(fileId) {
+            var file = _.findWhere(scope.data.listing.children, {id: fileId});
             var fileEl = $('tr[data-file-id="' + file.id + '"]');
             fileEl.addClass('ds-data-browser-processing');
             DataService.trash({file_id: file.id, resource: file.source}).then(
-              function(resp) {
+              function() {
                 scope.data.listing.children = _.reject(scope.data.listing.children, function(file) {
                   return file.id === key;
                 });
@@ -294,6 +350,82 @@
             );
 
           });
+        };
+
+        scope.copySelected = function() {
+          var dialog = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-select-destination.html',
+            controller: 'SelectDestinationModalCtrl',
+            resolve: {
+              data: {
+                title: 'Select the destination to copy selected files.',
+                sources: scope.data.sources,
+                currentSource: scope.data.currentSource,
+                listing: scope.data.listing
+              }
+            }
+          });
+          dialog.result.then(function(destination) {
+            var files = _.filter(scope.data.listing.children, function(child) {
+              return _.contains(scope.state.selected, child.id);
+            });
+            var defaultOpts = {
+              src_file_id: null,
+              src_resource: null,
+              dest_file_id: destination.id,
+              dest_resource: destination.source
+            };
+            _.each(files, function(f) {
+              var opts = _.extend(defaultOpts, {src_file_id: f.id, src_resource: f.source});
+              logger.log('COPY', opts);
+              dbCtrl.copyFile(opts);
+            });
+          });
+        };
+
+        scope.moveSelected = function() {
+          var dialog = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-select-destination.html',
+            controller: 'SelectDestinationModalCtrl',
+            resolve: {
+              data: {
+                title: 'Select the destination to move selected files.',
+                sources: scope.data.sources
+              }
+            }
+          });
+          dialog.result.then(function(destination) {
+            var files = _.filter(scope.data.listing.children, function(child) {
+              return _.contains(scope.state.selected, child.id);
+            });
+            var defaultOpts = {
+              src_file_id: null,
+              src_resource: null,
+              dest_file_id: destination.id,
+              dest_resource: destination.source
+            };
+            _.each(files, function(f) {
+              var opts = _.extend(defaultOpts, {src_file_id: f.id, src_resource: f.source});
+              logger.log('MOVE', opts);
+              dbCtrl.moveFile(opts);
+            });
+          });
+        };
+
+        scope.shareSelected = function() {
+
+        };
+
+        scope.downloadSelected = function() {
+
+        };
+
+        scope.previewSelected = function() {
+
+        };
+
+        scope.renameSelected = function() {
+
         };
       }
     };
@@ -333,9 +465,21 @@
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-list-display.html',
       scope: {
-        enablePreview: '=preview'
+        enablePreview: '=?preview',
+        enableSelection: '=?selection',
+        enableColumns: '=?columns',
+        actionFun: '&action',
+        actionLabel: '@'
       },
       link: function(scope, element, attrs, dbCtrl) {
+
+        scope.enablePreview = scope.enablePreview || true;
+        scope.enableSelection = scope.enableSelection || true;
+        scope.enableColumns = scope.enableColumns || ['name', 'size', 'lastModified', 'info'];
+
+        scope.display = function(colName) {
+          return _.contains(scope.enableColumns, colName);
+        };
 
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
@@ -397,69 +541,40 @@
           var data = JSON.parse(e.dataTransfer.getData('text/json'));
           var source =  data.id;
           var dest = file.id;
-          var dragAction;
-          var sourceEl;
-
+          var dragAction = e.dataTransfer.effectAllowed;
+          var opts = {
+            src_resource: data.source,
+            src_file_id: data.id,
+            dest_resource: file.source,
+            dest_file_id: file.id
+          };
           if (source !== dest) {
-            dragAction = e.dataTransfer.effectAllowed;
-            sourceEl = $('tr[data-file-id="' + source + '"]', element);
-            sourceEl.addClass('ds-data-browser-processing');
-            
-            var opts = {
-              src_resource: data.source,
-              src_file_id: data.id,
-              dest_resource: file.source,
-              dest_file_id: file.id
-            };
             if (dragAction === 'move') {
-              DataService.move(opts).then(
-                function (resp) {
-                  logger.log(resp);
-                  sourceEl.addClass('ds-data-browser-processing-success');
-                  sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
-                    scope.data.listing.children = _.reject(scope.data.listing.children, function (child) {
-                      return child.id === source;
-                    });
-                    scope.$apply();
-                  });
-                },
-                function (err) {
-                  logger.error(err);
-                  // TODO
-                  // window.alert('ERROR: Unable to move ' + source + ' to ' + dest + '.');
-                  sourceEl.addClass('ds-data-browser-processing-danger');
-
-                  setTimeout(function() {
-                    sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
-                  }, 3000);
-                }
-              );
+              dbCtrl.moveFile(opts);
             } else if (dragAction === 'copy') {
-              DataService.copy(opts).then(
-                function (resp) {
-                  sourceEl.addClass('ds-data-browser-processing-success');
-
-                  setTimeout(function() {
-                    sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-success');
-                  }, 3000);
-                },
-                function (err) {
-                  logger.error(err);
-                  // TODO
-                  // window.alert('ERROR: Unable to copy ' + source + ' to ' + dest + '.');
-                  sourceEl.addClass('ds-data-browser-processing-danger');
-
-                  setTimeout(function() {
-                    sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
-                  }, 3000);
-                }
-              );
+              dbCtrl.copyFile(opts);
             }
-
           }
         };
       }
     };
-    
+  }]);
+
+  module.controller('SelectDestinationModalCtrl', ['$scope', '$uibModalInstance', 'data', function($scope, $uibModalInstance, data) {
+
+    $scope.data = data;
+    $scope.dbFeat = {
+      preview: false,
+      selection: false,
+      columns: ['name', 'action']
+    };
+
+    $scope.selectDestination = function (file) {
+      $uibModalInstance.close(file);
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss('cancel');
+    };
   }]);
 })(window, angular, jQuery, _);

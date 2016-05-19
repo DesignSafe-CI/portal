@@ -110,3 +110,28 @@
     border-color: #ebccd1;
     color: #a94442;
 }
+
+.ds-data-browser table {
+    background-color: #fff;
+}
+
+.ds-data-browser caption {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+}
+
+.ds-data-browser-source-select-list .list-group-item {
+    padding: 0;
+}
+
+.ds-data-browser-source-select-list a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px 15px;
+}
+
+.ds-data-browser-source-select .dropdown-menu {
+    width: 100%;
+}

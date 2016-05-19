@@ -89,7 +89,8 @@
      */
     service.listPath = function(options) {
       options = options || {};
-      return $http.get(djangoUrl.reverse('designsafe_api:list', options));
+      var params = _.extend({resource: 'agave', file_id: null}, options);
+      return $http.get(djangoUrl.reverse('designsafe_api:list', params));
     };
 
 
@@ -196,7 +197,7 @@
         file_id: options.src_file_id
       };
       var body = {
-        action: 'move',
+        action: 'copy',
         dest_resource: options.dest_resource,
         dest_file_id: options.dest_file_id
       };

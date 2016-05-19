@@ -1,15 +1,17 @@
 <div class="table-responsive">
-    <table class="table table-bordered table-striped" style="background-color: white">
+    <table class="table table-bordered table-striped">
         <thead>
         <th>
-            <button class="flo-select-btn" ng-click="selectAll()" ng-mouseenter="state.hover['all'] = true" ng-mouseleave="state.hover['all'] = false">
+            <button class="flo-select-btn" ng-click="selectAll()" ng-mouseenter="state.hover['all'] = true" ng-mouseleave="state.hover['all'] = false" ng-if="enableSelection">
                 <i class="fa fa-fw" ng-class="{'fa-circle-o': (state.selecting || state.hover['all']) && !state.selectAll, 'fa-check-circle': state.selectAll}"></i>
                 <span class="sr-only">Select all</span>
             </button>
             Name
         </th>
-        <th>Last modified</th>
-        <th>Info</th>
+        <th ng-if="display('size')">Size</th>
+        <th ng-if="display('lastModified')">Last modified</th>
+        <th ng-if="enablePreview && display('info')">Info</th>
+        <th ng-if="display('action')">Action</th>
         </thead>
 
         <tbody>
@@ -18,31 +20,36 @@
             drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"
         >
             <td>
-                <button class="flo-select-btn" ng-click="selectFile(file)" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false">
+                <button class="flo-select-btn" ng-click="selectFile(file)" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
+                <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
                 <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file.name }}</a>
             </td>
-            <td>
+            <td ng-if="display('size')">{{ file.size|bytes }}</td>
+            <td ng-if="display('lastModified')">
                 {{ file.lastModified|date:"medium" }}
             </td>
-            <td>
+            <td ng-if="enablePreview && display('info')">
                 <button class="btn btn-xs btn-info" ng-click="previewFile(file)">
                     <i class="fa fa-info-circle"></i>
                     <span class="sr-only">More info</span>
                 </button>
             </td>
-        </tr>
-        <tr ng-hide="data.listing.children.length">
-            <td colspan="3">
-                <p class="lead text-center text-muted">
-                    <br>
-                    There is nothing here!
-                    <br>
-                    <i class="fa fa-folder-open-o fa-2x"></i>
-                </p>
+            <td ng-if="display('action')">
+                <button class="btn btn-xs btn-primary" ng-click="actionFun({file: file})">
+                    <span>{{ actionLabel }}</span>
+                </button>
             </td>
         </tr>
         </tbody>
+        <caption ng-hide="data.listing.children.length || state.loading">
+            <div class="text-center text-muted">
+                <p class="lead">
+                    There is nothing here! Drag and drop files here to upload.
+                    <br><i class="fa fa-folder-open-o"></i>
+                </p>
+            </div>
+        </caption>
     </table>
 </div>
