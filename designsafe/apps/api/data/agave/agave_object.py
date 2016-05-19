@@ -70,5 +70,5 @@ class AgaveObject(object):
         if name in self._wrap:
             return self._wrap.get(name)
         else:
-            raise AttributeError('\'Agave File\' object has no attribute \'%s\'' % (name))
+            raise AttributeError('\'AgaveObject\' has no attribute \'%s\'' % (name))
     

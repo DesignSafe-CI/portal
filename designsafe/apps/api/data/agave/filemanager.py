@@ -32,7 +32,6 @@ class FileManager(AbstractFileManager, AgaveObject):
         :param str user_obj: The user object from the django user model.
         """
         super(FileManager, self).__init__(**kwargs)
-        self._user = user_obj
         username = user_obj.username
         if user_obj.agave_oauth.expired:
             user_obj.agave_oauth.refresh()
@@ -40,9 +39,10 @@ class FileManager(AbstractFileManager, AgaveObject):
         token = user_obj.agave_oauth
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = Agave(api_server = agave_url, 
+        self.agave_client = Agave(api_server = agave_url,
                                   token = access_token)
         self.username = username
+        self._user = user_obj
 
     def is_shared(self, file_id):
         """Checks if the `file_id` is shared for the file manager's user.

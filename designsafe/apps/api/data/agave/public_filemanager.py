@@ -3,14 +3,18 @@ from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
+from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from django.conf import settings
 import urllib
 import os
 import logging
+
 logger = logging.getLogger(__name__)
 
+
 class FileManager(AgaveObject):
-    resource = 'agave'
+
+    resource = 'public'
     system_id = 'nees.public'
 
     def __init__(self, user_obj, **kwargs):
@@ -26,6 +30,7 @@ class FileManager(AgaveObject):
         self.system_id = 'nees.public'
         self.agave_client = Agave(api_server = agave_url, token = access_token)
         self.username = username
+        self._user = user_obj
 
     def parse_file_id(self, file_id):
         """Parses a `file_id`.
@@ -64,7 +69,7 @@ class FileManager(AgaveObject):
         else:
             components = file_id.strip('/').split('/')
             system_id = components[0] if len(components) >= 1 else self.system_id
-            file_path = '/'.join(components[1:]) if len(components) >= 2 else ''
+            file_path = '/'.join(components[1:]) if len(components) >= 2 else None
 
         return system_id, file_path
 
@@ -116,7 +121,58 @@ class FileManager(AgaveObject):
 
         return list_data
 
+    def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
+        """Copies a file
 
+        Copies a file in both the Agave filesystem and the
+        Elasticsearch index.
+
+        :param str file_id:
+        :param str dest_resource:
+        :param str dest_file_id:
+
+        :returns: dict representation of the original
+        :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+        :rtype: dict
+
+        Examples:
+        --------
+            Copy a file. `fm` is an instance of FileManager
+            >>> fm.copy(file_id='designsafe.storage.default/username/file.jpg',
+            >>>         dest_resource='agave',
+            >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
+        """
+        system, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, None, file_path,
+                                     agave_client=self.agave_client)
+
+        from designsafe.apps.api.data import lookup_file_manager
+        remote_fm = lookup_file_manager(dest_resource)(self._user)
+
+        if dest_resource == 'agave':
+            dest_system, dest_file_user, dest_file_path = \
+                remote_fm.parse_file_id(dest_file_id)
+
+            dest_file_path = 'agave://{}'.format(
+                urllib.quote(os.path.join(dest_system, dest_file_path)))
+
+            logger.debug('copying {} to {}'.format(file_id, dest_file_path))
+            copied_file = f.copy(dest_file_path)
+            esf = Object.from_agave_file(dest_file_user, copied_file, True, True)
+            esf.save()
+            return copied_file.to_dict()
+        else:
+            remote_fm = lookup_file_manager(dest_resource)
+            if remote_fm:
+                postit = f.create_postit(lifetime=300)
+                import_url = postit['_links']['self']['href']
+                remote_fm(self._user).import_file(dest_file_id, f.name, import_url)
+            else:
+                raise ApiException('Unknown destination resource', status=400,
+                                   extra={'file_id': file_id,
+                                          'dest_resource': dest_resource,
+                                          'dest_file_id': dest_file_id})
 
     def search(self, **kwargs):
         return [{}]

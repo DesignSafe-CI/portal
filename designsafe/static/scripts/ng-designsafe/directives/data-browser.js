@@ -162,10 +162,10 @@
               logger.log(resp);
               sourceEl.addClass('ds-data-browser-processing-success');
               sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
-                scope.data.listing.children = _.reject(scope.data.listing.children, function (child) {
-                  return child.id === source;
+                $scope.data.listing.children = _.reject($scope.data.listing.children, function (child) {
+                  return child.id === options.src_file_id;
                 });
-                scope.$apply();
+                $scope.$apply();
               });
             },
             function (err) {
@@ -370,13 +370,12 @@
               return _.contains(scope.state.selected, child.id);
             });
             var defaultOpts = {
-              src_file_id: null,
-              src_resource: null,
               dest_file_id: destination.id,
               dest_resource: destination.source
             };
             _.each(files, function(f) {
-              var opts = _.extend(defaultOpts, {src_file_id: f.id, src_resource: f.source});
+              var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
+              opts.dest_file_id = opts.dest_file_id + '/' + f.name;
               logger.log('COPY', opts);
               dbCtrl.copyFile(opts);
             });
@@ -399,13 +398,12 @@
               return _.contains(scope.state.selected, child.id);
             });
             var defaultOpts = {
-              src_file_id: null,
-              src_resource: null,
               dest_file_id: destination.id,
               dest_resource: destination.source
             };
             _.each(files, function(f) {
-              var opts = _.extend(defaultOpts, {src_file_id: f.id, src_resource: f.source});
+              var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
+              opts.dest_file_id = opts.dest_file_id + '/' + f.name;
               logger.log('MOVE', opts);
               dbCtrl.moveFile(opts);
             });
@@ -546,7 +544,7 @@
             src_resource: data.source,
             src_file_id: data.id,
             dest_resource: file.source,
-            dest_file_id: file.id
+            dest_file_id: file.id + '/' + data.name
           };
           if (source !== dest) {
             if (dragAction === 'move') {
