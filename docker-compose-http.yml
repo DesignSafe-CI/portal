@@ -16,6 +16,7 @@ django:
     - memcached:memcached
   volumes:
     - .:/portal
+    - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     - /var/www/designsafe-ci.org/static
     - /var/www/designsafe-ci.org/media
   ports:
@@ -66,6 +67,7 @@ worker:
     - memcached:memcached
   volumes:
     - .:/portal
+    - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
   dns:
     - 8.8.8.8
     - 8.8.4.4
