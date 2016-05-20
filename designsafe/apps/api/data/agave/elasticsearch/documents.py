@@ -417,6 +417,21 @@ class Object(DocType):
         self.save()
         return self
 
+    def update_metadata(self, meta_obj):
+        """Update metadata of an object
+
+        The matadata this method updates is only the user metadata.
+        This first version only focuses on **keywords**.
+        This metadata should grow in the future.
+
+        :param obj meta_obj: object with which the document will be updated
+
+        .. warning:: This method blindly replaces the data in the 
+            saved document. The only sanitization does is to remove
+            repeated elements.
+        """
+        pass
+
     def update_pems(self, user_to_share, pem):
         pems = getattr(self, 'permissions', [])
         pem_to_add = {

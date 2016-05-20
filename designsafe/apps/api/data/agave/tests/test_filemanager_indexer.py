@@ -30,3 +30,6 @@ class FileManagerBaseTestCase(TestCase):
 
 class FileManagerIndexerGeneratorTestCase(FileManagerBaseTestCase):
     pass
+
+class FileIndexingTestCase(FileManagerBaseTestCase):
+    pass

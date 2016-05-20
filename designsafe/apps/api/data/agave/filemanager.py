@@ -42,7 +42,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                                   token = access_token)
         self.username = username
         self._user = user_obj
-        self.indexer = AgaveIndexer()
+        self.indexer = AgaveIndexer(agave_client = self.agave_client)
 
     def is_shared(self, file_id):
         """Checks if the `file_id` is shared for the file manager's user.
@@ -645,7 +645,9 @@ class AgaveIndexer(AgaveObject):
         from the target file path. We assume a file path of $HOME/path/to/file.txt
         where $HOME will always be the username of the owner.
     """
-
+    def __init__(self, agave_client, *args, **kwargs):
+        super(AgaveIndexer, self).__init__(**kwargs)
+        self.agave_client = agave_client
 
     def walk(self, system_id, path, bottom_up = False, yield_base = True):
         """Walk a path in an agave filesystem.
@@ -773,7 +775,7 @@ class AgaveIndexer(AgaveObject):
         for f in resp:
             if f['name'] == '.':
                 continue
-            aff = AgaveFolderFile(self.agave_client, f)
+            aff = AgaveFile(self.agave_client, wrap = f)
             if aff.format == 'folder':
                 folders.append(aff)
             else:
@@ -925,12 +927,15 @@ class AgaveIndexer(AgaveObject):
                 objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
                                                     username, root, files, folders)
                 for o in objs_to_index:
+                    logger.debug('Indexing: {}'.format(o.full_path))
                     doc = Object.from_agave_file(username, o, get_pems = pems_indexing)
                     docs_indexed += 1
                 for d in docs_to_delete:
+                    logger.debug('delete_recursive: {}'.format(d.full_path))
                     docs_delete += d.delete_recursive()
             else:
                 for o in folders + files:
+                    logger.debug('Get or create file: {}'.format(o.full_path))
                     doc = Object.from_agave_file(username, o, 
                                     auto_update = True, get_pems = pems_indexing)
                     docs_indexed += 1
@@ -945,10 +950,11 @@ class AgaveIndexer(AgaveObject):
                 path, name = os.path.split(path)
                 af = AgaveFile.from_file_path(system_id, username, file_path, 
                                         agave_client = self.agave_client)
+                logger.debug('Get or create file: {}'.format(af.full_path))
                 doc = Object.from_agave_file(username, af, 
                                     auto_update = full_indexing, get_pems = pems_indexing)
                 docs_indexed += 1
-                paths.pop()
+                path_comp.pop()
         return docs_indexed, docs_deleted
 
     def index_permissions(self, system_id, path, username, bottom_up = True, levels = 0):
@@ -991,7 +997,7 @@ class AgaveIndexer(AgaveObject):
         p, n = os.path.split(path)
         if p == '':
             p = '/'
-        objs.append(Object.from_file_path(system_id, username, p, n))
+        objs.append(Object.from_file_path(system_id, username, os.path.join(p, n)))
         for o in objs:
             if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
                 continue
