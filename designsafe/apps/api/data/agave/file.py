@@ -297,6 +297,12 @@ class AgaveFile(AbstractFile, AgaveObject):
         Returns:
             Class instance for chainability
 
+        Examples:
+            >>> agave_file = AgaveFile.from_file_path(system = 'agave.system.id',
+            ...              'path/to/file.txt',
+            ...              agave_client = ac)
+            >>> agave_file.move('path/to/new folder/file.txt')
+
         Notes:
             `path` should be the complete path to move the file into.
             Should contain the file's name.

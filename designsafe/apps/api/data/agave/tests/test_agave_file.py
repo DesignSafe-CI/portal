@@ -216,7 +216,7 @@ class FileMoveTestCase(FileBaseTestCase):
     def test_move(self, mock_call_op):
         af = self.get_mock_file()
         origin_path = af.full_path
-        move_path = 'path/to/moved folder'
+        move_path = 'path/to/moved folder/%s' % af.name
         af.move(move_path)
 
         mock_call_op.assert_called_with('files.manage', systemId = af.system,
