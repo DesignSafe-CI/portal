@@ -1,14 +1,11 @@
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.box.file import BoxFile
+from designsafe.apps.api.tasks import box_upload
 from designsafe.apps.box_integration import util
 from boxsdk.exception import BoxAPIException
-from boxsdk.config import API
 import logging
-import json
-import requests
-from requests_toolbelt.downloadutils import tee
-from requests_toolbelt.streaming_iterator import StreamingIterator
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +17,7 @@ class FileManager(AbstractFileManager):
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__()
         self.box_api = util.get_box_client(user_obj)
+        self._user = user_obj
 
     def parse_file_id(self, file_id):
         if file_id is not None:
@@ -120,6 +118,33 @@ class FileManager(AbstractFileManager):
     def file(self, file_id, action, path = None, **kwargs):
         pass
 
+    def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
+        if dest_resource == 'agave':
+            from designsafe.apps.api.data import lookup_file_manager
+            remote_fm = lookup_file_manager(dest_resource)
+            if remote_fm:
+                return remote_fm(self._user).import_file(dest_file_id,
+                                                         self.resource,
+                                                         file_id)
+            else:
+                raise ApiException('Unknown destination resource',
+                                   status=400,
+                                   extra={'file_id': file_id,
+                                          'dest_resource': dest_resource,
+                                          'dest_file_id': dest_file_id})
+        else:
+            raise ApiException('Copying Box files is not supported on this resource.',
+                               status=400,
+                               extra={'file_id': file_id,
+                                      'dest_resource': dest_resource,
+                                      'dest_file_id': dest_file_id,
+                                      'kwargs': kwargs})
+
+    def move(self, file_id, **kwargs):
+        raise ApiException('Moving Box files is not supported.', status=400,
+                           extra={'file_id': file_id,
+                                  'kwargs': kwargs})
+
     def preview(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
@@ -134,20 +159,14 @@ class FileManager(AbstractFileManager):
             return {'href': download_url}
         return None
 
-    def import_file(self, file_id, import_file_name, import_url, **kwargs):
-        file_type, file_id = self.parse_file_id(file_id)
-        if file_type == 'folder':
-            try:
-                r = requests.get(import_url, stream=True)
-                self.box_api.folder(file_id).upload_stream(r.raw, import_file_name)
-            except BoxAPIException as e:
-                return ApiException('Failed to import file: {}'.format(e.message),
-                                    status=400,
-                                    extra={
-                                        'file_id': file_id,
-                                        'import_file_name': import_file_name,
-                                        'import_url': import_url
-                                    })
+    def import_file(self, file_id, from_resource, import_file_id, **kwargs):
+        box_upload.apply_async(args=(self._user.username,
+                                     file_id,
+                                     from_resource,
+                                     import_file_id),
+                               countdown=10)
+
+        return {'message': 'Your file(s) have been scheduled for upload to box.'}
 
     def search(self, q, **kwargs):
         pass

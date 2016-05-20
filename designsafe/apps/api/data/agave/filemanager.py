@@ -5,6 +5,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
+from designsafe.apps.api.tasks import box_download
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from functools import wraps
@@ -17,9 +18,11 @@ FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 }
 
+
 class FileManager(AbstractFileManager, AgaveObject):
 
     resource = 'agave'
+    mount_path = '/corral-repl/tacc/NHERI/shared'
 
     def __init__(self, user_obj, **kwargs):
         """Intializes an instance of the class.
@@ -29,7 +32,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         AND `self._wrap`. The latter is not used in this class.
         Here we're only initializing the agave client.
 
-        :param str user_obj: The user object from the django user model.
+        :param django.contrib.auth.models.User user_obj:
+            The user object from the django user model.
         """
         super(FileManager, self).__init__(**kwargs)
         username = user_obj.username
@@ -276,9 +280,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             from designsafe.apps.api.data import lookup_file_manager
             remote_fm = lookup_file_manager(dest_resource)
             if remote_fm:
-                postit = f.create_postit(lifetime=300)
-                import_url = postit['_links']['self']['href']
-                remote_fm(self._user).import_file(dest_file_id, f.name, import_url)
+                return remote_fm(self._user).import_file(dest_file_id, self.resource, file_id)
             else:
                 raise ApiException('Unknown destination resource', status=400,
                                    extra={'file_id': file_id,
@@ -311,8 +313,9 @@ class FileManager(AbstractFileManager, AgaveObject):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                     agave_client = self.agave_client)
         f.delete()
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.delete_recursive()
+
+        esf = Object.from_file_path(system, file_user, file_path)
+        esf.delete_recursive(file_user)
         return f.to_dict()
 
     def download(self, file_id, **kwargs):
@@ -367,17 +370,22 @@ class FileManager(AbstractFileManager, AgaveObject):
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
 
-    def import_file(self, file_id, import_file_name, import_url):
+    def import_file(self, file_id, from_resource, from_file_id):
         """
-        Import a file from a URL, for example from a different data resource.
+        Import a file from another data resource.
 
-        :param file_id: The file_id of the destination.
-        :param import_file_name: The name to give the imported file.
-        :param import_url: The URL of the remote file.
+        :param file_id: The agave file_id to import to
+        :param from_resource: The resource to import from
+        :param from_file_id: The file_id to import
         :return:
         """
-
-        pass
+        if from_resource == 'box':
+            box_download.apply_async(
+                args=(self.username, from_file_id, self.resource, file_id),
+                countdown=10)
+        else:
+            raise ApiException('Import from this resource is not supported', status=400,
+                               extra={'args': (file_id, from_resource, from_file_id)})
 
     def move(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Move a file
@@ -411,11 +419,13 @@ class FileManager(AbstractFileManager, AgaveObject):
                 return f.to_dict()
             else:
                 raise ApiException('Moving between systems is not supported; use COPY.',
+                                   status=400,
                                    extra={'file_id': file_id,
                                           'dest_resource': dest_resource,
                                           'dest_file_id': dest_file_id})
         else:
             raise ApiException('Moving to a remote resource is not supported; use COPY',
+                               status=400,
                                extra={'file_id': file_id,
                                       'dest_resource': dest_resource,
                                       'dest_file_id': dest_file_id})
@@ -595,6 +605,11 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.share(self.username, user, permission)
         return f.to_dict()
+
+    def get_file_real_path(self, file_id):
+        system, file_user, file_path = self.parse_file_id(file_id)
+        return os.path.join(self.mount_path, file_path)
+
 
 class AgaveIndexer(AgaveObject):
     """Indexer class for all indexing needs.

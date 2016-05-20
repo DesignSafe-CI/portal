@@ -304,7 +304,7 @@ class Object(DocType):
         self.save()
         return doc
 
-    def delete_recursive(self):
+    def delete_recursive(self, username):
         """Delete a file recursively.
 
         This method works with both files and folders.
