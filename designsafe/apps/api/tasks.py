@@ -85,7 +85,7 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
     logger.debug('Creating directory {} <= box://folder/{}'.format(directory_path,
                                                                    box_folder_id))
     try:
-        os.mkdir(directory_path, 0x0755)
+        os.mkdir(directory_path, 0o0755)
     except OSError as e:
         if e.errno == 17:  # directory already exists?
             pass
