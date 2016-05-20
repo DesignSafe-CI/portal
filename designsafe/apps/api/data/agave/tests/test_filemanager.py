@@ -125,6 +125,142 @@ class FileManagerListingTestCase(FileManagerBaseTestCase):
         
         mock_es_listing.assert_called_with(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path)
 
+class FileManagerCopyTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_agave_file_copy_same_resource_and_system(self, mock_agave_file_from_file_path,
+                                    mock_object_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        dest_path = '%s/path/to/folder-copy' % (self.user.username)
+        dest_file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, dest_path)
+        
+        mock_af = mock.Mock(spec = AgaveFile)
+        type(mock_af).name = mock.PropertyMock(return_value = 'folder-copy')
+        mock_esf = mock.Mock(spec = Object)
+    
+        mock_agave_file_from_file_path.return_value = mock_af
+        mock_object_from_file_path.return_value = mock_esf
+        
+        fm.copy(file_id, fm.resource, dest_file_id)
+
+        mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path, agave_client = fm.agave_client)
+        mock_object_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path)
+
+        mock_af.copy.assert_called_with(dest_path)
+        mock_esf.copy.assert_called_with(self.user.username, dest_path)
+
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_agave_file_copy_same_resource_different_system(self, mock_agave_file_from_file_path,
+                                    mock_object_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        dest_system = 'another.system.id'
+        dest_path = '%s/path/to/folder-copy' % (self.user.username)
+        dest_file_id = '%s/%s' % (dest_system, dest_path)
+        dest_file_uri = 'agave://{}'.format(dest_file_id)
+        
+        mock_af = mock.Mock(spec = AgaveFile)
+        type(mock_af).name = mock.PropertyMock(return_value = 'folder-copy')
+        mock_esf = mock.Mock(spec = Object)
+    
+        mock_agave_file_from_file_path.return_value = mock_af
+        mock_object_from_file_path.return_value = mock_esf
+        
+        fm.copy(file_id, fm.resource, dest_file_id)
+
+        mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path, agave_client = fm.agave_client)
+        mock_object_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path)
+
+        mock_af.copy.assert_called_with(dest_file_uri)
+        mock_esf.copy.assert_called_with(self.user.username, dest_file_uri)
+
+    @mock.patch('designsafe.apps.api.data.lookup_file_manager')
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_agave_file_copy_different_resource(self, mock_agave_file_from_file_path,
+                        mock_object_from_file_path, mock_lookup_file_manager):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        dest_file_id = 'box/file/00314'
+        
+        mock_af = mock.Mock(spec = AgaveFile)
+        type(mock_af).name = mock.PropertyMock(return_value = 'folder-copy')
+
+        with mock.patch('designsafe.apps.api.data.agave.filemanager.FileManager') as mock_fm_class:
+            mock_lookup_file_manager.return_value = mock_fm_class
+    
+        mock_af.create_postit.return_value = {'_links': {'self': {'href': 'download_link'} } }
+        mock_agave_file_from_file_path.return_value = mock_af
+        
+        fm.copy(file_id, 'box', dest_file_id)
+        
+        mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path, agave_client = fm.agave_client)
+
+        self.assertTrue(mock_af.create_postit.called)
+        mock_fm_class().import_file.assert_called_with(dest_file_id, 
+                   mock_af.name, 'download_link') 
+
+    @mock.patch('designsafe.apps.api.data.lookup_file_manager')
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_agave_file_copy_unknown_dest(self, mock_agave_file_from_file_path,
+                                mock_object_from_file_path, mock_lookup_file_manager):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        dest_file_id = 'box/file/00314'
+        
+        mock_af = mock.Mock(spec = AgaveFile)
+        type(mock_af).name = mock.PropertyMock(return_value = 'folder-copy')
+        mock_lookup_file_manager.return_value = None
+    
+        mock_agave_file_from_file_path.return_value = mock_af
+        
+        with self.assertRaises(ApiException):
+            fm.copy(file_id, 'box', dest_file_id)
+        
+        mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path, agave_client = fm.agave_client)
+
+class FileManagerDeleteTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_agave_file_delete(self, mock_agave_file_from_file_path,
+                                    mock_object_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+
+        mock_af = mock.Mock(spec = AgaveFile)
+        mock_esf = mock.Mock(spec = Object)
+
+        mock_agave_file_from_file_path.return_value = mock_af
+        mock_object_from_file_path.return_value = mock_esf
+
+        fm.delete(file_id)
+
+        mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path, agave_client = fm.agave_client)
+        mock_object_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                self.user.username, path)
+        self.assertTrue(mock_af.delete.called)
+        self.assertTrue(mock_esf.delete_recursive.called)
+        
 class FileManagerDownloadTestCase(FileManagerBaseTestCase):
     @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
     @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.create_postit')
@@ -372,3 +508,157 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         self.assertEqual(mov_args[0], file_id)
         self.assertEqual(mov_args[1], fm.resource)
         self.assertNotEqual(mov_args[2], '%s/.Trash/folder')
+
+class FileManagerPreviewTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_preview_image_file(self, mock_agave_from_file_path):
+        fm = self.get_filemanager()
+            
+        path = '%s/path/to/img.png' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        
+        mock_agave_file = mock.Mock(spec = AgaveFile)
+        type(mock_agave_file).name = mock.PropertyMock(return_value = 'img.png')
+        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.png')
+        type(mock_agave_file).path = mock.PropertyMock(
+                    return_value = '%s/path/to' % self.user.username)
+                
+        mock_agave_from_file_path.return_value = mock_agave_file
+        mock_agave_file.create_postit.return_value = {'_links': {'self': {'href': 'download_link'} } }
+
+        fm.preview(file_id, format = 'html')
+        
+        mock_agave_file.create_postit.assert_called_with(force=False)
+
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_preview_text_file(self, mock_agave_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/text.txt' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+
+        mock_agave_file = mock.Mock(autospec = AgaveFile)
+        type(mock_agave_file).name = mock.PropertyMock(return_value = 'text.json')
+        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.json')
+        type(mock_agave_file).path = mock.PropertyMock(
+                    return_value = '%s/path/to' % self.user.username)
+        
+        mock_agave_from_file_path.return_value = mock_agave_file
+        mock_agave_file.download.return_value = {}
+
+        fm.preview(file_id, format = 'html')
+
+        self.assertTrue(mock_agave_file.download.called)
+
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_preview_object_file(self, mock_agave_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/doc.pdf' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+
+        mock_agave_file = mock.Mock(autospec = AgaveFile)
+        type(mock_agave_file).name = mock.PropertyMock(return_value = 'doc.pdf')
+        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.pdf')
+        type(mock_agave_file).path = mock.PropertyMock(
+                    return_value = '%s/path/to' % self.user.username)
+        
+        mock_agave_from_file_path.return_value = mock_agave_file
+        mock_agave_file.create_postit.return_value = {'_links': {'self': {'href': 'download_link'} } }
+
+        fm.preview(file_id, format = 'html')
+
+        mock_agave_file.create_postit.assert_called_with(force=False)
+
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_preview_object_file(self, mock_agave_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/doc.asdf' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+
+        mock_agave_file = mock.Mock(autospec = AgaveFile)
+        type(mock_agave_file).name = mock.PropertyMock(return_value = 'doc.asdf')
+        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.asdf')
+        type(mock_agave_file).path = mock.PropertyMock(
+                    return_value = '%s/path/to' % self.user.username)
+        
+        mock_agave_from_file_path.return_value = mock_agave_file
+
+        fm.preview(file_id, format = 'html')
+
+        self.assertFalse(mock_agave_file.create_postit.called)
+
+class FileManagerMkdirTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_agave_file')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.mkdir')
+    def test_mkdir(self, mock_agave_mkdir,
+                                mock_object_from_agave_file):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        dir_name = 'new_dir'
+
+        mock_af = mock.Mock(spec = AgaveFile)
+        mock_esf = mock.Mock(spec = Object)
+
+        mock_agave_mkdir.return_value = mock_af
+        mock_object_from_agave_file.return_value = mock_esf
+
+        fm.mkdir(file_id, dir_name)
+
+        mock_agave_mkdir.assert_called_with(settings.AGAVE_STORAGE_SYSTEM, 
+                self.user.username, path, dir_name, agave_client = fm.agave_client)
+        mock_object_from_agave_file.assert_called_with(self.user.username, mock_af)
+
+class FileManagerRenameTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')        
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')        
+    def test_rename(self, mock_agave_from_file_path, mock_object_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        target_name = 'new_name'
+
+        mock_af = mock.Mock(spec = AgaveFile)
+        mock_esf = mock.Mock(spec = Object)
+
+        mock_agave_from_file_path.return_value = mock_af
+        mock_object_from_file_path.return_value = mock_esf
+
+        fm.rename(file_id, target_name)
+
+        mock_agave_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                        self.user.username, path, agave_client = fm.agave_client)
+        mock_object_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                        self.user.username, path)
+        mock_af.rename.assert_called_with(target_name)
+        mock_esf.rename.assert_called_with(self.user.username, target_name)
+
+class FileManagerShareTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')        
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')        
+    def test_rename(self, mock_agave_from_file_path, mock_object_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/folder' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+        share_user = 'share_user'
+        permission = 'READ'
+
+        mock_af = mock.Mock(spec = AgaveFile)
+        mock_esf = mock.Mock(spec = Object)
+
+        mock_agave_from_file_path.return_value = mock_af
+        mock_object_from_file_path.return_value = mock_esf
+
+        fm.share(file_id, share_user, permission)
+
+        mock_agave_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                        self.user.username, path, agave_client = fm.agave_client)
+        mock_object_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
+                        self.user.username, path)
+        mock_af.share.assert_called_with(share_user, permission)
+        mock_esf.share.assert_called_with(self.user.username, share_user, permission)

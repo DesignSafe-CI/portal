@@ -253,7 +253,7 @@ class Object(DocType):
             res = s.execute()
         return res, s
 
-    def copy(self, username, path):
+    def copy(self, username, target_name):
         """Copy a document.
 
         Although creating a copy of a document using this class is farily 
@@ -275,29 +275,22 @@ class Object(DocType):
 
             >>> origin_doc = Object.from_file_path('agave.system.id', 
             ...                 'username', 'username/path/file.txt')
-            >>> origin_doc.copy('username', 'file_copy.txt')
-            >>> #we have to go and search the resulting document
-            >>> copied_doc = Object.from_file_path(origin_doc.systemId,
-            ...           'username', os.path.join(origin_doc.path, 'file_copy.txt')
-            >>> print 'resulting file path: {}'.format(copied_doc.full_path)
+            >>> doc_copy = origin_doc.copy('username', 'file_copy.txt')
+            >>> print 'resulting file path: {}'.format(doc_copy.full_path)
         """
-        #split path arg. Assuming is in the form /file/to/new_name.txt
-        tail, head = os.path.split(path)
-        #check if we have something in tail.
-        #If we don't then we got just the new file name in the path arg.
-        if tail == '':
-            head = path
         if self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 d = o.to_dict()
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
-                d['path'] = re.sub(regex, os.path.join(self.path, head), d['path'], count = 1)
+                d['path'] = re.sub(regex, 
+                                os.path.join(self.path, target_name), 
+                                d['path'], count = 1)
                 d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
                 doc = Object(**d)
                 doc.save()
         d = self.to_dict()
-        d['name'] = head
+        d['name'] = target_name
         d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
         doc = Object(**d)
         doc.save()
@@ -356,13 +349,15 @@ class Object(DocType):
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
-                o.update(path = re.sub(regex, os.path.join(path, self.name), o.path, count = 1))
-                o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name))) 
-
+                o.update(path = re.sub(regex, os.path.join(path, self.name), 
+                                o.path, count = 1),
+                         agavePath = 'agave://{}/{}'.format(self.systemId, 
+                                os.path.join(self.path, self.name))) 
+                o.save()
         tail, head = os.path.split(path)
-        self.update(path = tail)
-        self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, self.name)))
-        logger.debug('Moved: {}'.format(self.to_dict()))
+        self.update(path = tail, agavePath = 'agave://{}/{}'.format(self.systemId, 
+                                                os.path.join(tail, self.name)))
+        logger.debug('Moved: {}'.format(self.full_path))
         self.save()
         return self
 
@@ -386,12 +381,14 @@ class Object(DocType):
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
-                o.update(path = re.sub(regex, os.path.join(self.path, head), o.path, count = 1))
-                o.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
-                logger.debug('Updated document to {}'.format(os.path.join(o.path, o.name)))
-        self.update(name = head)
-        self.update(agavePath = 'agave://{}/{}'.format(self.systemId, os.path.join(self.path, head)))
-        logger.debug('Updated ocument to {}'.format(os.path.join(self.path, self.name)))
+                target_path = re.sub(regex, os.path.join(self.path, head), o.path, count = 1)
+                o.update(path =  target_path, 
+                         agavePath = 'agave://{}/{}'.format(self.systemId, 
+                                            os.path.join(target_path, o.name)))
+                o.save()
+        self.update(name = head, 
+                    agavePath = 'agave://{}/{}'.format(self.systemId, 
+                                      os.path.join(self.path, head)))
         self.save()
         return self
 
@@ -404,17 +401,17 @@ class Object(DocType):
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
         """
         if self.type == 'dir':
-            res, s = self.__class__.listing_recursive(self.system, username, os.path.join(self.path, self.naem))
+            res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 o.update_pems(user_to_share, permission)
         
-        path_comps = os.path.join(self.path, self.name).split('/')
-        path_comps.pop()
+        path_comps = self.path.split('/')
         for i in range(len(path_comps)):
             doc_path = '.'.join(path_comps)
             doc = Object.from_file_path(self.systemId, username, doc_path)
             doc.update_pems(user_to_share, permission)
             path_comps.pop()
+            doc.save()
 
         self.update_pems(user_to_share, permission)
         self.save()

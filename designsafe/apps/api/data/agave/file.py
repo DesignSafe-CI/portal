@@ -72,6 +72,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         self.source = kwargs.pop('source', self.DEFAULT_SOURCE)
         self.agave_client = agave_client
         self._trail = None
+        self._permissions = None
         if self._wrap and 'permissions' in self._wrap and not isinstance(self._wrap['permissions'], basestring):
             self._permissions = self._wrap['permissions']
 
@@ -127,35 +128,8 @@ class AgaveFile(AbstractFile, AgaveObject):
             d.update({'systemId': system, 'filePath': file_path, 'body': body})
             raise ApiException(e.message, e.response.status_code, extra = d)
 
-        dir_path = os.path.join(file_path, dir_name)
-        return cls.from_file_path(system, username, dir_path, agave_client=agave_client,
-                                  **kwargs)
-
-    @property
-    def previewable(self):
-        return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
-
-    def create_postit(self, force=True, max_uses=1, lifetime=60):
-        url = self._links['self']['href']
-        if force:
-            url += '?force=true'
-        body = {
-            'url': url,
-            'maxUses': max_uses,
-            'method': 'GET',
-            'lifetime': lifetime,
-            'noauth': False
-        }
-        return self.call_operation('postits.create', body=body)
-
-    def download(self):
-        # TODO can't apply range headers in AgavePy. Use requests raw?
-        resp = self.call_operation('files.download',
-                                   systemId=self.system,
-                                   filePath=self.full_path,
-                                   # headers={'Range': 'bytes=0-4096'},
-                                   )
-        return resp.content
+        return cls(agave_client = agave_client, 
+                   wrap = f, **kwargs)
 
     @property
     def ext(self):
@@ -199,8 +173,11 @@ class AgaveFile(AbstractFile, AgaveObject):
             pems = self.call_operation('files.listPermissions', 
                         filePath = self.full_path, systemId = self.system)
             self._permissions = pems
-
         return self._permissions
+
+    @property
+    def previewable(self):
+        return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
 
     @property
     def trail(self):
@@ -254,8 +231,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             Class instance for chainability
 
         Notes:
-            `path` should be the entire path where the copy should go.
-            TODO: Sanitize path
+            `path` should be the name of the copied file.
         """
         d = {
             'systemId': self.system,
@@ -276,6 +252,28 @@ class AgaveFile(AbstractFile, AgaveObject):
         copy_wrap['permissions'] = []
         ret = AgaveFile(wrap = copy_wrap, agave_client = self.agave_client)
         return ret
+
+    def create_postit(self, force=True, max_uses=1, lifetime=60):
+        url = self._links['self']['href']
+        if force:
+            url += '?force=true'
+        body = {
+            'url': url,
+            'maxUses': max_uses,
+            'method': 'GET',
+            'lifetime': lifetime,
+            'noauth': False
+        }
+        return self.call_operation('postits.create', body=body)
+
+    def download(self):
+        # TODO can't apply range headers in AgavePy. Use requests raw?
+        resp = self.call_operation('files.download',
+                                   systemId=self.system,
+                                   filePath=self.full_path,
+                                   # headers={'Range': 'bytes=0-4096'},
+                                   )
+        return resp.content
 
     def delete(self):
         """
@@ -298,6 +296,12 @@ class AgaveFile(AbstractFile, AgaveObject):
 
         Returns:
             Class instance for chainability
+
+        Examples:
+            >>> agave_file = AgaveFile.from_file_path(system = 'agave.system.id',
+            ...              'path/to/file.txt',
+            ...              agave_client = ac)
+            >>> agave_file.move('path/to/new folder/file.txt')
 
         Notes:
             `path` should be the complete path to move the file into.
@@ -357,7 +361,7 @@ class AgaveFile(AbstractFile, AgaveObject):
                                 body = permission_body, 
                                 raise_agave = True)
         except (AgaveException, HTTPError) as e:
-            logger.error('{}: Couldn\'t update permissions {}'.format(e.message, permission_body))
+            logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
 
         return self
 

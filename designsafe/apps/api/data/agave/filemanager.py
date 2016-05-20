@@ -20,7 +20,6 @@ FILESYSTEMS = {
 
 
 class FileManager(AbstractFileManager, AgaveObject):
-
     resource = 'agave'
     mount_path = '/corral-repl/tacc/NHERI/shared'
 
@@ -47,6 +46,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                                   token = access_token)
         self.username = username
         self._user = user_obj
+        self.indexer = AgaveIndexer()
 
     def is_shared(self, file_id):
         """Checks if the `file_id` is shared for the file manager's user.
@@ -246,18 +246,18 @@ class FileManager(AbstractFileManager, AgaveObject):
         :param str dest_file_id:
 
         :returns: dict representation of the original 
-        :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
+            :class:`~designsafe.apps.api.data.agve.file.AgaveFile` instance
         :rtype: dict
 
-        Examples:
-        --------
+        **Examples**
             Copy a file. `fm` is an instance of FileManager
+
             >>> fm.copy(file_id='designsafe.storage.default/username/file.jpg',
-            >>>         dest_resource='agave',
-            >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
+            ...         dest_resource='agave',
+            ...         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-
+        
         f = AgaveFile.from_file_path(system, file_user, file_path,
                                      agave_client = self.agave_client)
 
@@ -265,15 +265,15 @@ class FileManager(AbstractFileManager, AgaveObject):
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
 
             if dest_system == system:
-                dest_file_uri = os.path.join(dest_file_path, f.name)
+                dest_file_uri = os.path.join(dest_file_path)
             else:
                 dest_file_uri = 'agave://{}'.format(
-                    os.path.join(dest_system, dest_file_path, f.name))
+                    os.path.join(dest_system, dest_file_path))
 
             logger.debug('copying {} to {}'.format(file_id, dest_file_uri))
             copied_file = f.copy(dest_file_uri)
-            esf = Object.from_agave_file(dest_file_user, copied_file, True, True)
-            esf.save()
+            esf = Object.from_file_path(system, file_user, file_path)
+            esf.copy(dest_file_user, dest_file_uri)
             return copied_file.to_dict()
 
         else:
@@ -527,7 +527,6 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
 
     def preview(self, file_id, **kwargs):
-        logger.debug(kwargs)
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
@@ -629,7 +628,7 @@ class AgaveIndexer(AgaveObject):
 
     Generators
     -----------
-
+        
         There are two generators implemented in this class 
         :meth:`walk` and :meth:`walk_levels`. The functionality of these generators
         is based on :meth:`os.walk` and their intended use is the same.
@@ -662,6 +661,7 @@ class AgaveIndexer(AgaveObject):
         where $HOME will always be the username of the owner.
     """
 
+
     def walk(self, system_id, path, bottom_up = False, yield_base = True):
         """Walk a path in an agave filesystem.
 
@@ -671,18 +671,17 @@ class AgaveIndexer(AgaveObject):
 
         :param str system_id: system id
         :param str path: path to walk
-        :param bool bottom_up: if `True` walk the path bottom to top. Default `False`
-            will walk the path top to bottom
+        :param bool bottom_up: if `True` walk the path bottom to top. 
+            Default `False` will walk the path top to bottom
         :param bool yield_base: if 'True' will yield an 
             :class:`~designsafe.apps.api.agave.file.AgaveFile` object of the 
-            path walked in the first iteration. After the first iteration it will
-            yield the children objects. Default 'True'.
+            path walked in the first iteration. After the first iteration it 
+            will yield the children objects. Default 'True'.
 
         :returns: childrens of the given file path
-        :rtype: :class:`~designsafe.apps.api.agave.file.AgaveFile`
+        :rtype: :class:`~designsafe.apps.api.data.agave.file.AgaveFile`
 
-        Pseudocode:
-        -----------
+        **Pseudocode**
 
         1. call `files.list` on `path`
         2. for each file in the listing
