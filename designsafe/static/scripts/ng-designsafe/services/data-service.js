@@ -145,8 +145,8 @@
     /**
      *
      * @param options
-     * @param options.resource
-     * @param options.file_id
+     * @param {string} options.resource
+     * @param {string} options.file_id
      */
     service.trash = function(options) {
       options = options || {};
@@ -157,17 +157,22 @@
     /**
      *
      * @param options
+     * @param {string} options.resource
+     * @param {string} options.file_id
      */
-    service.delete = function(options) {};
+    service.delete = function(options) {
+      options = options || {};
+      return $http.put(djangoUrl.reverse('designsafe_api:file', options), {action: 'delete'});
+    };
 
 
     /**
      *
      * @param options
-     * @param options.src_resource
-     * @param options.src_file_id
-     * @param options.dest_resource
-     * @param options.dest_file_id
+     * @param {string} options.src_resource
+     * @param {string} options.src_file_id
+     * @param {string} options.dest_resource
+     * @param {string} options.dest_file_id
      */
     service.move = function(options) {
       var params = {
@@ -186,10 +191,10 @@
     /**
      *
      * @param options
-     * @param options.src_resource
-     * @param options.src_file_id
-     * @param options.dest_resource
-     * @param options.dest_file_id
+     * @param {string} options.src_resource
+     * @param {string} options.src_file_id
+     * @param {string} options.dest_resource
+     * @param {string} options.dest_file_id
      */
     service.copy = function(options) {
       var params = {

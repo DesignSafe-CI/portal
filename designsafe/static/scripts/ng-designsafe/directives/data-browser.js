@@ -328,6 +328,48 @@
           dbCtrl.browseFile({resource: trailItem.source, file_id: trailItem.id});
         };
 
+        scope.moveToTrashEnabled = function() {
+          return scope.data.listing.name !== '.Trash';
+        };
+
+        scope.emptyTrashEnabled = function() {
+          return scope.data.listing.name === '.Trash';
+        };
+
+        /**
+         * Permanently deletes the selected files.
+         */
+        scope.emptyTrash = function() {
+          if (! window.confirm('Are you sure you want to permenantly delete the selected files? This cannot be undone.')) {
+            return;
+          }
+
+          _.each(scope.state.selected, function(fileId) {
+            var file = _.findWhere(scope.data.listing.children, {id: fileId});
+            var fileEl = $('tr[data-file-id="' + file.id + '"]');
+            fileEl.addClass('ds-data-browser-processing');
+
+            DataService.delete({file_id: file.id, resource: file.source}).then(
+              function() {
+                scope.data.listing.children = _.reject(scope.data.listing.children, function(file) {
+                  return file.id === fileId;
+                });
+              },
+              function(err) {
+                // TODO notify user
+                logger.error(err);
+                fileEl.addClass('ds-data-browser-processing-danger');
+                setTimeout(function() {
+                  fileEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
+                }, 3000);
+              }
+            );
+          });
+        };
+
+        /**
+         * Moves the selected files to the user's trash folder
+         */
         scope.trashSelected = function() {
           _.each(scope.state.selected, function(fileId) {
             var file = _.findWhere(scope.data.listing.children, {id: fileId});
@@ -336,7 +378,7 @@
             DataService.trash({file_id: file.id, resource: file.source}).then(
               function() {
                 scope.data.listing.children = _.reject(scope.data.listing.children, function(file) {
-                  return file.id === key;
+                  return file.id === fileId;
                 });
               },
               function(err) {
@@ -375,7 +417,7 @@
             };
             _.each(files, function(f) {
               var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
-              opts.dest_file_id = opts.dest_file_id + '/' + f.name;
+              // opts.dest_file_id = opts.dest_file_id + '/' + f.name;
               logger.log('COPY', opts);
               dbCtrl.copyFile(opts);
             });
@@ -467,6 +509,7 @@
         enableSelection: '=?selection',
         enableColumns: '=?columns',
         actionFun: '&action',
+        actionCondition: '&',
         actionLabel: '@'
       },
       link: function(scope, element, attrs, dbCtrl) {
@@ -565,6 +608,10 @@
       preview: false,
       selection: false,
       columns: ['name', 'action']
+    };
+
+    $scope.validDestination = function (file) {
+      return file.type === 'folder';
     };
 
     $scope.selectDestination = function (file) {

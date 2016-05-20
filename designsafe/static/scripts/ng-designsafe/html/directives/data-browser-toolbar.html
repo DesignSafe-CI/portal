@@ -29,8 +29,11 @@
             </button>
         </div>
         <div class="btn-group">
-            <button class="btn btn-sm btn-default" title="Move to trash" ng-click="trashSelected()">
+            <button class="btn btn-sm btn-default" title="Move to trash" ng-click="trashSelected()" ng-if="moveToTrashEnabled()">
                 <i class="fa fa-trash"></i><span class="sr-only">Move to Trash</span>
+            </button>
+            <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="emptyTrash()" ng-if="emptyTrashEnabled()">
+                <i class="fa fa-trash"></i><span class="sr-only">Delete selected files</span>
             </button>
         </div>
     </div>

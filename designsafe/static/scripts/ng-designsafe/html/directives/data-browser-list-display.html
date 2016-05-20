@@ -37,7 +37,7 @@
                 </button>
             </td>
             <td ng-if="display('action')">
-                <button class="btn btn-xs btn-primary" ng-click="actionFun({file: file})">
+                <button class="btn btn-xs btn-primary" ng-if="actionCondition({file: file})" ng-click="actionFun({file: file})">
                     <span>{{ actionLabel }}</span>
                 </button>
             </td>
