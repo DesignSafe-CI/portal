@@ -989,6 +989,7 @@ class AgaveIndexer(AgaveObject):
             of their paths. This is not necessarily correct but it is good enough
             for updating permissions.
         """
+        import urllib
         cnt = 0
         r, s = Object().listing_recursive(system_id, username, path)
         objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
