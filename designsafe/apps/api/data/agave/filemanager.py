@@ -523,7 +523,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         f = AgaveFile.mkdir(system, file_user, file_path, dir_name,
                             agave_client = self.agave_client)
         logger.debug('f: {}'.format(f.to_dict()))
-        esf = Object.from_agave_file(self.username, f)
+        esf = Object.from_agave_file(file_user, f)
         return f.to_dict()
 
     def preview(self, file_id, **kwargs):

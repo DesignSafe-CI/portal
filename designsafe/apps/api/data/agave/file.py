@@ -118,18 +118,17 @@ class AgaveFile(AbstractFile, AgaveObject):
     def mkdir(cls, system, username, file_path, dir_name, agave_client = None, **kwargs):
         body = '{{"action": "mkdir", "path": "{}"}}'.format(dir_name)
         try:
-            logger.debug('Agave: calling: files.manage, args: {}'.format( 
+            logger.debug('Agave: calling: files.manage, args: {}'.format(
                              {'systemId': system, 'filePath': file_path,
                               'body': body}))
-            f = agave_client.files.manage(systemId=system, filePath=file_path, body=body)
+            agave_client.files.manage(systemId=system, filePath=file_path, body=body)
+            dir_path = os.path.join(file_path, dir_name)
+            return cls.from_file_path(system, username, dir_path, agave_client)
         except (AgaveException, HTTPError) as e:
             logger.error(e, exc_info=True, extra=kwargs)
             d = {'operation': 'files.list'}
             d.update({'systemId': system, 'filePath': file_path, 'body': body})
             raise ApiException(e.message, e.response.status_code, extra = d)
-
-        return cls(agave_client = agave_client, 
-                   wrap = f, **kwargs)
 
     @property
     def ext(self):
