@@ -662,3 +662,4 @@ class FileManagerShareTestCase(FileManagerBaseTestCase):
                         self.user.username, path)
         mock_af.share.assert_called_with(share_user, permission)
         mock_esf.share.assert_called_with(self.user.username, share_user, permission)
+
