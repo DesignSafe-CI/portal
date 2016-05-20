@@ -40,7 +40,7 @@ def box_download(self, username, box_file_id, to_resource, dest_file_id):
         from designsafe.apps.api.data.agave.filemanager import AgaveIndexer
         system_id, file_user, file_path = agave_fm.parse_file_id(dest_file_id)
 
-        AgaveIndexer.index(system_id, file_path, file_user)
+        AgaveIndexer(user).index(system_id, file_path, file_user)
     except:
         logger.exception('Unexpected task failure: box_download', extra={
             'args': {
