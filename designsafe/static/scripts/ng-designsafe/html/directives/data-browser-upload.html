@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <h3 class="modal-title">Upload {{ state.directoryUpload && state.directoryUploadSupported ? 'folder' : 'files' }}</h3>
+</div>
+<div class="modal-body">
+    <p ng-if="state.directoryUpload && ! state.directoryUploadSupported" class="alert alert-warning">
+        <i class="fa fa-warning"></i>
+        This browser does not support folder upload. You can still upload multiple files.
+    </p>
+    <p>
+        Uploading to <code><i class="fa fa-folder"></i> {{ data.destinationNicePath }}</code>:
+    </p>
+    <form>
+        <div class="form-group">
+            <label for="id-choose-files">Select {{ state.directoryUpload && state.directoryUploadSupported ? 'folder' : 'files' }}</label>
+            <input type="file" multiple class="form-control" id="id-choose-files" name="choose-files"
+                   ng-disabled="state.uploading"
+                   ng-attr-directory="{{ state.directoryUpload && 'true' || undefined }}"
+                   ng-attr-webkitdirectory="{{ state.directoryUpload && 'true' || undefined }}"
+                   accessfiles="data.selectedFiles">
+        </div>
+        <div class="form-group">
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="upload in data.selectedFiles">
+                    {{  upload.webkitRelativePath || upload.name }} ({{ upload.size|bytes }})
+                </li>
+            </ul>
+        </div>
+        <div class="actions text-right">
+            <button class="btn btn-primary" ng-disabled="state.uploading || (data.selectedFiles|length) === 0" type="button" ng-click="upload()">
+                <span ng-if="! state.uploading">Begin upload</span>
+                <span ng-if="state.uploading"><i class="fa fa-refresh fa-spin"></i> Uploading</span>
+            </button>
+            <button class="btn btn-default" ng-disabled="state.uploading" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </form>
+</div>
+<div class="modal-footer"></div>

@@ -2,7 +2,7 @@
   "use strict";
 
   var module = angular.module('ng.designsafe');
-
+  
   module.directive('dsDataBrowser', ['Logging', function(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowser');
 
@@ -15,7 +15,6 @@
         data: '=data',  /* the data to initialize the data browser with; available keys are ['listing', 'resource', 'fileId'] */
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
-        
       },
       controller: ['$scope', '$element', '$uibModal', 'DataService', function($scope, $element, $uibModal, DataService) {
         
@@ -103,8 +102,36 @@
           });
         };
 
-        self.uploadFiles = function() {
-          window.alert('TODO!!!');
+        self.uploadFiles = function(directoryUpload) {
+          $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-upload.html',
+            controller: function ($scope, $uibModalInstance, Modernizr, DataService, uploadDestination, directoryUpload) {
+
+              $scope.data = {
+                destination: uploadDestination,
+                selectedFiles: []
+              };
+
+              $scope.state = {
+                uploading: false,
+                directoryUpload: directoryUpload,
+                directoryUploadSupported: Modernizr.fileinputdirectory
+              };
+
+              var nicePath = _.pluck(uploadDestination._trail, 'name');
+              $scope.data.destinationNicePath = nicePath.join('/') + '/' + uploadDestination.name;
+
+              $scope.upload = function() {
+                $scope.state.uploading = true;
+              };
+
+              $scope.cancel = function() {
+                $uibModalInstance.dismiss('cancel');
+              };
+            },
+            size: 'lg',
+            resolve: {uploadDestination: $scope.data.listing, directoryUpload: directoryUpload}
+          });
         };
 
         self.displayPreview = function(file) {
@@ -272,8 +299,9 @@
             _.contains(scope.data.listing._actions, 'WRITE');
         };
 
-        scope.createFolder = dbCtrl.createFolder;
-        scope.uploadFiles = dbCtrl.uploadFiles;
+        scope.createFolder = function() { dbCtrl.createFolder(); };
+        scope.uploadFiles = function() { dbCtrl.uploadFiles(false); };
+        scope.uploadFolders = function() { dbCtrl.uploadFiles(true); };
       }
     };
   }]);

@@ -227,8 +227,10 @@ class FileManager(AbstractFileManager, AgaveObject):
         if file_path.lower() == '$share':
             file_path = '/'
             file_user = self.username
-        listing = self._es_listing(system, self.username, file_path)
-        if not listing:
+        listing = self._es_listing(system, file_user, file_path)
+        if not listing or len(listing['children']) == 0:
+            logger.debug('Update files index for {}'.format(file_path))
+            self.indexer.index(system, file_path, file_user, levels=1)
             listing = self._agave_listing(system, file_path)
         return listing
 
@@ -265,16 +267,23 @@ class FileManager(AbstractFileManager, AgaveObject):
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
 
             if dest_system == system:
-                dest_file_uri = os.path.join(dest_file_path)
-            else:
-                dest_file_uri = 'agave://{}'.format(
-                    os.path.join(dest_system, dest_file_path))
+                logger.debug('copying {} to {}'.format(file_id, dest_file_path))
+                copied_file = f.copy(dest_file_path)
+                esf = Object.from_file_path(system, file_user, file_path)
+                esf.copy(dest_file_user, dest_file_path)
+                return copied_file.to_dict()
 
-            logger.debug('copying {} to {}'.format(file_id, dest_file_uri))
-            copied_file = f.copy(dest_file_uri)
-            esf = Object.from_file_path(system, file_user, file_path)
-            esf.copy(dest_file_user, dest_file_uri)
-            return copied_file.to_dict()
+            else:
+                file_ingest_uri = 'agave://{}'.format(
+                    os.path.join(system, file_path))
+                logger.debug('importing {} to {}/{}'.format(
+                    file_ingest_uri, dest_system, dest_file_path))
+                files_import = self.call_operation('files.importData', {
+                    'systemId': dest_system,
+                    'filePath': dest_file_path,
+                    'urlToIngest': file_ingest_uri
+                })
+                logger.debug(files_import)
 
         else:
             from designsafe.apps.api.data import lookup_file_manager
@@ -604,6 +613,9 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf = Object.from_file_path(system, self.username, file_path)
         esf.share(self.username, user, permission)
         return f.to_dict()
+
+    def upload(self, file_id, **kwargs):
+        pass
 
     def get_file_real_path(self, file_id):
         system, file_user, file_path = self.parse_file_id(file_id)
@@ -947,7 +959,7 @@ class AgaveIndexer(AgaveObject):
                     docs_indexed += 1
                 for d in docs_to_delete:
                     logger.debug('delete_recursive: {}'.format(d.full_path))
-                    docs_delete += d.delete_recursive()
+                    docs_deleted += d.delete_recursive()
             else:
                 for o in folders + files:
                     logger.debug('Get or create file: {}'.format(o.full_path))

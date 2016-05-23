@@ -3,6 +3,22 @@
 
   var mod = angular.module('ng.designsafe');
 
+  mod.directive('accessfiles', function() {
+    return {
+      scope: {
+        accessfiles: '='
+      },
+      link: function(scope, element, attributes) {
+
+        element.bind('change', function(event) {
+          scope.$apply(function() {
+            scope.accessfiles = event.target.files;
+          });
+        });
+      }
+    }
+  });
+
   mod.directive('selectOnFocus', function() {
     return {
       restrict: 'A',

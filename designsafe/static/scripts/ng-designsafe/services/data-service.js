@@ -117,9 +117,21 @@
 
     /**
      *
-     * @param options
+     * @param {object} options
+     * @param {string} options.resource The files resource to upload to.
+     * @param {string} options.file_id The file_id to upload to
+     * @param {FormData} options.data The FormData to POST for the upload.
      */
-    service.upload = function(options) {};
+    service.upload = function(options) {
+      options = options || {};
+      var params = {
+        resource: options.resource,
+        file_id: options.file_id
+      };
+      var body = options.data;
+      body.append('action', 'upload');
+      return $http.post(djangoUrl.reverse('designsafe_api:file', params), body);
+    };
 
 
     /**
