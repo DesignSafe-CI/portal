@@ -176,7 +176,7 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def previewable(self):
-        return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
+        return self.ext.lower() in self.SUPPORTED_PREVIEW_EXTENSIONS
 
     @property
     def trail(self):

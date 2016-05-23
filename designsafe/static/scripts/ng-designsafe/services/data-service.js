@@ -26,7 +26,7 @@
       }
 
       var icon;
-      switch (ext.slice(1)) {
+      switch (ext.slice(1).toLowerCase()) {
         case 'zip':
         case 'tar':
         case 'gz':
@@ -130,7 +130,9 @@
       };
       var body = options.data;
       body.append('action', 'upload');
-      return $http.post(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.post(djangoUrl.reverse('designsafe_api:file', params), body, {
+        headers : {'Content-Type': undefined}
+      });
     };
 
 
