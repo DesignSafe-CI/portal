@@ -325,6 +325,9 @@ LOGGING = {
             'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
+        'metrics': {
+            'format': '[METRICS] %(message)s user=%(user)s op=%(operation)s info=%(info)s'
+        },
     },
     'handlers': {
         'console': {
@@ -335,6 +338,11 @@ LOGGING = {
         'opbeat': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
+        },
+        'metrics': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'metrics',
         },
     },
     'loggers': {
@@ -347,16 +355,20 @@ LOGGING = {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
-        'dsapi':{
+        'dsapi': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
-        'celery':{
+        'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'INFO',
         },
-        'opbeat':{
+        'opbeat': {
             'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'metrics': {
+            'handlers': ['metrics'],
             'level': 'INFO',
         },
     },
