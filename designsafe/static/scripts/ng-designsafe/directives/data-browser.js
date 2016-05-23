@@ -105,7 +105,7 @@
         self.uploadFiles = function(directoryUpload) {
           $uibModal.open({
             templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-upload.html',
-            controller: function ($scope, $uibModalInstance, Modernizr, DataService, uploadDestination, directoryUpload) {
+            controller: function ($scope, $q, $uibModalInstance, Modernizr, DataService, uploadDestination, directoryUpload) {
 
               $scope.data = {
                 destination: uploadDestination,
@@ -114,6 +114,7 @@
 
               $scope.state = {
                 uploading: false,
+                progress: {},
                 directoryUpload: directoryUpload,
                 directoryUploadSupported: Modernizr.fileinputdirectory
               };
@@ -121,8 +122,57 @@
               var nicePath = _.pluck(uploadDestination._trail, 'name');
               $scope.data.destinationNicePath = nicePath.join('/') + '/' + uploadDestination.name;
 
+              $scope.$watch('data.selectedFiles', function(newValue) {
+                $scope.state.progress = {};
+                _.each(newValue, function(val, i) {
+                  $scope.state.progress[i] = {
+                    state: 'pending',
+                    promise: null
+                  };
+                });
+              });
+
               $scope.upload = function() {
                 $scope.state.uploading = true;
+                var tasks = [];
+                _.each($scope.data.selectedFiles, function(file, i) {
+                  $scope.state.progress[i].state = 'uploading';
+
+                  var formData = new window.FormData();
+                  formData.append('file', file);
+                  if (file.webkitRelativePath) {
+                    formData.append('relative_path', file.webkitRelativePath);
+                  }
+
+                  $scope.state.progress[i].promise = DataService.upload({
+                    resource: $scope.data.destination.source,
+                    file_id: $scope.data.destination.id,
+                    data: formData
+                  });
+
+                  tasks.push(
+                    $scope.state.progress[i].promise.then(
+                      function (resp) {
+                        $scope.state.progress[i].state = 'success';
+                        return $q.resolve({status: 'success', index: i, original: resp});
+                      },
+                      function (err) {
+                        $scope.state.progress[i].state = 'error';
+                        return $q.resolve({status: 'error', index: i, original: err});
+                      }
+                    )
+                  );
+                });
+
+                $q.all(tasks).then(
+                  function(values) {
+                    self.browseFile({
+                      resource: $scope.data.destination.source,
+                      file_id: $scope.data.destination.id
+                    });
+                    $scope.state.uploading = false;
+                  }
+                );
               };
 
               $scope.cancel = function() {

@@ -90,6 +90,7 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
         if e.errno == 17:  # directory already exists?
             pass
         else:
+            logger.exception('Error creating directory: {}'.format(directory_path))
             raise
 
     limit = 100

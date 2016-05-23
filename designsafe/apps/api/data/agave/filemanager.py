@@ -12,7 +12,9 @@ from functools import wraps
 import os
 import logging
 import datetime
+
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger('metrics')
 
 FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
@@ -121,23 +123,25 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
         res, listing = Object.listing(system, username, file_path)
         root_listing = Object.from_file_path(system, username, file_path)
-
-        if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
-            list_data = {
-                '_tail': [],
-                '_actions': [],
-                '_pems': [],
-                'source': self.resource,
-                'id': '$share',
-                'system': settings.AGAVE_STORAGE_SYSTEM,
-                'path': '',
-                'name': '$SHARE',
-                'children': [o.to_file_dict() for o in listing.scan() if o.name != username]
-            }
+        if root_listing:
+            if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
+                list_data = {
+                    '_tail': [],
+                    '_actions': [],
+                    '_pems': [],
+                    'source': self.resource,
+                    'id': '$share',
+                    'system': settings.AGAVE_STORAGE_SYSTEM,
+                    'path': '',
+                    'name': '$SHARE',
+                    'children': [o.to_file_dict() for o in listing.scan() if o.name != username]
+                }
+            else:
+                list_data = root_listing.to_file_dict()
+                list_data['children'] = [o.to_file_dict() for o in listing.scan()]
+            return list_data
         else:
-            list_data = root_listing.to_file_dict()
-            list_data['children'] = [o.to_file_dict() for o in listing.scan()]
-        return list_data
+            return None
 
     def parse_file_id(self, file_id):
         """Parses a `file_id`.
@@ -545,13 +549,14 @@ class FileManager(AbstractFileManager, AgaveObject):
             fmt = kwargs.get('format', 'json')
             if fmt == 'html':
                 context = {}
-                if f.ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
+                ext = f.ext.lower()
+                if ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
                     postit = f.create_postit(force=False)
                     context['image_preview'] = postit['_links']['self']['href']
-                elif f.ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
+                elif ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
                     content = f.download()
                     context['text_preview'] = content
-                elif f.ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
+                elif ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     postit = f.create_postit(force=False)
                     context['object_preview'] = postit['_links']['self']['href']
                 return 'designsafe/apps/api/data/agave/preview.html', context
@@ -614,8 +619,51 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.share(self.username, user, permission)
         return f.to_dict()
 
-    def upload(self, file_id, **kwargs):
-        pass
+    def upload(self, file_id, files, **kwargs):
+        upload_file = files['file']
+
+        rel_path = kwargs.pop('relative_path', None)
+        if rel_path:
+            # ensure path exists
+            rel_path_id = file_id
+            for c in rel_path.split('/')[:-1]:
+                rel_path_id = os.path.join(rel_path_id, c)
+                rel_path_real_path = self.get_file_real_path(rel_path_id)
+                if not os.path.isdir(rel_path_real_path):
+                    try:
+                        os.mkdir(rel_path_real_path, 0o0755)
+                    except OSError as e:
+                        if e.errno == 17:
+                            pass
+                        else:
+                            logger.exception(
+                                'Error creating directory: {}'.format(rel_path_real_path))
+                            raise
+            upload_file_id = os.path.join(rel_path_id, upload_file.name)
+        else:
+            upload_file_id = os.path.join(file_id, upload_file.name)
+
+        upload_real_path = self.get_file_real_path(upload_file_id)
+        with open(upload_real_path, 'wb+') as destination:
+            for chunk in upload_file.chunks():
+                destination.write(chunk)
+
+        metrics.info('User uploaded files via Data Browser', extra={
+            'user': self.username,
+            'operation': 'databrowser.upload',
+            'info': {
+                'file_name': upload_file.name,
+                'file_size': upload_file.size,
+                'content_type': upload_file.content_type,
+                'destination': upload_real_path
+            },
+        })
+
+        u_system, u_file_user, u_file_path = self.parse_file_id(upload_file_id)
+        u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
+                                          agave_client=self.agave_client)
+        Object.from_agave_file(u_file_user, u_file)  # index new file
+        return u_file.to_dict()
 
     def get_file_real_path(self, file_id):
         system, file_user, file_path = self.parse_file_id(file_id)

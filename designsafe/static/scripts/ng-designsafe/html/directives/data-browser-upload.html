@@ -21,7 +21,24 @@
         <div class="form-group">
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="upload in data.selectedFiles">
-                    {{  upload.webkitRelativePath || upload.name }} ({{ upload.size|bytes }})
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-9">{{  upload.webkitRelativePath || upload.name }}</div>
+                        <div class="col-sm-3 hidden-xs">({{ upload.size|bytes }})</div>
+                        <div class="col-sm-3 col-xs-3">
+                            <span ng-if="state.progress[$index].state === 'pending'" class="text-muted">
+                                <i class="fa fa-clock-o"></i> <span class="sr-only">Pending</span>
+                            </span>
+                            <span ng-if="state.progress[$index].state === 'uploading'" class="text-info">
+                                <i class="fa fa-refresh fa-spin"></i> <span class="sr-only">Upload in progress</span>
+                            </span>
+                            <span ng-if="state.progress[$index].state === 'success'" class="text-success">
+                                <i class="fa fa-check-circle"></i> <span class="sr-only">Uploaded</span>
+                            </span>
+                            <span ng-if="state.progress[$index].state === 'error'" class="text-danger" title="{{ state.progress[$index].message }}">
+                                <i class="fa fa-times-circle"></i> <span class="sr-only">Error</span>
+                            </span>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>

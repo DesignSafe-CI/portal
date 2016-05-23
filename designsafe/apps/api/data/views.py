@@ -57,11 +57,28 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
             body_json = json.loads(request.body)
         except ValueError:
             body_json = {}
-        files = request.FILES or []
         d = body_json
-        d.update({'files': files})
         d.update(kwargs)
         d.update(request.GET.dict())
+        resp = op(**d)
+        return resp
+
+    def _execute_form_operation(self, request, operation, **kwargs):
+        """
+        Executes operation of a file manager object as a traditional form post, i.e. NOT JSON.
+
+        :param request: the HttpRequest object.
+        :param operation: the operation to perform.
+        :param kwargs:
+        :return: HttpResponse
+        """
+        fm = self._get_file_manager(request, **kwargs)
+        op = getattr(fm, operation)
+        d = request.POST.dict()
+        d.update(request.GET.dict())
+        d.update(kwargs)
+        if request.FILES:
+            d['files'] = request.FILES
         resp = op(**d)
         return resp
 
@@ -87,10 +104,15 @@ class DataFileManageView(BaseDataView):
     The entire request body will be passed onto the file manager operation being executed as a python dictionary as well as the uploaded file array if present.
     """
     def _execute_post_operation(self, request, **kwargs):
-        body_json = json.loads(request.body)
-        operation = body_json.get('action', None)
-        if operation is not None:
-            return self._execute_operation(request, operation, **kwargs)
+        if 'action' in request.POST:
+            operation = request.POST.get('action', None)
+            if operation is not None:
+                return self._execute_form_operation(request, operation, **kwargs)
+        else:
+            body_json = json.loads(request.body)
+            operation = body_json.get('action', None)
+            if operation is not None:
+                return self._execute_operation(request, operation, **kwargs)
 
         return HttpResponseBadRequest('Invalid action')
 
