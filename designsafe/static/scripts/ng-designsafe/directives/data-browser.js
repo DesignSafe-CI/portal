@@ -46,7 +46,7 @@
           }
         };
 
-        self.selectFile = function(file) {
+        self.toggleSelectFile = function(file) {
           if (_.contains($scope.state.selected, file.id)) {
             $scope.state.selected = _.without($scope.state.selected, file.id);
           } else {
@@ -234,9 +234,8 @@
         self.moveFile = function(options) {
           var sourceEl = $('tr[data-file-id="' + options.src_file_id + '"]', $element);
           sourceEl.addClass('ds-data-browser-processing');
-          DataService.move(options).then(
+          return DataService.move(options).then(
             function (resp) {
-              logger.log(resp);
               sourceEl.addClass('ds-data-browser-processing-success');
               sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
                 $scope.data.listing.children = _.reject($scope.data.listing.children, function (child) {
@@ -244,6 +243,7 @@
                 });
                 $scope.$apply();
               });
+              return resp;
             },
             function (err) {
               logger.error(err);
@@ -429,6 +429,7 @@
 
             DataService.delete({file_id: file.id, resource: file.source}).then(
               function() {
+                dbCtrl.toggleSelectFile({id: fileId});
                 scope.data.listing.children = _.reject(scope.data.listing.children, function(file) {
                   return file.id === fileId;
                 });
@@ -455,6 +456,7 @@
             fileEl.addClass('ds-data-browser-processing');
             DataService.trash({file_id: file.id, resource: file.source}).then(
               function() {
+                dbCtrl.toggleSelectFile({id: fileId});
                 scope.data.listing.children = _.reject(scope.data.listing.children, function(file) {
                   return file.id === fileId;
                 });
@@ -524,8 +526,8 @@
             _.each(files, function(f) {
               var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
               opts.dest_file_id = opts.dest_file_id + '/' + f.name;
-              logger.log('MOVE', opts);
-              dbCtrl.moveFile(opts);
+              dbCtrl.moveFile(opts)
+                    .then(function() { dbCtrl.toggleSelectFile({id: f.id}); });
             });
           });
         };
@@ -603,7 +605,7 @@
         scope.data = scope.$parent.$parent.data;
         scope.getIconClass = dbCtrl.getIconClass;
         scope.selectAll = dbCtrl.selectAll;
-        scope.selectFile = dbCtrl.selectFile;
+        scope.selectFile = dbCtrl.toggleSelectFile;
         scope.clearSelection = dbCtrl.clearSelection;
         scope.previewFile = dbCtrl.previewFile;
 
