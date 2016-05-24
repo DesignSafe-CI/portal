@@ -135,3 +135,7 @@
 .ds-data-browser-source-select .dropdown-menu {
     width: 100%;
 }
+
+.ds-data-selected {
+    background-color: #a1d2eb !important;
+}

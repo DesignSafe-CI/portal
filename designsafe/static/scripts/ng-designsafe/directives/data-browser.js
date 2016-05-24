@@ -531,19 +531,18 @@
         };
 
         scope.shareSelected = function() {
-
+          window.alert('TODO!!');
+          logger.log('SHARE', scope.state.selected);
         };
 
         scope.downloadSelected = function() {
-
-        };
-
-        scope.previewSelected = function() {
-
+          window.alert('TODO!!');
+          logger.log('DOWNLOAD', scope.state.selected);
         };
 
         scope.renameSelected = function() {
-
+          window.alert('TODO!!');
+          logger.log('RENAME', scope.state.selected);
         };
       }
     };
@@ -606,11 +605,15 @@
         scope.selectAll = dbCtrl.selectAll;
         scope.selectFile = dbCtrl.selectFile;
         scope.clearSelection = dbCtrl.clearSelection;
-
         scope.previewFile = dbCtrl.previewFile;
+
+        scope.isFileSelected = function(file) {
+          return _.contains(scope.state.selected, file.id);
+        };
 
         scope.browseFile = function($event, file) {
           $event.preventDefault();
+          $event.stopPropagation();
           if (file.type === 'folder') {
             dbCtrl.browseFile({resource: file.source, file_id: file.id});
           } else if (scope.enablePreview) {

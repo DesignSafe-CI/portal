@@ -17,10 +17,11 @@
         <tbody>
         <tr ng-repeat="file in data.listing.children | orderBy:'name'" data-file-id="{{ file.id }}"
             ds-draggable transfer="file" drag-start="dragStart" drag-enter="dragEnter" drag-over="dragOver"
-            drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"
+            drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop" ng-click="selectFile(file)"
+            ng-class="{'ds-data-selected': isFileSelected(file)}"
         >
             <td>
-                <button class="flo-select-btn" ng-click="selectFile(file)" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">
+                <button class="flo-select-btn" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
