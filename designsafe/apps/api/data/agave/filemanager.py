@@ -122,26 +122,27 @@ class FileManager(AbstractFileManager, AgaveObject):
             for more information.
         """
         res, listing = Object.listing(system, username, file_path)
-        root_listing = Object.from_file_path(system, username, file_path)
-        if root_listing:
-            if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
-                list_data = {
-                    '_tail': [],
-                    '_actions': [],
-                    '_pems': [],
-                    'source': self.resource,
-                    'id': '$share',
-                    'system': settings.AGAVE_STORAGE_SYSTEM,
-                    'path': '',
-                    'name': '$SHARE',
-                    'children': [o.to_file_dict() for o in listing.scan() if o.name != username]
-                }
-            else:
+        if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
+            list_data = {
+                '_tail': [],
+                '_actions': [],
+                '_pems': [{'username': self.username, 'permission': {'read': True}}],
+                'source': self.resource,
+                'id': '$share',
+                'system': settings.AGAVE_STORAGE_SYSTEM,
+                'path': '',
+                'name': '$SHARE',
+                'children': [o.to_file_dict() for o in listing.scan() if o.name != username]
+            }
+        else:
+            root_listing = Object.from_file_path(system, username, file_path)
+            if root_listing:
                 list_data = root_listing.to_file_dict()
                 list_data['children'] = [o.to_file_dict() for o in listing.scan()]
-            return list_data
-        else:
-            return None
+            else:
+                list_data = None
+
+        return list_data
 
     def parse_file_id(self, file_id):
         """Parses a `file_id`.
@@ -228,12 +229,25 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>     do_something_cool(child)
         """
         system, file_user, file_path = self.parse_file_id(file_id)
+
+        reindex = kwargs.get('reindex', None) == 'true'
+        index_pems = kwargs.get('pems', None) == 'true'
+
         if file_path.lower() == '$share':
             file_path = '/'
             file_user = self.username
-        listing = self._es_listing(system, file_user, file_path)
-        if not listing or len(listing['children']) == 0:
+
+        if reindex:
             logger.debug('Update files index for {}'.format(file_path))
+            self.indexer.index(system, file_path, file_user, levels=1,
+                               pems_indexing=index_pems)
+
+        try:
+            listing = self._es_listing(system, self.username, file_path)
+        except:
+            listing = None
+
+        if not listing or len(listing['children']) == 0:
             self.indexer.index(system, file_path, file_user, levels=1)
             listing = self._agave_listing(system, file_path)
         return listing
@@ -1007,7 +1021,7 @@ class AgaveIndexer(AgaveObject):
                     docs_indexed += 1
                 for d in docs_to_delete:
                     logger.debug('delete_recursive: {}'.format(d.full_path))
-                    docs_deleted += d.delete_recursive()
+                    docs_deleted += d.delete_recursive(username)
             else:
                 for o in folders + files:
                     logger.debug('Get or create file: {}'.format(o.full_path))

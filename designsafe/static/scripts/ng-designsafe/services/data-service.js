@@ -3,8 +3,7 @@
 
   var module = angular.module('ng.designsafe');
 
-  module.factory('DataService', ['$rootScope', '$http', '$q', 'djangoUrl', 'Logging',
-    function($rootScope, $http, $q, djangoUrl, Logging) {
+  module.factory('DataService', ['$rootScope', '$http', '$q', 'djangoUrl', 'Logging', function($rootScope, $http, $q, djangoUrl, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataService');
 
@@ -86,11 +85,23 @@
      * @param options {object}
      * @param options.resource {string} the `source` to list.
      * @param options.file_id {object} the `id` of the file to list. The type and format of `id` varies based on `source`.
+     * @param options.reindex {boolean} whether to trigger a reindexing
+     * @param options.index_pems {boolean} whether to index permissions
      */
     service.listPath = function(options) {
-      options = options || {};
-      var params = _.extend({resource: 'agave', file_id: null}, options);
-      return $http.get(djangoUrl.reverse('designsafe_api:list', params));
+      var params = {
+        file_id: options.file_id,
+        resource: options.resource
+      };
+
+      var url = djangoUrl.reverse('designsafe_api:list', params);
+      if (options.reindex) {
+        url += '&reindex=true';
+      }
+      if (options.index_pems) {
+        url += '&pems=true';
+      }
+      return $http.get(url);
     };
 
 

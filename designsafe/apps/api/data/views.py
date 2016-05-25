@@ -138,6 +138,7 @@ class DataFileManageView(BaseDataView):
         resp = self._execute_post_operation(request, **kwargs)
         return self.render_to_json_response(resp)
 
+
 class DataSearchView(BaseDataView):
     """
     Data view to handle search.

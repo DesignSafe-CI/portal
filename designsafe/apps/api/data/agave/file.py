@@ -103,7 +103,10 @@ class AgaveFile(AbstractFile, AgaveObject):
         try:
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                          {'systemId': system, 'filePath': file_path}))
-            listing = agave_client.files.list(systemId = system, filePath = file_path)
+            limit = kwargs.pop('limit', 100)
+            offset = kwargs.pop('offset', 0)
+            listing = agave_client.files.list(systemId=system, filePath=file_path,
+                                              limit=limit, offset=offset)
         except (AgaveException, HTTPError) as e:
             logger.error(e, exc_info = True,)
             d = {'operation': 'files.list'}
@@ -169,8 +172,9 @@ class AgaveFile(AbstractFile, AgaveObject):
             >>> print f.permissions #reloaded permissions from agave.
         """
         if not self._permissions:
-            pems = self.call_operation('files.listPermissions', 
-                        filePath = self.full_path, systemId = self.system)
+            pems = self.call_operation('files.listPermissions',
+                                       filePath=self.full_path,
+                                       systemId=self.system)
             self._permissions = pems
         return self._permissions
 
@@ -364,7 +368,6 @@ class AgaveFile(AbstractFile, AgaveObject):
 
         return self
 
-
     def to_dict(self, **kwargs):
         return {
             'source': self.source,
@@ -377,8 +380,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             'size': self.length,
             'lastModified': datetime.strftime(self.lastModified, '%Y-%m-%dT%H:%M:%S%z'),
             '_trail': self.trail,
-            '_actions': [],
-            '_pems': [],
+            '_pems': self.permissions,
         }
 
     def __repr__(self):

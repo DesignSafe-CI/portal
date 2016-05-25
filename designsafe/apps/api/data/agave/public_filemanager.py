@@ -69,7 +69,7 @@ class FileManager(AgaveObject):
         else:
             components = file_id.strip('/').split('/')
             system_id = components[0] if len(components) >= 1 else self.system_id
-            file_path = '/'.join(components[1:]) if len(components) >= 2 else None
+            file_path = '/'.join(components[1:]) if len(components) >= 2 else ''
 
         return system_id, file_path
 
@@ -81,15 +81,18 @@ class FileManager(AgaveObject):
         <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
 
         :returns:listing dict. A dict with the properties of the
-        parent path file object plus a `childrens` key with a list
-        of :class:`~.
+        parent path file object plus a `children` key with a list
+        of :class:`~`.
         If the `file_id` passed is a file and not a folder the
         `children` list will be empty.
         :rtype: dict
 
         Examples:
             A listing dictionary:
-            ```{
+
+            .. code-block:: json
+
+                {
                   _pems: [ ],
                   type: "folder",
                   path: "",
@@ -104,12 +107,15 @@ class FileManager(AgaveObject):
                   _actions: [ ],
                   _trail: [ ]
                 }
-            ```
 
             To loop through the listing's files:
-            >>> listing = fm.listing(**kwargs)
-            >>> for child in listing['children']:
-            >>>     do_something_cool(child)
+
+            .. code-block:: python
+
+                listing = fm.listing(**kwargs)
+                for child in listing['children']:
+                    do_something_cool(child)
+
         """
         system, file_path = self.parse_file_id(file_id)
         listing = AgaveFile.listing(system, file_path, self.agave_client, source='public')

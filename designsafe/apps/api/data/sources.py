@@ -8,40 +8,40 @@ class SourcesApi(object):
             "resource": "agave",
             "defaultPath": settings.AGAVE_STORAGE_SYSTEM,
             "name": "My data",
+            "_indexed": True,
             "_extra": {
                 "icon": "fa-hdd-o"
             },
-            "_actions": ["READ", "WRITE", "EXECUTE"]
         },
         {
             "id": "$share",
             "resource": "agave",
             "defaultPath": '/'.join([settings.AGAVE_STORAGE_SYSTEM, '$share']),
             "name": "Shared with me",
+            "_indexed": True,
             "_extra": {
                 "icon": "fa-group"
             },
-            "_actions": ["READ", "WRITE", "EXECUTE"]
         },
         {
             "id": "public",
             "resource": "public",
             "defaultPath": None,
             "name": "Public data",
+            "_indexed": True,
             "_extra": {
                 "icon": "fa-globe"
             },
-            "_actions": ["READ"]
         },
         {
             "id": "box",
             "resource": "box",
             "defaultPath": None,
             "name": "Box.com",
+            "_indexed": False,
             "_extra": {
                 "icon": "fa-square"
             },
-            "_actions": ["READ", "WRITE", "EXECUTE"]
         }
     ]
 

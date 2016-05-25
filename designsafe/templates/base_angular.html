@@ -36,6 +36,7 @@
             (function(angular) {
                 var initial = angular.module('django.context', []);
                 initial.value('Django', {
+                    user: "{{ request.user }}",
                     context: {{ angular_init|default:"{}"|safe }}
                 });
             })(angular);

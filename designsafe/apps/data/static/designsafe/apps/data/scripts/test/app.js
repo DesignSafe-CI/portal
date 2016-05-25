@@ -28,6 +28,7 @@
       var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
 
       $scope.data = {
+        user: Django.user,
         currentSource: Django.context.currentSource,
         sources: Django.context.sources,
         listing: Django.context.listing

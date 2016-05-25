@@ -14,24 +14,23 @@ import os
 
 logger = logging.getLogger(__name__)
 
-es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
-
 try:
+    es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
     default_index = es_settings['default_index']
     cluster = es_settings['cluster']
     hosts = cluster['hosts']
+    connections.configure(
+        default={
+            'hosts': hosts,
+            'sniff_on_start': True,
+            'sniff_on_connection_fail': True,
+            'sniffer_timeout': 60,
+            'retry_on_timeout': True,
+            'timeout:': 20,
+        })
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
-connections.configure(
-    default={
-        'hosts': hosts,
-        'sniff_on_start': True,
-        'sniff_on_connection_fail': True,
-        'sniffer_timeout': 60,
-        'retry_on_timeout': True,
-        'timeout:': 20,
-    })
 
 class Object(DocType):
     """Class to wrap Elasticsearch (ES) documents.
@@ -63,7 +62,7 @@ class Object(DocType):
 
     .. todo:: should this class' methods be called **only** from 
         :class:`~designsafe.apps.api.data.agave.file.AgaveFile`?
-    .. todo:: create a wrapper to try/except `Unabel to sniff hosts` error.
+    .. todo:: create a wrapper to try/except `Unable to sniff hosts` error.
     """
     source = 'agave'
 
@@ -133,9 +132,12 @@ class Object(DocType):
         Examples:
         ---------
             Sort listing by depth
-            >>> listing = Object.listing_recursive('agave.system.id', 
-            ...                     'username', 'username/path/folder')
-            >>> sorted(listing, key=lambda x: len(x.full_path.split('/')))
+
+            .. code-block:: python
+
+                >>> listing = Object.listing_recursive('agave.system.id',
+                ...                     'username', 'username/path/folder')
+                >>> sorted(listing, key=lambda x: len(x.full_path.split('/')))
 
             .. note:: Python sorting is stable. In theory we could sort the listing
                 alphabetically (default behaivour) and then sort the listing
@@ -459,7 +461,9 @@ class Object(DocType):
         and returns the result of :meth:`~designsafe.apps.api.agave.files.AgaveFile.to_dict`.
         We hand off the dict construction to the 
         :class:`~designsafe.apps.api.agave.files.AgaveFile` class so we don't have to
-        implement it twice. 
+        implement it twice.
+
+        :param string pems_user: User to filter permissions for
 
         :returns: dict object representation of a file
         :rtype: dict
@@ -474,6 +478,8 @@ class Object(DocType):
         except AttributeError:
             lm = datetime.datetime.now()
 
+        pems = self.to_dict()['permissions']
+
         wrap = {
             'format': getattr(self, 'format', 'folder'),
             'lastModified': lm,
@@ -481,10 +487,10 @@ class Object(DocType):
             'mimeType': self.mimeType,
             'name': self.name,
             'path': os.path.join(self.path, self.name).strip('/'),
-            'permissions': self.permissions,
+            'permissions': pems,
             'system': self.systemId,
             'type': self.type,
-            '_permissions': self.permissions
+            '_pems': pems
         }
         f = AgaveFile(wrap = wrap)
         return f.to_dict()

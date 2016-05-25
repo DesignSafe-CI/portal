@@ -12,6 +12,7 @@
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser.html',
       scope: {
+        user: '=',
         data: '=data',  /* the data to initialize the data browser with; available keys are ['listing', 'resource', 'fileId'] */
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
@@ -25,6 +26,11 @@
         };
 
         var self = this;
+
+        self.hasPermission = function (permission) {
+          var user_pems = _.findWhere($scope.data.listing._pems, {username: $scope.user});
+          return user_pems && user_pems.permission[permission];
+        };
 
         self.getIconClass = function(file, hover) {
           if ($scope.state.selecting || hover) {
@@ -285,7 +291,11 @@
         self.renameFile = function(options) {
           window.alert('TODO!!!');
         };
-        
+
+        /**
+         * Preview File-like object.
+         * @param file {object} the file-like object to preview
+         */
         self.previewFile = function(file) {
           $scope.state.loading = true;
           DataService.listPath({resource: file.source, file_id: file.id}).then(
@@ -301,11 +311,41 @@
           );
         };
 
+
+        /**
+         *
+         */
+        self.reindexCurrentListing = function() {
+          $scope.state.loading = true;
+          var opts = {
+            resource: $scope.data.listing.source,
+            file_id: $scope.data.listing.id,
+            reindex: true
+          };
+          return DataService.listPath(opts).then(
+            function(resp) {
+              $scope.state.loading = false;
+              $scope.data.listing = resp.data;
+            },
+            function(err) {
+              logger.error(err);
+              // TODO notify
+            }
+          );
+        };
+
+        /**
+         * Browse to a file_id and list its contents.
+         * @param options {object}
+         * @oaram options.resource {string} the resource to browse
+         * @oaram options.file_id {string} the file_id to browse
+         * @returns {HttpPromise}
+         */
         self.browseFile = function(options) {
           self.clearSelection();
           $scope.state.loading = true;
           options = options || {};
-          DataService.listPath(options).then(
+          return DataService.listPath(options).then(
             function(response) {
               $scope.state.loading = false;
               $scope.data.listing = response.data;
@@ -324,7 +364,7 @@
         };
 
         if (! $scope.data.listing) {
-          self.browseFile();
+          self.browseFile({});
         }
       }]
     };
@@ -345,8 +385,7 @@
         scope.data = scope.$parent.$parent.data;
 
         scope.newFileEnabled = function() {
-          return _.contains(scope.data.currentSource._actions, 'WRITE') ||
-            _.contains(scope.data.listing._actions, 'WRITE');
+          return dbCtrl.hasPermission('write');
         };
 
         scope.createFolder = function() { dbCtrl.createFolder(); };
@@ -405,13 +444,30 @@
           $event.preventDefault();
           dbCtrl.browseFile({resource: trailItem.source, file_id: trailItem.id});
         };
+        
+        scope.downloadEnabled = function() {
+          var file;
+          if (scope.state.selected.length === 1) {
+            file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
+            return file && file.type === 'file';
+          }
+          return false;
+        };
 
         scope.moveToTrashEnabled = function() {
-          return scope.data.listing.name !== '.Trash';
+          return dbCtrl.hasPermission('write') && scope.data.listing.name !== '.Trash';
         };
 
         scope.emptyTrashEnabled = function() {
-          return scope.data.listing.name === '.Trash';
+          return dbCtrl.hasPermission('write') && scope.data.listing.name === '.Trash';
+        };
+
+        scope.reindexingEnabled = function() {
+          return dbCtrl.hasPermission('write') && scope.data.currentSource._indexed;
+        };
+
+        scope.requestReindex = function() {
+          dbCtrl.reindexCurrentListing();
         };
 
         /**
@@ -540,6 +596,14 @@
         scope.downloadSelected = function() {
           window.alert('TODO!!');
           logger.log('DOWNLOAD', scope.state.selected);
+        };
+
+        scope.previewSelected = function() {
+          var file;
+          if (scope.state.selected.length === 1) {
+            file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
+            dbCtrl.previewFile(file);
+          }
         };
 
         scope.renameSelected = function() {
