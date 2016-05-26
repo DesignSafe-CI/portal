@@ -94,7 +94,7 @@ class FileInitTestCase(FileBaseTestCase):
         listing = AgaveFile.listing(settings.AGAVE_STORAGE_SYSTEM,
                                     file_path, agave_client = ac)
 
-        ac.files.list.assert_called_with(systemId = settings.AGAVE_STORAGE_SYSTEM, filePath = file_path)
+        ac.files.list.assert_called_with(systemId = settings.AGAVE_STORAGE_SYSTEM, filePath = file_path, limit = 100, offset = 0)
         for i, af in enumerate(listing):
             self.assertEqual(af.full_path, listing_json[i]['path'])
 
