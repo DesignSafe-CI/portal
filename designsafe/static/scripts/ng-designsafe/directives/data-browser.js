@@ -27,9 +27,21 @@
 
         var self = this;
 
-        self.hasPermission = function (permission) {
-          var user_pems = _.findWhere($scope.data.listing._pems, {username: $scope.user});
-          return user_pems && user_pems.permission[permission];
+        /**
+         * Checks that the user has the requested permission on all files passed.
+         * @param {string} permission the permission to check for: read, write, execute
+         * @param {Array} files an array of files to check
+         * @return {boolean} Whether the user has the permission on all files.
+         */
+        self.hasPermission = function (permission, files) {
+          return _.reduce(files, function(memo, file) {
+            var filePem = _.findWhere(file._pems, {username: $scope.user});
+            var pem = filePem && filePem.permission[permission];
+            if (memo !== null) {
+              pem = memo && pem;
+            }
+            return pem;
+          }, null);
         };
 
         self.getIconClass = function(file, hover) {
@@ -385,7 +397,7 @@
         scope.data = scope.$parent.$parent.data;
 
         scope.newFileEnabled = function() {
-          return dbCtrl.hasPermission('write');
+          return dbCtrl.hasPermission('write', [scope.data.listing]);
         };
 
         scope.createFolder = function() { dbCtrl.createFolder(); };
@@ -444,26 +456,57 @@
           $event.preventDefault();
           dbCtrl.browseFile({resource: trailItem.source, file_id: trailItem.id});
         };
+
+        /**
+         * @return {Array} of files currently selected
+         */
+        function selectedFiles() {
+          return _.filter(scope.data.listing.children, function(file) {
+            return _.contains(scope.state.selected, file.id);
+          });
+        }
         
         scope.downloadEnabled = function() {
-          var file;
           if (scope.state.selected.length === 1) {
-            file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
-            return file && file.type === 'file';
+            return selectedFiles()[0].type === 'file';
           }
           return false;
         };
 
+        scope.previewEnabled = function() {
+          return scope.state.selected.length === 1;
+        };
+
+        scope.renameEnabled = function() {
+          return dbCtrl.hasPermission('write', selectedFiles()) &&
+                 scope.state.selected.length === 1;
+        };
+
+        scope.shareEnabled = function() {
+          return scope.data.currentSource.id === 'mydata';
+        };
+
+        scope.moveEnabled = function() {
+          return dbCtrl.hasPermission('write', [scope.data.listing]);
+        };
+
+        scope.copyEnabled = function() {
+          return dbCtrl.hasPermission('read', selectedFiles())
+        };
+
         scope.moveToTrashEnabled = function() {
-          return dbCtrl.hasPermission('write') && scope.data.listing.name !== '.Trash';
+          return dbCtrl.hasPermission('write', selectedFiles()) &&
+                 scope.data.listing.name !== '.Trash';
         };
 
         scope.emptyTrashEnabled = function() {
-          return dbCtrl.hasPermission('write') && scope.data.listing.name === '.Trash';
+          return dbCtrl.hasPermission('write', selectedFiles()) &&
+                 scope.data.listing.name === '.Trash';
         };
 
         scope.reindexingEnabled = function() {
-          return dbCtrl.hasPermission('write') && scope.data.currentSource._indexed;
+          return scope.data.currentSource._indexed &&
+                 dbCtrl.hasPermission('write', [scope.data.listing]);
         };
 
         scope.requestReindex = function() {
@@ -474,7 +517,7 @@
          * Permanently deletes the selected files.
          */
         scope.emptyTrash = function() {
-          if (! window.confirm('Are you sure you want to permenantly delete the selected files? This cannot be undone.')) {
+          if (! window.confirm('Are you sure you want to permanently delete the selected files? This cannot be undone.')) {
             return;
           }
 
