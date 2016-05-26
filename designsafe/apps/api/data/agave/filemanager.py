@@ -778,7 +778,7 @@ class AgaveIndexer(AgaveObject):
         files = self.call_operation('files.list', systemId = system_id, 
                                     filePath = path)
         for f in files:
-            logger.debug('path: {}'.format(f['path']))
+            #logger.debug('path: {}'.format(f['path']))
             aff = AgaveFile(agave_client = self.agave_client, wrap = f)
             if f['name'] == '.' or f['name'] == '..':
                 if not yield_base:
