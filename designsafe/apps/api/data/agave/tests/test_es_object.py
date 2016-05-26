@@ -139,21 +139,22 @@ class FileCopyTestCase(FileBaseTestCase):
         mock_listing_recursive.return_value = (None, s)
 
         doc = self.get_mock_object_folder()
-        doc.path = os.path.split(listing_json[0]['path'])[0]
+        doc.path, doc.name = os.path.split(listing_json[0]['path'])
 
+        target_path = doc.path + '/another folder'
         target_name = 'folder_copy'
 
         with mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object', spce = Object) as mock_obj_class:
             mock_obj_class.save.return_value = None
-            doc_copy = doc.copy(self.user.username, target_name)
+            doc_copy = doc.copy(self.user.username, os.path.join(target_path, target_name))
             #print 'Obj class was called: %d times' % mock_obj_class.call_count
             obj_class_calls = mock_obj_class.call_args_list
 
         for i, d in enumerate(listing_json):
             args, d_call = obj_class_calls[i]
-            regex = r'^{}'.format(os.path.join(doc.path, target_name))
+            regex = r'^{}'.format(os.path.join(doc.path, doc.name))
             self.assertEqual(d_call['path'], re.sub(regex, 
-                                os.path.join(d['path'], target_name),
+                                os.path.join(target_path, target_name),
                                 d['path']))
 
         mock_listing_recursive.assert_called_with(doc.systemId, 

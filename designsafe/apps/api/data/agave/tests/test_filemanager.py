@@ -100,9 +100,10 @@ class FileManagerTestCase(FileManagerBaseTestCase):
         self.assertEqual(file_path, self.user.username)
 
 class FileManagerListingTestCase(FileManagerBaseTestCase):
+    @mock.patch('designsafe.apps.api.data.agave.filemanager.AgaveIndexer.index')
     @mock.patch('designsafe.apps.api.data.agave.filemanager.FileManager._agave_listing')
     @mock.patch.object(FileManager, '_es_listing')
-    def test_listing_agave_fallback(self, mock_es_listing, mock_agave_listing):
+    def test_listing_agave_fallback(self, mock_es_listing, mock_agave_listing, mock_aidexer_index):
         fm = self.get_filemanager()
         
         path = '%s/path/to/folder' % (self.user.username)
@@ -114,13 +115,13 @@ class FileManagerListingTestCase(FileManagerBaseTestCase):
         
         mock_agave_listing.assert_called_with(settings.AGAVE_STORAGE_SYSTEM, path)
 
-    @mock.patch('designsafe.apps.api.data.agave.filemanager.FileManager._es_listing')
+    @mock.patch.object(FileManager, '_es_listing')
     def test_listing_es(self, mock_es_listing):
         fm = self.get_filemanager()
         
         path = '%s/path/to/folder' % (self.user.username)
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
-
+        mock_es_listing.return_value = {'children': [{'test': 'test'}]}
         fm.listing(file_id)
         
         mock_es_listing.assert_called_with(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path)
@@ -153,11 +154,11 @@ class FileManagerCopyTestCase(FileManagerBaseTestCase):
 
         mock_af.copy.assert_called_with(dest_path)
         mock_esf.copy.assert_called_with(self.user.username, dest_path)
-
-    @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
-    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
-    def test_agave_file_copy_same_resource_different_system(self, mock_agave_file_from_file_path,
-                                    mock_object_from_file_path):
+    @mock.patch('designsafe.apps.api.data.agave.filemanager.AgaveFile.from_file_path')
+    @mock.patch.object(FileManager, 'call_operation')
+    def test_agave_file_copy_same_resource_different_system(self, 
+                                    mock_call_op,
+                                    mock_af_from_file_path ):
         fm = self.get_filemanager()
 
         path = '%s/path/to/folder' % (self.user.username)
@@ -166,23 +167,16 @@ class FileManagerCopyTestCase(FileManagerBaseTestCase):
         dest_path = '%s/path/to/folder-copy' % (self.user.username)
         dest_file_id = '%s/%s' % (dest_system, dest_path)
         dest_file_uri = 'agave://{}'.format(dest_file_id)
-        
-        mock_af = mock.Mock(spec = AgaveFile)
-        type(mock_af).name = mock.PropertyMock(return_value = 'folder-copy')
-        mock_esf = mock.Mock(spec = Object)
-    
-        mock_agave_file_from_file_path.return_value = mock_af
-        mock_object_from_file_path.return_value = mock_esf
-        
+
+        #test fun
         fm.copy(file_id, fm.resource, dest_file_id)
-
-        mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
-                self.user.username, path, agave_client = fm.agave_client)
-        mock_object_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
-                self.user.username, path)
-
-        mock_af.copy.assert_called_with(dest_file_uri)
-        mock_esf.copy.assert_called_with(self.user.username, dest_file_uri)
+        
+        mock_call_op.assert_called_with('files.importData',
+                {
+                    'systemId': dest_system,
+                    'filePath': dest_path,
+                    'urlToIngest': 'agave://{}'.format(file_id)
+                })
 
     @mock.patch('designsafe.apps.api.data.lookup_file_manager')
     @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')
@@ -195,23 +189,17 @@ class FileManagerCopyTestCase(FileManagerBaseTestCase):
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
         dest_file_id = 'box/file/00314'
         
-        mock_af = mock.Mock(spec = AgaveFile)
-        type(mock_af).name = mock.PropertyMock(return_value = 'folder-copy')
-
         with mock.patch('designsafe.apps.api.data.agave.filemanager.FileManager') as mock_fm_class:
             mock_lookup_file_manager.return_value = mock_fm_class
     
-        mock_af.create_postit.return_value = {'_links': {'self': {'href': 'download_link'} } }
-        mock_agave_file_from_file_path.return_value = mock_af
-        
+        #test func
         fm.copy(file_id, 'box', dest_file_id)
         
         mock_agave_file_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
                 self.user.username, path, agave_client = fm.agave_client)
 
-        self.assertTrue(mock_af.create_postit.called)
         mock_fm_class().import_file.assert_called_with(dest_file_id, 
-                   mock_af.name, 'download_link') 
+                   fm.resource, file_id) 
 
     @mock.patch('designsafe.apps.api.data.lookup_file_manager')
     @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')

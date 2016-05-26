@@ -255,7 +255,7 @@ class Object(DocType):
             res = s.execute()
         return res, s
 
-    def copy(self, username, target_name):
+    def copy(self, username, target_file_path):
         """Copy a document.
 
         Although creating a copy of a document using this class is farily 
@@ -280,18 +280,26 @@ class Object(DocType):
             >>> doc_copy = origin_doc.copy('username', 'file_copy.txt')
             >>> print 'resulting file path: {}'.format(doc_copy.full_path)
         """
+        target_path, target_name = os.path.split(target_file_path.strip('/'))
+        #check that we got a full file path, else assume is just the name
+        if not target_path:
+            target_path = self.path
+
         if self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 d = o.to_dict()
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
+                logger.debug('d[path]: {}'.format(d['path']))
                 d['path'] = re.sub(regex, 
-                                os.path.join(self.path, target_name), 
+                                os.path.join(target_path, target_name), 
                                 d['path'], count = 1)
+                logger.debug('changed d[path]: {}'.format(d['path']))
                 d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
                 doc = Object(**d)
                 doc.save()
         d = self.to_dict()
+        d['path'] = target_path
         d['name'] = target_name
         d['agavePath'] = 'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
         doc = Object(**d)

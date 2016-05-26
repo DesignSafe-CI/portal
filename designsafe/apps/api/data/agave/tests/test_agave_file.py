@@ -94,11 +94,12 @@ class FileInitTestCase(FileBaseTestCase):
         listing = AgaveFile.listing(settings.AGAVE_STORAGE_SYSTEM,
                                     file_path, agave_client = ac)
 
-        ac.files.list.assert_called_with(systemId = settings.AGAVE_STORAGE_SYSTEM, filePath = file_path)
+        ac.files.list.assert_called_with(systemId = settings.AGAVE_STORAGE_SYSTEM, filePath = file_path, limit = 100, offset = 0)
         for i, af in enumerate(listing):
             self.assertEqual(af.full_path, listing_json[i]['path'])
 
-    def test_mkdir(self):
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_mkdir(self, mock_from_file_path):
         ac = mock.Mock(autospec = Agave)
         ac.files.manage.return_value = self.afile_json
         
@@ -109,7 +110,7 @@ class FileInitTestCase(FileBaseTestCase):
 
         body = '{{"action": "mkdir", "path": "{}"}}'.format(head)
         ac.files.manage.assert_called_with(systemId= settings.AGAVE_STORAGE_SYSTEM, filePath = tail, body = body)
-        self.assertEqual(af.full_path, file_path)
+        mock_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM, self.user.username, file_path, ac)
 
 class FileCreatePostitTestCase(FileBaseTestCase):
     @mock.patch.object(AgaveFile, 'call_operation')
