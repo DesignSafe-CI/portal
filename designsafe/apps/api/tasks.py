@@ -2,6 +2,7 @@ from celery import shared_task
 from django.contrib.auth import get_user_model
 import logging
 import os
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +29,8 @@ def box_download(self, username, box_file_id, to_resource, dest_file_id):
     :return:
     """
 
-    logger.debug('Downloading box://{} for user {} to {}://{}'.format(
-        box_file_id, username, to_resource, dest_file_id))
+    logger.debug('Downloading box://%s for user %s to %s://%s',
+                 box_file_id, username, to_resource, dest_file_id)
 
     try:
         user = get_user_model().objects.get(username=username)
@@ -70,11 +71,9 @@ def box_download_file(box_file_manager, box_file_id, download_directory_path):
     :return: the full path to the downloaded file
     """
     box_file = box_file_manager.box_api.file(box_file_id).get()
-    safe_filename = box_file.name.encode('utf-8')
-    file_download_path = os.path.join(download_directory_path, safe_filename)
-    logger.debug('Download file {} <= box://file/{}'.format(file_download_path,
-                                                            box_file_id))
-    with open(file_download_path, 'wb') as download_file:
+    file_download_path = os.path.join(download_directory_path, box_file.name)
+    logger.debug('Download file %s <= box://file/%s', file_download_path, box_file_id)
+    with open(file_download_path.encode('utf-8'), 'wb') as download_file:
         box_file.download_to(download_file)
     return file_download_path
 
@@ -90,17 +89,15 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
     :return:
     """
     box_folder = box_file_manager.box_api.folder(box_folder_id).get()
-    safe_foldername = box_folder.name.encode('utf-8')
-    directory_path = os.path.join(download_path, safe_foldername)
-    logger.debug('Creating directory {} <= box://folder/{}'.format(directory_path,
-                                                                   box_folder_id))
+    directory_path = os.path.join(download_path, box_folder.name)
+    logger.debug('Creating directory %s <= box://folder/%s', directory_path, box_folder_id)
     try:
-        os.mkdir(directory_path, 0o0755)
+        os.mkdir(directory_path.encode('utf-8'), 0o0755)
     except OSError as e:
         if e.errno == 17:  # directory already exists?
             pass
         else:
-            logger.exception('Error creating directory: {}'.format(directory_path))
+            logger.exception('Error creating directory: %s', directory_path)
             raise
 
     limit = 100
@@ -117,9 +114,10 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
         else:
             break
 
+
 @shared_task(bind=True)
 def box_upload(self, username, box_file_id, from_resource, upload_file_id):
-    logger.debug('Importing file {} for user {} from to {}://{}'.format(
+    logger.debug('Importing file %s for user %s from to %s://%s' % (
         upload_file_id, username, from_resource, box_file_id))
 
     try:
@@ -149,8 +147,8 @@ def box_upload(self, username, box_file_id, from_resource, upload_file_id):
                 elif os.path.isdir(file_real_path):
                     box_upload_directory(box_fm, file_id, file_real_path)
                 else:
-                    logger.error('Unable to upload {}: file does not exist!'.format(
-                        file_real_path))
+                    logger.error('Unable to upload %s: file does not exist!',
+                                 file_real_path)
             except:
                 logger.exception('Upload to Box failed!')
 
@@ -166,12 +164,11 @@ def box_upload(self, username, box_file_id, from_resource, upload_file_id):
 
 def box_upload_file(box_file_manager, box_folder_id, file_real_path):
     file_path, file_name = os.path.split(file_real_path)
-    with open(file_real_path, 'rb') as file_handle:
+    with open(file_real_path.encode(sys.getfilesystemencoding()), 'rb') as file_handle:
         box_folder = box_file_manager.box_api.folder(box_folder_id)
         uploaded_file = box_folder.upload_stream(file_handle, file_name)
-        logger.info('Successfully uploaded {} to box:folder/{} as box:file/{}'.format(
-            file_real_path, box_folder_id, uploaded_file.object_id
-        ))
+        logger.info('Successfully uploaded %s to box:folder/%s as box:file/%s',
+                    file_real_path, box_folder_id, uploaded_file.object_id)
 
 
 def box_upload_directory(box_file_manager, box_parent_folder_id, dir_real_path):
@@ -187,8 +184,7 @@ def box_upload_directory(box_file_manager, box_parent_folder_id, dir_real_path):
 
     dirparentpath, dirname = os.path.split(dir_real_path)
     box_parent_folder = box_file_manager.box_api.folder(box_parent_folder_id)
-    logger.info('Create directory {} in box folder/{}'.format(dirname,
-                                                              box_parent_folder_id))
+    logger.info('Create directory %s in box folder/%s', dirname, box_parent_folder_id)
     box_folder = box_parent_folder.create_subfolder(dirname)
 
     for dirpath, subdirnames, filenames in os.walk(dir_real_path):
