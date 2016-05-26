@@ -53,12 +53,10 @@ def box_download(self, username, box_file_id, to_resource, dest_file_id):
         agave_fm.indexer.index(system_id, file_path, file_user)
     except:
         logger.exception('Unexpected task failure: box_download', extra={
-            'args': {
-                'username': username,
-                'box_file_id': box_file_id,
-                'to_resource': to_resource,
-                'dest_file_id': dest_file_id
-            }
+            'username': username,
+            'box_file_id': box_file_id,
+            'to_resource': to_resource,
+            'dest_file_id': dest_file_id
         })
 
 
@@ -157,12 +155,10 @@ def box_upload(self, username, box_file_id, from_resource, upload_file_id):
         logger.debug('Box upload task complete.')
     except:
         logger.exception('Unexpected task failure: box_upload', extra={
-            'args': {
-                'username': username,
-                'box_file_id': box_file_id,
-                'from_resource': from_resource,
-                'upload_file_id': upload_file_id
-            }
+            'username': username,
+            'box_file_id': box_file_id,
+            'from_resource': from_resource,
+            'upload_file_id': upload_file_id
         })
 
 
