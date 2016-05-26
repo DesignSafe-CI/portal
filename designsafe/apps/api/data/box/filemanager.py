@@ -93,18 +93,28 @@ class FileManager(AbstractFileManager):
               - files: Array of Api file-like objects
         """
 
+        default_pems = [{
+            'username': self._user.username,
+            'recursive': True,
+            'permission': {
+                'read': True,
+                'write': False,
+                'execute': True
+            }
+        }]
+
         try:
             file_type, file_id = self.parse_file_id(file_id)
 
             box_op = getattr(self.box_api, file_type)
             box_item = box_op(file_id).get()
             if file_type == 'folder':
-                children = [BoxFile(item, parent=box_item).to_dict()
+                children = [BoxFile(item, parent=box_item).to_dict(default_pems=default_pems)
                             for item in box_item.get_items(100)]
             else:
                 children = None
 
-            list_data = BoxFile(box_item).to_dict()
+            list_data = BoxFile(box_item).to_dict(default_pems=default_pems)
             if children:
                 list_data['children'] = children
 

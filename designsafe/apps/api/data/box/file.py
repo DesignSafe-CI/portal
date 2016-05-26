@@ -122,6 +122,7 @@ class BoxFile(AbstractFile):
         return parts[0], parts[1]
 
     def to_dict(self, **kwargs):
+        pems = kwargs.get('default_pems', [])
         return {
             'source': self.source,
             'system': None,
@@ -134,5 +135,5 @@ class BoxFile(AbstractFile):
             'lastModified': self.last_modified,
             '_trail': self.trail,
             '_actions': [],
-            '_pems': [],
+            '_pems': pems,
         }
