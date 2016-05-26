@@ -5,7 +5,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
-from designsafe.apps.api.tasks import box_download
+from designsafe.apps.api.tasks import reindex_agave, box_download
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from functools import wraps
@@ -248,8 +248,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             listing = None
 
         if not listing or len(listing['children']) == 0:
-            self.indexer.index(system, file_path, file_user, levels=1)
             listing = self._agave_listing(system, file_path)
+            reindex_agave.apply_async(args=(self.username, file_id))
         return listing
 
     def search(self, **kwargs):

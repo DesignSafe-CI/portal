@@ -7,6 +7,16 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True)
+def reindex_agave(self, username, file_id):
+    user = get_user_model().objects.get(username=username)
+
+    from designsafe.apps.api.data import AgaveFileManager
+    agave_fm = AgaveFileManager(user)
+    system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
+    agave_fm.indexer.index(system_id, file_path, file_user, pems_indexing=True)
+
+
+@shared_task(bind=True)
 def box_download(self, username, box_file_id, to_resource, dest_file_id):
     """
 
