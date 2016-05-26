@@ -122,8 +122,13 @@ class FileManager(AgaveObject):
 
         root_file = filter(lambda x: x.full_path == file_path, listing)
 
-        list_data = root_file[0].to_dict()
-        list_data['children'] = [o.to_dict() for o in listing if o.full_path != file_path]
+        default_pems = [{'username': self.username,
+                         'permission': {'read': True, 'write': False, 'execute': True},
+                         'recursive': True}]
+
+        list_data = root_file[0].to_dict(default_pems=default_pems)
+        list_data['children'] = [o.to_dict(default_pems=default_pems)
+                                 for o in listing if o.full_path != file_path]
 
         return list_data
 
@@ -160,11 +165,11 @@ class FileManager(AgaveObject):
             dest_system, dest_file_user, dest_file_path = \
                 remote_fm.parse_file_id(dest_file_id)
 
-            dest_file_path = 'agave://{}'.format(
-                urllib.quote(os.path.join(dest_system, dest_file_path)))
+            copy_to_file_id = os.path.join(dest_file_id, f.name)
+            logger.debug('copying {} to {}'.format(file_id, copy_to_file_id))
 
-            logger.debug('copying {} to {}'.format(file_id, dest_file_path))
-            copied_file = f.copy(dest_file_path)
+            copy_to_file_url = 'agave://{}'.format(urllib.quote(copy_to_file_id))
+            copied_file = f.copy(copy_to_file_url)
             esf = Object.from_agave_file(dest_file_user, copied_file, True, True)
             esf.save()
             return copied_file.to_dict()

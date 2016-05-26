@@ -369,6 +369,10 @@ class AgaveFile(AbstractFile, AgaveObject):
         return self
 
     def to_dict(self, **kwargs):
+        pems = kwargs.get('default_pems', None)
+        if pems is None:
+            pems = self.permissions
+
         return {
             'source': self.source,
             'system': self.system,
@@ -380,7 +384,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             'size': self.length,
             'lastModified': datetime.strftime(self.lastModified, '%Y-%m-%dT%H:%M:%S%z'),
             '_trail': self.trail,
-            '_pems': self.permissions,
+            '_pems': pems,
         }
 
     def __repr__(self):
