@@ -71,10 +71,13 @@ def box_download_file(box_file_manager, box_file_id, download_directory_path):
     :return: the full path to the downloaded file
     """
     box_file = box_file_manager.box_api.file(box_file_id).get()
-    file_download_path = os.path.join(download_directory_path, box_file.name)
+    safe_filename = box_file.name.encode(sys.getfilesystemencoding(), 'ignore')  # convert utf-8 chars
+    file_download_path = os.path.join(download_directory_path, safe_filename)
     logger.debug('Download file %s <= box://file/%s', file_download_path, box_file_id)
-    with open(file_download_path.encode('utf-8'), 'wb') as download_file:
+
+    with open(file_download_path, 'wb') as download_file:
         box_file.download_to(download_file)
+
     return file_download_path
 
 
@@ -89,10 +92,11 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
     :return:
     """
     box_folder = box_file_manager.box_api.folder(box_folder_id).get()
-    directory_path = os.path.join(download_path, box_folder.name)
+    safe_dirname = box_folder.name.encode(sys.getfilesystemencoding(), 'ignore')  # convert utf-8 chars
+    directory_path = os.path.join(download_path, safe_dirname)
     logger.debug('Creating directory %s <= box://folder/%s', directory_path, box_folder_id)
     try:
-        os.mkdir(directory_path.encode('utf-8'), 0o0755)
+        os.mkdir(directory_path, 0o0755)
     except OSError as e:
         if e.errno == 17:  # directory already exists?
             pass
@@ -164,7 +168,7 @@ def box_upload(self, username, box_file_id, from_resource, upload_file_id):
 
 def box_upload_file(box_file_manager, box_folder_id, file_real_path):
     file_path, file_name = os.path.split(file_real_path)
-    with open(file_real_path.encode(sys.getfilesystemencoding()), 'rb') as file_handle:
+    with open(file_real_path, 'rb') as file_handle:
         box_folder = box_file_manager.box_api.folder(box_folder_id)
         uploaded_file = box_folder.upload_stream(file_handle, file_name)
         logger.info('Successfully uploaded %s to box:folder/%s as box:file/%s',

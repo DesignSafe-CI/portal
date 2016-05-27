@@ -241,13 +241,12 @@ class FileManager(AbstractFileManager, AgaveObject):
             logger.debug('Update files index for {}'.format(file_path))
             self.indexer.index(system, file_path, file_user, levels=1,
                                pems_indexing=index_pems)
-
         try:
             listing = self._es_listing(system, self.username, file_path)
         except:
             listing = None
 
-        if not listing or len(listing['children']) == 0:
+        if listing is None or len(listing['children']) == 0:
             listing = self._agave_listing(system, file_path)
             reindex_agave.apply_async(args=(self.username, file_id))
         return listing
@@ -1017,15 +1016,15 @@ class AgaveIndexer(AgaveObject):
                 objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
                                                     username, root, files, folders)
                 for o in objs_to_index:
-                    logger.debug('Indexing: %s', o.full_path)
+                    logger.debug(u'Indexing: {}'.format(o.full_path))
                     doc = Object.from_agave_file(username, o, get_pems = pems_indexing)
                     docs_indexed += 1
                 for d in docs_to_delete:
-                    logger.debug('delete_recursive: %s', d.full_path)
+                    logger.debug(u'delete_recursive: {}'.format(d.full_path))
                     docs_deleted += d.delete_recursive(username)
             else:
                 for o in folders + files:
-                    logger.debug('Get or create file: {}', o.full_path)
+                    logger.debug(u'Get or create file: {}'.format(o.full_path))
                     doc = Object.from_agave_file(username, o,
                                     auto_update = True, get_pems = pems_indexing)
                     docs_indexed += 1
@@ -1040,7 +1039,7 @@ class AgaveIndexer(AgaveObject):
                 path, name = os.path.split(path)
                 af = AgaveFile.from_file_path(system_id, username, file_path, 
                                         agave_client = self.agave_client)
-                logger.debug('Get or create file: {}'.format(af.full_path))
+                logger.debug(u'Get or create file: {}'.format(af.full_path))
                 doc = Object.from_agave_file(username, af,
                                     auto_update = full_indexing, get_pems = pems_indexing)
                 docs_indexed += 1
