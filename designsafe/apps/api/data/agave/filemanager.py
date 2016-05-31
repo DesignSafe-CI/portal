@@ -229,7 +229,6 @@ class FileManager(AbstractFileManager, AgaveObject):
             >>>     do_something_cool(child)
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-
         reindex = kwargs.get('reindex', None) == 'true'
         index_pems = kwargs.get('pems', None) == 'true'
 
@@ -246,7 +245,9 @@ class FileManager(AbstractFileManager, AgaveObject):
         except:
             listing = None
 
-        if listing is None or len(listing['children']) == 0:
+        fallback = listing is None or (listing['type'] == 'folder' and
+                                       len(listing['children']) == 0)
+        if fallback:
             listing = self._agave_listing(system, file_path)
             reindex_agave.apply_async(args=(self.username, file_id))
         return listing
@@ -360,7 +361,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         f = AgaveFile.from_file_path(system, self.username, file_path, 
                     agave_client = self.agave_client)
         if f.type == 'file':
-            postit = f.create_postit(force=True)
+            postit = f.create_postit(force=True, max_uses=10, lifetime=3600)
             return {'href': postit['_links']['self']['href']}
         else:
             return None
@@ -564,7 +565,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                 context = {}
                 ext = f.ext.lower()
                 if ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
-                    postit = f.create_postit(force=False)
+                    postit = f.create_postit(force=False, lifetime=360)
                     context['image_preview'] = postit['_links']['self']['href']
                 elif ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
                     content = f.download()
