@@ -44,7 +44,10 @@
             </td>
         </tr>
         </tbody>
-        <caption ng-hide="data.listing.children.length || state.loading">
+        <caption ng-hide="data.listing.children.length || state.loading"
+                 ds-draggable transfer="data.listing" drag-start="dragStart" drag-enter="dragEnter"
+                 drag-over="dragOver" drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"
+        >
             <div class="text-center text-muted">
                 <p class="lead">
                     There is nothing here! Drag and drop files here to upload.
