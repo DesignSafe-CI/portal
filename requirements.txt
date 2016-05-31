@@ -45,7 +45,7 @@ Pillow==2.9.0
 ply==3.4
 pytz==2015.4
 redis==2.10.5
-requests==2.10.0
+requests[security]==2.10.0
 requests-toolbelt==0.6.2
 rt==1.0.8
 six==1.9.0
