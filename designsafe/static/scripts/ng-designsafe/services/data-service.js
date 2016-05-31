@@ -238,8 +238,21 @@
     /**
      *
      * @param options
+     * @param {string} options.resource
+     * @param {string} options.file_id
+     * @param {string} options.target_name
      */
-    service.rename = function(options) {};
+    service.rename = function(options) {
+      var params = {
+        resource: options.resource,
+        file_id: options.file_id
+      };
+      var body = {
+        action: 'rename',
+        target_name: options.target_name
+      };
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+    };
 
     return service;
 

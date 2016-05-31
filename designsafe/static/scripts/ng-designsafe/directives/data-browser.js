@@ -87,7 +87,7 @@
         self.createFolder = function() {
           var instance = $uibModal.open({
             templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-create-folder.html',
-            controller: ['$scope', '$uibModalInstance', 'DataService', function($scope, $uibModalInstance) {
+            controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
               $scope.form = {
                 folderName: 'Untitled_folder'
               };
@@ -300,8 +300,45 @@
           );
         };
 
-        self.renameFile = function(options) {
-          window.alert('TODO!!!');
+        self.renameFile = function(file) {
+          var instance = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-rename.html',
+            controller: ['$scope', '$uibModalInstance', 'file', function($scope, $uibModalInstance, file) {
+              $scope.form = {
+                targetName: file.name
+              };
+              $scope.file = file;
+
+              $scope.doRenameFile = function($event) {
+                $event.preventDefault();
+                $uibModalInstance.close($scope.form.targetName);
+              };
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+              };
+            }],
+            resolve: {
+              file: file
+            }
+          });
+
+          instance.result.then(function(targetName) {
+            $scope.state.loading = true;
+            DataService.rename({
+              file_id: file.id,
+              resource: file.source,
+              target_name: targetName
+            }).then(function(resp) {
+              self.clearSelection();
+              _.extend(file, resp.data);
+              $scope.state.loading = false;
+            }, function(err) {
+              // TODO notify user mkdir errored
+              logger.error(err);
+              $scope.state.loading = false;
+            })
+          });
         };
 
         /**
@@ -650,8 +687,11 @@
         };
 
         scope.renameSelected = function() {
-          window.alert('TODO!!');
-          logger.log('RENAME', scope.state.selected);
+          var file;
+          if (scope.state.selected.length === 1) {
+            file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
+            dbCtrl.renameFile(file);
+          }
         };
       }
     };

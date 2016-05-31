@@ -599,9 +599,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             `path` should only be the name the file will be renamed with.
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-
         f = AgaveFile.from_file_path(system, file_user, file_path,
-                    agave_client = self.agave_client)
+                                     agave_client=self.agave_client)
         f.rename(target_name)
         esf = Object.from_file_path(system, self.username, file_path)
         esf.rename(self.username, target_name)
