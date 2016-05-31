@@ -257,7 +257,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         ret = AgaveFile(wrap = copy_wrap, agave_client = self.agave_client)
         return ret
 
-    def create_postit(self, force=True, max_uses=1, lifetime=60):
+    def create_postit(self, force=True, max_uses=10, lifetime=600):
         url = urllib2.unquote(self._links['self']['href'])
         if force:
             url += '?force=true'
