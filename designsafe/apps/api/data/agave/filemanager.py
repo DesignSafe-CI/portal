@@ -343,7 +343,7 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         esf = Object.from_file_path(system, file_user, file_path)
         esf.delete_recursive(file_user)
-        return f.to_dict()
+        return True
 
     def download(self, file_id, **kwargs):
         """Get the download link for a file
