@@ -754,7 +754,10 @@
         scope.selectAll = dbCtrl.selectAll;
         scope.selectFile = dbCtrl.toggleSelectFile;
         scope.clearSelection = dbCtrl.clearSelection;
-        scope.previewFile = dbCtrl.previewFile;
+        scope.previewFile = function($event, file) {
+          $event.stopPropagation();
+          dbCtrl.previewFile(file);
+        };
 
         scope.isFileSelected = function(file) {
           return _.contains(scope.state.selected, file.id);

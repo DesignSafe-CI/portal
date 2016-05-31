@@ -32,7 +32,7 @@
                 {{ file.lastModified|date:"medium" }}
             </td>
             <td ng-if="enablePreview && display('info')">
-                <button class="btn btn-xs btn-info" ng-click="previewFile(file)">
+                <button class="btn btn-xs btn-info" ng-click="previewFile($event, file)">
                     <i class="fa fa-info-circle"></i>
                     <span class="sr-only">More info</span>
                 </button>
