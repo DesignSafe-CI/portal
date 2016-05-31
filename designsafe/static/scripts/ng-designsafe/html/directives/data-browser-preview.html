@@ -23,12 +23,32 @@
         </div>
     </div>
     <div class="actions text-center">
-        <a class="btn btn-info" href="#copy:{{ data.file.name }}" ng-click="copyToMyData($event, data.item)">
-            <i class="fa fa-copy"></i> Copy to My Data
-        </a>
-        <a ng-if="! data.downloadUrl.loading && data.downloadUrl.href" class="btn btn-default" href="{{ data.downloadUrl.href }}">
-            <i class="fa fa-cloud-download"></i> Download
-        </a>
+        <button ng-disabled="! data.downloadUrl.href" class="btn btn-default" href="{{ data.downloadUrl.href }}">
+            <i ng-if="data.downloadUrl.loading" class="fa fa-spinner fa-spin"></i>
+            <i ng-if="! data.downloadUrl.loading" class="fa fa-cloud-download"></i>
+            Download
+        </button>
+
+        <button ng-disabled="! data.actions.share" ng-click="shareFile()" class="btn btn-default">
+            <i class="fa fa-send"></i> Share
+        </button>
+
+        <button ng-disabled="! data.actions.copy" ng-click="copyFile()" class="btn btn-default">
+            <i class="fa fa-copy"></i> Copy
+        </button>
+
+        <button ng-disabled="! data.actions.move" ng-click="moveFile()" class="btn btn-default">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+
+        <button ng-disabled="! data.actions.rename" ng-click="renameFile()" class="btn btn-default">
+            <i class="fa fa-pencil"></i> Rename
+        </button>
+
+        <button ng-disabled="! data.actions.trash" ng-click="trashFile()" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Move to Trash
+        </button>
+
     </div>
 </div>
 <div class="modal-footer">
