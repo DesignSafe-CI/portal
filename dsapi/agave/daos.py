@@ -1003,6 +1003,7 @@ class AgaveFolderFile(AgaveObject):
         return stream
 
     def download_postit(self):
+        # temp fix for double encoding
         postit_data = {
             'url': urllib2.unquote(self.link) + '?force=true',
             'maxUses': 1,
