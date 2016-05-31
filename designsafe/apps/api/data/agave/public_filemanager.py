@@ -5,6 +5,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from django.conf import settings
+from django.core.urlresolvers import reverse
 import urllib
 import os
 import logging
@@ -26,8 +27,6 @@ class FileManager(AgaveObject):
         token = user_obj.agave_oauth
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.resource = kwargs.get('resource')
-        self.system_id = 'nees.public'
         self.agave_client = Agave(api_server = agave_url, token = access_token)
         self.username = username
         self._user = user_obj
@@ -184,6 +183,56 @@ class FileManager(AgaveObject):
                                    extra={'file_id': file_id,
                                           'dest_resource': dest_resource,
                                           'dest_file_id': dest_file_id})
+
+    def download(self, file_id, **kwargs):
+        """Get the download link for a file
+
+        :param str file_id: String with the format
+        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+
+        :returns: a dict with a single key `href` which has the direct
+            noauth link to download a file
+        :rtype: dict
+
+        """
+        system, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, None, file_path,
+                                     agave_client=self.agave_client, source='public')
+        if f.type == 'file':
+            postit = f.create_postit(force=True, max_uses=10, lifetime=3600)
+            return {'href': postit['_links']['self']['href']}
+        else:
+            return None
+
+    def preview(self, file_id, **kwargs):
+        system, file_path = self.parse_file_id(file_id)
+
+        f = AgaveFile.from_file_path(system, None, file_path,
+                                     agave_client=self.agave_client, source='public')
+
+        if f.previewable:
+            fmt = kwargs.get('format', 'json')
+            if fmt == 'html':
+                context = {}
+                ext = f.ext.lower()
+                if ext in AgaveFile.SUPPORTED_IMAGE_PREVIEW_EXTS:
+                    postit = f.create_postit(force=False, lifetime=360)
+                    context['image_preview'] = postit['_links']['self']['href']
+                elif ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
+                    content = f.download()
+                    context['text_preview'] = content
+                elif ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
+                    postit = f.create_postit(force=False)
+                    context['object_preview'] = postit['_links']['self']['href']
+                return 'designsafe/apps/api/data/agave/preview.html', context
+            else:
+                preview_url = reverse('designsafe_api:file',
+                                      args=[self.resource, file_id]
+                                      ) + '?action=preview&format=html'
+                return {'href': preview_url}
+        else:
+            return None
 
     def search(self, **kwargs):
         return [{}]
