@@ -1,5 +1,6 @@
 import logging
 import os
+import urllib2
 from datetime import datetime
 import dateutil.parser
 
@@ -257,7 +258,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         return ret
 
     def create_postit(self, force=True, max_uses=1, lifetime=60):
-        url = self._links['self']['href']
+        url = urllib2.unquote(self._links['self']['href'])
         if force:
             url += '?force=true'
         body = {
