@@ -239,11 +239,11 @@ class Object(DocType):
         return o
 
     @classmethod
-    def search(cls, username, q = None, **kwargs):
+    def search_query(cls, username, q = None, **kwargs):
         """Search the Elasticsearch index using a query string
 
         Use a query string to search the ES index. This method will search 
-        on the fields **name**, **path**, **keywords**
+        on the fields **name**, and **keywords**
 
         :param str username: username making the request
         :param str q: string to query the ES index
@@ -254,7 +254,7 @@ class Object(DocType):
             the call to this method should be like this:
             >>> Object.search('username', q_keywords = 'project')
         """
-        fields = ['path', 'name', 'keywords']
+        fields = ['name', 'keywords']
         kw_fields = []
         for key, val in six.iteritems(kwargs):
             if key.startswith('q_'):
@@ -267,6 +267,7 @@ class Object(DocType):
         sq = { "query": { "filtered": { "query": { "query_string": { "fields":list(set(fields)), "query": q}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = cls.search()
         s.update_from_dict(sq)
+        logger.debug('search query: {}'.format(s.to_dict()))
         return cls._execute_search(s)
 
     @staticmethod        
@@ -468,10 +469,13 @@ class Object(DocType):
         :param obj meta_obj: object with which the document will be updated
 
         .. warning:: This method blindly replaces the data in the 
-            saved document. The only sanitization does is to remove
+            saved document. The only sanitization it does is to remove
             repeated elements.
         """
-        pass
+        meta_obj = list(set(meta_obj))
+        self.update(keywords = meta_obj)
+        self.save()
+        return self
 
     def update_pems(self, user_to_share, pem):
         pems = getattr(self, 'permissions', [])

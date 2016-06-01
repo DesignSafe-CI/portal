@@ -603,7 +603,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         :param str q_{field_name}: query string to search in a specific field
         
         """
-        res, s = Object.search(self.username, **kwargs)
+        res, s = Object.search_query(self.username, **kwargs)
         search_data = {
             'source': self.resource,
             'system': settings.AGAVE_STORAGE_SYSTEM,
@@ -618,7 +618,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             '_trail': [],
             '_pems': [{'username': self.username, 'permission': {'read': True}}],
         }
-        return list_data
+        return search_data
 
     def share(self, file_id, user = '', permission = 'READ', **kwargs):
         """Update permissions for a file
@@ -662,6 +662,12 @@ class FileManager(AbstractFileManager, AgaveObject):
                      'dest_resource': dest_resource,
                      'dest_file_id': dest_file_id}
             raise ApiException(message, status=400, extra=extra)
+
+    def update_metadata(self, file_id, meta_obj, **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.update_metadata(meta_obj)
+        return {'message': 'Metadata updated succesfully'}
 
     def upload(self, file_id, files, **kwargs):
         upload_file = files['file']

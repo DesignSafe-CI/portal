@@ -138,7 +138,6 @@ class DataFileManageView(BaseDataView):
         resp = self._execute_post_operation(request, **kwargs)
         return self.render_to_json_response(resp)
 
-
 class DataSearchView(BaseDataView):
     """
     Data view to handle search.
@@ -147,9 +146,5 @@ class DataSearchView(BaseDataView):
     method of the file manager class.
     """
     def get(self, request, *args, **kwargs):
-        fm = self._get_file_manager(request, **kwargs)
-        d = {}
-        d.update(kwargs)
-        d.update(request.GET.dict())
-        resp = fm.search(**kwargs)
-        return self.render_to_json_response([o.to_dict() for o in resp])
+        resp = self._execute_operation(request, 'search', **kwargs)        
+        return self.render_to_json_response(resp)
