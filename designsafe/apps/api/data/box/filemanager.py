@@ -4,6 +4,7 @@ from designsafe.apps.api.data.box.file import BoxFile
 from designsafe.apps.api.tasks import box_upload
 from designsafe.apps.box_integration import util
 from boxsdk.exception import BoxAPIException
+from django.core.exceptions import PermissionDenied
 import logging
 import os
 
@@ -16,6 +17,9 @@ class FileManager(AbstractFileManager):
 
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__()
+        if user_obj.is_anonymous():
+            raise PermissionDenied()
+
         self.box_api = util.get_box_client(user_obj)
         self._user = user_obj
 

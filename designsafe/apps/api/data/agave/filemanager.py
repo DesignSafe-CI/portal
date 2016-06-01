@@ -7,6 +7,7 @@ from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.tasks import reindex_agave
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.exceptions import PermissionDenied
 import os
 import logging
 import datetime
@@ -35,6 +36,10 @@ class FileManager(AbstractFileManager, AgaveObject):
             The user object from the django user model.
         """
         super(FileManager, self).__init__(**kwargs)
+
+        if user_obj.is_anonymous():
+            raise PermissionDenied()
+
         username = user_obj.username
         if user_obj.agave_oauth.expired:
             user_obj.agave_oauth.refresh()

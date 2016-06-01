@@ -21,15 +21,17 @@ class FileManager(AgaveObject):
 
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
-        username = user_obj.username
-        if user_obj.agave_oauth.expired:
-            user_obj.agave_oauth.referer()
-
-        token = user_obj.agave_oauth
-        access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = Agave(api_server = agave_url, token = access_token)
-        self.username = username
+        if user_obj.is_authenticated():
+            if user_obj.agave_oauth.expired:
+                user_obj.agave_oauth.referer()
+            self.agave_client = Agave(api_server=agave_url,
+                                      token=user_obj.agave_oauth.access_token)
+        else:
+            site_token = getattr(settings, 'AGAVE_SUPER_TOKEN')
+            self.agave_client = Agave(api_server=agave_url,
+                                      token=site_token)
+        self.username = user_obj.username
         self._user = user_obj
 
     def parse_file_id(self, file_id):

@@ -24,7 +24,7 @@ class SourcesView(SecureMixin, JSONResponseMixin, BaseApiView):
         return self.render_to_json_response(api.list())
 
 
-class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
+class BaseDataView(JSONResponseMixin, BaseApiView):
     """
     Base View which instatiates corresponding file manager
     and execute correct operation.

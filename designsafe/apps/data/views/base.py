@@ -1,15 +1,17 @@
 from django.shortcuts import render, render_to_response
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.core.exceptions import PermissionDenied
+from django.http import Http404, HttpResponse
+from django.shortcuts import resolve_url
 from .mixins import SecureMixin, JSONResponseMixin
 from django.views.generic.base import View, TemplateView
-from django.http import HttpResponse
 from requests.exceptions import ConnectionError, HTTPError
 from dsapi.agave.daos import shared_with_me
 from django.contrib.auth import get_user_model
 from agavepy.agave import Agave, AgaveException
 from django.conf import settings
 
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
 from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
 from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
@@ -153,26 +155,40 @@ class  BasePublicTemplate(TemplateView):
         return context
 
 
-class DataBrowserTestView(SecureMixin, BasePublicTemplate):
+class DataBrowserTestView(BasePublicTemplate):
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super(BasePublicTemplate, self).dispatch(request, *args, **kwargs)
+        except PermissionDenied:
+            path = request.get_full_path()
+            resolved_login_url = resolve_url(settings.LOGIN_URL)
+            from django.contrib.auth.views import redirect_to_login
+            return redirect_to_login(
+                path, resolved_login_url)
+
+
     def get_context_data(self, **kwargs):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
-        context['unreadNotifications'] = 0
 
-        resource = kwargs.pop('resource', settings.AGAVE_STORAGE_SYSTEM)
+        user_obj = self.request.user
+
+        resource = kwargs.pop('resource', None)
         if resource is None:
-            resource = 'agave'
+            if self.request.user.is_authenticated():
+                resource = 'agave'
+            else:
+                resource = 'public'
 
         file_path = kwargs.pop('file_path', None)
 
         # TODO get initial listing in a generic way?
-        user_obj = self.request.user
         if resource == 'public':
             fm = PublicFileManager(user_obj, resource=resource, **kwargs)
         elif resource == 'box':
             fm = BoxFileManager(user_obj, **kwargs)
         elif resource == 'agave':
             fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
-            if fm.is_shared(file_path):
+            if file_path is not None and fm.is_shared(file_path):
                 resource = '$share'
             else:
                 resource = 'mydata'

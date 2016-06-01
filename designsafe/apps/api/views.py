@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views.generic import View
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
@@ -22,6 +22,9 @@ class BaseApiView(View):
         try:
             return super(BaseApiView, self).dispatch(request, *args, **kwargs)
         except ApiException as e:
+            if e.status == 403:
+                return HttpResponseForbidden()
+
             status = e.response.status_code
             message = e.response.reason
             extra = e.extra
