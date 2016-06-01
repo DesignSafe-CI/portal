@@ -17,6 +17,7 @@ class FileManager(AgaveObject):
 
     resource = 'public'
     system_id = 'nees.public'
+    mount_path = '/corral-repl/tacc/NHERI/public/projects'
 
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
@@ -71,6 +72,10 @@ class FileManager(AgaveObject):
             file_path = '/'.join(components[1:]) if len(components) >= 2 else ''
 
         return system_id, file_path
+
+    def get_file_real_path(self, file_id):
+        system, file_path = self.parse_file_id(file_id)
+        return os.path.join(self.mount_path, file_path)
 
     def listing(self, file_id=None, **kwargs):
         """
@@ -156,7 +161,7 @@ class FileManager(AgaveObject):
         from designsafe.apps.api.data import lookup_transfer_service
         service = lookup_transfer_service(self.resource, dest_resource)
         if service:
-            args = (self.username, file_id, dest_resource, dest_file_id)
+            args = (self.username, self.resource, file_id, dest_resource, dest_file_id)
             service.apply_async(args=args)
             return {'message': 'The requested transfer has been scheduled'}
         else:

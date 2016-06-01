@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
+import shutil
 import logging
 import os
 import sys
@@ -220,5 +221,35 @@ def box_upload_directory(box_file_manager, box_parent_folder_id, dir_real_path):
 
 
 @shared_task(bind=True)
-def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
-    pass
+def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resource,
+                          dest_file_id):
+    logger.debug('Scheduled copy of files from %s://%s to %s://%s',
+                 src_resource, src_file_id, dest_resource, dest_file_id)
+    try:
+        from designsafe.apps.api.data import lookup_file_manager
+        source_fm_cls = lookup_file_manager(src_resource)
+        dest_fm_cls = lookup_file_manager(dest_resource)
+
+        if source_fm_cls and dest_fm_cls:
+            user = get_user_model().objects.get(username=username)
+            source_fm = source_fm_cls(user)
+            dest_fm = dest_fm_cls(user)
+            source_real_path = source_fm.get_file_real_path(src_file_id)
+            dirname = os.path.basename(source_real_path)
+            dest_real_path = os.path.join(dest_fm.get_file_real_path(dest_file_id),
+                                          dirname)
+            if os.path.isdir(source_real_path):
+                shutil.copytree(source_real_path, dest_real_path)
+            elif os.path.isfile(source_real_path):
+                shutil.copy(source_real_path, dest_real_path)
+            else:
+                logger.error('The request copy source=%s does not exist!', src_resource)
+
+            system, username, path = dest_fm.parse_file_id(dest_file_id)
+            dest_fm.indexer.index(system, path, username)
+        else:
+            logger.error('Unable to load file managers for both source=%s and destination=%s',
+                         src_resource, dest_resource)
+    except:
+        logger.exception('Unexpected task failure')
+
