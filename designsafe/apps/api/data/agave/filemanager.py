@@ -597,7 +597,28 @@ class FileManager(AbstractFileManager, AgaveObject):
         return f.to_dict()
     
     def search(self, **kwargs):
-        return [{}]
+        """Searches a file using the Elasticsearch index
+        
+        :param str q: query string to search
+        :param str q_{field_name}: query string to search in a specific field
+        
+        """
+        res, s = Object.search(self.username, **kwargs)
+        search_data = {
+            'source': self.resource,
+            'system': settings.AGAVE_STORAGE_SYSTEM,
+            'id': '$search',
+            'type': 'folder',
+            'name': '$SEARCH',
+            'path': '',
+            'ext': '',
+            'size': None,
+            'lastModified': None,
+            'children': [o.to_file_dict() for o in s.scan()],
+            '_trail': [],
+            '_pems': [{'username': self.username, 'permission': {'read': True}}],
+        }
+        return list_data
 
     def share(self, file_id, user = '', permission = 'READ', **kwargs):
         """Update permissions for a file

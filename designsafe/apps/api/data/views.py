@@ -142,7 +142,9 @@ class DataFileManageView(BaseDataView):
 class DataSearchView(BaseDataView):
     """
     Data view to handle search.
-    It will pass all the keyword arguments as well as the Query String parameters as a dictionary on to the `search` method of the file manager class.
+    It will pass all the keyword arguments as well as the 
+    Query String parameters as a dictionary on to the `search` 
+    method of the file manager class.
     """
     def get(self, request, *args, **kwargs):
         fm = self._get_file_manager(request, **kwargs)
