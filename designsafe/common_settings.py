@@ -400,18 +400,19 @@ PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
 PIPELINE_CSS = {
     'vendor': {
         'source_filenames': (
-          'vendor/bootstrap-ds/css/bootstrap.css',
-          'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
-          'vendor/font-awesome/css/font-awesome.css',
+            'vendor/bootstrap-ds/css/bootstrap.css',
+            'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+            'vendor/font-awesome/css/font-awesome.css',
+            'vendor/angular-toastr/dist/angular-toastr.css',
         ),
         'output_filename': 'css/vendor.css',
     },
     'main': {
         'source_filenames': (
-          'styles/typekit.css',
-          'styles/main.css',
-          'styles/corner-ribbon.css',
-          'styles/base.scss',
+            'styles/typekit.css',
+            'styles/main.css',
+            'styles/corner-ribbon.css',
+            'styles/base.scss',
         ),
         'output_filename': 'css/main.css',
     },
@@ -421,6 +422,7 @@ PIPELINE_JS = {
     'vendor': {
         'source_filenames': (
             'vendor/modernizr/modernizr.js',
+            'vendor/angular-toastr/dist/angular-toastr.js',
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',

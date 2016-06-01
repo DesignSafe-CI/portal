@@ -455,3 +455,38 @@ label.required:after,
 dd {
     margin-bottom: .5em;
 }
+
+.toast-close-button {
+  position: relative;
+  right: -0.3em;
+  top: -0.3em;
+  float: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: #FFFFFF;
+  -webkit-text-shadow: 0 1px 0 #ffffff;
+  text-shadow: none;
+  opacity: 0.8;
+}
+
+button.toast-close-button {
+  background-color: #cccccc;
+  color: #333333;
+  border: solid #efefef 1px;
+}
+
+/*#toast-container > .toast-info {
+  background-image: none !important;
+}
+
+#toast-container > .toast-error {
+  background-image: none !important;
+}
+
+#toast-container > .toast-success {
+  background-image: none !important;
+}
+
+#toast-container > .toast-warning {
+  background-image: none !important;
+}*/

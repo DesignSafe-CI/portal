@@ -13,9 +13,10 @@
         );
   }
 
-  var app = angular.module('NotificationList', ['djng.urls','ds.wsBus', 'ds.notifications', 'logging']).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
+  var app = angular.module('NotificationList', ['djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr'])
 
-
+  app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
+  
   angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'logger', function($scope,$rootScope,notificationFactory, logger) {
       $scope.data = {};
       $scope.showRawMessage = false;
