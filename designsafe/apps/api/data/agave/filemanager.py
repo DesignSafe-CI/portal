@@ -1,14 +1,12 @@
-from agavepy.agave import AgaveException, Agave
-from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+from agavepy.agave import Agave
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
-from designsafe.apps.api.tasks import reindex_agave, box_download
+from designsafe.apps.api.tasks import reindex_agave
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from functools import wraps
 import os
 import logging
 import datetime
@@ -276,43 +274,25 @@ class FileManager(AbstractFileManager, AgaveObject):
             ...         dest_resource='agave',
             ...         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
-        system, file_user, file_path = self.parse_file_id(file_id)
-        
-        f = AgaveFile.from_file_path(system, file_user, file_path,
-                                     agave_client = self.agave_client)
-
         if dest_resource == self.resource:
+            system, file_user, file_path = self.parse_file_id(file_id)
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
-
+            source_file = AgaveFile.from_file_path(system, file_user, file_path,
+                                                   agave_client=self.agave_client)
             if dest_system == system:
-                logger.debug('copying {} to {}'.format(file_id, dest_file_path))
-                copied_file = f.copy(dest_file_path)
+                dest_full_path = os.path.join(dest_file_path, source_file.name)
+                logger.debug('copying {} to {}'.format(file_id, dest_full_path))
+                copied_file = source_file.copy(dest_full_path)
                 esf = Object.from_file_path(system, file_user, file_path)
-                esf.copy(dest_file_user, dest_file_path)
+                esf.copy(dest_file_user, dest_full_path)
                 return copied_file.to_dict()
 
             else:
-                file_ingest_uri = 'agave://{}'.format(
-                    os.path.join(system, file_path))
-                logger.debug('importing {} to {}/{}'.format(
-                    file_ingest_uri, dest_system, dest_file_path))
-                files_import = self.call_operation('files.importData', {
-                    'systemId': dest_system,
-                    'filePath': dest_file_path,
-                    'urlToIngest': file_ingest_uri
-                })
-                logger.debug(files_import)
-
+                agave_url = 'agave://{}'.format(os.path.join(system, file_path))
+                logger.debug('importing %s to %s', agave_url, dest_file_id)
+                return self.import_file(dest_file_id, source_file.name, agave_url)
         else:
-            from designsafe.apps.api.data import lookup_file_manager
-            remote_fm = lookup_file_manager(dest_resource)
-            if remote_fm:
-                return remote_fm(self._user).import_file(dest_file_id, self.resource, file_id)
-            else:
-                raise ApiException('Unknown destination resource', status=400,
-                                   extra={'file_id': file_id,
-                                          'dest_resource': dest_resource,
-                                          'dest_file_id': dest_file_id})
+            return self.transfer(file_id, dest_resource, dest_file_id)
 
     def delete(self, file_id, **kwargs):
         """Deletes a file
@@ -397,22 +377,30 @@ class FileManager(AbstractFileManager, AgaveObject):
         file_op = getattr(self, action)
         return file_op(system, file_path, file_user, path, **kwargs)
 
-    def import_file(self, file_id, from_resource, from_file_id):
+    def import_file(self, file_id, file_name, remote_url, **kwargs):
         """
-        Import a file from another data resource.
+        Import a file from a remote url. Supported schemes include agave://, http://,
+        https://.
 
         :param file_id: The agave file_id to import to
-        :param from_resource: The resource to import from
-        :param from_file_id: The file_id to import
+        :param file_name: The name to assign the file upon import
+        :param remote_url: The URL of the remote data to import
         :return:
         """
-        if from_resource == 'box':
-            box_download.apply_async(
-                args=(self.username, from_file_id, self.resource, file_id),
-                countdown=10)
-        else:
-            raise ApiException('Import from this resource is not supported', status=400,
-                               extra={'args': (file_id, from_resource, from_file_id)})
+        system, file_user, file_path = self.parse_file_id(file_id)
+
+        args = {
+            'systemId': system,
+            'filePath': file_path,
+            'fileName': file_name,
+            'urlToIngest': remote_url
+        }
+        try:
+            resp = self.call_operation('files.importData', args)
+            return resp
+        except Exception as e:
+            raise ApiException('Import failed', status=400,
+                               extra={'operation': 'files.importData', 'arguments': args})
 
     def move(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Move a file
@@ -423,7 +411,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         :param str file_id: the file id in the format
             <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
         :param str dest_resource: destination resource
-        :param str file_id: destination file id
+        :param str dest_file_id: destination file id
 
         :returns: dict representation of the  
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
@@ -433,25 +421,25 @@ class FileManager(AbstractFileManager, AgaveObject):
             in the same file system. For moving files between file systems
             see py:meth:`copy`
         """
-        system, file_user, file_path = self.parse_file_id(file_id)
-
-        f = AgaveFile.from_file_path(system, file_user, file_path,
-                                     agave_client = self.agave_client)
         if dest_resource == self.resource:
+            system, file_user, file_path = self.parse_file_id(file_id)
             dest_system, dest_file_user, dest_file_path = self.parse_file_id(dest_file_id)
             if dest_system == system:
-                f.move(dest_file_path)
+                f = AgaveFile.from_file_path(system, file_user, file_path,
+                                             agave_client=self.agave_client)
+                dest_full_path = os.path.join(dest_file_path, f.name)
+                f.move(dest_full_path)
                 esf = Object.from_file_path(system, file_user, file_path)
-                esf.move(dest_file_user, dest_file_path)
+                esf.move(dest_file_user, dest_full_path)
                 return f.to_dict()
             else:
-                raise ApiException('Moving between systems is not supported; use COPY.',
+                raise ApiException('Use transfer to move files between systems',
                                    status=400,
                                    extra={'file_id': file_id,
                                           'dest_resource': dest_resource,
                                           'dest_file_id': dest_file_id})
         else:
-            raise ApiException('Moving to a remote resource is not supported; use COPY',
+            raise ApiException('Use transfer to move files between resources',
                                status=400,
                                extra={'file_id': file_id,
                                       'dest_resource': dest_resource,
@@ -494,36 +482,37 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
         system, file_user, file_path = self.parse_file_id(file_id)
 
-        user_home_id = os.path.join(system, self.username)
-        trash_dir_id = os.path.join(user_home_id, '.Trash')
-
         # Ensure $HOME/.Trash exists
+        trash_id = os.path.join(system, self.username, '.Trash')
         trash_path = os.path.join(self.username, '.Trash')
         trash = Object.from_file_path(system, self.username, trash_path)
         if trash is None:
+            user_home_id = os.path.join(system, self.username)
             self.mkdir(user_home_id, '.Trash', **kwargs)
-        
+
         path_comps = os.path.split(file_path)
-        o = Object.from_file_path(system, self.username, 
-                                os.path.join(trash_path, path_comps[1]))
+        check_trash = Object.from_file_path(system, self.username,
+                                            os.path.join(trash_path, path_comps[1]))
 
-        if o is not None:
-            if o.type == 'dir':
-                trash_name = '%s_%s' % (o.name, 
-                    datetime.datetime.now().isoformat().replace(':', '-'))
+        if check_trash is not None:
+            # file with same name already exists in Trash. rename this file first.
+            timestamp = datetime.datetime.now().isoformat().replace(':', '-')
+            this_file = Object.from_file_path(system, self.username, file_path)
+
+            if this_file.type == 'dir':
+                trash_name = '%s_%s' % (this_file.name, timestamp)
             else:
-                trash_name = '%s_%s%s' % (o.name.replace(o.ext, ''), 
-                                datetime.datetime.now().isoformat().replace(':', '-'),
-                                o.ext)
+                trash_name = '%s_%s%s' % (this_file.name.replace(this_file.ext, ''),
+                                          timestamp,
+                                          this_file.ext)
 
-            self.rename(os.path.join(system, o.full_path), trash_name)
-            file_path = os.path.join(o.path, trash_name)
+            logger.debug('File %s exists in trash; renaming to %s then moving',
+                         this_file.name, trash_name)
 
-        tail, head = os.path.split(file_path)
-        trash_path = os.path.join(trash_dir_id, head)
+            renamed_file = self.rename(file_id, trash_name)
+            file_id = renamed_file['id']
 
-        ret = self.move(file_id, self.resource, trash_path)
-        return ret
+        return self.move(file_id, self.resource, trash_id)
 
     def mkdir(self, file_id, dir_name, **kwargs):
         """Create a directory
@@ -626,11 +615,29 @@ class FileManager(AbstractFileManager, AgaveObject):
         system, file_user, file_path = self.parse_file_id(file_id)
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
-                    agave_client = self.agave_client)
+                                     agave_client=self.agave_client)
         f.share(user, permission)
         esf = Object.from_file_path(system, self.username, file_path)
         esf.share(self.username, user, permission)
         return f.to_dict()
+
+    def transfer(self, file_id, dest_resource, dest_file_id):
+        from designsafe.apps.api.data import lookup_transfer_service
+        service = lookup_transfer_service(self.resource, dest_resource)
+        if service:
+            service.apply_async(args=(self.username,
+                                      self.resource,
+                                      file_id,
+                                      dest_resource,
+                                      dest_file_id))
+            return {'message': 'The requested transfer has been scheduled'}
+        else:
+            message = 'The requested transfer from %s to %s ' \
+                      'is not supported' % (self.resource, dest_resource)
+            extra = {'file_id': file_id,
+                     'dest_resource': dest_resource,
+                     'dest_file_id': dest_file_id}
+            raise ApiException(message, status=400, extra=extra)
 
     def upload(self, file_id, files, **kwargs):
         upload_file = files['file']

@@ -129,26 +129,22 @@ class FileManager(AbstractFileManager):
         pass
 
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
-        if dest_resource == 'agave':
-            from designsafe.apps.api.data import lookup_file_manager
-            remote_fm = lookup_file_manager(dest_resource)
-            if remote_fm:
-                return remote_fm(self._user).import_file(dest_file_id,
-                                                         self.resource,
-                                                         file_id)
-            else:
-                raise ApiException('Unknown destination resource',
-                                   status=400,
-                                   extra={'file_id': file_id,
-                                          'dest_resource': dest_resource,
-                                          'dest_file_id': dest_file_id})
+        # can only transfer out of box
+        from designsafe.apps.api.data import lookup_transfer_service
+        service = lookup_transfer_service(self.resource, dest_resource)
+        if service:
+            args = (self._user.username,
+                    self.resource, file_id,
+                    dest_resource, dest_file_id)
+            service.apply_async(args=args)
+            return {'message': 'The requested transfer has been scheduled'}
         else:
-            raise ApiException('Copying Box files is not supported on this resource.',
-                               status=400,
-                               extra={'file_id': file_id,
-                                      'dest_resource': dest_resource,
-                                      'dest_file_id': dest_file_id,
-                                      'kwargs': kwargs})
+            message = 'The requested transfer from %s to %s ' \
+                      'is not supported' % (self.resource, dest_resource)
+            extra = {'file_id': file_id,
+                     'dest_resource': dest_resource,
+                     'dest_file_id': dest_file_id}
+            raise ApiException(message, status=400, extra=extra)
 
     def move(self, file_id, **kwargs):
         raise ApiException('Moving Box files is not supported.', status=400,

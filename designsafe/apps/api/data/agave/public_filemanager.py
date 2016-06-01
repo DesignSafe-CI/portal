@@ -152,37 +152,20 @@ class FileManager(AgaveObject):
             >>>         dest_resource='agave',
             >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
-        system, file_path = self.parse_file_id(file_id)
-
-        f = AgaveFile.from_file_path(system, None, file_path,
-                                     agave_client=self.agave_client)
-
-        from designsafe.apps.api.data import lookup_file_manager
-        remote_fm = lookup_file_manager(dest_resource)(self._user)
-
-        if dest_resource == 'agave':
-            dest_system, dest_file_user, dest_file_path = \
-                remote_fm.parse_file_id(dest_file_id)
-
-            copy_to_file_id = os.path.join(dest_file_id, f.name)
-            logger.debug('copying {} to {}'.format(file_id, copy_to_file_id))
-
-            copy_to_file_url = 'agave://{}'.format(urllib.quote(copy_to_file_id))
-            copied_file = f.copy(copy_to_file_url)
-            esf = Object.from_agave_file(dest_file_user, copied_file, True, True)
-            esf.save()
-            return copied_file.to_dict()
+        # can only transfer out of public
+        from designsafe.apps.api.data import lookup_transfer_service
+        service = lookup_transfer_service(self.resource, dest_resource)
+        if service:
+            args = (self.username, file_id, dest_resource, dest_file_id)
+            service.apply_async(args=args)
+            return {'message': 'The requested transfer has been scheduled'}
         else:
-            remote_fm = lookup_file_manager(dest_resource)
-            if remote_fm:
-                postit = f.create_postit(lifetime=300)
-                import_url = postit['_links']['self']['href']
-                remote_fm(self._user).import_file(dest_file_id, f.name, import_url)
-            else:
-                raise ApiException('Unknown destination resource', status=400,
-                                   extra={'file_id': file_id,
-                                          'dest_resource': dest_resource,
-                                          'dest_file_id': dest_file_id})
+            message = 'The requested transfer from %s to %s ' \
+                      'is not supported' % (self.resource, dest_resource)
+            extra = {'file_id': file_id,
+                     'dest_resource': dest_resource,
+                     'dest_file_id': dest_file_id}
+            raise ApiException(message, status=400, extra=extra)
 
     def download(self, file_id, **kwargs):
         """Get the download link for a file

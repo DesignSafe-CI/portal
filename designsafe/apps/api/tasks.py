@@ -18,19 +18,19 @@ def reindex_agave(self, username, file_id):
 
 
 @shared_task(bind=True)
-def box_download(self, username, box_file_id, to_resource, dest_file_id):
+def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
     """
-
     :param self:
     :param username:
-    :param box_file_id:
-    :param to_resource:
+    :param src_resource:
+    :param src_file_id:
+    :param dest_resource:
     :param dest_file_id:
     :return:
     """
 
-    logger.debug('Downloading box://%s for user %s to %s://%s',
-                 box_file_id, username, to_resource, dest_file_id)
+    logger.debug('Downloading %s://%s for user %s to %s://%s',
+                 src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
         user = get_user_model().objects.get(username=username)
@@ -40,7 +40,7 @@ def box_download(self, username, box_file_id, to_resource, dest_file_id):
         dest_real_path = agave_fm.get_file_real_path(dest_file_id)
 
         box_fm = BoxFileManager(user)
-        file_type, file_id = box_fm.parse_file_id(box_file_id)
+        file_type, file_id = box_fm.parse_file_id(src_file_id)
 
         if file_type == 'file':
             box_download_file(box_fm, file_id, dest_real_path)
@@ -55,8 +55,8 @@ def box_download(self, username, box_file_id, to_resource, dest_file_id):
     except:
         logger.exception('Unexpected task failure: box_download', extra={
             'username': username,
-            'box_file_id': box_file_id,
-            'to_resource': to_resource,
+            'box_file_id': src_file_id,
+            'to_resource': dest_resource,
             'dest_file_id': dest_file_id
         })
 
@@ -120,32 +120,42 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
 
 
 @shared_task(bind=True)
-def box_upload(self, username, box_file_id, from_resource, upload_file_id):
-    logger.debug('Importing file %s for user %s from to %s://%s' % (
-        upload_file_id, username, from_resource, box_file_id))
+def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
+    """
+    :param self:
+    :param username:
+    :param src_resource: should be 'agave'
+    :param src_file_id: the agave file id
+    :param dest_resource: should be 'box'
+    :param dest_file_id: the box id of the destination folder
+    :return:
+    """
+    logger.debug('Importing file %s://%s for user %s to %s://%s' % (
+        src_resource, src_file_id, username, dest_resource, dest_file_id))
 
     try:
         user = get_user_model().objects.get(username=username)
 
         from designsafe.apps.api.data import BoxFileManager
         box_fm = BoxFileManager(user)
-        file_type, file_id = box_fm.parse_file_id(box_file_id)
+        file_type, file_id = box_fm.parse_file_id(dest_file_id)
 
         if file_type != 'folder':
             logger.warn('Cannot import to a file destination!')
             raise Exception('You can only import files to a folder!', status=400,
                             extra={
-                                'box_file_id': box_file_id,
-                                'from_resource': from_resource,
-                                'upload_file_id': upload_file_id
+                                'src_resource': src_resource,
+                                'src_file_id': src_file_id,
+                                'dest_resource': dest_resource,
+                                'dest_file_id': dest_file_id,
                             })
 
-        if from_resource == 'agave' or from_resource == 'public':
+        if src_resource == 'agave' or src_resource == 'public':
             try:
                 logger.debug('Starting upload to Box...')
                 from designsafe.apps.api.data import lookup_file_manager
-                agave_fm = lookup_file_manager(from_resource)(user)
-                file_real_path = agave_fm.get_file_real_path(upload_file_id)
+                agave_fm = lookup_file_manager(src_resource)(user)
+                file_real_path = agave_fm.get_file_real_path(src_file_id)
                 if os.path.isfile(file_real_path):
                     box_upload_file(box_fm, file_id, file_real_path)
                 elif os.path.isdir(file_real_path):
@@ -160,9 +170,10 @@ def box_upload(self, username, box_file_id, from_resource, upload_file_id):
     except:
         logger.exception('Unexpected task failure: box_upload', extra={
             'username': username,
-            'box_file_id': box_file_id,
-            'from_resource': from_resource,
-            'upload_file_id': upload_file_id
+            'src_resource': src_resource,
+            'src_file_id': src_file_id,
+            'dest_resource': dest_resource,
+            'dest_file_id': dest_file_id,
         })
 
 
@@ -206,3 +217,8 @@ def box_upload_directory(box_file_manager, box_parent_folder_id, dir_real_path):
         subdirnames[:] = []
 
     return box_folder
+
+
+@shared_task(bind=True)
+def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
+    pass

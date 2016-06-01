@@ -313,7 +313,6 @@
             };
             _.each(filesToMove, function(f) {
               var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
-              opts.dest_file_id = opts.dest_file_id + '/' + f.name;
               self.moveFile(opts);
             });
           });
@@ -368,7 +367,6 @@
             };
             _.each(filesToCopy, function(f) {
               var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
-              opts.dest_file_id = opts.dest_file_id + '/' + f.name;
               self.copyFile(opts);
             });
           });
@@ -876,7 +874,7 @@
                 src_resource: data.source,
                 src_file_id: data.id,
                 dest_resource: file.source,
-                dest_file_id: file.id + '/' + data.name
+                dest_file_id: file.id
               };
               if (source !== dest) {
                 if (dragAction === 'move') {
