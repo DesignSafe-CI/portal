@@ -19,7 +19,12 @@
 </div>
 <div class="modal-footer">
     <div class="text-right">
-        <button class="btn btn-primary" type="button" ng-click="selectDestination(data.listing)">Select this folder</button>
+        <button class="btn btn-primary" type="button"
+                ng-disabled="! validDestination(data.listing)"
+                ng-click="selectDestination(data.listing)"
+        >
+            Select this folder
+        </button>
         <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
     </div>
 </div>

@@ -299,9 +299,10 @@
             resolve: {
               data: {
                 title: 'Select the destination to move selected files.',
-                sources: $scope.data.sources,
+                sources: _.filter($scope.data.sources, {}),
                 currentSource: $scope.data.currentSource,
-                listing: $scope.data.listing
+                listing: $scope.data.listing,
+                user: $scope.user
               }
             }
           });
@@ -355,7 +356,8 @@
                 title: 'Select the destination to copy selected files.',
                 sources: $scope.data.sources,
                 currentSource: $scope.data.currentSource,
-                listing: $scope.data.listing
+                listing: $scope.data.listing,
+                user: $scope.user
               }
             }
           });
@@ -900,7 +902,13 @@
     };
 
     $scope.validDestination = function (file) {
-      return file.type === 'folder';
+      var valid = false;
+      var filePems;
+      if (file.type === 'folder') {
+        filePems = _.findWhere(file._pems, {username: $scope.data.user});
+        valid = filePems && filePems.permission.write;
+      }
+      return valid;
     };
 
     $scope.selectDestination = function (file) {
