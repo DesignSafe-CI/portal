@@ -10,7 +10,7 @@ urlpatterns = patterns(
         name='my_data'),
     url(r'^public/$', BasePublicTemplate.as_view(template_name='data/file-manager/public_data.html'),
         name='public_data'),
-    url(r'^test/(?P<resource>[\w.-]+)?/?(?P<file_path>[ \S]+)?$', DataBrowserTestView.as_view(template_name='data/file-manager/test.html'),
+    url(r'^browser/(?P<resource>[\w.-]+)?/?(?P<file_path>[ \S]+)?$', DataBrowserTestView.as_view(template_name='data/file-manager/test.html'),
         name='data_browser_test'),
 
 )
