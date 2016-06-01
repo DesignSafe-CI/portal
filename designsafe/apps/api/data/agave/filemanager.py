@@ -253,9 +253,6 @@ class FileManager(AbstractFileManager, AgaveObject):
             reindex_agave.apply_async(args=(self.username, file_id))
         return listing
 
-    def search(self, **kwargs):
-        return [{}]
-
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Copies a file
 
@@ -599,6 +596,9 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.rename(self.username, target_name)
         return f.to_dict()
     
+    def search(self, **kwargs):
+        return [{}]
+
     def share(self, file_id, user = '', permission = 'READ', **kwargs):
         """Update permissions for a file
 
