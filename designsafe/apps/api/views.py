@@ -22,7 +22,7 @@ class BaseApiView(View):
         try:
             return super(BaseApiView, self).dispatch(request, *args, **kwargs)
         except ApiException as e:
-            if e.status == 403:
+            if e.response.status_code == 403:
                 return HttpResponseForbidden()
 
             status = e.response.status_code

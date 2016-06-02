@@ -422,7 +422,6 @@ PIPELINE_JS = {
     'vendor': {
         'source_filenames': (
             'vendor/modernizr/modernizr.js',
-            'vendor/angular-toastr/dist/angular-toastr.js',
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
