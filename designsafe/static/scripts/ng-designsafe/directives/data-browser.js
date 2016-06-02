@@ -120,7 +120,10 @@
               $scope.data.listing.children.push(resp.data);
               $scope.state.loading = false;
             }, function(err) {
-              // TODO notify user mkdir errored
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Unable to create directory: ' + err.data.message
+              });
               logger.error(err);
               $scope.state.loading = false;
             })
@@ -325,7 +328,10 @@
           sourceEl.addClass('ds-data-browser-processing');
           return DataService.move(options).then(
             function (resp) {
-                // TODO notify user
+              $scope.$emit('designsafe:notify', {
+                level: 'info',
+                message: 'Moved "' + resp.data.name + '" to "' + options.dest_file_id + '".'
+              });
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
@@ -338,8 +344,12 @@
             },
             function (err) {
               logger.error(err);
-                // TODO notify user
-              // window.alert('ERROR: Unable to move ' + source + ' to ' + dest + '.');
+
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Failed to move file: ' + err.data.message
+              });
+
               sourceEl.addClass('ds-data-browser-processing-danger');
 
               setTimeout(function() {
@@ -381,7 +391,10 @@
           sourceEl.addClass('ds-data-browser-processing');
           DataService.copy(options).then(
             function (resp) {
-                // TODO notify user
+              $scope.$emit('designsafe:notify', {
+                level: 'info',
+                message: 'Copied "' + resp.data.name + '" to "' + options.dest_file_id + '".'
+              });
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               setTimeout(function() {
@@ -389,11 +402,14 @@
               }, 3000);
             },
             function (err) {
-              sourceEl.addClass('ds-data-browser-processing-danger');
-              // TODO alert user with message
               logger.error(err);
-              // window.alert('ERROR: Unable to copy ' + source + ' to ' + dest + '.');
 
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Failed to copy file: ' + err.data.message
+              });
+
+              sourceEl.addClass('ds-data-browser-processing-danger');
               setTimeout(function() {
                 sourceEl.removeClass('ds-data-browser-processing ds-data-browser-processing-danger');
               }, 3000);
@@ -431,12 +447,19 @@
               resource: file.source,
               target_name: targetName
             }).then(function(resp) {
-                // TODO notify user
+              $scope.$emit('designsafe:notify', {
+                level: 'info',
+                message: 'Renamed "' + file.name + '" to "' + targetName + '".'
+              });
               $scope.state.loading = false;
               self.clearSelection();
               _.extend(file, resp.data);
             }, function(err) {
-              // TODO notify user mkdir errored
+                $scope.$emit('designsafe:notify', { 
+                level: 'warning', 
+                message: 'Failed to rename file: ' + err.data.message 
+              });
+
               logger.error(err);
               $scope.state.loading = false;
             })
@@ -449,14 +472,22 @@
             var fileEl = $('tr[data-file-id="' + file.id + '"]');
             fileEl.addClass('ds-data-browser-processing');
             DataService.trash({file_id: file.id, resource: file.source}).then(
-              function() {
-                // TODO notify user
+              function(resp) {
+                var message = '"' + file.name + '" moved to trash.';
+                if (resp.data.name !== file.name) {
+                  message += ' (Renamed to "' + resp.data.name + '".)';
+                }
+                $scope.$emit('designsafe:notify', {level: 'info', message: message});
                 $scope.data.listing.children = _.reject($scope.data.listing.children, function (child) {
                   return child.id === file.id;
                 });
               },
               function(err) {
-                // TODO notify user
+                $scope.$emit('designsafe:notify', {
+                  level: 'warning',
+                  message: 'Unable to move "' + file.name + '" to trash: ' + err.data.message
+                });
+
                 logger.error(err);
                 fileEl.addClass('ds-data-browser-processing-danger');
                 setTimeout(function() {
@@ -475,13 +506,19 @@
             fileEl.addClass('ds-data-browser-processing');
             DataService.delete({file_id: file.id, resource: file.source}).then(
               function() {
-                // TODO notify user
+                $scope.$emit('designsafe:notify', {
+                  level: 'info',
+                  message: 'Deleted "' + file.name + '".'
+                });
                 $scope.data.listing.children = _.reject($scope.data.listing.children, function (child) {
                   return child.id === file.id;
                 });
               },
               function(err) {
-                // TODO notify user
+                $scope.$emit('designsafe:notify', {
+                  level: 'warning',
+                  message: 'Unable to delete "' + file.name + '": ' + err.data.message
+                });
                 logger.error(err);
                 fileEl.addClass('ds-data-browser-processing-danger');
                 setTimeout(function() {
@@ -504,13 +541,42 @@
               $scope.state.loading = false;
             },
             function(err) {
-              // TODO notify user preview failed
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Unable to preview file: ' + err.data.message
+              });
               logger.error(err);
               $scope.state.loading = false;
             }
           );
         };
 
+        /**
+         * Initiate a file download
+         * @param file {object} the file-like object to download.
+         * @param file.id {string} the file id
+         * @param file.name {string} the file name
+         * @param file.source {string} the resource the file is sourced from
+         */
+        self.downloadFile = function(file) {
+          DataService.download({resource: file.source, file_id: file.id}).then(
+            function(resp) {
+              var link = document.createElement('a');
+              link.style.display = 'none';
+              link.setAttribute('href', resp.data.href);
+              link.setAttribute('download', null);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            },
+            function(err) {
+              logger.error(err);
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Unable to download "' + file.name + '": ' + err.data.message
+              });
+            });
+        };
 
         /**
          *
@@ -524,13 +590,15 @@
           };
           return DataService.listPath(opts).then(
             function(resp) {
-              // TODO notify user
               $scope.state.loading = false;
               $scope.data.listing = resp.data;
             },
             function(err) {
               logger.error(err);
-              // TODO notify
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Unable to refresh file index: ' + err.data.message
+              });
             }
           );
         };
@@ -540,7 +608,7 @@
          * @param options {object}
          * @oaram options.resource {string} the resource to browse
          * @oaram options.file_id {string} the file_id to browse
-         * @returns {HttpPromise}
+         * @returns {Promise}
          */
         self.browseFile = function(options) {
           self.clearSelection();
@@ -606,9 +674,7 @@
     };
   }]);
 
-  module.directive('dsDataBrowserNew', ['Logging', function(Logging) {
-
-    var logger = Logging.getLogger('ngDesignSafe.daDataBrowserNew');
+  module.directive('dsDataBrowserNew', [function() {
 
     return {
       require: '^^dsDataBrowser',
@@ -631,9 +697,7 @@
     };
   }]);
 
-  module.directive('dsDataBrowserSourceSelect', ['Logging', function(Logging) {
-
-    var logger = Logging.getLogger('ngDesignSafe.dsDataBrowserSourceSelect');
+  module.directive('dsDataBrowserSourceSelect', [function() {
 
     return {
       require: '^^dsDataBrowser',
@@ -661,7 +725,7 @@
     };
   }]);
 
-  module.directive('dsDataBrowserToolbar', ['$uibModal', 'Logging', 'DataService', function($uibModal, Logging, DataService) {
+  module.directive('dsDataBrowserToolbar', ['$uibModal', 'Logging', function($uibModal, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowserToolbar');
 
@@ -682,10 +746,7 @@
         };
         
         scope.downloadEnabled = function() {
-          if (scope.state.selected.length === 1) {
-            return dbCtrl.selectedFiles()[0].type === 'file';
-          }
-          return false;
+          return true;
         };
 
         scope.previewEnabled = function() {
@@ -765,8 +826,9 @@
         };
 
         scope.downloadSelected = function() {
-          window.alert('TODO!!');
-          logger.log('DOWNLOAD', scope.state.selected);
+          _.each(dbCtrl.selectedFiles(), function(file) {
+            dbCtrl.downloadFile(file);
+          });
         };
 
         scope.previewSelected = function() {
@@ -788,9 +850,7 @@
     };
   }]);
 
-  module.directive('dsDataListDisplay', ['Logging', 'DataService', function(Logging, DataService) {
-    
-    var logger = Logging.getLogger('ngDesignSafe.dsDataListDisplay');
+  module.directive('dsDataListDisplay', ['DataService', function(DataService) {
 
     function updateDragEl(options) {
       options = _.extend({dragging: false, action: 'move', icon: 'arrows'}, options);
