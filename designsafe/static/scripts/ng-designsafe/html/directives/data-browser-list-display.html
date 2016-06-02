@@ -48,10 +48,18 @@
                  ds-draggable transfer="data.listing" drag-start="dragStart" drag-enter="dragEnter"
                  drag-over="dragOver" drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"
         >
-            <div class="text-center text-muted">
+            <div class="text-center text-muted" ng-if="! state.listingError">
                 <p class="lead">
                     There is nothing here! Drag and drop files here to upload.
                     <br><i class="fa fa-folder-open-o"></i>
+                </p>
+            </div>
+            <div class="text-center" ng-if="state.listingError">
+                <p class="lead">
+                    <span ng-bind-html="state.listingError">Error</span><br>
+                    <a ng-if="state.errorRedirect" href="/login/?next={{ state.errorRedirect }}"
+                       class="btn btn-primary btn-lg"
+                    >Log in</a>
                 </p>
             </div>
         </caption>

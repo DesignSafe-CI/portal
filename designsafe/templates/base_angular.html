@@ -6,7 +6,9 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{%static 'vendor/angular/angular.min.js' %}"></script>
+    <script src="{% static 'vendor/angular/angular.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-sanitize/angular-sanitize.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-toastr/dist/angular-toastr.tpls.min.js' %}"></script>
 
     {% addtoblock "js" %}
         <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>

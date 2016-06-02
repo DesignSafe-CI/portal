@@ -2,7 +2,7 @@
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 {% block title %}Data Depot Browser{% endblock %}
 {% block head_extra %}
-    <base href="{% url 'designsafe_data:data_browser_test' %}">
+    <base href="{% url 'designsafe_data:data_browser' %}">
 {% endblock %}
 {% block content %}
 <div class="container">
@@ -40,6 +40,6 @@
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-    <script type="text/javascript" src="{% static 'designsafe/apps/data/scripts/test/app.js' %}"></script>
+    <script type="text/javascript" src="{% static 'designsafe/apps/data/scripts/browser/app.js' %}"></script>
 {% endaddtoblock %}
 {% endblock %}

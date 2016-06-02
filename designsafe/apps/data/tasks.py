@@ -148,7 +148,11 @@ def share(system_id, path, username, permission, me):
                       {'Action': 'Sharing Finished'},
                       {'Shared with': username},
                       {'Permissions set': permission},
-                      ]
+                      ],
+                  'toast': {
+                      'type': 'info',
+                      'msg': me + ' has shared files with you.'
+                      }
                   },
                   [username])
     except ObjectDoesNotExist:

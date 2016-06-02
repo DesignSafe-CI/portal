@@ -119,8 +119,7 @@ class BaseView(View):
                     'filesystem': self.filesystem,
                     'file_path': self.file_path,
                     'username': request.user.username
-                }
-                )
+                })
             resp = {}
             resp['error'] = error
             resp['message'] = message
@@ -156,15 +155,24 @@ class  BasePublicTemplate(TemplateView):
 
 
 class DataBrowserTestView(BasePublicTemplate):
+
+    def login_rediect(self, request):
+        path = request.get_full_path()
+        resolved_login_url = resolve_url(settings.LOGIN_URL)
+        from django.contrib.auth.views import redirect_to_login
+        return redirect_to_login(
+            path, resolved_login_url)
+
     def dispatch(self, request, *args, **kwargs):
         try:
             return super(BasePublicTemplate, self).dispatch(request, *args, **kwargs)
+        except ApiException as e:
+            if e.response.status_code == 403:
+                return self.login_rediect(request)
+            else:
+                raise
         except PermissionDenied:
-            path = request.get_full_path()
-            resolved_login_url = resolve_url(settings.LOGIN_URL)
-            from django.contrib.auth.views import redirect_to_login
-            return redirect_to_login(
-                path, resolved_login_url)
+            return self.login_rediect(request)
 
 
     def get_context_data(self, **kwargs):

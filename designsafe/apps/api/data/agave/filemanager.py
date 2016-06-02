@@ -251,8 +251,10 @@ class FileManager(AbstractFileManager, AgaveObject):
         except:
             listing = None
 
-        fallback = listing is None or (listing['type'] == 'folder' and
-                                       len(listing['children']) == 0)
+        fallback = listing is None or (
+            listing['type'] == 'folder' and
+            listing['id'] != '$share' and
+            len(listing['children']) == 0)
         if fallback:
             listing = self._agave_listing(system, file_path)
             reindex_agave.apply_async(args=(self.username, file_id))

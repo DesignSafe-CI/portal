@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('ng.designsafe', ['ngSanitize']);
   
   module.directive('dsDataBrowser', ['Logging', function(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowser');
@@ -21,6 +21,7 @@
         
         $scope.state = {
           loading: false,
+          listingError: false,
           selecting: false,
           selected: []
         };
@@ -324,6 +325,7 @@
           sourceEl.addClass('ds-data-browser-processing');
           return DataService.move(options).then(
             function (resp) {
+                // TODO notify user
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
@@ -336,7 +338,7 @@
             },
             function (err) {
               logger.error(err);
-              // TODO
+                // TODO notify user
               // window.alert('ERROR: Unable to move ' + source + ' to ' + dest + '.');
               sourceEl.addClass('ds-data-browser-processing-danger');
 
@@ -379,6 +381,7 @@
           sourceEl.addClass('ds-data-browser-processing');
           DataService.copy(options).then(
             function (resp) {
+                // TODO notify user
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               setTimeout(function() {
@@ -428,6 +431,7 @@
               resource: file.source,
               target_name: targetName
             }).then(function(resp) {
+                // TODO notify user
               $scope.state.loading = false;
               self.clearSelection();
               _.extend(file, resp.data);
@@ -446,6 +450,7 @@
             fileEl.addClass('ds-data-browser-processing');
             DataService.trash({file_id: file.id, resource: file.source}).then(
               function() {
+                // TODO notify user
                 $scope.data.listing.children = _.reject($scope.data.listing.children, function (child) {
                   return child.id === file.id;
                 });
@@ -470,6 +475,7 @@
             fileEl.addClass('ds-data-browser-processing');
             DataService.delete({file_id: file.id, resource: file.source}).then(
               function() {
+                // TODO notify user
                 $scope.data.listing.children = _.reject($scope.data.listing.children, function (child) {
                   return child.id === file.id;
                 });
@@ -518,6 +524,7 @@
           };
           return DataService.listPath(opts).then(
             function(resp) {
+              // TODO notify user
               $scope.state.loading = false;
               $scope.data.listing = resp.data;
             },
@@ -537,6 +544,7 @@
          */
         self.browseFile = function(options) {
           self.clearSelection();
+          $scope.state.listingError = false;
           $scope.state.loading = true;
           options = options || {};
           return DataService.listPath(options).then(
@@ -551,8 +559,54 @@
             },
             function(error) {
               $scope.state.loading = false;
-              logger.error(error);
-              // TODO notify user
+              var handler = $scope.onPathChanged();
+              $scope.data.listing = {
+                id: options.file_id,
+                source: options.resource
+              };
+              if (handler) {
+                handler($scope.data.listing);
+              }
+              var message;
+              if (error.status === 403) {
+                // access denied
+                if ($scope.data.user === 'AnonymousUser') {
+                  $scope.state.errorRedirect = '/login/?next=' + window.location.pathname;
+                  message = 'Please log in to access this resource.';
+                } else {
+                  message = 'You do not have access to view that resource.';
+                }
+                $scope.state.listingError = message;
+                $scope.$emit('designsafe:notify', {
+                  level: 'warning',
+                  title: 'Access Denied',
+                  message: message,
+                  opts: {
+                    onTap: function() {
+                      window.location = '/login/?next=' + window.location.pathname;
+                    }
+                  }
+                });
+              } else {
+                logger.error(error);
+                var contentType = error.headers('content-type');
+                if (contentType === 'application/json') {
+                  message = error.data.message;
+                } else {
+                  message = 'We are unable to display the data you requested. ' +
+                    'If you feel that this is in error, please ' +
+                    '<a href="/help">submit a support ticket</a>.'
+                }
+                $scope.state.listingError = message;
+                $scope.$emit('designsafe:notify', {
+                  level: 'error',
+                  title: 'Unable to display data listing',
+                  message: message,
+                  opts: {
+                    allowHtml: true
+                  }
+                });
+              }
             }
           );
         };

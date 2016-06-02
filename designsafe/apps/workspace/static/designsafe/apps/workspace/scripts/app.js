@@ -22,6 +22,7 @@
     'ds.wsBus',
     'ds.notifications',
     'logging',
+    'toastr',
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
   angular.module('WorkspaceApp')
