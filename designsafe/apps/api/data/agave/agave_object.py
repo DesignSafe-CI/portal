@@ -23,25 +23,21 @@ class AgaveObject(object):
         response = op(**kwargs)
         return response
 
-    def call_operation(self, operation, raise_agave = False, **kwargs):
+    def call_operation(self, operation, raise_agave=False, **kwargs):
         a = self.agave_client
         op = self.get_operation(a, operation)
         try:
             logger.debug('Agave: calling {}, args: {}'.format(operation, kwargs))
             response = self.exec_operation(op, **kwargs)
         except (AgaveException, HTTPError) as e:
-            logger.error(e,
-                exc_info = True,
-                extra = kwargs)
+            logger.error(e, exc_info = True, extra = kwargs)
             if e.response.status_code < 500 or raise_agave:
                 raise
             else:
                 d = {'operation': op}
                 d.update(kwargs)
-                raise ApiException(e.message, 
-                            e.response.status_code, 
-                            extra = d)
-            response = None
+                raise ApiException(e.message, e.response.status_code,
+                                   response=e.response, extra=d)
         return response
 
     def split_filepath(self, path):

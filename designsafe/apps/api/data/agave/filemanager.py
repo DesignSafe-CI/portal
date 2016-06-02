@@ -7,6 +7,7 @@ from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.tasks import reindex_agave
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from requests import HTTPError
 import os
 import logging
 import datetime
@@ -351,7 +352,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             postit = f.create_postit(force=True, max_uses=10, lifetime=3600)
             return {'href': postit['_links']['self']['href']}
         else:
-            return None
+            raise ApiException(message='Folders cannot be downloaded directly',
+                               status=400)
 
     #TODO: we don't need this method anymore
     def file(self, file_id, action, path = None, **kwargs):
@@ -596,12 +598,27 @@ class FileManager(AbstractFileManager, AgaveObject):
             `path` should only be the name the file will be renamed with.
         """
         system, file_user, file_path = self.parse_file_id(file_id)
-        f = AgaveFile.from_file_path(system, file_user, file_path,
-                                     agave_client=self.agave_client)
-        f.rename(target_name)
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.rename(self.username, target_name)
-        return f.to_dict()
+
+        try:
+            f = AgaveFile.from_file_path(system, file_user, file_path,
+                                         agave_client=self.agave_client)
+            f.rename(target_name)
+            esf = Object.from_file_path(system, self.username, file_path)
+            esf.rename(self.username, target_name)
+            return f.to_dict()
+        except HTTPError as e:
+            logger.error('HTTP {}: {}: {}'.format(
+                e.response.status_code, e.response.reason, e.response.content))
+            try:
+                err_json = e.response.json()
+                message = err_json['message']
+            except ValueError:
+                message = e.response.content
+
+            raise ApiException(message, e.response.status_code, response=e.response,
+                               extra={'operation': 'rename',
+                                      'file_id': file_id,
+                                      'target_name': target_name})
     
     def search(self, **kwargs):
         """Searches a file using the Elasticsearch index

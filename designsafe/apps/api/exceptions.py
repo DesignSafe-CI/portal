@@ -1,5 +1,6 @@
 from requests.exceptions import RequestException
-from requests.models import Response, Request
+from requests.models import Response
+
 
 class ApiException(RequestException):
     """
