@@ -1,6 +1,5 @@
-from django.shortcuts import render, render_to_response
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
 from .mixins import SecureMixin, JSONResponseMixin
@@ -8,7 +7,7 @@ from django.views.generic.base import View, TemplateView
 from requests.exceptions import ConnectionError, HTTPError
 from dsapi.agave.daos import shared_with_me
 from django.contrib.auth import get_user_model
-from agavepy.agave import Agave, AgaveException
+from agavepy.agave import Agave
 from django.conf import settings
 
 from designsafe.apps.api.exceptions import ApiException
@@ -188,14 +187,19 @@ class DataBrowserTestView(BasePublicTemplate):
             listing = fm.listing(file_path)
         except ApiException as e:
             fm = None
+            action_url = e.extra.get('action_url', None)
+            action_label = e.extra.get('action_label', None)
+            if action_url is None and e.response.status_code == 403:
+                action_url = '{}?next={}'.format(reverse('login'), self.request.path)
+                action_label = 'Log in'
             listing = {
                 'source': resource,
                 'id': file_path,
                 '_error': {
                     'status': e.response.status_code,
                     'message': e.response.reason,
-                    'action_url': e.extra.get('action_url'),
-                    'action_label': e.extra.get('action_label', 'Continue')
+                    'action_url': action_url,
+                    'action_label': action_label
                 },
             }
 

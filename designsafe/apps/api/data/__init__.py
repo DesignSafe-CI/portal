@@ -5,6 +5,7 @@ from designsafe.apps.api.data.agave.public_filemanager import (
 from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
 from designsafe.apps.api.tasks import box_download, box_upload, copy_public_to_mydata
 
+
 def lookup_file_manager(resource):
     if resource == 'public':
         return PublicFileManager

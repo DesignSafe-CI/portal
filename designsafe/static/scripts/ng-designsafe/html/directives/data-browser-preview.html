@@ -23,11 +23,11 @@
         </div>
     </div>
     <div class="actions text-center">
-        <button ng-disabled="! data.downloadUrl.href" class="btn btn-default" href="{{ data.downloadUrl.href }}">
+        <a ng-disabled="! data.downloadUrl.href" class="btn btn-default" ng-href="{{ data.downloadUrl.href }}">
             <i ng-if="data.downloadUrl.loading" class="fa fa-spinner fa-spin"></i>
             <i ng-if="! data.downloadUrl.loading" class="fa fa-cloud-download"></i>
             Download
-        </button>
+        </a>
 
         <button ng-disabled="! data.actions.share" ng-click="shareFile()" class="btn btn-default">
             <i class="fa fa-send"></i> Share

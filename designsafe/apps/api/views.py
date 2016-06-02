@@ -25,19 +25,12 @@ class BaseApiView(View):
             status = e.response.status_code
             message = e.response.reason
             extra = e.extra
-            logger.error('{}'.format(message),
-                exc_info = True,
-                extra = extra
-                )
+            logger.error('{}'.format(message), exc_info=True, extra=extra)
         except (ConnectionError, HTTPError) as e:
             status = e.response.status_code
             message = e.response.reason
-            logger.error('{}'.format(message),
-                exc_info = True,
-                extra = {
-                    'username': request.user.username
-                }
-                )
+            logger.error('{}'.format(message), exc_info=True,
+                         extra={'username': request.user.username})
         
         resp = {'message': message}
         if request.FILES:

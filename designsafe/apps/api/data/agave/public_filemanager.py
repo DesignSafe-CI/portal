@@ -159,6 +159,10 @@ class FileManager(AgaveObject):
             >>>         dest_resource='agave',
             >>>         dest_file_id='designsafe.storage.default/username/file_copy.jpg')
         """
+        if self._user.is_anonymous():
+            raise ApiException(message='You must log in to perform this action.',
+                               status=403)
+
         # can only transfer out of public
         from designsafe.apps.api.data import lookup_transfer_service
         service = lookup_transfer_service(self.resource, dest_resource)

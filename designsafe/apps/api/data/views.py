@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseBadRequest
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from designsafe.apps.api.views import BaseApiView
@@ -92,14 +93,30 @@ class DataView(BaseDataView):
             resp = self._execute_operation(request, 'listing', **kwargs)
             return self.render_to_json_response(resp)
         except ApiException as e:
+            action_url = e.extra.get('action_url', None)
+            action_label = e.extra.get('action_label', None)
+            if action_url is None and e.response.status_code == 403:
+                login_url = reverse('login')
+                resource = kwargs.get('resource', None)
+                file_id = kwargs.get('file_id', None)
+                args = []
+                if resource is not None:
+                    args.append(resource)
+                if file_id is not None:
+                    args.append(file_id)
+                data_url = reverse('designsafe_data:data_browser', args=args)
+                redirect_url = '{}?next={}'.format(login_url, data_url)
+                action_url = redirect_url
+                action_label = 'Log in'
+
             resp = {
                 'id': kwargs.get('file_id'),
                 'source': kwargs.get('resource'),
                 '_error': {
                     'status': e.response.status_code,
                     'message': e.response.reason,
-                    'action_url': e.extra.get('action_url', None),
-                    'action_label': e.extra.get('action_label', 'Continue')
+                    'action_url': action_url,
+                    'action_label': action_label
                 }
             }
             return self.render_to_json_response(resp, status=e.response.status_code)

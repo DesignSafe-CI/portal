@@ -558,20 +558,9 @@
               }
             },
             function(error) {
-              var opts = {};
               var handler = $scope.onPathChanged();
               $scope.state.loading = false;
               $scope.data.listing = error.data;
-              // $scope.data.listing = {
-              //   id: options.file_id,
-              //   source: options.resource,
-              //   _error: {
-              //     status: error.status,
-              //     message: error.data.message,
-              //     action_url: null,
-              //     action_label: null
-              //   }
-              // };
               if (handler) {
                 handler($scope.data.listing);
               }
@@ -585,16 +574,10 @@
                   $scope.data.listing._error.message =
                     $scope.data.listing._error.message || 'You do not have access to view that resource.';
                 }
-                if ($scope.data.listing._error.action_url) {
-                  opts.onTap = function() {
-                    window.location = $scope.data.listing._error.action_url;
-                  };
-                }
                 $scope.$emit('designsafe:notify', {
                   level: 'warning',
                   title: 'Access Denied',
-                  message: $scope.data.listing._error.message,
-                  opts: opts
+                  message: $scope.data.listing._error.message
                 });
               } else {
                 logger.error(error);
@@ -606,17 +589,10 @@
                 $scope.data.listing._error.message =
                   $scope.data.listing._error.message || defaultMessage;
 
-
-                if ($scope.data.listing._error.action_url) {
-                  opts.onTap = function() {
-                    window.location = $scope.data.listing._error.action_url;
-                  };
-                }
                 $scope.$emit('designsafe:notify', {
                   level: 'error',
                   title: 'Unable to display data listing',
-                  message: $scope.data.listing._error.message,
-                  opts: opts
+                  message: $scope.data.listing._error.message
                 });
               }
             }

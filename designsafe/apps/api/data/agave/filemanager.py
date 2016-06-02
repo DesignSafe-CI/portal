@@ -7,7 +7,6 @@ from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.tasks import reindex_agave
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
 import os
 import logging
 import datetime
@@ -38,7 +37,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         super(FileManager, self).__init__(**kwargs)
 
         if user_obj.is_anonymous():
-            raise PermissionDenied()
+            raise ApiException(status=403,
+                               message='Log in required to access these files.')
 
         username = user_obj.username
         if user_obj.agave_oauth.expired:
@@ -47,8 +47,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         token = user_obj.agave_oauth
         access_token = token.access_token
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = Agave(api_server = agave_url,
-                                  token = access_token)
+        self.agave_client = Agave(api_server=agave_url, token=access_token)
         self.username = username
         self._user = user_obj
         self.indexer = AgaveIndexer(agave_client = self.agave_client)
@@ -75,7 +74,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         """
 
         file_id = self.parse_file_id(file_id)
-        return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and file_id[1] == self.username)
+        return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and
+                    file_id[1] == self.username)
     
     def _agave_listing(self, system, file_path):
         """Returns a "listing" dict constructed with the response from Agave.
