@@ -12,9 +12,7 @@ from agavepy.agave import Agave, AgaveException
 from django.conf import settings
 
 from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
-from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
-from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
 
 import logging
@@ -166,19 +164,12 @@ class DataBrowserTestView(BasePublicTemplate):
     def dispatch(self, request, *args, **kwargs):
         try:
             return super(BasePublicTemplate, self).dispatch(request, *args, **kwargs)
-        except ApiException as e:
-            if e.response.status_code == 403:
-                return self.login_rediect(request)
-            else:
-                raise
         except PermissionDenied:
             return self.login_rediect(request)
 
 
     def get_context_data(self, **kwargs):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
-
-        user_obj = self.request.user
 
         resource = kwargs.pop('resource', None)
         if resource is None:
@@ -187,29 +178,40 @@ class DataBrowserTestView(BasePublicTemplate):
             else:
                 resource = 'public'
 
-        file_path = kwargs.pop('file_path', None)
-
-        # TODO get initial listing in a generic way?
-        if resource == 'public':
-            fm = PublicFileManager(user_obj, resource=resource, **kwargs)
-        elif resource == 'box':
-            fm = BoxFileManager(user_obj, **kwargs)
-        elif resource == 'agave':
-            fm = AgaveFileManager(user_obj, resource=resource, **kwargs)
-            if file_path is not None and fm.is_shared(file_path):
-                resource = '$share'
-            else:
-                resource = 'mydata'
-        else:
+        fm_cls = lookup_file_manager(resource)
+        if fm_cls is None:
             raise Http404('Unknown resource')
 
-        listing = fm.listing(file_path)
+        file_path = kwargs.pop('file_path', None)
+        try:
+            fm = fm_cls(self.request.user)
+            listing = fm.listing(file_path)
+        except ApiException as e:
+            fm = None
+            listing = {
+                'source': resource,
+                'id': file_path,
+                '_error': {
+                    'status': e.response.status_code,
+                    'message': e.response.reason,
+                    'action_url': e.extra.get('action_url'),
+                    'action_label': e.extra.get('action_label', 'Continue')
+                },
+            }
 
-        sourcesApi = SourcesApi()
+        sources_api = SourcesApi()
+        source_id = resource
+        if source_id == 'agave':
+            if fm is not None and fm.is_shared(file_path):
+                source_id = '$share'
+            else:
+                source_id = 'mydata'
+        current_source = sources_api.get(source_id)
+        sources_list = sources_api.list()
 
         context['angular_init'] = json.dumps({
-            'currentSource': sourcesApi.get(resource),
-            'sources': sourcesApi.list(),
+            'currentSource': current_source,
+            'sources': sources_list,
             'listing': listing
         })
         return context

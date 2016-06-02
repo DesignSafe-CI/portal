@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
 
@@ -88,8 +88,21 @@ class DataView(BaseDataView):
     Data View to handle listing of a file or folder. GET HTTP Request.
     """
     def get(self, request, *args, **kwargs):
-        resp = self._execute_operation(request, 'listing', **kwargs)        
-        return self.render_to_json_response(resp)
+        try:
+            resp = self._execute_operation(request, 'listing', **kwargs)
+            return self.render_to_json_response(resp)
+        except ApiException as e:
+            resp = {
+                'id': kwargs.get('file_id'),
+                'source': kwargs.get('resource'),
+                '_error': {
+                    'status': e.response.status_code,
+                    'message': e.response.reason,
+                    'action_url': e.extra.get('action_url', None),
+                    'action_label': e.extra.get('action_label', 'Continue')
+                }
+            }
+            return self.render_to_json_response(resp, status=e.response.status_code)
 
 
 class DataFileManageView(BaseDataView):
@@ -101,7 +114,8 @@ class DataFileManageView(BaseDataView):
     - action: Operation to execute in the file manager.
     - path: File path on which the operation should be executed.
 
-    The entire request body will be passed onto the file manager operation being executed as a python dictionary as well as the uploaded file array if present.
+    The entire request body will be passed onto the file manager operation being executed
+    as a python dictionary as well as the uploaded file array if present.
     """
     def _execute_post_operation(self, request, **kwargs):
         if 'action' in request.POST:

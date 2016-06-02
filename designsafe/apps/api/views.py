@@ -22,9 +22,6 @@ class BaseApiView(View):
         try:
             return super(BaseApiView, self).dispatch(request, *args, **kwargs)
         except ApiException as e:
-            if e.response.status_code == 403:
-                return HttpResponseForbidden()
-
             status = e.response.status_code
             message = e.response.reason
             extra = e.extra
@@ -46,7 +43,8 @@ class BaseApiView(View):
         if request.FILES:
             resp['files'] = request.FILES
                                       
-        return HttpResponse(json.dumps(resp), status = status, content_type = 'application/json')
+        return HttpResponse(json.dumps(resp),
+                            status=status, content_type='application/json')
 
 
 class LoggerApi(BaseApiView):

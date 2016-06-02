@@ -26,5 +26,6 @@ class ApiException(RequestException):
         response = self.response or Response()
         response.status_code = status or response.status_code
         response.reason = message or response.reason
+        self.message = message or response.reason
         self.response = response
         self.extra = extra

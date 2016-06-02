@@ -4,7 +4,7 @@ from designsafe.apps.api.data.box.file import BoxFile
 from designsafe.apps.api.tasks import box_upload
 from designsafe.apps.box_integration import util
 from designsafe.apps.box_integration.models import BoxUserToken
-from boxsdk.exception import BoxAPIException
+from boxsdk.exception import BoxException, BoxOAuthException
 from django.core.urlresolvers import reverse
 import logging
 import os
@@ -26,10 +26,12 @@ class FileManager(AbstractFileManager):
         try:
             self.box_api = util.get_box_client(user_obj)
         except BoxUserToken.DoesNotExist:
-            activate_box_url = reverse('box_integration:initialize_token')
-            message = 'You need to <a href="%s">connect your Box.com account</a> ' \
-                      'before you can access your Box.com files.' % activate_box_url
-            raise ApiException(status=400, message=message)
+            message = 'You need to connect your Box.com account ' \
+                      'before you can access your Box.com files.'
+            raise ApiException(status=400, message=message, extra={
+                'action_url': reverse('box_integration:index'),
+                'action_label': 'Connect Box.com Account'
+            })
 
     def parse_file_id(self, file_id):
         if file_id is not None:
@@ -133,9 +135,18 @@ class FileManager(AbstractFileManager):
             return list_data
 
         except AssertionError:
-            raise
-        except BoxAPIException:
-            raise
+            raise ApiException(status=404,
+                               message='The file you requested does not exist.')
+        except BoxOAuthException:
+            # user needs to reconnect with Box
+            message = 'While you previously granted this application access to Box, ' \
+                      'that grant appears to be no longer valid. Please ' \
+                      '<a href="%s">disconnect and reconnect your Box.com account</a> ' \
+                      'to continue using Box data.' % reverse('box_integration:index')
+            raise ApiException(status=403, message=message)
+        except BoxException as e:
+            message = 'Unable to communicate with Box: %s' % e.message
+            raise ApiException(status=500, message=message)
 
     def file(self, file_id, action, path = None, **kwargs):
         pass

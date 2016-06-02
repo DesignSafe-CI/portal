@@ -558,53 +558,65 @@
               }
             },
             function(error) {
-              $scope.state.loading = false;
+              var opts = {};
               var handler = $scope.onPathChanged();
-              $scope.data.listing = {
-                id: options.file_id,
-                source: options.resource
-              };
+              $scope.state.loading = false;
+              $scope.data.listing = error.data;
+              // $scope.data.listing = {
+              //   id: options.file_id,
+              //   source: options.resource,
+              //   _error: {
+              //     status: error.status,
+              //     message: error.data.message,
+              //     action_url: null,
+              //     action_label: null
+              //   }
+              // };
               if (handler) {
                 handler($scope.data.listing);
               }
-              var message;
+
               if (error.status === 403) {
                 // access denied
                 if ($scope.data.user === 'AnonymousUser') {
-                  $scope.state.errorRedirect = '/login/?next=' + window.location.pathname;
-                  message = 'Please log in to access this resource.';
+                  $scope.data.listing._error.message =
+                    $scope.data.listing._error.message || 'Please log in to access this resource.';
                 } else {
-                  message = 'You do not have access to view that resource.';
+                  $scope.data.listing._error.message =
+                    $scope.data.listing._error.message || 'You do not have access to view that resource.';
                 }
-                $scope.state.listingError = message;
+                if ($scope.data.listing._error.action_url) {
+                  opts.onTap = function() {
+                    window.location = $scope.data.listing._error.action_url;
+                  };
+                }
                 $scope.$emit('designsafe:notify', {
                   level: 'warning',
                   title: 'Access Denied',
-                  message: message,
-                  opts: {
-                    onTap: function() {
-                      window.location = '/login/?next=' + window.location.pathname;
-                    }
-                  }
+                  message: $scope.data.listing._error.message,
+                  opts: opts
                 });
               } else {
                 logger.error(error);
-                var contentType = error.headers('content-type');
-                if (contentType === 'application/json') {
-                  message = error.data.message;
-                } else {
-                  message = 'We are unable to display the data you requested. ' +
+
+                var defaultMessage = 'We are unable to display the data you requested. ' +
                     'If you feel that this is in error, please ' +
-                    '<a href="/help">submit a support ticket</a>.'
+                    '<a href="/help">submit a support ticket</a>.';
+
+                $scope.data.listing._error.message =
+                  $scope.data.listing._error.message || defaultMessage;
+
+
+                if ($scope.data.listing._error.action_url) {
+                  opts.onTap = function() {
+                    window.location = $scope.data.listing._error.action_url;
+                  };
                 }
-                $scope.state.listingError = message;
                 $scope.$emit('designsafe:notify', {
                   level: 'error',
                   title: 'Unable to display data listing',
-                  message: message,
-                  opts: {
-                    allowHtml: true
-                  }
+                  message: $scope.data.listing._error.message,
+                  opts: opts
                 });
               }
             }

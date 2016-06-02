@@ -21,8 +21,12 @@
 
       $locationProvider.html5Mode(true);
 
+      /*
+       * https://github.com/Foxandxss/angular-toastr#toastr-customization
+       */
       angular.extend(toastrConfig, {
-        positionClass: 'toast-bottom-left'
+        positionClass: 'toast-bottom-left',
+        timeOut: 20000
       });
     }
   ]);
@@ -49,12 +53,23 @@
         }
       });
 
-      $scope.$on('designsafe:notify', function ($event, data) {
-        console.log($event, data);
+      /**
+       *
+       * @param $event {event}
+       * @param data {object}
+       * @param data.level {string} info, success, warning, error
+       * @param data.message {string}
+       * @param data.title {string}
+       * @param data.opts {object}
+       */
+      function toastNotify ($event, data) {
         var level = data.level || 'info';
         var toastop = toastr[level] || toastr.info;
-        toastop(data.message, data.title, data.opts);
-      });
+        var opts = _.extend({allowHtml: true}, data.opts);
+        toastop(data.message, data.title, opts);
+      }
+
+      $scope.$on('designsafe:notify', toastNotify);
 
       $scope.onPathChanged = function(listing) {
         var path = $filter('dsFileUrl')(listing);
