@@ -239,7 +239,7 @@ class Object(DocType):
         return o
 
     @classmethod
-    def search_query(cls, username, q = None, **kwargs):
+    def search_query(cls, username, q, fields = [], **kwargs):
         """Search the Elasticsearch index using a query string
 
         Use a query string to search the ES index. This method will search 
@@ -247,24 +247,18 @@ class Object(DocType):
 
         :param str username: username making the request
         :param str q: string to query the ES index
+        :param list fields: list of strings
 
         .. note:: In order to make this method scalable more fields can be
-            searched by passing extra keyword arguments int he form 
-            **q_{field_name}**. Meaning, to search only on the keywords field
-            the call to this method should be like this:
-            >>> Object.search('username', q_keywords = 'project')
+            searched by passing a **fields** keyword argument. You can add
+            the **systemTags** field like so:
+            >>> Object.search('username', 'txt', fields = ['systemTags'])
         """
-        fields = ['name', 'keywords']
-        kw_fields = []
-        for key, val in six.iteritems(kwargs):
-            if key.startswith('q_'):
-                kw_fields.append(key[2:])
-        if q is None:
-            fields = kw_fields
-        else:
-            fields += kw_fields
+        search_fields = ['name', 'keywords']
+        if fields:
+            search_fields += fields
 
-        sq = { "query": { "filtered": { "query": { "query_string": { "fields":list(set(fields)), "query": q}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
+        sq = { "query": { "filtered": { "query": { "query_string": { "fields":list(set(search_fields)), "query": "*%s*" % q}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = cls.search()
         s.update_from_dict(sq)
         logger.debug('search query: {}'.format(s.to_dict()))

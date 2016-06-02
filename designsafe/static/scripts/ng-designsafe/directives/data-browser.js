@@ -619,16 +619,20 @@
             function(response) {
               $scope.state.loading = false;
               $scope.data.listing = response.data;
+              $scope.state.search = false;
 
               var handler = $scope.onPathChanged();
               if (handler) {
                 handler($scope.data.listing);
               }
+              $scope.state.search = false;
             },
             function(error) {
               var handler = $scope.onPathChanged();
               $scope.state.loading = false;
               $scope.data.listing = error.data;
+              $scope.state.search = false;
+              
               if (handler) {
                 handler($scope.data.listing);
               }
@@ -669,8 +673,8 @@
 
         self.search = function(q){
           $scope.state.loading = true;
-
-          return DataService.search($scope.data.listing.source,q).then(
+          $scope.state.search = true;
+          return DataService.search($scope.data.listing.source, q).then(
             function(response){
               $scope.state.loading = false;
               $scope.data.listing = response.data;

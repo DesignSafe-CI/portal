@@ -1,6 +1,9 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         <thead>
+        <th ng-if="state.search">
+            Path
+        </th>
         <th>
             <button class="flo-select-btn" ng-click="selectAll()" ng-mouseenter="state.hover['all'] = true" ng-mouseleave="state.hover['all'] = false" ng-if="enableSelection">
                 <i class="fa fa-fw" ng-class="{'fa-circle-o': (state.selecting || state.hover['all']) && !state.selectAll, 'fa-check-circle': state.selectAll}"></i>
@@ -20,6 +23,9 @@
             drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop" ng-click="selectFile(file)"
             ng-class="{'ds-data-selected': isFileSelected(file)}"
         >
+            <td ng-if="state.search">
+              {{ file.path }}
+            </td>
             <td>
                 <button class="flo-select-btn" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>

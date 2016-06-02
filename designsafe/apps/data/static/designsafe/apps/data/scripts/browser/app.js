@@ -75,6 +75,10 @@
         var path = $filter('dsFileUrl')(listing);
         $location.state(angular.copy($scope.data));
         $location.path(path);
+        if (listing.name == '$SEARCH') {
+          $location.search('q', listing.query.q);
+          $location.search('filters', listing.query.filters);
+        }
       };
 
     }]);
