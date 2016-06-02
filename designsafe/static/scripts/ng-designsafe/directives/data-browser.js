@@ -126,7 +126,7 @@
               });
               logger.error(err);
               $scope.state.loading = false;
-            })
+            });
           });
         };
 
@@ -462,7 +462,7 @@
 
               logger.error(err);
               $scope.state.loading = false;
-            })
+            });
           });
         };
 
@@ -667,6 +667,26 @@
           );
         };
 
+        self.search = function(q){
+          $scope.state.loading = true;
+
+          return DataService.search($scope.data.listing.source,q).then(
+            function(response){
+              $scope.state.loading = false;
+              $scope.data.listing = response.data;
+
+              var handler = $scope.onPathChanged();
+              if (handler) {
+                handler($scope.data.listing);
+              }
+            },
+            function(error) {
+              $scope.state.loading = false;
+              logger.error(error);
+            }
+          );
+        };
+
         if (! $scope.data.listing) {
           self.browseFile({});
         }
@@ -767,7 +787,7 @@
         };
 
         scope.copyEnabled = function() {
-          return dbCtrl.hasPermission('read', dbCtrl.selectedFiles())
+          return dbCtrl.hasPermission('read', dbCtrl.selectedFiles());
         };
 
         scope.moveToTrashEnabled = function() {
@@ -845,6 +865,10 @@
             file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
             dbCtrl.renameFile(file);
           }
+        };
+
+        scope.search = function(){
+          dbCtrl.search(scope.dbSearch);
         };
       }
     };

@@ -49,4 +49,12 @@
         <li class="active">{{ data.listing.name }}</li>
         <li></li>
     </ol>
+    <div class="search-wrap">
+      <div class="search-bar">
+        <form id = "search-form" name="search-form" ng-submit="search()">
+          <span class="search-icon"><i class="fa fa-search"></i></span>
+          <input ng-model="dbSearch" name = "dbSearch" type="search" id="db-search" placeholder="Search..." />
+        </form>
+      </div>
+    </div>
 </div>

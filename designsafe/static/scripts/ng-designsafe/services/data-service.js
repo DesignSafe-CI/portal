@@ -254,6 +254,23 @@
       return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
     };
 
+    /**
+     *
+     * This method accepts either a query string
+     * or an object were keys are in the form "q_{field_name}" 
+     *
+     * @param {string} q
+     * @param q_kw
+    */
+    service.search = function(resource, q, q_kw){
+      var params = {
+        resource: resource
+      };
+      var url = djangoUrl.reverse('designsafe_api:search', params);
+      url += '&q=' + q;
+      return $http.get(url);
+    };
+
     return service;
 
   }]);
