@@ -258,9 +258,6 @@ class FileManager(AbstractFileManager, AgaveObject):
             reindex_agave.apply_async(args=(self.username, file_id))
         return listing
 
-    def search(self, **kwargs):
-        return [{}]
-
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Copies a file
 
@@ -604,6 +601,30 @@ class FileManager(AbstractFileManager, AgaveObject):
         esf.rename(self.username, target_name)
         return f.to_dict()
     
+    def search(self, **kwargs):
+        """Searches a file using the Elasticsearch index
+        
+        :param str q: query string to search
+        :param str q_{field_name}: query string to search in a specific field
+        
+        """
+        res, s = Object.search_query(self.username, **kwargs)
+        search_data = {
+            'source': self.resource,
+            'system': settings.AGAVE_STORAGE_SYSTEM,
+            'id': '$search',
+            'type': 'folder',
+            'name': '$SEARCH',
+            'path': '',
+            'ext': '',
+            'size': None,
+            'lastModified': None,
+            'children': [o.to_file_dict() for o in s.scan() if not o.path.startswith('%s/.Trash' % self.username)],
+            '_trail': [],
+            '_pems': [{'username': self.username, 'permission': {'read': True}}],
+        }
+        return search_data
+
     def share(self, file_id, user = '', permission = 'READ', **kwargs):
         """Update permissions for a file
 
@@ -646,6 +667,12 @@ class FileManager(AbstractFileManager, AgaveObject):
                      'dest_resource': dest_resource,
                      'dest_file_id': dest_file_id}
             raise ApiException(message, status=400, extra=extra)
+
+    def update_metadata(self, file_id, meta_obj, **kwargs):
+        system, file_user, file_path = self.parse_file_id(file_id)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.update_metadata(meta_obj)
+        return {'message': 'Metadata updated succesfully'}
 
     def upload(self, file_id, files, **kwargs):
         upload_file = files['file']
