@@ -751,7 +751,6 @@
               if (handler) {
                 handler($scope.data.listing);
               }
-              $scope.state.search = false;
             },
             function(error) {
               var handler = $scope.onPathChanged();
@@ -797,10 +796,10 @@
           );
         };
 
-        self.search = function(q){
+        self.search = function(q, fields = []){
           $scope.state.loading = true;
           $scope.state.search = true;
-          return DataService.search($scope.data.listing.source, q).then(
+          return DataService.search($scope.data.listing.source, q, fields).then(
             function(response){
               $scope.state.loading = false;
               $scope.data.listing = response.data;

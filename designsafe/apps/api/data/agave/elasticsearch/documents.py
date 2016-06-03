@@ -239,7 +239,7 @@ class Object(DocType):
         return o
 
     @classmethod
-    def search_query(cls, username, q, fields = [], **kwargs):
+    def search_query(cls, username, q, fields = [], sanitize = True, **kwargs):
         """Search the Elasticsearch index using a query string
 
         Use a query string to search the ES index. This method will search 
@@ -254,10 +254,15 @@ class Object(DocType):
             the **systemTags** field like so:
             >>> Object.search('username', 'txt', fields = ['systemTags'])
         """
+        if sanitize:
+            q = re.sub('[^\w" ]', '', q)
+            q = q.replace('"', '\"')
+            if isinstance(fields, basestring):
+                fields = fields.split(',')
+        #logger.debug('q: {}. fields: {}'.format(q, fields))
         search_fields = ['name', 'keywords']
         if fields:
             search_fields += fields
-
         sq = { "query": { "filtered": { "query": { "query_string": { "fields":list(set(search_fields)), "query": "*%s*" % q}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
         s = cls.search()
         s.update_from_dict(sq)
