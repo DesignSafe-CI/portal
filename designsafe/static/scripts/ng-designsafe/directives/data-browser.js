@@ -14,17 +14,12 @@
       scope: {
         user: '=',
         data: '=data',  /* the data to initialize the data browser with; available keys are ['listing', 'resource', 'fileId'] */
+        state: '=state', /* the state to initialize the data browser: ['loading: false, listingError: false, selecting: false, selected: [], search: false */
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
       },
       controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
         
-        $scope.state = {
-          loading: false,
-          listingError: false,
-          selecting: false,
-          selected: []
-        };
 
         var self = this;
 

@@ -43,13 +43,23 @@
         listing: Django.context.listing
       };
 
+      $scope.state = {
+        loading: Django.context.state && Django.context.state.loading || false,
+        listingError: Django.context.state && Django.context.state.loading || false,
+        selecting: Django.context.state && Django.context.state.loading || false,
+        search: Django.context.state && Django.context.state.loading || false,
+        selected: Django.context.state && Django.context.state.loading || []
+      };
+
       /* initialize HTML5 history state */
-      $location.state(angular.copy($scope.data));
+      $location.state({'data': angular.copy($scope.data),
+                       'state': angular.copy($scope.state)});
       $location.replace();
 
       $scope.$on('$locationChangeSuccess', function ($event, newUrl, oldUrl, newState) {
         if (newUrl !== oldUrl) {
-          _.extend($scope.data, newState);
+          _.extend($scope.data, newState.data);
+          _.extend($scope.state, newState.state);
         }
       });
 
@@ -73,11 +83,17 @@
 
       $scope.onPathChanged = function(listing) {
         var path = $filter('dsFileUrl')(listing);
-        $location.state(angular.copy($scope.data));
+        $location.state({'data': angular.copy($scope.data), 
+                         'state': angular.copy($scope.state)});
         $location.path(path);
         if (listing.name == '$SEARCH') {
           $location.search('q', listing.query.q);
           $location.search('filters', listing.query.filters);
+        }else{
+          var qs = $location.search();
+          if (qs.q) delete qs.q;
+          if (qs.filters) delete qs.filters;
+          $location.search(qs);
         }
       };
 
