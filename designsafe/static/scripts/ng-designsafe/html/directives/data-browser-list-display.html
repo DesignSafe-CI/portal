@@ -24,7 +24,9 @@
             ng-class="{'ds-data-selected': isFileSelected(file)}"
         >
             <td ng-if="state.search">
-              {{ file.path }}
+              <i class="fa fa-fw fa-folder"></i>
+              <a href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}" 
+                 ng-click = "browseFile($event, file._trail[file._trail.length - 1])">{{ file.path }}</a>
             </td>
             <td>
                 <button class="flo-select-btn" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">

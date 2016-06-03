@@ -220,6 +220,7 @@ class AgaveFile(AbstractFile, AgaveObject):
                         'id': '/'.join([self.system] + trail_path + [c]),
                         'path': '/'.join(trail_path),
                         'name': c,
+                        'type': 'folder'
                     })
 
         return self._trail
