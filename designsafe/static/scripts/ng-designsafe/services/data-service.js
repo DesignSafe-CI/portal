@@ -290,6 +290,9 @@
       };
       var url = djangoUrl.reverse('designsafe_api:search', params);
       url += '&q=' + q;
+      if (fields && fields.length >= 1){
+        url += '?fields=' + fields;    
+      }
       return $http.get(url);
     };
 
