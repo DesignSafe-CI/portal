@@ -241,7 +241,7 @@
             $q.all(tasks).then(
               function(results) {
                 $scope.state.loading = false;
-                file._pems = results.pop()._pems; /* update pems for current file */
+                file._pems = results.pop().data._pems; /* update pems for current file */
                 $scope.$emit('designsafe:notify', {
                   level: 'info',
                   message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
