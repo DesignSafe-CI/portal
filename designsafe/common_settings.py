@@ -50,7 +50,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
 
-    'djangular',
+    'djng',
     'cms',
     'treebeard',
     'menus',
@@ -76,6 +76,7 @@ INSTALLED_APPS = (
 
     # custom
     'designsafe.apps.auth',
+    'designsafe.apps.api',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -110,7 +111,7 @@ CACHES = {
 }
 
 MIDDLEWARE_CLASSES = (
-    'djangular.middleware.DjangularUrlMiddleware',
+    'djng.middleware.AngularUrlMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -324,6 +325,9 @@ LOGGING = {
             'format': '[AGAVE] %(levelname)s %(asctime)s %(module)s '
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
+        'metrics': {
+            'format': '[METRICS] %(message)s user=%(user)s op=%(operation)s info=%(info)s'
+        },
     },
     'handlers': {
         'console': {
@@ -334,6 +338,11 @@ LOGGING = {
         'opbeat': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
+        },
+        'metrics': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'metrics',
         },
     },
     'loggers': {
@@ -346,16 +355,20 @@ LOGGING = {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
-        'dsapi':{
+        'dsapi': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
-        'celery':{
+        'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'INFO',
         },
-        'opbeat':{
+        'opbeat': {
             'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'metrics': {
+            'handlers': ['metrics'],
             'level': 'INFO',
         },
     },
@@ -387,18 +400,19 @@ PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
 PIPELINE_CSS = {
     'vendor': {
         'source_filenames': (
-          'vendor/bootstrap-ds/css/bootstrap.css',
-          'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
-          'vendor/font-awesome/css/font-awesome.css',
+            'vendor/bootstrap-ds/css/bootstrap.css',
+            'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+            'vendor/font-awesome/css/font-awesome.css',
+            'vendor/angular-toastr/dist/angular-toastr.css',
         ),
         'output_filename': 'css/vendor.css',
     },
     'main': {
         'source_filenames': (
-          'styles/typekit.css',
-          'styles/main.css',
-          'styles/corner-ribbon.css',
-          'styles/base.scss',
+            'styles/typekit.css',
+            'styles/main.css',
+            'styles/corner-ribbon.css',
+            'styles/base.scss',
         ),
         'output_filename': 'css/main.css',
     },
@@ -407,7 +421,7 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'vendor': {
         'source_filenames': (
-            'vendor/modernizer/modernizr.js',
+            'vendor/modernizr/modernizr.js',
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',

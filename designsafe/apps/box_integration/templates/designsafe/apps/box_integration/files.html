@@ -32,15 +32,5 @@
         <script type="text/javascript" src="{% static 'designsafe/apps/box_integration/scripts/app.js' %}"></script>
         <script type="text/javascript" src="{% static 'designsafe/apps/box_integration/scripts/controllers/browser.js' %}"></script>
         <script type="text/javascript" src="{% static 'designsafe/apps/box_integration/scripts/services/box-files.js' %}"></script>
-        <script type="text/javascript">
-            (function(angular) {
-                var initial = angular.module('django.context', []);
-                initial.value('Django', {
-                    context: {
-                        folder: {{ folder|safe }}
-                    }
-                });
-            })(angular);
-        </script>
     {% endaddtoblock %}
 {% endblock %}

@@ -138,6 +138,11 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
                     'label': 'View Output',
                     'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
                 }
+                event_data['toast'] = {
+                      'type': 'info',
+                      'msg': job_name + ' job outputs are available.'
+                }
+
                 logger.debug('Event data with action link %s' % event_data)
 
                 # notify
@@ -201,9 +206,9 @@ def index_job_outputs(user, job):
                token=user.agave_oauth.access_token)
     system_id = job['archiveSystem']
     archive_path = job['archivePath']
-   
+
     mgr = FileManager(ag)
-    mgr.index(system_id, archive_path, user.username) 
+    mgr.index(system_id, archive_path, user.username)
 
 # @shared_task
 # def subscribe_job_notification(request, agave, job_id):

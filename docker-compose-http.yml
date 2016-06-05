@@ -16,6 +16,7 @@ django:
     - memcached:memcached
   volumes:
     - .:/portal
+    - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     - /var/www/designsafe-ci.org/static
     - /var/www/designsafe-ci.org/media
   ports:
@@ -23,7 +24,7 @@ django:
   dns:
     - 8.8.8.8
     - 8.8.4.4
-  command: python manage.py runserver 0.0.0.0:8000
+  command: ./bin/run-django.sh
 
 #ef:
 #  build: .
@@ -66,6 +67,7 @@ worker:
     - memcached:memcached
   volumes:
     - .:/portal
+    - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
   dns:
     - 8.8.8.8
     - 8.8.4.4

@@ -1,5 +1,6 @@
 from requests.exceptions import RequestException
-from requests.models import Response, Request
+from requests.models import Response
+
 
 class ApiException(RequestException):
     """
@@ -26,5 +27,6 @@ class ApiException(RequestException):
         response = self.response or Response()
         response.status_code = status or response.status_code
         response.reason = message or response.reason
+        self.message = message or response.reason
         self.response = response
         self.extra = extra

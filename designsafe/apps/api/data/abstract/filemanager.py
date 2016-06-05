@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
+
 class AbstractFileManager:
     """
     Abstract Class to implement a data File Manager for different resources.
@@ -17,7 +18,7 @@ class AbstractFileManager:
         - All required arguments are passed as `kwargs` dictionary. This means 
           that you can implement the required method adding the necessary 
           method arguments, e.g.:
-        >>> def file(self, file_path, action, path, **kwargs):
+        >>> def file(self, file_id, action, path, **kwargs):
 
     References:
         https://docs.python.org/2/library/abc.html
@@ -29,17 +30,24 @@ class AbstractFileManager:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def listing(self, file_path, **kwargs):
+    def parse_file_id(self, file_id):
+        """
+        Stuff
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def listing(self, file_id, **kwargs):
         """
         Lists contents of a folder or details of a file.
         When the main data view calls this method it will send all the keyword 
-        arguments as **kwargs. This means that `file_path` will be the URL path 
+        arguments as **kwargs. This means that `file_id` will be the URL path 
         call after the necessary routing parts have been removed, i.e. It will 
         not contain the host, operation type or resource type. 
         See designsafe.apps.api.urls comments for more information.
 
         Args:
-            file_path: String of file path to list
+            file_id: String of file path to list
 
         Returns:
             Dictionary with two keys;
@@ -49,10 +57,10 @@ class AbstractFileManager:
         raise NotImplementedError()
 
     @abstractmethod
-    def file(self, file_path, action, path = None, **kwargs):
+    def file(self, file_id, action, path = None, **kwargs):
         """
         Main method to manage a folder or file.
-        See the `listing` method for reference of `file_path`.
+        See the `listing` method for reference of `file_id`.
         When the main data view calls this method it will send all the keyword 
         arguments as **kwargs. 
         If the HTTP Request is of type POST or GET the `kwargs` dictionary will 
@@ -76,7 +84,7 @@ class AbstractFileManager:
               }
 
         Args:
-            file_path: Url file path.
+            file_id: Url file path.
             action: File action to execute.
             path: File path if necessary.
 
@@ -88,17 +96,17 @@ class AbstractFileManager:
         #get the action from this class.
         file_op = getattr(self, action)
         #execute passing the necessary arguments
-        file_op(file_path, path, **kwargs)
+        file_op(file_id, path, **kwargs)
         raise NotImplementedError()
 
     @abstractmethod
-    def download(self, file_path, **kwargs):
+    def download(self, file_id, **kwargs):
         """
         Method to create a download link which will be passed onto 
         the client to download a file.
 
         Args:
-            file_path: Url file path
+            file_id: Url file path
 
         Returns:
             Dictionary with two keys:

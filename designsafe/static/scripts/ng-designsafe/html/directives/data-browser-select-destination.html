@@ -1,0 +1,30 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{ data.title }}</h3>
+</div>
+<div class="modal-body">
+    <p class="lead" ng-if="data.message">{{ data.message }}</p>
+    <ds-data-browser data="data">
+        <div class="ds-data-browser-main">
+            <ds-data-browser-source-select widget="dropdown"></ds-data-browser-source-select>
+            <ds-data-browser-toolbar></ds-data-browser-toolbar>
+            <ds-data-list-display selection="dbFeat.selection"
+                                  preview="dbFeat.preview"
+                                  columns="dbFeat.columns"
+                                  action-condition="validDestination(file)"
+                                  action="selectDestination(file)"
+                                  action-label="Select this folder"
+            ></ds-data-list-display>
+        </div>
+    </ds-data-browser>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-primary" type="button"
+                ng-disabled="! validDestination(data.listing)"
+                ng-click="selectDestination(data.listing)"
+        >
+            Select this folder
+        </button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</div>

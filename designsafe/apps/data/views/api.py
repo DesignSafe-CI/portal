@@ -13,7 +13,7 @@ from .base import BaseView, BasePrivateJSONView, BasePublicJSONView
 from dsapi.agave.daos import AgaveFolderFile, AgaveMetaFolderFile, AgaveFilesManager, FileManager
 from types import GeneratorType
 
-import json 
+import json
 import requests
 import traceback
 import itertools
@@ -33,7 +33,7 @@ class ListingsMixin(object):
                                     username = request.user.username)
 
         if request.GET.get('refresh', None):
-            mgr.index(self.filesystem, self.file_path, request.user.username, levels = 1)       
+            mgr.index(self.filesystem, self.file_path, request.user.username, levels = 1)
 
         l = mgr.list_path(system_id = self.filesystem,
                       path = self.file_path,
@@ -52,7 +52,7 @@ class ListingsView(ListingsMixin, BasePrivateJSONView):
     pass
 class PublicListingsView(ListingsMixin, BasePublicJSONView):
     pass
- 
+
 class DownloadMixin(object):
     def set_context_props(self, request, **kwargs):
         super(DownloadMixin, self).set_context_props(request, **kwargs)
@@ -60,7 +60,7 @@ class DownloadMixin(object):
     def get(self, request, *args, **kwargs):
         self.set_context_props(request, **kwargs)
         f = AgaveFolderFile.from_path(agave_client = self.agave_client,
-                system_id = self.filesystem, 
+                system_id = self.filesystem,
                 path = self.file_path)
         postit_link = f.download_postit()
         resp = {
@@ -79,7 +79,7 @@ class UploadView(BasePrivateJSONView):
         ufs = request.FILES
         mgr = FileManager(self.agave_client)
         mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
-        return self.render_to_json_response({'files': [o.as_json() for o in fs], 
+        return self.render_to_json_response({'files': [o.as_json() for o in fs],
                                              'filesMeta': [o.to_dict(get_id = True) for o in mfs]})
 
 class ManageView(BasePrivateJSONView):
@@ -122,7 +122,7 @@ class MoveToTrashView(BasePrivateJSONView):
 
 class ShareView(BasePrivateJSONView):
     def post(self, request, *args, **kwargs):
-        self.set_context_props(request, **kwargs)    
+        self.set_context_props(request, **kwargs)
         body = json.loads(request.body)
         action = body.get('action', None)
         user = body.get('user', None)
@@ -137,10 +137,14 @@ class ShareView(BasePrivateJSONView):
                   'action_link': { 'label': 'View Files', 'value': '/data/my/#/Shared with me/' + self.file_path},
                   'html':[
                       {'Message': 'Your files are been shared.'},
-                      {'Action': 'Sharing Sarting'}, 
+                      {'Action': 'Sharing Sarting'},
                       {'Shared with': user},
                       {'Permissions set': permission},
-                      ]
+                      ],
+                  'toast': {
+                        'type': 'info',
+                        'msg': user + ' will be notified when shared files are available.'
+                      }
                   },
                   [request.user.username])
 
@@ -154,7 +158,7 @@ class ShareView(BasePrivateJSONView):
     #    user = body.get('user', None)
     #    permission = body.get('permission', None)
     #    op = getattr(mngr, action)
-    #    resp = op(system_id = self.filesystem, path = self.file_path, 
+    #    resp = op(system_id = self.filesystem, path = self.file_path,
     #              username = user, permission = permission,
     #              me = request.user.username)
     #    return self.render_to_json_response(resp)
@@ -163,8 +167,8 @@ class MetadataMixin(object):
     def set_context_props(self, request, **kwargs):
         super(MetadataMixin, self).set_context_props(request, **kwargs)
         mgr = FileManager(self.agave_client)
-        return mgr.get(system_id = self.filesystem, 
-                       path = self.file_path, 
+        return mgr.get(system_id = self.filesystem,
+                       path = self.file_path,
                        username = request.user.username,
                        is_public = self.is_public)
 
@@ -200,15 +204,15 @@ class MetaSearchMixin(object):
     def get(self, request, *args, **kwargs):
         status = 200
         mgr = self.set_context_props(request, **kwargs)
-        res, search = mgr.search_meta(request.GET.get('q', None), 
-                          self.filesystem, 
-                          request.user.username, 
+        res, search = mgr.search_meta(request.GET.get('q', None),
+                          self.filesystem,
+                          request.user.username,
                           is_public = self.is_public)
         res_search = search[0:10]
         response = [o.to_dict(get_id = True) for o in res_search]
         if self.is_public:
-            p_res, p_search = mgr.search_public_meta(request.GET.get('q', None), 
-                              self.filesystem, 
+            p_res, p_search = mgr.search_public_meta(request.GET.get('q', None),
+                              self.filesystem,
                               request.user.username)
             p_res = [o.to_dict(get_id = True) for o in p_search.scan()]
             response = p_res + response

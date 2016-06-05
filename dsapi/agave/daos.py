@@ -1055,7 +1055,6 @@ class AgaveFolderFile(AgaveObject):
         return self
 
     def move(self, path):
-        path = urllib.unquote(path)
         base_path, file_name = os.path.split(path)
         d = {
             'systemId': self.system,

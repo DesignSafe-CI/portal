@@ -1,0 +1,103 @@
+[
+	{
+		"_links": {
+			"history": {
+				"href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.default/xirdneh"
+			},
+			"metadata": {
+				"href": "https://agave.designsafe-ci.org/meta/v2/data?q=%7B%22associationIds%22%3A%223590786994289110555-242ac117-0001-002%22%7D"
+			},
+			"self": {
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+			},
+			"system": {
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+			}
+		},
+		"format": "folder",
+		"lastModified": "2016-05-18T18:48:28.000-05:00",
+		"length": 32768,
+		"mimeType": "text/directory",
+		"name": ".",
+		"path": "xirdneh",
+		"permissions": "ALL",
+		"system": "designsafe.storage.default",
+		"type": "dir"
+	},
+	{
+		"_links": {
+			"self": {
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh/.Trash"
+			},
+			"system": {
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+			}
+		},
+		"format": "folder",
+		"lastModified": "2016-05-10T14:19:53.000-05:00",
+		"length": 32768,
+		"mimeType": "text/directory",
+		"name": ".Trash",
+		"path": "xirdneh/.Trash",
+		"permissions": "ALL",
+		"system": "designsafe.storage.default",
+		"type": "dir"
+	},
+	{
+		"_links": {
+			"self": {
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh/agavefs"
+			},
+			"system": {
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+			}
+		},
+		"format": "folder",
+		"lastModified": "2016-05-13T17:33:00.000-05:00",
+		"length": 32768,
+		"mimeType": "text/directory",
+		"name": "agavefs",
+		"path": "xirdneh/agavefs",
+		"permissions": "ALL",
+		"system": "designsafe.storage.default",
+		"type": "dir"
+	},
+	{
+		"_links": {
+			"self": {
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh/DOC19.jpg"
+			},
+			"system": {
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+			}
+		},
+		"format": "raw",
+		"lastModified": "2016-05-18T14:06:19.000-05:00",
+		"length": 399061,
+		"mimeType": "application/octet-stream",
+		"name": "DOC19.jpg",
+		"path": "xirdneh/DOC19.jpg",
+		"permissions": "READ_WRITE",
+		"system": "designsafe.storage.default",
+		"type": "file"
+	},
+	{
+		"_links": {
+			"self": {
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh/DOC19_copy.jpg"
+			},
+			"system": {
+				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
+			}
+		},
+		"format": "raw",
+		"lastModified": "2016-05-18T16:15:18.000-05:00",
+		"length": 399061,
+		"mimeType": "application/octet-stream",
+		"name": "DOC19_copy.jpg",
+		"path": "xirdneh/DOC19_copy.jpg",
+		"permissions": "READ_WRITE",
+		"system": "designsafe.storage.default",
+		"type": "file"
+	}
+]

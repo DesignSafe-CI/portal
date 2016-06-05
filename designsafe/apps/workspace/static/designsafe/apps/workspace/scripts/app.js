@@ -15,13 +15,14 @@
 
   angular.module('WorkspaceApp', [
     'ngCookies',
-    'ng.django.urls',
+    'djng.urls',
     'ui.bootstrap',
     'schemaForm',
     'ng.designsafe',
     'ds.wsBus',
     'ds.notifications',
     'logging',
+    'toastr',
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
   angular.module('WorkspaceApp')

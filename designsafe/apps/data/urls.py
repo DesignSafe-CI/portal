@@ -1,6 +1,6 @@
 from designsafe.apps.data.views.api import *
 from django.conf.urls import url, patterns
-from designsafe.apps.data.views.base import BasePrivateTemplate, BasePublicTemplate
+from designsafe.apps.data.views.base import BasePrivateTemplate, BasePublicTemplate, DataBrowserTestView
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -10,6 +10,15 @@ urlpatterns = patterns(
         name='my_data'),
     url(r'^public/$', BasePublicTemplate.as_view(template_name='data/file-manager/public_data.html'),
         name='public_data'),
+    url(r'^browser/$',
+        DataBrowserTestView.as_view(template_name='data/browser.html'),
+        name='data_browser'),
+    url(r'^browser/(?P<resource>[\w.-]+)/$',
+        DataBrowserTestView.as_view(template_name='data/browser.html'),
+        name='data_browser'),
+    url(r'^browser/(?P<resource>[\w.-]+)/(?P<file_path>[ \S]+)/?$',
+        DataBrowserTestView.as_view(template_name='data/browser.html'),
+        name='data_browser'),
 
 )
 
@@ -34,6 +43,7 @@ urlpatterns += patterns('designsafe.apps.data.views.api',
     url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/?$', PublicMetaSearchView.as_view(), name='meta_search'),
     url(r'^api/(?P<filesystem>[a-zA-Z\-\_\.0-9\/]+)/meta/(?P<file_path>[ \S]+)?$', PublicMetadataView.as_view(), name='metadata'),
 )
+
 
 def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'research_workbench':

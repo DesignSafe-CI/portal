@@ -86,7 +86,7 @@ class BoxFilesView(BoxAPIView):
 
         folder = self.box_api.folder(folder_id).get()
         context = {
-            'folder': json.dumps(folder, cls=BoxObjectJsonSerializer),
+            'angular_init': json.dumps({'folder': folder}, cls=BoxObjectJsonSerializer),
         }
 
         return render(request, 'designsafe/apps/box_integration/files.html', context)

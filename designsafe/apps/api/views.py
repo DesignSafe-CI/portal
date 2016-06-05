@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseForbidden
 from django.views.generic import View
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
@@ -25,25 +25,19 @@ class BaseApiView(View):
             status = e.response.status_code
             message = e.response.reason
             extra = e.extra
-            logger.error('{}'.format(message),
-                exc_info = True,
-                extra = extra
-                )
+            logger.error('{}'.format(message), exc_info=True, extra=extra)
         except (ConnectionError, HTTPError) as e:
             status = e.response.status_code
             message = e.response.reason
-            logger.error('{}'.format(message),
-                exc_info = True,
-                extra = {
-                    'username': request.user.username
-                }
-                )
+            logger.error('{}'.format(message), exc_info=True,
+                         extra={'username': request.user.username})
         
         resp = {'message': message}
         if request.FILES:
             resp['files'] = request.FILES
                                       
-        return HttpResponse(json.dumps(resp), status = status, content_type = 'application/json')
+        return HttpResponse(json.dumps(resp),
+                            status=status, content_type='application/json')
 
 
 class LoggerApi(BaseApiView):

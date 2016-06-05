@@ -1,0 +1,60 @@
+<div>
+    <div ng-show="state.selecting" class="btn-toolbar btn-toolbar-ds" role="toolbar" aria-label="Data Browser Actions">
+        <div class="btn-group">
+            <button class="btn btn-sm btn-link" ng-click="clearSelection()"><i class="fa fa-times-circle"></i> Clear selection</button>
+            <span class="btn btn-sm btn-toolbar-text">{{ state.selected|length }} selected</span>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="Download" ng-click="downloadSelected()" ng-disabled="!downloadEnabled()">
+                <i class="fa fa-cloud-download"></i><span class="sr-only">Download</span>
+            </button>
+            <button class="btn btn-sm btn-default" title="Preview" ng-click="previewSelected()" ng-disabled="!previewEnabled()">
+                <i class="fa fa-binoculars"></i><span class="sr-only">Preview</span>
+            </button>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="Share" ng-click="shareSelected()" ng-disabled="!shareEnabled()">
+                <i class="fa fa-send"></i><span class="sr-only">Share</span>
+            </button>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="Copy" ng-click="copySelected()" ng-disabled="!copyEnabled()">
+                <i class="fa fa-copy"></i><span class="sr-only">Copy</span>
+            </button>
+            <button class="btn btn-sm btn-default" title="Move" ng-click="moveSelected()" ng-disabled="!moveEnabled()">
+                <i class="fa fa-arrows"></i><span class="sr-only">Move</span>
+            </button>
+            <button class="btn btn-sm btn-default" title="Rename" ng-click="renameSelected()" ng-disabled="!renameEnabled()">
+                <i class="fa fa-pencil"></i><span class="sr-only">Rename</span>
+            </button>
+        </div>
+        <div class="btn-group" ng-if="reindexingEnabled()">
+            <button class="btn btn-sm btn-default" title="Reindex" ng-click="requestReindex()">
+                <i class="fa fa-refresh"></i><span class="sr-only">Reindex</span>
+            </button>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-default" title="Move to trash" ng-click="trashSelected()" ng-if="!emptyTrashEnabled()" ng-disabled="!moveToTrashEnabled()">
+                <i class="fa fa-trash"></i><span class="sr-only">Move to Trash</span>
+            </button>
+            <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="emptyTrash()" ng-if="emptyTrashEnabled()">
+                <i class="fa fa-trash"></i><span class="sr-only">Delete selected files</span>
+            </button>
+        </div>
+    </div>
+    <ol ng-hide="state.selecting" class="breadcrumb breadcrumb-ds">
+        <li ng-repeat="item in data.listing._trail">
+            <a href="{{ item|dsFileUrl }}" ng-click="selectTrail($event, item)">{{ item.name }}</a>
+        </li>
+        <li class="active">{{ data.listing.name }}</li>
+        <li></li>
+    </ol>
+    <div class="search-wrap">
+      <div class="search-bar">
+        <form id = "search-form" name="search-form" ng-submit="search()">
+          <span class="search-icon"><i class="fa fa-search"></i></span>
+          <input ng-model="dbSearch" name = "dbSearch" type="search" id="db-search" placeholder="Search..." />
+        </form>
+      </div>
+    </div>
+</div>

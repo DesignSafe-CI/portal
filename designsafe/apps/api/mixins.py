@@ -5,7 +5,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 import logging
 import json
 
-loger = logging.getLevelName(__name__)
+logger = logging.getLevelName(__name__)
+
 
 class JSONResponseMixin(object):
     """

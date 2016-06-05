@@ -1,22 +1,36 @@
+from django.http.response import HttpResponseBadRequest
+from django.core.urlresolvers import reverse
+from django.shortcuts import render
+
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-
-from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
-from designsafe.apps.api.data.agave.public_filemanager import FileManager as PublicFileManager
-from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+from designsafe.apps.api.exceptions import ApiException
+from designsafe.apps.api.data import lookup_file_manager
+from designsafe.apps.api.data.sources import SourcesApi
 
 import logging
 import json
 
 logger = logging.getLogger(__name__)
 
-class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
+
+class SourcesView(SecureMixin, JSONResponseMixin, BaseApiView):
+
+    def get(self, request, source_id=None, *args, **kwargs):
+        api = SourcesApi()
+
+        if source_id is not None:
+            return self.render_to_json_response(api.get(source_id))
+
+        return self.render_to_json_response(api.list())
+
+
+class BaseDataView(JSONResponseMixin, BaseApiView):
     """
-    Base View which to instatiate corresponding file manager
+    Base View which instatiates corresponding file manager
     and execute correct operation.
     """
     #TODO: More elegant meta-programming.
-    #TODO: Better way to check if it's an operation not permitted and to add operations.
     def _get_file_manager(self, request, resource, **kwargs):
         """
         Instantiates the correct file manager class
@@ -26,12 +40,9 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
             resource: Resource name to decide which class to instantiate.
         """
         user_obj = request.user
-        if resource == 'default':
-            return AgaveFileManager(user_obj, resource = resource, **kwargs)
-        elif resource == 'public':
-            return PublicFileManager(user_obj, resource = resource, **kwargs)
-        elif resource == 'box':
-            return BoxFileManager(user_obj, resource = resource, **kwargs)
+        fm_cls = lookup_file_manager(resource)
+        if fm_cls:
+            return fm_cls(user_obj, **kwargs)
 
     def _execute_operation(self, request, operation, **kwargs):
         """
@@ -47,20 +58,69 @@ class BaseDataView(SecureMixin, JSONResponseMixin, BaseApiView):
             body_json = json.loads(request.body)
         except ValueError:
             body_json = {}
-        files = request.FILES or []
         d = body_json
-        d.update({'files': files})
         d.update(kwargs)
-        resp = op(**kwargs)
+        d.update(request.GET.dict())
+        resp = op(**d)
         return resp
+
+    def _execute_form_operation(self, request, operation, **kwargs):
+        """
+        Executes operation of a file manager object as a traditional form post, i.e. NOT JSON.
+
+        :param request: the HttpRequest object.
+        :param operation: the operation to perform.
+        :param kwargs:
+        :return: HttpResponse
+        """
+        fm = self._get_file_manager(request, **kwargs)
+        op = getattr(fm, operation)
+        d = request.POST.dict()
+        d.update(request.GET.dict())
+        d.update(kwargs)
+        if request.FILES:
+            d['files'] = request.FILES
+        resp = op(**d)
+        return resp
+
 
 class DataView(BaseDataView):
     """
     Data View to handle listing of a file or folder. GET HTTP Request.
     """
     def get(self, request, *args, **kwargs):
-        resp = self._execute_operation(request, 'listing', **kwargs)        
-        return self.render_to_json_response(resp)
+        try:
+            resp = self._execute_operation(request, 'listing', **kwargs)
+            return self.render_to_json_response(resp)
+        except ApiException as e:
+            action_url = e.extra.get('action_url', None)
+            action_label = e.extra.get('action_label', None)
+            if action_url is None and e.response.status_code == 403:
+                login_url = reverse('login')
+                resource = kwargs.get('resource', None)
+                file_id = kwargs.get('file_id', None)
+                args = []
+                if resource is not None:
+                    args.append(resource)
+                if file_id is not None:
+                    args.append(file_id)
+                data_url = reverse('designsafe_data:data_browser', args=args)
+                redirect_url = '{}?next={}'.format(login_url, data_url)
+                action_url = redirect_url
+                action_label = 'Log in'
+
+            resp = {
+                'id': kwargs.get('file_id'),
+                'source': kwargs.get('resource'),
+                '_error': {
+                    'status': e.response.status_code,
+                    'message': e.response.reason,
+                    'action_url': action_url,
+                    'action_label': action_label
+                }
+            }
+            return self.render_to_json_response(resp, status=e.response.status_code)
+
 
 class DataFileManageView(BaseDataView):
     """
@@ -71,33 +131,51 @@ class DataFileManageView(BaseDataView):
     - action: Operation to execute in the file manager.
     - path: File path on which the operation should be executed.
 
-    The entire request body will be passed onto the file manager operation being executed as a python dictionary as well as the uploaded file array if present.
+    The entire request body will be passed onto the file manager operation being executed
+    as a python dictionary as well as the uploaded file array if present.
     """
-    def _execute_post_operation(request, **kwargs):
-        body_json = json.loads(request.body)
-        operation = body_json.get('action')
+    def _execute_post_operation(self, request, **kwargs):
+        if 'action' in request.POST:
+            operation = request.POST.get('action', None)
+            if operation is not None:
+                return self._execute_form_operation(request, operation, **kwargs)
+        else:
+            body_json = json.loads(request.body)
+            operation = body_json.get('action', None)
+            if operation is not None:
+                return self._execute_operation(request, operation, **kwargs)
+
+        return HttpResponseBadRequest('Invalid action')
+
+    def get(self, request, *args, **kwargs):
+        operation = request.GET.get('action')
+        fmt = request.GET.get('format', 'json')
         resp = self._execute_operation(request, operation, **kwargs)
-        return self.render_to_json_response(resp.to_dict())
+        if fmt == 'html':
+            logger.debug(resp)
+            return render(request, resp[0], resp[1])
+        else:
+            return self.render_to_json_response(resp)
 
     def post(self, request, *args, **kwargs):
-        self._execute_post_operation(request, **kwargs)
+        resp = self._execute_post_operation(request, **kwargs)
+        return self.render_to_json_response(resp)
 
     def put(self, request, *args, **kwargs):
-        self._execute_post_operation(request, **kwargs)
+        resp = self._execute_post_operation(request, **kwargs)
+        return self.render_to_json_response(resp)
 
     def delete(self, request, *args, **kwargs):
-        resp = self._execute_operation(request, 'delete', **kwargs)        
-        return self.render_to_json_response(resp.to_dict())
+        resp = self._execute_post_operation(request, **kwargs)
+        return self.render_to_json_response(resp)
 
 class DataSearchView(BaseDataView):
     """
     Data view to handle search.
-    It will pass all the keyword arguments as well as the Query String parameters as a dictionary on to the `search` method of the file manager class.
+    It will pass all the keyword arguments as well as the 
+    Query String parameters as a dictionary on to the `search` 
+    method of the file manager class.
     """
     def get(self, request, *args, **kwargs):
-        fm = self._get_file_manager(request, **kwargs)
-        d = {}
-        d.update(kwargs)
-        d.update(request.GET)
-        resp = fm.search(**kwargs)
-        return self.render_to_json_response([o.to_dict() for o in resp])
+        resp = self._execute_operation(request, 'search', **kwargs)        
+        return self.render_to_json_response(resp)

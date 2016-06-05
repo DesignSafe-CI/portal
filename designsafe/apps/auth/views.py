@@ -24,25 +24,31 @@ def login_options(request):
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('/')
 
-    agave_status = AgaveServiceStatus()
-    ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
-                              '56bb6d92a216b873280008fd')
-    designsafe_status = (s for s in agave_status.status
-                         if s['id'] == ds_oauth_svc_id).next()
-    if designsafe_status['status_code'] == 400:
-        message = {
-            'class': 'warning',
-            'text': 'DesignSafe API Services are experiencing a Partial Service '
-                    'Disruption. Some services may be unavailable.'
-        }
-    elif designsafe_status['status_code'] == 500:
-        message = {
-            'class': 'danger',
-            'text': 'DesignSafe API Services are experiencing a Service Disruption. '
-                    'Some services may be unavailable.'
-        }
-    else:
-        message = False
+    message = False
+
+    try:
+        agave_status = AgaveServiceStatus()
+        ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
+                                  '56bb6d92a216b873280008fd')
+        designsafe_status = (s for s in agave_status.status
+                             if s['id'] == ds_oauth_svc_id).next()
+        if designsafe_status and 'status_code' in designsafe_status:
+            if designsafe_status['status_code'] == 400:
+                message = {
+                    'class': 'warning',
+                    'text': 'DesignSafe API Services are experiencing a Partial Service '
+                            'Disruption. Some services may be unavailable.'
+                }
+            elif designsafe_status['status_code'] == 500:
+                message = {
+                    'class': 'danger',
+                    'text': 'DesignSafe API Services are experiencing a Service Disruption. '
+                            'Some services may be unavailable.'
+                }
+    except Exception as e:
+        logger.warn('Unable to check AgaveServiceStatus: %s', e.message)
+        agave_status = None
+        designsafe_status = None
 
     context = {
         'message': message,
