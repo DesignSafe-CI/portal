@@ -17,8 +17,8 @@
     service.listSources = function() {
       return $http.get(djangoUrl.reverse('designsafe_api:sources'));
     };
-    
-    
+
+
     service.getIcon = function(type, ext) {
       if (type === 'folder') {
         return 'fa-folder';
@@ -255,9 +255,30 @@
     };
 
     /**
+     * Share files with users.
+     * @param {object} options file sharing options
+     * @param {string} options.resource
+     * @param {string} options.file_id
+     * @param {string} options.username
+     * @param {string} options.permission
+     */
+    service.share = function(options) {
+      var params = {
+        resource: options.resource,
+        file_id: options.file_id
+      };
+      var body = {
+        action: 'share',
+        user: options.username,
+        permission: options.permission
+      };
+      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+    };
+
+    /**
      *
      * This method accepts either a query string
-     * or an object were keys are in the form "q_{field_name}" 
+     * or an object were keys are in the form "q_{field_name}"
      *
      * @param {string} q
      * @param q_kw
@@ -274,6 +295,6 @@
     return service;
 
   }]);
-  
+
 
 })(window, angular, jQuery, _);

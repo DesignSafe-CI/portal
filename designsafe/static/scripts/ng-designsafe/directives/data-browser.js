@@ -17,7 +17,7 @@
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
       },
-      controller: ['$scope', '$element', '$uibModal', 'DataService', function($scope, $element, $uibModal, DataService) {
+      controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
         
         $scope.state = {
           loading: false,
@@ -127,6 +127,131 @@
               logger.error(err);
               $scope.state.loading = false;
             });
+          });
+        };
+
+        self.shareFilesDialog = function(file) {
+          var instance = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-share-files.html',
+            controller: ['$scope', '$uibModalInstance', 'file', 'user', function($scope, $uibModalInstance, file, user) {
+
+              $scope.data = {
+                title: 'Share files',
+                file: file,
+                current_user: user,
+                permissions: [
+                  {permission: 'READ', label: 'Read Only'},
+                  {permission: 'READ_WRITE', label: 'Read/Write'},
+                  {permission: 'ALL', label: 'All'},
+                  {permission: null, label: 'None (Revoke Permission)'}
+                ]
+              };
+
+              $scope.form = {
+                add_user: null,
+                add_permission: $scope.data.permissions[0],
+                permissions: []
+              };
+              
+              /* Initialize form with current permissions */
+              _.each(file._pems, function(pem) {
+                // Can't edit own or ds_admin pems
+                if (pem.username === 'ds_admin' || pem.username === user.username) {
+                  return;
+                }
+                var formPem = {username: pem.username};
+                if (pem.permission.read && pem.permission.write && pem.permission.execute) {
+                  formPem.permission = $scope.data.permissions[2];
+                } else if (pem.permission.read && pem.permission.write) {
+                  formPem.permission = $scope.data.permissions[1];
+                } else if (pem.permission.read) {
+                  formPem.permission = $scope.data.permissions[0];
+                } else {
+                  formPem.permission = $scope.data.permissions[3];
+                }
+                $scope.form.permissions.push(formPem);
+              });
+
+              $scope.searchUsers = function(q) {
+                return UserService.search({q: q})
+                  .then(function(resp) {
+                    return resp.data;
+                  });
+              };
+
+              $scope.formatSelection = function() {
+                if ($scope.form.add_user) {
+                  return $scope.form.add_user.first_name +
+                    ' ' + $scope.form.add_user.last_name +
+                    ' (' + $scope.form.add_user.username + ')' +
+                    ' <' + $scope.form.add_user.email + '>';
+                }
+              };
+
+              $scope.addNewPermission = function() {
+                if ($scope.form.add_user && $scope.form.add_user.username) {
+                  $scope.form.permissions.push({
+                    username: $scope.form.add_user.username,
+                    permission: $scope.form.add_permission
+                  });
+                  $scope.form.add_user = null;
+                }
+              };
+
+              $scope.doShareFiles = function($event) {
+                $event.preventDefault();
+                $uibModalInstance.close($scope.form.permissions);
+              };
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+              };
+            }],
+            size: 'lg',
+            resolve: {
+              file: file,
+              user: {username: $scope.user}
+            }
+          });
+
+          // /**
+          //  * Modal promise callback
+          //  * @param {Object[]} permissions the sharing parameters
+          //  * @param {string} permissions[].username the username of the user to share with
+          //  * @param {object} permissions[].permission the permission model to grant
+          //  * @param {object} permissions[].permission.permission the permission to grant: READ, READ_WRITE, or ALL
+          //  */
+          instance.result.then(function (permissions) {
+            $scope.state.loading = true;
+            self.clearSelection();
+
+            var tasks = _.map(permissions, function(pem) {
+              var params = {
+                resource: file.source,
+                file_id: file.id,
+                username: pem.username,
+                permission: pem.permission.permission
+              };
+              return DataService.share(params);
+            });
+            $q.all(tasks).then(
+              function(results) {
+                $scope.state.loading = false;
+                file._pems = results.pop()._pems; /* update pems for current file */
+                $scope.$emit('designsafe:notify', {
+                  level: 'info',
+                  message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
+                });
+              },
+              function(errors) {
+                $scope.state.loading = false;
+                logger.error(errors);
+                $scope.$emit('designsafe:notify', {
+                  level: 'warning',
+                  message: 'There were some errors updating the sharing settings for <b>' + file.name + '</b>. Please try again.'
+                });
+              }
+            );
           });
         };
 
@@ -268,7 +393,8 @@
               };
 
               $scope.shareFile = function() {
-
+                $scope.cancel();
+                self.shareFilesDialog(previewFile);
               };
 
               $scope.copyFile = function() {
@@ -779,11 +905,12 @@
 
         scope.renameEnabled = function() {
           return dbCtrl.hasPermission('write', dbCtrl.selectedFiles()) &&
-                 scope.state.selected.length === 1;
+            scope.state.selected.length === 1;
         };
 
         scope.shareEnabled = function() {
-          return scope.data.currentSource.id === 'mydata';
+          return scope.data.currentSource.id === 'mydata' &&
+            scope.state.selected.length === 1;
         };
 
         scope.moveEnabled = function() {
@@ -796,17 +923,17 @@
 
         scope.moveToTrashEnabled = function() {
           return dbCtrl.hasPermission('write', dbCtrl.selectedFiles()) &&
-                 scope.data.listing.name !== '.Trash';
+            scope.data.listing.name !== '.Trash';
         };
 
         scope.emptyTrashEnabled = function() {
           return dbCtrl.hasPermission('write', dbCtrl.selectedFiles()) &&
-                 scope.data.listing.name === '.Trash';
+            scope.data.listing.name === '.Trash';
         };
 
         scope.reindexingEnabled = function() {
           return scope.data.currentSource._indexed &&
-                 dbCtrl.hasPermission('write', [scope.data.listing]);
+            dbCtrl.hasPermission('write', [scope.data.listing]);
         };
 
         scope.requestReindex = function() {
@@ -831,22 +958,15 @@
         };
 
         scope.copySelected = function() {
-          var files = _.filter(scope.data.listing.children, function(child) {
-            return _.contains(scope.state.selected, child.id);
-          });
-          dbCtrl.copyFilesDialog(files);
+          dbCtrl.copyFilesDialog(dbCtrl.selectedFiles());
         };
 
         scope.moveSelected = function() {
-          var files = _.filter(scope.data.listing.children, function(child) {
-            return _.contains(scope.state.selected, child.id);
-          });
-          dbCtrl.moveFilesDialog(files);
+          dbCtrl.moveFilesDialog(dbCtrl.selectedFiles());
         };
 
         scope.shareSelected = function() {
-          window.alert('TODO!!');
-          logger.log('SHARE', scope.state.selected);
+          dbCtrl.shareFilesDialog(dbCtrl.selectedFiles()[0]);
         };
 
         scope.downloadSelected = function() {
