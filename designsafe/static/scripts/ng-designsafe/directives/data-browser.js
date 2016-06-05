@@ -200,6 +200,10 @@
 
               $scope.doShareFiles = function($event) {
                 $event.preventDefault();
+                if ($scope.form.add_user && $scope.form.add_user.username) {
+                  // User added someone, but didn't click "+"
+                  $scope.addNewPermission();
+                }
                 $uibModalInstance.close($scope.form.permissions);
               };
 
