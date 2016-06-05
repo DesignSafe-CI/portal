@@ -1,5 +1,22 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.5
+
+June 5, 2016
+
+Improvements:
+
+- Brand new Data Browser with several new features:
+    - Box Integration
+    - Streamlined interface
+    - Improved drag-and-drop
+    - Multiple file download
+    - Expanded preview file type support
+    - Folder upload (Chrome browser only)
+    - Notifications
+    - Single URL space for files/sharing
+    - And More!
+
 ## v0.9.4
 
 April 21, 2016
