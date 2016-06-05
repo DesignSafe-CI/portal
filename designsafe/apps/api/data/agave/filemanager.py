@@ -666,8 +666,10 @@ class FileManager(AbstractFileManager, AgaveObject):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                                      agave_client=self.agave_client)
         f.share(user, permission)
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.share(self.username, user, permission)
+        reindex_agave.apply_async(args=(self.username, file_id))
+        # self.indexer.index(system, file_path, file_user, pems_indexing=True)
+        # # esf = Object.from_file_path(system, self.username, file_path)
+        # # esf.share(self.username, user, permission)
         return f.to_dict()
 
     def transfer(self, file_id, dest_resource, dest_file_id):
