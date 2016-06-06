@@ -277,13 +277,14 @@
 
     /**
      *
-     * This method accepts either a query string
-     * or an object were keys are in the form "q_{field_name}"
+     * Search in the ES index using a query string.
+     * An array with the string name of each extra field to search
+     * can be passed. 
      *
      * @param {string} q
-     * @param q_kw
+     * @param {array} fields
     */
-    service.search = function(resource, q, q_kw){
+    service.search = function(resource, q, fields){
       var params = {
         resource: resource
       };

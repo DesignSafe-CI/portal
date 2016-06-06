@@ -24,12 +24,13 @@
 .ds-data-browser-loading {
     position: absolute;
     top: 0;
-    right: 40%;
+    right: 0;
     padding: 5px;
     font-size: 1.5em;
     border: 1px solid #46B8DA;
     background-color: #5bc0de;
     color: #ffffff;
+    z-index:9999;
 }
 
 .ds-data-browser {
