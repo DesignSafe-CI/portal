@@ -448,7 +448,7 @@ class Object(DocType):
         
         path_comps = self.path.split('/')
         for i in range(len(path_comps)):
-            doc_path = '.'.join(path_comps)
+            doc_path = '/'.join(path_comps)
             doc = Object.from_file_path(self.systemId, username, doc_path)
             doc.update_pems(user_to_share, permission)
             path_comps.pop()

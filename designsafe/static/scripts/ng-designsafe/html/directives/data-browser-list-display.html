@@ -1,15 +1,15 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         <thead>
-        <th ng-if="state.search">
-            Path
-        </th>
         <th>
             <button class="flo-select-btn" ng-click="selectAll()" ng-mouseenter="state.hover['all'] = true" ng-mouseleave="state.hover['all'] = false" ng-if="enableSelection">
                 <i class="fa fa-fw" ng-class="{'fa-circle-o': (state.selecting || state.hover['all']) && !state.selectAll, 'fa-check-circle': state.selectAll}"></i>
                 <span class="sr-only">Select all</span>
             </button>
             Name
+        </th>
+        <th ng-if="state.search">
+            Path
         </th>
         <th ng-if="display('size')">Size</th>
         <th ng-if="display('lastModified')">Last modified</th>
@@ -23,17 +23,17 @@
             drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop" ng-click="selectFile(file)"
             ng-class="{'ds-data-selected': isFileSelected(file)}"
         >
-            <td ng-if="state.search">
-              <i class="fa fa-fw fa-folder"></i>
-              <a href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}" 
-                 ng-click = "browseFile($event, file._trail[file._trail.length - 1])">{{ file.path }}</a>
-            </td>
             <td>
                 <button class="flo-select-btn" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
                 <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file.name }}</a>
+            </td>
+            <td ng-if="state.search">
+              <i class="fa fa-fw fa-folder"></i>
+              <a href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}" 
+                 ng-click = "browseFile($event, file._trail[file._trail.length - 1])">{{ file.path }}</a>
             </td>
             <td ng-if="display('size')">{{ file.size|bytes }}</td>
             <td ng-if="display('lastModified')">
