@@ -4,16 +4,7 @@ module.exports = function(config){
     basePath : './',
 
     files : [
-      '/var/www/designsafe-ci.org/static/vendor/jquery/dist/jquery.js',
-      '/var/www/designsafe-ci.org/static/vendor/angular/angular.js',
-      '/var/www/designsafe-ci.org/static/vendor/angular-bootstrap/ui-bootstrap-tpls.js',
-      '/var/www/designsafe-ci.org/static/vendor/angular-cookies/angular-cookies.js',
-      '/var/www/designsafe-ci.org/static/vendor/angular-mocks/angular-mocks.js',
-      '/var/www/designsafe-ci.org/static/vendor/angular-schema-form/dist/schema-form.js',
-      '/var/www/designsafe-ci.org/static/vendor/angular-schema-form/dist/bootstrap-decorator.js',
-      '/var/www/designsafe-ci.org/static/vendor/underscore/underscore.js',
-      '/var/www/designsafe-ci.org/static/vendor/tv4/tv4.js',
-      '/var/www/designsafe-ci.org/static/vendor/objectpath/lib/ObjectPath.js',
+      '/var/www/designsafe-ci.org/static/js/vendor.js',
       '/var/www/designsafe-ci.org/static/djng/js/django-angular.js',
       '/var/www/designsafe-ci.org/static/scripts/**/*.js',
       '/var/www/designsafe-ci.org/static/designsafe/apps/workspace/scripts/**/*.js',
