@@ -14,9 +14,10 @@ module.exports = function(config){
       '/var/www/designsafe-ci.org/static/vendor/underscore/underscore.js',
       '/var/www/designsafe-ci.org/static/vendor/tv4/tv4.js',
       '/var/www/designsafe-ci.org/static/vendor/objectpath/lib/ObjectPath.js',
-      '/var/www/designsafe-ci.org/static/djangular/js/django-angular.js',
-      '/portal/designsafe/apps/workspace/static/designsafe/apps/workspace/scripts/**/*.js',
-      '/portal/designsafe/apps/workspace/tests/**/*.js'
+      '/var/www/designsafe-ci.org/static/djng/js/django-angular.js',
+      '/var/www/designsafe-ci.org/static/scripts/**/*.js',
+      '/var/www/designsafe-ci.org/static/designsafe/apps/workspace/scripts/**/*.js',
+      './designsafe/apps/workspace/tests/**/*.js'
     ],
 
     autoWatch : true,
