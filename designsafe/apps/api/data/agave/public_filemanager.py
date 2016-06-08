@@ -38,7 +38,7 @@ class FileManager(AgaveObject):
         """Parses a `file_id`.
 
         :param str file_id: String with the format
-        <filesystem id>[ [ [/ | /<file_path>] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: a list with up to two elements
 
@@ -84,7 +84,7 @@ class FileManager(AgaveObject):
         Lists contents of a folder or details of a file.
 
         :param str file_id: id representing the file. Format:
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns:listing dict. A dict with the properties of the
         parent path file object plus a `children` key with a list
@@ -182,7 +182,7 @@ class FileManager(AgaveObject):
         """Get the download link for a file
 
         :param str file_id: String with the format
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: a dict with a single key `href` which has the direct
             noauth link to download a file

@@ -19,7 +19,6 @@ FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 }
 
-
 class FileManager(AbstractFileManager, AgaveObject):
     resource = 'agave'
     mount_path = '/corral-repl/tacc/NHERI/shared'
@@ -155,7 +154,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         """Parses a `file_id`.
 
         :param str file_id: String with the format 
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: a list with three elements
 
@@ -202,7 +201,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Lists contents of a folder or details of a file.
 
         :param str file_id: id representing the file. Format:
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns:listing dict. A dict with the properties of the 
         parent path file object plus a `childrens` key with a list
@@ -337,7 +336,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         """Get the download link for a file
 
         :param str file_id: String with the format 
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: a dict with a single key `href` which has the direct
             noauth link to download a file
@@ -360,7 +359,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         """Main routing method for file actions
         
         :param str file_id: String with the format 
-            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+            <filesystem id>[/ | /<username> [/ | /<file_path>] ]
         :param str action: action to execute. Must be a valid method name
         :param str path: target path to use. Optional
 
@@ -418,7 +417,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Elasticsearch index.
 
         :param str file_id: the file id in the format
-            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+            <filesystem id>[/ | /<username> [/ | /<file_path>] ]
         :param str dest_resource: destination resource
         :param str dest_file_id: destination file id
 
@@ -461,7 +460,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Elasticsearch index.
 
         :param str file_id: the file id in the format
-            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+            <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: dict representation of the  
             :class:`designsafe.apps.api.data.agve.file.AgaveFile` instance
@@ -652,7 +651,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         for the specified user
 
         :param str file_id: string with the format
-            <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+            <filesystem id>[/ | /<username> [/ | /<file_path>] ]
         :param str permission: permission to set on the file [READ | WRITE |
             EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
 
@@ -763,8 +762,7 @@ class AgaveIndexer(AgaveObject):
     module. The decision to leave this class here, for now, is because of the close
     relation the indexing operations have with the :class:`filemanager` operations.
 
-    Generators
-    -----------
+    **Generators:**
         
         There are two generators implemented in this class 
         :meth:`walk` and :meth:`walk_levels`. The functionality of these generators
@@ -796,6 +794,14 @@ class AgaveIndexer(AgaveObject):
         instead of making another call to Agave. The owner's username is extracted
         from the target file path. We assume a file path of $HOME/path/to/file.txt
         where $HOME will always be the username of the owner.
+
+    .. note:: It is recommended to not instantiate this class directly. 
+        The :class:`FileManager` class will count with an instance 
+        of this class:
+        >>> mgr = FileManager(user_obj)
+        >>> #do indexing stuff
+        >>> mgr.indexer.index(...)
+
     """
     def __init__(self, agave_client, *args, **kwargs):
         super(AgaveIndexer, self).__init__(**kwargs)

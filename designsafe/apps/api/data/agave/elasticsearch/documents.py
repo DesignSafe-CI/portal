@@ -302,8 +302,7 @@ class Object(DocType):
 
         .. note:: this method returns the copied document.
 
-        Examples:
-        ---------
+        **Examples**:
             Copy a file and print the resulting copied file path
 
             >>> origin_doc = Object.from_file_path('agave.system.id', 
@@ -540,3 +539,176 @@ class Object(DocType):
     class Meta:
         index = default_index
         doc_type = 'objects'
+
+class Project(DocType):
+    
+    def search_by_name(self, name, fields = None):
+        #TODO: This should be a classmeethod
+        name = re.sub(r'\.groups$', '', name)
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs, fields = None):
+        #TODO: This should be a classmeethod
+        query_fields = ["description",
+                  "endDate",
+                  "equipment.component",
+                  "equipment.equipmentClass",
+                  "equipment.facility",
+                  "fundorg"
+                  "fundorgprojid",
+                  "name",
+                  "organization.name",
+                  "pis.firstName",
+                  "pis.lastName",
+                  "title"]
+        #qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    class Meta:
+        index = 'nees'
+        doc_type = 'project'
+
+class Experiment(DocType):
+
+    def search_by_project(self, project, fields = None):
+        #TODO: This should be a classmeethod
+        project = re.sub(r'\.groups$', '', project)
+        q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_by_name_and_project(self, project, name, fields = None):
+        #TODO: This should be a classmeethod
+        project = re.sub(r'\.groups$', '', project)
+        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}, {"term": {"project._exact":project}}]}} }
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_query(self, system_id, username, qs, fields = None):
+        #TODO: This should be a classmeethod
+        search_fields = ["description",
+                  "facility.country"
+                  "facility.name",
+                  "facility.state",
+                  "name",
+                  "project",
+                  "startDate",
+                  "title"]
+        #qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    class Meta:
+        index = 'nees'
+        doc_type = 'experiment'
+
+class PublicObject(DocType):
+    def search_partial_path(self, system_id, username, path):
+        #TODO: This should be a classmeethod
+        q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_path(self, system_id, username, path, name):
+        #TODO: This should be a classmeethod
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return s.execute(), s
+
+    def search_exact_folder_path(self, system_id, path):
+        #TODO: This should be a classmeethod
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        try:
+            res = s.execute()
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
+            res = s.execute()
+        return res, s
+
+    def search_query(self, system_id, username, qs, fields = None):
+        #TODO: This should be a classmeethod
+        query_fields = ["name", "path", "project"]
+        #qs = '*{}*'.format(qs)
+        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+
+        return s.execute(), s
+
+    def search_project_folders(self, system_id, username, project_names, fields = None):
+        #TODO: This should be a classmeethod
+        q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
+        if fields is not None:
+            q['fields'] = fields
+        s = self.__class__.search()
+        s.update_from_dict(q)
+
+        return s.execute(), s
+
+    def to_dict(self, get_id = False, *args, **kwargs):
+        d = super(PublicObject, self).to_dict(*args, **kwargs)
+        #TODO: This should be done by ES, this is terribly inefficient.
+        paths = self.path.split('/')
+        if self.path == '/':
+            r, s = Project().search_by_name(self.project, ['title', 'name'])
+            if r.hits.total:
+                d['projecTitle'] = r[0].title[0]
+                d['projectName'] = r[0].name[0]
+        elif re.search('^experiment', self.name.lower()):
+            r, s = Experiment().search_by_name_and_project(self.project, self.name, ['title'])
+            if r.hits.total:
+                d['experimentTitle'] = r[0].title[0]
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
+            if r.hits.total:
+                d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
+        elif len(paths) == 1:
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
+            if r.hits.total:
+                d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
+        elif len(paths) >= 2:
+            r, s = Project().search_by_name(paths[0], ['title', 'name'])
+            if r.hits.total:
+                d['parentProjecTitle'] = r[0].title[0]
+                d['parentProjecName'] = r[0].name[0]
+            r, s = Experiment().search_by_name_and_project(paths[0], paths[1], ['title'])
+            if r.hits.total:
+                d['parentExperimentTitle'] = r[0].title[0]
+
+        if get_id:
+            d['_id'] = self._id
+        return d
+
+    class Meta:
+        index = 'nees'
+        doc_type = 'object'
+
+
