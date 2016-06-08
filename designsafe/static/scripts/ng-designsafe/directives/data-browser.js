@@ -424,20 +424,9 @@
             resolve: {
               data: {
                 title: 'Metadata.',
-                metadata: ['tag1', 'tag2']
+                metadata: file.keywords
               }
             }
-          });
-          dialog.result.then(function(destination) {
-            self.clearSelection();
-            var defaultOpts = {
-              dest_file_id: destination.id,
-              dest_resource: destination.source
-            };
-            _.each(filesToMove, function(f) {
-              var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
-              self.moveFile(opts);
-            });
           });
         };
 
@@ -1190,6 +1179,13 @@
       preview: false,
       selection: false,
       columns: ['name', 'action']
+    };
+    $scope.state = {
+      loading: false,
+      listingError: false,
+      selecting: false,
+      search: false,
+      selected: false
     };
 
     $scope.validDestination = function (file) {
