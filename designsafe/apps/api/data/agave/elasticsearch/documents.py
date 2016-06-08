@@ -2,7 +2,6 @@ from django.conf import settings
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl.utils import AttrList
 from elasticsearch import TransportError
 from designsafe.apps.api.data.agave.file import AgaveFile
 import dateutil.parser
@@ -208,11 +207,9 @@ class Object(ExecuteSearchMixin, DocType):
                     lastModified = file_obj.lastModified.isoformat(),
                     fileType = file_obj.ext or 'folder',
                     agavePath = u'agave://{}/{}'.format(file_obj.system, file_obj.full_path),
-                    systemTags = [],
                     length = file_obj.length,
                     systemId = file_obj.system,
                     path = file_obj.parent_path,
-                    keywords = [],
                     link = file_obj._links['self']['href'],
                     type = file_obj.type
                 )
@@ -536,7 +533,11 @@ class Object(ExecuteSearchMixin, DocType):
             '_pems': pems
         }
         f = AgaveFile(wrap = wrap)
-        return f.to_dict()
+        extra = {
+            'keywords': self.to_dict().get('keywords', list([])), 
+            'systemTags': self.to_dict().get('systemTags', list([]))
+        }
+        return f.to_dict(extra = extra)
 
     class Meta:
         index = default_index

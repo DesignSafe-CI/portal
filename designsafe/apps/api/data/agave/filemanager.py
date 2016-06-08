@@ -246,10 +246,11 @@ class FileManager(AbstractFileManager, AgaveObject):
             logger.debug('Update files index for {}'.format(file_path))
             self.indexer.index(system, file_path, file_user, levels=1,
                                pems_indexing=index_pems)
-        try:
-            listing = self._es_listing(system, self.username, file_path)
-        except:
-            listing = None
+        #try:
+        #    listing = self._es_listing(system, self.username, file_path)
+        #except:
+        #    listing = None
+        listing = self._es_listing(system, self.username, file_path)
 
         fallback = listing is None or (
             listing['type'] == 'folder' and

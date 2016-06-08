@@ -370,12 +370,20 @@ class AgaveFile(AbstractFile, AgaveObject):
 
         return self
 
-    def to_dict(self, **kwargs):
-        pems = kwargs.get('default_pems', None)
+    def to_dict(self, default_pems = None, extra = {}, **kwargs):
+        """Converts a file object into a serializable dictionary.
+
+        :param list default_pems: A list of dicts representing some default permissions.
+            This is useful when retreiving permissions from Agave is not necessary and
+            the permissions can be constructed from existent information.
+        :param dict extra: A dictionary with keys and values to add to the dict returned
+            by this function. 
+        """
+        pems = default_pems
         if pems is None:
             pems = self.permissions
 
-        return {
+        d = {
             'source': self.source,
             'system': self.system,
             'id': self.id,
@@ -388,6 +396,8 @@ class AgaveFile(AbstractFile, AgaveObject):
             '_trail': self.trail,
             '_pems': pems,
         }
+        d.update(extra)
+        return d
 
     def __repr__(self):
         return 'AgaveFile(wrap={{ "system": "{}", "path": "{}", "name": "{}"}})'.format(getattr(self, 'system', ''), getattr(self, 'path', ''), getattr(self, 'name', ''))
