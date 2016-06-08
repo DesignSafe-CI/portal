@@ -8,6 +8,7 @@ from designsafe.apps.api.data.agave.file import AgaveFile
 import dateutil.parser
 import datetime
 import logging
+import json
 import six
 import re
 import os
@@ -31,8 +32,25 @@ try:
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
+class ExecuteSearchMixin(object):
+    @staticmethod        
+    def _execute_search(s):
+        """Method to try/except a search and retry if the response is something
+            other than a 404 error.
 
-class Object(DocType):
+        :param object s: search object to execute
+
+        .. todo:: this should probably be a wrapper so we can use it everywhere.
+        """
+        try:
+            res = s.execute()
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
+            res = s.execute()
+        return res, s
+
+class Object(ExecuteSearchMixin, DocType):
     """Class to wrap Elasticsearch (ES) documents.
         
     This class points specifically to the index `designsafe` and the 
@@ -269,22 +287,6 @@ class Object(DocType):
         logger.debug('search query: {}'.format(s.to_dict()))
         return cls._execute_search(s)
 
-    @staticmethod        
-    def _execute_search(s):
-        """Method to try/except a search and retry if the response is something
-            other than a 404 error.
-
-        :param object s: search object to execute
-
-        .. todo:: this should probably be a wrapper so we can use it everywhere.
-        """
-        try:
-            res = s.execute()
-        except TransportError as e:
-            if e.status_code == 404:
-                raise
-            res = s.execute()
-        return res, s
 
     def copy(self, username, target_file_path):
         """Copy a document.
@@ -540,20 +542,19 @@ class Object(DocType):
         index = default_index
         doc_type = 'objects'
 
-class Project(DocType):
-    
-    def search_by_name(self, name, fields = None):
-        #TODO: This should be a classmeethod
+class Project(ExecuteSearchMixin, DocType):
+    @classmethod
+    def from_name(cls, name, fields = None):
         name = re.sub(r'\.groups$', '', name)
         q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
         if fields is not None:
             q['fields'] = fields
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        return cls._execute_search(s)
 
-    def search_query(self, system_id, username, qs, fields = None):
-        #TODO: This should be a classmeethod
+    @classmethod
+    def search_query(cls, system_id, username, qs, fields = None):
         query_fields = ["description",
                   "endDate",
                   "equipment.component",
@@ -570,38 +571,38 @@ class Project(DocType):
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        return cls._execute_search(s)
 
+    @classmethod
     class Meta:
         index = 'nees'
         doc_type = 'project'
 
-class Experiment(DocType):
-
-    def search_by_project(self, project, fields = None):
-        #TODO: This should be a classmeethod
+class Experiment(ExecuteSearchMixin, DocType):
+    @classmethod
+    def from_project(cls, project, fields = None):
         project = re.sub(r'\.groups$', '', project)
         q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
         if fields is not None:
             q['fields'] = fields
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        return cls._execute_search(s)
 
-    def search_by_name_and_project(self, project, name, fields = None):
-        #TODO: This should be a classmeethod
+    @classmethod
+    def from_name_and_project(cls, project, name, fields = None):
         project = re.sub(r'\.groups$', '', project)
         q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}, {"term": {"project._exact":project}}]}} }
         if fields is not None:
             q['fields'] = fields
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return s.execute(), s
-
-    def search_query(self, system_id, username, qs, fields = None):
-        #TODO: This should be a classmeethod
+        return cls._execute_search(s)
+   
+    @classmethod 
+    def search_query(cls, system_id, username, qs, fields = None):
         search_fields = ["description",
                   "facility.country"
                   "facility.name",
@@ -614,67 +615,54 @@ class Experiment(DocType):
         q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return s.execute(), s
+        return cls._execute_search(s)
 
     class Meta:
         index = 'nees'
         doc_type = 'experiment'
 
-class PublicObject(DocType):
+class PublicObject(ExecuteSearchMixin, DocType):
     def __init__(self, *args, **kwargs):
         super(PublicObject, self).__init__(*args, **kwargs)
         self.project_title_ = None
         self.project_name_ = None
         self.experiment_name_ = None
-
-    @staticmethod        
-    def _execute_search(s):
-        """Method to try/except a search and retry if the response is something
-            other than a 404 error.
-
-        :param object s: search object to execute
-
-        .. todo:: this should probably be a wrapper so we can use it everywhere.
-        """
-        try:
-            res = s.execute()
-        except TransportError as e:
-            if e.status_code == 404:
-                raise
-            res = s.execute()
-        return res, s
+        self.trail_ = None
 
     @classmethod
-    def listing_recursive(self, system_id, username, path):
+    def listing_recursive(cls, system_id, path):
+        path = path or '/'
         q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return self._execute_search(s)
+        return cls._execute_search(s)
 
     @classmethod
-    def from_file_path(self, system_id, username, file_path):
+    def from_file_path(cls, system_id, file_path):
         path, name = os.path.split(file_path)
         path = path or '/'
         q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        res, s = self._execute_search(s)
+        res, s = cls._execute_search(s)
         if res.hits.total:
             return res[0]
         else:
             return None
 
     @classmethod
-    def listing(self, system_id, path):
+    def listing(cls, system_id, path):
+        path = path or '/'
         q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
-        s = self.__class__.search()
+        s = cls.search()
         s.update_from_dict(q)
-        return self._execute_search(s)
+        logger.debug('public object listing: {}'.format(s.to_dict()))
+        return cls._execute_search(s)
     
     @classmethod
-    def search_query(self, system_id, username, q, fields = None):
+    def search_query(cls, system_id, username, q, fields = [], sanitize = True, **kwargs):
         if sanitize:
             q = re.sub('[^\w" ]', '', q)
             q = q.replace('"', '\"')
@@ -687,9 +675,9 @@ class PublicObject(DocType):
             query_fields += fields
 
         qd = {"query": { "query_string": { "fields":query_fields, "query": q}}}
-        s = self.__class__.search()
-        s.update_from_dict(q)
-        return s.execute(), s
+        s = cls.search()
+        s.update_from_dict(qd)
+        return cls._execute_search(s)
 
     #def search_project_folders(self, system_id, username, project_names, fields = None):
     #    q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
@@ -701,7 +689,7 @@ class PublicObject(DocType):
     #    return s.execute(), s
   
     def _set_project_title_and_name(self): 
-        r, s = Project().search_by_name(self.project, ['title', 'name'])
+        r, s = Project.from_name(self.project, ['title', 'name'])
         if r.hits.total:
             self.project_title_ = r[0].title[0]
             self.project_name_ = r[0].name[0]
@@ -722,21 +710,72 @@ class PublicObject(DocType):
 
     @property
     def experiment_name(self):
-        if self.experiment_name_ is None:
-            exp_id = self.path.split('/', 2)[1]
-            r, s = Experiment().search_by_name_and_project(self.project, exp_id, ['title'])
+        path_comps = self.path.split('/')
+        exp_id = None
+        if len(path_comps) >= 2:
+            exp_id = path_comps[1]
+
+        if self.experiment_name_ is None and exp_id is not None:
+            r, s = Experiment.from_name_and_project(self.project, exp_id, ['title'])
             if r.hits.total:
                 self.experiment_name_ = r[0].title[0]
 
         return self.experiment_name_
 
-    def to_dict(self, get_id = False, *args, **kwargs):
+    @property
+    def parent_path(self):
+        return self.path
+
+    @property
+    def trail(self):
+        try:
+            if self.trail_ is None:
+                self.trail_ = []
+                if self.parent_path != '' and self.parent_path != '/':
+                    path_parts = self.parent_path.split('/')
+                    for i, c in enumerate(path_parts):
+                        trail_path = '/'.join(path_parts[:i])
+                        self.trail_.append(dict(
+                            source = 'public',
+                            system = self.systemId,
+                            id = os.path.join(self.systemId, trail_path, c),
+                            path = trail_path,
+                            name = c,
+                            type = 'folder'
+                        ))
+            return list(self.trail_)
+        except:
+            logger.debug('Error', exc_info=True)
+            raise
+    
+    @property
+    def ext(self):
+        return os.path.splitext(self.name)[1]
+
+    @property
+    def full_path(self):
+        return os.path.join(self.path.strip('/'), self.name)
+
+    @property
+    def file_id(self):
+        return os.path.join(self.systemId, self.full_path)
+        
+    def to_dict(self, get_id = False, def_pems = None, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
+        d['ext'] = self.ext
+        d['id'] = self.file_id
+        d['size'] = self.length
+        d['system'] = self.systemId
+        d['source'] = 'public'
+        d['type'] = 'folder' if self.type == 'dir' else 'file'
         d['projectTitle'] = self.project_title
         d['projectName'] = self.project_name
         d['experimentName'] = self.experiment_name
+        d['_trail'] = [o.to_dict() for o in self.trail] if self.trail else []
         if get_id:
             d['_id'] = self._id
+        if def_pems:
+            d['_pems'] = list(def_pems)
         return d
 
     class Meta:
