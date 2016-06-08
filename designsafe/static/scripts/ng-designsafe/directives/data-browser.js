@@ -417,6 +417,30 @@
           });
         };
 
+        self.metadataDialog = function(file) {
+          var dialog = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-metadata.html',
+            controller: 'SelectDestinationModalCtrl',
+            resolve: {
+              data: {
+                title: 'Metadata.',
+                metadata: ['tag1', 'tag2']
+              }
+            }
+          });
+          dialog.result.then(function(destination) {
+            self.clearSelection();
+            var defaultOpts = {
+              dest_file_id: destination.id,
+              dest_resource: destination.source
+            };
+            _.each(filesToMove, function(f) {
+              var opts = _.extend({src_file_id: f.id, src_resource: f.source}, defaultOpts);
+              self.moveFile(opts);
+            });
+          });
+        };
+
         self.moveFilesDialog = function(filesToMove) {
           var dialog = $uibModal.open({
             templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-select-destination.html',
@@ -894,6 +918,10 @@
           return true;
         };
 
+        scope.metadataEnabled = function() {
+          return scope.state.selected.length === 1;
+        };
+
         scope.previewEnabled = function() {
           return scope.state.selected.length === 1;
         };
@@ -968,6 +996,14 @@
           _.each(dbCtrl.selectedFiles(), function(file) {
             dbCtrl.downloadFile(file);
           });
+        };
+
+        scope.previewMetadataSelected = function(){
+          var file;
+          if (scope.state.selected.length === 1){
+            file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
+            dbCtrl.metadataDialog(file);
+          }
         };
 
         scope.previewSelected = function() {
