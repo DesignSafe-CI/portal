@@ -623,25 +623,21 @@ class Experiment(DocType):
         doc_type = 'experiment'
 
 class PublicObject(DocType):
-    def search_partial_path(self, system_id, username, path):
-        #TODO: This should be a classmeethod
-        q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
-        s = self.__class__.search()
-        s.update_from_dict(q)
-        return s.execute(), s
+    def __init__(self, *args, **kwargs):
+        super(PublicObject, self).__init__(*args, **kwargs)
+        self.project_title_ = None
+        self.project_name_ = None
+        self.experiment_name_ = None
 
-    def search_exact_path(self, system_id, username, path, name):
-        #TODO: This should be a classmeethod
-        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
-        s = self.__class__.search()
-        s.update_from_dict(q)
-        return s.execute(), s
+    @staticmethod        
+    def _execute_search(s):
+        """Method to try/except a search and retry if the response is something
+            other than a 404 error.
 
-    def search_exact_folder_path(self, system_id, path):
-        #TODO: This should be a classmeethod
-        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
-        s = self.__class__.search()
-        s.update_from_dict(q)
+        :param object s: search object to execute
+
+        .. todo:: this should probably be a wrapper so we can use it everywhere.
+        """
         try:
             res = s.execute()
         except TransportError as e:
@@ -650,59 +646,95 @@ class PublicObject(DocType):
             res = s.execute()
         return res, s
 
-    def search_query(self, system_id, username, qs, fields = None):
-        #TODO: This should be a classmeethod
+    @classmethod
+    def listing_recursive(self, system_id, username, path):
+        q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return self._execute_search(s)
+
+    @classmethod
+    def from_file_path(self, system_id, username, file_path):
+        path, name = os.path.split(file_path)
+        path = path or '/'
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        res, s = self._execute_search(s)
+        if res.hits.total:
+            return res[0]
+        else:
+            return None
+
+    @classmethod
+    def listing(self, system_id, path):
+        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
+        s = self.__class__.search()
+        s.update_from_dict(q)
+        return self._execute_search(s)
+    
+    @classmethod
+    def search_query(self, system_id, username, q, fields = None):
+        if sanitize:
+            q = re.sub('[^\w" ]', '', q)
+            q = q.replace('"', '\"')
+            if isinstance(fields, basestring):
+                fields = fields.split(',')
+
         query_fields = ["name", "path", "project"]
-        #qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        
         if fields is not None:
-            q['fields'] = fields
+            query_fields += fields
+
+        qd = {"query": { "query_string": { "fields":query_fields, "query": q}}}
         s = self.__class__.search()
         s.update_from_dict(q)
-
         return s.execute(), s
 
-    def search_project_folders(self, system_id, username, project_names, fields = None):
-        #TODO: This should be a classmeethod
-        q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
-        if fields is not None:
-            q['fields'] = fields
-        s = self.__class__.search()
-        s.update_from_dict(q)
+    #def search_project_folders(self, system_id, username, project_names, fields = None):
+    #    q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
+    #    if fields is not None:
+    #        q['fields'] = fields
+    #    s = self.__class__.search()
+    #    s.update_from_dict(q)
 
-        return s.execute(), s
+    #    return s.execute(), s
+  
+    def _set_project_title_and_name(self): 
+        r, s = Project().search_by_name(self.project, ['title', 'name'])
+        if r.hits.total:
+            self.project_title_ = r[0].title[0]
+            self.project_name_ = r[0].name[0]
+
+    @property
+    def project_title(self):
+        if self.project_title_ is None or self.project_name_ is None:
+            self._set_project_title_and_name()
+
+        return self.project_title_
+
+    @property
+    def project_name(self):
+        if self.project_title_ is None or self.project_name_ is None:
+            self._set_project_title_and_name()
+
+        return self.project_name_
+
+    @property
+    def experiment_name(self):
+        if self.experiment_name_ is None:
+            exp_id = self.path.split('/', 2)[1]
+            r, s = Experiment().search_by_name_and_project(self.project, exp_id, ['title'])
+            if r.hits.total:
+                self.experiment_name_ = r[0].title[0]
+
+        return self.experiment_name_
 
     def to_dict(self, get_id = False, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
-        #TODO: This should be done by ES, this is terribly inefficient.
-        paths = self.path.split('/')
-        if self.path == '/':
-            r, s = Project().search_by_name(self.project, ['title', 'name'])
-            if r.hits.total:
-                d['projecTitle'] = r[0].title[0]
-                d['projectName'] = r[0].name[0]
-        elif re.search('^experiment', self.name.lower()):
-            r, s = Experiment().search_by_name_and_project(self.project, self.name, ['title'])
-            if r.hits.total:
-                d['experimentTitle'] = r[0].title[0]
-            r, s = Project().search_by_name(paths[0], ['title', 'name'])
-            if r.hits.total:
-                d['parentProjecTitle'] = r[0].title[0]
-                d['parentProjecName'] = r[0].name[0]
-        elif len(paths) == 1:
-            r, s = Project().search_by_name(paths[0], ['title', 'name'])
-            if r.hits.total:
-                d['parentProjecTitle'] = r[0].title[0]
-                d['parentProjecName'] = r[0].name[0]
-        elif len(paths) >= 2:
-            r, s = Project().search_by_name(paths[0], ['title', 'name'])
-            if r.hits.total:
-                d['parentProjecTitle'] = r[0].title[0]
-                d['parentProjecName'] = r[0].name[0]
-            r, s = Experiment().search_by_name_and_project(paths[0], paths[1], ['title'])
-            if r.hits.total:
-                d['parentExperimentTitle'] = r[0].title[0]
-
+        d['projectTitle'] = self.project_title
+        d['projectName'] = self.project_name
+        d['experimentName'] = self.experiment_name
         if get_id:
             d['_id'] = self._id
         return d
