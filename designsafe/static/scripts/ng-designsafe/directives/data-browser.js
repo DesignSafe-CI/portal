@@ -576,10 +576,10 @@
               self.clearSelection();
               _.extend(file, resp.data);
             }, function(err) {
-                $scope.$emit('designsafe:notify', { 
-                level: 'warning', 
-                message: 'Failed to rename file: ' + err.data.message 
-              });
+                $scope.$emit('designsafe:notify', {
+                level: 'warning', 
+                message: 'Failed to rename file: ' + err.data.message
+                });
 
               logger.error(err);
               $scope.state.loading = false;
@@ -791,7 +791,8 @@
           );
         };
 
-        self.search = function(q, fields = []){
+        self.search = function(q, fields){
+          fields = fields || [];
           $scope.state.loading = true;
           $scope.state.search = true;
           return DataService.search($scope.data.listing.source, q, fields).then(
@@ -1047,6 +1048,7 @@
         scope.selectAll = dbCtrl.selectAll;
         scope.selectFile = dbCtrl.toggleSelectFile;
         scope.clearSelection = dbCtrl.clearSelection;
+
         scope.previewFile = function($event, file) {
           $event.stopPropagation();
           dbCtrl.previewFile(file);
@@ -1131,6 +1133,11 @@
               }
             }
           }
+        };
+
+        scope.browseAndPreview = function(e, file){
+          scope.browseFile(e, file._trail[file._trail.length - 1]);
+          scope.previewFile(e, file);
         };
       }
     };
