@@ -1136,8 +1136,12 @@
         };
 
         scope.browseAndPreview = function(e, file){
-          scope.browseFile(e, file._trail[file._trail.length - 1]);
-          scope.previewFile(e, file);
+          if (file.type != 'folder'){
+            scope.browseFile(e, file._trail[file._trail.length - 1]);
+            scope.previewFile(e, file);
+          } else {
+            scope.browseFile(e, file);
+          }
         };
       }
     };
