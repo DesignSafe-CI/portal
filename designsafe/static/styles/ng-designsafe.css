@@ -209,3 +209,85 @@
     -o-transition: width .55s ease;
     transition: width .55s ease;
 }
+
+/**
+*
+* METADATA TAGS CSS
+*
+*/
+
+.tags-list {
+    margin-top:10px;
+}
+
+.tag-item input[type="checkbox"]{
+    display:none;
+}
+
+.tag-item label {
+    position:absolute;
+    top:-7px;
+    left: 1px;
+    cursor:pointer;
+}
+
+.tag-item label.enabled {
+    color:#ccc;
+}
+
+
+.tag-item {
+  background: #4F8FbF;
+  border-radius: 3px 0 0 3px;
+  color: black;
+  display: inline-block;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 20px 0 23px;
+  position: relative;
+  margin: 0 10px 10px 0;
+  text-decoration: none;
+  -webkit-transition: color 0.2s;
+}
+
+.tag-item.deleted {
+  background: #ececec;
+}
+
+.tag-item span.deleted {
+    text-decoration: line-through;
+}
+
+/*
+.tag-item:before {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
+  content: '';
+  height: 6px;
+  left: 10px;
+  position: absolute;
+  width: 6px;
+  top: 10px;
+}
+*/
+
+.tag-item:after {
+  background: #fff;
+  border-bottom: 13px solid transparent;
+  border-left: 10px solid #4F8FbF;
+  border-top: 13px solid transparent;
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.tag-item.deleted:after {
+  border-left: 10px solid #ececec;
+}
+
+.tag-item .ds-fa-remove:before {
+    content: "\2717";
+    font-family: ""Helvetica Neue", Helvetica, Arial, sans-serif";
+}

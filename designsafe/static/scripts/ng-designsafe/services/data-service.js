@@ -296,6 +296,19 @@
       return $http.get(url);
     };
 
+    service.updateMeta = function(options){
+      var params = {
+        resource: options.resource,
+        file_id: options.file_id
+      };
+      var body = {
+        action: 'update_metadata',
+        meta_obj: options.meta_obj
+      };
+      var url = djangoUrl.reverse('designsafe_api:file', params);
+      return $http.put(url, body);
+    };
+
     return service;
 
   }]);

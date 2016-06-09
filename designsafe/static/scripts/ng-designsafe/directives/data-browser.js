@@ -420,13 +420,69 @@
         self.metadataDialog = function(file) {
           var dialog = $uibModal.open({
             templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-metadata.html',
-            controller: 'SelectDestinationModalCtrl',
-            resolve: {
-              data: {
+            controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
+              $scope.form = {
+                keywords: '',
+                tagsToDelete:[]
+              };
+              $scope.data =  {
                 title: 'Metadata.',
-                metadata: file.keywords
-              }
+                metadata: file.meta,
+                file: file
+              };
+              $scope.tagsClass = {};
+
+              $scope.saveMeta = function($event) {
+                $event.preventDefault();
+                $uibModalInstance.close($scope.form);
+              };
+
+              $scope.toggleTag = function(tag){
+                var id = $scope.form.tagsToDelete.indexOf(tag);
+                if (id > -1){
+                  $scope.form.tagsToDelete.splice(id, 1);
+                  $scope.tagsClass[tag] = false;
+                } else {
+                  $scope.form.tagsToDelete.push(tag);
+                  $scope.tagsClass[tag] = true;
+                }
+              };
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+              };
+            }]
+          });
+
+          dialog.result.then(function(form) {
+            $scope.state.loading = true;
+            var meta_obj = {
+                keywords: file.meta.keywords
+                };
+            if (form.keywords) {
+              meta_obj.keywords = meta_obj.keywords.concat(form.keywords.split(','));
             }
+            if (form.tagsToDelete.length){
+              meta_obj.keywords = meta_obj.keywords.filter(function(value){
+                return form.tagsToDelete.indexOf(value) < 0;
+              });
+            }
+            DataService.updateMeta({
+              file_id: file.id,
+              resource: file.source,
+              meta_obj: meta_obj
+            }).then(function(resp) {
+              $scope.state.loading = false;
+              self.clearSelection();
+              _.extend(file, resp.data);
+            }, function(err) {
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Unable to update metadata: ' + err.data.message
+              });
+              logger.error(err);
+              $scope.state.loading = false;
+            });
           });
         };
 

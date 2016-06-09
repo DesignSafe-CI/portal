@@ -469,9 +469,12 @@ class Object(ExecuteSearchMixin, DocType):
             saved document. The only sanitization it does is to remove
             repeated elements.
         """
-        meta_obj = list(set(meta_obj))
-        self.update(keywords = meta_obj)
+
+        keywords = list(set(meta_obj['keywords']))
+        keywords = [kw.strip() for kw in keywords]
+        self.update(keywords = keywords)
         self.save()
+        logger.debug(self.keywords)
         return self
 
     def update_pems(self, user_to_share, pem):
@@ -534,8 +537,11 @@ class Object(ExecuteSearchMixin, DocType):
         }
         f = AgaveFile(wrap = wrap)
         extra = {
-            'keywords': self.to_dict().get('keywords', list([])), 
-            'systemTags': self.to_dict().get('systemTags', list([]))
+            'meta':
+            {
+                'keywords': self.to_dict().get('keywords', list([])), 
+                'systemTags': self.to_dict().get('systemTags', list([]))
+            }
         }
         return f.to_dict(extra = extra)
 

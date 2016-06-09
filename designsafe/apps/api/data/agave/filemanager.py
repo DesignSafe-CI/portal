@@ -246,11 +246,10 @@ class FileManager(AbstractFileManager, AgaveObject):
             logger.debug('Update files index for {}'.format(file_path))
             self.indexer.index(system, file_path, file_user, levels=1,
                                pems_indexing=index_pems)
-        #try:
-        #    listing = self._es_listing(system, self.username, file_path)
-        #except:
-        #    listing = None
-        listing = self._es_listing(system, self.username, file_path)
+        try:
+            listing = self._es_listing(system, self.username, file_path)
+        except:
+            listing = None
 
         fallback = listing is None or (
             listing['type'] == 'folder' and
@@ -694,7 +693,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         system, file_user, file_path = self.parse_file_id(file_id)
         esf = Object.from_file_path(system, self.username, file_path)
         esf.update_metadata(meta_obj)
-        return {'message': 'Metadata updated succesfully'}
+        return esf.to_file_dict()
 
     def upload(self, file_id, files, **kwargs):
         upload_file = files['file']
