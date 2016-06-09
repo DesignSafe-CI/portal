@@ -232,7 +232,7 @@
 }
 
 .tag-item label.enabled {
-    color:#ccc;
+    color:darkgray;
 }
 
 
@@ -288,6 +288,5 @@
 }
 
 .tag-item .ds-fa-remove:before {
-    content: "\2717";
-    font-family: ""Helvetica Neue", Helvetica, Arial, sans-serif";
+    content: "\2715";
 }
