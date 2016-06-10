@@ -17,9 +17,26 @@
 
         <div class="caption text-center">
             <h4>{{ data.file.name }}</h4>
-            <div>{{ data.file.size|bytes }}</div>
-            <div ng-if="data.file.type === 'folder' && data.file.children">{{ data.file.children.length }} items</div>
-            <div>Created on {{ data.file.lastModified|date:'short' }}</div>
+            <p class="preview-info">
+              <span class="preview-file-size">
+                {{ data.file.size|bytes }} - 
+              </span>
+              <span class="preview-children-length" 
+                  ng-if="data.file.type === 'folder' && data.file.children">
+                  {{ data.file.children.length }} items - 
+              </span>
+              <span class="preview-created-on">
+                Created on {{ data.file.lastModified|date:'short' }}
+              </span>
+            </p>
+            <div class="tags-wrapper">
+              <ul class="tags-list">
+                 <li ng-repeat="tag in data.file.meta.keywords" 
+                     class="tag-item">
+                   <span>{{tag}}</span>
+                 </li>
+              </ul>
+            </div>
         </div>
     </div>
     <div class="actions text-center">
