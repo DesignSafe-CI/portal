@@ -351,6 +351,7 @@
                 move: self.hasPermission('write', [parentFile, previewFile]),
                 rename: self.hasPermission('write', [previewFile]),
                 trash: self.hasPermission('write', [parentFile, previewFile]),
+                metadata: self.hasPermission('read', [previewFile])
               };
 
               $scope.data.previewUrl = {loading: true};
@@ -410,6 +411,11 @@
               $scope.trashFile = function() {
                 $scope.cancel();
                 self.trashFiles([previewFile]);
+              };
+
+              $scope.metadataFile = function() {
+                $scope.cancel();
+                self.metadataDialog(previewFile);
               };
             },
             size: 'lg',

@@ -62,10 +62,13 @@
             <i class="fa fa-pencil"></i> Rename
         </button>
 
+        <button ng-disabled="! data.actions.metadata" ng-click="metadataFile()" class="btn btn-default">
+            <i class="fa fa-book"></i>View / Edit Metadata
+        </button>
+
         <button ng-disabled="! data.actions.trash" ng-click="trashFile()" class="btn btn-danger">
             <i class="fa fa-trash"></i> Move to Trash
         </button>
-
 
     </div>
 </div>

@@ -7,8 +7,8 @@
             <label for="id-new-folder-name">New Tags:</label>
             <input type="text" class="form-control" id="id-new-keywords" name="new-keywords" placeholder="tag1, tag2, tag3" ng-model="form.keywords" autofocus select-on-focus>
         </div>
-        <div ng-if="!data.metadata">
-            <p class="alert alert-info">There is no metadata to show. Please add tags separated by commas or click on the <b>x</b> icon on a tag to delete it.</p>
+        <div ng-if="!data.metadata.keywords.length">
+            <p class="alert alert-info">There is no metadata to show. Please add tags separated by commas.</p>
         </div>
 
         <div class="tags-wrapper">
