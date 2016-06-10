@@ -218,6 +218,7 @@
           //  */
           instance.result.then(function (permissions) {
             $scope.state.loading = true;
+            $scope.file = file;
             self.clearSelection();
 
             var tasks = _.map(permissions, function(pem) {
@@ -232,7 +233,8 @@
             $q.all(tasks).then(
               function(results) {
                 $scope.state.loading = false;
-                file._pems = results.pop()._pems; /* update pems for current file */
+                var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
+                listingFile._pems = results.pop().data._pems; /* update pems for current file */
                 $scope.$emit('designsafe:notify', {
                   level: 'info',
                   message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
@@ -462,6 +464,7 @@
 
           dialog.result.then(function(form) {
             $scope.state.loading = true;
+            $scope.file = file;
             var meta_obj = {
                 keywords: file.meta.keywords
                 };
@@ -480,7 +483,8 @@
             }).then(function(resp) {
               $scope.state.loading = false;
               self.clearSelection();
-              _.extend(file, resp.data);
+              var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
+              _.extend(listingFile, resp.data);
             }, function(err) {
               $scope.$emit('designsafe:notify', {
                 level: 'warning',
@@ -638,6 +642,7 @@
 
           instance.result.then(function(targetName) {
             $scope.state.loading = true;
+            $scope.file = file;
             DataService.rename({
               file_id: file.id,
               resource: file.source,
@@ -649,7 +654,8 @@
               });
               $scope.state.loading = false;
               self.clearSelection();
-              _.extend(file, resp.data);
+              var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
+              _.extend(listingFile, resp.data);
             }, function(err) {
                 $scope.$emit('designsafe:notify', {
                 level: 'warning', 
