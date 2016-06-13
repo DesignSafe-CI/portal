@@ -224,6 +224,11 @@
     display:none;
 }
 
+.tag-item button {
+    background:none;
+    padding:0px;
+}
+
 .tag-item label {
     position:absolute;
     top:-7px;
@@ -231,19 +236,14 @@
     cursor:pointer;
 }
 
-.tag-item label.enabled {
-    color:darkgray;
-}
-
-
 .tag-item {
-  background: #4F8FbF;
+  background: #ececec;
   border-radius: 3px 0 0 3px;
   color: black;
   display: inline-block;
   height: 26px;
   line-height: 26px;
-  padding: 0 20px 0 23px;
+  padding: 0 20px 0 10px;
   position: relative;
   margin: 0 10px 10px 0;
   text-decoration: none;
@@ -251,31 +251,17 @@
 }
 
 .tag-item.deleted {
-  background: #ececec;
+  background: #f2dede;
 }
 
 .tag-item span.deleted {
     text-decoration: line-through;
 }
 
-/*
-.tag-item:before {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
-  content: '';
-  height: 6px;
-  left: 10px;
-  position: absolute;
-  width: 6px;
-  top: 10px;
-}
-*/
-
 .tag-item:after {
   background: #fff;
   border-bottom: 13px solid transparent;
-  border-left: 10px solid #4F8FbF;
+  border-left: 10px solid #ececec;
   border-top: 13px solid transparent;
   content: '';
   position: absolute;
@@ -284,9 +270,6 @@
 }
 
 .tag-item.deleted:after {
-  border-left: 10px solid #ececec;
+  border-left: 10px solid #f2dede;
 }
 
-.tag-item .ds-fa-remove:before {
-    content: "\2715";
-}

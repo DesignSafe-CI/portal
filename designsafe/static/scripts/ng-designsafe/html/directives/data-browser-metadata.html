@@ -15,18 +15,20 @@
           <ul class="tags-list">
              <li ng-repeat="tag in data.metadata.keywords" 
                  class="tag-item"
-                 ng-class="{'deleted': tagsClass[tag]}">
-               <input type="checkbox" 
-                      id="{{'tag-' + $index}}" 
-                      checked="checked"
-                      value="{{tag}}" 
-                      ng-click="toggleTag(tag)"/>
-               <label for="{{'tag-' + $index}}"
-                      ng-class="{'enabled': !tagsClass[tag]}">
-                 <i class="fa"
-                    ng-class="tagsClass[tag] ? 'fa-reply' : 'ds-fa-remove'"></i>
-               </label>
-               <span ng-class="{'deleted': tagsClass[tag]}">{{tag}}</span>
+                 ng-class="{'deleted': isMarkedDeleted(tag)}">
+               <button class="btn btn-sm"  
+                       ng-if="!isMarkedDeleted(tag)"
+                       title="Mark as deleted"
+                       ng-click="toggleTag(tag)">
+                       <span>&times;</span>
+               </button>
+               <button class="btn btn-sm"  
+                       ng-if="isMarkedDeleted(tag)"
+                       title="Mark as deleted"
+                       ng-click="toggleTag(tag)">
+                       <span><i class="fa fa-reply"></i></span>
+               </button>
+               <span ng-class="{'deleted': isMarkedDeleted(tag)}">{{tag}}</span>
              </li>
           </ul>
         </div>

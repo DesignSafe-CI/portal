@@ -438,21 +438,22 @@
                 metadata: file.meta,
                 file: file
               };
-              $scope.tagsClass = {};
 
               $scope.saveMeta = function($event) {
                 $event.preventDefault();
                 $uibModalInstance.close($scope.form);
+              };
+              
+              $scope.isMarkedDeleted = function(tag){
+                return $scope.form.tagsToDelete.indexOf(tag) > -1;
               };
 
               $scope.toggleTag = function(tag){
                 var id = $scope.form.tagsToDelete.indexOf(tag);
                 if (id > -1){
                   $scope.form.tagsToDelete.splice(id, 1);
-                  $scope.tagsClass[tag] = false;
                 } else {
                   $scope.form.tagsToDelete.push(tag);
-                  $scope.tagsClass[tag] = true;
                 }
               };
 
