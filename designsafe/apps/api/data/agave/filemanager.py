@@ -239,12 +239,13 @@ class FileManager(AbstractFileManager, AgaveObject):
         index_pems = kwargs.get('pems', None) == 'true'
 
         if file_path.lower() == '$share':
-            file_path = '/'
+            file_path = '/' 
             file_user = self.username
 
         if reindex:
             logger.debug('Update files index for {}'.format(file_path))
             self.indexer.index(system, file_path, file_user, levels=1,
+                               full_indexing = True,
                                pems_indexing=index_pems)
         try:
             listing = self._es_listing(system, self.username, file_path)
@@ -665,10 +666,10 @@ class FileManager(AbstractFileManager, AgaveObject):
         f = AgaveFile.from_file_path(system, self.username, file_path,
                                      agave_client=self.agave_client)
         f.share(user, permission)
-        reindex_agave.apply_async(args=(self.username, file_id))
+        #reindex_agave.apply_async(args=(self.username, file_id))
         # self.indexer.index(system, file_path, file_user, pems_indexing=True)
-        # # esf = Object.from_file_path(system, self.username, file_path)
-        # # esf.share(self.username, user, permission)
+        esf = Object.from_file_path(system, self.username, file_path)
+        esf.share(self.username, user, permission)
         return f.to_dict()
 
     def transfer(self, file_id, dest_resource, dest_file_id):
@@ -1046,60 +1047,67 @@ class AgaveIndexer(AgaveObject):
         ----------
             
             1. use `walk_levels` to get the lists of files and folders
-            2. if `full_indexing` is **not** `True`
-
-                2.1 call `_dedup_and_discover` to get file objects to index
-                    and ES documents to delete
-                2.2 for each object to index
-
-                    2.2.1 create ES document
+            2. call `_dedup_and_discover` to get file objects to index
+                and ES documents to delete
                 
-                2.3 for each document to delete
+            3 for each document to delete
 
-                    2.3.1 delete ES document recursevly.
+                3.1 delete ES document recursevly.
 
-            3. if `full_indexing` is `True`
+            4. if `full_indexing` is **not** `True`
 
-                3.1 for every file and folder in this level
+                4.1 for each object to index
 
-                    3.1.1 get or create ES document and update its data
+                    4.1.1 create ES document
 
-            4. if `index_full_path` is `True`
+            5. if `full_indexing` is `True`
+
+                5.1 for every file and folder in this level
+
+                    5.1.1 get or create ES document and update its data
+
+            6. if `index_full_path` is `True`
                 
-                4.1 split indexing path by `/` store it in `path_comp`
-                4.2 for every string in `path_comp`
+                6.1 split indexing path by `/` store it in `path_comp`
+                6.2 for every string in `path_comp`
 
-                    4.2.1 get agave file object
-                    4.2.2 get or create ES document
+                    6.2.1 get agave file object
+                    6.2.2 get or create ES document
 
         Notes
         -----
             
-            The documents indexed count returnes does not represent the new documents
+            The documents indexed count returned does not represent the new documents
             created. It represent all the documents that were created and/or updated.
             Meaning, all the documents touched.
         """
+
+
         docs_indexed = 0
         docs_deleted = 0
-        for root, folders, files in self.walk_levels(system_id, path, bottom_up = bottom_up):
+        for root, folders, files in self.walk_levels(system_id, path, 
+                                                bottom_up = bottom_up):
+
+            objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
+                                                username, root, files, folders)
+            for d in docs_to_delete:
+                logger.debug(u'delete_recursive: {}'.format(d.full_path))
+                docs_deleted += d.delete_recursive(username)
+
             if not full_indexing:
-                objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
-                                                    username, root, files, folders)
                 for o in objs_to_index:
                     logger.debug(u'Indexing: {}'.format(o.full_path))
                     doc = Object.from_agave_file(username, o, get_pems = pems_indexing)
                     docs_indexed += 1
-                for d in docs_to_delete:
-                    logger.debug(u'delete_recursive: {}'.format(d.full_path))
-                    docs_deleted += d.delete_recursive(username)
             else:
-                for o in folders + files:
+                folders_and_files = folders + files
+                for o in folders_and_files:
                     logger.debug(u'Get or create file: {}'.format(o.full_path))
                     doc = Object.from_agave_file(username, o,
                                     auto_update = True, get_pems = pems_indexing)
                     docs_indexed += 1
 
-            if levels and len(root.split('/')) >= levels:
+            if levels and (len(root.split('/')) - len(path.split('/')) + 1) >= levels:
                 del folders[:]
 
         if index_full_path:

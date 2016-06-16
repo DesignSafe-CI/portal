@@ -15,7 +15,10 @@ def reindex_agave(self, username, file_id):
     from designsafe.apps.api.data import AgaveFileManager
     agave_fm = AgaveFileManager(user)
     system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
-    agave_fm.indexer.index(system_id, file_path, file_user, pems_indexing=True)
+    agave_fm.indexer.index(system_id, file_path, file_user, 
+                           full_indexing = True, 
+                           pems_indexing = True, 
+                           index_full_path = True)
 
 
 @shared_task(bind=True)

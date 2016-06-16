@@ -233,6 +233,7 @@
             $q.all(tasks).then(
               function(results) {
                 $scope.state.loading = false;
+                //Get the file from scope or else it might not be the same reference.
                 var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
                 listingFile._pems = results.pop().data._pems; /* update pems for current file */
                 $scope.$emit('designsafe:notify', {
@@ -484,6 +485,7 @@
             }).then(function(resp) {
               $scope.state.loading = false;
               self.clearSelection();
+              //Get the file from scope or else it might not be the same reference.
               var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
               _.extend(listingFile, resp.data);
             }, function(err) {
@@ -654,7 +656,8 @@
                 message: 'Renamed "' + file.name + '" to "' + targetName + '".'
               });
               $scope.state.loading = false;
-              self.clearSelection();
+              self.clearSelection();  
+              //Get the file from scope or else it might not be the same reference.
               var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
               _.extend(listingFile, resp.data);
             }, function(err) {

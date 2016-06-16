@@ -365,9 +365,12 @@ class AgaveFile(AbstractFile, AgaveObject):
                                 systemId = self.system,
                                 body = permission_body, 
                                 raise_agave = True)
-        except (AgaveException, HTTPError) as e:
+        except AgaveException as e:
             logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
-
+        except HTTPError as e:
+            logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
+            if e.response.status_code == 500:
+                raise
         return self
 
     def to_dict(self, default_pems = None, extra = {}, **kwargs):
