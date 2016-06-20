@@ -375,6 +375,10 @@ class Object(ExecuteSearchMixin, DocType):
         """
         return os.path.join(self.path, self.name)
 
+    @property
+    def parent_path(self):
+        return self.path
+
     def move(self, username, path):
         """Update document with new path
 
@@ -431,28 +435,36 @@ class Object(ExecuteSearchMixin, DocType):
         self.save()
         return self
 
-    def share(self, username, user_to_share, permission):
+    def save(self, **kwargs):
+        """Overwrite to become save or update
+        """
+        doc = Object.from_file_path(self.systemId, self.full_path.split('/')[0], self.full_path)
+        if doc:
+            setattr(self.meta, 'index', doc.meta.index)
+            setattr(self.meta, 'id', doc.meta.id)
+            setattr(self.meta, 'doc_type', doc.meta.doc_type)
+            doc.update(**self.to_dict())
+        return super(Object, self).save(**kwargs)
+
+    def share(self, username, permissions, update_parent_path = True, recursive = True):
         """Update permissions on a document recursively.
 
         :param str username: username making the request
-        :param str user_to_share: username with whom we are going to share this document
-        :param str permission: string representing the permission to set 
+        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
+            string representing the permission to set 
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
+        :param bool update_parent_path: if set it will update the permission on all the parent folders.
+        :param bool recursive: if set it will update the permissions recursively.
         """
-        if self.type == 'dir':
+        if recursive and self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
-                o.update_pems(user_to_share, permission)
+                o.update_pems(permissions)
         
-        path_comps = self.path.split('/')
-        for i in range(len(path_comps)):
-            doc_path = '/'.join(path_comps)
-            doc = Object.from_file_path(self.systemId, username, doc_path)
-            doc.update_pems(user_to_share, permission)
-            path_comps.pop()
-            doc.save()
+        if update_parent_path:
+            self._update_pems_on_parent_path(permissions)
 
-        self.update_pems(user_to_share, permission)
+        self.update_pems(permissions)
         self.save()
         return self
 
@@ -477,25 +489,103 @@ class Object(ExecuteSearchMixin, DocType):
         logger.debug(self.keywords)
         return self
 
-    def update_pems(self, username_to_update, pem):
+    def _pems_args_to_es_pems_list(self, permissions):
+        pems = []
+        for pem in permissions:
+            d = {
+                'username': pem['user_to_share'],
+                'recursive': True,
+                'permission': {
+                    'read': True if pem['permission'] in ['READ_WRITE', 'READ_EXECUTE', 'READ', 'ALL'] else False,
+                    'write': True if pem['permission'] in ['READ_WRITE', 'WRITE_EXECUTE', 'WRITE', 'ALL'] else False,
+                    'execute': True if pem['permission'] in ['READ_EXECUTE', 'WRITE_EXECUTE', 'EXECUTE', 'ALL'] else False
+                }
+            }
+            pems.append(d)
+        return pems
+
+    @property
+    def owner(self):
+        if self.path == '/':
+            owner = self.name
+        else:
+            owner = self.path.split('/')[0]
+        return owner
+
+    def _user_has_access(self, username, file_name_filter = None, pem = 'read'):
+        owner = self.owner
+        if self.type != 'dir':
+            username_pems = filter(lambda x: x['username'] == username, self.permissions)
+            check = username_pems[0]['permission'][pem]
+        else:
+            res, s = Object.listing(self.systemId, owner, owner)
+            check = False
+            for o in s.scan():
+                if file_name_filter is not None and o.name == file_name_filter:
+                    continue
+                pems = o.permissions
+                username_pems = filter(lambda x: x['username'] == username, self.permissions)
+                logger.debug('username_pems: {} on file: {}'.format(username_pems, o.full_path))
+                if len(username_pems) > 0 and username_pems[0]['permission'][pem]:
+                    check = True
+                    break
+        return check
+
+    def _filter_revoke_pems_list(self, pems_args):
+        owner = self.owner
+        revoke = filter(lambda x: x['permission'] == 'NONE', pems_args)
+        logger.debug('revoke: {}'.format(revoke))
+        if len(revoke) > 0:
+            revoke_usernames = [o['user_to_share'] for o in revoke]
+            home_dir = Object.from_file_path(self.systemId, owner, owner)
+            if self.parent_path == owner:
+                file_name_filter = self.name
+            else:
+                file_name_filter = None
+            for username in revoke_usernames:
+                if home_dir._user_has_access(username, file_name_filter = file_name_filter):
+                    pems_args = filter(lambda x: x['user_to_share'] != username, pems_args)
+
+        return pems_args
+
+    def _update_pems_on_parent_path(self, pems_args):
+        pems_args = self._filter_revoke_pems_list(pems_args)
+        if len(pems_args) == 0:
+            return False
+        
+        path_comps = self.parent_path.split('/')
+        parents_pems_args = []
+        for p in pems_args:
+            d = {'user_to_share': p['user_to_share'],
+                 'permission': 'READ' if p['permission'] != 'NONE' else 'NONE'                }
+            parents_pems_args.append(d)
+        for i in range(len(path_comps)):
+            file_path = u'/'.join(path_comps)
+            logger.debug('ES updating pems on parent: %s' % file_path)
+            doc = Object.from_file_path(self.systemId, self.parent_path.split('/')[0], 
+                                        file_path)
+            doc.share(self.parent_path.split('/')[0], 
+                      parents_pems_args, 
+                      update_parent_path = False, 
+                      recursive = False)
+            path_comps.pop()
+        return True
+
+    def update_pems(self, permissions):
         """Update permissions on a document.
 
         :param str username_to_update: username with whom we are going to share this document
-        :param str pem: string representing the permission to set 
+        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
+            string representing the permission to set 
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
         """
         pems = getattr(self, 'permissions', [])
-        pem_to_add = {
-                'username': username_to_update,
-                'recursive': True,
-                'permission': {
-                    'read': True if pem in ['READ_WRITE', 'READ_EXECUTE', 'READ', 'ALL'] else False,
-                    'write': True if pem in ['READ_WRITE', 'WRITE_EXECUTE', 'WRITE', 'ALL'] else False,
-                    'execute': True if pem in ['READ_EXECUTE', 'WRITE_EXECUTE', 'EXECUTE', 'ALL'] else False
-                }
-            }
-        user_pems = filter(lambda x: x['username'] != user_to_share, pems)
-        user_pems.append(pem_to_add)
+        pems_to_add = self._pems_args_to_es_pems_list(permissions)
+        pems_usernames = [o['username'] for o in pems_to_add]
+        pems_to_add = filter(lambda x: not (x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False), pems_to_add)
+        user_pems = filter(lambda x: x['username'] not in pems_usernames, pems)
+        user_pems += pems_to_add
+        logger.debug('updating permissions on {} with {}'.format(self.meta.id, user_pems))
         self.update(permissions = user_pems)
         self.save()
         return self

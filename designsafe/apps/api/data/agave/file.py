@@ -258,7 +258,10 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         if self.type != 'dir':
             username_pems = filter(lambda x: x['username'] == username, self.permissions)
-            check = username_pems['permission'][pem]
+            check = False
+            if len(username_pems) > 0:
+                check = username_pems[0]['permission'][pem]
+
         else:
             listing = AgaveFile.listing(self.system, 
                                         file_path = self.full_path,
@@ -267,7 +270,6 @@ class AgaveFile(AbstractFile, AgaveObject):
             for o in listing:
                 if (file_name_filter is not None and o.name == file_name_filter) or o.name == self.name:
                     continue
-
                 pems = o.permissions
                 username_pems = filter(lambda x: x['username'] == username, pems)
                 logger.debug('username_pems: {} on file: {}'.format(username_pems, o.full_path))
@@ -435,7 +437,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             list: The same ``pems_args`` except filtered.
 
         Note:
-            The decision to filter out permission revoke is based only on the rest of
+            The decision to filter out revoked permission is based only on the rest of
             the permission in the first level of the home directory. This is because
             if a user has any access to a file that is deep in the file system tree
             those permissions should be reflected in, at least, one directory on the
