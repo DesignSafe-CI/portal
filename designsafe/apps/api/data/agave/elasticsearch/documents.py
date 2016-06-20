@@ -524,7 +524,7 @@ class Object(ExecuteSearchMixin, DocType):
                 if file_name_filter is not None and o.name == file_name_filter:
                     continue
                 pems = o.permissions
-                username_pems = filter(lambda x: x['username'] == username, self.permissions)
+                username_pems = filter(lambda x: x['username'] == username, pems)
                 logger.debug('username_pems: {} on file: {}'.format(username_pems, o.full_path))
                 if len(username_pems) > 0 and username_pems[0]['permission'][pem]:
                     check = True

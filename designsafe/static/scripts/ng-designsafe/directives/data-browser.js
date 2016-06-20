@@ -245,6 +245,7 @@
               }
               else if (pem.permission.permission === null &&
                 !(!p.read && p.write && p.execute)){
+                pem_to_add.permission = 'NONE';
                 $scope.pems_to_update.push(pem_to_add);
               }
             });

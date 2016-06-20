@@ -444,7 +444,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             first level.                
         """
         owner = self.parent_path.split('/')[0]
-        revoke = filter(lambda x: x['permission'] == 'NONE', pems_args)
+        revoke = filter(lambda x: x['permission'].upper() == 'NONE', pems_args)
         logger.debug('revoke: {}'.format(revoke))
         if len(revoke) > 0:
             revoke_usernames = [o['user_to_share'] for o in revoke]
