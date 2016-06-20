@@ -477,10 +477,16 @@ class Object(ExecuteSearchMixin, DocType):
         logger.debug(self.keywords)
         return self
 
-    def update_pems(self, user_to_share, pem):
+    def update_pems(self, username_to_update, pem):
+        """Update permissions on a document.
+
+        :param str username_to_update: username with whom we are going to share this document
+        :param str pem: string representing the permission to set 
+            [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
+        """
         pems = getattr(self, 'permissions', [])
         pem_to_add = {
-                'username': user_to_share,
+                'username': username_to_update,
                 'recursive': True,
                 'permission': {
                     'read': True if pem in ['READ_WRITE', 'READ_EXECUTE', 'READ', 'ALL'] else False,
