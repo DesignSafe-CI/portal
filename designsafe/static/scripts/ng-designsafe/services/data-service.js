@@ -269,8 +269,7 @@
       };
       var body = {
         action: 'share',
-        user: options.username,
-        permission: options.permission
+        permissions: options.permissions
       };
       return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
     };

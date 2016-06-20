@@ -220,22 +220,44 @@
             $scope.state.loading = true;
             $scope.file = file;
             self.clearSelection();
+            $scope.pems_to_update = [];
 
-            var tasks = _.map(permissions, function(pem) {
-              var params = {
-                resource: file.source,
-                file_id: file.id,
-                username: pem.username,
-                permission: pem.permission.permission
-              };
-              return DataService.share(params);
+            _.each(permissions, function(pem){
+              var pems = _.find($scope.file._pems, function(o){ 
+                                    return o.username == pem.username; });
+              if (!pems){
+                return;
+              }
+              var p = pems.permission;
+              var pem_to_add =  {'user_to_share':pem.username,
+                    'permission': pem.permission.permission};
+              if(pem.permission.permission == 'READ' &&
+                !(p.read && !p.write && !p.execute)){
+                $scope.pems_to_update.push(pem_to_add);
+              }
+              else if (pem.permission.permission == 'READ_WRITE' &&
+                !(p.read && p.write && !p.execute)){
+                $scope.pems_to_update.push(pem_to_add); 
+              }
+              else if (pem.permission.permission == 'ALL' &&
+                !(p.read && p.write && p.execute)){
+                $scope.pems_to_update.push(pem_to_add);
+              }
+              else if (pem.permission.permission === null &&
+                !(!p.read && p.write && p.execute)){
+                $scope.pems_to_update.push(pem_to_add);
+              }
             });
-            $q.all(tasks).then(
-              function(results) {
+            DataService.share({
+              resource: file.source,
+              file_id: file.id,
+              permissions: $scope.pems_to_update
+            }).then(
+              function(resp) {
                 $scope.state.loading = false;
                 //Get the file from scope or else it might not be the same reference.
                 var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
-                listingFile._pems = results.pop().data._pems; /* update pems for current file */
+                listingFile._pems = resp.data._pems; /* update pems for current file */
                 $scope.$emit('designsafe:notify', {
                   level: 'info',
                   message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
