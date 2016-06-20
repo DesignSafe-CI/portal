@@ -226,27 +226,29 @@
               var pems = _.find($scope.file._pems, function(o){ 
                                     return o.username == pem.username; });
               if (!pems){
-                return;
-              }
-              var p = pems.permission;
-              var pem_to_add =  {'user_to_share':pem.username,
-                    'permission': pem.permission.permission};
-              if(pem.permission.permission == 'READ' &&
-                !(p.read && !p.write && !p.execute)){
-                $scope.pems_to_update.push(pem_to_add);
-              }
-              else if (pem.permission.permission == 'READ_WRITE' &&
-                !(p.read && p.write && !p.execute)){
-                $scope.pems_to_update.push(pem_to_add); 
-              }
-              else if (pem.permission.permission == 'ALL' &&
-                !(p.read && p.write && p.execute)){
-                $scope.pems_to_update.push(pem_to_add);
-              }
-              else if (pem.permission.permission === null &&
-                !(!p.read && p.write && p.execute)){
-                pem_to_add.permission = 'NONE';
-                $scope.pems_to_update.push(pem_to_add);
+                $scope.pems_to_update.push({'user_to_share': pem.username,
+                                    'permission': pem.permission.permission});
+              } else {
+                var p = pems.permission;
+                var pem_to_add =  {'user_to_share':pem.username,
+                      'permission': pem.permission.permission};
+                if(pem.permission.permission == 'READ' &&
+                  !(p.read && !p.write && !p.execute)){
+                  $scope.pems_to_update.push(pem_to_add);
+                }
+                else if (pem.permission.permission == 'READ_WRITE' &&
+                  !(p.read && p.write && !p.execute)){
+                  $scope.pems_to_update.push(pem_to_add); 
+                }
+                else if (pem.permission.permission == 'ALL' &&
+                  !(p.read && p.write && p.execute)){
+                  $scope.pems_to_update.push(pem_to_add);
+                }
+                else if (pem.permission.permission === null &&
+                  !(!p.read && p.write && p.execute)){
+                  pem_to_add.permission = 'NONE';
+                  $scope.pems_to_update.push(pem_to_add);
+                }
               }
             });
             DataService.share({
