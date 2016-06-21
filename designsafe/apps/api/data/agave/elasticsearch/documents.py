@@ -1,9 +1,10 @@
 from django.conf import settings
-from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
-from elasticsearch_dsl.connections import connections
 from elasticsearch import TransportError
+from elasticsearch_dsl import Search, DocType
+from elasticsearch_dsl.connections import connections
 from designsafe.apps.api.data.agave.file import AgaveFile
+from designsafe.apps.api.data.agave.elasticsearch import utils as query_utils
 import dateutil.parser
 import datetime
 import logging
@@ -94,7 +95,12 @@ class Object(ExecuteSearchMixin, DocType):
         :returns: list of :class:`Object`
         :rtype: list
         """
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":file_path}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
+        q = Q('filtered',
+              query = Q('bool',
+                        must = Q({'term': {'path._exact': file_path}})
+                        ),
+              filter = query_utils.files_access_filter(username, system)
+              )
         s = cls.search()
         s.update_from_dict(q)
         return cls._execute_search(s)
@@ -113,12 +119,18 @@ class Object(ExecuteSearchMixin, DocType):
         """
         path, name = os.path.split(file_path)
         path = path or '/'
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"must_not":{"term":{"deleted":"true"}}}}}}}
-        if username is not None:
-            q['query']['filtered']['filter']['bool']['should'] = [{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}] 
+        q = Q('filtered',
+             query = Q('bool',
+                      must = [
+                        Q({'term': {'path._exact': path}}),
+                        Q({'term': {'name._exact': name}})
+                        ]
+                     ),
+            filter = query_utils.files_access_filter(username, system)
+            )
 
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         res, s = cls._execute_search(s)
         if res.hits.total:
             return res[0]
@@ -269,18 +281,20 @@ class Object(ExecuteSearchMixin, DocType):
             the **systemTags** field like so:
             >>> Object.search('username', 'txt', fields = ['systemTags'])
         """
-        if sanitize:
-            q = re.sub('[^\w" ]', '', q)
-            q = q.replace('"', '\"')
-            if isinstance(fields, basestring):
-                fields = fields.split(',')
-        #logger.debug('q: {}. fields: {}'.format(q, fields))
-        search_fields = ['name', 'keywords']
+        if isinstance(fields, basestring):
+            fields = fields.split(',')
+
+        search_fields = ['name._exact', 'keywords']
+
         if fields:
             search_fields += fields
-        sq = { "query": { "filtered": { "query": { "query_string": { "fields":list(set(search_fields)), "query": "*%s*" % q}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
+
+        sq = Q('filtered',
+                query = query_utils.files_wildcard_query(q, search_fields),
+                filter = query_utils.files_access_filter(username)
+                )
         s = cls.search()
-        s.update_from_dict(sq)
+        s.query = sq
         logger.debug('search query: {}'.format(s.to_dict()))
         return cls._execute_search(s)
 
@@ -765,21 +779,18 @@ class PublicObject(ExecuteSearchMixin, DocType):
         return cls._execute_search(s)
     
     @classmethod
-    def search_query(cls, system_id, username, q, fields = [], sanitize = True, **kwargs):
-        if sanitize:
-            q = re.sub('[^\w" ]', '', q)
-            q = q.replace('"', '\"')
-            if isinstance(fields, basestring):
-                fields = fields.split(',')
+    def search_query(cls, system_id, username, q, fields = [], **kwargs):
+        if isinstance(fields, basestring):
+            fields = fields.split(',')
 
-        query_fields = ["name", "path", "project"]
+        query_fields = ["name._exact", "project._exact"]
         
         if fields is not None:
             query_fields += fields
 
-        qd = {"query": { "query_string": { "fields":query_fields, "query": q}}}
         s = cls.search()
-        s.update_from_dict(qd)
+        s.query = query_utils.files_wildcard_query(q, query_fields)
+        logger.debug('public query string: {}'.format(s.to_dict()))
         return cls._execute_search(s)
 
     #def search_project_folders(self, system_id, username, project_names, fields = None):

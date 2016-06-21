@@ -61,7 +61,6 @@ class BaseDataView(JSONResponseMixin, BaseApiView):
         d = body_json
         d.update(kwargs)
         d.update(request.GET.dict())
-        logger.debug('Calling share: {}'.format(d))
         resp = op(**d)
         return resp
 

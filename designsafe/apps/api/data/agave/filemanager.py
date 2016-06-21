@@ -638,7 +638,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             'ext': '',
             'size': None,
             'lastModified': None,
-            'query': {'q': kwargs.get('q'), 'filtes': kwargs.get('fields', [])},
+            'query': {'q': kwargs.get('q'), 'fields': kwargs.get('fields', [])},
             'children': [o.to_file_dict() for o in s.scan() if not o.path.startswith('%s/.Trash' % self.username)],
             '_trail': [],
             '_pems': [{'username': self.username, 'permission': {'read': True}}],
