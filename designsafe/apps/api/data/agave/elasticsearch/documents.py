@@ -174,9 +174,16 @@ class Object(ExecuteSearchMixin, DocType):
                 and alphabetically.
 
         """
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":file_path}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
+        q = Q('filtered',
+              query = Q('bool',
+                        must = [
+                          Q({'term': {'path._path': file_path}})
+                          ]
+                      ),
+              filter = query_utils.files_access_filter(username, system)
+              )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         return cls._execute_search(s)
 
     @classmethod
@@ -573,6 +580,7 @@ class Object(ExecuteSearchMixin, DocType):
             d = {'user_to_share': p['user_to_share'],
                  'permission': 'READ' if p['permission'] != 'NONE' else 'NONE'                }
             parents_pems_args.append(d)
+
         for i in range(len(path_comps)):
             file_path = u'/'.join(path_comps)
             logger.debug('ES updating pems on parent: %s' % file_path)
@@ -663,11 +671,12 @@ class Project(ExecuteSearchMixin, DocType):
     @classmethod
     def from_name(cls, name, fields = None):
         name = re.sub(r'\.groups$', '', name)
-        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}]}} }
-        if fields is not None:
-            q['fields'] = fields
+        q = Q({'term': {'name._exact': name}})
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
+
+        if fields is not None:
+            s.fields(fields)
         return cls._execute_search(s)
 
     @classmethod
@@ -684,7 +693,6 @@ class Project(ExecuteSearchMixin, DocType):
                   "pis.firstName",
                   "pis.lastName",
                   "title"]
-        #qs = '*{}*'.format(qs)
         q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
             q['fields'] = fields
@@ -751,16 +759,23 @@ class PublicObject(ExecuteSearchMixin, DocType):
     @classmethod
     def listing_recursive(cls, system_id, path):
         path = path or '/'
-        q = {"query":{"bool":{"must":[{"term":{"path._path":path}}, {"term": {"systemId": system_id}}]}} }
+        q = Q('bool',
+                must = [Q({'term': {'path._path': path}}),
+                        Q({'term': {'systemId': system_id}})]
+              )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         return cls._execute_search(s)
 
     @classmethod
     def from_file_path(cls, system_id, file_path):
         path, name = os.path.split(file_path)
         path = path or '/'
-        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system_id}}]}}}
+        q = Q('bool',
+                must = [Q({'term': {'path._exact': path}}),
+                        Q({'term': {'name._exact': path}}),
+                        Q({'term': {'systemId': system_id}})]
+              )
         s = cls.search()
         s.update_from_dict(q)
         res, s = cls._execute_search(s)
@@ -772,9 +787,12 @@ class PublicObject(ExecuteSearchMixin, DocType):
     @classmethod
     def listing(cls, system_id, path):
         path = path or '/'
-        q = {"query":{"bool":{"must":[{"term":{"path._exact":path}}, {"term": {"systemId": system_id}}] }}}
+        q = Q('bool',
+               must = [Q({'term': {'path._exact': path}}),
+                       Q({'term': {'systemId': system_id}})]
+               )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         logger.debug('public object listing: {}'.format(s.to_dict()))
         return cls._execute_search(s)
     
