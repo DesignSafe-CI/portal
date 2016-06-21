@@ -689,16 +689,18 @@ class Project(ExecuteSearchMixin, DocType):
                   "equipment.facility",
                   "fundorg"
                   "fundorgprojid",
-                  "name",
+                  "name._exact",
                   "organization.name",
                   "pis.firstName",
                   "pis.lastName",
                   "title"]
-        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
         if fields is not None:
-            q['fields'] = fields
+            query_fields += fields
+
+        q = query_utils.files_wildcard_query(q, query_fields)
+
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         return cls._execute_search(s)
 
     @classmethod
@@ -710,39 +712,47 @@ class Experiment(ExecuteSearchMixin, DocType):
     @classmethod
     def from_project(cls, project, fields = None):
         project = re.sub(r'\.groups$', '', project)
-        q = {"query":{"bool":{"must":[{"term":{"project._exact":project}}]}} }
-        if fields is not None:
-            q['fields'] = fields
+        q = Q({'term': {'project._exact': project}})
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
+        if fields is not None:
+            s.fields(fields)
+
         return cls._execute_search(s)
 
     @classmethod
     def from_name_and_project(cls, project, name, fields = None):
         project = re.sub(r'\.groups$', '', project)
-        q = {"query":{"bool":{"must":[{"term":{"name._exact":name}}, {"term": {"project._exact":project}}]}} }
-        if fields is not None:
-            q['fields'] = fields
+        q = Q('bool',
+              must = [Q({'term': {'name._exact': name}}),
+                      Q({'term': {'project._exact': project}})]
+             )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
+        if fields is not None:
+            s.fields(fields)
+
         return cls._execute_search(s)
    
     @classmethod 
     def search_query(cls, system_id, username, qs, fields = None):
-        search_fields = ["description",
+        query_fields = ["description",
                   "facility.country"
                   "facility.name",
                   "facility.state",
-                  "name",
+                  "name._exact",
                   "project",
                   "startDate",
                   "title"]
-        #qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
         if fields is not None:
-            q['fields'] = fields
+            query_fields += fields
+
+        q = query_utils.files_wildcard_query(q, query_fields)
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
+        if fields is not None:
+            s.fields(fields)
+
         return cls._execute_search(s)
 
     class Meta:
@@ -809,7 +819,6 @@ class PublicObject(ExecuteSearchMixin, DocType):
 
         s = cls.search()
         s.query = query_utils.files_wildcard_query(q, query_fields)
-        logger.debug('public query string: {}'.format(s.to_dict()))
         return cls._execute_search(s)
   
     def _set_project_title_and_name(self): 
@@ -884,7 +893,7 @@ class PublicObject(ExecuteSearchMixin, DocType):
     def file_id(self):
         return os.path.join(self.systemId, self.full_path)
         
-    def to_dict(self, get_id = False, def_pems = None, *args, **kwargs):
+    def to_dict(self, get_id = False, def_pems = None, with_meta = True, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
         d['ext'] = self.ext
         d['id'] = self.file_id
@@ -892,14 +901,18 @@ class PublicObject(ExecuteSearchMixin, DocType):
         d['system'] = self.systemId
         d['source'] = 'public'
         d['type'] = 'folder' if self.type == 'dir' else 'file'
-        d['projectTitle'] = self.project_title
-        d['projectName'] = self.project_name
-        d['experimentName'] = self.experiment_name
         d['_trail'] = [o.to_dict() for o in self.trail] if self.trail else []
         if get_id:
             d['_id'] = self._id
         if def_pems:
             d['_pems'] = list(def_pems)
+
+        if with_meta:
+            d['metadata'] = {
+                'projectTitle' : self.project_title,
+                'projectName' : self.project_name,
+                'experimentName' : self.experiment_name 
+            }
         return d
 
     class Meta:
