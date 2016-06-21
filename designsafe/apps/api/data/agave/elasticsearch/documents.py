@@ -42,6 +42,7 @@ class ExecuteSearchMixin(object):
 
         .. todo:: this should probably be a wrapper so we can use it everywhere.
         """
+        logger.debug('es query: {}'.format(s.to_dict()))
         try:
             res = s.execute()
         except TransportError as e:
@@ -102,7 +103,7 @@ class Object(ExecuteSearchMixin, DocType):
               filter = query_utils.files_access_filter(username, system)
               )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         return cls._execute_search(s)
 
     @classmethod
@@ -777,7 +778,7 @@ class PublicObject(ExecuteSearchMixin, DocType):
                         Q({'term': {'systemId': system_id}})]
               )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         res, s = cls._execute_search(s)
         if res.hits.total:
             return res[0]
@@ -810,15 +811,6 @@ class PublicObject(ExecuteSearchMixin, DocType):
         s.query = query_utils.files_wildcard_query(q, query_fields)
         logger.debug('public query string: {}'.format(s.to_dict()))
         return cls._execute_search(s)
-
-    #def search_project_folders(self, system_id, username, project_names, fields = None):
-    #    q = {'query': {'filtered': { 'query': { 'terms': {'name._exact': project_names}}, 'filter': {'term': {'path._exact': '/'}}}}}
-    #    if fields is not None:
-    #        q['fields'] = fields
-    #    s = self.__class__.search()
-    #    s.update_from_dict(q)
-
-    #    return s.execute(), s
   
     def _set_project_title_and_name(self): 
         r, s = Project.from_name(self.project, ['title', 'name'])
