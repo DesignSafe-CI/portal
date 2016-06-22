@@ -273,3 +273,14 @@
   border-left: 10px solid #f2dede;
 }
 
+
+/**
+*
+* DATA BROWSER TABLE WRAPPER CSS
+*
+**/
+
+.ds-table-display-wrapper {
+    height:500px;
+    overflow:scroll;
+}

@@ -922,6 +922,18 @@
           );
         };
 
+        self.scrollToBottom = function(el, pos){
+          if($scope.state.loadingMore){
+            return;
+          }
+          $scope.state.loadingMore = true;
+          $scope.state.loadingMore = false;
+        };
+
+        self.scrollToTop = function(el, pos){
+          return;     
+        };
+
         if (! $scope.data.listing) {
           self.browseFile({});
         }
@@ -1170,6 +1182,8 @@
         scope.selectAll = dbCtrl.selectAll;
         scope.selectFile = dbCtrl.toggleSelectFile;
         scope.clearSelection = dbCtrl.clearSelection;
+        scope.scrollToBottom = dbCtrl.scrollToBottom;
+        scope.scrollToTop = dbCtrl.scrollToTop;
 
         scope.previewFile = function($event, file) {
           $event.stopPropagation();
