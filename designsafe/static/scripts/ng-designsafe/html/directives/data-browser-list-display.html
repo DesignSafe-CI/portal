@@ -61,6 +61,14 @@
             </td>
         </tr>
         </tbody>
+        <tfoot ng-if="state.loadingMore">
+          <tr>
+            <td>
+              <i class="fa fa-spin fa-spinner"></i>
+              <span>Loading...</span>
+            </td>
+          </tr>
+        </tfoot>
         <caption ng-hide="data.listing.children.length || state.loading"
                  ds-draggable transfer="data.listing" drag-start="dragStart" drag-enter="dragEnter"
                  drag-over="dragOver" drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"

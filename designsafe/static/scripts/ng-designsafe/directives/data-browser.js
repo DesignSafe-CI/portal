@@ -19,7 +19,6 @@
         onResourceChanged: '&onResourceChanged'
       },
       controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
-        
 
         var self = this;
 
@@ -845,6 +844,8 @@
           self.clearSelection();
           $scope.state.listingError = false;
           $scope.state.loading = true;
+          $scope.state.page = 0;
+          $scope.state.reachedEnd = false;
           options = options || {};
           return DataService.listPath(options).then(
             function(response) {
@@ -905,6 +906,9 @@
           fields = fields || [];
           $scope.state.loading = true;
           $scope.state.search = true;
+          $scope.state.page = 0;
+          $scope.state.reachedEnd = false;
+          $scope.state.searchFields = fields;
           return DataService.search($scope.data.listing.source, q, fields).then(
             function(response){
               $scope.state.loading = false;
@@ -923,11 +927,52 @@
         };
 
         self.scrollToBottom = function(el, pos){
-          if($scope.state.loadingMore){
+          if($scope.state.loadingMore || $scope.state.reachedEnd){
             return;
           }
+          if($scope.state.page){
+            $scope.state.page += 1;
+          } else {
+            $scope.state.page = 1;
+          }
           $scope.state.loadingMore = true;
-          $scope.state.loadingMore = false;
+          if (!$scope.search){
+            DataService.listPath({resource: $scope.data.listing.source,
+                                  file_id: $scope.data.listing.id,
+                                  page: $scope.state.page}).then(
+              function(response){
+                var children = $scope.data.listing.children;
+                var moreChildren = response.data.children;
+                $scope.data.listing.children = children.concat(moreChildren);
+                if (moreChildren.length < 100){
+                  $scope.state.reachedEnd = true;
+                }
+                $scope.state.loadingMore = false;
+              },
+              function(error){
+                logger.error(error);
+                $scope.state.loadingMore = false;
+              }
+            );
+          } else {
+            DataService.search($scope.data.listing.source, q, 
+                               $scope.data.state.searchFields,
+                               $scope.state.page).then(
+              function(response){
+                var children = $scope.data.listing.children;
+                var moreChildren = response.data.children;
+                $scope.data.listing.children = children.concat(moreChildren);
+                if (moreChildren.length < 100){
+                  $scope.state.reachedEnd = true;
+                }
+                $scope.state.loadingMore = false;
+              },
+              function(error) {
+                $scope.state.loadingMore = false;
+                logger.error(error);
+              }
+            );
+          }
         };
 
         self.scrollToTop = function(el, pos){

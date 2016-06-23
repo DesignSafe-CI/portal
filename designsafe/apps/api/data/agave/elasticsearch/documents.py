@@ -34,7 +34,7 @@ except KeyError as e:
 
 class ExecuteSearchMixin(object):
     @staticmethod        
-    def _execute_search(s):
+    def _execute_search(s, **kwargs):
         """Method to try/except a search and retry if the response is something
             other than a 404 error.
 
@@ -86,7 +86,7 @@ class Object(ExecuteSearchMixin, DocType):
     source = 'agave'
 
     @classmethod
-    def listing(cls, system, username, file_path):
+    def listing(cls, system, username, file_path, **kwargs):
         """Do a listing of one level.
 
         :param str system: system id
@@ -104,7 +104,15 @@ class Object(ExecuteSearchMixin, DocType):
               )
         s = cls.search()
         s.query = q
-        return cls._execute_search(s)
+        s = s.sort({'name._exact': 'asc'})
+
+        res, s = cls._execute_search(s)
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        if res.hits.total < limit:
+            limit = res.hits.total
+        return res, s[offset:limit]
 
     @classmethod
     def from_file_path(cls, system, username, file_path):
@@ -303,8 +311,16 @@ class Object(ExecuteSearchMixin, DocType):
                 )
         s = cls.search()
         s.query = sq
-        logger.debug('search query: {}'.format(s.to_dict()))
-        return cls._execute_search(s)
+        s = s.sort('path._exact', 'name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+
+        return res, s[offset:limit]
 
 
     def copy(self, username, target_file_path):
@@ -677,11 +693,11 @@ class Project(ExecuteSearchMixin, DocType):
         s.query = q
 
         if fields is not None:
-            s.fields(fields)
+            s = s.fields(fields)
         return cls._execute_search(s)
 
     @classmethod
-    def search_query(cls, system_id, username, qs, fields = None):
+    def search_query(cls, system_id, username, qs, fields = None, **kwargs):
         query_fields = ["description",
                   "endDate",
                   "equipment.component",
@@ -701,7 +717,16 @@ class Project(ExecuteSearchMixin, DocType):
 
         s = cls.search()
         s.query = q
-        return cls._execute_search(s)
+        s = s.sort('name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+
+        return res, s[offset:limit]
 
     @classmethod
     class Meta:
@@ -716,7 +741,7 @@ class Experiment(ExecuteSearchMixin, DocType):
         s = cls.search()
         s.query = q
         if fields is not None:
-            s.fields(fields)
+            s = s.fields(fields)
 
         return cls._execute_search(s)
 
@@ -730,7 +755,7 @@ class Experiment(ExecuteSearchMixin, DocType):
         s = cls.search()
         s.query = q
         if fields is not None:
-            s.fields(fields)
+            s = s.fields(fields)
 
         return cls._execute_search(s)
    
@@ -751,9 +776,18 @@ class Experiment(ExecuteSearchMixin, DocType):
         s = cls.search()
         s.query = q
         if fields is not None:
-            s.fields(fields)
+            s = s.fields(fields)
 
-        return cls._execute_search(s)
+        s = s.sort('name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+
+        return res, s[offset:limit]
 
     class Meta:
         index = 'nees'
@@ -796,30 +830,47 @@ class PublicObject(ExecuteSearchMixin, DocType):
             return None
 
     @classmethod
-    def listing(cls, system_id, path):
+    def listing(cls, system_id, path, **kwargs):
         path = path or '/'
         q = Q('bool',
                must = [Q({'term': {'path._exact': path}}),
                        Q({'term': {'systemId': system_id}})]
                )
         s = cls.search()
+        s = s.sort({'project._exact': 'asc'})
         s.query = q
-        logger.debug('public object listing: {}'.format(s.to_dict()))
-        return cls._execute_search(s)
+
+        res, s = cls._execute_search(s)
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        if res.hits.total < limit:
+            limit = res.hits.total
+        return res, s[offset:limit]
     
     @classmethod
     def search_query(cls, system_id, username, q, fields = [], **kwargs):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
-        query_fields = ["name._exact", "project._exact"]
+        query_fields = ["name._exact"]
         
         if fields is not None:
             query_fields += fields
 
         s = cls.search()
         s.query = query_utils.files_wildcard_query(q, query_fields)
-        return cls._execute_search(s)
+
+        s = s.sort('type', 'path._exact', 'name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+
+        return res, s[offset:limit]
   
     def _set_project_title_and_name(self): 
         r, s = Project.from_name(self.project, ['title', 'name'])

@@ -101,6 +101,10 @@
       if (options.index_pems) {
         url += '&pems=true';
       }
+      if (options.page){
+        var offset = options.page * 100;
+        url += '&offset=' + offset;
+      }
       return $http.get(url);
     };
 
@@ -283,7 +287,7 @@
      * @param {string} q
      * @param {array} fields
     */
-    service.search = function(resource, q, fields){
+    service.search = function(resource, q, fields, page){
       var params = {
         resource: resource
       };
@@ -291,6 +295,10 @@
       url += '&q=' + q;
       if (fields && fields.length >= 1){
         url += '&fields=' + fields;    
+      }
+      if (page){
+        var offset = options.page * 100;
+        url += '&offset=' + offset;
       }
       return $http.get(url);
     };

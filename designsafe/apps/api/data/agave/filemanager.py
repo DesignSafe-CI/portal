@@ -77,7 +77,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and
                     file_id[1] == self.username)
     
-    def _agave_listing(self, system, file_path):
+    def _agave_listing(self, system, file_path, **kwargs):
         """Returns a "listing" dict constructed with the response from Agave.
 
         :param str sytem: System id
@@ -94,7 +94,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             This should not be called directly. See py:meth:`listing(file_id)`
             for more information.
         """
-        listing = AgaveFile.listing(system, file_path, self.agave_client)
+        listing = AgaveFile.listing(system, file_path, self.agave_client, **kwargs)
         #logger.debug('listing: {}'.format(listing))
 
         root_file = filter(lambda x: x.full_path == file_path, listing)
@@ -105,7 +105,7 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         return list_data
 
-    def _es_listing(self, system, username, file_path):
+    def _es_listing(self, system, username, file_path, **kwargs):
         """Returns a "listing" dict constructed with the response from Elasticsearch.
 
         :param str system: system id
@@ -124,7 +124,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             This should not be called directly. See py:meth:`listing(file_id)`
             for more information.
         """
-        res, listing = Object.listing(system, username, file_path)
+        res, listing = Object.listing(system, username, file_path, **kwargs)
         if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
             list_data = {
                 'source': self.resource,
@@ -136,7 +136,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                 'ext': '',
                 'size': None,
                 'lastModified': None,
-                'children': [o.to_file_dict() for o in listing.scan() if o.name != username],
+                'children': [o.to_file_dict() for o in listing if o.name != username],
                 '_trail': [],
                 '_pems': [{'username': self.username, 'permission': {'read': True}}],
             }
@@ -144,7 +144,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             root_listing = Object.from_file_path(system, username, file_path)
             if root_listing:
                 list_data = root_listing.to_file_dict()
-                list_data['children'] = [o.to_file_dict() for o in listing.scan()]
+                list_data['children'] = [o.to_file_dict() for o in listing]
             else:
                 list_data = None
 
@@ -247,8 +247,9 @@ class FileManager(AbstractFileManager, AgaveObject):
             self.indexer.index(system, file_path, file_user, levels=1,
                                full_indexing = True,
                                pems_indexing=index_pems)
+        logger.debug('offset: %s. limit: %s' % kwargs.get('offset'), kwargs.get('limit'))
         try:
-            listing = self._es_listing(system, self.username, file_path)
+            listing = self._es_listing(system, self.username, file_path, **kwargs)
         except:
             listing = None
 
@@ -257,7 +258,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             listing['id'] != '$share' and
             len(listing['children']) == 0)
         if fallback:
-            listing = self._agave_listing(system, file_path)
+            listing = self._agave_listing(system, file_path, **kwargs)
             reindex_agave.apply_async(args=(self.username, file_id))
         return listing
 
