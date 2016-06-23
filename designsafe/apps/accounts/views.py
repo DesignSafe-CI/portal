@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
+
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import NEESUser, DesignSafeProfile
 
@@ -230,28 +232,21 @@ def nees_migration(request, step=None):
             return render(request,
                           'designsafe/apps/accounts/nees_migration_step_2.html',
                           {'form': form})
-
-
     return HttpResponseRedirect(reverse('designsafe_accounts:nees_migration'))
 
 
 def register(request):
     if request.user.is_authenticated():
         messages.info(request, 'You are already logged in!')
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('designsafe_accounts:index')
 
     if request.method == 'POST':
         account_form = forms.UserRegistrationForm(request.POST)
         if account_form.is_valid():
             try:
                 account_form.save()
-                messages.success(
-                    request,
-                    'Congratulations! Your account request has been received. You should '
-                    'receive an activation code at the email address provided. Please '
-                    'follow the instructions in the email to activate your account.'
-                )
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect(
+                    reverse('designsafe_accounts:registration_successful'))
             except Exception as e:
                 logger.info('error: {}'.format(e))
 
@@ -295,6 +290,10 @@ def register(request):
         'account_form': account_form
     }
     return render(request, 'designsafe/apps/accounts/register.html', context)
+
+
+def registration_successful(request):
+    return render_to_response('designsafe/apps/accounts/registration_successful.html')
 
 
 @login_required

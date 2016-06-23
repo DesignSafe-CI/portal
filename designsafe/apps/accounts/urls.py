@@ -15,6 +15,7 @@ urlpatterns = patterns(
     url(r'^register/$', 'register', name='register'),
     url(r'^nees-account/(?:(?P<step>\d+)/)?$', 'nees_migration',
         name='nees_migration'),
+    url(r'^registration-successful/$', 'registration_successful', name='registration_successful'),
     url(r'^password-reset/(?:(?P<code>.+)/)?$', 'password_reset', name='password_reset'),
     url(r'^activate/(?:(?P<code>.+)/)?$', 'email_confirmation', name='email_confirmation'),
     url(r'^departments\.json$', 'departments_json', name='departments_json'),
