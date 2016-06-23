@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 @shared_task(bind=True)
 def reindex_agave(self, username, file_id, full_indexing = True, 
-                  pems_indexing = True, index_full_path = True):
+                  levels = 0, pems_indexing = True, index_full_path = True):
     user = get_user_model().objects.get(username=username)
 
     from designsafe.apps.api.data import AgaveFileManager
@@ -19,7 +19,8 @@ def reindex_agave(self, username, file_id, full_indexing = True,
     agave_fm.indexer.index(system_id, file_path, file_user, 
                            full_indexing = full_indexing, 
                            pems_indexing = pems_indexing, 
-                           index_full_path = index_full_path)
+                           index_full_path = index_full_path, 
+                           levels = levels)
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions):

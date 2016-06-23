@@ -952,7 +952,9 @@
               },
               function(error){
                 logger.error(error);
+                $scope.state.page -= 1;
                 $scope.state.loadingMore = false;
+                $scope.state.reachedEnd = true;
               }
             );
           } else {
@@ -970,7 +972,9 @@
                 $scope.state.loadingMore = false;
               },
               function(error) {
+                $scope.state.page -= 1;
                 $scope.state.loadingMore = false;
+                $scope.state.reachedEnd = true;
                 logger.error(error);
               }
             );

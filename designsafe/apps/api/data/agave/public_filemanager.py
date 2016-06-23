@@ -207,11 +207,10 @@ class FileManager(AgaveObject):
 
         """
         system, file_path = self.parse_file_id(file_id)
-        #try:
-        #    listing = self._es_listing(system, self.username, file_path, **kwargs)
-        #except:
-        #    listing = None
-        listing = self._es_listing(system, self.username, file_path, **kwargs)
+        try:
+            listing = self._es_listing(system, self.username, file_path, **kwargs)
+        except:
+            listing = None
         
         fallback = listing is None or(
             listing['type'] == 'folder' and

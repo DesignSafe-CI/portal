@@ -112,6 +112,10 @@ class Object(ExecuteSearchMixin, DocType):
         limit = offset + limit
         if res.hits.total < limit:
             limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+
         return res, s[offset:limit]
 
     @classmethod
@@ -319,7 +323,10 @@ class Object(ExecuteSearchMixin, DocType):
         res, s = cls._execute_search(s)
         if res.hits.total < limit:
             limit = res.hits.total
-
+        if offset > limit:
+            offset = 0
+            limit = 0
+        logger.debug('limit: %s. offset: %s' % (limit, offset))
         return res, s[offset:limit]
 
 
@@ -725,6 +732,9 @@ class Project(ExecuteSearchMixin, DocType):
         res, s = cls._execute_search(s)
         if res.hits.total < limit:
             limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
 
         return res, s[offset:limit]
 
@@ -786,6 +796,9 @@ class Experiment(ExecuteSearchMixin, DocType):
         res, s = cls._execute_search(s)
         if res.hits.total < limit:
             limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
 
         return res, s[offset:limit]
 
@@ -846,6 +859,9 @@ class PublicObject(ExecuteSearchMixin, DocType):
         limit = offset + limit
         if res.hits.total < limit:
             limit = res.hits.total
+        if offset < limit:
+            offset = 0
+            limit = 0
         return res, s[offset:limit]
     
     @classmethod

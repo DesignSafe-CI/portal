@@ -284,3 +284,11 @@
     height:500px;
     overflow:scroll;
 }
+
+.ds-table-display-wrapper table tfoot tr td {
+    font-size: 1.5em;
+    border: 1px solid #46B8DA;
+    background-color: #5bc0de;
+    color: #ffffff;
+    z-index:9999;
+}

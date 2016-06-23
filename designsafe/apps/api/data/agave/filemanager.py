@@ -249,7 +249,8 @@ class FileManager(AbstractFileManager, AgaveObject):
                                pems_indexing=index_pems)
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
-        except:
+        except Exception as e:
+            logger.debug('Error listing from Elasticsearch, falling back to agave.', exc_info=True)
             listing = None
 
         fallback = listing is None or (
@@ -258,7 +259,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             len(listing['children']) == 0)
         if fallback:
             listing = self._agave_listing(system, file_path, **kwargs)
-            reindex_agave.apply_async(args=(self.username, file_id))
+            reindex_agave.apply_async(args=(self.username, file_id, 1))
         return listing
 
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
@@ -744,7 +745,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                                           agave_client=self.agave_client)
         Object.from_agave_file(u_file_user, u_file)  # index new file
         reindex_agave.apply_async(args=(self.username, file_id, 
-                                            False, False, True))
+                                            0, False, False, True))
         return u_file.to_dict()
 
     def get_file_real_path(self, file_id):

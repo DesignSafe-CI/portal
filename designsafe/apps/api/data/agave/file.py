@@ -78,7 +78,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             self._permissions = self._wrap['permissions']
 
         if self.name == '.':
-            tail, head = os.path.split(self.path) 
+            tail, head = os.path.split(self.path.strip('/')) 
             self.name = head
 
     @classmethod

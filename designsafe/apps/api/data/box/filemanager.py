@@ -91,7 +91,7 @@ class FileManager(AbstractFileManager):
                         status=404)
             box_object = next_object
         return box_object
-
+    
     def listing(self, file_id=None, **kwargs):
         """
         Lists contents of a folder or details of a file.
@@ -123,8 +123,12 @@ class FileManager(AbstractFileManager):
             box_op = getattr(self.box_api, file_type)
             box_item = box_op(file_id).get()
             if file_type == 'folder':
+                limit = int(kwargs.pop('limit', 100))
+                offset = int(kwargs.pop('offset', 0))
+                limit = offset + limit
+
                 children = [BoxFile(item, parent=box_item).to_dict(default_pems=default_pems)
-                            for item in box_item.get_items(100)]
+                            for item in box_item.get_items(limit, offset = offset)]
             else:
                 children = None
 
