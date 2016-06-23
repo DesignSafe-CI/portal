@@ -943,11 +943,15 @@
                                   page: $scope.state.page}).then(
               function(response){
                 var children = $scope.data.listing.children;
-                var moreChildren = response.data.children;
+                var moreChildren = [];
+                if (response.data.children){
+                  moreChildren = response.data.children;
+                }
                 $scope.data.listing.children = children.concat(moreChildren);
+
                 if (moreChildren.length < 100){
                   $scope.state.reachedEnd = true;
-                }
+                }    
                 $scope.state.loadingMore = false;
               },
               function(error){
