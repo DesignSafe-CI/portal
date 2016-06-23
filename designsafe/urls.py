@@ -46,7 +46,7 @@ urlpatterns = patterns(
     url(r'^account/', include('designsafe.apps.accounts.urls',
         namespace='designsafe_accounts')),
     url(r'^register/$', RedirectView.as_view(
-        pattern_name='designsafe_accounts:register'), name='register'),
+        pattern_name='designsafe_accounts:register', permanent=True), name='register'),
 
     # need a fancier redirect here to pass the code param along
     url(r'^activate/(?:(?P<code>.+)/)?$',
