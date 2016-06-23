@@ -702,7 +702,7 @@ class FileManager(AbstractFileManager, AgaveObject):
 
     def upload(self, file_id, files, **kwargs):
         upload_file = files['file']
-
+        index_parent = False
         rel_path = kwargs.pop('relative_path', None)
         if rel_path:
             # ensure path exists
@@ -712,6 +712,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                 rel_path_real_path = self.get_file_real_path(rel_path_id)
                 if not os.path.isdir(rel_path_real_path):
                     try:
+                        index_parent = True
                         os.mkdir(rel_path_real_path, 0o0755)
                     except OSError as e:
                         if e.errno == 17:
@@ -744,7 +745,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
                                           agave_client=self.agave_client)
         Object.from_agave_file(u_file_user, u_file)  # index new file
-        reindex_agave.apply_async(args=(self.username, file_id, 
+        if index_parent:
+            reindex_agave.apply_async(args=(self.username, file_id, 
                                             False, 0, False, True))
         return u_file.to_dict()
 
