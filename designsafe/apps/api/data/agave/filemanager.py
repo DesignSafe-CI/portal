@@ -259,7 +259,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             len(listing['children']) == 0)
         if fallback:
             listing = self._agave_listing(system, file_path, **kwargs)
-            reindex_agave.apply_async(args=(self.username, file_id, 1))
+            reindex_agave.apply_async(args=(self.username, file_id, True, 1))
         return listing
 
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
@@ -745,7 +745,7 @@ class FileManager(AbstractFileManager, AgaveObject):
                                           agave_client=self.agave_client)
         Object.from_agave_file(u_file_user, u_file)  # index new file
         reindex_agave.apply_async(args=(self.username, file_id, 
-                                            0, False, False, True))
+                                            False, 0, False, True))
         return u_file.to_dict()
 
     def get_file_real_path(self, file_id):
