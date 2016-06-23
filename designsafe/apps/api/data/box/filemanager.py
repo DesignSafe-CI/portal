@@ -112,7 +112,7 @@ class FileManager(AbstractFileManager):
             'recursive': True,
             'permission': {
                 'read': True,
-                'write': False,
+                'write': True,
                 'execute': True
             }
         }]
