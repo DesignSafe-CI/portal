@@ -869,7 +869,6 @@ class PublicObject(ExecuteSearchMixin, DocType):
         res, s = cls._execute_search(s)
         if res.hits.total < limit:
             limit = res.hits.total
-        logger.debug('offset: %s. limit: %s'.format(offset, limit))
         if offset > limit:
             offset = 0
             limit = 0

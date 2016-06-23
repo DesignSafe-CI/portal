@@ -23,25 +23,22 @@ def reindex_agave(self, username, file_id, full_indexing = True,
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions):
-    try:
-        user = get_user_model().objects.get(username=username)
+    user = get_user_model().objects.get(username=username)
 
-        from designsafe.apps.api.data import AgaveFileManager
-        from designsafe.apps.api.data.agave.file import AgaveFile
-        from designsafe.apps.api.data.agave.elasticsearch.documents import Object
-        agave_fm = AgaveFileManager(user)
-        system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
+    from designsafe.apps.api.data import AgaveFileManager
+    from designsafe.apps.api.data.agave.file import AgaveFile
+    from designsafe.apps.api.data.agave.elasticsearch.documents import Object
+    agave_fm = AgaveFileManager(user)
+    system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
 
-        f = AgaveFile.from_file_path(system_id, username, file_path,
-                                     agave_client=agave_fm.agave_client)
-        f.share(permissions)
-        #reindex_agave.apply_async(args=(self.username, file_id))
-        # self.indexer.index(system, file_path, file_user, pems_indexing=True)
-        
-        esf = Object.from_file_path(system_id, username, file_path)
-        esf.share(username, permissions)
-    except Exception as e:
-        logger.debug('error: {}'.format(e))
+    f = AgaveFile.from_file_path(system_id, username, file_path,
+                                 agave_client=agave_fm.agave_client)
+    f.share(permissions)
+    #reindex_agave.apply_async(args=(self.username, file_id))
+    # self.indexer.index(system, file_path, file_user, pems_indexing=True)
+    
+    esf = Object.from_file_path(system_id, username, file_path)
+    esf.share(username, permissions)
 
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
