@@ -209,7 +209,8 @@ class FileManager(AgaveObject):
         system, file_path = self.parse_file_id(file_id)
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
-        except:
+        except Exception as e:
+            logger.debug('Error listing using Es. Falling back to Aagave', exc_info=True)
             listing = None
         
         fallback = listing is None or(

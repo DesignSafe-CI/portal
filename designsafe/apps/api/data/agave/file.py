@@ -102,10 +102,12 @@ class AgaveFile(AbstractFile, AgaveObject):
     @classmethod
     def listing(cls, system, file_path, agave_client, **kwargs):
         try:
+            limit = int(kwargs.pop('limit', 100))
+            offset = int(kwargs.pop('offset', 0))
+            limit = offset + limit
             logger.debug('Agave: calling: files.list, args: {}'.format( 
-                         {'systemId': system, 'filePath': file_path}))
-            limit = kwargs.pop('limit', 100)
-            offset = kwargs.pop('offset', 0)
+                         {'systemId': system, 'filePath': file_path,
+                          'limit': limit, 'offset': offset}))
             listing = agave_client.files.list(systemId=system, filePath=file_path,
                                               limit=limit, offset=offset)
         except (AgaveException, HTTPError) as e:
