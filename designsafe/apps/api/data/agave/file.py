@@ -140,7 +140,7 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def full_path(self):
-        return self.path
+        return self.path.strip('/')
 
     @property
     def id(self):

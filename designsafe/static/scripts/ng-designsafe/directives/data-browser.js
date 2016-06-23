@@ -909,6 +909,7 @@
           $scope.state.page = 0;
           $scope.state.reachedEnd = false;
           $scope.state.searchFields = fields;
+          $scope.state.searchQ = q;
           return DataService.search($scope.data.listing.source, q, fields).then(
             function(response){
               $scope.state.loading = false;
@@ -936,7 +937,7 @@
             $scope.state.page = 1;
           }
           $scope.state.loadingMore = true;
-          if (!$scope.search){
+          if (!$scope.state.search){
             DataService.listPath({resource: $scope.data.listing.source,
                                   file_id: $scope.data.listing.id,
                                   page: $scope.state.page}).then(
@@ -955,8 +956,9 @@
               }
             );
           } else {
-            DataService.search($scope.data.listing.source, q, 
-                               $scope.data.state.searchFields,
+            DataService.search($scope.data.listing.source, 
+                               $scope.state.searchQ, 
+                               $scope.state.searchFields,
                                $scope.state.page).then(
               function(response){
                 var children = $scope.data.listing.children;

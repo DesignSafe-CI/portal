@@ -297,7 +297,7 @@
         url += '&fields=' + fields;    
       }
       if (page){
-        var offset = options.page * 100;
+        var offset = page * 100;
         url += '&offset=' + offset;
       }
       return $http.get(url);

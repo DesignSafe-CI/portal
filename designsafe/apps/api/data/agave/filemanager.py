@@ -4,7 +4,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
-from designsafe.apps.api.tasks import reindex_agave
+from designsafe.apps.api.tasks import reindex_agave, share_agave
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from requests import HTTPError
@@ -247,7 +247,6 @@ class FileManager(AbstractFileManager, AgaveObject):
             self.indexer.index(system, file_path, file_user, levels=1,
                                full_indexing = True,
                                pems_indexing=index_pems)
-        logger.debug('offset: %s. limit: %s' % kwargs.get('offset'), kwargs.get('limit'))
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
         except:
@@ -667,12 +666,13 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         f = AgaveFile.from_file_path(system, self.username, file_path,
                                      agave_client=self.agave_client)
-        f.share(permissions)
-        #reindex_agave.apply_async(args=(self.username, file_id))
-        # self.indexer.index(system, file_path, file_user, pems_indexing=True)
-        
-        esf = Object.from_file_path(system, self.username, file_path)
-        esf.share(self.username, permissions)
+        #f.share(permissions)
+        ##reindex_agave.apply_async(args=(self.username, file_id))
+        ## self.indexer.index(system, file_path, file_user, pems_indexing=True)
+        #
+        #esf = Object.from_file_path(system, self.username, file_path)
+        #esf.share(self.username, permissions)
+        share_agave.apply_async(args=(self.username, file_id, permissions))
         return f.to_dict()
 
     def transfer(self, file_id, dest_resource, dest_file_id):
@@ -743,6 +743,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
                                           agave_client=self.agave_client)
         Object.from_agave_file(u_file_user, u_file)  # index new file
+        reindex_agave.apply_async(args=(self.username, file_id, 
+                                            False, False, True))
         return u_file.to_dict()
 
     def get_file_real_path(self, file_id):

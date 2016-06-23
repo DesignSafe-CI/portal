@@ -316,7 +316,7 @@ class FileManager(AgaveObject):
         res, s = PublicObject.search_query(self.system_id, self.username, **kwargs)
         search_data = {
             'source': self.resource,
-            'system': settings.AGAVE_STORAGE_SYSTEM,
+            'system': 'nees.public',
             'id': '$search',
             'type': 'folder',
             'name': '$SEARCH',
