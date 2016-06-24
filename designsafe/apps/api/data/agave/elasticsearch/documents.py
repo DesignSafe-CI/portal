@@ -859,7 +859,7 @@ class PublicObject(ExecuteSearchMixin, DocType):
         limit = offset + limit
         if res.hits.total < limit:
             limit = res.hits.total
-        if offset < limit:
+        if offset > limit:
             offset = 0
             limit = 0
         return res, s[offset:limit]
