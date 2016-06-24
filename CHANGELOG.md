@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.7
+
+Bug fixes:
+
+- Fix bug in public data Elasticsearch query
+
 ## v0.9.6
 
 Bug fixes:
