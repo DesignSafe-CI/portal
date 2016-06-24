@@ -1,5 +1,23 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.6
+
+Bug fixes:
+
+- Fixed issue with copying files from DesignSafe to Box
+- Fixed issue folder uploads not indexing properly
+
+Improvements:
+
+- Added infinite scroll to data browser for directories with lots of files. The data 
+  browser will load additional contents when scrolled to the bottom of the listing.
+- Added metadata interface to new data browser
+- Added "registration successful" page redirect to better inform new users of account 
+  activation steps.
+- When sharing files, only apply changes to permissions, instead of reapplying all 
+  permissions.
+
+
 ## v0.9.5
 
 June 5, 2016
