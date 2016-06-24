@@ -582,6 +582,7 @@ class FileManager(AgaveObject):
         e_names = ['{}.groups'.format(o.project) for o in e_s.scan()]
         po_names = p_names + e_names
         d.pop('fields')
+        logger.debug('project names: {}'.format(po_names))
         res, s = PublicObject().search_project_folders(system_id = filesystem, username = username, project_names = po_names)
         return res, s
 

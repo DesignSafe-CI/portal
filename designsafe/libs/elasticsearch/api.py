@@ -95,17 +95,28 @@ class Project(DocType):
                   "equipment.facility",
                   "fundorg"
                   "fundorgprojid",
-                  "name",
+                  "name._exact",
                   "organization.name",
                   "pis.firstName",
                   "pis.lastName",
                   "title"]
-        #qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+
+        wildcards = []
+        for f in query_fields:
+            wildcards.append({
+                'wildcard': {
+                   f: {'value': '*%s*' % qs} 
+                }
+            })
+
+        #q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        q = {'query': {'bool': {'should': wildcards } } }
+
         if fields is not None:
             q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
+        logger.debug('query dict: {}'.format(s.to_dict()))
         return s.execute(), s
 
     def update_from_dict(self, **d):
@@ -147,7 +158,7 @@ class Experiment(DocType):
 
     def search_query(self, system_id, username, qs, fields = None):
         #TODO: This should be a classmeethod
-        search_fields = ["description",
+        query_fields = ["description",
                   "facility.country"
                   "facility.name",
                   "facility.state",
@@ -156,11 +167,23 @@ class Experiment(DocType):
                   "startDate",
                   "title"]
         #qs = '*{}*'.format(qs)
-        q = {"query": { "query_string": { "fields":search_fields, "query": qs}}}
+
+        wildcards = []
+        for f in query_fields:
+            wildcards.append({
+                'wildcard': {
+                   f: {'value': '*%s*' % qs} 
+                }
+            })
+
+        #q = {"query": { "query_string": { "fields":query_fields, "query": qs}}}
+        q = {'query': {'bool': {'should': wildcards } } }
+
         if fields is not None:
             q['fields'] = fields
         s = self.__class__.search()
         s.update_from_dict(q)
+        logger.debug('query dict: {}'.format(s.to_dict()))
         return s.execute(), s
 
     def update_from_dict(self, **d):

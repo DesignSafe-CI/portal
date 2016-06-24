@@ -1,13 +1,14 @@
 from django.conf import settings
-from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
-from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl.utils import AttrList
 from elasticsearch import TransportError
+from elasticsearch_dsl import Search, DocType
+from elasticsearch_dsl.connections import connections
 from designsafe.apps.api.data.agave.file import AgaveFile
+from designsafe.apps.api.data.agave.elasticsearch import utils as query_utils
 import dateutil.parser
 import datetime
 import logging
+import json
 import six
 import re
 import os
@@ -31,8 +32,26 @@ try:
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
+class ExecuteSearchMixin(object):
+    @staticmethod        
+    def _execute_search(s, **kwargs):
+        """Method to try/except a search and retry if the response is something
+            other than a 404 error.
 
-class Object(DocType):
+        :param object s: search object to execute
+
+        .. todo:: this should probably be a wrapper so we can use it everywhere.
+        """
+        logger.debug('es query: {}'.format(s.to_dict()))
+        try:
+            res = s.execute()
+        except TransportError as e:
+            if e.status_code == 404:
+                raise
+            res = s.execute()
+        return res, s
+
+class Object(ExecuteSearchMixin, DocType):
     """Class to wrap Elasticsearch (ES) documents.
         
     This class points specifically to the index `designsafe` and the 
@@ -67,7 +86,7 @@ class Object(DocType):
     source = 'agave'
 
     @classmethod
-    def listing(cls, system, username, file_path):
+    def listing(cls, system, username, file_path, **kwargs):
         """Do a listing of one level.
 
         :param str system: system id
@@ -77,10 +96,27 @@ class Object(DocType):
         :returns: list of :class:`Object`
         :rtype: list
         """
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":file_path}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
+        q = Q('filtered',
+              query = Q('bool',
+                        must = Q({'term': {'path._exact': file_path}})
+                        ),
+              filter = query_utils.files_access_filter(username, system)
+              )
         s = cls.search()
-        s.update_from_dict(q)
-        return cls._execute_search(s)
+        s.query = q
+        s = s.sort({'name._exact': 'asc'})
+
+        res, s = cls._execute_search(s)
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+
+        return res, s[offset:limit]
 
     @classmethod
     def from_file_path(cls, system, username, file_path):
@@ -96,12 +132,18 @@ class Object(DocType):
         """
         path, name = os.path.split(file_path)
         path = path or '/'
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._exact":path}},{"term":{"name._exact":name}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"must_not":{"term":{"deleted":"true"}}}}}}}
-        if username is not None:
-            q['query']['filtered']['filter']['bool']['should'] = [{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}] 
+        q = Q('filtered',
+             query = Q('bool',
+                      must = [
+                        Q({'term': {'path._exact': path}}),
+                        Q({'term': {'name._exact': name}})
+                        ]
+                     ),
+            filter = query_utils.files_access_filter(username, system)
+            )
 
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         res, s = cls._execute_search(s)
         if res.hits.total:
             return res[0]
@@ -145,9 +187,16 @@ class Object(DocType):
                 and alphabetically.
 
         """
-        q = {"query":{"filtered":{"query":{"bool":{"must":[{"term":{"path._path":file_path}}, {"term": {"systemId": system}}]}},"filter":{"bool":{"should":[{"term":{"owner":username}},{"terms":{"permissions.username":[username, "world"]}}], "must_not":{"term":{"deleted":"true"}} }}}}}
+        q = Q('filtered',
+              query = Q('bool',
+                        must = [
+                          Q({'term': {'path._path': file_path}})
+                          ]
+                      ),
+              filter = query_utils.files_access_filter(username, system)
+              )
         s = cls.search()
-        s.update_from_dict(q)
+        s.query = q
         return cls._execute_search(s)
 
     @classmethod
@@ -190,11 +239,9 @@ class Object(DocType):
                     lastModified = file_obj.lastModified.isoformat(),
                     fileType = file_obj.ext or 'folder',
                     agavePath = u'agave://{}/{}'.format(file_obj.system, file_obj.full_path),
-                    systemTags = [],
                     length = file_obj.length,
                     systemId = file_obj.system,
                     path = file_obj.parent_path,
-                    keywords = [],
                     link = file_obj._links['self']['href'],
                     type = file_obj.type
                 )
@@ -239,7 +286,7 @@ class Object(DocType):
         return o
 
     @classmethod
-    def search_query(cls, username, q, fields = [], **kwargs):
+    def search_query(cls, username, q, fields = [], sanitize = True, **kwargs):
         """Search the Elasticsearch index using a query string
 
         Use a query string to search the ES index. This method will search 
@@ -254,32 +301,34 @@ class Object(DocType):
             the **systemTags** field like so:
             >>> Object.search('username', 'txt', fields = ['systemTags'])
         """
-        search_fields = ['name', 'keywords']
+        if isinstance(fields, basestring):
+            fields = fields.split(',')
+
+        search_fields = ['name._exact', 'keywords']
+
         if fields:
             search_fields += fields
 
-        sq = { "query": { "filtered": { "query": { "query_string": { "fields":list(set(search_fields)), "query": "*%s*" % q}}, "filter":{"bool":{"should":[ {"term":{"owner":username}},{"term":{"permissions.username":username}}], "must_not":{"term":{"deleted":"true"}}}}}}}
+        sq = Q('filtered',
+                query = query_utils.files_wildcard_query(q, search_fields),
+                filter = query_utils.files_access_filter(username)
+                )
         s = cls.search()
-        s.update_from_dict(sq)
-        logger.debug('search query: {}'.format(s.to_dict()))
-        return cls._execute_search(s)
+        s.query = sq
+        s = s.sort('path._exact', 'name._exact')
 
-    @staticmethod        
-    def _execute_search(s):
-        """Method to try/except a search and retry if the response is something
-            other than a 404 error.
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+        logger.debug('limit: %s. offset: %s' % (limit, offset))
+        return res, s[offset:limit]
 
-        :param object s: search object to execute
-
-        .. todo:: this should probably be a wrapper so we can use it everywhere.
-        """
-        try:
-            res = s.execute()
-        except TransportError as e:
-            if e.status_code == 404:
-                raise
-            res = s.execute()
-        return res, s
 
     def copy(self, username, target_file_path):
         """Copy a document.
@@ -297,8 +346,7 @@ class Object(DocType):
 
         .. note:: this method returns the copied document.
 
-        Examples:
-        ---------
+        **Examples**:
             Copy a file and print the resulting copied file path
 
             >>> origin_doc = Object.from_file_path('agave.system.id', 
@@ -372,6 +420,10 @@ class Object(DocType):
         """
         return os.path.join(self.path, self.name)
 
+    @property
+    def parent_path(self):
+        return self.path
+
     def move(self, username, path):
         """Update document with new path
 
@@ -428,28 +480,36 @@ class Object(DocType):
         self.save()
         return self
 
-    def share(self, username, user_to_share, permission):
+    def save(self, **kwargs):
+        """Overwrite to become save or update
+        """
+        doc = Object.from_file_path(self.systemId, self.full_path.split('/')[0], self.full_path)
+        if doc:
+            setattr(self.meta, 'index', doc.meta.index)
+            setattr(self.meta, 'id', doc.meta.id)
+            setattr(self.meta, 'doc_type', doc.meta.doc_type)
+            doc.update(**self.to_dict())
+        return super(Object, self).save(**kwargs)
+
+    def share(self, username, permissions, update_parent_path = True, recursive = True):
         """Update permissions on a document recursively.
 
         :param str username: username making the request
-        :param str user_to_share: username with whom we are going to share this document
-        :param str permission: string representing the permission to set 
+        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
+            string representing the permission to set 
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
+        :param bool update_parent_path: if set it will update the permission on all the parent folders.
+        :param bool recursive: if set it will update the permissions recursively.
         """
-        if self.type == 'dir':
+        if recursive and self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
-                o.update_pems(user_to_share, permission)
+                o.update_pems(permissions)
         
-        path_comps = self.path.split('/')
-        for i in range(len(path_comps)):
-            doc_path = '.'.join(path_comps)
-            doc = Object.from_file_path(self.systemId, username, doc_path)
-            doc.update_pems(user_to_share, permission)
-            path_comps.pop()
-            doc.save()
+        if update_parent_path:
+            self._update_pems_on_parent_path(permissions)
 
-        self.update_pems(user_to_share, permission)
+        self.update_pems(permissions)
         self.save()
         return self
 
@@ -466,24 +526,112 @@ class Object(DocType):
             saved document. The only sanitization it does is to remove
             repeated elements.
         """
-        meta_obj = list(set(meta_obj))
-        self.update(keywords = meta_obj)
+
+        keywords = list(set(meta_obj['keywords']))
+        keywords = [kw.strip() for kw in keywords]
+        self.update(keywords = keywords)
         self.save()
+        logger.debug(self.keywords)
         return self
 
-    def update_pems(self, user_to_share, pem):
-        pems = getattr(self, 'permissions', [])
-        pem_to_add = {
-                'username': user_to_share,
+    def _pems_args_to_es_pems_list(self, permissions):
+        pems = []
+        for pem in permissions:
+            d = {
+                'username': pem['user_to_share'],
                 'recursive': True,
                 'permission': {
-                    'read': True if pem in ['READ_WRITE', 'READ_EXECUTE', 'READ', 'ALL'] else False,
-                    'write': True if pem in ['READ_WRITE', 'WRITE_EXECUTE', 'WRITE', 'ALL'] else False,
-                    'execute': True if pem in ['READ_EXECUTE', 'WRITE_EXECUTE', 'EXECUTE', 'ALL'] else False
+                    'read': True if pem['permission'] in ['READ_WRITE', 'READ_EXECUTE', 'READ', 'ALL'] else False,
+                    'write': True if pem['permission'] in ['READ_WRITE', 'WRITE_EXECUTE', 'WRITE', 'ALL'] else False,
+                    'execute': True if pem['permission'] in ['READ_EXECUTE', 'WRITE_EXECUTE', 'EXECUTE', 'ALL'] else False
                 }
             }
-        user_pems = filter(lambda x: x['username'] != user_to_share, pems)
-        user_pems.append(pem_to_add)
+            pems.append(d)
+        return pems
+
+    @property
+    def owner(self):
+        if self.path == '/':
+            owner = self.name
+        else:
+            owner = self.path.split('/')[0]
+        return owner
+
+    def _user_has_access(self, username, file_name_filter = None, pem = 'read'):
+        owner = self.owner
+        if self.type != 'dir':
+            username_pems = filter(lambda x: x['username'] == username, self.permissions)
+            check = username_pems[0]['permission'][pem]
+        else:
+            res, s = Object.listing(self.systemId, owner, owner)
+            check = False
+            for o in s.scan():
+                if file_name_filter is not None and o.name == file_name_filter:
+                    continue
+                pems = o.permissions
+                username_pems = filter(lambda x: x['username'] == username, pems)
+                logger.debug('username_pems: {} on file: {}'.format(username_pems, o.full_path))
+                if len(username_pems) > 0 and username_pems[0]['permission'][pem]:
+                    check = True
+                    break
+        return check
+
+    def _filter_revoke_pems_list(self, pems_args):
+        owner = self.owner
+        revoke = filter(lambda x: x['permission'] == 'NONE', pems_args)
+        logger.debug('revoke: {}'.format(revoke))
+        if len(revoke) > 0:
+            revoke_usernames = [o['user_to_share'] for o in revoke]
+            home_dir = Object.from_file_path(self.systemId, owner, owner)
+            if self.parent_path == owner:
+                file_name_filter = self.name
+            else:
+                file_name_filter = None
+            for username in revoke_usernames:
+                if home_dir._user_has_access(username, file_name_filter = file_name_filter):
+                    pems_args = filter(lambda x: x['user_to_share'] != username, pems_args)
+
+        return pems_args
+
+    def _update_pems_on_parent_path(self, pems_args):
+        pems_args = self._filter_revoke_pems_list(pems_args)
+        if len(pems_args) == 0:
+            return False
+        
+        path_comps = self.parent_path.split('/')
+        parents_pems_args = []
+        for p in pems_args:
+            d = {'user_to_share': p['user_to_share'],
+                 'permission': 'READ' if p['permission'] != 'NONE' else 'NONE'                }
+            parents_pems_args.append(d)
+
+        for i in range(len(path_comps)):
+            file_path = u'/'.join(path_comps)
+            logger.debug('ES updating pems on parent: %s' % file_path)
+            doc = Object.from_file_path(self.systemId, self.parent_path.split('/')[0], 
+                                        file_path)
+            doc.share(self.parent_path.split('/')[0], 
+                      parents_pems_args, 
+                      update_parent_path = False, 
+                      recursive = False)
+            path_comps.pop()
+        return True
+
+    def update_pems(self, permissions):
+        """Update permissions on a document.
+
+        :param str username_to_update: username with whom we are going to share this document
+        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
+            string representing the permission to set 
+            [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
+        """
+        pems = getattr(self, 'permissions', [])
+        pems_to_add = self._pems_args_to_es_pems_list(permissions)
+        pems_usernames = [o['username'] for o in pems_to_add]
+        pems_to_add = filter(lambda x: not (x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False), pems_to_add)
+        user_pems = filter(lambda x: x['username'] not in pems_usernames, pems)
+        user_pems += pems_to_add
+        logger.debug('updating permissions on {} with {}'.format(self.meta.id, user_pems))
         self.update(permissions = user_pems)
         self.save()
         return self
@@ -530,8 +678,315 @@ class Object(DocType):
             '_pems': pems
         }
         f = AgaveFile(wrap = wrap)
-        return f.to_dict()
+        extra = {
+            'meta':
+            {
+                'keywords': self.to_dict().get('keywords', list([])), 
+                'systemTags': self.to_dict().get('systemTags', list([]))
+            }
+        }
+        return f.to_dict(extra = extra)
 
     class Meta:
         index = default_index
         doc_type = 'objects'
+
+class Project(ExecuteSearchMixin, DocType):
+    @classmethod
+    def from_name(cls, name, fields = None):
+        name = re.sub(r'\.groups$', '', name)
+        q = Q({'term': {'name._exact': name}})
+        s = cls.search()
+        s.query = q
+
+        if fields is not None:
+            s = s.fields(fields)
+        return cls._execute_search(s)
+
+    @classmethod
+    def search_query(cls, system_id, username, qs, fields = None, **kwargs):
+        query_fields = ["description",
+                  "endDate",
+                  "equipment.component",
+                  "equipment.equipmentClass",
+                  "equipment.facility",
+                  "fundorg"
+                  "fundorgprojid",
+                  "name._exact",
+                  "organization.name",
+                  "pis.firstName",
+                  "pis.lastName",
+                  "title"]
+        if fields is not None:
+            query_fields += fields
+
+        q = query_utils.files_wildcard_query(q, query_fields)
+
+        s = cls.search()
+        s.query = q
+        s = s.sort('name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+
+        return res, s[offset:limit]
+
+    @classmethod
+    class Meta:
+        index = 'nees'
+        doc_type = 'project'
+
+class Experiment(ExecuteSearchMixin, DocType):
+    @classmethod
+    def from_project(cls, project, fields = None):
+        project = re.sub(r'\.groups$', '', project)
+        q = Q({'term': {'project._exact': project}})
+        s = cls.search()
+        s.query = q
+        if fields is not None:
+            s = s.fields(fields)
+
+        return cls._execute_search(s)
+
+    @classmethod
+    def from_name_and_project(cls, project, name, fields = None):
+        project = re.sub(r'\.groups$', '', project)
+        q = Q('bool',
+              must = [Q({'term': {'name._exact': name}}),
+                      Q({'term': {'project._exact': project}})]
+             )
+        s = cls.search()
+        s.query = q
+        if fields is not None:
+            s = s.fields(fields)
+
+        return cls._execute_search(s)
+   
+    @classmethod 
+    def search_query(cls, system_id, username, qs, fields = None):
+        query_fields = ["description",
+                  "facility.country"
+                  "facility.name",
+                  "facility.state",
+                  "name._exact",
+                  "project",
+                  "startDate",
+                  "title"]
+        if fields is not None:
+            query_fields += fields
+
+        q = query_utils.files_wildcard_query(q, query_fields)
+        s = cls.search()
+        s.query = q
+        if fields is not None:
+            s = s.fields(fields)
+
+        s = s.sort('name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+
+        return res, s[offset:limit]
+
+    class Meta:
+        index = 'nees'
+        doc_type = 'experiment'
+
+class PublicObject(ExecuteSearchMixin, DocType):
+    def __init__(self, *args, **kwargs):
+        super(PublicObject, self).__init__(*args, **kwargs)
+        self.project_title_ = None
+        self.project_name_ = None
+        self.experiment_name_ = None
+        self.trail_ = None
+
+    @classmethod
+    def listing_recursive(cls, system_id, path):
+        path = path or '/'
+        q = Q('bool',
+                must = [Q({'term': {'path._path': path}}),
+                        Q({'term': {'systemId': system_id}})]
+              )
+        s = cls.search()
+        s.query = q
+        return cls._execute_search(s)
+
+    @classmethod
+    def from_file_path(cls, system_id, file_path):
+        path, name = os.path.split(file_path)
+        path = path or '/'
+        q = Q('bool',
+                must = [Q({'term': {'path._exact': path}}),
+                        Q({'term': {'name._exact': path}}),
+                        Q({'term': {'systemId': system_id}})]
+              )
+        s = cls.search()
+        s.query = q
+        res, s = cls._execute_search(s)
+        if res.hits.total:
+            return res[0]
+        else:
+            return None
+
+    @classmethod
+    def listing(cls, system_id, path, **kwargs):
+        path = path or '/'
+        q = Q('bool',
+               must = [Q({'term': {'path._exact': path}}),
+                       Q({'term': {'systemId': system_id}})]
+               )
+        s = cls.search()
+        s = s.sort({'project._exact': 'asc'})
+        s.query = q
+
+        res, s = cls._execute_search(s)
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset < limit:
+            offset = 0
+            limit = 0
+        return res, s[offset:limit]
+    
+    @classmethod
+    def search_query(cls, system_id, username, q, fields = [], **kwargs):
+        if isinstance(fields, basestring):
+            fields = fields.split(',')
+
+        query_fields = ["name._exact"]
+        
+        if fields is not None:
+            query_fields += fields
+
+        s = cls.search()
+        s.query = query_utils.files_wildcard_query(q, query_fields)
+
+        s = s.sort('type', 'path._exact', 'name._exact')
+
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        res, s = cls._execute_search(s)
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+
+        return res, s[offset:limit]
+  
+    def _set_project_title_and_name(self): 
+        r, s = Project.from_name(self.project, ['title', 'name'])
+        if r.hits.total:
+            self.project_title_ = r[0].title[0]
+            self.project_name_ = r[0].name[0]
+
+    @property
+    def project_title(self):
+        if self.project_title_ is None or self.project_name_ is None:
+            self._set_project_title_and_name()
+
+        return self.project_title_
+
+    @property
+    def project_name(self):
+        if self.project_title_ is None or self.project_name_ is None:
+            self._set_project_title_and_name()
+
+        return self.project_name_
+
+    @property
+    def experiment_name(self):
+        path_comps = self.path.split('/')
+        exp_id = None
+        if len(path_comps) >= 2:
+            exp_id = path_comps[1]
+
+        if self.experiment_name_ is None and exp_id is not None:
+            r, s = Experiment.from_name_and_project(self.project, exp_id, ['title'])
+            if r.hits.total:
+                self.experiment_name_ = r[0].title[0]
+
+        return self.experiment_name_
+
+    @property
+    def parent_path(self):
+        return self.path
+
+    @property
+    def trail(self):
+        try:
+            if self.trail_ is None:
+                self.trail_ = []
+                if self.parent_path != '' and self.parent_path != '/':
+                    path_parts = self.parent_path.split('/')
+                    for i, c in enumerate(path_parts):
+                        trail_path = '/'.join(path_parts[:i])
+                        self.trail_.append(dict(
+                            source = 'public',
+                            system = self.systemId,
+                            id = os.path.join(self.systemId, trail_path, c),
+                            path = trail_path,
+                            name = c,
+                            type = 'folder'
+                        ))
+            return list(self.trail_)
+        except:
+            logger.debug('Error', exc_info=True)
+            raise
+    
+    @property
+    def ext(self):
+        return os.path.splitext(self.name)[1]
+
+    @property
+    def full_path(self):
+        return os.path.join(self.path.strip('/'), self.name)
+
+    @property
+    def file_id(self):
+        return os.path.join(self.systemId, self.full_path)
+        
+    def to_dict(self, get_id = False, def_pems = None, with_meta = True, *args, **kwargs):
+        d = super(PublicObject, self).to_dict(*args, **kwargs)
+        d['ext'] = self.ext
+        d['id'] = self.file_id
+        d['size'] = self.length
+        d['system'] = self.systemId
+        d['source'] = 'public'
+        d['type'] = 'folder' if self.type == 'dir' else 'file'
+        d['_trail'] = [o.to_dict() for o in self.trail] if self.trail else []
+        if get_id:
+            d['_id'] = self._id
+        if def_pems:
+            d['_pems'] = list(def_pems)
+
+        if with_meta:
+            d['metadata'] = {
+                'projectTitle' : self.project_title,
+                'projectName' : self.project_name,
+                'experimentName' : self.experiment_name 
+            }
+        return d
+
+    class Meta:
+        index = 'nees'
+        doc_type = 'object'
+
+

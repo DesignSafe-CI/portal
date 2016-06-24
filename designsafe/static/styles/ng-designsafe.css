@@ -24,12 +24,13 @@
 .ds-data-browser-loading {
     position: absolute;
     top: 0;
-    right: 40%;
+    right: 0;
     padding: 5px;
     font-size: 1.5em;
     border: 1px solid #46B8DA;
     background-color: #5bc0de;
     color: #ffffff;
+    z-index:9999;
 }
 
 .ds-data-browser {
@@ -207,4 +208,87 @@
     -ms-transition: width .55s ease;
     -o-transition: width .55s ease;
     transition: width .55s ease;
+}
+
+/**
+*
+* METADATA TAGS CSS
+*
+*/
+
+.tags-list {
+    margin-top:10px;
+}
+
+.tag-item input[type="checkbox"]{
+    display:none;
+}
+
+.tag-item button {
+    background:none;
+    padding:0px;
+}
+
+.tag-item label {
+    position:absolute;
+    top:-7px;
+    left: 1px;
+    cursor:pointer;
+}
+
+.tag-item {
+  background: #ececec;
+  border-radius: 3px 0 0 3px;
+  color: black;
+  display: inline-block;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 20px 0 10px;
+  position: relative;
+  margin: 0 10px 10px 0;
+  text-decoration: none;
+  -webkit-transition: color 0.2s;
+}
+
+.tag-item.deleted {
+  background: #f2dede;
+}
+
+.tag-item span.deleted {
+    text-decoration: line-through;
+}
+
+.tag-item:after {
+  background: #fff;
+  border-bottom: 13px solid transparent;
+  border-left: 10px solid #ececec;
+  border-top: 13px solid transparent;
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.tag-item.deleted:after {
+  border-left: 10px solid #f2dede;
+}
+
+
+/**
+*
+* DATA BROWSER TABLE WRAPPER CSS
+*
+**/
+
+.ds-table-display-wrapper {
+    height:500px;
+    overflow:scroll;
+}
+
+.ds-table-display-wrapper table tfoot tr td {
+    font-size: 1.5em;
+    border: 1px solid #46B8DA;
+    background-color: #5bc0de;
+    color: #ffffff;
+    z-index:9999;
 }

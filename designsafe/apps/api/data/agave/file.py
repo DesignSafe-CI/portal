@@ -78,7 +78,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             self._permissions = self._wrap['permissions']
 
         if self.name == '.':
-            tail, head = os.path.split(self.path) 
+            tail, head = os.path.split(self.path.strip('/')) 
             self.name = head
 
     @classmethod
@@ -102,10 +102,12 @@ class AgaveFile(AbstractFile, AgaveObject):
     @classmethod
     def listing(cls, system, file_path, agave_client, **kwargs):
         try:
+            limit = int(kwargs.pop('limit', 100))
+            offset = int(kwargs.pop('offset', 0))
+            limit = offset + limit
             logger.debug('Agave: calling: files.list, args: {}'.format( 
-                         {'systemId': system, 'filePath': file_path}))
-            limit = kwargs.pop('limit', 100)
-            offset = kwargs.pop('offset', 0)
+                         {'systemId': system, 'filePath': file_path,
+                          'limit': limit, 'offset': offset}))
             listing = agave_client.files.list(systemId=system, filePath=file_path,
                                               limit=limit, offset=offset)
         except (AgaveException, HTTPError) as e:
@@ -140,7 +142,7 @@ class AgaveFile(AbstractFile, AgaveObject):
 
     @property
     def full_path(self):
-        return self.path
+        return self.path.strip('/')
 
     @property
     def id(self):
@@ -220,9 +222,64 @@ class AgaveFile(AbstractFile, AgaveObject):
                         'id': '/'.join([self.system] + trail_path + [c]),
                         'path': '/'.join(trail_path),
                         'name': c,
+                        'type': 'folder'
                     })
 
         return self._trail
+
+    def _user_has_access(self, username, file_name_filter = None, pem = 'read'):
+        """Checks if username has access to a child file
+
+        Given a username check if there is any child file 
+        (on the first immeidate level) that has the permission `pem` set.
+        If a ``file_name_filter`` is given the function will check any 1st children
+        filtering out the file with the specified file name.
+        If a ``pem`` is given the function will check for that specific permission.
+
+        Args:
+            username (string): Username to check permission.
+            file_name_filter (string): File name to filter out when checking for permissions.
+            pem (string): String representation of permission to look for. 
+                Please refer to :func:`update_pems` for alowed strings. Defaults to READ.
+        Returns:
+            bool: True or False if the permission for the given username was found.
+
+        Note:
+            This method should be used whenever a permission for a given username is revoked
+            in order to decide if the permission revoke should be reflected on the parent
+            path or any other files. Meaning, if a username has read access to `path/to/file`
+            and `path/to/another_file` and the read permission is revoked on `path/to/file`
+            we would not want to also revoke read permission on `path/to` or the username
+            will not be able to see `path/to/another_file`.
+        
+        Note:
+            If the current class instance is a representation of a file and not a directory
+            i.e. it does not have any children, the function will analyze the current
+            file's permissions.
+
+        """
+        if self.type != 'dir':
+            username_pems = filter(lambda x: x['username'] == username, self.permissions)
+            check = False
+            if len(username_pems) > 0:
+                check = username_pems[0]['permission'][pem]
+
+        else:
+            listing = AgaveFile.listing(self.system, 
+                                        file_path = self.full_path,
+                                        agave_client = self.agave_client)
+            check = False
+            for o in listing:
+                if (file_name_filter is not None and o.name == file_name_filter) or o.name == self.name:
+                    continue
+                pems = o.permissions
+                username_pems = filter(lambda x: x['username'] == username, pems)
+                logger.debug('username_pems: {} on file: {}'.format(username_pems, o.full_path))
+                if len(username_pems) > 0 and username_pems[0]['permission'][pem]:
+                    check = True
+                    break
+
+        return check
 
     def copy(self, path):
         """
@@ -346,35 +403,131 @@ class AgaveFile(AbstractFile, AgaveObject):
         self.name = path
         return self
 
-    def share(self, user_to_share, permission):
-        """
-        Share file(s)
+    def share(self, pems_args, update_parent_path = True, recursive = True):
+        """Share and/or un-share file(s)
+
+        This function takes a list as an argument. This list should be a list 
+        of :class:`dict` objects with two keys ``user_to_share`` and ``permission``.
+
 
         Args:
-            user_to_share: String. User to share the file(s) with.
-            permission: String. Permission to set [READ | WRITE | EXECUTE | ALL]
+            pems_args (list): A list of dicts with two keys ``user_to_share`` and ``permission``.
+            update_parent_path (bool): If ``True`` update the permission on the parent path.
 
         Returns:
             Class instance for chainability
         """
-        permission_body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, user_to_share)
+        for pem in pems_args:
+            self.update_pems(pem['user_to_share'], pem['permission'], recursive)
+        
+        if update_parent_path:
+            self._update_pems_on_parent_path(pems_args)
+
+        return self
+
+    def _filter_revoke_pems_list(self, pems_args):
+        """Filter out any revoke pems when not needed
+
+        This function will remove any revoke permissions if the username,
+        whose permission we wish to revoke, still has access to another
+        file/folder in the home directory.
+
+        Args:
+            pems_args (list): list of permissions arguments. Refer to :func:`share`
+
+        Returns:
+            list: The same ``pems_args`` except filtered.
+
+        Note:
+            The decision to filter out revoked permission is based only on the rest of
+            the permission in the first level of the home directory. This is because
+            if a user has any access to a file that is deep in the file system tree
+            those permissions should be reflected in, at least, one directory on the
+            first level.                
+        """
+        owner = self.parent_path.split('/')[0]
+        revoke = filter(lambda x: x['permission'].upper() == 'NONE', pems_args)
+        logger.debug('revoke: {}'.format(revoke))
+        if len(revoke) > 0:
+            revoke_usernames = [o['user_to_share'] for o in revoke]
+            home_dir= AgaveFile.from_file_path(self.system, owner,
+                                            owner, self.agave_client)
+            if self.parent_path == owner:
+                file_name_filter = self.name
+            else:
+                file_name_filter = None
+            for username in revoke_usernames:
+                logger.debug('Checking username: {} for permissions'.format(username)) 
+                if home_dir._user_has_access(username, file_name_filter = file_name_filter):
+                    pems_args = filter(lambda x: x['user_to_share'] != username, pems_args)
+
+        return pems_args
+
+    def _update_pems_on_parent_path(self, pems_args):
+        """Update permissions on all the parent folders
+        """
+        pems_args = self._filter_revoke_pems_list(pems_args)
+        if len(pems_args) == 0:
+            return False
+
+        path_comps = self.parent_path.split('/')
+        parents_pems_args = []
+        for p in pems_args:
+            d = {'user_to_share': p['user_to_share'],
+                 'permission': 'READ' if p['permission'] != 'NONE' else 'NONE'
+                }
+            parents_pems_args.append(d)
+        for i in range(len(path_comps)):
+            file_path = u'/'.join(path_comps)
+            logger.debug('Agave updating pems on parent: %s' % file_path)
+            af = AgaveFile.from_file_path(self.system, self.parent_path.split('/')[0], 
+                                    file_path, self.agave_client)
+            af.share(parents_pems_args, update_parent_path = False, recursive = False)
+            path_comps.pop()
+        return True
+
+    def update_pems(self, username_to_update, permission, recursive = True):
+        """Update permissions.
+        
+        Args:
+            username_to_update (string): Username whose permissions we are 
+                going to update
+            permission (string): New permission.
+                [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
+        Returns:
+            Class instasnce for chainability
+        """
+        permission_body = '{{ "recursive": "{}", "permission": "{}", "username": "{}" }}'.format(
+                                                         recursive, permission, username_to_update)
         try:
             self.call_operation('files.updatePermissions',
                                 filePath = self.full_path,
                                 systemId = self.system,
                                 body = permission_body, 
                                 raise_agave = True)
-        except (AgaveException, HTTPError) as e:
+        except AgaveException as e:
             logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
-
+        except HTTPError as e:
+            if e.response.status_code == 502 or e.response.status_code == 503:
+                logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
+            else:
+                raise
         return self
 
-    def to_dict(self, **kwargs):
-        pems = kwargs.get('default_pems', None)
+    def to_dict(self, default_pems = None, extra = {}, **kwargs):
+        """Converts a file object into a serializable dictionary.
+
+        :param list default_pems: A list of dicts representing some default permissions.
+            This is useful when retreiving permissions from Agave is not necessary and
+            the permissions can be constructed from existent information.
+        :param dict extra: A dictionary with keys and values to add to the dict returned
+            by this function. 
+        """
+        pems = default_pems
         if pems is None:
             pems = self.permissions
 
-        return {
+        d = {
             'source': self.source,
             'system': self.system,
             'id': self.id,
@@ -387,6 +540,8 @@ class AgaveFile(AbstractFile, AgaveObject):
             '_trail': self.trail,
             '_pems': pems,
         }
+        d.update(extra)
+        return d
 
     def __repr__(self):
         return 'AgaveFile(wrap={{ "system": "{}", "path": "{}", "name": "{}"}})'.format(getattr(self, 'system', ''), getattr(self, 'path', ''), getattr(self, 'name', ''))

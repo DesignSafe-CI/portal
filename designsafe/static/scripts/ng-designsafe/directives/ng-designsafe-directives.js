@@ -16,7 +16,7 @@
           });
         });
       }
-    }
+    };
   });
 
   mod.directive('selectOnFocus', function() {
@@ -27,7 +27,7 @@
           this.select();
         });
       }
-    }
+    };
   });
 
   mod.directive('dsDataDraggable', function() {
@@ -127,5 +127,29 @@
     };
   });
 
+  mod.directive('dsInfiniteScroll', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        scrollBottom: '&',
+        scrollTop: '&',
+        bottomHeight: '='
+      },
+      link: function(scope, element, attrs){
+        var el = element[0];
+        el.addEventListener('scroll', function(e){
+          var pos = el.offsetHeight + el.scrollTop;
+          if (pos >= el.scrollHeight - scope.bottomHeight){
+            scope.scrollBottom(el, pos);
+          }
+          if (pos <= el.offsetHeight){
+            if (scope.scrollTop){
+              scope.scrollTop(el, pos);
+            }
+          }
+        });
+      }
+    };
+  });
 
 })(angular, jQuery);

@@ -47,4 +47,5 @@ Tests are based on the next snippets:
 
 #Test share
 `>>> fm.share(file_id = 'designsafe.storage.default/xirdneh/DOC19.jpg', user = 'v2_share', permission = 'READ')`
+>>> fm.share('designsafe.storage.default/xirdneh/agavefs', [{'user_to_share': 'user1', 'permission': 'READ'}, {'user_to_share': 'user2', 'permission': 'READ_WRITE'}])
 

@@ -14,17 +14,11 @@
       scope: {
         user: '=',
         data: '=data',  /* the data to initialize the data browser with; available keys are ['listing', 'resource', 'fileId'] */
+        state: '=state', /* the state to initialize the data browser: ['loading: false, listingError: false, selecting: false, selected: [], search: false */
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
       },
       controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
-        
-        $scope.state = {
-          loading: false,
-          listingError: false,
-          selecting: false,
-          selected: []
-        };
 
         var self = this;
 
@@ -227,21 +221,49 @@
           //  */
           instance.result.then(function (permissions) {
             $scope.state.loading = true;
+            $scope.file = file;
             self.clearSelection();
+            $scope.pems_to_update = [];
 
-            var tasks = _.map(permissions, function(pem) {
-              var params = {
-                resource: file.source,
-                file_id: file.id,
-                username: pem.username,
-                permission: pem.permission.permission
-              };
-              return DataService.share(params);
+            _.each(permissions, function(pem){
+              var pems = _.find($scope.file._pems, function(o){ 
+                                    return o.username == pem.username; });
+              if (!pems){
+                $scope.pems_to_update.push({'user_to_share': pem.username,
+                                    'permission': pem.permission.permission});
+              } else {
+                var p = pems.permission;
+                var pem_to_add =  {'user_to_share':pem.username,
+                      'permission': pem.permission.permission};
+                if(pem.permission.permission == 'READ' &&
+                  !(p.read && !p.write && !p.execute)){
+                  $scope.pems_to_update.push(pem_to_add);
+                }
+                else if (pem.permission.permission == 'READ_WRITE' &&
+                  !(p.read && p.write && !p.execute)){
+                  $scope.pems_to_update.push(pem_to_add); 
+                }
+                else if (pem.permission.permission == 'ALL' &&
+                  !(p.read && p.write && p.execute)){
+                  $scope.pems_to_update.push(pem_to_add);
+                }
+                else if (pem.permission.permission === null &&
+                  !(!p.read && p.write && p.execute)){
+                  pem_to_add.permission = 'NONE';
+                  $scope.pems_to_update.push(pem_to_add);
+                }
+              }
             });
-            $q.all(tasks).then(
-              function(results) {
+            DataService.share({
+              resource: file.source,
+              file_id: file.id,
+              permissions: $scope.pems_to_update
+            }).then(
+              function(resp) {
                 $scope.state.loading = false;
-                file._pems = results.pop().data._pems; /* update pems for current file */
+                //Get the file from scope or else it might not be the same reference.
+                var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
+                listingFile._pems = resp.data._pems; /* update pems for current file */
                 $scope.$emit('designsafe:notify', {
                   level: 'info',
                   message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
@@ -360,6 +382,7 @@
                 move: self.hasPermission('write', [parentFile, previewFile]),
                 rename: self.hasPermission('write', [previewFile]),
                 trash: self.hasPermission('write', [parentFile, previewFile]),
+                metadata: self.hasPermission('read', [previewFile])
               };
 
               $scope.data.previewUrl = {loading: true};
@@ -420,9 +443,87 @@
                 $scope.cancel();
                 self.trashFiles([previewFile]);
               };
+
+              $scope.metadataFile = function() {
+                $scope.cancel();
+                self.metadataDialog(previewFile);
+              };
             },
             size: 'lg',
             resolve: {parentFile: parentFile, previewFile: previewFile}
+          });
+        };
+
+        self.metadataDialog = function(file) {
+          var dialog = $uibModal.open({
+            templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-metadata.html',
+            controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
+              $scope.form = {
+                keywords: '',
+                tagsToDelete:[]
+              };
+              $scope.data =  {
+                title: 'Metadata.',
+                metadata: file.meta,
+                file: file
+              };
+
+              $scope.saveMeta = function($event) {
+                $event.preventDefault();
+                $uibModalInstance.close($scope.form);
+              };
+              
+              $scope.isMarkedDeleted = function(tag){
+                return $scope.form.tagsToDelete.indexOf(tag) > -1;
+              };
+
+              $scope.toggleTag = function(tag){
+                var id = $scope.form.tagsToDelete.indexOf(tag);
+                if (id > -1){
+                  $scope.form.tagsToDelete.splice(id, 1);
+                } else {
+                  $scope.form.tagsToDelete.push(tag);
+                }
+              };
+
+              $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+              };
+            }]
+          });
+
+          dialog.result.then(function(form) {
+            $scope.state.loading = true;
+            $scope.file = file;
+            var meta_obj = {
+                keywords: file.meta.keywords
+                };
+            if (form.keywords) {
+              meta_obj.keywords = meta_obj.keywords.concat(form.keywords.split(','));
+            }
+            if (form.tagsToDelete.length){
+              meta_obj.keywords = meta_obj.keywords.filter(function(value){
+                return form.tagsToDelete.indexOf(value) < 0;
+              });
+            }
+            DataService.updateMeta({
+              file_id: file.id,
+              resource: file.source,
+              meta_obj: meta_obj
+            }).then(function(resp) {
+              $scope.state.loading = false;
+              self.clearSelection();
+              //Get the file from scope or else it might not be the same reference.
+              var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
+              _.extend(listingFile, resp.data);
+            }, function(err) {
+              $scope.$emit('designsafe:notify', {
+                level: 'warning',
+                message: 'Unable to update metadata: ' + err.data.message
+              });
+              logger.error(err);
+              $scope.state.loading = false;
+            });
           });
         };
 
@@ -572,6 +673,7 @@
 
           instance.result.then(function(targetName) {
             $scope.state.loading = true;
+            $scope.file = file;
             DataService.rename({
               file_id: file.id,
               resource: file.source,
@@ -582,13 +684,15 @@
                 message: 'Renamed "' + file.name + '" to "' + targetName + '".'
               });
               $scope.state.loading = false;
-              self.clearSelection();
-              _.extend(file, resp.data);
+              self.clearSelection();  
+              //Get the file from scope or else it might not be the same reference.
+              var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
+              _.extend(listingFile, resp.data);
             }, function(err) {
-                $scope.$emit('designsafe:notify', { 
-                level: 'warning', 
-                message: 'Failed to rename file: ' + err.data.message 
-              });
+                $scope.$emit('designsafe:notify', {
+                level: 'warning', 
+                message: 'Failed to rename file: ' + err.data.message
+                });
 
               logger.error(err);
               $scope.state.loading = false;
@@ -744,6 +848,8 @@
           self.clearSelection();
           $scope.state.listingError = false;
           $scope.state.loading = true;
+          $scope.state.page = 0;
+          $scope.state.reachedEnd = false;
           options = options || {};
           return DataService.listPath(options).then(
             function(response) {
@@ -755,7 +861,6 @@
               if (handler) {
                 handler($scope.data.listing);
               }
-              $scope.state.search = false;
             },
             function(error) {
               var handler = $scope.onPathChanged();
@@ -801,10 +906,15 @@
           );
         };
 
-        self.search = function(q){
+        self.search = function(q, fields){
+          fields = fields || [];
           $scope.state.loading = true;
           $scope.state.search = true;
-          return DataService.search($scope.data.listing.source, q).then(
+          $scope.state.page = 0;
+          $scope.state.reachedEnd = false;
+          $scope.state.searchFields = fields;
+          $scope.state.searchQ = q;
+          return DataService.search($scope.data.listing.source, q, fields).then(
             function(response){
               $scope.state.loading = false;
               $scope.data.listing = response.data;
@@ -819,6 +929,68 @@
               logger.error(error);
             }
           );
+        };
+
+        self.scrollToBottom = function(el, pos){
+          if($scope.state.loadingMore || $scope.state.reachedEnd){
+            return;
+          }
+          if($scope.state.page){
+            $scope.state.page += 1;
+          } else {
+            $scope.state.page = 1;
+          }
+          $scope.state.loadingMore = true;
+          if (!$scope.state.search){
+            DataService.listPath({resource: $scope.data.listing.source,
+                                  file_id: $scope.data.listing.id,
+                                  page: $scope.state.page}).then(
+              function(response){
+                var children = $scope.data.listing.children;
+                var moreChildren = [];
+                if (response.data.children){
+                  moreChildren = response.data.children;
+                }
+                $scope.data.listing.children = children.concat(moreChildren);
+
+                if (moreChildren.length < 100){
+                  $scope.state.reachedEnd = true;
+                }    
+                $scope.state.loadingMore = false;
+              },
+              function(error){
+                logger.error(error);
+                $scope.state.page -= 1;
+                $scope.state.loadingMore = false;
+                $scope.state.reachedEnd = true;
+              }
+            );
+          } else {
+            DataService.search($scope.data.listing.source, 
+                               $scope.state.searchQ, 
+                               $scope.state.searchFields,
+                               $scope.state.page).then(
+              function(response){
+                var children = $scope.data.listing.children;
+                var moreChildren = response.data.children;
+                $scope.data.listing.children = children.concat(moreChildren);
+                if (moreChildren.length < 100){
+                  $scope.state.reachedEnd = true;
+                }
+                $scope.state.loadingMore = false;
+              },
+              function(error) {
+                $scope.state.page -= 1;
+                $scope.state.loadingMore = false;
+                $scope.state.reachedEnd = true;
+                logger.error(error);
+              }
+            );
+          }
+        };
+
+        self.scrollToTop = function(el, pos){
+          return;
         };
 
         if (! $scope.data.listing) {
@@ -903,6 +1075,10 @@
           return true;
         };
 
+        scope.metadataEnabled = function() {
+          return scope.state.selected.length === 1;
+        };
+
         scope.previewEnabled = function() {
           return scope.state.selected.length === 1;
         };
@@ -977,6 +1153,14 @@
           _.each(dbCtrl.selectedFiles(), function(file) {
             dbCtrl.downloadFile(file);
           });
+        };
+
+        scope.previewMetadataSelected = function(){
+          var file;
+          if (scope.state.selected.length === 1){
+            file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
+            dbCtrl.metadataDialog(file);
+          }
         };
 
         scope.previewSelected = function() {
@@ -1057,6 +1241,9 @@
         scope.selectAll = dbCtrl.selectAll;
         scope.selectFile = dbCtrl.toggleSelectFile;
         scope.clearSelection = dbCtrl.clearSelection;
+        scope.scrollToBottom = dbCtrl.scrollToBottom;
+        scope.scrollToTop = dbCtrl.scrollToTop;
+
         scope.previewFile = function($event, file) {
           $event.stopPropagation();
           dbCtrl.previewFile(file);
@@ -1142,6 +1329,15 @@
             }
           }
         };
+
+        scope.browseAndPreview = function(e, file){
+          if (file.type != 'folder'){
+            scope.browseFile(e, file._trail[file._trail.length - 1]);
+            scope.previewFile(e, file);
+          } else {
+            scope.browseFile(e, file);
+          }
+        };
       }
     };
   }]);
@@ -1153,6 +1349,13 @@
       preview: false,
       selection: false,
       columns: ['name', 'action']
+    };
+    $scope.state = {
+      loading: false,
+      listingError: false,
+      selecting: false,
+      search: false,
+      selected: false
     };
 
     $scope.validDestination = function (file) {

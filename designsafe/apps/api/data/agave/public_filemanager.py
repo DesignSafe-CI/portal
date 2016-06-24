@@ -3,7 +3,7 @@ from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
-from designsafe.apps.api.data.agave.elasticsearch.documents import Object
+from designsafe.apps.api.data.agave.elasticsearch.documents import Object, PublicObject
 from django.conf import settings
 from django.core.urlresolvers import reverse
 import urllib
@@ -38,7 +38,7 @@ class FileManager(AgaveObject):
         """Parses a `file_id`.
 
         :param str file_id: String with the format
-        <filesystem id>[ [ [/ | /<file_path>] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: a list with up to two elements
 
@@ -79,12 +79,95 @@ class FileManager(AgaveObject):
         system, file_path = self.parse_file_id(file_id)
         return os.path.join(self.mount_path, file_path)
 
+    def _es_listing(self, system, username, file_path, **kwargs):
+        """Returns a "listing" dict constructed with the response from Elasticsearch.
+
+        :param str system: system id
+        :param str username: username which is requesting the listing. 
+                             This is to check the permissions in the ES docs.
+        :param str file_path: path to list
+
+        :returns: A dict with information of the listed file and, when possible, 
+        a list of :class:`~designsafe.apps.api.data.agave.elasticsearch.documents.Object` objects
+        dict in the key ``children``
+        :rtype: dict
+
+        Notes:
+        -----
+
+            This should not be called directly. See py:meth:`listing(file_id)`
+            for more information.
+        """
+        file_path = file_path or '/'
+        res, listing  = PublicObject.listing(system, file_path, **kwargs)
+
+        default_pems = [{'username': self.username,
+                         'permission': {'read': True, 'write': False, 'execute': True},
+                         'recursive': True}]
+
+        if file_path == '/':
+            list_data = {
+                'source': self.resource,
+                'system': 'nees.public',
+                'id': 'nees.public/',
+                'type': 'folder',
+                'name': '',
+                'path': '/',
+                'ext': '',
+                'size': None,
+                'lastModified': None,
+                'children': [o.to_dict(def_pems = default_pems) for o in listing],
+                '_trail': [],
+                '_pems': default_pems,
+            }
+        else:
+            root_listing = PublicObject.from_file_path(system, file_path)
+            if root_listing:
+                list_data = root_listing.to_dict(def_pems = default_pems)
+                list_data['children'] = [o.to_dict(def_pems = default_pems) for o in listing]
+            else:
+                list_data = None
+
+        return list_data
+
+    def _agave_listing(self, system, file_path, **kwargs):
+        """Returns a "listing" dict constructed with the response from Agave.
+
+        :param str sytem: System id
+        :param str file_path: Path to list
+
+        :returns: A dict with information of the listed file and, when possible, 
+        a list of :class:`~designsafe.apps.api.data.agave.files.AgaveFile` objects
+        dict in the key ``children``
+        :rtype: dict
+
+        Notes:
+        -----
+
+            This should not be called directly. See py:meth:`listing(file_id)`
+            for more information.
+        """
+        listing = AgaveFile.listing(system, file_path, self.agave_client, 
+                                    source='public', **kwargs)
+
+        root_file = filter(lambda x: x.full_path == file_path, listing)
+
+        default_pems = [{'username': self.username,
+                         'permission': {'read': True, 'write': False, 'execute': True},
+                         'recursive': True}]
+
+        list_data = root_file[0].to_dict(default_pems=default_pems)
+        list_data['children'] = [o.to_dict(default_pems=default_pems)
+                                 for o in listing if o.full_path != file_path]
+
+        return list_data
+
     def listing(self, file_id=None, **kwargs):
         """
         Lists contents of a folder or details of a file.
 
         :param str file_id: id representing the file. Format:
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns:listing dict. A dict with the properties of the
         parent path file object plus a `children` key with a list
@@ -124,20 +207,21 @@ class FileManager(AgaveObject):
 
         """
         system, file_path = self.parse_file_id(file_id)
-        listing = AgaveFile.listing(system, file_path, self.agave_client, source='public')
+        try:
+            listing = self._es_listing(system, self.username, file_path, **kwargs)
+        except Exception as e:
+            logger.debug('Error listing using Es. Falling back to Aagave', exc_info=True)
+            listing = None
+        
+        fallback = listing is None or(
+            listing['type'] == 'folder' and
+            len(listing['children']) == 0)
 
-        root_file = filter(lambda x: x.full_path == file_path, listing)
+        if fallback:
+            listing = self._agave_listing(system, file_path, **kwargs)
 
-        default_pems = [{'username': self.username,
-                         'permission': {'read': True, 'write': False, 'execute': True},
-                         'recursive': True}]
-
-        list_data = root_file[0].to_dict(default_pems=default_pems)
-        list_data['children'] = [o.to_dict(default_pems=default_pems)
-                                 for o in listing if o.full_path != file_path]
-
-        return list_data
-
+        return listing                                          
+        
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Copies a file
 
@@ -182,7 +266,7 @@ class FileManager(AgaveObject):
         """Get the download link for a file
 
         :param str file_id: String with the format
-        <filesystem id>[ [ [/ | /<username> [/ | /<file_path>] ] ] ]
+        <filesystem id>[/ | /<username> [/ | /<file_path>] ]
 
         :returns: a dict with a single key `href` which has the direct
             noauth link to download a file
@@ -229,4 +313,20 @@ class FileManager(AgaveObject):
             return None
 
     def search(self, **kwargs):
-        return [{}]
+        res, s = PublicObject.search_query(self.system_id, self.username, **kwargs)
+        search_data = {
+            'source': self.resource,
+            'system': 'nees.public',
+            'id': '$search',
+            'type': 'folder',
+            'name': '$SEARCH',
+            'path': '',
+            'ext': '',
+            'size': None,
+            'lastModified': None,
+            'query': {'q': kwargs.get('q'), 'fields': kwargs.get('fields', [])},
+            'children': [o.to_dict() for o in s if not o.path.startswith('%s/.Trash' % self.username)],
+            '_trail': [],
+            '_pems': [{'username': self.username, 'permission': {'read': True}}],
+        }
+        return search_data

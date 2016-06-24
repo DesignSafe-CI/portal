@@ -101,6 +101,10 @@
       if (options.index_pems) {
         url += '&pems=true';
       }
+      if (options.page){
+        var offset = options.page * 100;
+        url += '&offset=' + offset;
+      }
       return $http.get(url);
     };
 
@@ -269,27 +273,47 @@
       };
       var body = {
         action: 'share',
-        user: options.username,
-        permission: options.permission
+        permissions: options.permissions
       };
       return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
     };
 
     /**
      *
-     * This method accepts either a query string
-     * or an object were keys are in the form "q_{field_name}"
+     * Search in the ES index using a query string.
+     * An array with the string name of each extra field to search
+     * can be passed. 
      *
      * @param {string} q
-     * @param q_kw
+     * @param {array} fields
     */
-    service.search = function(resource, q, q_kw){
+    service.search = function(resource, q, fields, page){
       var params = {
         resource: resource
       };
       var url = djangoUrl.reverse('designsafe_api:search', params);
       url += '&q=' + q;
+      if (fields && fields.length >= 1){
+        url += '&fields=' + fields;    
+      }
+      if (page){
+        var offset = page * 100;
+        url += '&offset=' + offset;
+      }
       return $http.get(url);
+    };
+
+    service.updateMeta = function(options){
+      var params = {
+        resource: options.resource,
+        file_id: options.file_id
+      };
+      var body = {
+        action: 'update_metadata',
+        meta_obj: options.meta_obj
+      };
+      var url = djangoUrl.reverse('designsafe_api:file', params);
+      return $http.put(url, body);
     };
 
     return service;
