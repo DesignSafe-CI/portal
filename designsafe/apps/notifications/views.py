@@ -68,10 +68,7 @@ def generic_webhook_handler(request):
                 'associationIds': [job_uuid],
             }
             user = get_user_model().objects.get(username=job_owner)
-            token = user.agave_oauth
-            if token.expired:
-                token.refresh()
-            agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
+            agave = user.agave_oauth.client
             agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
         except AgaveException as e:
