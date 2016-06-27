@@ -67,8 +67,6 @@ class AgaveOAuthToken(models.Model):
                      token_callback=self.update)
 
     def update(self, **kwargs):
-
-        logger.debug('Updating token %s', kwargs)
         for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
         self.save()
