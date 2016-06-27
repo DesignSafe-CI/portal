@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class AgaveTokenRefreshMiddleware(object):
+    """
+    DEPRECATED
+    """
 
     def process_request(self, request):
         if request.path != '/logout/' and request.user.is_authenticated():
