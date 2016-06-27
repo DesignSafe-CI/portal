@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     'designsafe.apps.signals',
 
     # Designsafe apps
+    'designsafe.apps.applications',
     'designsafe.apps.data',
     'designsafe.apps.djangoRT',
     'designsafe.apps.notifications',
@@ -478,7 +479,7 @@ BROKER_URL = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERYD_LOG_FORMAT ='[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: [%(task_name)s(%(task_id)s)]%(message)s' 
+CELERYD_LOG_FORMAT ='[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: [%(task_name)s(%(task_id)s)]%(message)s'
 
 ###
 # Analytics

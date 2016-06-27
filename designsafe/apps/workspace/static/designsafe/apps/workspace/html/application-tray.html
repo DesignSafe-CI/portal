@@ -1,31 +1,1 @@
-<div class="apps-tray">
-    <div class="app-wrapper" ng-show="!data.apps">
-        <div class="app text-center">
-            <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
-            <div class="app-title">Loading...</div>
-            <div class="app-version">&nbsp;</div>
-        </div>
-    </div>
-    <div ng-repeat="app in data.apps | orderBy : 'name'"
-         class="app-wrapper" ng-class="{'app-active': data.activeApp.id==app.id}"
-         ng-click="launchApp(app);"
-         uib-tooltip-html="app.shortDescription + '<br>(' + app.id + ')'"
-         tooltip-placement="bottom">
-        <div class="corner-ribbon-container">
-            <div class="app text-center">
-                <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>
-                <div class="app-title">{{app.label}}</div>
-                <div class="app-version">{{app.version}}</div>
-                <div ng-if="!app.isPublic" class="corner-ribbon corner-ribbon-fa grey" title="Private app"><i class="fa fa-lock"></i></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="checkbox">
-    <label for="id_publicOnly">
-        <input type="checkbox" name="publicOnly" id="id_publicOnly"
-               ng-model="data.publicOnly" ng-change="refreshApps()">
-        Show only publicly available apps
-    </label>
-</div>
+<div>    <p ng-show="error" class="alert alert-danger">{{error}}</p>    <div class="app-wrapper" ng-show="!data.apps">        <div class="app text-center" ng-show="requesting">            <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>            <div class="app-title">Loading...</div>            <div class="app-version">&nbsp;</div>        </div>    </div>    <uib-tabset ng-show="!requesting">      <uib-tab ng-repeat="tab in tabs" active="tab.active">        <uib-tab-heading>          <div ng-switch="tab.title">            <div ng-switch-when="Public">              <span>{{tab.title}} </span>            </div>            <div ng-switch-when="Private">              <span>{{tab.title}} </span>            </div>            <div ng-switch-default>              <span>{{tab.title}} <i class="fa fa-times" aria-hidden="true" ng-click="removeTab($event, $index, tab)"></i></span>            </div>          </div>        </uib-tab-heading>        <div ng-show="!tab.edit" class="apps-tray top-buffer">            <div ng-repeat="app in tab.content | orderBy: 'label'"                 ng-click="launchApp(app)"                 class="app-wrapper"                 ng-class="{'app-active': data.activeApp.label==app.label}">              <div class="app text-center">                <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>                <div class="app-title">{{app.label}}</div>              </div>            </div>        </div>        <div ng-show="tab.edit" class="dnd-list">          <div class="page-header">            <h3>Customize your apps tray</h3>            <p>              Select any DesignSafe-CI Apps from the Apps tray and drag              them to your customized tray. Click your tray title to edit it.              Save your changes.            </p>          </div>          <div class="row top-buffer">            <div ng-repeat="list in tab.multiple.lists" class="col-md-6">              <div class="panel panel-info">                <div class="panel-heading">                    <h3 class="panel-title">                      <div ng-switch="list.listName">                        <div ng-switch-when="Apps">                          {{list.listName}}                        </div>                        <div ng-switch-default>                          <a href="#" editable-text="list.listName">{{list.listName}}</a>                        </div>                      </div>                    </h3>                </div>                <div class="panel-body text-center">                  <ul dnd-list dnd-drop="onDrop(list, item, index)" class="list-inline">                    <li ng-repeat="item in list.items"                        dnd-draggable="getSelectedItemsIncluding(list, item)"                        dnd-dragstart="onDragstart(list, event)"                        dnd-moved="onMoved(list)"                        dnd-dragend="list.dragging = false"                        dnd-selected="item.selected = !item.selected"                        ng-class="{'selected': item.selected}"                        ng-hide="list.dragging && item.selected"                        class="app-wrapper"                        >                          <div class="app text-center">                            <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>                            <div class="app-title">{{item.label}}</div>                          </div>                    </li>                  </ul>                </div>              </div>              <div class="button-group pull-right" ng-show="list.listName !== 'Apps'">                <button class="btn btn-default" ng-click="cancelTab(tab, list)">Cancel</button>                <button class="btn btn-primary" ng-click="saveTab(tab, list)">Save</button>              </div>            </div>          </div>        </div>        <div class="text-center top-buffer">          <button ng-show="tab.title !== 'Public' && tab.title !== 'Private' && !tab.edit" class="btn btn-default" ng-click="editTab(tab); tab.edit = !tab.edit">Edit</button>        </div>      </uib-tab>      <button class="btn btn-default btn-tab" ng-click="addTab()" ><i class="fa fa-plus"></i></button>    </uib-tabset></div>

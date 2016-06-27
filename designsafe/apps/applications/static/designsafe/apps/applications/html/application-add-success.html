@@ -1,0 +1,32 @@
+<div modal="addSuccessModal">
+    <div class="modal-header">
+      <h3 class="modal-title">Successfully added {{appMeta.id}}</h3>
+    </div>
+    <div class="modal-body">
+      <div ng-if="appMeta" class="table-responsive">
+        <table class="table table-bordered">
+          <tbody>
+            <tr ng-if="appMeta.id">
+              <td>ID</td>
+              <td><strong>{{appMeta.id}}</strong></td>
+            </tr>
+            <tr ng-if="appMeta.label">
+              <td>Name</td>
+              <td>{{appMeta.label}}</td>
+            </tr>
+            <tr ng-if="appMeta.shortDescription">
+              <td>Description</td>
+              <td>{{appMeta.shortDescription}}</td>
+            </tr>
+            <tr ng-if="appMeta.html">
+              <td>html</td>
+              <td><div ng-bind-html="appMeta.html | toTrusted"></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" ng-click="close()">Close</button>
+    </div>
+</div>

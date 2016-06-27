@@ -23,6 +23,9 @@
     'ds.notifications',
     'logging',
     'toastr',
+    'dndLists',
+    'xeditable',
+    'pascalprecht.translate',
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
   angular.module('WorkspaceApp')
@@ -32,5 +35,8 @@
     }])
     .run(['NotificationService', function init(NotificationService){
         NotificationService.init();
-    }]);
+    }])
+    .run(function(editableOptions) {
+      editableOptions.theme = 'bs3';
+    });
 })(window, angular, jQuery);
