@@ -7,6 +7,7 @@ import time
 import requests
 from requests import HTTPError
 from .signals import *
+from designsafe.libs.common.decorators import deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,22 @@ class AgaveOAuthToken(models.Model):
         return self.created + self.expires_in - current_time - 600 <= 0
 
     @property
+    def created_at(self):
+        """
+        Map the agavepy.Token property to model property
+        :return: The Epoch timestamp this token was created
+        """
+        return self.created_at
+
+    @created_at.setter
+    def created_at(self, value):
+        """
+        Map the agavepy.Token property to model property
+        :param value: The Epoch timestamp this token was created
+        """
+        self.created = value
+
+    @property
     def token(self):
         return {
             'access_token': self.access_token,
@@ -40,11 +57,28 @@ class AgaveOAuthToken(models.Model):
             'expires_in': self.expires_in
         }
 
+    @property
+    def client(self):
+        return Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
+                     api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
+                     api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
+                     token=self.access_token,
+                     refresh_token=self.refresh_token,
+                     token_callback=self.update)
+
     def update(self, **kwargs):
+
+        logger.debug('Updating token %s', kwargs)
         for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
+        self.save()
 
+    @deprecated
     def refresh(self):
+        """
+        DEPRECATED
+        :return:
+        """
         logger.debug('Refreshing Agave OAuth token for user=%s' % self.user.username)
         ag = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
                    api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
@@ -55,7 +89,6 @@ class AgaveOAuthToken(models.Model):
         ag.token.refresh()
         self.created = int(current_time)
         self.update(**ag.token.token_info)
-        self.save()
         logger.debug('Agave OAuth token for user=%s refreshed: %s' % (self.user.username,
                                                                       self.masked_token))
 
