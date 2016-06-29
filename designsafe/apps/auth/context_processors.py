@@ -1,9 +1,14 @@
-from django.conf import settings
+from designsafe.apps.auth.models import AgaveOAuthToken
 
 
 def auth(request):
-    session_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
-    context = {
-        'agave_ready': session_key in request.session
-    }
+    try:
+        ag_token = request.user.agave_oauth
+        context = {
+            'agave_ready': ag_token is not None
+        }
+    except (AttributeError, AgaveOAuthToken.DoesNotExist):
+        context = {
+            'agave_ready': False
+        }
     return context
