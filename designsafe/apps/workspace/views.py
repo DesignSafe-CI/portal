@@ -21,13 +21,9 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def index(request):
-    context = {}
-    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
-    if token_key in request.session:
-        context['session'] = {
-            'agave': json.dumps(request.session[token_key])
-        }
-    context['unreadNotifications'] = get_number_unread_notifications(request)
+    context = {
+        'unreadNotifications': get_number_unread_notifications(request)
+    }
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
 
