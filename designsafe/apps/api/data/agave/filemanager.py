@@ -41,13 +41,8 @@ class FileManager(AbstractFileManager, AgaveObject):
                                message='Log in required to access these files.')
 
         username = user_obj.username
-        if user_obj.agave_oauth.expired:
-            user_obj.agave_oauth.refresh()
 
-        token = user_obj.agave_oauth
-        access_token = token.access_token
-        agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = Agave(api_server=agave_url, token=access_token)
+        self.agave_client = user_obj.agave_oauth.client
         self.username = username
         self._user = user_obj
         self.indexer = AgaveIndexer(agave_client = self.agave_client)

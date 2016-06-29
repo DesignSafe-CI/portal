@@ -36,10 +36,7 @@ def submit_job(request, username, job_post, retry=1):
 
     try:
         user = get_user_model().objects.get(username=username)
-        token = user.agave_oauth
-        if token.expired:
-            token.refresh()
-        agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
+        agave = user.agave_oauth.client
         response = agave.jobs.submit(body=job_post)
         logger.debug('Job Submission Response: {}'.format(response))
 
@@ -85,10 +82,7 @@ def submit_job(request, username, job_post, retry=1):
 def watch_job_status(username, job_id, current_status=None, retry=0):
     try:
         user = get_user_model().objects.get(username=username)
-        if user.agave_oauth.expired:
-            user.agave_oauth.refresh()
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token=user.agave_oauth.token['access_token'])
+        ag = user.agave_oauth.client
         job = ag.jobs.get(jobId=job_id)
 
         job_status = job['status']
@@ -200,38 +194,9 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
 
 
 def index_job_outputs(user, job):
-    if user.agave_oauth.expired:
-        user.agave_oauth.refresh()
-    ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-               token=user.agave_oauth.access_token)
+    ag = user.agave_oauth.client
     system_id = job['archiveSystem']
     archive_path = job['archivePath']
 
     mgr = FileManager(ag)
     mgr.index(system_id, archive_path, user.username)
-
-# @shared_task
-# def subscribe_job_notification(request, agave, job_id):
-#     url=request.build_absolute_uri(reverse('jobs_webhook'))+'?uuid=${UUID}&status=${STATUS}&job_id=${JOB_ID}&event=${EVENT}&system=${JOB_SYSTEM}&job_name=${JOB_NAME}&job_owner=${JOB_OWNER}'
-#     logger.info('job notification url: {}'.format(url))
-#
-#     d = {
-#         "url" : url,
-#         "event" : "*",
-#         "associatedUuid" : job_id,
-#         "persistent": True
-#     }
-#
-#     try:
-#       subscribe = agave.notifications.add(body=json.dumps(d))
-#     except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError) as e:
-#         logger.debug('Job Notification Subscription Task HTTPError {0}: {1}'.format(e.response.status_code, e.__class__))
-#         submit_job.retry(exc=e("Agave is currently down. Your notification will be created when it returns."), max_retries=None)
-#
-#     logger.info('agave subs: {}'.format(subscribe))
-#
-#
-# #just for testing
-# def mock_agave_notification():
-#     import requests
-#     r = requests.post('http://192.168.99.100:8000/webhooks/jobs/', data={"job_id":'1234512345', "event":"test", "job_name":'test name', "job_owner": 'mlm55', "status":"test status", "archivePath":"test/path"})
