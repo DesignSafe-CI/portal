@@ -1,6 +1,5 @@
-from agavepy.agave import Agave, AgaveException
+from agavepy.agave import AgaveException
 from django.shortcuts import render
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
@@ -36,8 +35,7 @@ def _app_license_type(app_id):
 @login_required
 def call_api(request, service):
     try:
-        token = request.user.agave_oauth
-        agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
+        agave = request.user.agave_oauth.client
         if service == 'apps':
             app_id = request.GET.get('app_id')
             if app_id:
