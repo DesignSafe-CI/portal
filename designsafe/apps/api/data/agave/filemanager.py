@@ -253,8 +253,12 @@ class FileManager(AbstractFileManager, AgaveObject):
             listing['id'] != '$share' and
             len(listing['children']) == 0)
         if fallback:
-            listing = self._agave_listing(system, file_path, **kwargs)
-            reindex_agave.apply_async(args=(self.username, file_id, True, 1))
+            es_listing = listing.copy()
+            try:
+                listing = self._agave_listing(system, file_path, **kwargs)
+                reindex_agave.apply_async(args=(self.username, file_id, True, 1))
+            except IndexError:
+                listing = es_listing
         return listing
 
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
@@ -1084,8 +1088,6 @@ class AgaveIndexer(AgaveObject):
             created. It represent all the documents that were created and/or updated.
             Meaning, all the documents touched.
         """
-
-
         docs_indexed = 0
         docs_deleted = 0
         for root, folders, files in self.walk_levels(system_id, path, 

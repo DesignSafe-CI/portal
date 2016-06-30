@@ -831,7 +831,7 @@ class PublicObject(ExecuteSearchMixin, DocType):
         path = path or '/'
         q = Q('bool',
                 must = [Q({'term': {'path._exact': path}}),
-                        Q({'term': {'name._exact': path}}),
+                        Q({'term': {'name._exact': name}}),
                         Q({'term': {'systemId': system_id}})]
               )
         s = cls.search()
@@ -852,7 +852,7 @@ class PublicObject(ExecuteSearchMixin, DocType):
         s = cls.search()
         s = s.sort({'project._exact': 'asc'})
         s.query = q
-
+        logger.debug('public listing queyr: {}'.format(s.to_dict()))
         res, s = cls._execute_search(s)
         limit = int(kwargs.pop('limit', 100))
         offset = int(kwargs.pop('offset', 0))
