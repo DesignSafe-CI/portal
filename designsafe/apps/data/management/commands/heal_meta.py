@@ -5,14 +5,14 @@ from django.contrib.auth import get_user_model
 from designsafe.libs.elasticsearch.api import Object
 from requests.exceptions import HTTPError
 from django.conf import settings
+from time import time
 import os
 
 class Command(BaseCommand):
     help = 'Creates/updates missing metadata object for existing files/folders'
     def add_arguments(self, parser):
         parser.add_argument('username', 
-                help="Username to impersonate when doing Agave calls",
-                required=True)
+                help="Username to impersonate when doing Agave calls")
         parser.add_argument('-l', '--levels', 
                 help="Number of levels to recurse and index.", 
                 type=int, 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
         #        default=False)
 
     def _get_users(self, *args, **options): 
-        all_users = options['all-users']
+        all_users = options['all_users']
         base_path = options['base_path'] or username
         if not all_users:
             if base_path:
@@ -55,6 +55,7 @@ class Command(BaseCommand):
             return [o.username for o in um.objects.all()]
 
     def handle(self, *args, **options):
+        t0 = time()
         system_id = options['system'] or settings.AGAVE_STORAGE_SYSTEM
         username = options['username']
         levels = options['levels']
@@ -69,16 +70,23 @@ class Command(BaseCommand):
         for username in usernames:
             if options['pemsindex']:
                 self.stdout.write('Indexing permissions only with username: %s.' % username)
-                mgr.indexer.index_permissions(system_id, 
+                cnt = mgr.indexer.index_permissions(system_id, 
                                 base_path, username, levels = levels, bottom_up = False)
+                self.stdout.write('Documents updated: {}'.format(cnt))
             elif options['fullindex']:
                 self.stdout.write('Full Indexing with username: %s' % username)
-                mgr.indexer.index(system_id, 
+                docs_indexed, docs_deleted = mgr.indexer.index(system_id, 
                                 base_path, username, full_indexing = True, levels = levels)
+                self.stdout.write('Documents indexed: {}. Documents deleted: {}'.format(
+                                                            docs_indexed, docs_deleted))
             else:
                 self.stdout.write('Normal Indexing with username: %s' % username)
-                mgr.indexer.index(system_id, base_path, username, levels = levels)
-
+                docs_indexed, docs_deleted = mgr.indexer.index(system_id, base_path, username, levels = levels)
+                self.stdout.write('Documents indexed: {}. Documents deleted: {}'.format(
+                                                            docs_indexed, docs_deleted))
+        t1 = time()
+        total_time = t1 - t0
+        self.stdout.write('Accurate enough running time: {} s'.format(total_time))
         #if options['trash']:
         #    r, s = Object().search_marked_deleted(system_id, username, base_path)
         #    docs_sorted = sorted(s.scan(), key = lambda x: len(x.path.split('/')))
