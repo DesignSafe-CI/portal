@@ -26,7 +26,8 @@
           controller: "ApplicationAddCtrl"
       })
       .state('applications-edit', {
-          url: "/edit",
+          url: "/edit/:appId",
+          params: {appMeta: null},
           templateUrl: "/static/designsafe/apps/applications/html/application-edit.html",
           controller: "ApplicationEditCtrl"
       })

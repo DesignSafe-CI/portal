@@ -12,6 +12,7 @@
             error_app_delete: "An error ocurred deleting your app",
             error_app_meta: "An error ocurred getting the app",
             error_app_exists: "An app with this name and version already exists. Please change name or version",
+            error_app_doesnt_exists: "This app does not exist",
             storage_default: "designsafe.storage.default",
             execution_default: "designsafe.community.exec.stampede"
         });
