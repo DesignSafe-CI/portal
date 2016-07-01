@@ -249,9 +249,12 @@ class FileShareTestCase(FileBaseTestCase):
         af = self.get_mock_file()
         user_to_share = 'user_to_share'
         permission = 'READ_WRITE'
-        body = '{{ "recursive": "true", "permission": "{}", "username": "{}" }}'.format(permission, user_to_share)
+        body = json.dumps({'recursive': True,
+                           'permission': permission,
+                           'username': user_to_share})
 
-        af.share(user_to_share, permission)
+        af.share([{'user_to_share': user_to_share, 'permission': permission}],
+                 update_parent_path=False)
 
         mock_call_op.assert_called_with('files.updatePermissions',
             filePath = self.afile_json['path'],

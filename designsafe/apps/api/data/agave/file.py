@@ -3,6 +3,7 @@ import os
 import urllib2
 from datetime import datetime
 import dateutil.parser
+import json
 
 from agavepy.agave import AgaveException
 from requests.exceptions import HTTPError
@@ -497,8 +498,9 @@ class AgaveFile(AbstractFile, AgaveObject):
         Returns:
             Class instasnce for chainability
         """
-        permission_body = '{{ "recursive": "{}", "permission": "{}", "username": "{}" }}'.format(
-                                                         recursive, permission, username_to_update)
+        permission_body = json.dumps({'recursive': recursive,
+                                      'permission': permission,
+                                      'username': username_to_update})
         try:
             self.call_operation('files.updatePermissions',
                                 filePath = self.full_path,
