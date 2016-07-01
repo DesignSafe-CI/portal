@@ -2,13 +2,13 @@
 	{
 		"_links": {
 			"history": {
-				"href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.default/xirdneh/folder"
+				"href": "https://agave.designsafe-ci.org/files/v2/history/system/designsafe.storage.default/ds_user/folder"
 			},
 			"metadata": {
 				"href": "https://agave.designsafe-ci.org/meta/v2/data?q=%7B%22associationIds%22%3A%221780892864709062170-242ac112-0001-002%22%7D"
 			},
 			"self": {
-				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh/folder"
+				"href": "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user/folder"
 			},
 			"system": {
 				"href": "https://agave.designsafe-ci.org/systems/v2/designsafe.storage.default"
@@ -19,7 +19,7 @@
 		"length": 32768,
 		"mimeType": "text/directory",
 		"name": ".",
-		"path": "xirdneh/directory",
+		"path": "ds_user/directory",
 		"permissions": "ALL",
 		"system": "designsafe.storage.default",
 		"type": "dir"
