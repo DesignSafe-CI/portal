@@ -747,7 +747,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
         if index_parent:
             reindex_agave.apply_async(args=(self.username, file_id, 
-                                            False, 0, False, True))
+                                            False, 0, True, True))
         return u_file.to_dict()
 
     def get_file_real_path(self, file_id):
