@@ -1,105 +1,1 @@
-<div modal="detailsModal">
-    <div class="modal-header">
-      <h3 class="modal-title">Application Details</h3>
-    </div>
-    <div class="modal-body">
-      <p ng-show="error" class="alert alert-danger">{{error}}</p>
-      <div class="text-center" ng-show="requesting">
-          <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
-      </div>
-      <div ng-if="appMeta && !requesting">
-        <div ng-switch="appMeta.type">
-          <div ng-switch-when="html">
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <tbody>
-                  <tr ng-if="appMeta.id">
-                    <td>ID</td>
-                    <td><strong>{{appMeta.id}}</strong></td>
-                  </tr>
-                  <tr ng-if="appMeta.label">
-                    <td>Name</td>
-                    <td>{{appMeta.label}}</td>
-                  </tr>
-                  <tr ng-if="appMeta.shortDescription">
-                    <td>Description</td>
-                    <td>{{appMeta.shortDescription}}</td>
-                  </tr>
-                  <tr ng-if="appMeta.html">
-                    <td>html</td>
-                    <td><div ng-bind-html="appMeta.html | toTrusted"></div></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div ng-switch-when="agave">
-            <div ng-if="appMeta" class="table-responsive">
-              <table class="table table-bordered">
-                <tbody>
-                 <tr ng-if="appMeta.id">
-                   <td>ID</td>
-                   <td><strong>{{appMeta.id}}</strong></td>
-                 </tr>
-                 <tr ng-if="appMeta.name">
-                   <td>Name</td>
-                   <td>{{appMeta.name}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.longDescription">
-                   <td>Description</td>
-                   <td>{{appMeta.longDescription}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.label">
-                   <td>Label</td>
-                   <td>{{appMeta.label}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.isPublic">
-                   <td>Public</td>
-                   <td>{{appMeta.isPublic}}</td>
-                 </tr>
-                 <tr>
-                   <td>Available</td>
-                   <td>{{appMeta.available}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.deploymentSystem">
-                   <td>Deployment System</td>
-                   <td>{{appMeta.deploymentSystem}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.deploymentPath">
-                   <td>Deployment Path</td>
-                   <td>{{appMeta.deploymentPath}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.executionSystem">
-                   <td>Execution System</td>
-                   <td>{{appMeta.executionSystem}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.executionType">
-                   <td>Execution Type</td>
-                   <td>{{appMeta.executionType}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.parallelism">
-                   <td>Parallelism</td>
-                   <td>{{appMeta.parallelism}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.revision">
-                   <td>Revision</td>
-                   <td>{{appMeta.revision}}</td>
-                 </tr>
-                 <tr ng-if="appMeta.lastModified">
-                   <td>Last Modified</td>
-                   <td>{{appMeta.lastModified}}</td>
-                 </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    <div class="modal-footer">
-      <div class="text-center">
-        <!-- <button class="btn btn-primary" ng-click="share()">Share</button> -->
-        <button class="btn btn-danger" ng-show="delete" ng-click="deleteApp(appMeta)">Delete</button>
-        <button class="btn btn-default" ng-click="cancel()">Exit</button>
-      </div>
-    </div>
-</div>
+<div modal="detailsModal">    <div class="modal-header">      <h3 class="modal-title">Application Details</h3>    </div>    <div class="modal-body">      <p ng-show="error" class="alert alert-danger">{{error}}</p>      <div class="text-center" ng-show="requesting">          <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>      </div>      <div ng-if="appMeta && !requesting">        <div ng-switch="appMeta.type">          <div ng-switch-when="html">            <div class="table-responsive">              <table class="table table-bordered">                <tbody>                  <tr ng-if="appMeta.id">                    <td>ID</td>                    <td><strong>{{appMeta.id}}</strong></td>                  </tr>                  <tr ng-if="appMeta.label">                    <td>Name</td>                    <td>{{appMeta.label}}</td>                  </tr>                  <tr ng-if="appMeta.shortDescription">                    <td>Description</td>                    <td>{{appMeta.shortDescription}}</td>                  </tr>                  <tr ng-if="appMeta.html">                    <td>html</td>                    <td><div ng-bind-html="appMeta.html | toTrusted"></div></td>                  </tr>                </tbody>              </table>            </div>          </div>          <div ng-switch-when="agave">            <div ng-if="appMeta" class="table-responsive">              <table class="table table-bordered">                <tbody>                 <tr ng-if="appMeta.id">                   <td>ID</td>                   <td><strong>{{appMeta.id}}</strong></td>                 </tr>                 <tr ng-if="appMeta.name">                   <td>Name</td>                   <td>{{appMeta.name}}</td>                 </tr>                 <tr ng-if="appMeta.shortDescription">                   <td>Description</td>                   <td>{{appMeta.shortDescription}}</td>                 </tr>                 <tr ng-if="appMeta.label">                   <td>Label</td>                   <td>{{appMeta.label}}</td>                 </tr>                 <tr ng-if="appMeta.isPublic">                   <td>Public</td>                   <td>{{appMeta.isPublic}}</td>                 </tr>                 <tr>                   <td>Available</td>                   <td>{{appMeta.available}}</td>                 </tr>                 <tr ng-if="appMeta.deploymentSystem">                   <td>Deployment System</td>                   <td>{{appMeta.deploymentSystem}}</td>                 </tr>                 <tr ng-if="appMeta.deploymentPath">                   <td>Deployment Path</td>                   <td>{{appMeta.deploymentPath}}</td>                 </tr>                 <tr ng-if="appMeta.executionSystem">                   <td>Execution System</td>                   <td>{{appMeta.executionSystem}}</td>                 </tr>                 <tr ng-if="appMeta.executionType">                   <td>Execution Type</td>                   <td>{{appMeta.executionType}}</td>                 </tr>                 <tr ng-if="appMeta.parallelism">                   <td>Parallelism</td>                   <td>{{appMeta.parallelism}}</td>                 </tr>                 <tr ng-if="appMeta.revision">                   <td>Revision</td>                   <td>{{appMeta.revision}}</td>                 </tr>                 <tr ng-if="appMeta.lastModified">                   <td>Last Modified</td>                   <td>{{appMeta.lastModified}}</td>                 </tr>                </tbody>              </table>            </div>          </div>        </div>      </div>    <div class="modal-footer">      <div class="text-center">        <button class="btn btn-warning" ng-show="edit" ng-click="editApp(appMeta)">Edit</button>        <button class="btn btn-danger" ng-show="delete" ng-click="deleteApp(appMeta)">Delete</button>        <button class="btn btn-default" ng-click="cancel()">Exit</button>      </div>    </div></div>

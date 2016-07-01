@@ -1,4 +1,7 @@
-(function(window, angular, $, _) {  "use strict";  angular.module('ApplicationsApp').controller('ApplicationAddCtrl',    ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, SimpleList, MultipleList, AppsWizard, Django) {
+(function(window, angular, $, _) {
+  "use strict";
+  angular.module('ApplicationsApp').controller('ApplicationAddCtrl',
+    ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, SimpleList, MultipleList, AppsWizard, Django) {
 
       /******* addForm form *********/
       $scope.addSchema = {
@@ -171,7 +174,7 @@
                   "maxLength": 16
               },
               "helpURI": {
-                  "type": "string",
+                  "type": [null,"string"],
                   "description": "The URL where users can go for more information about the app",
                   "format": "url",
                   "title": "Help URL",
@@ -183,7 +186,7 @@
                   "title": "Label"
               },
               "icon": {
-                  "type": "string",
+                  "type": [null,"string"],
                   "description": "The icon url to associate with this app",
                   "title": "Icon",
                   // "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
@@ -517,6 +520,8 @@
                       },
                       {
                         "key": "helpURI",
+                        "title": "Help URL",
+                        "description": "The URL where users can go for more information about the app",
                         ngModelOptions: {
                             updateOnDefault: true
                         },
@@ -543,7 +548,41 @@
               {
                   "title": "Dependencies",
                   "items": [
-                      "deploymentPath",
+                      {
+                        "key": "deploymentPath",
+                        "type": "template",
+                        "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.deploymentPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                        validate: function(form){
+                          if (!$scope.model.deploymentPath){
+                            form.description = 'Missing required'
+                          }
+                        },
+                        validatePath: function(event, form){
+                          event.preventDefault();
+                          event.stopPropagation();
+                          if (typeof $scope.model.deploymentSystem === 'undefined' || $scope.model.deploymentSystem === ''){
+                            var filePath = $scope.model.deploymentPath;
+                            form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                          } else {
+                            var filePath = $scope.model.deploymentPath;
+                            form.requesting = true;
+                            Apps.getFile($scope.model.deploymentSystem, $scope.model.deploymentPath)
+                            .then(
+                              function(response){
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is valid';
+                                form.requesting = false;
+                              },
+                              function(response){
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                                form.requesting = false;
+                              }
+                            );
+                          }
+                        },
+                        ngModelOptions: {
+                          updateOnDefault: true
+                        }
+                      },
                       {
                           "key": "deploymentSystem",
                           "placeholder": "designsafe.storage.default",
@@ -561,8 +600,76 @@
                             'required': 'Missing required'
                           }
                       },
-                      "templatePath",
-                      "testPath",
+                      {
+                        "key": "templatePath",
+                        "type": "template",
+                        "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.templatePath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                        validate: function(form){
+                          if (!$scope.model.templatePath){
+                            form.description = 'Missing required'
+                          }
+                        },
+                        validatePath: function(event, form){
+                          event.preventDefault();
+                          event.stopPropagation();
+                          if (
+                            (typeof $scope.model.deploymentSystem === 'undefined' || $scope.model.deploymentSystem === '') &&
+                            (typeof $scope.model.deploymentPath === 'undefined' || $scope.model.deploymentPath === '')
+                          ){
+                            var filePath = $scope.model.deploymentPath + '/' + $scope.model.templatePath;
+                            form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                          } else {
+                            var filePath = $scope.model.deploymentPath + '/' + $scope.model.templatePath;
+                            form.requesting = true;
+                            Apps.getFile($scope.model.deploymentSystem, filePath)
+                            .then(
+                              function(response){
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is valid';
+                                form.requesting = false;
+                              },
+                              function(response){
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                                form.requesting = false;
+                              }
+                            );
+                          }
+                        }
+                      },
+                      {
+                        "key": "testPath",
+                        "type": "template",
+                        "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.testPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
+                        validate: function(form){
+                          if (!$scope.model.testPath){
+                            form.description = 'Missing required'
+                          }
+                        },
+                        validatePath: function(event, form){
+                          event.preventDefault();
+                          event.stopPropagation();
+                          if (
+                            (typeof $scope.model.deploymentSystem === 'undefined' || $scope.model.deploymentSystem === '') &&
+                            (typeof $scope.model.deploymentPath === 'undefined' || $scope.model.deploymentPath === '')
+                          ){
+                            var filePath = $scope.model.deploymentPath + '/' + $scope.model.testPath;
+                            form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                          } else {
+                            var filePath = $scope.model.deploymentPath + '/' + $scope.model.testPath;
+                            form.requesting = true;
+                            Apps.getFile($scope.model.deploymentSystem, filePath)
+                            .then(
+                              function(response){
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is valid';
+                                form.requesting = false;
+                              },
+                              function(response){
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                                form.requesting = false;
+                              }
+                            );
+                          }
+                        }
+                      },
                       {
                           "key": 'modules',
                           "startEmpty": true,
@@ -823,20 +930,25 @@
                                           },
                                           $validators: {
                                               minLessThanMax: function (value) {
-                                                  if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
-                                                    if (value && $scope.model.parameters[arrayIndex].semantics.maxCardinality > 0 &&
-                                                        value > $scope.model.parameters[arrayIndex].semantics.maxCardinality) {
-                                                        return false;
+                                                  if (typeof $scope.model.parameters !== 'undefined'){
+                                                    if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
+                                                      if (value && $scope.model.parameters[arrayIndex].semantics.maxCardinality > 0 &&
+                                                          value > $scope.model.parameters[arrayIndex].semantics.maxCardinality) {
+                                                          return false;
+                                                      }
                                                     }
                                                   }
+
                                                   return true;
                                               },
                                               oneWhenBoolish: function (value) {
-                                                if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
-                                                  if (value && ($scope.model.parameters[arrayIndex].value.type == 'bool' ||
-                                                      $scope.model.parameters[arrayIndex].value.type == 'flag') &&
-                                                      $scope.model.parameters[arrayIndex].semantics.maxCardinality > 1) {
-                                                      return false;
+                                                if (typeof $scope.model.parameters !== 'undefined'){
+                                                  if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
+                                                    if (value && ($scope.model.parameters[arrayIndex].value.type == 'bool' ||
+                                                        $scope.model.parameters[arrayIndex].value.type == 'flag') &&
+                                                        $scope.model.parameters[arrayIndex].semantics.maxCardinality > 1) {
+                                                        return false;
+                                                    }
                                                   }
                                                 }
                                                 return true;
@@ -941,7 +1053,7 @@
       $scope.model = {
         "name": "shell-runner",
         "version": "0.1.0",
-        "helpURI": "http://help.me",
+        "helpURI": "http://agaveapi.co/documentation/tutorials/app-management-tutorial",
         "label": "Execute a command at a shell",
         "defaultNodeCount": 1,
         "defaultRequestedTime": "01:00:00",
@@ -981,7 +1093,8 @@
         "checkpointable": false
       };
 
-      $scope.prettyModel = '{}';
+      // $scope.prettyModel = '{}';
+      $scope.prettyModel = '';
 
       $scope.systems = {
           execution: [],
@@ -997,15 +1110,6 @@
       $scope.codeview = false;
 
       $scope.init = function() {
-
-
-          if (typeof AppsWizard.model !== 'undefined'){
-            if (AppsWizard.model.id){
-              delete AppsWizard.model.id;
-            }
-            $scope.model = AppsWizard.model;
-            delete AppsWizard.model;
-          }
           Apps.getSystems()
             .then(
               function(response){
@@ -1045,7 +1149,6 @@
                   Apps.createApp($scope.model)
                     .then(
                       function(response){
-                        var appMeta = response.data;
                         var metadata = {};
                         metadata.name = 'ds_app';
                         metadata.value = {};
@@ -1098,13 +1201,14 @@
                                 Apps.updateMeta(metadata)
                                   .then(
                                     function(response){
+                                      $scope.appMeta = response.data.value;
                                       var modalInstance = $uibModal.open({
                                         templateUrl: '/static/designsafe/apps/applications/html/application-add-success.html',
                                         scope: $scope,
                                         size: 'md',
                                         resolve: {
                                          appMeta: function(){
-                                           return appMeta;
+                                           return $scope.appMeta;
                                          }
                                         },
                                         controller: [
@@ -1217,19 +1321,8 @@
 
       $scope.wizview = 'split';
 
-      $scope.editorConfig = {
-          lineWrapping: true,
-          lineNumbers: true,
-          matchBrackets: true,
-          styleActiveLine: false,
-          theme: "neat",
-          mode: 'javascript'
-      };
-
-
       $scope.updateWizardLayout = function() {
       };
-
 
       $scope.codemirrorLoaded = function(_editor) {
           // Events
@@ -1241,10 +1334,7 @@
                     try {
                       $scope.model = JSON.parse(_editor.getValue());
                     } catch(error) {
-                      App.alert({
-                          type: 'danger',
-                          message: error
-                      });
+                      $scope.error = $translate.instant('error_form_codemirror');
                     }
 
                   }
@@ -1252,7 +1342,11 @@
           });
           _editor.on("blur", function () {
               if (_editor.hasFocus()) {
-                  $scope.model = JSON.parse(_editor.getValue());
+                  try {
+                    $scope.model = JSON.parse(_editor.getValue());
+                  } catch (error){
+                    $scope.error = $translate.instant('error_form_codemirror');
+                  }
               }
           });
       };
@@ -1271,36 +1365,40 @@
       };
 
       $scope.$watch('model', function(currentModel){
-          if (currentModel === ''){
-            $scope.model = {};
-          }
+          $scope.error = '';
+          // if (currentModel === ''){
+          //   $scope.model = {};
+          // }
           if (currentModel){
               $scope.prettyModel = JSON.stringify(currentModel, undefined, 2);
           }
       }, true);
 
-      $scope.$watch('model.modules', function(newValue, oldValue){
-          if (typeof newValue === 'undefined' && $scope.model !== ''){
-            $scope.model.modules = [];
-          }
-      }, true);
-
-      $scope.$watch('model.ontology', function(newValue, oldValue){
-          if (typeof newValue === 'undefined' && typeof $scope.model !== 'undefined'){
-            $scope.model.ontology = [];
-          }
-      }, true);
-
-      $scope.$watch('model.parameters', function(newValue, oldValue){
-          if (typeof newValue === 'undefined'){
-            $scope.model.parameters = [];
-          }
-      }, true);
-
-      $scope.$watch('model.tags', function(newValue, oldValue){
-          if (typeof newValue === 'undefined'){
-            $scope.model.tags = [];
-          }
-      }, true);
+      // $scope.$watch('model.modules', function(newValue, oldValue){
+      //     if (typeof newValue === 'undefined' && $scope.model !== ''){
+      //       $scope.model.modules = [];
+      //     }
+      // }, true);
+      //
+      // $scope.$watch('model.ontology', function(newValue, oldValue){
+      //     if (typeof newValue === 'undefined' && typeof $scope.model !== 'undefined'){
+      //       $scope.model.ontology = [];
+      //     }
+      // }, true);
+      //
+      // $scope.$watch('model.parameters', function(newValue, oldValue){
+      //     if (typeof newValue === 'undefined'){
+      //       $scope.model.parameters = [];
+      //     }
+      // }, true);
+      //
+      // $scope.$watch('model.tags', function(newValue, oldValue){
+      //     if (typeof newValue === 'undefined'){
+      //       $scope.model.tags = [];
+      //     }
+      // }, true);
       /******** end Agave form ********/
-    }]);})(window, angular, jQuery, _);
+
+    }]);
+
+})(window, angular, jQuery, _);

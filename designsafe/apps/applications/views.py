@@ -55,6 +55,12 @@ def call_api(request, service):
                 if app_id:
                     data = agave.apps.delete(appId=app_id)
 
+        elif service == 'files':
+            system_id = request.GET.get('system_id')
+            path = request.GET.get('path')
+            if (system_id and path):
+                data = agave.files.list(systemId=system_id, filePath=path)
+
         elif service == 'systems':
             system_id = request.GET.get('system_id')
             public = request.GET.get('public')
