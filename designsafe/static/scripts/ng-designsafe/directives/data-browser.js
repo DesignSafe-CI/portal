@@ -820,7 +820,8 @@
           var opts = {
             resource: $scope.data.listing.source,
             file_id: $scope.data.listing.id,
-            reindex: true
+            reindex: true,
+            index_pems: true
           };
           return DataService.listPath(opts).then(
             function(resp) {
