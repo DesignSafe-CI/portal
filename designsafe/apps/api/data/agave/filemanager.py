@@ -239,6 +239,7 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         if reindex:
             logger.debug('Update files index for {}'.format(file_path))
+            logger.debug('pems_indexing: {}'.format(index_pems))
             self.indexer.index(system, file_path, file_user, levels=1,
                                full_indexing = True,
                                pems_indexing=index_pems)
@@ -743,7 +744,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         u_system, u_file_user, u_file_path = self.parse_file_id(upload_file_id)
         u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
                                           agave_client=self.agave_client)
-        Object.from_agave_file(u_file_user, u_file)  # index new file
+        Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
         if index_parent:
             reindex_agave.apply_async(args=(self.username, file_id, 
                                             False, 0, False, True))
