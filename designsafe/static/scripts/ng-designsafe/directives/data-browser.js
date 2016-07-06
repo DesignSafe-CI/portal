@@ -350,6 +350,7 @@
                       file_id: $scope.data.destination.id
                     });
                     $scope.state.uploading = false;
+                    $uibModalInstance.close();
                   }
                 );
               };
