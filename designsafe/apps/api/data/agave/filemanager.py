@@ -254,7 +254,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             listing['id'] != '$share' and
             len(listing['children']) == 0)
         if fallback:
-            es_listing = listing.copy()
+            es_listing = listing.copy() if listing is not None else None
             try:
                 listing = self._agave_listing(system, file_path, **kwargs)
                 reindex_agave.apply_async(args=(self.username, file_id, True, 1))
@@ -744,7 +744,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         u_system, u_file_user, u_file_path = self.parse_file_id(upload_file_id)
         u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
                                           agave_client=self.agave_client)
-        Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
+        doc = Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
+        doc.save()
         if index_parent:
             reindex_agave.apply_async(args=(self.username, file_id, 
                                             False, 0, True, True))

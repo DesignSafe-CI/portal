@@ -214,7 +214,7 @@ class FileManager(AgaveObject):
             len(listing['children']) == 0)
 
         if fallback:
-            es_listing = listing.copy()
+            es_listing = listing.copy() if listing is not None else None
             try:
                 listing = self._agave_listing(system, file_path, **kwargs)
             except IndexError:
