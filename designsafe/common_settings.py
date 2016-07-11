@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     # custom
     'designsafe.apps.auth',
     'designsafe.apps.api',
+    'designsafe.apps.api.notifications',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',

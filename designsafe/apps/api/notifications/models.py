@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.signals import post_save
 from designsafe.apps.signals.signals import generic_event
 import datetime
 import logging
