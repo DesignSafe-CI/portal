@@ -10,11 +10,12 @@
     'ui.bootstrap',
     'ng.designsafe',
     'django.context',
-    'toastr'
+    'toastr',
+    'ds.wsBus'
   ]);
 
-  app.config(['$httpProvider', '$locationProvider', 'toastrConfig',
-    function config($httpProvider, $locationProvider, toastrConfig) {
+  app.config(['WSBusServiceProvider', '$httpProvider', '$locationProvider', 'toastrConfig',
+    function config(WSBusServiceProvider, $httpProvider, $locationProvider, toastrConfig) {
       $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
       $httpProvider.defaults.xsrfCookieName = 'csrftoken';
       $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -28,10 +29,18 @@
         positionClass: 'toast-bottom-left',
         timeOut: 20000
       });
+
+      WSBusServiceProvider.setUrl(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+        window.location.hostname +
+        (window.location.port ? ':' + window.location.port : '') +
+        '/ws/websockets?subscribe-broadcast&subscribe-user'
+      );
     }
   ]);
 
-  app.controller('DataDepotBrowserCtrl', ['$scope', '$location', '$filter', 'toastr', 'Logging', 'Django',
+  app.controller('DataDepotBrowserCtrl', 
+    ['$scope', '$location', '$filter', 'toastr', 'Logging', 'Django',
     function($scope, $location, $filter, toastr, Logging, Django) {
 
       var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
@@ -97,6 +106,11 @@
         }
       };
 
+    }]);
+
+    app.run(['WSBusService', 'logger', function init(WSBusService, logger){
+      logger.log(WSBusService.url);
+      WSBusService.init(WSBusService.url);
     }]);
 
 })(window, angular, jQuery, _);
