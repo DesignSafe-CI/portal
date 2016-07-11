@@ -1,19 +1,25 @@
 from django.db import models
-from django.dispatch import receiver
+from django.db.models.signals import post_save
 from designsafe.apps.signals.signals import generic_event
 import datetime
+import logging
 import json
-import six
-import cgi
 
-class Notification(models.Model):
-    # what are the agave length defaults?
+logger = logging.getLogger(__name__)
+
+class BaseNotify(models.Model):
     event_type = models.CharField(max_length=50)
+    datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    body = models.TextField()
+
+    class Meta:
+        abstract = True
+
+class Notification(BaseNotify):
+    # what are the agave length defaults?
     user = models.CharField(max_length=20)
     read = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
-    datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
-    body = models.TextField()
 
     @property
     def content(self):
@@ -27,27 +33,26 @@ class Notification(models.Model):
         self.deleted = True
         self.save()
 
+    def to_dict(self):
+        event_data = {}
+        event_data['event_type'] = self.event_type
+        event_data['read'] = self.read
+        event_data['deleted'] = self.deleted
+        event_data['datetime'] = self.datetime.strftime('%s')
+        event_data['body'] = self.body
+        return event_data
 
-#@receiver(generic_event)
-#def receive_notification(sender, **kwargs):
-#    event_type = kwargs.get('event_type')
-#    event_data = kwargs.get('event_data')
-#    event_users = kwargs.get('event_users')
-#
-#    d = []
-#    if 'html' in event_data:
-#        for item in event_data['html']:
-#            for key, value in item.items():
-#                if key != 'action_link':
-#                    key= cgi.escape(key)
-#                    value= cgi.escape(value)
-#                    d.append({key:value})
-#
-#    event_data['html'] = d
-#
-#    for user in event_users:
-#        notification = Notification(event_type=event_type, user=user,
-#                                    body=json.dumps(event_data))
-#        notification.save()
-#
-#    Event.send_event(event_type, event_users, event_data)
+class Broadcast(BaseNotify):
+    group = models.CharField(max_length=20)
+
+    @property
+    def content(self):
+        return json.loads(self.body)
+
+    def to_dict(self):
+        event_data = {}
+        event_data['event_type'] = self.event_type
+        event_data['datetime'] = self.datetime.strftime('%s')
+        event_data['body'] = self.body
+        return event_data
+
