@@ -435,12 +435,10 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
 
         mock_object_from_file_path.side_effect = [mock_trash_esf,
                                                   mock_conflict_file_esf,
-                                                  mock_file_esf,
-                                                  mock_file_esf,
                                                   mock_file_esf,]
 
         mock_fm_move.return_value = None
-        mock_fm_rename.return_value = None
+        mock_fm_rename.return_value = {'id': file_id + '_timestamp'}
         mock_fm_mkdir.return_value = None
 
         fm.move_to_trash(file_id)
@@ -457,8 +455,6 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username,
                       '%s/.Trash/file.txt' % (self.user.username)),
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
         ]
 
         rename_calls = mock_fm_rename.call_args
@@ -470,7 +466,7 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         move_calls = mock_fm_move.call_args
         mov_args, mov_kwargs = move_calls
         self.assertTrue(mock_fm_move.called)
-        self.assertEqual(mov_args[0], file_id)
+        self.assertEqual(mov_args[0], file_id + '_timestamp')
         self.assertEqual(mov_args[1], fm.resource)
         self.assertNotEqual(mov_args[2], '%s/.Trash/file.txt')
 
@@ -486,15 +482,21 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
 
         mock_trash_esf = mock.Mock(spec = Object)
+        mock_conflict_file_esf = mock.Mock(spec=Object)
+        type(mock_conflict_file_esf).path = mock.PropertyMock(
+            return_value='%s/.Trash' % self.user.username)
+        type(mock_conflict_file_esf).name = 'folder'
         mock_file_esf = mock.Mock(spec = Object)
         type(mock_file_esf).type = mock.PropertyMock(return_value = 'dir')
         type(mock_file_esf).name = mock.PropertyMock(return_value = 'folder')
         type(mock_file_esf).path = mock.PropertyMock(return_value = '%s/path/to' % self.user.username)
         type(mock_file_esf).full_path = mock.PropertyMock(return_value = path)
         mock_file_esf.return_value.type = 'dir'
-        mock_object_from_file_path.side_effect = [mock_trash_esf, mock_file_esf]
+        mock_object_from_file_path.side_effect = [mock_trash_esf, 
+                                                  mock_conflict_file_esf, 
+                                                  mock_file_esf]
         mock_fm_move.return_value = None
-        mock_fm_rename.return_value = None
+        mock_fm_rename.return_value = {'id': file_id + '_timestamp'}
         mock_fm_mkdir.return_value = None
 
         fm.move_to_trash(file_id)
@@ -511,8 +513,6 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username,
                       '%s/.Trash/folder' % (self.user.username)),
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
         ]
 
         rename_calls = mock_fm_rename.call_args
@@ -524,7 +524,7 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         move_calls = mock_fm_move.call_args
         mov_args, mov_kwargs = move_calls
         self.assertTrue(mock_fm_move.called)
-        self.assertEqual(mov_args[0], file_id)
+        self.assertEqual(mov_args[0], file_id + '_timestamp')
         self.assertEqual(mov_args[1], fm.resource)
         self.assertNotEqual(mov_args[2], '%s/.Trash/folder')
 
