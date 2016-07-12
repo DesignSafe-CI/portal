@@ -264,10 +264,10 @@
                 //Get the file from scope or else it might not be the same reference.
                 var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
                 listingFile._pems = resp.data._pems; /* update pems for current file */
-                $scope.$emit('designsafe:notify', {
-                  level: 'info',
-                  message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
-                });
+                //$scope.$emit('designsafe:notify', {
+                //  level: 'info',
+                //  message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
+                //});
               },
               function(errors) {
                 $scope.state.loading = false;
