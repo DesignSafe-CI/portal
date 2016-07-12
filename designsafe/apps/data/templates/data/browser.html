@@ -6,10 +6,6 @@
 {% endblock %}
 {% block content %}
 <div class="container">
-    <h1 class="headline headline-research">
-        <span class="hl hl-research">Data Depot Browser</span>
-    </h1>
-
     <div ng-app="DataDepotBrowser">
         <div ng-controller="DataDepotBrowserCtrl">
             <ds-data-browser user="data.user" data="data" data-state="state" on-path-changed="onPathChanged">
