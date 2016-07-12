@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
+from designsafe.apps.api.notifications.models import Notification, Broadcast
 import shutil
 import logging
 import os
@@ -24,6 +25,13 @@ def reindex_agave(self, username, file_id, full_indexing = True,
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions):
+    n = Notification(event_type = 'data',
+                     status = 'INFO',
+                     operation = 'share_initializing',
+                     message = 'File sharing is initializing. Please wait...',
+                     user = username,
+                     extra = {'target_path': '/'.join(file_id.split('/')[1:])})
+    n.save()
     user = get_user_model().objects.get(username=username)
 
     from designsafe.apps.api.data import AgaveFileManager
@@ -40,6 +48,13 @@ def share_agave(self, username, file_id, permissions):
     
     esf = Object.from_file_path(system_id, username, file_path)
     esf.share(username, permissions)
+    n = Notification(event_type = 'data',
+                     status = 'SUCCESS',
+                     operation = 'share_finished',
+                     message = 'Files were shared succesfully',
+                     user = username,
+                     extra = {'target_path': file_path})
+    n.save()
 
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
