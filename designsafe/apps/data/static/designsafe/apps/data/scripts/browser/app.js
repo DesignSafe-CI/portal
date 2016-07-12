@@ -40,8 +40,8 @@
   ]);
 
   app.controller('DataDepotBrowserCtrl', 
-    ['$scope', '$location', '$filter', 'toastr', 'Logging', 'Django',
-    function($scope, $location, $filter, toastr, Logging, Django) {
+    ['$rootScope', '$scope', '$location', '$filter', 'toastr', 'Logging', 'Django',
+    function($rootScope, $scope, $location, $filter, toastr, Logging, Django) {
 
       var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
 
@@ -70,6 +70,17 @@
           _.extend($scope.data, newState.data);
           _.extend($scope.state, newState.state);
         }
+      });
+
+      $rootScope.$on('ds.wsBus:data', function($event, data){
+        logger.log('Message received on DATA: ', data);
+        var toastop = toastr[data._toast.level] || toastr.info;
+        var message = data._toast.message;
+        if (data.body.target_path) {
+           message = '<p>' + message + '</p>' + 
+                     '<a href="' + data.body.target_path + '">' + data.body.target_path + '</a>';
+        }
+        toastop(message, data._toast.title, {allowHtml: true});
       });
 
       /**
