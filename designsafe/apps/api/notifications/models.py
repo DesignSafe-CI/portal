@@ -54,4 +54,3 @@ class Broadcast(BaseNotify):
         event_data['datetime'] = self.datetime.strftime('%s')
         event_data['body'] = self.body
         return event_data
-
