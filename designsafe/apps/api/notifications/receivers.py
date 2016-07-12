@@ -13,20 +13,10 @@ logger = logging.getLogger(__name__)
 
 WEBSOCKETS_FACILITY = 'websockets'
 
-def decompose_message(instance):
-    event_type = instance.event_type
-    user = instance.user
-    body = instance.body
-    logger.debug('Event Type: {}'.format(event_type))
-    logger.debug('User: {}'.format(user))
-    logger.debug('Body: {}'.format(body))
-    return event_type, user, body
-
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
 def send_notification_ws(sender, instance, **kwargs):
     try:
-        event_type, user, body = decompose_message(instance)
-        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[user])
+        rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[instance.user])
         msg = RedisMessage(json.dumps(instance.to_dict()))
         rp.publish_message(msg)
     except Exception as e:
