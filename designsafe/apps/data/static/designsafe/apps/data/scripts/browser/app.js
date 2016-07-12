@@ -76,9 +76,9 @@
         logger.log('Message received on DATA: ', data);
         var toastop = toastr[data._toast.level] || toastr.info;
         var message = data._toast.message;
-        if (data.body.target_path) {
+        if (data.extra.target_path) {
            message = '<p>' + message + '</p>' + 
-                     '<a href="' + data.body.target_path + '">' + data.body.target_path + '</a>';
+                     '<a href="' + data.extra.target_path + '">' + data.extra.target_path + '</a>';
         }
         toastop(message, data._toast.title, {allowHtml: true});
       });

@@ -10,9 +10,9 @@ class BaseNotify(models.Model):
     event_type = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
     status = models.CharField(max_length = 255)
-    operation = models.charField(max_length = 255)
-    message = models.TextField()
-    extra = models.TextField()
+    operation = models.CharField(max_length = 255, default = '')
+    message = models.TextField(default='')
+    extra = models.TextField(default='')
 
     def to_dict(self):
         d = {
