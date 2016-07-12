@@ -1,7 +1,7 @@
 # from designsafe.apps.notifications.tasks import send_job_notification
 from designsafe.apps.notifications.apps import Event
 from designsafe.apps.signals.signals import generic_event
-from designsafe.apps.notifications.models import Notification
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.signals.signals import generic_event
 
 from django.core import serializers
@@ -134,7 +134,7 @@ def get_number_unread_notifications(request):
 def notifications(request):
     items = Notification.objects.filter(
         deleted=False,
-        user=str(request.user)).order_by('-notification_time')
+        user=str(request.user)).order_by('-datetime')
     unread = 0
     for i in items:
         if not i.read:

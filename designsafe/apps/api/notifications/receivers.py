@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 WEBSOCKETS_FACILITY = 'websockets'
 
 @receiver(post_save, sender=Notification, dispatch_uid='notification_msg')
-def send_notification_ws(sender, instance, **kwargs):
+def send_notification_ws(sender, instance, created, **kwargs):
+    #Only send WS message if it's a new notification not if we're updating.
+    if not created:
+        return
     try:
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[instance.user])
         instance_dict = json.dumps(instance.to_dict())
@@ -25,9 +28,12 @@ def send_notification_ws(sender, instance, **kwargs):
         logger.debug('Exception sending websocket message', 
                      exc_info=True,
                      extra = instance.to_dict())
+    return
 
 @receiver(post_save, sender=Broadcast, dispatch_uid='broadcast_msg')
-def send_broadcast_ws(sender, instance, **kwargs):
+def send_broadcast_ws(sender, instance, created, **kwargs):
+    if not created:
+        return
     try:
         event_type, user, body = decompose_message(instance)
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY,broadcast=True)
@@ -39,3 +45,4 @@ def send_broadcast_ws(sender, instance, **kwargs):
         logger.debug('Exception sending websocket message', 
                      exc_info=True,
                      extra = instance.to_dict())
+    return
