@@ -263,6 +263,15 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                           dest_file_id):
     logger.debug('Scheduled copy of files from %s://%s to %s://%s',
                  src_resource, src_file_id, dest_resource, dest_file_id)
+
+    n = Notification(event_type = 'data',
+                     status = 'INFO',
+                     operation = 'copy_public_to_mydata_start',
+                     message = 'Copying files from public data to your private data. Please wait...',
+                     user = username,
+                     extra = {'target_path': src_file})
+    n.save()
+    notify_status = 'SUCCESS'
     try:
         from designsafe.apps.api.data import lookup_file_manager
         source_fm_cls = lookup_file_manager(src_resource)
@@ -281,13 +290,40 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
             elif os.path.isfile(source_real_path):
                 shutil.copy(source_real_path, dest_real_path)
             else:
+                notify_status = 'ERROR'
                 logger.error('The request copy source=%s does not exist!', src_resource)
 
             system, username, path = dest_fm.parse_file_id(dest_file_id)
             dest_fm.indexer.index(system, path, username)
+
+            n = Notification(event_type = 'data',
+                             status = notify_status,
+                             operation = 'copy_public_to_mydata_end',
+                             message = 'Files have been copied to your private data.',
+                             user = username,
+                             extra = {'target_path': dest_file_id})
+            n.save()
         else:
             logger.error('Unable to load file managers for both source=%s and destination=%s',
                          src_resource, dest_resource)
+
+            n = Notification(event_type = 'data',
+                             status = 'ERROR',
+                             operation = 'copy_public_to_mydata_error',
+                             message = '''There was an error copying the files to your public data.
+                                          Plese try again.''',
+                             user = username,
+                             extra = {'target_path': dest_file_id})
+            n.save()
     except:
         logger.exception('Unexpected task failure')
+
+        n = Notification(event_type = 'data',
+                         status = 'ERROR',
+                         operation = 'copy_public_to_mydata_error',
+                         message = '''There was an error copying the files to your public data.
+                                      Plese try again.''',
+                         user = username,
+                         extra = {'target_path': dest_file_id})
+        n.save()
 
