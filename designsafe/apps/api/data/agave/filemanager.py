@@ -1,16 +1,17 @@
 from agavepy.agave import Agave
 from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
-from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
-from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.tasks import reindex_agave, share_agave
-from django.conf import settings
+from designsafe.apps.api.data.agave.agave_object import AgaveObject
+from designsafe.apps.api.data.agave.elasticsearch.documents import Object
+from designsafe.apps.api.notifications.models import Notification, Broadcast  
+from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from requests import HTTPError
-import os
 import logging
 import datetime
+import os
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -257,7 +258,9 @@ class FileManager(AbstractFileManager, AgaveObject):
             es_listing = listing.copy() if listing is not None else None
             try:
                 listing = self._agave_listing(system, file_path, **kwargs)
-                reindex_agave.apply_async(args=(self.username, file_id, True, 1))
+                reindex_agave.apply_async(kwargs = {'username': self.username, 
+                                                    'file_id': file_id, 
+                                                    'levels': 1})
             except IndexError:
                 listing = es_listing
         return listing
@@ -747,8 +750,11 @@ class FileManager(AbstractFileManager, AgaveObject):
         doc = Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
         doc.save()
         if index_parent:
-            reindex_agave.apply_async(args=(self.username, file_id, 
-                                            False, 0, True, True))
+            reindex_agave.apply_async(kwargs={'username': self.username, 
+                                              'file_id': file_id, 
+                                              'full_indexing' : False, 
+                                              'pems_indexing': True, 
+                                              'index_full_path': True})
         return u_file.to_dict()
 
     def get_file_real_path(self, file_id):
