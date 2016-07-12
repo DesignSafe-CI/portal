@@ -23,6 +23,13 @@ class BaseNotify(models.Model):
             'message': self.message,
             'extra': self.extra
         }
+        return d
+
+    def save(self, *args, **kwargs):
+        if isinstance(self.extra, dict):
+            self.extra = json.dumps(self.extra)
+
+        super(BaseNotify, self).save(*args, **kwargs)
 
     class Meta:
         abstract = True
