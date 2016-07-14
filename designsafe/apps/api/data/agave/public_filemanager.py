@@ -209,7 +209,6 @@ class FileManager(AgaveObject):
             listing = self._es_listing(system, self.username, file_path, **kwargs)
         except Exception as e:
             logger.debug('Error listing using Es. Falling back to Aagave', exc_info=True)
-        
         fallback = listing is None or(
             listing['type'] == 'folder' and
             len(listing['children']) == 0)

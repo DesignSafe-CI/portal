@@ -2,6 +2,7 @@
     <h3 class="modal-title">Metadata</h3>
 </div>
 <div class="modal-body">
+  <div ng-if = "data.file.source != 'public'">
     <form>
         <div class="form-group">
             <label for="id-new-folder-name">New Tags:</label>
@@ -37,5 +38,76 @@
             <button class="btn btn-primary" type="submit" ng-click="saveMeta($event)">Save</button>
         </div>
     </form>
+  </div>
+  <div ng-if = "data.file.source == 'public'">
+    <div class="public-metadata">
+      <div ng-if = "!data.file.name.toLowerCase().startsWith('experiment')">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th colspan="2">Projects</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat = "(key, value) in data.file.metadata.project">
+            <td><b>{{key}}</b></td>
+            <td ng-if="isString(value)">{{value}}</td>
+            <td ng-if="isArray(value)">
+                <ul class='metadata-inner-list'>
+                  <li ng-repeat = "ival in value">
+                    <ul class="metadata-inner-val-list">
+                      <li ng-repeat = "(label, s) in ival">
+                        <b>{{label}}:</b> {{s}}
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+            </td>
+            <td ng-if="!isString(value) && !isArray(value)">
+                <ul class='metadata-inner-list'>
+                  <li ng-repeat= "(ikey, ivalue) in value">
+                      <b>{{ikey}}</b>: {{ivalue}}
+                  </li>
+                </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div ng-if = "data.file.name.toLowerCase().startsWith('experiment')">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th colspan="2">Experiment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat = "(key, value) in data.file.metadata.experiment">
+            <td><b>{{key}}</b></td>
+            <td ng-if="isString(value)">{{value}}</td>
+            <td ng-if="isArray(value)">
+                <ul class='metadata-inner-list'>
+                  <li ng-repeat = "ival in value">
+                    <ul class="metadata-inner-val-list">
+                      <li ng-repeat = "(label, s) in ival">
+                        <b>{{label}}:</b> {{s}}
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+            </td>
+            <td ng-if="!isString(value) && !isArray(value)">
+                <ul class='metadata-inner-list'>
+                  <li ng-repeat= "(ikey, ivalue) in value">
+                      <b>{{ikey}}:</b> {{ivalue}}
+                  </li>
+                </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
 
+    </div>    
+  </div>  
 </div>

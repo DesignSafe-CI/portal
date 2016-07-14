@@ -907,11 +907,6 @@ class PublicObject(ExecuteSearchMixin, DocType):
             return self.project_
 
         p = Project.from_name(self.project)
-        if p is not None:
-            p = p.to_dict()
-        else:
-            p = {}
-
         self.project_ = p
         return self.project_ 
 
@@ -921,11 +916,6 @@ class PublicObject(ExecuteSearchMixin, DocType):
             return self.experiment_
 
         e = Experiment.from_name_and_project(self.project, self.name)
-        if e is not None:
-            e = e.to_dict()
-        else:
-            e = {}
-
         self.experiment_ = e
         return self.experiment_
   
@@ -982,9 +972,11 @@ class PublicObject(ExecuteSearchMixin, DocType):
             d['_pems'] = list(def_pems)
 
         if with_meta:
+            e = self.experiment_meta
+            p = self.project_meta
             d['metadata'] = {
-                'experiment': self.experiment_meta,
-                'project': self.project_meta
+                'experiment': e.to_dict() if e is not None else {},
+                'project': p.to_dict() if p is not None else {}
             }
         return d
 

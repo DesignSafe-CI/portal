@@ -487,6 +487,22 @@
                 }
               };
 
+              $scope.isString = function(obj){
+                if (typeof obj === 'string'){
+                  return true;
+                } else {
+                  return false;
+                }
+              };
+
+              $scope.isArray = function(obj){
+                if (Array.isArray(obj)){
+                  return true;
+                } else {
+                  return false;
+                }
+              };
+
               $scope.cancel = function () {
                 $uibModalInstance.dismiss('cancel');
               };
@@ -935,6 +951,10 @@
 
         self.scrollToBottom = function(el, pos){
           if($scope.state.loadingMore || $scope.state.reachedEnd){
+            return;
+          }
+          if ($scope.data.listing.children && $scope.data.listing.children.length < 100){
+            $scope.state.reachedEnd = true;
             return;
           }
           if($scope.state.page){
