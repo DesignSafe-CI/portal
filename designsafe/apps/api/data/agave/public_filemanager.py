@@ -113,7 +113,7 @@ class FileManager(AgaveObject):
                 'ext': '',
                 'size': None,
                 'lastModified': None,
-                'children': [o.to_dict(def_pems = default_pems) for o in listing],
+                'children': [o.to_dict(def_pems = default_pems, with_meta = True) for o in listing],
                 '_trail': [],
                 '_pems': default_pems,
             }
@@ -204,6 +204,7 @@ class FileManager(AgaveObject):
 
         """
         system, file_path = self.parse_file_id(file_id)
+        listing = None
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
         except Exception as e:

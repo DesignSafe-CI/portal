@@ -701,7 +701,11 @@ class Project(ExecuteSearchMixin, DocType):
 
         if fields is not None:
             s = s.fields(fields)
-        return cls._execute_search(s)
+        res, s = cls._execute_search(s)
+        if res.hits.total:
+            return res[0]
+        else:
+            return None
 
     @classmethod
     def search_query(cls, system_id, username, qs, fields = None, **kwargs):
@@ -753,7 +757,11 @@ class Experiment(ExecuteSearchMixin, DocType):
         if fields is not None:
             s = s.fields(fields)
 
-        return cls._execute_search(s)
+        res, s = cls._execute_search(s)
+        if res.hits.total:
+            return res[0]
+        else:
+            return None
 
     @classmethod
     def from_name_and_project(cls, project, name, fields = None):
@@ -766,8 +774,11 @@ class Experiment(ExecuteSearchMixin, DocType):
         s.query = q
         if fields is not None:
             s = s.fields(fields)
-
-        return cls._execute_search(s)
+        res, s = cls._execute_search(s)
+        if res.hits.total:
+            return res[0]
+        else:
+            return None
    
     @classmethod 
     def search_query(cls, system_id, username, qs, fields = None):
@@ -809,9 +820,8 @@ class Experiment(ExecuteSearchMixin, DocType):
 class PublicObject(ExecuteSearchMixin, DocType):
     def __init__(self, *args, **kwargs):
         super(PublicObject, self).__init__(*args, **kwargs)
-        self.project_title_ = None
-        self.project_name_ = None
-        self.experiment_name_ = None
+        self.project_ = None
+        self.experiment_ = None
         self.trail_ = None
 
     @classmethod
@@ -890,41 +900,35 @@ class PublicObject(ExecuteSearchMixin, DocType):
             limit = 0
 
         return res, s[offset:limit]
+
+    @property
+    def project_meta(self):
+        if self.project_:
+            return self.project_
+
+        p = Project.from_name(self.project)
+        if p is not None:
+            p = p.to_dict()
+        else:
+            p = {}
+
+        self.project_ = p
+        return self.project_ 
+
+    @property
+    def experiment_meta(self):
+        if self.experiment_:
+            return self.experiment_
+
+        e = Experiment.from_name_and_project(self.project, self.name)
+        if e is not None:
+            e = e.to_dict()
+        else:
+            e = {}
+
+        self.experiment_ = e
+        return self.experiment_
   
-    def _set_project_title_and_name(self): 
-        r, s = Project.from_name(self.project, ['title', 'name'])
-        if r.hits.total:
-            self.project_title_ = r[0].title[0]
-            self.project_name_ = r[0].name[0]
-
-    @property
-    def project_title(self):
-        if self.project_title_ is None or self.project_name_ is None:
-            self._set_project_title_and_name()
-
-        return self.project_title_
-
-    @property
-    def project_name(self):
-        if self.project_title_ is None or self.project_name_ is None:
-            self._set_project_title_and_name()
-
-        return self.project_name_
-
-    @property
-    def experiment_name(self):
-        path_comps = self.path.split('/')
-        exp_id = None
-        if len(path_comps) >= 2:
-            exp_id = path_comps[1]
-
-        if self.experiment_name_ is None and exp_id is not None:
-            r, s = Experiment.from_name_and_project(self.project, exp_id, ['title'])
-            if r.hits.total:
-                self.experiment_name_ = r[0].title[0]
-
-        return self.experiment_name_
-
     @property
     def parent_path(self):
         return self.path
@@ -979,9 +983,8 @@ class PublicObject(ExecuteSearchMixin, DocType):
 
         if with_meta:
             d['metadata'] = {
-                'projectTitle' : self.project_title,
-                'projectName' : self.project_name,
-                'experimentName' : self.experiment_name 
+                'experiment': self.experiment_meta,
+                'project': self.project_meta
             }
         return d
 
