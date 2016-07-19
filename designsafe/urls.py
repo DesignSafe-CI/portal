@@ -35,8 +35,8 @@ urlpatterns = patterns(
     url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
 
     # api urls, just for the samples.
-    url(r'^applications/', include('designsafe.apps.applications.urls',
-                                namespace='designsafe_applications')),
+    # url(r'^applications/', include('designsafe.apps.applications.urls',
+    #                             namespace='designsafe_applications')),
     url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
     url(r'^rw/workspace/', include('designsafe.apps.workspace.urls',
                                    namespace='designsafe_workspace')),
