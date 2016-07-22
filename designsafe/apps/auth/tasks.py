@@ -20,7 +20,7 @@ def check_or_create_agave_home_dir(username):
                    token=settings.AGAVE_SUPER_TOKEN)
         body = {'action': 'mkdir', 'path': username}
         ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                        filePath='/', body=json.dumps(body))
+                        filePath='', body=body)
 
         # add dir to index
         fm = FileManager(agave_client=ag)
