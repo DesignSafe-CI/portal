@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.8
+
+Bug fixes:
+
+- Apply workaround to issue creating user home directories, #10447
+
 ## v0.9.7
 
 Bug fixes:
