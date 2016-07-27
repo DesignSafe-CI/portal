@@ -245,12 +245,14 @@
         $q.all(promises).then(
           function(data) {
 
-            $scope.tabs.push(
-              {
-                title: 'Private',
-                content: $scope.simpleList.lists['Private']
-              }
-            );
+            if ($scope.simpleList.lists['Private'].length > 0){
+              $scope.tabs.push(
+                {
+                  title: 'Private',
+                  content: $scope.simpleList.lists['Private']
+                }
+              );
+            }
 
             $scope.tabs.push(
               {
