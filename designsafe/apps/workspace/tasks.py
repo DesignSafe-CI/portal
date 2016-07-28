@@ -30,8 +30,7 @@ class JobSubmitError(Exception):
         }
 
 
-@shared_task
-def submit_job(request, username, job_post, retry=1):
+def submit_job(request, username, job_post):
     logger.info('Submitting job for user=%s: %s' % (username, job_post))
 
     try:
@@ -47,30 +46,20 @@ def submit_job(request, username, job_post, retry=1):
     except ConnectionError as e:
         logger.error('ConnectionError while submitting job: %s' % e.message,
                      extra={'job': job_post})
-        logger.info('Retry %s for job submission %s' % (retry, job_post))
-        retry += 1
-        submit_job.apply_async(args=[username, job_post], countdown=2**retry)
         raise JobSubmitError(status='error',
                              status_code=500,
                              message='We were unable to submit your job at this time due '
-                                     'to a Job Service Interruption. Your job will be '
-                                     'automatically resubmitted when the Job Service is '
-                                     'available.')
+                                     'to a Job Service Interruption. Please try again later.')
 
     except HTTPError as e:
         logger.error('HTTPError while submitting job: %s' % e.message,
                        extra={'job': job_post})
         if e.response.status_code >= 500:
-            logger.info('Retry %s for job submission %s' % (retry, job_post))
-            retry += 1
-            submit_job.apply_async(args=[username, job_post], countdown=2**retry)
             raise JobSubmitError(
                 status='error',
                 status_code=e.response.status_code,
                 message='We were unable to submit your job at this time due '
-                        'to a Job Service Interruption. Your job will be '
-                        'automatically resubmitted when the Job Service is '
-                        'available.')
+                        'to a Job Service Interruption. Please try again later.')
 
         err_resp = e.response.json()
         err_resp['status_code'] = e.response.status_code
@@ -78,8 +67,8 @@ def submit_job(request, username, job_post, retry=1):
         raise JobSubmitError(**err_resp)
 
 
-@shared_task
-def watch_job_status(username, job_id, current_status=None, retry=0):
+@shared_task(bind=True)
+def watch_job_status(self, username, job_id, current_status=None):
     try:
         user = get_user_model().objects.get(username=username)
         ag = user.agave_oauth.client
@@ -142,13 +131,9 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
                 # notify
                 generic_event.send_robust(None, event_type='job', event_data=event_data,
                                           event_users=[job['owner']])
-            except:
+            except Exception as e:
                 logger.exception('Error indexing job output; scheduling retry')
-                retry += 1
-                watch_job_status.apply_async(args=[username, job_id],
-                                             kwargs={'retry': retry,
-                                                     'current_status': 'FINISHED'},
-                                             countdown=2**retry)
+                raise self.retry(exc=e, countdown=60, max_retries=3)
 
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
@@ -173,24 +158,12 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
             logger.warning('Job not found. Cancelling job watch.',
                            extra={'job_id': job_id})
         else:
-            retry += 1
-            if retry > 10:
-                logger.error('Agave Job Status max retries exceeded for job=%s' % job)
-            else:
-                logger.warning('Agave API error. Retry number %s...' % retry)
-                watch_job_status.apply_async(args=[username, job_id],
-                                             kwargs={'retry': retry},
-                                             countdown=2**retry)
+            logger.warning('Agave API error. Retrying...')
+            raise self.retry(exc=e, countdown=60, max_retries=10)
 
-    except AgaveException:
-        retry += 1
-        if retry > 10:
-            logger.error('Agave Job Status max retries exceeded for job=%s' % job)
-        else:
-            logger.warning('Agave API error. Retry number %s...' % retry)
-            watch_job_status.apply_async(args=[username, job_id],
-                                         kwargs={'retry': retry},
-                                         countdown=2**retry)
+    except AgaveException as e:
+        logger.warning('Agave API error. Retrying...')
+        raise self.retry(exc=e, countdown=60, max_retries=10)
 
 
 def index_job_outputs(user, job):
