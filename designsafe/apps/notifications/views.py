@@ -2,6 +2,7 @@
 from designsafe.apps.notifications.apps import Event
 from designsafe.apps.signals.signals import generic_event
 from designsafe.apps.api.notifications.models import Notification
+from designsafe.apps.notifications.models import Notification as LegacyNotification
 from designsafe.apps.signals.signals import generic_event
 
 from django.core import serializers
@@ -14,6 +15,8 @@ from django.views.decorators.http import require_POST
 from agavepy.agave import Agave, AgaveException
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
+from itertools import chain
 
 import json
 import logging
@@ -46,19 +49,35 @@ def generic_webhook_handler(request):
             'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
             'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
 
-        body = {
-            'event_type': event_type,
-            'job_owner': job_owner,
-            'host': host,
-            'port': port,
-            'password': password,
-            'associationIds': job_uuid,
-            'action_link': {
-                'value': vnc_connect_link,
-                'label': 'Connect',
+        #body = {
+        #    'event_type': event_type,
+        #    'job_owner': job_owner,
+        #    'host': host,
+        #    'port': port,
+        #    'password': password,
+        #    'associationIds': job_uuid,
+        #    'action_link': {
+        #        'value': vnc_connect_link,
+        #        'label': 'Connect',
+        #    }
+        #}
+
+        event_data = {
+            Notification.EVENT_TYPE: 'job',
+            Notification.STATUS: '',
+            Notification.USER: job_owner,
+            Notification.MESSAGE: '',
+            Notification.EXTRA:{
+                'host': host,
+                'port': port,
+                'password': password,
+                'associationIds': job_uuid,
+                'target_uri': vnc_connect_link
             }
         }
-        generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)
+        #generic_event.send_robust('generic_webhook_handler', event_type=event_type, event_data=body)
+        n = Notification.objects.create(**event_data)
+        n.save()
 
         # create metadata for VNC connection and save to agave metadata?
         try:
@@ -135,11 +154,15 @@ def notifications(request):
     items = Notification.objects.filter(
         deleted=False,
         user=str(request.user)).order_by('-datetime')
+    legacy_items = LegacyNotification.objects.filter(
+        deleted = False,
+        user = str(request.user)).order_by('-notification_time')
     unread = 0
     for i in items:
         if not i.read:
             unread += 1
             i.mark_read()
+    items = list(chain(items, legacy_items))
     try:
         items = serializers.serialize('json', items)
     except TypeError as e:
