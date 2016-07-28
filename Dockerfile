@@ -7,6 +7,7 @@ EXPOSE 8000
 CMD ["/usr/local/bin/uwsgi", "--ini", "/portal/conf/uwsgi.ini"]
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV TERM xterm
 
 RUN apt-get update && \
     apt-get upgrade -y && \
