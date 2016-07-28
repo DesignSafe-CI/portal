@@ -8,6 +8,7 @@ from designsafe.apps.signals.signals import generic_event
 from designsafe.libs.elasticsearch.api import Object
 from dsapi.agave import utils as agave_utils
 from dsapi.agave.daos import AgaveFolderFile, FileManager
+from designsafe.apps.api.notifications.models import Notification
 from agavepy.agave import Agave, AgaveException
 from celery import shared_task
 from requests import ConnectionError, HTTPError
@@ -92,56 +93,74 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
         job_name = job['name']
 
         event_data = {
-            'job_name': job_name,
-            'job_id': job['id'],
-            'event': job_status,
-            'status': job_status,
-            'archive_path': job['archivePath'],
-            'job_owner': job['owner'],
-            'html': [
-                {'Job Name': job_name},
-                {'Status': job_status},
-            ]
+            Notification.EVENT_TYPE: 'job',
+            Notification.STATUS: '',
+            Notification.USER: username,
+            Notification.MESSAGE: '',
+            Notification.EXTRA:{
+                'job_name': job_name,
+                'job_id': job['id'],
+                'job_owner': job['owner'],
+                'job_status': job_status,
+                'archive_path': job['archivePath'],
+            }
         }
+        archive_id = 'agave/%s/%s' % (job['archiveSystem'], job['archivePath'].split('/'))
 
         if job_status == 'FAILED':
             # end state, no additional tasks; notify
-            logger.debug('JOB FINALIZED: id=%s status=%s' % (job_id, job_status))
-            generic_event.send_robust(None, event_type='job', event_data=event_data,
-                                      event_users=[username])
+            logger.debug('JOB FAILED: id=%s status=%s' % (job_id, job_status))
+            event_data[Notification.STATUS] = Notification.ERROR
+            event_data[Notification.MESSAGE] = 'Job "%s" Failed. Please try again...' % (job_name, )
+            event_data[Notification.OPERATION] = 'job_failed'
+            n = Notification.objects.create(**event_data)
+            n.save()
+            #generic_event.send_robust(None, event_type='job', event_data=event_data,
+            #                          event_users=[username])
 
         elif job_status == 'INDEXING':
             # end state, start indexing outputs
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
 
             # notify
-            generic_event.send_robust(None, event_type='job', event_data=event_data,
-                                      event_users=[username])
+            event_data[Notification.STATUS] = Notification.INFO
+            event_data[Notification.MESSAGE] = 'Job %s status has been updated to INDEXING' % (job_name, )
+            logger.debug('ws event_data: {}'.format(event_data))
+            n = Notification.objects.create(**event_data)
+            n.save()
+            #generic_event.send_robust(None, event_type='job', event_data=event_data,
+            #                          event_users=[username])
 
             try:
                 logger.debug('Preparing to Index Job Output job=%s' % job)
                 index_job_outputs(user, job)
                 logger.debug('Finished Indexing Job Output job=%s' % job)
 
-                event_data['status'] = 'FINISHED'
-                event_data['event'] = 'FINISHED'
-                event_data['html'][1] = {'Status': 'FINISHED'}
+                logger.debug('archivePath: {}'.format(job['archivePath']))
+                target_path = '%s/%s' % (reverse('designsafe_data:data_browser'), archive_id)
 
-                db_hash = job['archivePath'].replace(job['owner'], '')
-                event_data['action_link'] = {
-                    'label': 'View Output',
-                    'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
-                }
-                event_data['toast'] = {
-                      'type': 'info',
-                      'msg': job_name + ' job outputs are available.'
-                }
+                event_data[Notification.STATUS] = Notification.SUCCESS
+                event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
+                event_data[Notification.EXTRA]['target_path'] = target_path
+                event_data[Notification.MESSAGE] = 'Job "%s" has finished!' % (job_name, )
+                event_data[Notification.OPERATION] = 'job_finished'
+
+                n = Notification.objects.create(**event_data)
+                n.save()
+                #event_data['action_link'] = {
+                #    'label': 'View Output',
+                #    'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
+                #}
+                #event_data['toast'] = {
+                #      'type': 'info',
+                #      'msg': job_name + ' job outputs are available.'
+                #}
 
                 logger.debug('Event data with action link %s' % event_data)
 
                 # notify
-                generic_event.send_robust(None, event_type='job', event_data=event_data,
-                                          event_users=[job['owner']])
+                #generic_event.send_robust(None, event_type='job', event_data=event_data,
+                #                          event_users=[job['owner']])
             except:
                 logger.exception('Error indexing job output; scheduling retry')
                 retry += 1
@@ -163,8 +182,12 @@ def watch_job_status(username, job_id, current_status=None, retry=0):
 
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
-            generic_event.send_robust(None, event_type='job', event_data=event_data,
-                                      event_users=[username])
+            event_data[Notification.STATUS] = Notification.INFO
+            event_data[Notification.MESSAGE] = 'Job "%s" status has been updated to %s.' % (job_name, job_status)
+            event_data[Notification.OPERATION] = 'job_status_update'
+            Notification.objects.create(**event_data)
+            #generic_event.send_robust(None, event_type='job', event_data=event_data,
+            #                          event_users=[username])
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 
@@ -198,5 +221,8 @@ def index_job_outputs(user, job):
     system_id = job['archiveSystem']
     archive_path = job['archivePath']
 
-    mgr = FileManager(ag)
-    mgr.index(system_id, archive_path, user.username)
+    from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
+    mgr = AgaveFileManager(user)
+    mgr.indexer.index(system_id, archive_path, user.username,
+                      full_indexing = True, pems_indexing = True,
+                      index_full_path = True)

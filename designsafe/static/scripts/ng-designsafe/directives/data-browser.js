@@ -576,10 +576,12 @@
           sourceEl.addClass('ds-data-browser-processing');
           return DataService.move(options).then(
             function (resp) {
-              $scope.$emit('designsafe:notify', {
-                level: 'info',
-                message: 'Moved "' + resp.data.name + '" to "' + options.dest_file_id + '".'
-              });
+              if (options.src_resource == 'agave'){
+                $scope.$emit('designsafe:notify', {
+                  level: 'info',
+                  message: 'Moved "' + resp.data.name + '" to "' + options.dest_file_id + '".'
+                });
+              }
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
@@ -639,10 +641,13 @@
           sourceEl.addClass('ds-data-browser-processing');
           DataService.copy(options).then(
             function (resp) {
-              $scope.$emit('designsafe:notify', {
-                level: 'info',
-                message: 'Copied "' + resp.data.name + '" to "' + options.dest_file_id + '".'
-              });
+
+              if (options.src_resource == 'agave'){
+                $scope.$emit('designsafe:notify', {
+                  level: 'info',
+                  message: 'Copied "' + resp.data.name + '" to "' + options.dest_file_id + '".'
+                });
+              }
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               setTimeout(function() {

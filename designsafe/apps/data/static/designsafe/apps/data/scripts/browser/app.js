@@ -72,13 +72,12 @@
         }
       });
 
-      $rootScope.$on('ds.wsBus:data', function($event, data){
-        logger.log('Message received on DATA: ', data);
+      $rootScope.$on('ds.wsBus:default', function($event, data){
+        logger.log('Message received: ', data);
         var toastop = toastr[data._toast.level] || toastr.info;
-        var message = data._toast.message;
+        var message = '<p>' + data._toast.message + '</p>';
         if (data.extra.target_path) {
-           message = '<p>' + message + '</p>' + 
-                     '<a href="' + data.extra.target_path + '">' + data.extra.target_path + '</a>';
+           message += '<a href="' + data.extra.target_path + '">View</a>';
         }
         toastop(message, data._toast.title, {allowHtml: true});
       });

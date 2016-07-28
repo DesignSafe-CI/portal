@@ -77,9 +77,9 @@
       }
       else {
         for (var i=0; i < $scope.data.jobs.length; i++){
-            if ($scope.data.jobs[i]['id'] == msg.job_id) {
-              $scope.data.jobs[i]['status'] = msg.status;
-              $scope.$apply()
+            if ($scope.data.jobs[i]['id'] == msg.extra.job_id) {
+              $scope.data.jobs[i]['status'] = msg.extra.job_status;
+              $scope.$apply();
               break;
             }
         }

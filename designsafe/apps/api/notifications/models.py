@@ -9,10 +9,22 @@ logger = logging.getLogger(__name__)
 class BaseNotify(models.Model):
     event_type = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    #Status should be SUCCESS, INFO, ERROR, WARNING, 
     status = models.CharField(max_length = 255)
     operation = models.CharField(max_length = 255, default = '')
     message = models.TextField(default='')
     extra = models.TextField(default='')
+
+    SUCCESS = GREEN = 'SUCCESS'
+    INFO = BLUE = 'INFO'
+    ERROR = RED = 'ERROR'
+    WARNING = ORANGE = 'WARNING'
+    EVENT_TYPE = 'event_type'
+    STATUS = 'status'
+    USER = USERNAME = 'user'
+    EXTRA = CONTENT = 'extra'
+    MESSAGE = 'message'
+    OPERATION = 'operation'
 
     def to_dict(self):
         d = {
@@ -30,6 +42,10 @@ class BaseNotify(models.Model):
             self.extra = json.dumps(self.extra)
 
         super(BaseNotify, self).save(*args, **kwargs)
+    
+    @property
+    def extra_content(self):
+        return json.loads(self.extra)
 
     class Meta:
         abstract = True
@@ -39,10 +55,6 @@ class Notification(BaseNotify):
     user = models.CharField(max_length=20)
     read = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
-
-    @property
-    def content(self):
-        return json.loads(self.body)
 
     def mark_read(self):
         self.read = True
@@ -63,10 +75,6 @@ class Notification(BaseNotify):
 
 class Broadcast(BaseNotify):
     group = models.CharField(max_length=20)
-
-    @property
-    def content(self):
-        return json.loads(self.body)
 
     def to_dict(self):
         event_data = super(Broadcast, self).to_dict()

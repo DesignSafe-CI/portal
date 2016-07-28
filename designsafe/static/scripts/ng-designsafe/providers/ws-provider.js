@@ -5,7 +5,8 @@
         var service = {
             init: init,
             ws: ws,
-            url: configURL
+            url: configURL,
+
         };
 
         return service;
@@ -48,11 +49,7 @@
             toast.message = msg.message;
             msg._toast = toast;
             logger.log('broadcasting message to $rootScope: ', msg);
-            if (msg.event_type && (msg.event_type !== '' || msg.event_type.toLowerCase() != 'broadcast')){
-              $rootScope.$broadcast('ds.wsBus:' + msg.event_type, msg);
-            } else {
-              $rootScope.$broadcast('ds.wsBus:default', msg);
-            }
+            $rootScope.$broadcast('ds.wsBus:default', msg);
         }
     }
 
