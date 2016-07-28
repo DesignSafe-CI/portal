@@ -87,7 +87,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         try:
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                              {'systemId': system, 'filePath': file_path}))
-            listing = agave_client.files.list(systemId=system, filePath= file_path)
+            listing = agave_client.files.list(systemId=system, filePath= urllib2.quote(file_path))
         except (AgaveException, HTTPError) as e:
             logger.error(e,
                 exc_info = True,
@@ -109,7 +109,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                          {'systemId': system, 'filePath': file_path,
                           'limit': limit, 'offset': offset}))
-            listing = agave_client.files.list(systemId=system, filePath=file_path,
+            listing = agave_client.files.list(systemId=system, filePath=urllib2.quote(file_path),
                                               limit=limit, offset=offset)
         except (AgaveException, HTTPError) as e:
             logger.error(e, exc_info = True,)
@@ -128,7 +128,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             logger.debug('Agave: calling: files.manage, args: {}'.format(
                              {'systemId': system, 'filePath': file_path,
                               'body': body}))
-            agave_client.files.manage(systemId=system, filePath=file_path, body=body)
+            agave_client.files.manage(systemId=system, filePath=urllib2.quote(file_path), body=body)
             dir_path = os.path.join(file_path, dir_name)
             return cls.from_file_path(system, username, dir_path, agave_client)
         except (AgaveException, HTTPError) as e:
@@ -177,7 +177,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         if not self._permissions:
             pems = self.call_operation('files.listPermissions',
-                                       filePath=self.full_path,
+                                       filePath=urllib2.quote(self.full_path),
                                        systemId=self.system)
             self._permissions = pems
         return self._permissions
