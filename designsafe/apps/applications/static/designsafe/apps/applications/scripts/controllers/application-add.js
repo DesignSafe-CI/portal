@@ -174,11 +174,11 @@
                   "maxLength": 16
               },
               "helpURI": {
-                  "type": [null,"string"],
+                  "type": "string",
                   "description": "The URL where users can go for more information about the app",
                   "format": "url",
                   "title": "Help URL",
-                  // "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
+                  "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "label": {
                   "type": "string",
@@ -186,10 +186,10 @@
                   "title": "Label"
               },
               "icon": {
-                  "type": [null,"string"],
+                  "type": "string",
                   "description": "The icon url to associate with this app",
                   "title": "Icon",
-                  // "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
+                  "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "shortDescription": {
                   "type": "string",
@@ -243,18 +243,20 @@
                       "placeholder": 1
                   }
               },
-              "defaultRequestedTime": {
-                  "type": "string",
-                  "description": "Default max run time to be used when running this app if no requested run time is given in the job request",
-                  "maxLength": 10,
-                  "title": "Default run time",
-                  "x-schema-form": {
-                      "type": "input",
-                      "placeholder": "24:00:00"
-                  }
+              "defaultMaxRunTime": {
+                "type": "string",
+                "description": "Default max run time to be used when running this app if no requested run time is given in the job request",
+                "maxLength": 10,
+                "title": "Default run time",
+                "validator": "^(?:[0-9]{1,3}?[0-9]):[0-5][0-9]:[0-5][0-9]$",
+                "x-schema-form": {
+                    "type": "input",
+                    "placeholder": "24:00:00"
+                }
               },
               "ontology": {
                   "type": "array",
+                  "description": "An array of ontology terms describing this app.",
                   "items": {
                       "type": "string"
                   },
@@ -397,7 +399,7 @@
                                   "ontology": {
                                       "title": "Ontology",
                                       "type": "array",
-                                      // "description": "Array of ontology terms describing this parameter.",
+                                      "description": "Array of ontology terms describing this parameter.",
                                       "items": {
                                           "type": "string"
                                       }
@@ -410,14 +412,14 @@
                               "title": "Value",
                               "properties": {
                                   "default": {
-                                      "type": "string",
-                                      "description": "Description of this parameter",
+                                      "type": ["number", "string"],
+                                      "description": "Default value",
                                       "title": "Default value"
                                   },
                                   "type": {
                                       "type": "string",
                                       "description": "The content type of the parameter",
-                                      "enum": ["string", "number", "boolean", "enumeration", "flag"],
+                                      "enum": ["string", "number", "bool", "enumeration", "flag"],
                                       "title": "Parameter type",
                                   },
                                   "validator": {
@@ -562,7 +564,7 @@
                           event.stopPropagation();
                           if (typeof $scope.model.deploymentSystem === 'undefined' || $scope.model.deploymentSystem === ''){
                             var filePath = $scope.model.deploymentPath;
-                            form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                            form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please verify that you have chosen a proper Deployment system and file path. You can check the data browser and make sure it exists and you have permissions to it';
                           } else {
                             var filePath = $scope.model.deploymentPath;
                             form.requesting = true;
@@ -573,7 +575,7 @@
                                 form.requesting = false;
                               },
                               function(response){
-                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please check data browser and make sure it exists and you have permissions to it';
+                                form.description = $scope.model.deploymentSystem + '/' + filePath + ' is not a valid path. Please verify that you have chosen a proper Deployment system and file path. You can check the data browser and make sure it exists and you have permissions to it';
                                 form.requesting = false;
                               }
                             );
@@ -750,25 +752,7 @@
                       "defaultNodeCount",
                       "defaultMemoryPerNode",
                       "defaultProcessorsPerNode",
-                      {
-                        "key": "defaultRequestedTime",
-                        $validators: {
-                          required: function(value) {
-                            return value ? true : false;
-                          },
-                          invalidFormat: function(value) {
-                            var patt = /^(?:[0-9]{1,3}?[0-9]):[0-5][0-9]:[0-5][0-9]$/;
-                            if (!patt.test(value)){
-                              return false
-                            }
-                            return true;
-                          },
-                        },
-                        validationMessage: {
-                          "required": "Missing required",
-                          "invalidFormat": "Invalid format. Should be HH:MM:SS"
-                        }
-                      },
+                      "defaultMaxRunTime",
                       {
                           "key": "parallelism",
                           "type": "select",
@@ -832,7 +816,7 @@
                                   "description": "Descriptive details about this app parameter used in form generation.",
                                   "items": [
                                       "parameters[].details.label",
-                                      "parameters[].details.description",
+                                      // "parameters[].details.description",
                                       {
                                           "key": "parameters[].details.showArgument",
                                           "type": "radiobuttons",
@@ -1006,6 +990,7 @@
                                               {"value": false, "name": "No"}
                                           ],
                                           onChange: function (modelValue, form) {
+                                            if (typeof $scope.model.parameters !== 'undefined'){
                                               if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
                                                 if (modelValue && $scope.model.parameters[arrayIndex].semantics.minCardinality == 0) {
                                                     $scope.model.parameters[arrayIndex].semantics.minCardinality = 1;
@@ -1013,6 +998,7 @@
                                                     $scope.model.parameters[arrayIndex].semantics.minCardinality = 0;
                                                 }
                                               }
+                                            }
                                           }
                                       },
                                       {
@@ -1031,9 +1017,11 @@
                                               {"value": false, "name": "No"}
                                           ],
                                           onChange: function (modelValue, form) {
-                                            if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
-                                              if (!modelValue) {
-                                                  $scope.model.parameters[arrayIndex].value.required = true
+                                            if (typeof $scope.model.parameters !== 'undefined'){
+                                              if ($scope.model.parameters.length > 0 && typeof arrayIndex !== 'undefined'){
+                                                if (!modelValue) {
+                                                    $scope.model.parameters[arrayIndex].value.required = true
+                                                }
                                               }
                                             }
                                           }
@@ -1056,7 +1044,7 @@
         "helpURI": "http://agaveapi.co/documentation/tutorials/app-management-tutorial",
         "label": "Execute a command at a shell",
         "defaultNodeCount": 1,
-        "defaultRequestedTime": "01:00:00",
+        "defaultMaxRunTime": "01:00:00",
         "shortDescription": "This will execute whatever command you give in the command parameter",
         "longDescription": "This will execute whatever command you give in the command parameter",
         "executionSystem": "",
@@ -1225,20 +1213,20 @@
                                       $scope.requesting = false;
                                     },
                                     function(response){
-                                      $scope.error = $translate.instant('error_app_create');
+                                      $scope.error = $translate.instant('error_app_create') + response.data;
                                       $scope.requesting = false;
                                     }
                                   )
                               }
                             },
                             function(response){
-                              $scope.error = $translate.instant('error_app_create');
+                              $scope.error = $translate.instant('error_app_create') + response.data;
                               $scope.requesting = false;
                             }
                           );
                       },
                       function(response){
-                        $scope.error = $translate.instant('error_app_create');
+                        $scope.error = $translate.instant('error_app_create') + response.data;
                         $scope.requesting = false;
                       }
                     );
@@ -1287,7 +1275,7 @@
                                 $scope.requesting = false;
                               },
                               function(response){
-                                $scope.error = $translate.instant('error_app_create');
+                                $scope.error = $translate.instant('error_app_create') + response.data;
                                 $scope.requesting = false;
                               }
                             );
@@ -1296,8 +1284,8 @@
                           $scope.requesting = false;
                         }
                       },
-                      function(){
-                        $scope.error = $translate.instant('error_app_create');
+                      function(response){
+                        $scope.error = $translate.instant('error_app_create') + response.data;
                         $scope.requesting = false;
                       }
                     );
@@ -1357,7 +1345,7 @@
           lineNumbers: true,
           matchBrackets: true,
           styleActiveLine: false,
-          theme: "neat",
+          theme: 'neat',
           mode: 'javascript',
           json: true,
           statementIndent: 2,

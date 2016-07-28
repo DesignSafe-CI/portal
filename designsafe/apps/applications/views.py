@@ -11,7 +11,6 @@ import json
 import logging
 
 
-
 logger = logging.getLogger(__name__)
 
 @login_required
@@ -23,7 +22,10 @@ def index(request):
             'agave': json.dumps(request.session[token_key])
         }
     context['unreadNotifications'] = get_number_unread_notifications(request)
-    return render(request, 'designsafe/apps/applications/index.html', context)
+    if request.user.is_superuser:
+        return render(request, 'designsafe/apps/applications/index.html', context)
+    else:
+        return render(request, 'designsafe/apps/applications/denied.html', context)
 
 
 def _app_license_type(app_id):
@@ -113,17 +115,24 @@ def call_api(request, service):
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
-    except HTTPError as e:
-        logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-            service, e.message))
-        return HttpResponse(json.dumps(e.message),
-                            content_type='application/json',
-                            status=400)
     except AgaveException as e:
         logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
             service, e.message))
         return HttpResponse(json.dumps(e.message), content_type='application/json',
                             status=400)
+    except HTTPError as e:
+        try:
+            json_response = e.response.json()
+            logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
+            service, json_response.get('message')))
+            return HttpResponse(json.dumps(json_response.get('message')),
+                    content_type='application/json',
+                    status=400)
+        except Exception as e:
+            return HttpResponse(json.dumps(e.message),
+                    content_type='application/json',
+                    status=400)
+
     except Exception as e:
         logger.error('Failed to execute {0} API call due to Exception={1}'.format(
             service, e.message))
