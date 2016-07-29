@@ -12,6 +12,7 @@ from requests import HTTPError
 import logging
 import datetime
 import os
+import urllib2
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -242,7 +243,7 @@ class FileManager(AbstractFileManager, AgaveObject):
             logger.debug('Update files index for {}'.format(file_path))
             logger.debug('pems_indexing: {}'.format(index_pems))
             self.indexer.index(system, file_path, file_user, levels=1,
-                               full_indexing = True,
+                               full_indexing=True,
                                pems_indexing=index_pems)
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
@@ -728,6 +729,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         else:
             upload_file_id = os.path.join(file_id, upload_file.name)
 
+        logger.debug(upload_file_id)
         upload_real_path = self.get_file_real_path(upload_file_id)
         with open(upload_real_path, 'wb+') as destination:
             for chunk in upload_file.chunks():
@@ -943,8 +945,7 @@ class AgaveIndexer(AgaveObject):
 
         """
 
-        resp = self.call_operation('files.list', systemId = system_id,
-                                    filePath = path)
+        resp = self.call_operation('files.list', systemId=system_id, filePath=urllib2.quote(path))
         folders = []
         files = []
         for f in resp:
@@ -1099,7 +1100,7 @@ class AgaveIndexer(AgaveObject):
         docs_indexed = 0
         docs_deleted = 0
         for root, folders, files in self.walk_levels(system_id, path, 
-                                                bottom_up = bottom_up):
+                                                     bottom_up=bottom_up):
 
             objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
                                                 username, root, files, folders)

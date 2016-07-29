@@ -86,7 +86,7 @@ class AgaveFile(AbstractFile, AgaveObject):
     def from_file_path(cls, system, username = None, file_path = None, agave_client = None, **kwargs):
         try:
             logger.debug('Agave: calling: files.list, args: {}'.format( 
-                             {'systemId': system, 'filePath': file_path}))
+                             {'systemId': system, 'filePath': urllib2.quote(file_path)}))
             listing = agave_client.files.list(systemId=system, filePath= urllib2.quote(file_path))
         except (AgaveException, HTTPError) as e:
             logger.error(e,
