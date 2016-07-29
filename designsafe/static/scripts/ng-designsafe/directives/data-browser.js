@@ -264,10 +264,10 @@
                 //Get the file from scope or else it might not be the same reference.
                 var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
                 listingFile._pems = resp.data._pems; /* update pems for current file */
-                $scope.$emit('designsafe:notify', {
-                  level: 'info',
-                  message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
-                });
+                //$scope.$emit('designsafe:notify', {
+                //  level: 'info',
+                //  message: 'Sharing settings for <b>' + file.name + '</b> were updated.'
+                //});
               },
               function(errors) {
                 $scope.state.loading = false;
@@ -350,6 +350,7 @@
                       file_id: $scope.data.destination.id
                     });
                     $scope.state.uploading = false;
+                    $uibModalInstance.close();
                   }
                 );
               };
@@ -486,6 +487,22 @@
                 }
               };
 
+              $scope.isString = function(obj){
+                if (typeof obj === 'string'){
+                  return true;
+                } else {
+                  return false;
+                }
+              };
+
+              $scope.isArray = function(obj){
+                if (Array.isArray(obj)){
+                  return true;
+                } else {
+                  return false;
+                }
+              };
+
               $scope.cancel = function () {
                 $uibModalInstance.dismiss('cancel');
               };
@@ -559,10 +576,12 @@
           sourceEl.addClass('ds-data-browser-processing');
           return DataService.move(options).then(
             function (resp) {
-              $scope.$emit('designsafe:notify', {
-                level: 'info',
-                message: 'Moved "' + resp.data.name + '" to "' + options.dest_file_id + '".'
-              });
+              if (options.src_resource == 'agave'){
+                $scope.$emit('designsafe:notify', {
+                  level: 'info',
+                  message: 'Moved "' + resp.data.name + '" to "' + options.dest_file_id + '".'
+                });
+              }
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               sourceEl.animate({'opacity': 0}, 250).promise().then(function () {
@@ -622,10 +641,13 @@
           sourceEl.addClass('ds-data-browser-processing');
           DataService.copy(options).then(
             function (resp) {
-              $scope.$emit('designsafe:notify', {
-                level: 'info',
-                message: 'Copied "' + resp.data.name + '" to "' + options.dest_file_id + '".'
-              });
+
+              if (options.src_resource == 'agave'){
+                $scope.$emit('designsafe:notify', {
+                  level: 'info',
+                  message: 'Copied "' + resp.data.name + '" to "' + options.dest_file_id + '".'
+                });
+              }
               self.clearSelection();
               sourceEl.addClass('ds-data-browser-processing-success');
               setTimeout(function() {
@@ -820,7 +842,8 @@
           var opts = {
             resource: $scope.data.listing.source,
             file_id: $scope.data.listing.id,
-            reindex: true
+            reindex: true,
+            index_pems: true
           };
           return DataService.listPath(opts).then(
             function(resp) {
@@ -933,6 +956,10 @@
 
         self.scrollToBottom = function(el, pos){
           if($scope.state.loadingMore || $scope.state.reachedEnd){
+            return;
+          }
+          if ($scope.data.listing.children && $scope.data.listing.children.length < 100){
+            $scope.state.reachedEnd = true;
             return;
           }
           if($scope.state.page){
@@ -1189,7 +1216,7 @@
   module.directive('dsDataListDisplay', ['DataService', function(DataService) {
 
     function updateDragEl(options) {
-      options = _.extend({dragging: false, action: 'move', icon: 'arrows'}, options);
+      options = _.extend({dragging: false}, options);
 
       var action = options.action;
       var $el = $('.ds-drag-el');
@@ -1199,16 +1226,24 @@
         $el.appendTo('body');
       }
 
-      $('.drag-action', $el).html('<i class="fa fa-' + options.icon + '"></i> ' + options.action);
-      if (options.dragInfo) {
-        $('.drag-info', $el).html(options.dragInfo);
-      }
-
       if (options.dragging) {
         $el.show();
+        var dragAction = '';
+        if (options.icon) {
+          dragAction += '<i class="fa fa-' + options.icon + '"></i>';
+        }
+        if (options.action) {
+          dragAction += ' ' + options.action;
+        }
+        $('.drag-action', $el).html(dragAction);
+
+        if (options.dragInfo) {
+          $('.drag-info', $el).html(options.dragInfo);
+        }
       } else {
         $el.hide();
       }
+
       return $el[0];
     }
 
@@ -1263,18 +1298,17 @@
           }
         };
 
+
         scope.dragStart = function (e, file) {
+
           var dragInfo = '<i class="fa ' + DataService.getIcon(file.type, file.ext) + '"></i> ' + file.name;
-          var effect = e.altKey ? 'copy' : 'move';
           var dragEl = updateDragEl({
             dragging: true,
-            icon: effect === 'move' ? 'arrows' : 'copy',
-            action: effect,
+            icon: 'arrows',
             dragInfo: dragInfo});
+          e.dataTransfer.setDragImage(dragEl, 50, 50);
 
           var fileURI = file.source + '://' + file.id;
-          e.dataTransfer.setDragImage(dragEl, 50, 50);
-          e.dataTransfer.effectAllowed = effect;
           e.dataTransfer.setData('text/json', JSON.stringify(file));
           e.dataTransfer.setData('text/uri-list', fileURI);
           e.dataTransfer.setData('text/plain', fileURI);
@@ -1282,17 +1316,23 @@
         
         scope.dragEnter = function(e, file) {
           if (file.type === 'folder') {
-            $(e.target, element).closest('tr,caption').addClass('ds-droppable');
+            $(e.target, element).closest('.ds-drop-target').addClass('ds-droppable');
           }
         };
-        
+
         scope.dragLeave = function(e, file) {
-          $(e.target, element).closest('tr,caption').removeClass('ds-droppable');
+          $(e.target, element).closest('.ds-drop-target').removeClass('ds-drop-active');
         };
 
         scope.dragOver = function(e, file) {
           if (file.type === 'folder') {
-            $(e.target, element).closest('tr,caption').addClass('ds-droppable');
+            var target = $(e.target, element).closest('.ds-drop-target');
+            target.addClass('ds-drop-active');
+            if (e.altKey) {
+              e.dataTransfer.dropEffect = 'copy';
+            } else {
+              e.dataTransfer.dropEffect = 'move';
+            }
             e.preventDefault();
           }
         };
@@ -1302,6 +1342,8 @@
         };
 
         scope.dragDrop = function(e, file) {
+          e.preventDefault();
+          $(e.target, element).closest('.ds-drop-target').removeClass('ds-drop-active ds-drop-move ds-drop-copy');
           if (e.dataTransfer.files.length > 0) {
             // dropping files from computer
             dbCtrl.uploadFiles(file, false, e.dataTransfer.files);
@@ -1320,10 +1362,10 @@
                 dest_file_id: file.id
               };
               if (source !== dest) {
-                if (dragAction === 'move') {
-                  dbCtrl.moveFile(opts);
-                } else if (dragAction === 'copy') {
+                if (e.altKey) {
                   dbCtrl.copyFile(opts);
+                } else {
+                  dbCtrl.moveFile(opts);
                 }
               }
             }

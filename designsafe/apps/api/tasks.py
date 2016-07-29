@@ -1,5 +1,7 @@
 from celery import shared_task
+from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from designsafe.apps.api.notifications.models import Notification, Broadcast
 import shutil
 import logging
 import os
@@ -24,22 +26,69 @@ def reindex_agave(self, username, file_id, full_indexing = True,
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions):
-    user = get_user_model().objects.get(username=username)
+    try:
+        n = Notification(event_type = 'data',
+                         status = 'INFO',
+                         operation = 'share_initializing',
+                         message = 'File sharing is initializing. Please wait...',
+                         user = username,
+                         extra = {'target_path': reverse('designsafe_data:data_browser',
+                                                         args=['agave', file_id])})
+        n.save()
+        user = get_user_model().objects.get(username=username)
 
-    from designsafe.apps.api.data import AgaveFileManager
-    from designsafe.apps.api.data.agave.file import AgaveFile
-    from designsafe.apps.api.data.agave.elasticsearch.documents import Object
-    agave_fm = AgaveFileManager(user)
-    system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
+        from designsafe.apps.api.data import AgaveFileManager
+        from designsafe.apps.api.data.agave.file import AgaveFile
+        from designsafe.apps.api.data.agave.elasticsearch.documents import Object
+        agave_fm = AgaveFileManager(user)
+        system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
 
-    f = AgaveFile.from_file_path(system_id, username, file_path,
-                                 agave_client=agave_fm.agave_client)
-    f.share(permissions)
-    #reindex_agave.apply_async(args=(self.username, file_id))
-    # self.indexer.index(system, file_path, file_user, pems_indexing=True)
-    
-    esf = Object.from_file_path(system_id, username, file_path)
-    esf.share(username, permissions)
+        f = AgaveFile.from_file_path(system_id, username, file_path,
+                                     agave_client=agave_fm.agave_client)
+        f.share(permissions)
+        #reindex_agave.apply_async(args=(self.username, file_id))
+        # self.indexer.index(system, file_path, file_user, pems_indexing=True)
+        
+        esf = Object.from_file_path(system_id, username, file_path)
+        esf.share(username, permissions)
+
+        # Notify owner share completed
+        n = Notification(event_type = 'data',
+                         status = 'SUCCESS',
+                         operation = 'share_finished',
+                         message = 'File permissions were updated successfully.',
+                         user = username,
+                         extra = {'target_path': reverse('designsafe_data:data_browser',
+                                                         args=['agave', file_id])})
+        n.save()
+
+        # Notify users they have new shared files
+        for pem in permissions:
+            if pem['permission'] != 'NONE':
+                message = '%s shared some files with you.' % user.get_full_name()
+                n = Notification(event_type = 'data',
+                                 status = 'SUCCESS',
+                                 operation = 'share_finished',
+                                 message = message,
+                                 user = pem['user_to_share'],
+                                 extra = {'target_path': reverse('designsafe_data:data_browser',
+                                                                 args=['agave', file_id])})
+                n.save()
+
+    except:
+        logger.error('Error sharing file/folder', exc_info=True,
+                     extra = {
+                         'username': username,
+                         'file_id': file_id,
+                         'permissions': permissions
+                     })
+        n = Notification(event_type = 'data',
+                         status = Notification.ERROR,
+                         operation = 'share_error',
+                         message = 'We were unable to share the specified folder/file(s). Please try again...',
+                         user = username,
+                         extra = {})
+        n.save()
 
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
@@ -57,6 +106,14 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                  src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
+        n = Notification(event_type = 'data',
+                         status = Notification.INFO,
+                         operation = 'box_download_start',
+                         message = 'Starting download file %s from box.' % (src_file_id, ),
+                         user = username,
+                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+        n.save()
+
         user = get_user_model().objects.get(username=username)
 
         from designsafe.apps.api.data import BoxFileManager, AgaveFileManager
@@ -72,10 +129,18 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
             box_download_folder(box_fm, file_id, dest_real_path)
 
         # index the new files
-        from designsafe.apps.api.data.agave.filemanager import AgaveIndexer
+        #from designsafe.apps.api.data.agave.filemanager import AgaveIndexer
         system_id, file_user, file_path = agave_fm.parse_file_id(dest_file_id)
 
-        agave_fm.indexer.index(system_id, file_path, file_user)
+        agave_fm.indexer.index(system_id, file_path, file_user, full_indexing = True, pems_indexing=True, index_full_path = True)
+
+        n = Notification(event_type = 'data',
+                         status = Notification.SUCCESS,
+                         operation = 'box_download_end',
+                         message = 'File %s has been copied from box succesfully!' % (src_file_id, ),
+                         user = username,
+                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), dest_resource, dest_file_id)})
+        n.save()
     except:
         logger.exception('Unexpected task failure: box_download', extra={
             'username': username,
@@ -83,6 +148,13 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
             'to_resource': dest_resource,
             'dest_file_id': dest_file_id
         })
+        n = Notification(event_type = 'data',
+                         status = Notification.ERROR,
+                         operation = 'box_download_error',
+                         message = 'We were unable to get the specified file from box. Please try again...',
+                         user = username,
+                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+        n.save()
 
 
 def box_download_file(box_file_manager, box_file_id, download_directory_path):
@@ -158,6 +230,13 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
         src_resource, src_file_id, username, dest_resource, dest_file_id))
 
     try:
+        n = Notification(event_type = 'data',
+                         status = Notification.INFO,
+                         operation = 'box_upload_start',
+                         message = 'Starting import file %s into box.' % src_file_id,
+                         user = username,
+                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+        n.save()
         user = get_user_model().objects.get(username=username)
 
         from designsafe.apps.api.data import BoxFileManager
@@ -191,6 +270,14 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                 logger.exception('Upload to Box failed!')
 
         logger.debug('Box upload task complete.')
+
+        n = Notification(event_type = 'data',
+                         status = Notification.SUCCESS,
+                         operation = 'box_upload_end',
+                         message = 'File(s) %s succesfully uploaded into box!' % src_file_id,
+                         user = username,
+                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), dest_resource, dest_file_id)})
+        n.save()
     except:
         logger.exception('Unexpected task failure: box_upload', extra={
             'username': username,
@@ -199,6 +286,13 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
             'dest_resource': dest_resource,
             'dest_file_id': dest_file_id,
         })
+        n = Notification(event_type = 'data',
+                         status = Notification.ERROR,
+                         operation = 'box_download_error',
+                         message = 'We were unable to get the specified file from box. Please try again...',
+                         user = username,
+                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+        n.save()
 
 
 def box_upload_file(box_file_manager, box_folder_id, file_real_path):
@@ -248,7 +342,16 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                           dest_file_id):
     logger.debug('Scheduled copy of files from %s://%s to %s://%s',
                  src_resource, src_file_id, dest_resource, dest_file_id)
+
     try:
+        n = Notification(event_type = 'data',
+                         status = 'INFO',
+                         operation = 'copy_public_to_mydata_start',
+                         message = 'Copying folder/files %s from public data to your private data. Please wait...' % (src_file_id, ),
+                         user = username,
+                         extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), src_file_id)})
+        n.save()
+        notify_status = 'SUCCESS'
         from designsafe.apps.api.data import lookup_file_manager
         source_fm_cls = lookup_file_manager(src_resource)
         dest_fm_cls = lookup_file_manager(dest_resource)
@@ -266,13 +369,40 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
             elif os.path.isfile(source_real_path):
                 shutil.copy(source_real_path, dest_real_path)
             else:
+                notify_status = 'ERROR'
                 logger.error('The request copy source=%s does not exist!', src_resource)
 
             system, username, path = dest_fm.parse_file_id(dest_file_id)
             dest_fm.indexer.index(system, path, username)
+
+            n = Notification(event_type = 'data',
+                             status = notify_status,
+                             operation = 'copy_public_to_mydata_end',
+                             message = 'Files have been copied to your private data.',
+                             user = username,
+                             extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), dest_file_id)})
+            n.save()
         else:
             logger.error('Unable to load file managers for both source=%s and destination=%s',
                          src_resource, dest_resource)
+
+            n = Notification(event_type = 'data',
+                             status = 'ERROR',
+                             operation = 'copy_public_to_mydata_error',
+                             message = '''There was an error copying the files to your public data.
+                                          Plese try again.''',
+                             user = username,
+                             extra = {})
+            n.save()
     except:
         logger.exception('Unexpected task failure')
+
+        n = Notification(event_type = 'data',
+                         status = 'ERROR',
+                         operation = 'copy_public_to_mydata_error',
+                         message = '''There was an error copying the files to your public data.
+                                      Plese try again.''',
+                         user = username,
+                         extra = {})
+        n.save()
 

@@ -23,10 +23,7 @@ class FileManager(AgaveObject):
         super(FileManager, self).__init__(**kwargs)
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         if user_obj.is_authenticated():
-            if user_obj.agave_oauth.expired:
-                user_obj.agave_oauth.referer()
-            self.agave_client = Agave(api_server=agave_url,
-                                      token=user_obj.agave_oauth.access_token)
+            self.agave_client = user_obj.agave_oauth.client
         else:
             site_token = getattr(settings, 'AGAVE_SUPER_TOKEN')
             self.agave_client = Agave(api_server=agave_url,
@@ -116,7 +113,7 @@ class FileManager(AgaveObject):
                 'ext': '',
                 'size': None,
                 'lastModified': None,
-                'children': [o.to_dict(def_pems = default_pems) for o in listing],
+                'children': [o.to_dict(def_pems = default_pems, with_meta = True) for o in listing],
                 '_trail': [],
                 '_pems': default_pems,
             }
@@ -207,18 +204,21 @@ class FileManager(AgaveObject):
 
         """
         system, file_path = self.parse_file_id(file_id)
+        listing = None
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
         except Exception as e:
             logger.debug('Error listing using Es. Falling back to Aagave', exc_info=True)
-            listing = None
-        
         fallback = listing is None or(
             listing['type'] == 'folder' and
             len(listing['children']) == 0)
 
         if fallback:
-            listing = self._agave_listing(system, file_path, **kwargs)
+            es_listing = listing.copy() if listing is not None else None
+            try:
+                listing = self._agave_listing(system, file_path, **kwargs)
+            except IndexError:
+                listing = es_listing
 
         return listing                                          
         

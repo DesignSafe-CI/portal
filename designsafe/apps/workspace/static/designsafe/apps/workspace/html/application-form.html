@@ -12,7 +12,10 @@
         </p>
     </div>
 </div>
-<div ng-if="data.app" class="app-form-wrapper">
+<div ng-if="data.type === 'html' && data.app">
+  <p ng-bind-html="data.app"></p>
+</div>
+<div ng-if="data.type === 'agave' && data.app" class="app-form-wrapper">
     <div class="lead alert alert-warning" ng-if="data.needsLicense">
         <h2>Software License Required</h2>
         <p>

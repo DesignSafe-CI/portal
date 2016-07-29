@@ -67,16 +67,21 @@
     return {
       restrict: 'A',
       scope: {
-        transferData: '=transfer',
-        dragStart: '&',
-        dragEnter: '&',
-        dragOver: '&',
-        dragLeave: '&',
-        dragEnd: '&',
-        dragDrop: '&'
+        transferData: '=dsDragTransfer',
+        dragStart: '&dsDragStart',
+        dragEnter: '&dsDragEnter',
+        dragOver: '&dsDragOver',
+        dragLeave: '&dsDragLeave',
+        dragEnd: '&dsDragEnd',
+        dragDrop: '&dsDragDrop',
+        allowDrag: '=dsDragEnabled'
       },
       link: function(scope, element) {
-        element[0].draggable = true;
+        if (scope.allowDrag) {
+          element[0].draggable = true;
+        }
+
+        element.addClass('ds-drop-target');
 
         element[0].addEventListener('dragstart', function (e) {
           var handler = scope.dragStart();
@@ -116,8 +121,6 @@
         });
 
         element[0].addEventListener('drop', function (e) {
-          e.preventDefault();
-          element.removeClass('ds-droppable');
           var handler = scope.dragDrop();
           if (handler) {
             handler(e, scope.transferData);

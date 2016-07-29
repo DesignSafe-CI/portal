@@ -8,7 +8,7 @@
       var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'];
       var number = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
       return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-    }
+    };
   });
 
   mod.filter('keys', function() {
@@ -17,7 +17,7 @@
         return Object.keys(obj);
       }
       return [];
-    }
+    };
   });
 
   mod.filter('length', function() {
@@ -34,6 +34,6 @@
         return String(obj).length;
       }
       return 0;
-    }
+    };
   });
 })(window, angular);

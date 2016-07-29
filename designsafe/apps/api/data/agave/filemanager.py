@@ -1,16 +1,18 @@
 from agavepy.agave import Agave
 from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.file import AgaveFile
-from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
-from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.tasks import reindex_agave, share_agave
-from django.conf import settings
+from designsafe.apps.api.data.agave.agave_object import AgaveObject
+from designsafe.apps.api.data.agave.elasticsearch.documents import Object
+from designsafe.apps.api.notifications.models import Notification, Broadcast  
+from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from requests import HTTPError
-import os
 import logging
 import datetime
+import os
+import urllib2
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -41,13 +43,8 @@ class FileManager(AbstractFileManager, AgaveObject):
                                message='Log in required to access these files.')
 
         username = user_obj.username
-        if user_obj.agave_oauth.expired:
-            user_obj.agave_oauth.refresh()
 
-        token = user_obj.agave_oauth
-        access_token = token.access_token
-        agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        self.agave_client = Agave(api_server=agave_url, token=access_token)
+        self.agave_client = user_obj.agave_oauth.client
         self.username = username
         self._user = user_obj
         self.indexer = AgaveIndexer(agave_client = self.agave_client)
@@ -244,8 +241,9 @@ class FileManager(AbstractFileManager, AgaveObject):
 
         if reindex:
             logger.debug('Update files index for {}'.format(file_path))
+            logger.debug('pems_indexing: {}'.format(index_pems))
             self.indexer.index(system, file_path, file_user, levels=1,
-                               full_indexing = True,
+                               full_indexing=True,
                                pems_indexing=index_pems)
         try:
             listing = self._es_listing(system, self.username, file_path, **kwargs)
@@ -258,8 +256,14 @@ class FileManager(AbstractFileManager, AgaveObject):
             listing['id'] != '$share' and
             len(listing['children']) == 0)
         if fallback:
-            listing = self._agave_listing(system, file_path, **kwargs)
-            reindex_agave.apply_async(args=(self.username, file_id, True, 1))
+            es_listing = listing.copy() if listing is not None else None
+            try:
+                listing = self._agave_listing(system, file_path, **kwargs)
+                reindex_agave.apply_async(kwargs = {'username': self.username, 
+                                                    'file_id': file_id, 
+                                                    'levels': 1})
+            except IndexError:
+                listing = es_listing
         return listing
 
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
@@ -549,7 +553,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         f = AgaveFile.mkdir(system, file_user, file_path, dir_name,
                             agave_client = self.agave_client)
         logger.debug('f: {}'.format(f.to_dict()))
-        esf = Object.from_agave_file(file_user, f)
+        esf = Object.from_agave_file(file_user, f, get_pems = True)
         return f.to_dict()
 
     def preview(self, file_id, **kwargs):
@@ -725,6 +729,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         else:
             upload_file_id = os.path.join(file_id, upload_file.name)
 
+        logger.debug(upload_file_id)
         upload_real_path = self.get_file_real_path(upload_file_id)
         with open(upload_real_path, 'wb+') as destination:
             for chunk in upload_file.chunks():
@@ -744,10 +749,14 @@ class FileManager(AbstractFileManager, AgaveObject):
         u_system, u_file_user, u_file_path = self.parse_file_id(upload_file_id)
         u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
                                           agave_client=self.agave_client)
-        Object.from_agave_file(u_file_user, u_file)  # index new file
+        doc = Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
+        doc.save()
         if index_parent:
-            reindex_agave.apply_async(args=(self.username, file_id, 
-                                            False, 0, False, True))
+            reindex_agave.apply_async(kwargs={'username': self.username, 
+                                              'file_id': file_id, 
+                                              'full_indexing' : False, 
+                                              'pems_indexing': True, 
+                                              'index_full_path': True})
         return u_file.to_dict()
 
     def get_file_real_path(self, file_id):
@@ -936,8 +945,7 @@ class AgaveIndexer(AgaveObject):
 
         """
 
-        resp = self.call_operation('files.list', systemId = system_id,
-                                    filePath = path)
+        resp = self.call_operation('files.list', systemId=system_id, filePath=urllib2.quote(path))
         folders = []
         files = []
         for f in resp:
@@ -1089,12 +1097,10 @@ class AgaveIndexer(AgaveObject):
             created. It represent all the documents that were created and/or updated.
             Meaning, all the documents touched.
         """
-
-
         docs_indexed = 0
         docs_deleted = 0
         for root, folders, files in self.walk_levels(system_id, path, 
-                                                bottom_up = bottom_up):
+                                                     bottom_up=bottom_up):
 
             objs_to_index, docs_to_delete = self._dedup_and_discover(system_id, 
                                                 username, root, files, folders)

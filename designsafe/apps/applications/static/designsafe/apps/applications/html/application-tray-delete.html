@@ -1,0 +1,18 @@
+<div modal="deleteModal">
+    <div class="modal-header">
+      <h3 class="modal-title">Remove App Tray</h3>
+    </div>
+    <div class="modal-body">
+      <p ng-show="error" class="alert alert-danger">{{error}}</p>
+      <p class="text-center" ng-show="requesting">
+        <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+      </p>
+      <p ng-show="!requesting">
+        Are you sure you want to delete <strong>{{tab.title}}</strong> tray?
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+      <button class="btn btn-danger" ng-click="deleteTab()">Delete</button>
+    </div>
+</div>

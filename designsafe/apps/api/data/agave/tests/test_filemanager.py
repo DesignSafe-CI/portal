@@ -27,10 +27,9 @@ class FileManagerBaseTestCase(TestCase):
         fm = FileManager(self.user)
         return fm
 
+
 class FileManagerTestCase(FileManagerBaseTestCase):
-    @mock.patch('agavepy.agave.Agave.__init__')
-    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.refresh')
-    def test_filemanager_initialization(self, agave_oauth_refresh, agave_init):
+    def test_filemanager_initialization(self):
         """Test correct FileManager initialization
 
         Asserts:
@@ -39,11 +38,8 @@ class FileManagerTestCase(FileManagerBaseTestCase):
             * Agave client gets called with the correct args
             * Username is correctly set
         """
-        agave_init.return_value = None
-        agave_oauth_refresh.return_value = None
         fm = FileManager(self.user)
-        agave_init.assert_called_with(api_server = settings.AGAVE_TENANT_BASEURL,
-                                   token = self.user.agave_oauth.access_token)
+        self.assertEqual(fm.agave_client._token, self.user.agave_oauth.access_token)
         self.assertEqual(fm.username, self.user.username)
 
     def test_is_shared(self):
@@ -439,12 +435,10 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
 
         mock_object_from_file_path.side_effect = [mock_trash_esf,
                                                   mock_conflict_file_esf,
-                                                  mock_file_esf,
-                                                  mock_file_esf,
                                                   mock_file_esf,]
 
         mock_fm_move.return_value = None
-        mock_fm_rename.return_value = None
+        mock_fm_rename.return_value = {'id': file_id + '_timestamp'}
         mock_fm_mkdir.return_value = None
 
         fm.move_to_trash(file_id)
@@ -461,8 +455,6 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username,
                       '%s/.Trash/file.txt' % (self.user.username)),
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
         ]
 
         rename_calls = mock_fm_rename.call_args
@@ -474,7 +466,7 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         move_calls = mock_fm_move.call_args
         mov_args, mov_kwargs = move_calls
         self.assertTrue(mock_fm_move.called)
-        self.assertEqual(mov_args[0], file_id)
+        self.assertEqual(mov_args[0], file_id + '_timestamp')
         self.assertEqual(mov_args[1], fm.resource)
         self.assertNotEqual(mov_args[2], '%s/.Trash/file.txt')
 
@@ -490,15 +482,21 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
 
         mock_trash_esf = mock.Mock(spec = Object)
+        mock_conflict_file_esf = mock.Mock(spec=Object)
+        type(mock_conflict_file_esf).path = mock.PropertyMock(
+            return_value='%s/.Trash' % self.user.username)
+        type(mock_conflict_file_esf).name = 'folder'
         mock_file_esf = mock.Mock(spec = Object)
         type(mock_file_esf).type = mock.PropertyMock(return_value = 'dir')
         type(mock_file_esf).name = mock.PropertyMock(return_value = 'folder')
         type(mock_file_esf).path = mock.PropertyMock(return_value = '%s/path/to' % self.user.username)
         type(mock_file_esf).full_path = mock.PropertyMock(return_value = path)
         mock_file_esf.return_value.type = 'dir'
-        mock_object_from_file_path.side_effect = [mock_trash_esf, mock_file_esf]
+        mock_object_from_file_path.side_effect = [mock_trash_esf, 
+                                                  mock_conflict_file_esf, 
+                                                  mock_file_esf]
         mock_fm_move.return_value = None
-        mock_fm_rename.return_value = None
+        mock_fm_rename.return_value = {'id': file_id + '_timestamp'}
         mock_fm_mkdir.return_value = None
 
         fm.move_to_trash(file_id)
@@ -515,8 +513,6 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username,
                       '%s/.Trash/folder' % (self.user.username)),
             mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
-            mock.call(settings.AGAVE_STORAGE_SYSTEM, self.user.username, path),
         ]
 
         rename_calls = mock_fm_rename.call_args
@@ -528,7 +524,7 @@ class FileManagerMoveToTrashTestCase(FileManagerBaseTestCase):
         move_calls = mock_fm_move.call_args
         mov_args, mov_kwargs = move_calls
         self.assertTrue(mock_fm_move.called)
-        self.assertEqual(mov_args[0], file_id)
+        self.assertEqual(mov_args[0], file_id + '_timestamp')
         self.assertEqual(mov_args[1], fm.resource)
         self.assertNotEqual(mov_args[2], '%s/.Trash/folder')
 
@@ -623,6 +619,7 @@ class FileManagerMkdirTestCase(FileManagerBaseTestCase):
         path = '%s/path/to/folder' % (self.user.username)
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
         dir_name = 'new_dir'
+        system = str(settings.AGAVE_STORAGE_SYSTEM)
 
         mock_af = mock.Mock(spec = AgaveFile)
         mock_esf = mock.Mock(spec = Object)
@@ -632,9 +629,10 @@ class FileManagerMkdirTestCase(FileManagerBaseTestCase):
 
         fm.mkdir(file_id, dir_name)
 
-        mock_agave_mkdir.assert_called_with(settings.AGAVE_STORAGE_SYSTEM, 
-                self.user.username, path, dir_name, agave_client = fm.agave_client)
-        mock_object_from_agave_file.assert_called_with(self.user.username, mock_af)
+        mock_agave_mkdir.assert_called_with(
+            system, self.user.username, path, dir_name, agave_client=fm.agave_client)
+        mock_object_from_agave_file.assert_called_with(
+            self.user.username, mock_af, get_pems=True)
 
 class FileManagerRenameTestCase(FileManagerBaseTestCase):
     @mock.patch('designsafe.apps.api.data.agave.elasticsearch.documents.Object.from_file_path')        
@@ -663,26 +661,25 @@ class FileManagerRenameTestCase(FileManagerBaseTestCase):
 
 
 class FileManagerShareTestCase(FileManagerBaseTestCase):
-    @mock.patch('designsafe.apps.api.tasks.reindex_agave.apply_async')
-    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')        
-    def test_rename(self, mock_agave_from_file_path, mock_reindex_pems):
+    @mock.patch('designsafe.apps.api.tasks.share_agave.apply_async')
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_rename(self, mock_agave_from_file_path, mock_share_task):
         fm = self.get_filemanager()
 
         path = '%s/path/to/folder' % (self.user.username)
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
-        share_user = 'share_user'
-        permission = 'READ'
+        permissions = [{'user_to_share': 'share_user', 'permission': 'READ'}]
 
         mock_af = mock.Mock(spec = AgaveFile)
 
         mock_agave_from_file_path.return_value = mock_af
 
-        fm.share(file_id, share_user, permission)
+        fm.share(file_id, permissions)
 
-        mock_agave_from_file_path.assert_called_with(settings.AGAVE_STORAGE_SYSTEM,
-                        self.user.username, path, agave_client = fm.agave_client)
-        mock_reindex_pems.assert_called_with(
-            args=(self.user.username, file_id)
-        )
-        mock_af.share.assert_called_with(share_user, permission)
+        mock_agave_from_file_path.assert_called_with(
+            settings.AGAVE_STORAGE_SYSTEM,
+            self.user.username, path,
+            agave_client=fm.agave_client)
+        mock_share_task.assert_called_with(
+            args=(self.user.username, file_id, permissions))
 

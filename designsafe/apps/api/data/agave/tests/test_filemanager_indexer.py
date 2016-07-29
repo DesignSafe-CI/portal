@@ -44,7 +44,7 @@ class FileManagerIndexerGeneratorTestCase(FileManagerBaseTestCase):
     @mock.patch.object(AgaveIndexer, 'call_operation')
     def test_walk_creating_correct_objects(self, mock_agave_call_op):
         system = settings.AGAVE_STORAGE_SYSTEM
-        path = 'xirdneh'
+        path = 'ds_user'
         mock_agave_call_op.side_effect = [self.home_listing_json, 
                     self.trash_listing_json, self.agavefs_listing_json]
         objs = self.home_listing_json + self.trash_listing_json + self.agavefs_listing_json
@@ -65,8 +65,8 @@ class FileManagerIndexerGeneratorTestCase(FileManagerBaseTestCase):
 
     @mock.patch.object(AgaveIndexer, 'call_operation')
     def test_walk_calling_listing_correctly(self, mock_agave_call_op):
-        system = settings.AGAVE_STORAGE_SYSTEM
-        path = 'xirdneh'
+        system = 'storage.example.com'
+        path = 'ds_user'
         mock_agave_call_op.side_effect = [self.home_listing_json, 
                     self.trash_listing_json, self.agavefs_listing_json]
         objs = self.home_listing_json + self.trash_listing_json + self.agavefs_listing_json

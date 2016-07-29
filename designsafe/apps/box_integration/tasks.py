@@ -48,13 +48,7 @@ def copy_box_item(self, username, box_item_type, box_item_id, target_system_id,
         self.update_state(state='FAILURE', meta={'exc': e})
         return
 
-    agave_oauth = user.agave_oauth
-    if agave_oauth.expired:
-        agave_oauth.refresh()
-
-    agave_client = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                         token=agave_oauth.access_token)
-
+    agave_client = user.agave_oauth.client
     fm = FileManager(agave_client=agave_client)
 
     if box_item_type == 'file':

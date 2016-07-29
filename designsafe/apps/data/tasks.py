@@ -77,10 +77,7 @@ logger = logging.getLogger(__name__)
 def index(system_id, path, username, pems = False, bottom_up = False, levels = 0):
     try:
         user = get_user_model().objects.get(username = username)
-        if user.agave_oauth.expired:
-            user.agave_oauth.refresh()
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token = user.agave_oauth.token['access_token'])
+        ag = user.agave_oauth.client
         mngr = FileManager(agave_client = ag)
         mngr.index(system_id, path, username, bottom_up = bottom_up, levels = levels)
         if pems:
@@ -92,10 +89,7 @@ def index(system_id, path, username, pems = False, bottom_up = False, levels = 0
 def index_permissions(system_id, path, username, bottom_up = False, levels = 0):
     try:
         user = get_user_model().objects.get(username = username)
-        if user.agave_oauth.expired:
-            user.agave_oauth.refresh()
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token = user.agave_oauth.token['access_token'])
+        ag = user.agave_oauth.client
         mngr = FileManager(agave_client = ag)
         mngr.index_permissions(system_id, path, username, bottom_up = bottom_up, levels = levels)
     except ObjectDoesNotExist:
@@ -107,10 +101,7 @@ def share(system_id, path, username, permission, me):
     path_shared = path
     try:
         user = get_user_model().objects.get(username=me)
-        if user.agave_oauth.expired:
-            user.agave_oauth.refresh()
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token = user.agave_oauth.token['access_token'])
+        ag = user.agave_oauth.client
         mngr = FileManager(agave_client = ag)
         rep = mngr.share(system_id = system_id, path = path,
                   username = username, permission = permission,

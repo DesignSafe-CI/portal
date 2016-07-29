@@ -1,6 +1,5 @@
-from agavepy.agave import Agave, AgaveException
+from agavepy.agave import AgaveException
 from django.shortcuts import render
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
@@ -15,19 +14,16 @@ from datetime import datetime
 import json
 import six
 import logging
+import urllib
 
 logger = logging.getLogger(__name__)
 
 
 @login_required
 def index(request):
-    context = {}
-    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
-    if token_key in request.session:
-        context['session'] = {
-            'agave': json.dumps(request.session[token_key])
-        }
-    context['unreadNotifications'] = get_number_unread_notifications(request)
+    context = {
+        'unreadNotifications': get_number_unread_notifications(request)
+    }
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
 
@@ -40,8 +36,7 @@ def _app_license_type(app_id):
 @login_required
 def call_api(request, service):
     try:
-        token = request.user.agave_oauth
-        agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
+        agave = request.user.agave_oauth.client
         if service == 'apps':
             app_id = request.GET.get('app_id')
             if app_id:
@@ -60,6 +55,38 @@ def call_api(request, service):
                     data = agave.apps.list(publicOnly='true')
                 else:
                     data = agave.apps.list()
+
+        elif service == 'meta':
+            app_id = request.GET.get('app_id')
+            if request.method == 'GET':
+                if app_id:
+                    data = agave.meta.get(appId=app_id)
+                    lic_type = _app_license_type(app_id)
+                    data['license'] = {
+                        'type': lic_type
+                    }
+                    if lic_type is not None:
+                        lic = request.user.licenses.filter(license_type=lic_type).first()
+                        data['license']['enabled'] = lic is not None
+
+                else:
+                    query = request.GET.get('q')
+                    data = agave.meta.listMetadata(q=query)
+            elif request.method == 'POST':
+                meta_post = json.loads(request.body)
+                meta_uuid = meta_post.get('uuid')
+
+                if meta_uuid:
+                    del meta_post['uuid']
+                    data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
+                else:
+                    data = agave.meta.addMetadata(body=meta_post)
+            elif request.method == 'DELETE':
+                meta_uuid = request.GET.get('uuid')
+                if meta_uuid:
+                    data = agave.meta.deleteMetadata(uuid=meta_uuid)
+
+
 
         elif service == 'files':
             system_id = request.GET.get('system_id')
@@ -136,28 +163,45 @@ def call_api(request, service):
 
                 # submit job
                 elif job_post:
+
+                    # cleaning archive path value
                     if 'archivePath' in job_post:
-                        archive_path = job_post['archivePath']
-                        # parse agave:// URI into "archiveSystem" and "archivePath"
-                        if archive_path.startswith('agave://'):
-                            parsed = urlparse(archive_path)
-                            # strip leading slash
-                            job_post['archivePath'] = parsed.path[1:]
-                            job_post['archiveSystem'] = parsed.netloc
-                        elif not archive_path.startswith(request.user.username):
-                            archive_path = '%s/%s' % (
+                        parsed = urlparse(job_post['archivePath'])
+                        if parsed.path.startswith('/'):
+                            # strip leading '/'
+                            archive_path = parsed.path[1:]
+                        else:
+                            archive_path = parsed.path
+
+                        if not archive_path.startswith(request.user.username):
+                            archive_path = '{}/{}'.format(
                                 request.user.username, archive_path)
-                            job_post['archivePath'] = archive_path
+
+                        job_post['archivePath'] = archive_path
+
+                        if parsed.netloc:
+                            job_post['archiveSystem'] = parsed.netloc
                     else:
                         job_post['archivePath'] = \
-                            '%s/archive/jobs/%s/${JOB_NAME}-${JOB_ID}' % (
+                            '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                                 request.user.username,
                                 datetime.now().strftime('%Y-%m-%d'))
 
+                    # check for running licensed apps
                     lic_type = _app_license_type(job_post['appId'])
                     if lic_type is not None:
                         lic = request.user.licenses.filter(license_type=lic_type).first()
                         job_post['parameters']['_license'] = lic.license_as_str()
+
+                    # url encode inputs
+                    if job_post['inputs']:
+                        for key, value in six.iteritems(job_post['inputs']):
+                            parsed = urlparse(value)
+                            if parsed.scheme:
+                                job_post['inputs'][key] = '{}://{}{}'.format(
+                                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                            else:
+                                job_post['inputs'][key] = urllib.quote(parsed.path)
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
@@ -184,8 +228,12 @@ def call_api(request, service):
                     job_meta = agave.meta.listMetadata(q=json.dumps(q))
                     if job_meta:
                         data['_embedded'] = {"metadata": job_meta}
-                    db_hash = data['archivePath'].replace(data['owner'], '')
-                    data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
+
+                    archive_system_path = '{}/{}'.format(data['archiveSystem'],
+                                                         data['archivePath'])
+                    data['archiveUrl'] = reverse(
+                        'designsafe_data:data_browser',
+                        args=['agave', archive_system_path])
 
                 # list jobs
                 else:
@@ -217,4 +265,3 @@ def call_api(request, service):
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
                         content_type='application/json')
-

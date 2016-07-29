@@ -27,12 +27,29 @@
       }
 
       return path;
-    }
+    };
   }]);
 
   mod.filter('dsFileIcon', ['DataService', function(DataService) {
     return function(file) {
       return DataService.getIcon(file.type, file.ext);
-    }
+    };
   }]);
+
+  mod.filter('dsFileDisplayName', [function() {
+    return function(file){
+      var displayName = file.name;
+      if (typeof file.metadata === 'undefined'){
+        return displayName;
+      }
+      if (file.path == '/' && file.metadata.project.title){
+        displayName = file.metadata.project.title;
+      }else if (displayName.toLowerCase().startsWith('experiment') &&
+            file.metadata.experiment.title){
+        displayName = file.metadata.experiment.title;
+      }
+      return displayName;
+    };
+  }]);
+
 })(window, angular, jQuery, _);

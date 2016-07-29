@@ -9,10 +9,10 @@
     "recursive" : true,
     "_links" : {
       "self" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/ds_user"
       },
       "file" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user"
       },
       "profile" : {
         "href" : "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
@@ -29,17 +29,17 @@
     "recursive" : false,
     "_links" : {
       "self" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/ds_user"
       },
       "file" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user"
       },
       "profile" : {
         "href" : "https://agave.designsafe-ci.org/profiles/v2/envision"
       }
     }
   },{
-    "username" : "xirdneh",
+    "username" : "ds_user",
     "internalUsername" : null,
     "permission" : {
       "read" : true,
@@ -49,13 +49,13 @@
     "recursive" : true,
     "_links" : {
       "self" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/files/v2/pems/system/designsafe.storage.default/ds_user"
       },
       "file" : {
-        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/ds_user"
       },
       "profile" : {
-        "href" : "https://agave.designsafe-ci.org/profiles/v2/xirdneh"
+        "href" : "https://agave.designsafe-ci.org/profiles/v2/ds_user"
       }
     }
   } ]

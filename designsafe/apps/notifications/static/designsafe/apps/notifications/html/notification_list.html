@@ -14,34 +14,52 @@
           <a name="delete" ng-click="delete(x.pk)">Delete</a>
           <div ng-class="(x.fields.read) ? 'text-muted' : 'text-info'">
             <dl class="dl-horizontal">
-              <dt>Type</dt>
-              <dd>{{ x.fields.event_type }}</dd>
-              <dt>Time</dt>
-              <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
-              <div ng-repeat="item in x.fields.body.html">
-                <div ng-repeat="(key, val) in item">
+              <div ng-if = "x.fields.body">
+                <dt>Type</dt>
+                <dd>{{ x.fields.event_type }}</dd>
+                <dt>Time</dt>
+                <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+                <div ng-repeat="item in x.fields.body.html">
+                  <div ng-repeat="(key, val) in item">
+                    <dt>{{key}}</dt>
+                    <dd>{{val}}</dd>
+                  </div>
+                </div>
+
+                <!--
+                <div ng-if="x.fields.event_type=='job'">
+                  <dt>Job name</dt>
+                  <dd>{{x.fields.body.job_name}}</dd>
+
+                  <dt>Status</dt>
+                  <dd>{{x.fields.body.status}}</dd>
+
+                  <dt>Archive path</dt>
+                  <dd>{{x.fields.body.archive_path}}</dd>
+                </div>
+                  -->
+                <dt>Raw message</dt>
+                <dd>
+                  <p><button ng-click="showRawMessage = !showRawMessage" type="button" name="toggle-raw-message" class="btn btn-xs btn-default">Click to view</button></p>
+                  <p ng-show="showRawMessage">{{x}}</p>
+                </dd>
+              </div>
+              <div ng-if="x.fields.datetime">
+                <dt>Type</dt>
+                <dd>{{ x.fields.event_type}} </dd>
+                <dt>Time</dt>
+                <dd>{{x.fields.datetime| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+                <dt>Operation</dt>
+                <dd>{{x.fields.operation}}</dd>
+                <dt>status</dt>
+                <dd>{{x.fields.status}}</dd>
+                <dt>Message</dt>
+                <dd>{{x.fields.message}}</dd>
+                <div ng-repeat"(key, val) in x.fields.extra">
                   <dt>{{key}}</dt>
                   <dd>{{val}}</dd>
                 </div>
               </div>
-
-              <!--
-              <div ng-if="x.fields.event_type=='job'">
-                <dt>Job name</dt>
-                <dd>{{x.fields.body.job_name}}</dd>
-
-                <dt>Status</dt>
-                <dd>{{x.fields.body.status}}</dd>
-
-                <dt>Archive path</dt>
-                <dd>{{x.fields.body.archive_path}}</dd>
-              </div>
-                -->
-              <dt>Raw message</dt>
-              <dd>
-                <p><button ng-click="showRawMessage = !showRawMessage" type="button" name="toggle-raw-message" class="btn btn-xs btn-default">Click to view</button></p>
-                <p ng-show="showRawMessage">{{x}}</p>
-              </dd>
             </dl>
             <div ng-if="x.fields.body.action_link">
               <a href="{{x.fields.body.action_link.value}}" target="_blank" class="btn btn-primary">{{x.fields.body.action_link.label}}</a>

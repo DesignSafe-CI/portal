@@ -47,28 +47,23 @@
 }
 
 .ds-data-browser-sidebar {
-    padding: 3px;
     border: 1px solid #ddd;
     background-color: #eee;
 }
 
-.ds-data-browser-sidebar:first-child {
-    margin-right: 5px;
-}
-
-.ds-data-browser-sidebar:last-child {
-    margin-left: 5px;
-}
-
 .ds-data-browser-new {
-    margin: 5px;
+    margin: 10px 10px 20px;
 }
 
 .ds-data-browser-main {
     flex: 1 1 auto;
 }
 
-.ds-droppable {
+.ds-drop-target {
+    position: relative;
+}
+
+.ds-drop-target.ds-drop-active {
     background-color: #d9edf7 !important;
 }
 
@@ -123,7 +118,30 @@
 }
 
 .ds-data-browser-source-select-list .list-group-item {
-    padding: 0;
+    padding: 0 0 0 5px;
+    background-color: transparent;
+    border: none;
+    color: inherit;
+}
+
+.ds-data-browser-source-select-list .list-group-item:hover,
+.ds-data-browser-source-select-list .list-group-item:focus {
+    background-color: #ccc;
+    color: inherit;
+}
+
+.ds-data-browser-source-select-list .list-group-item.active {
+    background-color: #337ab7;
+    border-color: #ddd;
+}
+
+.ds-data-browser-source-select-list .list-group-item:hover a,
+.ds-data-browser-source-select-list .list-group-item:focus a {
+    background-color: #e1e1e1;
+}
+
+.ds-data-browser-source-select-list .list-group-item.active a {
+    background-color: #fff;
 }
 
 .ds-data-browser-source-select-list a {

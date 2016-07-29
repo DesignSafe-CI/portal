@@ -23,20 +23,21 @@
 
         <tbody>
         <tr ng-repeat="file in data.listing.children | orderBy:'name'" data-file-id="{{ file.id }}"
-            ds-draggable transfer="file" drag-start="dragStart" drag-enter="dragEnter" drag-over="dragOver"
-            drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop" ng-click="selectFile(file)"
-            ng-class="{'ds-data-selected': isFileSelected(file)}"
+            ds-draggable  ds-drag-enabled="true" ds-drag-transfer="file"
+            ds-drag-start="dragStart" ds-drag-enter="dragEnter" ds-drag-over="dragOver"
+            ds-drag-leave="dragLeave" ds-drag-end="dragEnd" ds-drag-drop="dragDrop"
+            ng-click="selectFile(file)" ng-class="{'ds-data-selected': isFileSelected(file)}"
         >
             <td ng-if = "!state.search">
                 <button class="flo-select-btn" ng-mouseenter="state.hover[file.id] = true" ng-mouseleave="state.hover[file.id] = false" ng-if="enableSelection">
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
-                <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file.name }}</a>
+                <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file|dsFileDisplayName }}</a>
             </td>
             <td ng-if = "state.search">
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
-                <a title="{{ file|dsFileUrl }}" href="{{ file|dsFileUrl }}" ng-click="browseAndPreview($event, file)">{{ file.name }}</a>
+                <a title="{{ file|dsFileUrl }}" href="{{ file|dsFileUrl }}" ng-click="browseAndPreview($event, file)">{{ file.name|dsFileUrl }}</a>
             </td>
             <td ng-if="state.search">
               <i class="fa fa-fw fa-folder"></i>
@@ -70,8 +71,8 @@
           </tr>
         </tfoot>
         <caption ng-hide="data.listing.children.length || state.loading"
-                 ds-draggable transfer="data.listing" drag-start="dragStart" drag-enter="dragEnter"
-                 drag-over="dragOver" drag-leave="dragLeave" drag-end="dragEnd" drag-drop="dragDrop"
+                 ds-draggable ds-drag-enabled="false" ds-drag-transfer="data.listing" ds-drag-start="dragStart" ds-drag-enter="dragEnter"
+                 ds-drag-over="dragOver" ds-drag-leave="dragLeave" ds-drag-end="dragEnd" ds-drag-drop="dragDrop"
         >
             <div class="text-center text-muted" ng-if="! data.listing._error">
                 <p class="lead">

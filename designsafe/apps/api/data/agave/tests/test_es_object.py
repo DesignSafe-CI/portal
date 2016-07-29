@@ -79,6 +79,7 @@ class FileBaseTestCase(TestCase):
             type = self.afile_json['type'],
             permissions = self.apems_json
         )
+        setattr(doc.meta, 'id', '__mock__')
         return doc
 
     def get_mock_object_folder(self):
@@ -370,7 +371,7 @@ class FileShareTestCase(FileBaseTestCase):
 
         pems = 'READ_WRITE'
         user_to_share = 'share_user'
-        doc.share(self.user.username, user_to_share, pems)
+        doc.share(self.user.username, [{'user_to_share': user_to_share, 'permission': pems}])
 
         from_file_path_calls = mock_obj_from_file_path.call_args_list
         for call in from_file_path_calls:
@@ -383,8 +384,8 @@ class FileShareTestCase(FileBaseTestCase):
         update_pems_calls = mock_update_pems.call_args_list
         for call in update_pems_calls:
             args, kwrgs = call
-            self.assertEqual(args[0], user_to_share)
-            self.assertEqual(args[1], pems)
+            self.assertEqual(args[0][0]['user_to_share'], user_to_share)
+            self.assertEqual(args[0][0]['permission'], pems)
 
         self.assertEqual(mock_update_pems.call_count, len(listing_json) + 1)
         self.assertEqual(mock_obj().save.call_count, len(file_path_comps))
@@ -412,7 +413,7 @@ class FileUpdatePemsTestCase(FileBaseTestCase):
         ]
         doc.permissions = origin_pems
 
-        doc.update_pems(user_to_share, 'READ')
+        doc.update_pems([{'user_to_share': user_to_share, 'permission': 'READ'}])
 
         _, kwargs = mock_update.call_args
         updated_pems = kwargs['permissions']
@@ -443,7 +444,7 @@ class FileUpdatePemsTestCase(FileBaseTestCase):
         ]
         doc.permissions = origin_pems
 
-        doc.update_pems(user_to_share, 'WRITE')
+        doc.update_pems([{'user_to_share': user_to_share, 'permission': 'WRITE'}])
 
         _, kwargs = mock_update.call_args
         updated_pems = kwargs['permissions']
@@ -474,7 +475,7 @@ class FileUpdatePemsTestCase(FileBaseTestCase):
         ]
         doc.permissions = origin_pems
 
-        doc.update_pems(new_user_to_share, 'READ')
+        doc.update_pems([{'user_to_share': new_user_to_share, 'permission': 'READ'}])
 
         _, kwargs = mock_update.call_args
         updated_pems = kwargs['permissions']
@@ -511,7 +512,7 @@ class FileUpdatePemsTestCase(FileBaseTestCase):
         ]
         doc.permissions = origin_pems
 
-        doc.update_pems(new_user_to_share, 'WRITE')
+        doc.update_pems([{'user_to_share': new_user_to_share, 'permission': 'WRITE'}])
 
         _, kwargs = mock_update.call_args
         updated_pems = kwargs['permissions']

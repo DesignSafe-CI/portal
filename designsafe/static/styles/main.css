@@ -490,3 +490,21 @@ button.toast-close-button {
 #toast-container > .toast-warning {
   background-image: none !important;
 }*/
+
+ul.metadata-inner-list {
+  list-style:none;
+}
+
+ul.metadata-inner-list li {
+  list-style:none;
+}
+
+ul.metadata-inner-list > li {
+  border-bottom:1px dashed lightgray;
+  margin-bottom:5px;
+}
+
+ul.metadata-inner-list > li:last-child{
+  border-bottom:none;
+}
+

@@ -122,9 +122,6 @@ def agave_oauth_callback(request):
                 token.user = user
             token.save()
 
-            # TODO deprecate using token in session
-            request.session[getattr(settings, 'AGAVE_TOKEN_SESSION_ID')] = token.token
-
             login(request, user)
             if user.last_login is not None:
                 msg_tmpl = 'Login successful. Welcome back, %s %s!'
