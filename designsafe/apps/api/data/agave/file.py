@@ -87,7 +87,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         try:
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                              {'systemId': system, 'filePath': file_path}))
-            listing = agave_client.files.list(systemId=system, filePath= file_path)
+            listing = agave_client.files.list(systemId=system, filePath= urllib2.quote(file_path))
         except (AgaveException, HTTPError) as e:
             logger.error(e,
                 exc_info = True,
@@ -109,7 +109,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             logger.debug('Agave: calling: files.list, args: {}'.format( 
                          {'systemId': system, 'filePath': file_path,
                           'limit': limit, 'offset': offset}))
-            listing = agave_client.files.list(systemId=system, filePath=file_path,
+            listing = agave_client.files.list(systemId=system, filePath=urllib2.quote(file_path),
                                               limit=limit, offset=offset)
         except (AgaveException, HTTPError) as e:
             logger.error(e, exc_info = True,)
@@ -126,9 +126,9 @@ class AgaveFile(AbstractFile, AgaveObject):
         body = '{{"action": "mkdir", "path": "{}"}}'.format(dir_name)
         try:
             logger.debug('Agave: calling: files.manage, args: {}'.format(
-                             {'systemId': system, 'filePath': file_path,
+                             {'systemId': system, 'filePath': urllib2.quote(file_path),
                               'body': body}))
-            agave_client.files.manage(systemId=system, filePath=file_path, body=body)
+            agave_client.files.manage(systemId=system, filePath=urllib2.quote(file_path), body=body)
             dir_path = os.path.join(file_path, dir_name)
             return cls.from_file_path(system, username, dir_path, agave_client)
         except (AgaveException, HTTPError) as e:
@@ -177,7 +177,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         if not self._permissions:
             pems = self.call_operation('files.listPermissions',
-                                       filePath=self.full_path,
+                                       filePath=urllib2.quote(self.full_path),
                                        systemId=self.system)
             self._permissions = pems
         return self._permissions
@@ -267,7 +267,7 @@ class AgaveFile(AbstractFile, AgaveObject):
 
         else:
             listing = AgaveFile.listing(self.system, 
-                                        file_path = self.full_path,
+                                        file_path = urllib2.quote(self.full_path),
                                         agave_client = self.agave_client)
             check = False
             for o in listing:
@@ -297,7 +297,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib2.quote(self.full_path),
             'body': {"action": "copy", "path": path}
         }
         copy_wrap = self.call_operation('files.manage', **d)
@@ -332,7 +332,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         # TODO can't apply range headers in AgavePy. Use requests raw?
         resp = self.call_operation('files.download',
                                    systemId=self.system,
-                                   filePath=self.full_path,
+                                   filePath=urllib2.quote(self.full_path),
                                    # headers={'Range': 'bytes=0-4096'},
                                    )
         return resp.content
@@ -346,7 +346,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         res = self.call_operation('files.delete',
             systemId = self.system,
-            filePath = self.full_path)
+            filePath = urllib2.quote(self.full_path))
         return self
 
     def move(self, path):
@@ -369,9 +369,10 @@ class AgaveFile(AbstractFile, AgaveObject):
             `path` should be the complete path to move the file into.
             Should contain the file's name.
         """
+        logger.debug('move "%s" to "%s"' % (self.full_path, path))
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib2.quote(self.full_path),
             'body': {"action": "move", "path": path}
         }
         res = self.call_operation('files.manage', **d)
@@ -395,7 +396,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib2.quote(self.full_path),
             'body': {"action": "rename", "path": path}
         }
         res = self.call_operation('files.manage', **d)
@@ -503,7 +504,7 @@ class AgaveFile(AbstractFile, AgaveObject):
                                       'username': username_to_update})
         try:
             self.call_operation('files.updatePermissions',
-                                filePath = self.full_path,
+                                filePath = urllib2.quote(self.full_path),
                                 systemId = self.system,
                                 body = permission_body, 
                                 raise_agave = True)

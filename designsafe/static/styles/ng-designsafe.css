@@ -59,7 +59,11 @@
     flex: 1 1 auto;
 }
 
-.ds-droppable {
+.ds-drop-target {
+    position: relative;
+}
+
+.ds-drop-target.ds-drop-active {
     background-color: #d9edf7 !important;
 }
 

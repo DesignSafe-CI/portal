@@ -14,6 +14,7 @@ from datetime import datetime
 import json
 import six
 import logging
+import urllib
 
 logger = logging.getLogger(__name__)
 
@@ -162,28 +163,45 @@ def call_api(request, service):
 
                 # submit job
                 elif job_post:
+
+                    # cleaning archive path value
                     if 'archivePath' in job_post:
-                        archive_path = job_post['archivePath']
-                        # parse agave:// URI into "archiveSystem" and "archivePath"
-                        if archive_path.startswith('agave://'):
-                            parsed = urlparse(archive_path)
-                            # strip leading slash
-                            job_post['archivePath'] = parsed.path[1:]
-                            job_post['archiveSystem'] = parsed.netloc
-                        elif not archive_path.startswith(request.user.username):
-                            archive_path = '%s/%s' % (
+                        parsed = urlparse(job_post['archivePath'])
+                        if parsed.path.startswith('/'):
+                            # strip leading '/'
+                            archive_path = parsed.path[1:]
+                        else:
+                            archive_path = parsed.path
+
+                        if not archive_path.startswith(request.user.username):
+                            archive_path = '{}/{}'.format(
                                 request.user.username, archive_path)
-                            job_post['archivePath'] = archive_path
+
+                        job_post['archivePath'] = archive_path
+
+                        if parsed.netloc:
+                            job_post['archiveSystem'] = parsed.netloc
                     else:
                         job_post['archivePath'] = \
-                            '%s/archive/jobs/%s/${JOB_NAME}-${JOB_ID}' % (
+                            '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
                                 request.user.username,
                                 datetime.now().strftime('%Y-%m-%d'))
 
+                    # check for running licensed apps
                     lic_type = _app_license_type(job_post['appId'])
                     if lic_type is not None:
                         lic = request.user.licenses.filter(license_type=lic_type).first()
                         job_post['parameters']['_license'] = lic.license_as_str()
+
+                    # url encode inputs
+                    if job_post['inputs']:
+                        for key, value in six.iteritems(job_post['inputs']):
+                            parsed = urlparse(value)
+                            if parsed.scheme:
+                                job_post['inputs'][key] = '{}://{}{}'.format(
+                                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                            else:
+                                job_post['inputs'][key] = urllib.quote(parsed.path)
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
@@ -210,8 +228,12 @@ def call_api(request, service):
                     job_meta = agave.meta.listMetadata(q=json.dumps(q))
                     if job_meta:
                         data['_embedded'] = {"metadata": job_meta}
-                    db_hash = data['archivePath'].replace(data['owner'], '')
-                    data['archiveUrl'] = '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
+
+                    archive_system_path = '{}/{}'.format(data['archiveSystem'],
+                                                         data['archivePath'])
+                    data['archiveUrl'] = reverse(
+                        'designsafe_data:data_browser',
+                        args=['agave', archive_system_path])
 
                 # list jobs
                 else:

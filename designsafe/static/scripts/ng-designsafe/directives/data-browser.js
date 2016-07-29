@@ -1216,7 +1216,7 @@
   module.directive('dsDataListDisplay', ['DataService', function(DataService) {
 
     function updateDragEl(options) {
-      options = _.extend({dragging: false, action: 'move', icon: 'arrows'}, options);
+      options = _.extend({dragging: false}, options);
 
       var action = options.action;
       var $el = $('.ds-drag-el');
@@ -1226,16 +1226,24 @@
         $el.appendTo('body');
       }
 
-      $('.drag-action', $el).html('<i class="fa fa-' + options.icon + '"></i> ' + options.action);
-      if (options.dragInfo) {
-        $('.drag-info', $el).html(options.dragInfo);
-      }
-
       if (options.dragging) {
         $el.show();
+        var dragAction = '';
+        if (options.icon) {
+          dragAction += '<i class="fa fa-' + options.icon + '"></i>';
+        }
+        if (options.action) {
+          dragAction += ' ' + options.action;
+        }
+        $('.drag-action', $el).html(dragAction);
+
+        if (options.dragInfo) {
+          $('.drag-info', $el).html(options.dragInfo);
+        }
       } else {
         $el.hide();
       }
+
       return $el[0];
     }
 
@@ -1290,18 +1298,17 @@
           }
         };
 
+
         scope.dragStart = function (e, file) {
+
           var dragInfo = '<i class="fa ' + DataService.getIcon(file.type, file.ext) + '"></i> ' + file.name;
-          var effect = e.altKey ? 'copy' : 'move';
           var dragEl = updateDragEl({
             dragging: true,
-            icon: effect === 'move' ? 'arrows' : 'copy',
-            action: effect,
+            icon: 'arrows',
             dragInfo: dragInfo});
+          e.dataTransfer.setDragImage(dragEl, 50, 50);
 
           var fileURI = file.source + '://' + file.id;
-          e.dataTransfer.setDragImage(dragEl, 50, 50);
-          e.dataTransfer.effectAllowed = effect;
           e.dataTransfer.setData('text/json', JSON.stringify(file));
           e.dataTransfer.setData('text/uri-list', fileURI);
           e.dataTransfer.setData('text/plain', fileURI);
@@ -1309,17 +1316,23 @@
         
         scope.dragEnter = function(e, file) {
           if (file.type === 'folder') {
-            $(e.target, element).closest('tr,caption').addClass('ds-droppable');
+            $(e.target, element).closest('.ds-drop-target').addClass('ds-droppable');
           }
         };
-        
+
         scope.dragLeave = function(e, file) {
-          $(e.target, element).closest('tr,caption').removeClass('ds-droppable');
+          $(e.target, element).closest('.ds-drop-target').removeClass('ds-drop-active');
         };
 
         scope.dragOver = function(e, file) {
           if (file.type === 'folder') {
-            $(e.target, element).closest('tr,caption').addClass('ds-droppable');
+            var target = $(e.target, element).closest('.ds-drop-target');
+            target.addClass('ds-drop-active');
+            if (e.altKey) {
+              e.dataTransfer.dropEffect = 'copy';
+            } else {
+              e.dataTransfer.dropEffect = 'move';
+            }
             e.preventDefault();
           }
         };
@@ -1329,6 +1342,8 @@
         };
 
         scope.dragDrop = function(e, file) {
+          e.preventDefault();
+          $(e.target, element).closest('.ds-drop-target').removeClass('ds-drop-active ds-drop-move ds-drop-copy');
           if (e.dataTransfer.files.length > 0) {
             // dropping files from computer
             dbCtrl.uploadFiles(file, false, e.dataTransfer.files);
@@ -1347,10 +1362,10 @@
                 dest_file_id: file.id
               };
               if (source !== dest) {
-                if (dragAction === 'move') {
-                  dbCtrl.moveFile(opts);
-                } else if (dragAction === 'copy') {
+                if (e.altKey) {
                   dbCtrl.copyFile(opts);
+                } else {
+                  dbCtrl.moveFile(opts);
                 }
               }
             }
