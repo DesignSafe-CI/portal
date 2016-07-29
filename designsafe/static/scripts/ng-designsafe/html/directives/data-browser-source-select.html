@@ -1,9 +1,9 @@
 <div class="ds-data-browser-source-select" ng-class="{'ds-data-browser-source-select-list': widget === 'list', 'btn-group btn-block': widget === 'dropdown'}">
     <button ng-if="widget === 'dropdown'" type="button" class="btn btn-default btn-block dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Select Source: {{ data.currentSource.name }} <span class="caret"></span>
+        Select: {{ data.currentSource.name }} <span class="caret"></span>
     </button>
     <ul ng-class="{'list-group': widget === 'list', 'dropdown-menu': widget === 'dropdown'}">
-        <li ng-class="{'list-group-item': widget === 'list', 'active': data.currentSource.id === source.id}" ng-repeat="source in data.sources">
+        <li ng-class="{'list-group-item': widget === 'list', 'active': data.currentSource.id === source.id}" ng-repeat="source in data.sources|filter:{_visible:true}">
             <a href="{{ getSourcePath(source) }}" ng-click="selectSource($event, source)">
                 <i class="fa {{ source._extra.icon }}"></i>
                 {{ source.name }}
