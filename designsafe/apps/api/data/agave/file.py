@@ -297,7 +297,7 @@ class AgaveFile(AbstractFile, AgaveObject):
         """
         d = {
             'systemId': self.system,
-            'filePath': self.full_path,
+            'filePath': urllib2.quote(self.full_path),
             'body': {"action": "copy", "path": path}
         }
         copy_wrap = self.call_operation('files.manage', **d)
