@@ -126,7 +126,7 @@ def watch_job_status(self, username, job_id, current_status=None):
                 logger.debug('Finished Indexing Job Output job=%s' % job)
 
                 logger.debug('archivePath: {}'.format(job['archivePath']))
-                target_path = '%s/%s' % (reverse('designsafe_data:data_browser'), archive_id)
+                target_path = reverse('designsafe_data:data_browser', args=['agave', archive_id])
 
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'

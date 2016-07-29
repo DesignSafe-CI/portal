@@ -32,7 +32,8 @@ def share_agave(self, username, file_id, permissions):
                          operation = 'share_initializing',
                          message = 'File sharing is initializing. Please wait...',
                          user = username,
-                         extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), file_id)})
+                         extra = {'target_path': reverse('designsafe_data:data_browser',
+                                                         args=['agave', file_id])})
         n.save()
         user = get_user_model().objects.get(username=username)
 
@@ -50,13 +51,30 @@ def share_agave(self, username, file_id, permissions):
         
         esf = Object.from_file_path(system_id, username, file_path)
         esf.share(username, permissions)
+
+        # Notify owner share completed
         n = Notification(event_type = 'data',
                          status = 'SUCCESS',
                          operation = 'share_finished',
-                         message = 'Files were shared succesfully',
+                         message = 'File permissions were updated successfully.',
                          user = username,
-                         extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), file_id)})
+                         extra = {'target_path': reverse('designsafe_data:data_browser',
+                                                         args=['agave', file_id])})
         n.save()
+
+        # Notify users they have new shared files
+        for pem in permissions:
+            if pem['permission'] != 'NONE':
+                message = '%s shared some files with you.' % user.get_full_name()
+                n = Notification(event_type = 'data',
+                                 status = 'SUCCESS',
+                                 operation = 'share_finished',
+                                 message = message,
+                                 user = pem['user_to_share'],
+                                 extra = {'target_path': reverse('designsafe_data:data_browser',
+                                                                 args=['agave', file_id])})
+                n.save()
+
     except:
         logger.error('Error sharing file/folder', exc_info=True,
                      extra = {
