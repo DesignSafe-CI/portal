@@ -8,6 +8,9 @@
         </div>
 
         <div ng-if="! data.previewUrl.loading && ! data.previewUrl.href" class="text-center">
+            <p class="alert alert-warning">
+                Preview not available for this item.
+            </p>
             <i class="fa {{ data.file|dsFileIcon }}" style="font-size: 150px"></i>
         </div>
 
