@@ -1,5 +1,23 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.9
+
+Enhancements:
+
+- Improved notifications for files sharing, jobs; #10093
+- Improved handling of token negotiation and refresh with Agave; #10111
+- Improved application catalog (tray); #10391
+- Added message when file preview is not available; #10475
+- Various interface improvements
+
+Bug fixes:
+
+- Improved indexing and permissions validation on shared files and folders
+- Fixed multiple issues surrounding file path encoding; #10266
+- Fixed links to job outputs from workspace; #10124
+- Fixed drag and drop effects; #10397
+- Fixed notification for box transfers; #10275
+
 ## v0.9.8
 
 Bug fixes:
