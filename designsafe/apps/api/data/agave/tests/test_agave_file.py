@@ -160,10 +160,31 @@ class FilePropertiesTestCase(FileBaseTestCase):
 
     @mock.patch.object(AgaveFile, 'call_operation')
     def test_permissions(self, mock_call_op):
+        self_pems = [self.apems_json[0]]
+        parent_pems = self.apems_json
+        parent_pems.append({
+            'username': 'extra_username',
+            'permission': {
+                'read': True,
+                'write': True,
+                'execute': False
+            },
+            'recursive': True,
+        })
+        mock_call_op.side_effect = [self_pems, parent_pems]
+
         af = self.get_mock_file()
         pems = af.permissions
-        mock_call_op.assert_called_with('files.listPermissions', 
-            filePath = self.afile_json['path'], systemId = self.afile_json['system'])
+        mock_call_op.assert_any_call('files.listPermissions', 
+            filePath = self.afile_json['path'], 
+            systemId = self.afile_json['system'])
+        self_pems_dict = {v['username']: v for v in self_pems}
+        parent_pems_dict = {v['username']: v for v in parent_pems if v['recursive']}
+        pems_dict = {v['username']: v for v in pems}
+        all_usernames = set(self_pems_dict.keys() + parent_pems_dict.keys())
+        self_usernames = pems_dict.keys()
+        for username in all_usernames:
+            self.assertIn(username, self_usernames)
 
     def test_previewable_txt(self):
         af = self.get_mock_file()
@@ -261,3 +282,5 @@ class FileShareTestCase(FileBaseTestCase):
             systemId = self.afile_json['system'],
             body = body,
             raise_agave = True)
+
+
