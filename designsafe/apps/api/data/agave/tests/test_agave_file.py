@@ -178,6 +178,9 @@ class FilePropertiesTestCase(FileBaseTestCase):
         mock_call_op.assert_any_call('files.listPermissions', 
             filePath = self.afile_json['path'], 
             systemId = self.afile_json['system'])
+        mock_call_op.assert_any_call('files.listPermissions', 
+            filePath = '/'.join(self.afile_json['path'].split('/')[:-1]), 
+            systemId = self.afile_json['system'])
         self_pems_dict = {v['username']: v for v in self_pems}
         parent_pems_dict = {v['username']: v for v in parent_pems if v['recursive']}
         pems_dict = {v['username']: v for v in pems}
