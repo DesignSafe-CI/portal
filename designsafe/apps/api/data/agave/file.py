@@ -176,9 +176,31 @@ class AgaveFile(AbstractFile, AgaveObject):
             >>> print f.permissions #reloaded permissions from agave.
         """
         if not self._permissions:
-            pems = self.call_operation('files.listPermissions',
+            self_pems = self.call_operation('files.listPermissions',
                                        filePath=urllib2.quote(self.full_path),
                                        systemId=self.system)
+            parent_pems = self.call_operation('files.listPermissions',
+                                       filePath=urllib2.quote(self.parent_path),
+                                       systemId=self.system)
+
+            #Dicitonary comprehensions only Python 2.7+
+            #We use this to reduce the time complexity when merging pems.
+            #format: {'username': {'index': 0, 'pem': {}}, 'username2': {...}}
+            parent_pems_objs = {v['username']: {'index': index, 'pem': v} for index, v in enumerate(parent_pems)}
+            self_pems_objs = {v['username']: {'index': index, 'pem': v} for index, v in enumerate(self_pems)}
+            logger.debug('self pems: {}'.format(self_pems_objs.keys()))
+            logger.debug('parent pems: {}'.format(parent_pems_objs.keys()))
+            pems = []
+            #Merge parent pems and child pems. 
+            #Basically, if the username is set in the children pems array then use that data
+            # and delete that element from the parent pems array. 
+            # Then just add whatever is left on the parent pems array.
+            for username in parent_pems_objs.keys():
+                pem = parent_pems_objs[username]['pem']
+                if username not in self_pems_objs and pem.get('recursive', False):
+                    pems.append(pem)
+            pems += self_pems
+            logger.debug('pems: {}'.format(pems))
             self._permissions = pems
         return self._permissions
 

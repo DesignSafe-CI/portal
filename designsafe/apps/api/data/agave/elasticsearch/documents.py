@@ -253,6 +253,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
                     type = file_obj.type
                 )
             if get_pems:
+                logger.debug('file_obj pems: {}'.format(file_obj.permissions))
                 o.update(permissions = file_obj.permissions)
             return o
 
