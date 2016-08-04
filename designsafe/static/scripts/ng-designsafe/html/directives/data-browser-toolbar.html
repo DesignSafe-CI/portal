@@ -52,7 +52,7 @@
         <li class="active">{{ data.listing.name }}</li>
         <li></li>
     </ol>
-    <div class="search-wrap">
+    <div class="search-wrap" ng-if="searchbar">
       <div class="search-bar">
         <form id = "search-form" name="search-form" ng-submit="search()">
           <span class="search-icon"><i class="fa fa-search"></i></span>

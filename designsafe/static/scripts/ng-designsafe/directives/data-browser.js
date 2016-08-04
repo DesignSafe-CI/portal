@@ -2,7 +2,7 @@
   "use strict";
 
   var module = angular.module('ng.designsafe', ['ngSanitize', 'ng.modernizr']);
-  
+
   module.directive('dsDataBrowser', ['Logging', function(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowser');
 
@@ -146,7 +146,7 @@
                 add_permission: $scope.data.permissions[0],
                 permissions: []
               };
-              
+
               /* Initialize form with current permissions */
               _.each(file._pems, function(pem) {
                 // Can't edit own or ds_admin pems
@@ -226,7 +226,7 @@
             $scope.pems_to_update = [];
 
             _.each(permissions, function(pem){
-              var pems = _.find($scope.file._pems, function(o){ 
+              var pems = _.find($scope.file._pems, function(o){
                                     return o.username == pem.username; });
               if (!pems){
                 $scope.pems_to_update.push({'user_to_share': pem.username,
@@ -241,7 +241,7 @@
                 }
                 else if (pem.permission.permission == 'READ_WRITE' &&
                   !(p.read && p.write && !p.execute)){
-                  $scope.pems_to_update.push(pem_to_add); 
+                  $scope.pems_to_update.push(pem_to_add);
                 }
                 else if (pem.permission.permission == 'ALL' &&
                   !(p.read && p.write && p.execute)){
@@ -473,7 +473,7 @@
                 $event.preventDefault();
                 $uibModalInstance.close($scope.form);
               };
-              
+
               $scope.isMarkedDeleted = function(tag){
                 return $scope.form.tagsToDelete.indexOf(tag) > -1;
               };
@@ -554,7 +554,8 @@
                 sources: _.filter($scope.data.sources, {}),
                 currentSource: $scope.data.currentSource,
                 listing: $scope.data.listing,
-                user: $scope.user
+                user: $scope.user,
+                action: 'move'
               }
             }
           });
@@ -619,7 +620,8 @@
                 sources: $scope.data.sources,
                 currentSource: $scope.data.currentSource,
                 listing: $scope.data.listing,
-                user: $scope.user
+                user: $scope.user,
+                action: 'copy'
               }
             }
           });
@@ -706,13 +708,13 @@
                 message: 'Renamed "' + file.name + '" to "' + targetName + '".'
               });
               $scope.state.loading = false;
-              self.clearSelection();  
+              self.clearSelection();
               //Get the file from scope or else it might not be the same reference.
               var listingFile = _.findWhere($scope.data.listing.children, {id: $scope.file.id});
               _.extend(listingFile, resp.data);
             }, function(err) {
                 $scope.$emit('designsafe:notify', {
-                level: 'warning', 
+                level: 'warning',
                 message: 'Failed to rename file: ' + err.data.message
                 });
 
@@ -890,7 +892,7 @@
               $scope.state.loading = false;
               $scope.data.listing = error.data;
               $scope.state.search = false;
-              
+
               if (handler) {
                 handler($scope.data.listing);
               }
@@ -982,7 +984,7 @@
 
                 if (moreChildren.length < 100){
                   $scope.state.reachedEnd = true;
-                }    
+                }
                 $scope.state.loadingMore = false;
               },
               function(error){
@@ -993,8 +995,8 @@
               }
             );
           } else {
-            DataService.search($scope.data.listing.source, 
-                               $scope.state.searchQ, 
+            DataService.search($scope.data.listing.source,
+                               $scope.state.searchQ,
                                $scope.state.searchFields,
                                $scope.state.page).then(
               function(response){
@@ -1087,17 +1089,20 @@
       restrict: 'E',
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-toolbar.html',
-      scope: {},
+      scope: {
+        search: '@'
+      },
       link: function(scope, element, attrs, dbCtrl) {
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
         scope.clearSelection = dbCtrl.clearSelection;
-        
+        scope.searchbar = (typeof attrs.searchbar === 'undefined') ? false : true;
+
         scope.selectTrail = function($event, trailItem) {
           $event.preventDefault();
           dbCtrl.browseFile({resource: trailItem.source, file_id: trailItem.id});
         };
-        
+
         scope.downloadEnabled = function() {
           return true;
         };
@@ -1313,7 +1318,7 @@
           e.dataTransfer.setData('text/uri-list', fileURI);
           e.dataTransfer.setData('text/plain', fileURI);
         };
-        
+
         scope.dragEnter = function(e, file) {
           if (file.type === 'folder') {
             $(e.target, element).closest('.ds-drop-target').addClass('ds-droppable');
