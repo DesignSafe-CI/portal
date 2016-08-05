@@ -224,10 +224,9 @@ def call_api(request, service):
                 # get specific job info
                 if job_id:
                     data = agave.jobs.get(jobId=job_id)
-                    q = {"associationIds": job_id }
+                    q = {"associationIds": job_id}
                     job_meta = agave.meta.listMetadata(q=json.dumps(q))
-                    if job_meta:
-                        data['_embedded'] = {"metadata": job_meta}
+                    data['_embedded'] = {"metadata": job_meta}
 
                     archive_system_path = '{}/{}'.format(data['archiveSystem'],
                                                          data['archivePath'])
