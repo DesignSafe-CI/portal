@@ -644,7 +644,7 @@
           DataService.copy(options).then(
             function (resp) {
 
-              if (options.src_resource == 'agave'){
+              if (options.src_resource === 'agave' && options.dest_resource === 'agave'){
                 $scope.$emit('designsafe:notify', {
                   level: 'info',
                   message: 'Copied "' + resp.data.name + '" to "' + options.dest_file_id + '".'
