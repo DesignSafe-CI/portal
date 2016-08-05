@@ -1,11 +1,6 @@
 (function(){
     'use strict';
-    function NotificationService($rootScope, logger, toastr){
-        var service = {
-            init: init,
-        };
-
-        return service;
+    function NotificationService($rootScope, logger, toastr) {
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
@@ -122,6 +117,11 @@
                 }
             }
         }
+
+      return {
+        init: init
+      };
+
     }
 
     function NotificationServiceProvider($injector){
