@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.10
+
+Fixes:
+
+- Fixed issue with notifications for interactive jobs
+- Fixed issue recording metadata for interactive jobs
+- Disabled source selection on move dialog, since it is not supported
+- Improved notification messages in Data Browser
+
 ## v0.9.9
 
 Enhancements:
