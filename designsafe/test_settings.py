@@ -21,10 +21,6 @@ BROKER_BACKEND = 'memory'
 MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
                       'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
 
-# No pipeline please
-PIPELINE_COMPILERS = ()
-PIPELINE_ENABLED = False
-
 # Agave
 AGAVE_TENANT_ID = 'example.com'
 AGAVE_TENANT_BASEURL = 'https://api.example.com'
