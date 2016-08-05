@@ -26,20 +26,6 @@ django:
     - 8.8.4.4
   command: ./bin/run-django.sh
 
-#ef:
-#  build: .
-#  env_file: designsafe.env
-#  environment:
-#    - DJANGO_SETTINGS_MODULE=designsafe.ef_http_debug_settings
-#  links:
-#    - redis:redis
-#  volumes:
-#    - .:/portal
-#  dns:
-#    - 8.8.8.8
-#    - 8.8.4.4
-#  command: python manage.py runserver 0.0.0.0:8000
-
 nginx:
   image: nginx
   volumes:
@@ -52,7 +38,6 @@ nginx:
     - django
   links:
     - django:django
-#    - ef:ef
   ports:
     - 80:80
     - 443:443
