@@ -4,10 +4,10 @@
 }
 
 .CodeMirror-lint-tooltip {
-  background-color: #ffd;
+  background-color: infobackground;
   border: 1px solid black;
   border-radius: 4px 4px 4px 4px;
-  color: black;
+  color: infotext;
   font-family: monospace;
   font-size: 10pt;
   overflow: hidden;

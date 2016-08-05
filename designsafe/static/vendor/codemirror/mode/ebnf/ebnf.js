@@ -94,7 +94,7 @@
 
         if (bracesMode !== null && (state.braced || peek === "{")) {
           if (state.localState === null)
-            state.localState = CodeMirror.startState(bracesMode);
+            state.localState = bracesMode.startState();
 
           var token = bracesMode.token(stream, state.localState),
           text = stream.current();

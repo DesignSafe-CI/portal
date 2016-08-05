@@ -77,8 +77,6 @@ CodeMirror.defineMode('troff', function() {
   };
 });
 
-CodeMirror.defineMIME('text/troff', 'troff');
-CodeMirror.defineMIME('text/x-troff', 'troff');
-CodeMirror.defineMIME('application/x-troff', 'troff');
+CodeMirror.defineMIME('troff', 'troff');
 
 });

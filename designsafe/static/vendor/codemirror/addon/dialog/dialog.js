@@ -56,8 +56,6 @@
 
     var inp = dialog.getElementsByTagName("input")[0], button;
     if (inp) {
-      inp.focus();
-
       if (options.value) {
         inp.value = options.value;
         if (options.selectValueOnOpen !== false) {
@@ -81,6 +79,8 @@
       });
 
       if (options.closeOnBlur !== false) CodeMirror.on(inp, "blur", close);
+
+      inp.focus();
     } else if (button = dialog.getElementsByTagName("button")[0]) {
       CodeMirror.on(button, "click", function() {
         close();

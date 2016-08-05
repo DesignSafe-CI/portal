@@ -3,16 +3,42 @@
 
 /**
  * Supported keybindings:
- *   Too many to list. Refer to defaultKeyMap below.
  *
- * Supported Ex commands:
- *   Refer to defaultExCommandMap below.
+ *   Motion:
+ *   h, j, k, l
+ *   gj, gk
+ *   e, E, w, W, b, B, ge, gE
+ *   f<character>, F<character>, t<character>, T<character>
+ *   $, ^, 0, -, +, _
+ *   gg, G
+ *   %
+ *   '<character>, `<character>
+ *
+ *   Operator:
+ *   d, y, c
+ *   dd, yy, cc
+ *   g~, g~g~
+ *   >, <, >>, <<
+ *
+ *   Operator-Motion:
+ *   x, X, D, Y, C, ~
+ *
+ *   Action:
+ *   a, i, s, A, I, S, o, O
+ *   zz, z., z<CR>, zt, zb, z-
+ *   J
+ *   u, Ctrl-r
+ *   m<character>
+ *   r<character>
+ *
+ *   Modes:
+ *   ESC - leave insert mode, visual mode, and clear input state.
+ *   Ctrl-[, Ctrl-c - same as ESC.
  *
  * Registers: unnamed, -, a-z, A-Z, 0-9
  *   (Does not respect the special case for number registers when delete
  *    operator is made with these commands: %, (, ),  , /, ?, n, N, {, } )
  *   TODO: Implement the remaining registers.
- *
  * Marks: a-z, A-Z, and 0-9
  *   TODO: Implement the remaining special marks. They have more complex
  *       behavior.
@@ -26,12 +52,11 @@
  *  2. Variable declarations and short basic helpers
  *  3. Instance (External API) implementation
  *  4. Internal state tracking objects (input state, counter) implementation
- *     and instantiation
+ *     and instanstiation
  *  5. Key handler (the main command dispatcher) implementation
  *  6. Motion, operator, and action implementations
  *  7. Helper functions for the key handler, motions, operators, and actions
  *  8. Set up Vim to work as a keymap for CodeMirror.
- *  9. Ex command implementations.
  */
 
 (function(mod) {
@@ -64,9 +89,9 @@
     { keys: '<C-[>', type: 'keyToKey', toKeys: '<Esc>', context: 'insert' },
     { keys: '<C-c>', type: 'keyToKey', toKeys: '<Esc>', context: 'insert' },
     { keys: 's', type: 'keyToKey', toKeys: 'cl', context: 'normal' },
-    { keys: 's', type: 'keyToKey', toKeys: 'c', context: 'visual'},
+    { keys: 's', type: 'keyToKey', toKeys: 'xi', context: 'visual'},
     { keys: 'S', type: 'keyToKey', toKeys: 'cc', context: 'normal' },
-    { keys: 'S', type: 'keyToKey', toKeys: 'VdO', context: 'visual' },
+    { keys: 'S', type: 'keyToKey', toKeys: 'dcc', context: 'visual' },
     { keys: '<Home>', type: 'keyToKey', toKeys: '0' },
     { keys: '<End>', type: 'keyToKey', toKeys: '$' },
     { keys: '<PageUp>', type: 'keyToKey', toKeys: '<C-b>' },
@@ -164,7 +189,6 @@
     { keys: 'v', type: 'action', action: 'toggleVisualMode' },
     { keys: 'V', type: 'action', action: 'toggleVisualMode', actionArgs: { linewise: true }},
     { keys: '<C-v>', type: 'action', action: 'toggleVisualMode', actionArgs: { blockwise: true }},
-    { keys: '<C-q>', type: 'action', action: 'toggleVisualMode', actionArgs: { blockwise: true }},
     { keys: 'gv', type: 'action', action: 'reselectLastSelection' },
     { keys: 'J', type: 'action', action: 'joinLines', isEdit: true },
     { keys: 'p', type: 'action', action: 'paste', isEdit: true, actionArgs: { after: true, isEdit: true }},
@@ -201,35 +225,6 @@
     { keys: 'g#', type: 'search', searchArgs: { forward: false, querySrc: 'wordUnderCursor', toJumplist: true }},
     // Ex command
     { keys: ':', type: 'ex' }
-  ];
-
-  /**
-   * Ex commands
-   * Care must be taken when adding to the default Ex command map. For any
-   * pair of commands that have a shared prefix, at least one of their
-   * shortNames must not match the prefix of the other command.
-   */
-  var defaultExCommandMap = [
-    { name: 'colorscheme', shortName: 'colo' },
-    { name: 'map' },
-    { name: 'imap', shortName: 'im' },
-    { name: 'nmap', shortName: 'nm' },
-    { name: 'vmap', shortName: 'vm' },
-    { name: 'unmap' },
-    { name: 'write', shortName: 'w' },
-    { name: 'undo', shortName: 'u' },
-    { name: 'redo', shortName: 'red' },
-    { name: 'set', shortName: 'se' },
-    { name: 'set', shortName: 'se' },
-    { name: 'setlocal', shortName: 'setl' },
-    { name: 'setglobal', shortName: 'setg' },
-    { name: 'sort', shortName: 'sor' },
-    { name: 'substitute', shortName: 's', possiblyAsync: true },
-    { name: 'nohlsearch', shortName: 'noh' },
-    { name: 'yank', shortName: 'y' },
-    { name: 'delmarks', shortName: 'delm' },
-    { name: 'registers', shortName: 'reg', excludeFromCommandHistory: true },
-    { name: 'global', shortName: 'g' }
   ];
 
   var Pos = CodeMirror.Pos;
@@ -294,7 +289,12 @@
         // Keypress character binding of format "'a'"
         return key.charAt(1);
       }
-      var pieces = key.split(/-(?!$)/);
+      var pieces = key.split('-');
+      if (/-$/.test(key)) {
+        // If the - key was typed, split will result in 2 extra empty strings
+        // in the array. Replace them with 1 '-'.
+        pieces.splice(-2, 2, '-');
+      }
       var lastPiece = pieces[pieces.length - 1];
       if (pieces.length == 1 && pieces[0].length == 1) {
         // No-modifier bindings use literal character bindings above. Skip.
@@ -382,30 +382,18 @@
     }
 
     var options = {};
-    function defineOption(name, defaultValue, type, aliases, callback) {
-      if (defaultValue === undefined && !callback) {
-        throw Error('defaultValue is required unless callback is provided');
-      }
+    function defineOption(name, defaultValue, type) {
+      if (defaultValue === undefined) { throw Error('defaultValue is required'); }
       if (!type) { type = 'string'; }
       options[name] = {
         type: type,
-        defaultValue: defaultValue,
-        callback: callback
+        defaultValue: defaultValue
       };
-      if (aliases) {
-        for (var i = 0; i < aliases.length; i++) {
-          options[aliases[i]] = options[name];
-        }
-      }
-      if (defaultValue) {
-        setOption(name, defaultValue);
-      }
+      setOption(name, defaultValue);
     }
 
-    function setOption(name, value, cm, cfg) {
+    function setOption(name, value) {
       var option = options[name];
-      cfg = cfg || {};
-      var scope = cfg.scope;
       if (!option) {
         throw Error('Unknown option: ' + name);
       }
@@ -417,59 +405,16 @@
           value = true;
         }
       }
-      if (option.callback) {
-        if (scope !== 'local') {
-          option.callback(value, undefined);
-        }
-        if (scope !== 'global' && cm) {
-          option.callback(value, cm);
-        }
-      } else {
-        if (scope !== 'local') {
-          option.value = option.type == 'boolean' ? !!value : value;
-        }
-        if (scope !== 'global' && cm) {
-          cm.state.vim.options[name] = {value: value};
-        }
-      }
+      option.value = option.type == 'boolean' ? !!value : value;
     }
 
-    function getOption(name, cm, cfg) {
+    function getOption(name) {
       var option = options[name];
-      cfg = cfg || {};
-      var scope = cfg.scope;
       if (!option) {
         throw Error('Unknown option: ' + name);
       }
-      if (option.callback) {
-        var local = cm && option.callback(undefined, cm);
-        if (scope !== 'global' && local !== undefined) {
-          return local;
-        }
-        if (scope !== 'local') {
-          return option.callback();
-        }
-        return;
-      } else {
-        var local = (scope !== 'global') && (cm && cm.state.vim.options[name]);
-        return (local || (scope !== 'local') && option || {}).value;
-      }
+      return option.value;
     }
-
-    defineOption('filetype', undefined, 'string', ['ft'], function(name, cm) {
-      // Option is local. Do nothing for global.
-      if (cm === undefined) {
-        return;
-      }
-      // The 'filetype' option proxies to the CodeMirror 'mode' option.
-      if (name === undefined) {
-        var mode = cm.getOption('mode');
-        return mode == 'null' ? '' : mode;
-      } else {
-        var mode = name == '' ? 'null' : name;
-        cm.setOption('mode', mode);
-      }
-    });
 
     var createCircularJumpList = function() {
       var size = 100;
@@ -623,9 +568,8 @@
           visualBlock: false,
           lastSelection: null,
           lastPastedText: null,
-          sel: {},
-          // Buffer-local/window-local values of vim options.
-          options: {}
+          sel: {
+          }
         };
       }
       return cm.state.vim;
@@ -642,7 +586,7 @@
         jumpList: createCircularJumpList(),
         macroModeState: new MacroModeState,
         // Recording latest f, t, F or T motion command.
-        lastCharacterSearch: {increment:0, forward:true, selectedCharacter:''},
+        lastChararacterSearch: {increment:0, forward:true, selectedCharacter:''},
         registerController: new RegisterController({}),
         // search history buffer
         searchHistoryController: new HistoryController({}),
@@ -683,18 +627,11 @@
         // Add user defined key bindings.
         exCommandDispatcher.map(lhs, rhs, ctx);
       },
-      unmap: function(lhs, ctx) {
-        exCommandDispatcher.unmap(lhs, ctx);
-      },
-      // TODO: Expose setOption and getOption as instance methods. Need to decide how to namespace
-      // them, or somehow make them work with the existing CodeMirror setOption/getOption API.
       setOption: setOption,
       getOption: getOption,
       defineOption: defineOption,
       defineEx: function(name, prefix, func){
-        if (!prefix) {
-          prefix = name;
-        } else if (name.indexOf(prefix) !== 0) {
+        if (name.indexOf(prefix) !== 0) {
           throw new Error('(Vim.defineEx) "'+prefix+'" is not a prefix of "'+name+'", command not registered');
         }
         exCommands[name]=func;
@@ -851,8 +788,6 @@
       mapCommand: mapCommand,
       _mapCommand: _mapCommand,
 
-      defineRegister: defineRegister,
-
       exitVisualMode: exitVisualMode,
       exitInsertMode: exitInsertMode
     };
@@ -942,25 +877,6 @@
       }
     };
 
-    /**
-     * Defines an external register.
-     *
-     * The name should be a single character that will be used to reference the register.
-     * The register should support setText, pushText, clear, and toString(). See Register
-     * for a reference implementation.
-     */
-    function defineRegister(name, register) {
-      var registers = vimGlobalState.registerController.registers[name];
-      if (!name || name.length != 1) {
-        throw Error('Register name must be 1 character');
-      }
-      if (registers[name]) {
-        throw Error('Register already defined ' + name);
-      }
-      registers[name] = register;
-      validRegisters.push(name);
-    }
-
     /*
      * vim registers allow you to keep many independent copy and paste buffers.
      * See http://usevim.com/2012/04/13/registers/ for an introduction.
@@ -1048,7 +964,7 @@
     };
     function HistoryController() {
         this.historyBuffer = [];
-        this.iterator = 0;
+        this.iterator;
         this.initialPrefix = null;
     }
     HistoryController.prototype = {
@@ -1262,8 +1178,7 @@
         }
         function onPromptKeyDown(e, query, close) {
           var keyName = CodeMirror.keyName(e);
-          if (keyName == 'Esc' || keyName == 'Ctrl-C' || keyName == 'Ctrl-[' ||
-              (keyName == 'Backspace' && query == '')) {
+          if (keyName == 'Esc' || keyName == 'Ctrl-C' || keyName == 'Ctrl-[') {
             vimGlobalState.searchHistoryController.pushInput(query);
             vimGlobalState.searchHistoryController.reset();
             updateSearchQuery(cm, originalQuery);
@@ -1273,10 +1188,6 @@
             clearInputState(cm);
             close();
             cm.focus();
-          } else if (keyName == 'Ctrl-U') {
-            // Ctrl-U clears input.
-            CodeMirror.e_stop(e);
-            close('');
           }
         }
         switch (command.searchArgs.querySrc) {
@@ -1337,8 +1248,7 @@
         }
         function onPromptKeyDown(e, input, close) {
           var keyName = CodeMirror.keyName(e), up;
-          if (keyName == 'Esc' || keyName == 'Ctrl-C' || keyName == 'Ctrl-[' ||
-              (keyName == 'Backspace' && input == '')) {
+          if (keyName == 'Esc' || keyName == 'Ctrl-C' || keyName == 'Ctrl-[') {
             vimGlobalState.exCommandHistoryController.pushInput(input);
             vimGlobalState.exCommandHistoryController.reset();
             CodeMirror.e_stop(e);
@@ -1350,10 +1260,6 @@
             up = keyName == 'Up' ? true : false;
             input = vimGlobalState.exCommandHistoryController.nextMatch(input, up) || '';
             close(input);
-          } else if (keyName == 'Ctrl-U') {
-            // Ctrl-U clears input.
-            CodeMirror.e_stop(e);
-            close('');
           } else {
             if ( keyName != 'Left' && keyName != 'Right' && keyName != 'Ctrl' && keyName != 'Alt' && keyName != 'Shift')
               vimGlobalState.exCommandHistoryController.reset();
@@ -1373,7 +1279,7 @@
         }
       },
       evalInput: function(cm, vim) {
-        // If the motion command is set, execute both the operator and motion.
+        // If the motion comand is set, execute both the operator and motion.
         // Otherwise return.
         var inputState = vim.inputState;
         var motion = inputState.motion;
@@ -1383,8 +1289,8 @@
         var registerName = inputState.registerName;
         var sel = vim.sel;
         // TODO: Make sure cm and vim selections are identical outside visual mode.
-        var origHead = copyCursor(vim.visualMode ? clipCursorToContent(cm, sel.head): cm.getCursor('head'));
-        var origAnchor = copyCursor(vim.visualMode ? clipCursorToContent(cm, sel.anchor) : cm.getCursor('anchor'));
+        var origHead = copyCursor(vim.visualMode ? sel.head: cm.getCursor('head'));
+        var origAnchor = copyCursor(vim.visualMode ? sel.anchor : cm.getCursor('anchor'));
         var oldHead = copyCursor(origHead);
         var oldAnchor = copyCursor(origAnchor);
         var newHead, newAnchor;
@@ -1697,12 +1603,11 @@
         var line = motionArgs.forward ? cur.line + repeat : cur.line - repeat;
         var first = cm.firstLine();
         var last = cm.lastLine();
-        // Vim go to line begin or line end when cursor at first/last line and
-        // move to previous/next line is triggered.
-        if (line < first && cur.line == first){
-          return this.moveToStartOfLine(cm, head, motionArgs, vim);
-        }else if (line > last && cur.line == last){
-            return this.moveToEol(cm, head, motionArgs, vim);
+        // Vim cancels linewise motions that start on an edge and move beyond
+        // that edge. It does not cancel motions that do not start on an edge.
+        if ((line < first && cur.line == first) ||
+            (line > last && cur.line == last)) {
+          return;
         }
         if (motionArgs.toFirstChar){
           endCh=findFirstNonWhiteSpaceCharacter(cm.getLine(line));
@@ -1910,7 +1815,7 @@
       },
 
       repeatLastCharacterSearch: function(cm, head, motionArgs) {
-        var lastSearch = vimGlobalState.lastCharacterSearch;
+        var lastSearch = vimGlobalState.lastChararacterSearch;
         var repeat = motionArgs.repeat;
         var forward = motionArgs.forward === lastSearch.forward;
         var increment = (lastSearch.increment ? 1 : 0) * (forward ? -1 : 1);
@@ -1951,30 +1856,21 @@
           var anchor = ranges[0].anchor,
               head = ranges[0].head;
           text = cm.getRange(anchor, head);
-          var lastState = vim.lastEditInputState || {};
-          if (lastState.motion == "moveByWords" && !isWhiteSpaceString(text)) {
+          if (!isWhiteSpaceString(text)) {
             // Exclude trailing whitespace if the range is not all whitespace.
             var match = (/\s+$/).exec(text);
-            if (match && lastState.motionArgs && lastState.motionArgs.forward) {
+            if (match) {
               head = offsetCursor(head, 0, - match[0].length);
               text = text.slice(0, - match[0].length);
             }
           }
-          var prevLineEnd = new Pos(anchor.line - 1, Number.MAX_VALUE);
-          var wasLastLine = cm.firstLine() == cm.lastLine();
-          if (head.line > cm.lastLine() && args.linewise && !wasLastLine) {
-            cm.replaceRange('', prevLineEnd, head);
-          } else {
-            cm.replaceRange('', anchor, head);
-          }
-          if (args.linewise) {
+          var wasLastLine = head.line - 1 == cm.lastLine();
+          cm.replaceRange('', anchor, head);
+          if (args.linewise && !wasLastLine) {
             // Push the next line back down, if there is a next line.
-            if (!wasLastLine) {
-              cm.setCursor(prevLineEnd);
-              CodeMirror.commands.newlineAndIndent(cm);
-            }
-            // make sure cursor ends up at the end of the line.
-            anchor.ch = Number.MAX_VALUE;
+            CodeMirror.commands.newlineAndIndent(cm);
+            // null ch so setCursor moves to end of line.
+            anchor.ch = null;
           }
           finalHead = anchor;
         } else {
@@ -2153,7 +2049,9 @@
         switch (actionArgs.position) {
           case 'center': y = y - (height / 2) + lineHeight;
             break;
-          case 'bottom': y = y - height + lineHeight;
+          case 'bottom': y = y - height + lineHeight*1.4;
+            break;
+          case 'top': y = y + lineHeight*0.4;
             break;
         }
         cm.scrollTo(null, y);
@@ -3003,7 +2901,7 @@
       // Only clip if the selection ends with trailing newline + whitespace
       if (/\n\s*$/.test(selection)) {
         var lines = selection.split('\n');
-        // We know this is all whitespace.
+        // We know this is all whitepsace.
         lines.pop();
 
         // Cases:
@@ -3089,9 +2987,9 @@
     }
 
     function recordLastCharacterSearch(increment, args) {
-        vimGlobalState.lastCharacterSearch.increment = increment;
-        vimGlobalState.lastCharacterSearch.forward = args.forward;
-        vimGlobalState.lastCharacterSearch.selectedCharacter = args.selectedCharacter;
+        vimGlobalState.lastChararacterSearch.increment = increment;
+        vimGlobalState.lastChararacterSearch.forward = args.forward;
+        vimGlobalState.lastChararacterSearch.selectedCharacter = args.selectedCharacter;
     }
 
     var symbolToMode = {
@@ -3215,7 +3113,7 @@
       return cur;
     }
 
-    /**
+    /*
      * Returns the boundaries of the next word. If the cursor in the middle of
      * the word, then returns the boundaries of the current word, starting at
      * the cursor. If the cursor is at the start/end of a word, and we are going
@@ -3290,6 +3188,8 @@
         line = cm.getLine(lineNum);
         pos = (dir > 0) ? 0 : line.length;
       }
+      // Should never get here.
+      throw new Error('The impossible happened.');
     }
 
     /**
@@ -3451,7 +3351,7 @@
     }
 
     // TODO: perhaps this finagling of start and end positions belonds
-    // in codemirror/replaceRange?
+    // in codmirror/replaceRange?
     function selectCompanionObject(cm, head, symb, inclusive) {
       var cur = head, start, end;
 
@@ -3666,17 +3566,13 @@
     // Translates the replace part of a search and replace from ex (vim) syntax into
     // javascript form.  Similar to translateRegex, but additionally fixes back references
     // (translates '\[0..9]' to '$[0..9]') and follows different rules for escaping '$'.
-    var charUnescapes = {'\\n': '\n', '\\r': '\r', '\\t': '\t'};
     function translateRegexReplace(str) {
       var escapeNextChar = false;
       var out = [];
       for (var i = -1; i < str.length; i++) {
         var c = str.charAt(i) || '';
         var n = str.charAt(i+1) || '';
-        if (charUnescapes[c + n]) {
-          out.push(charUnescapes[c+n]);
-          i++;
-        } else if (escapeNextChar) {
+        if (escapeNextChar) {
           // At any point in the loop, escapeNextChar is true if the previous
           // character was a '\' and was not escaped.
           out.push(c);
@@ -3704,7 +3600,6 @@
     }
 
     // Unescape \ and / in the replace part, for PCRE mode.
-    var unescapes = {'\\/': '/', '\\\\': '\\', '\\n': '\n', '\\r': '\r', '\\t': '\t'};
     function unescapeRegexReplace(str) {
       var stream = new CodeMirror.StringStream(str);
       var output = [];
@@ -3713,15 +3608,13 @@
         while (stream.peek() && stream.peek() != '\\') {
           output.push(stream.next());
         }
-        var matched = false;
-        for (var matcher in unescapes) {
-          if (stream.match(matcher, true)) {
-            matched = true;
-            output.push(unescapes[matcher]);
-            break;
-          }
-        }
-        if (!matched) {
+        if (stream.match('\\/', true)) {
+          // \/ => /
+          output.push('/');
+        } else if (stream.match('\\\\', true)) {
+          // \\ => \
+          output.push('\\');
+        } else {
           // Don't change anything
           output.push(stream.next());
         }
@@ -3782,10 +3675,17 @@
       }
     }
     function makePrompt(prefix, desc) {
-      var raw = '<span style="font-family: monospace; white-space: pre">' +
-          (prefix || "") + '<input type="text"></span>';
-      if (desc)
-        raw += ' <span style="color: #888">' + desc + '</span>';
+      var raw = '';
+      if (prefix) {
+        raw += '<span style="font-family: monospace">' + prefix + '</span>';
+      }
+      raw += '<input type="text"/> ' +
+          '<span style="color: #888">';
+      if (desc) {
+        raw += '<span style="color: #888">';
+        raw += desc;
+        raw += '</span>';
+      }
       return raw;
     }
     var searchPromptDesc = '(Javascript regexp)';
@@ -3944,6 +3844,27 @@
       return {top: from.line, bottom: to.line};
     }
 
+    // Ex command handling
+    // Care must be taken when adding to the default Ex command map. For any
+    // pair of commands that have a shared prefix, at least one of their
+    // shortNames must not match the prefix of the other command.
+    var defaultExCommandMap = [
+      { name: 'map' },
+      { name: 'imap', shortName: 'im' },
+      { name: 'nmap', shortName: 'nm' },
+      { name: 'vmap', shortName: 'vm' },
+      { name: 'unmap' },
+      { name: 'write', shortName: 'w' },
+      { name: 'undo', shortName: 'u' },
+      { name: 'redo', shortName: 'red' },
+      { name: 'set', shortName: 'set' },
+      { name: 'sort', shortName: 'sor' },
+      { name: 'substitute', shortName: 's', possiblyAsync: true },
+      { name: 'nohlsearch', shortName: 'noh' },
+      { name: 'delmarks', shortName: 'delm' },
+      { name: 'registers', shortName: 'reg', excludeFromCommandHistory: true },
+      { name: 'global', shortName: 'g' }
+    ];
     var ExCommandDispatcher = function() {
       this.buildCommandMap_();
     };
@@ -4168,13 +4089,6 @@
     };
 
     var exCommands = {
-      colorscheme: function(cm, params) {
-        if (!params.args || params.args.length < 1) {
-          showConfirm(cm, cm.getOption('theme'));
-          return;
-        }
-        cm.setOption('theme', params.args[0]);
-      },
       map: function(cm, params, ctx) {
         var mapArgs = params.args;
         if (!mapArgs || mapArgs.length < 2) {
@@ -4208,9 +4122,6 @@
       },
       set: function(cm, params) {
         var setArgs = params.args;
-        // Options passed through to the setOption/getOption calls. May be passed in by the
-        // local/global versions of the set command
-        var setCfg = params.setCfg || {};
         if (!setArgs || setArgs.length < 1) {
           if (cm) {
             showConfirm(cm, 'Invalid mapping: ' + params.input);
@@ -4234,35 +4145,24 @@
           optionName = optionName.substring(2);
           value = false;
         }
-
         var optionIsBoolean = options[optionName] && options[optionName].type == 'boolean';
         if (optionIsBoolean && value == undefined) {
           // Calling set with a boolean option sets it to true.
           value = true;
         }
-        // If no value is provided, then we assume this is a get.
-        if (!optionIsBoolean && value === undefined || forceGet) {
-          var oldValue = getOption(optionName, cm, setCfg);
+        if (!optionIsBoolean && !value || forceGet) {
+          var oldValue = getOption(optionName);
+          // If no value is provided, then we assume this is a get.
           if (oldValue === true || oldValue === false) {
             showConfirm(cm, ' ' + (oldValue ? '' : 'no') + optionName);
           } else {
             showConfirm(cm, '  ' + optionName + '=' + oldValue);
           }
         } else {
-          setOption(optionName, value, cm, setCfg);
+          setOption(optionName, value);
         }
       },
-      setlocal: function (cm, params) {
-        // setCfg is passed through to setOption
-        params.setCfg = {scope: 'local'};
-        this.set(cm, params);
-      },
-      setglobal: function (cm, params) {
-        // setCfg is passed through to setOption
-        params.setCfg = {scope: 'global'};
-        this.set(cm, params);
-      },
-      registers: function(cm, params) {
+      registers: function(cm,params) {
         var regArgs = params.args;
         var registers = vimGlobalState.registerController.registers;
         var regInfo = '----------Registers----------<br><br>';
@@ -4306,7 +4206,7 @@
               if (decimal + hex + octal > 1) { return 'Invalid arguments'; }
               number = decimal && 'decimal' || hex && 'hex' || octal && 'octal';
             }
-            if (args.match(/\/.*\//)) { return 'patterns not supported'; }
+            if (args.eatSpace() && args.match(/\/.*\//)) { 'patterns not supported'; }
           }
         }
         var err = parseArgs();
@@ -4489,9 +4389,6 @@
         var query = state.getQuery();
         var lineStart = (params.line !== undefined) ? params.line : cm.getCursor().line;
         var lineEnd = params.lineEnd || lineStart;
-        if (lineStart == cm.firstLine() && lineEnd == cm.lastLine()) {
-          lineEnd = Infinity;
-        }
         if (count) {
           lineStart = lineEnd;
           lineEnd = lineStart + count - 1;
@@ -4506,20 +4403,13 @@
         if (CodeMirror.commands.save) {
           // If a save command is defined, call it.
           CodeMirror.commands.save(cm);
-        } else if (cm.save) {
-          // Saves to text area if no save command is defined and cm.save() is available.
+        } else {
+          // Saves to text area if no save command is defined.
           cm.save();
         }
       },
       nohlsearch: function(cm) {
         clearSearchHighlight(cm);
-      },
-      yank: function (cm) {
-        var cur = copyCursor(cm.getCursor());
-        var line = cur.line;
-        var lineText = cm.getLine(line);
-        vimGlobalState.registerController.pushText(
-          '0', 'yank', lineText, true, true);
       },
       delmarks: function(cm, params) {
         if (!params.argString || !trim(params.argString)) {
@@ -4617,9 +4507,10 @@
         searchCursor.replace(newText);
       }
       function next() {
+        var found;
         // The below only loops to skip over multiple occurrences on the same
         // line when 'global' is not true.
-        while(searchCursor.findNext() &&
+        while(found = searchCursor.findNext() &&
               isInRange(searchCursor.from(), lineStart, lineEnd)) {
           if (!global && lastPos && searchCursor.from().line == lastPos.line) {
             continue;
@@ -4752,7 +4643,7 @@
     }
 
     function _mapCommand(command) {
-      defaultKeymap.unshift(command);
+      defaultKeymap.push(command);
     }
 
     function mapCommand(keys, type, name, args, extra) {
@@ -4794,14 +4685,6 @@
 
     function executeMacroRegister(cm, vim, macroModeState, registerName) {
       var register = vimGlobalState.registerController.getRegister(registerName);
-      if (registerName == ':') {
-        // Read-only register containing last Ex command.
-        if (register.keyBuffer[0]) {
-          exCommandDispatcher.processCommand(cm, register.keyBuffer[0]);
-        }
-        macroModeState.isPlaying = false;
-        return;
-      }
       var keyBuffer = register.keyBuffer;
       var imc = 0;
       macroModeState.isPlaying = true;
@@ -4841,7 +4724,7 @@
       if (macroModeState.isPlaying) { return; }
       var registerName = macroModeState.latestRegister;
       var register = vimGlobalState.registerController.getRegister(registerName);
-      if (register && register.pushInsertModeChanges) {
+      if (register) {
         register.pushInsertModeChanges(macroModeState.lastInsertModeChanges);
       }
     }
@@ -4850,7 +4733,7 @@
       if (macroModeState.isPlaying) { return; }
       var registerName = macroModeState.latestRegister;
       var register = vimGlobalState.registerController.getRegister(registerName);
-      if (register && register.pushSearchQuery) {
+      if (register) {
         register.pushSearchQuery(query);
       }
     }
@@ -4901,7 +4784,7 @@
     }
     function updateFakeCursor(cm) {
       var vim = cm.state.vim;
-      var from = clipCursorToContent(cm, copyCursor(vim.sel.head));
+      var from = copyCursor(vim.sel.head);
       var to = offsetCursor(from, 0, 1);
       if (vim.fakeCursor) {
         vim.fakeCursor.clear();

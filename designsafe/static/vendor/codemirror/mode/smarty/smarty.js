@@ -47,17 +47,10 @@
     }
 
     function tokenTop(stream, state) {
-      var string = stream.string;
-      for (var scan = stream.pos;;) {
-        var nextMatch = string.indexOf(leftDelimiter, scan);
-        scan = nextMatch + leftDelimiter.length;
-        if (nextMatch == -1 || !doesNotCount(stream, nextMatch + leftDelimiter.length)) break;
-      }
-      if (nextMatch == stream.pos) {
-        stream.match(leftDelimiter);
+      if (stream.match(leftDelimiter, true)) {
         if (stream.eat("*")) {
           return chain(stream, state, tokenBlock("comment", "*" + rightDelimiter));
-        } else {
+        } else if (!doesNotCount(stream)) {
           state.depth++;
           state.tokenize = tokenSmarty;
           last = "startTag";
@@ -65,9 +58,11 @@
         }
       }
 
-      if (nextMatch > -1) stream.string = string.slice(0, nextMatch);
       var token = baseMode.token(stream, state.base);
-      if (nextMatch > -1) stream.string = string;
+      var text = stream.current();
+      var found = text.indexOf(leftDelimiter);
+      if (found > -1 && !doesNotCount(stream, stream.start + found + 1))
+        stream.backUp(text.length - found);
       return token;
     }
 
@@ -209,12 +204,6 @@
         var style = state.tokenize(stream, state);
         state.last = last;
         return style;
-      },
-      indent: function(state, text) {
-        if (state.tokenize == tokenTop && baseMode.indent)
-          return baseMode.indent(state.base, text);
-        else
-          return CodeMirror.Pass;
       },
       blockCommentStart: leftDelimiter + "*",
       blockCommentEnd: "*" + rightDelimiter

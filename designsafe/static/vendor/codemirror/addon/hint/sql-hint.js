@@ -18,9 +18,7 @@
     QUERY_DIV: ";",
     ALIAS_KEYWORD: "AS"
   };
-  var Pos = CodeMirror.Pos, cmpPos = CodeMirror.cmpPos;
-
-  function isArray(val) { return Object.prototype.toString.call(val) == "[object Array]" }
+  var Pos = CodeMirror.Pos;
 
   function getKeywords(editor) {
     var mode = editor.doc.modeOption;
@@ -32,28 +30,10 @@
     return typeof item == "string" ? item : item.text;
   }
 
-  function wrapTable(name, value) {
-    if (isArray(value)) value = {columns: value}
-    if (!value.text) value.text = name
-    return value
-  }
-
-  function parseTables(input) {
-    var result = {}
-    if (isArray(input)) {
-      for (var i = input.length - 1; i >= 0; i--) {
-        var item = input[i]
-        result[getText(item).toUpperCase()] = wrapTable(getText(item), item)
-      }
-    } else if (input) {
-      for (var name in input)
-        result[name.toUpperCase()] = wrapTable(name, input[name])
-    }
-    return result
-  }
-
-  function getTable(name) {
-    return tables[name.toUpperCase()]
+  function getItem(list, item) {
+    if (!list.slice) return list[item];
+    for (var i = list.length - 1; i >= 0; i--) if (getText(list[i]) == item)
+      return list[i];
   }
 
   function shallowClone(object) {
@@ -70,18 +50,11 @@
   }
 
   function addMatches(result, search, wordlist, formatter) {
-    if (isArray(wordlist)) {
-      for (var i = 0; i < wordlist.length; i++)
-        if (match(search, wordlist[i])) result.push(formatter(wordlist[i]))
-    } else {
-      for (var word in wordlist) if (wordlist.hasOwnProperty(word)) {
-        var val = wordlist[word]
-        if (!val || val === true)
-          val = word
-        else
-          val = val.displayText ? {text: val.text, displayText: val.displayText} : val.text
-        if (match(search, val)) result.push(formatter(val))
-      }
+    for (var word in wordlist) {
+      if (!wordlist.hasOwnProperty(word)) continue;
+      if (wordlist.slice) word = wordlist[word];
+
+      if (match(search, word)) result.push(formatter(word));
     }
   }
 
@@ -105,7 +78,7 @@
   }
 
   function nameCompletion(cur, token, result, editor) {
-    // Try to complete table, column names and return start position of completion
+    // Try to complete table, colunm names and return start position of completion
     var useBacktick = false;
     var nameParts = [];
     var start = token.start;
@@ -139,28 +112,21 @@
     string = nameParts.pop();
     var table = nameParts.join(".");
 
-    var alias = false;
-    var aliasTable = table;
     // Check if table is available. If not, find table by Alias
-    if (!getTable(table)) {
-      var oldTable = table;
+    if (!getItem(tables, table))
       table = findTableByAlias(table, editor);
-      if (table !== oldTable) alias = true;
-    }
 
-    var columns = getTable(table);
+    var columns = getItem(tables, table);
     if (columns && columns.columns)
       columns = columns.columns;
 
     if (columns) {
       addMatches(result, string, columns, function(w) {
-        var tableInsert = table;
-        if (alias == true) tableInsert = aliasTable;
         if (typeof w == "string") {
-          w = tableInsert + "." + w;
+          w = table + "." + w;
         } else {
           w = shallowClone(w);
-          w.text = tableInsert + "." + w.text;
+          w.text = table + "." + w.text;
         }
         return useBacktick ? insertBackticks(w) : w;
       });
@@ -176,6 +142,15 @@
     for (var i = 0; i < words.length; i++) {
       f(words[i]?words[i].replace(excepted, '') : '');
     }
+  }
+
+  function convertCurToNumber(cur) {
+    // max characters of a line is 999,999.
+    return cur.line + cur.ch / Math.pow(10, 6);
+  }
+
+  function convertNumberToCur(num) {
+    return Pos(Math.floor(num), +num.toString().split('.').pop());
   }
 
   function findTableByAlias(alias, editor) {
@@ -200,14 +175,15 @@
     separator.push(Pos(editor.lastLine(), editor.getLineHandle(editor.lastLine()).text.length));
 
     //find valid range
-    var prevItem = null;
-    var current = editor.getCursor()
-    for (var i = 0; i < separator.length; i++) {
-      if ((prevItem == null || cmpPos(current, prevItem) > 0) && cmpPos(current, separator[i]) <= 0) {
-        validRange = {start: prevItem, end: separator[i]};
+    var prevItem = 0;
+    var current = convertCurToNumber(editor.getCursor());
+    for (var i=0; i< separator.length; i++) {
+      var _v = convertCurToNumber(separator[i]);
+      if (current > prevItem && current <= _v) {
+        validRange = { start: convertNumberToCur(prevItem), end: convertNumberToCur(_v) };
         break;
       }
-      prevItem = separator[i];
+      prevItem = _v;
     }
 
     var query = doc.getRange(validRange.start, validRange.end, false);
@@ -216,7 +192,7 @@
       var lineText = query[i];
       eachWord(lineText, function(word) {
         var wordUpperCase = word.toUpperCase();
-        if (wordUpperCase === aliasUpperCase && getTable(previousWord))
+        if (wordUpperCase === aliasUpperCase && getItem(tables, previousWord))
           table = previousWord;
         if (wordUpperCase !== CONS.ALIAS_KEYWORD)
           previousWord = word;
@@ -227,11 +203,10 @@
   }
 
   CodeMirror.registerHelper("hint", "sql", function(editor, options) {
-    tables = parseTables(options && options.tables)
+    tables = (options && options.tables) || {};
     var defaultTableName = options && options.defaultTable;
-    var disableKeywords = options && options.disableKeywords;
-    defaultTable = defaultTableName && getTable(defaultTableName);
-    keywords = getKeywords(editor);
+    defaultTable = defaultTableName && getItem(tables, defaultTableName);
+    keywords = keywords || getKeywords(editor);
 
     if (defaultTableName && !defaultTable)
       defaultTable = findTableByAlias(defaultTableName, editor);
@@ -262,8 +237,7 @@
     } else {
       addMatches(result, search, tables, function(w) {return w;});
       addMatches(result, search, defaultTable, function(w) {return w;});
-      if (!disableKeywords)
-        addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
+      addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
     }
 
     return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};

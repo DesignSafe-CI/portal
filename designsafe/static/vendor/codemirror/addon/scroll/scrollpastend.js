@@ -40,9 +40,7 @@
     if (cm.state.scrollPastEndPadding != padding) {
       cm.state.scrollPastEndPadding = padding;
       cm.display.lineSpace.parentNode.style.paddingBottom = padding;
-      cm.off("refresh", updateBottomMargin);
       cm.setSize();
-      cm.on("refresh", updateBottomMargin);
     }
   }
 });

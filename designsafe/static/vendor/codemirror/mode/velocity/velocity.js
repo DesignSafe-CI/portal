@@ -34,7 +34,7 @@ CodeMirror.defineMode("velocity", function() {
         state.beforeParams = false;
         var ch = stream.next();
         // start of unparsed string?
-        if ((ch == "'") && !state.inString && state.inParams) {
+        if ((ch == "'") && state.inParams) {
             state.lastTokenWasBuiltin = false;
             return chain(stream, state, tokenString(ch));
         }

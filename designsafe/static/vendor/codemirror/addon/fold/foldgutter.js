@@ -20,7 +20,7 @@
       cm.off("viewportChange", onViewportChange);
       cm.off("fold", onFold);
       cm.off("unfold", onFold);
-      cm.off("swapDoc", onChange);
+      cm.off("swapDoc", updateInViewport);
     }
     if (val) {
       cm.state.foldGutter = new State(parseOptions(val));
@@ -30,7 +30,7 @@
       cm.on("viewportChange", onViewportChange);
       cm.on("fold", onFold);
       cm.on("unfold", onFold);
-      cm.on("swapDoc", onChange);
+      cm.on("swapDoc", updateInViewport);
     }
   });
 
@@ -50,7 +50,7 @@
   }
 
   function isFolded(cm, line) {
-    var marks = cm.findMarks(Pos(line, 0), Pos(line + 1, 0));
+    var marks = cm.findMarksAt(Pos(line));
     for (var i = 0; i < marks.length; ++i)
       if (marks[i].__isFold && marks[i].find().from.line == line) return marks[i];
   }

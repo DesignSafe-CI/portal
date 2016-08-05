@@ -49,7 +49,7 @@
     });
     var myRange = cm.markText(range.from, range.to, {
       replacedWith: myWidget,
-      clearOnEnter: getOption(cm, options, "clearOnEnter"),
+      clearOnEnter: true,
       __isFold: true
     });
     myRange.on("clear", function(from, to) {
@@ -129,8 +129,7 @@
     rangeFinder: CodeMirror.fold.auto,
     widget: "\u2194",
     minFoldSize: 0,
-    scanUp: false,
-    clearOnEnter: true
+    scanUp: false
   };
 
   CodeMirror.defineOption("foldOptions", null);

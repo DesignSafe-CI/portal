@@ -60,7 +60,6 @@
   position: absolute;
   cursor: pointer;
   color: #44c;
-  z-index: 3;
 }
 
 .CodeMirror-merge-copy-reverse {

@@ -70,10 +70,7 @@
           return "operator";
         case "\\":
           if (stream.match(/\\[a-z]+/)) return "string-2";
-          else {
-            stream.next();
-            return "atom";
-          }
+          else return null;
         case ".":
         case ",":
         case ";":
