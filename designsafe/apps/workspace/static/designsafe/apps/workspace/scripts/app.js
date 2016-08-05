@@ -29,8 +29,7 @@
   ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
   angular.module('WorkspaceApp')
-    .run(['WSBusService', 'logger', function init(WSBusService, logger){
-        logger.log(WSBusService.url);
+    .run(['WSBusService', function init(WSBusService){
         WSBusService.init(WSBusService.url);
     }])
     .run(['NotificationService', function init(NotificationService){
