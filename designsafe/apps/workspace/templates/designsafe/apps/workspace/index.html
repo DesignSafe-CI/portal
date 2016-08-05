@@ -11,18 +11,18 @@
 
 <div class="container" role="main" ng-app="WorkspaceApp" id="workspace">
   <div ng-controller="ApplicationTrayCtrl"
-       ng-include="'{% static 'designsafe/apps/workspace/html/application-tray.html' %}'"
+       ng-include="'{% static "designsafe/apps/workspace/html/application-tray.html" %}'"
        class="workspace-panel workspace-panel-fixed"></div>
   <div class="workspace-panel-container">
     <div ng-controller="DataBrowserCtrl"
-         ng-include="'{% static 'designsafe/apps/workspace/html/data-browser.html' %}'"
+         ng-include="'{% static "designsafe/apps/workspace/html/data-browser.html" %}'"
          class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-left"
          ng-class="{'workspace-panel-collapsed': panel.collapsed}"></div>
     <div ng-controller="ApplicationFormCtrl"
-         ng-include="'{% static 'designsafe/apps/workspace/html/application-form.html' %}'"
+         ng-include="'{% static "designsafe/apps/workspace/html/application-form.html" %}'"
          class="workspace-panel workspace-panel-main"></div>
     <div ng-controller="JobsStatusCtrl"
-         ng-include="'{% static 'designsafe/apps/workspace/html/jobs-status.html' %}'"
+         ng-include="'{% static "designsafe/apps/workspace/html/jobs-status.html" %}'"
          class="workspace-panel workspace-panel-sidebar workspace-panel-sidebar-right"
          ng-class="{'workspace-panel-collapsed': panel.collapsed}"
          ng-init="panel.collapsed = true"></div>
