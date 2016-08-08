@@ -26,16 +26,20 @@ class BaseTicketForm(forms.Form):
     """
     Base form class for Tickets.
     """
-    first_name = forms.CharField(widget=forms.TextInput(), max_length=100, required=True)
-    last_name = forms.CharField(widget=forms.TextInput(), max_length=100, required=True)
+    first_name = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
+    last_name = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
     email = forms.EmailField(widget=forms.EmailInput(), required=True)
-    subject = forms.CharField(widget=forms.TextInput(), max_length=100, required=True)
+    subject = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
 
     category_choices = (('', 'Choose one'),) + settings.TICKET_CATEGORIES
     category = forms.CharField(widget=forms.Select(choices=category_choices),
                                required=True)
     problem_description = forms.CharField(widget=forms.Textarea(), required=True)
     attachment = forms.FileField(required=False)
+
+    error_page = forms.CharField(widget=forms.HiddenInput(), required=False)
+    http_referer = forms.CharField(widget=forms.HiddenInput(), required=False)
+
 
 class TicketForm(BaseTicketForm):
     """
