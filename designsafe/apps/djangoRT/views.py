@@ -71,6 +71,11 @@ def ticketcreate(request):
                 ('Category', dict(settings.TICKET_CATEGORIES)[form.cleaned_data['category']]),
                 ('Resource', 'DesignSafe'),
             )
+            if form.cleaned_data['error_page'] is not None:
+                meta += (
+                    ('Error Page', form.cleaned_data['error_page']),
+                    ('HTTP Referer', form.cleaned_data['http_referer']),
+                )
 
             header = '\n'.join('[%s] %s' % m for m in meta)
             ticket_body = '%s\n\n%s\n\n---\n%s' % (
@@ -113,6 +118,8 @@ def ticketcreate(request):
             'subject': request.GET.get('subject'),
             'category': request.GET.get('category'),
             'problem_description': request.GET.get('problem_description'),
+            'error_page': request.GET.get('error_page'),
+            'http_referer': request.GET.get('http_referer'),
         }
         if request.user.is_authenticated():
             initial_data['email'] = request.user.email

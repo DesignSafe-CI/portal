@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Not Found{% endblock %}
 {% block content %}
-<div class="container">
-  <h1>The resource you requested was not found.</h1>
-  <p>
-    The resource you requested was not found.
-  </p>
-</div>
+    <div class="container">
+        <h1>The resource you requested isn't here.</h1>
+        <p>
+            If you followed a link from another DesignSafe-CI page, please
+            <a href="{% url 'djangoRT:ticketcreate' %}?error_page={{ request.path }}&http_referer={{ request.META.HTTP_REFERER }}">submit a ticket</a>
+            to let us know so we can get the link corrected! If you followed a link from elsewhere on
+            the web, we would also like to know so we can get that link redirected
+            properly!
+        </p>
+    </div>
 {% endblock content %}
