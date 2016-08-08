@@ -12,6 +12,9 @@ from designsafe.libs.common.decorators import deprecated
 logger = logging.getLogger(__name__)
 
 
+TOKEN_EXPIRY_THRESHOLD = 600
+
+
 class AgaveOAuthToken(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth')
     token_type = models.CharField(max_length=255)
@@ -28,7 +31,7 @@ class AgaveOAuthToken(models.Model):
     @property
     def expired(self):
         current_time = time.time()
-        return self.created + self.expires_in - current_time - 600 <= 0
+        return self.created + self.expires_in - current_time - TOKEN_EXPIRY_THRESHOLD <= 0
 
     @property
     def created_at(self):
