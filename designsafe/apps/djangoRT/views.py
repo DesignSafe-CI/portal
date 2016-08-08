@@ -129,27 +129,31 @@ def ticketreply(request, ticketId):
         raise PermissionDenied
 
     ticket = rt.getTicket(ticketId)
-    data = {}
-
     if request.method == 'POST':
         form = forms.ReplyForm(request.POST, request.FILES)
 
         if form.is_valid():
+            reply_text = '[Reply from] {}\n\n{}\n\n---\n{} {} <{}>'.format(
+                request.user.username,
+                form.cleaned_data['reply'],
+                request.user.first_name,
+                request.user.last_name,
+                request.user.email
+            )
+            attachments = []
             if 'attachment' in request.FILES:
-                if rt.replyToTicket(ticketId, text=form.cleaned_data['reply'], files=([request.FILES['attachment'].name, request.FILES['attachment'], mimetypes.guess_type(request.FILES['attachment'].name)],)):
-                    return HttpResponseRedirect(reverse( 'djangoRT:ticketdetail', args=[ ticketId ] ) )
-                else:
-                    data['reply'] = form.cleaned_data['reply']
-                    form = forms.ReplyForm(data)
-            else:
-                if rt.replyToTicket(ticketId, text=form.cleaned_data['reply']):
-                    return HttpResponseRedirect(reverse( 'djangoRT:ticketdetail', args=[ ticketId ] ) )
-                else:
-                    data['reply'] = form.cleaned_data['reply']
-                    form = forms.ReplyForm(data)
-
+                attachments.append(
+                    (
+                       request.FILES['attachment'].name,
+                       request.FILES['attachment'],
+                       mimetypes.guess_type(request.FILES['attachment'].name),
+                    ))
+            if rt.replyToTicket(ticketId, text=reply_text, files=attachments):
+                return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
+                                                    args=[ticketId]))
     else:
-        form = forms.ReplyForm(initial=data)
+        form = forms.ReplyForm()
+
     return render(request, 'djangoRT/ticketReply.html', {
         'ticket_id': ticketId,
         'ticket': ticket,
