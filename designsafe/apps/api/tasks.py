@@ -123,16 +123,20 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
         box_fm = BoxFileManager(user)
         file_type, file_id = box_fm.parse_file_id(src_file_id)
 
+        levels = 0
+        downloaded_file_path = None
         if file_type == 'file':
-            box_download_file(box_fm, file_id, dest_real_path)
+            downloaded_file_path = box_download_file(box_fm, file_id, dest_real_path)
+            levels = 1
         elif file_type == 'folder':
-            box_download_folder(box_fm, file_id, dest_real_path)
+            downloaded_file_path = box_download_folder(box_fm, file_id, dest_real_path)
 
-        # index the new files
-        #from designsafe.apps.api.data.agave.filemanager import AgaveIndexer
-        system_id, file_user, file_path = agave_fm.parse_file_id(dest_file_id)
-
-        agave_fm.indexer.index(system_id, file_path, file_user, full_indexing = True, pems_indexing=True, index_full_path = True)
+        if downloaded_file_path is not None:
+            downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
+            system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
+            agave_fm.indexer.index(system_id, file_path, file_user, full_indexing=True,
+                                   pems_indexing=True, index_full_path=True,
+                                   levels=levels)
 
         n = Notification(event_type = 'data',
                          status = Notification.SUCCESS,
@@ -213,6 +217,8 @@ def box_download_folder(box_file_manager, box_folder_id, download_path):
             offset += limit
         else:
             break
+
+    return directory_path
 
 
 @shared_task(bind=True)

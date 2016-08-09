@@ -749,15 +749,22 @@ class FileManager(AbstractFileManager, AgaveObject):
         u_system, u_file_user, u_file_path = self.parse_file_id(upload_file_id)
         u_file = AgaveFile.from_file_path(u_system, u_file_user, u_file_path,
                                           agave_client=self.agave_client)
-        doc = Object.from_agave_file(u_file_user, u_file, get_pems = True)  # index new file
+        doc = Object.from_agave_file(u_file_user, u_file, get_pems=True)
         doc.save()
         if index_parent:
             reindex_agave.apply_async(kwargs={'username': self.username, 
                                               'file_id': file_id, 
-                                              'full_indexing' : False, 
+                                              'full_indexing': False,
                                               'pems_indexing': True, 
                                               'index_full_path': True})
         return u_file.to_dict()
+
+    def from_file_real_path(self, file_real_path):
+        if file_real_path.startswith(self.mount_path):
+            return file_real_path.replace(self.mount_path, settings.AGAVE_STORAGE_SYSTEM)
+        else:
+            raise ApiException('The path "%s" is not on the default storage system. '
+                               'Unable to map to file_id.' % file_real_path)
 
     def get_file_real_path(self, file_id):
         system, file_user, file_path = self.parse_file_id(file_id)
