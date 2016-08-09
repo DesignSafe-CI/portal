@@ -82,12 +82,13 @@ def share_agave(self, username, file_id, permissions):
                          'file_id': file_id,
                          'permissions': permissions
                      })
-        n = Notification(event_type = 'data',
-                         status = Notification.ERROR,
-                         operation = 'share_error',
-                         message = 'We were unable to share the specified folder/file(s). Please try again...',
-                         user = username,
-                         extra = {})
+        n = Notification(event_type='data',
+                         status=Notification.ERROR,
+                         operation='share_error',
+                         message='We were unable to share the specified folder/file(s). '
+                                 'Please try again...',
+                         user=username,
+                         extra={})
         n.save()
 
 @shared_task(bind=True)
@@ -106,12 +107,14 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                  src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
-        n = Notification(event_type = 'data',
-                         status = Notification.INFO,
-                         operation = 'box_download_start',
-                         message = 'Starting download file %s from box.' % (src_file_id, ),
-                         user = username,
-                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+        target_path = reverse('designsafe_data:data_browser',
+                              args=[src_resource, src_file_id])
+        n = Notification(event_type='data',
+                         status=Notification.INFO,
+                         operation='box_download_start',
+                         message='Starting download file %s from box.' % (src_file_id,),
+                         user=username,
+                         extra={'target_path': target_path})
         n.save()
 
         user = get_user_model().objects.get(username=username)
@@ -138,12 +141,14 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                                    pems_indexing=True, index_full_path=True,
                                    levels=levels)
 
-        n = Notification(event_type = 'data',
-                         status = Notification.SUCCESS,
-                         operation = 'box_download_end',
-                         message = 'File %s has been copied from box succesfully!' % (src_file_id, ),
-                         user = username,
-                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), dest_resource, dest_file_id)})
+        target_path = reverse('designsafe_data:data_browser',
+                              args=[dest_resource, dest_file_id])
+        n = Notification(event_type='data',
+                         status=Notification.SUCCESS,
+                         operation='box_download_end',
+                         message='File %s has been copied from box successfully!' % (src_file_id, ),
+                         user=username,
+                         extra={'target_path': target_path})
         n.save()
     except:
         logger.exception('Unexpected task failure: box_download', extra={
@@ -152,12 +157,15 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
             'to_resource': dest_resource,
             'dest_file_id': dest_file_id
         })
-        n = Notification(event_type = 'data',
-                         status = Notification.ERROR,
-                         operation = 'box_download_error',
-                         message = 'We were unable to get the specified file from box. Please try again...',
-                         user = username,
-                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+        target_path = reverse('designsafe_data:data_browser',
+                              args=[src_resource, src_file_id])
+        n = Notification(event_type='data',
+                         status=Notification.ERROR,
+                         operation='box_download_error',
+                         message='We were unable to get the specified file from box. '
+                                 'Please try again...',
+                         user=username,
+                         extra={'target_path': target_path})
         n.save()
 
 
