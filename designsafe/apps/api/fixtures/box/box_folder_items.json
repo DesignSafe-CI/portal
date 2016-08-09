@@ -6,14 +6,14 @@
       "id": "192429928",
       "sequence_id": "1",
       "etag": "1",
-      "name": "Stephen Curry Three Pointers"
+      "name": "OpenSees Test Data"
     },
     {
       "type": "file",
       "id": "818853862",
       "sequence_id": "0",
       "etag": "0",
-      "name": "Warriors.jpg"
+      "name": "demo.tcl"
     }
   ],
   "offset": 0,

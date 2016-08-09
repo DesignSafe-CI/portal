@@ -1,0 +1,21 @@
+[
+  {
+    "fields": {
+      "access_token": "aaaaaaaa",
+      "box_user_id": "9999998",
+      "user": 1,
+      "refresh_token": "zzzzzzzz"
+    },
+    "model": "box_integration.boxusertoken",
+    "pk": 43
+  },
+  {
+    "fields": {
+      "access_token": "bbbbbbbb",
+      "box_user_id": "9999999",
+      "user": 2,
+      "refresh_token": "yyyyyyyy"},
+    "model": "box_integration.boxusertoken",
+    "pk": 44
+  }
+]
