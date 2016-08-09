@@ -2,12 +2,10 @@ from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.box.file import BoxFile
 from designsafe.apps.api.tasks import box_upload
-from designsafe.apps.box_integration import util
 from designsafe.apps.box_integration.models import BoxUserToken
 from boxsdk.exception import BoxException, BoxOAuthException
 from django.core.urlresolvers import reverse
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +22,7 @@ class FileManager(AbstractFileManager):
             raise ApiException(status=403, message='Log in required to access Box files.')
 
         try:
-            self.box_api = util.get_box_client(user_obj)
+            self.box_api = user_obj.box_user_token.client
         except BoxUserToken.DoesNotExist:
             message = 'You need to connect your Box.com account ' \
                       'before you can access your Box.com files.'
