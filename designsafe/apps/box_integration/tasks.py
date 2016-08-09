@@ -2,10 +2,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.text import get_valid_filename
 from celery import shared_task
-from designsafe.apps.box_integration import util
 from dsapi.agave.daos import FileManager
 from boxsdk.exception import BoxAPIException
-from agavepy.agave import Agave
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from requests.exceptions import HTTPError
 import logging
@@ -28,7 +26,7 @@ def check_connection(username):
         BoxUserToken.DoesNotExist: if token does not exist for user
     """
     user = get_user_model().objects.get(username=username)
-    client = util.get_box_client(user)
+    client = user.box_user_token.client
     box_user = client.user(user_id=u'me').get()
     return box_user
 
@@ -38,7 +36,7 @@ def copy_box_item(self, username, box_item_type, box_item_id, target_system_id,
                   target_path):
 
     user = get_user_model().objects.get(username=username)
-    client = util.get_box_client(user)
+    client = user.box_user_token.client
 
     try:
         op = getattr(client, box_item_type)

@@ -6,14 +6,12 @@ from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         HttpResponseServerError, Http404)
+                         Http404)
 from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.box_integration.models import BoxUserToken
 from designsafe.apps.box_integration.tasks import check_connection, copy_box_item
-from designsafe.apps.box_integration.util import BoxObjectJsonSerializer
-from agavepy.agave import Agave
-from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+from designsafe.apps.box_integration.serializers import BoxObjectJsonSerializer
 import logging
 import json
 
