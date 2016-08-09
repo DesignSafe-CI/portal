@@ -47,6 +47,7 @@ pytz==2015.4
 redis==2.10.5
 requests[security]==2.10.0
 requests-toolbelt==0.6.2
+requests-mock==1.0.0
 rt==1.0.8
 six==1.9.0
 slimit==0.8.1
