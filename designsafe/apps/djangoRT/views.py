@@ -24,7 +24,11 @@ def mytickets(request):
     rt = rtUtil.DjangoRt()
     show_resolved = 'show_resolved' in request.GET
     tickets = rt.getUserTickets(request.user.email, show_resolved=show_resolved)
-    return render(request, 'djangoRT/ticketList.html', { 'tickets': tickets, 'show_resolved': show_resolved })
+    context = {
+        'tickets': tickets,
+        'show_resolved': show_resolved
+    }
+    return render(request, 'djangoRT/ticketList.html', context)
 
 @login_required
 def ticketdetail(request, ticketId):
@@ -49,7 +53,6 @@ def ticketdetail(request, ticketId):
 
 
 def ticketcreate(request):
-    rt = rtUtil.DjangoRt()
 
     template_name = 'djangoRT/ticketCreate.html'
     if request.user.is_authenticated():
@@ -91,6 +94,7 @@ def ticketcreate(request):
 
             logger.debug('Creating ticket for user: %s' % form.cleaned_data)
 
+            rt = rtUtil.DjangoRt()
             ticket_id = rt.createTicket(ticket)
             if ticket_id > -1:
                 messages.success(request, 'Your ticket has been submitted.')

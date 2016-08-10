@@ -1,0 +1,26 @@
+RT/4.2.1 200 Ok
+
+id: ticket/29152
+Queue: DesignSafe-ci
+Owner: Nobody
+Creator: portal
+Subject: Test Post, Please Ignore
+Status: open
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: admin@designsafe-ci.org
+AdminCc:
+Created: Sat Feb 27 23:18:38 2016
+Starts: Not set
+Started: Sun Feb 28 01:01:24 2016
+Due: Not set
+Resolved: Sun Feb 28 01:01:24 2016
+Told: Not set
+LastUpdated: Sun Feb 28 01:01:24 2016
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+

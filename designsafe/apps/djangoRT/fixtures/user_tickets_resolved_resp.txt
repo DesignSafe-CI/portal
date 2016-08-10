@@ -1,0 +1,701 @@
+RT/4.2.1 200 Ok
+
+id: ticket/27
+Queue: Technology Infrastructure
+Owner: mrhanlon
+Creator: mrhanlon
+Subject: Oh hai, consulting
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: admin@designsafe-ci.org
+AdminCc:
+Created: Thu Oct 03 18:07:46 2013
+Starts: Not set
+Started: Thu Nov 14 14:03:12 2013
+Due: Not set
+Resolved: Tue Feb 04 13:44:15 2014
+Told: Tue Feb 04 13:44:14 2014
+LastUpdated: Tue Feb 04 13:44:15 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/29
+Queue: Technology Infrastructure
+Owner: mpackard
+Creator: portal
+Subject: I like to create tickets from the portal!
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Fri Oct 11 15:56:32 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Mon Jan 20 18:57:59 2014
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:57:59 2014
+Told: Not set
+LastUpdated: Mon Jan 20 18:57:59 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/30
+Queue: Technology Infrastructure
+Owner: mpackard
+Creator: portal
+Subject: More from the portal dude
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Fri Oct 11 16:04:08 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Wed Dec 11 11:36:57 2013
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:57:59 2014
+Told: Wed Dec 11 11:36:57 2013
+LastUpdated: Mon Jan 20 18:57:59 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/31
+Queue: Technology Infrastructure
+Owner: mpackard
+Creator: portal
+Subject: This time it's for real
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Fri Oct 11 16:10:45 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Mon Dec 09 15:35:21 2013
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:57:59 2014
+Told: Mon Dec 09 15:48:31 2013
+LastUpdated: Mon Jan 20 18:57:59 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/32
+Queue: Technology Infrastructure
+Owner: mpackard
+Creator: portal
+Subject: testing 456
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Tue Oct 15 10:37:11 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Thu Dec 05 22:28:28 2013
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:57:59 2014
+Told: Mon Dec 09 10:49:34 2013
+LastUpdated: Mon Jan 20 18:57:59 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/33
+Queue: Technology Infrastructure
+Owner: mrhanlon
+Creator: portal
+Subject: testing 123
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Tue Oct 15 10:38:37 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Mon Nov 25 15:50:19 2013
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:57:59 2014
+Told: Tue Dec 10 12:37:36 2013
+LastUpdated: Mon Feb 03 11:52:25 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/34
+Queue: Technology Infrastructure
+Owner: mpackard
+Creator: portal
+Subject: Great jorb Homestar
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Tue Oct 15 17:11:37 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Thu Dec 05 23:37:00 2013
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:57:59 2014
+Told: Fri Dec 06 12:54:06 2013
+LastUpdated: Mon Jan 20 18:58:00 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/35
+Queue: Technology Infrastructure
+Owner: mpackard
+Creator: portal
+Subject: Crikes!
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Tue Oct 15 17:34:28 2013
+Starts: Thu Jan 01 00:00:00 1970
+Started: Mon Dec 09 15:10:12 2013
+Due: Thu Jan 01 00:00:00 1970
+Resolved: Mon Jan 20 18:58:00 2014
+Told: Mon Dec 09 15:34:49 2013
+LastUpdated: Mon Jan 20 18:58:00 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/14238
+Queue: High Performance Computing
+Owner: Nobody
+Creator: Importer
+Subject: Testing please ignore
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Mon Jan 20 15:06:47 2014
+Starts: Wed Nov 07 14:55:43 2012
+Started: Wed Nov 07 14:55:43 2012
+Due: Not set
+Resolved: Thu Nov 29 19:58:16 2012
+Told: Not set
+LastUpdated: Mon Jan 20 15:06:49 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/16644
+Queue: High Performance Computing
+Owner: wscarbor
+Creator: Importer
+Subject: Testing
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: collab@designsafe-ci.org
+AdminCc:
+Created: Mon Jan 20 17:22:19 2014
+Starts: Mon Jul 08 12:18:09 2013
+Started: Mon Jul 08 12:18:09 2013
+Due: Not set
+Resolved: Mon Jul 15 09:10:05 2013
+Told: Not set
+LastUpdated: Mon Jan 20 17:22:21 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/18577
+Queue: High Performance Computing
+Owner: viennej
+Creator: portal
+Subject: testing, please ignore
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Wed Jan 29 15:21:37 2014
+Starts: Not set
+Started: Wed Jan 29 15:41:53 2014
+Due: Not set
+Resolved: Wed Jan 29 15:41:53 2014
+Told: Not set
+LastUpdated: Wed Jan 29 15:41:53 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/19413
+Queue: High Performance Computing
+Owner: Nobody
+Creator: portal
+Subject: Feedback submission: Other
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Fri Apr 11 14:18:48 2014
+Starts: Not set
+Started: Fri Apr 11 14:19:57 2014
+Due: Not set
+Resolved: Fri Apr 11 14:19:57 2014
+Told: Not set
+LastUpdated: Fri Apr 11 14:19:57 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/19416
+Queue: High Performance Computing
+Owner: mrhanlon
+Creator: portal
+Subject: Feedback submission: Other
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Fri Apr 11 15:49:59 2014
+Starts: Not set
+Started: Fri Apr 11 15:50:46 2014
+Due: Not set
+Resolved: Fri Apr 11 15:50:46 2014
+Told: Fri Apr 11 15:50:46 2014
+LastUpdated: Fri Apr 11 15:50:46 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/19662
+Queue: Test
+Owner: mrhanlon
+Creator: portal
+Subject: Testing
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Wed Apr 30 10:16:07 2014
+Starts: Not set
+Started: Fri May 23 09:11:29 2014
+Due: Not set
+Resolved: Fri May 23 09:11:29 2014
+Told: Not set
+LastUpdated: Fri May 23 09:11:29 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/22478
+Queue: Technology Infrastructure
+Owner: Nobody
+Creator: portal
+Subject: Testing auto-routing tickets to TI
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: collab@designsafe-ci.org
+AdminCc:
+Created: Fri Dec 05 09:32:53 2014
+Starts: Not set
+Started: Sat Dec 06 01:29:46 2014
+Due: Not set
+Resolved: Mon Dec 08 12:56:25 2014
+Told: Mon Dec 08 12:56:25 2014
+LastUpdated: Mon Dec 08 12:56:25 2014
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/22696
+Queue: High Performance Computing
+Owner: djames
+Creator: mrhanlon
+Subject: Stampede login5 down?
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: collab@designsafe-ci.org
+AdminCc:
+Created: Fri Dec 26 13:30:33 2014
+Starts: Not set
+Started: Fri Dec 26 13:37:05 2014
+Due: Not set
+Resolved: Fri Jan 02 11:14:14 2015
+Told: Fri Dec 26 14:53:37 2014
+LastUpdated: Fri Jan 02 11:14:14 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/23051
+Queue: Data Intensive Computing
+Owner: Nobody
+Creator: portal
+Subject: Feedback submission: Data Analytics or Storage Resources
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Tue Jan 27 14:02:48 2015
+Starts: Not set
+Started: Tue Jan 27 14:03:23 2015
+Due: Not set
+Resolved: Tue Jan 27 14:03:23 2015
+Told: Not set
+LastUpdated: Tue Jan 27 14:03:23 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/23052
+Queue: Data Intensive Computing
+Owner: Nobody
+Creator: portal
+Subject: Testing ticket queue routing
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Tue Jan 27 14:15:06 2015
+Starts: Not set
+Started: Tue Jan 27 14:15:47 2015
+Due: Not set
+Resolved: Tue Jan 27 14:15:47 2015
+Told: Not set
+LastUpdated: Tue Jan 27 14:15:47 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/23390
+Queue: Chameleon
+Owner: mrhanlon
+Creator: portal
+Subject: Testing attachment
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Mon Feb 23 09:15:47 2015
+Starts: Not set
+Started: Mon Feb 23 09:15:48 2015
+Due: Not set
+Resolved: Wed Apr 08 11:19:17 2015
+Told: Wed Apr 08 11:19:06 2015
+LastUpdated: Wed Apr 08 11:19:17 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/24308
+Queue: Test
+Owner: mrhanlon
+Creator: portal
+Subject: Testing
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: admin@designsafe-ci.org
+AdminCc:
+Created: Tue Apr 28 15:22:48 2015
+Starts: Not set
+Started: Tue Apr 28 15:22:49 2015
+Due: Not set
+Resolved: Tue Apr 28 15:25:43 2015
+Told: Tue Apr 28 15:25:43 2015
+LastUpdated: Tue Apr 28 15:25:44 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/24331
+Queue: Chameleon
+Owner: Nobody
+Creator: portal
+Subject: Testing new ticket categories
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Wed Apr 29 16:22:18 2015
+Starts: Not set
+Started: Wed Apr 29 16:25:04 2015
+Due: Not set
+Resolved: Wed Sep 02 16:55:03 2015
+Told: Wed Sep 02 16:54:53 2015
+LastUpdated: Wed Sep 02 16:55:03 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/27523
+Queue: High Performance Computing
+Owner: mrhanlon
+Creator: portal
+Subject: Feedback submission: Other
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Mon Nov 23 17:08:13 2015
+Starts: Not set
+Started: Mon Nov 23 17:09:53 2015
+Due: Not set
+Resolved: Mon Nov 23 17:09:53 2015
+Told: Not set
+LastUpdated: Mon Nov 23 17:09:53 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/27524
+Queue: High Performance Computing
+Owner: mrhanlon
+Creator: portal
+Subject: Feedback submission: Other
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Mon Nov 23 17:25:56 2015
+Starts: Not set
+Started: Mon Nov 23 17:26:21 2015
+Due: Not set
+Resolved: Mon Nov 23 17:26:21 2015
+Told: Not set
+LastUpdated: Mon Nov 23 17:26:23 2015
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/28142
+Queue: Accounting
+Owner: Nobody
+Creator: portal
+Subject: Test ticket
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Thu Jan 14 09:53:28 2016
+Starts: Not set
+Started: Thu Jan 14 09:53:55 2016
+Due: Not set
+Resolved: Thu Jan 14 09:53:55 2016
+Told: Not set
+LastUpdated: Thu Jan 14 09:53:55 2016
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/29151
+Queue: DesignSafe-ci
+Owner: Nobody
+Creator: portal
+Subject: testing, please ignore
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc:
+AdminCc:
+Created: Sat Feb 27 23:12:19 2016
+Starts: Not set
+Started: Sat Feb 27 23:12:20 2016
+Due: Not set
+Resolved: Sat Feb 27 23:13:53 2016
+Told: Sat Feb 27 23:12:20 2016
+LastUpdated: Sat Feb 27 23:13:54 2016
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/29152
+Queue: DesignSafe-ci
+Owner: Nobody
+Creator: portal
+Subject: Test Post, Please Ignore
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: admin@designsafe-ci.org
+AdminCc:
+Created: Sat Feb 27 23:18:38 2016
+Starts: Not set
+Started: Sun Feb 28 01:01:24 2016
+Due: Not set
+Resolved: Sun Feb 28 01:01:24 2016
+Told: Not set
+LastUpdated: Sun Feb 28 01:01:24 2016
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 
+
+--
+
+id: ticket/29214
+Queue: DesignSafe-ci
+Owner: Nobody
+Creator: portal
+Subject: MATLAB license activation request
+Status: resolved
+Priority: 0
+InitialPriority: 0
+FinalPriority: 0
+Requestors: user@designsafe-ci.org
+Cc: collab@designsafe-ci.org
+AdminCc:
+Created: Wed Mar 02 10:05:30 2016
+Starts: Not set
+Started: Wed Mar 02 10:29:34 2016
+Due: Not set
+Resolved: Wed Mar 02 10:29:34 2016
+Told: Not set
+LastUpdated: Wed Mar 02 10:29:34 2016
+TimeEstimated: 0
+TimeWorked: 0
+TimeLeft: 0
+CF.{Resource}: 

@@ -60,12 +60,15 @@ class DjangoRt:
             ticket['Created'] = datetime.strptime(ticket['Created'], '%Y-%m-%d %X')
             ticket['Created'] = ticket['Created'].replace(tzinfo=pytz.UTC)
             ticket['Created'] = ticket['Created'].astimezone(local_tz)
-            logger.debug(ticket['Created'])
 
         return ticketHistory
 
-    # Returns the ticket id of the created ticket
     def createTicket(self, ticket):
+        """
+        Creates a new ticket and returns its ticket ID
+        :param ticket: RT Ticket object
+        :return: The newly created ticket ID
+        """
         return self.tracker.create_ticket(
             Subject=ticket.subject, Requestors=ticket.requestor, Cc=",".join(ticket.cc),
             Text=ticket.problem_description.replace('\n', '\n '))

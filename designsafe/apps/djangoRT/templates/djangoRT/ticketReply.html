@@ -19,12 +19,7 @@
 {% block content %}
 <div class="container">
   <h2>
-    {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}
-      Reopen
-    {% else %}
-      Reply to
-    {% endif %}
-    #{{ ticket_id }} : {{ ticket.Subject }}
+    {% if ticket.Status == 'resolved' or ticket.Status == 'closed' %}Reopen{% else %}Reply to{% endif %} #{{ ticket_id }}: {{ ticket.Subject }}
   </h2>
 
   <div class='reply_description'>

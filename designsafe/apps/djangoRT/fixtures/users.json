@@ -1,0 +1,38 @@
+[
+  {
+    "fields": {
+      "username": "ds_admin",
+      "first_name": "DesignSafe",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2016-03-01T00:00:00.000Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "",
+      "email": "admin@designsafe-ci.org",
+      "date_joined": "2016-03-01T00:00:00.000Z"
+    },
+    "model": "auth.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "username": "ds_user",
+      "first_name": "DesignSafe",
+      "last_name": "User",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2016-03-01T00:00:00.000Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "",
+      "email": "user@designsafe-ci.org",
+      "date_joined": "2016-03-01T00:00:00.000Z"
+    },
+    "model": "auth.user",
+    "pk": 2
+  }
+]

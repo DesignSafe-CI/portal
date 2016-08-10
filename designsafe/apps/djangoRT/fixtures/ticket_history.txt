@@ -1,0 +1,149 @@
+RT/4.2.1 200 Ok
+
+# 6/6 (id/551574/total)
+
+id: 551574
+Ticket: 29152
+TimeTaken: 0
+Type: Create
+Field:
+OldValue:
+NewValue:
+Data:
+Description: Ticket created by portal
+
+Content: [Opened by] mrhanlon
+         [Category] Other
+         [Resource] DesignSafe
+
+         Test post, please ignore.
+
+         ---
+         Matthew Hanlon <mrhanlon@tacc.utexas.edu>
+
+Creator: portal
+Created: 2016-02-28 05:18:38
+
+Attachments:
+             332776: untitled (133b)
+
+
+--
+
+# 6/6 (id/551575/total)
+
+id: 551575
+Ticket: 29152
+TimeTaken: 0
+Type: EmailRecord
+Field:
+OldValue:
+NewValue:
+Data: <rt-4.2.1-12606-1456636718-608.29152-4-0@tacc.utexas.edu>
+Description: Outgoing email recorded by RT_System
+
+Content: A ticket has been created in the DesignSafe-ci Queue.
+
+         Ticket <URL: https://consult.tacc.utexas.edu/Ticket/Display.html?id=29152 >
+         Subject: Test Post, Please Ignore
+
+         [Opened by] mrhanlon
+         [Category] Other
+         [Resource] DesignSafe
+
+         Test post, please ignore.
+
+         ---
+         Matthew Hanlon <mrhanlon@tacc.utexas.edu>
+
+
+Creator: RT_System
+Created: 2016-02-28 05:18:38
+
+Attachments:
+             332777: untitled (301b)
+
+
+--
+
+# 6/6 (id/551576/total)
+
+id: 551576
+Ticket: 29152
+TimeTaken: 0
+Type: AddWatcher
+Field: Requestor
+OldValue:
+NewValue: 143
+Data:
+Description: Requestor mrhanlon (Matthew Hanlon) added by portal
+Content: This transaction appears to have no content
+Creator: portal
+Created: 2016-02-28 05:18:38
+Attachments:
+
+--
+
+# 6/6 (id/551587/total)
+
+id: 551587
+Ticket: 29152
+TimeTaken: 0
+Type: Comment
+Field:
+OldValue:
+NewValue:
+Data: No Subject
+Description: Comments added by portal
+Content: Done.
+Creator: portal
+Created: 2016-02-28 07:01:24
+
+Attachments:
+             332783: untitled (5b)
+
+
+--
+
+# 6/6 (id/551588/total)
+
+id: 551588
+Ticket: 29152
+TimeTaken: 0
+Type: Status
+Field: Status
+OldValue: new
+NewValue: resolved
+Data:
+Description: Status changed from 'new' to 'resolved' by portal
+Content: This transaction appears to have no content
+Creator: portal
+Created: 2016-02-28 07:01:24
+Attachments:
+
+--
+
+# 6/6 (id/551589/total)
+
+id: 551589
+Ticket: 29152
+TimeTaken: 0
+Type: EmailRecord
+Field:
+OldValue:
+NewValue:
+Data: <rt-4.2.1-14986-1456642884-1054.29152-10-0@tacc.utexas.edu>
+Description: Outgoing email recorded by RT_System
+
+Content: According to our records, your request has been resolved. If you have any
+         further questions or concerns, please respond to this message or visit the TACC User Portal: <URL: https://portal.tacc.utexas.edu/web/tup/tacc-consulting/-/consult/tickets/29152 >
+
+
+
+Creator: RT_System
+Created: 2016-02-28 07:01:24
+
+Attachments:
+             332784: untitled (255b)
+
+(designsafe)

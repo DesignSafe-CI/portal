@@ -3,8 +3,12 @@ from django.conf import settings
 from django.core.validators import validate_email
 from captcha.fields import CaptchaField
 
-# This was pulled from : https://docs.djangoproject.com/en/1.7/ref/forms/validation/
+
 class MultiEmailField(forms.Field):
+    """
+    This was pulled from : https://docs.djangoproject.com/en/1.7/ref/forms/validation/
+    """
+
     def to_python(self, value):
         """ Normalize data to a list of strings. """
 
@@ -21,6 +25,7 @@ class MultiEmailField(forms.Field):
 
         for email in value:
             validate_email(email.strip())
+
 
 class BaseTicketForm(forms.Form):
     """
