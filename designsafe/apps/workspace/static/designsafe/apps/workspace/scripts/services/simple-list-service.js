@@ -116,13 +116,17 @@
 
             if (appMeta.value.isPublic){
               self.lists['Public'].push({
-                label: appMeta.value.id,
-                type: appMeta.value.type
+                id: appMeta.value.id,
+                label: appMeta.value.label,
+                type: appMeta.value.type,
+                version: appMeta.value.version
               });
             } else {
               self.lists['Private'].push({
-                label: appMeta.value.id,
-                type: appMeta.value.type
+                id: appMeta.value.id,
+                label: appMeta.value.label,
+                type: appMeta.value.type,
+                version: appMeta.value.version
               });
             }
           });
