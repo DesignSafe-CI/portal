@@ -503,7 +503,6 @@ class AgaveFile(AbstractFile, AgaveObject):
             parents_pems_args.append(d)
         for i in range(len(path_comps)):
             file_path = u'/'.join(path_comps)
-            logger.debug('Agave updating pems on parent: %s' % file_path)
             af = AgaveFile.from_file_path(self.system, self.parent_path.split('/')[0], 
                                     file_path, self.agave_client)
             af.share(parents_pems_args, update_parent_path = False, recursive = False)
@@ -521,6 +520,15 @@ class AgaveFile(AbstractFile, AgaveObject):
         Returns:
             Class instasnce for chainability
         """
+        if permission == 'NONE' and (self.parent_path.strip('/').split('/')) > 1:
+            parent_pems = self.from_file_path(self.system, None,
+                                    self.parent_path, self.agave_client)
+            parent_user_pems = filter(lambda x: x['username'] == username_to_update and x['username']['recursive'],
+                                        parent_pems)
+            if parent_user_pems:
+                raise ApiException('Can not remove permissions when the user has RECURSIVE permissions on parent',
+                             400)
+
         permission_body = json.dumps({'recursive': recursive,
                                       'permission': permission,
                                       'username': username_to_update})

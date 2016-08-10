@@ -540,7 +540,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         for pem in permissions:
             d = {
                 'username': pem['user_to_share'],
-                'recursive': True,
+                'recursive': pem.get('recursive', False),
                 'permission': {
                     'read': True if pem['permission'] in ['READ_WRITE', 'READ_EXECUTE', 'READ', 'ALL'] else False,
                     'write': True if pem['permission'] in ['READ_WRITE', 'WRITE_EXECUTE', 'WRITE', 'ALL'] else False,
@@ -618,8 +618,22 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             path_comps.pop()
         return True
 
-    def update_pems(self, permissions):
+    def update_pems(self, permissions, recursive = True):
         """Update permissions on a document.
+
+        When updating permissions in an ElasticSearch (ES) document, we have to create the 
+        list of objects necessary. This list is the same as the response from 
+        *agavepy*'s ``files.listPermissions``. We translate between the ``permissions``
+        list that this function gets as a parameter to the corresponding list with 
+        `func:_pems_args_to_es_pems_list`. Once we have this list we have to overwrite (or remove)
+        the corresponding list elements. We do this by filtering the pems list on the document
+        with the translated pems list using the *username* as uniqueness. We then append the
+        translated pems to the document's pems list and upate the document. 
+
+        **Removing Permissions**: When removing permissions we first need to check that the
+        parent folder does not have the ``recursive`` flag set for that username. If it has
+        the ``recursive`` flag set then we **can not** remove permissions for that username
+        on that specific file. 
 
         :param str username_to_update: username with whom we are going to share this document
         :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
@@ -627,13 +641,14 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
         """
         pems = getattr(self, 'permissions', [])
-        pems_to_add = self._pems_args_to_es_pems_list(permissions)
-        pems_usernames = [o['username'] for o in pems_to_add]
-        pems_to_add = filter(lambda x: not (x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False), pems_to_add)
-        user_pems = filter(lambda x: x['username'] not in pems_usernames, pems)
-        user_pems += pems_to_add
-        logger.debug('updating permissions on {} with {}'.format(self.meta.id, user_pems))
-        self.update(permissions = user_pems)
+        pems_translated = self._pems_args_to_es_pems_list(permissions)
+        pems_usernames = [o['username'] for o in pems_translated]
+        pems_to_add = filter(lambda x: not (x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False), pems_translated)
+        pems_to_remove = filter(lambda x: x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] = False, pems_translated)
+        pems_to_persist = filter(lambda x: x['username'] not in pems_usernames, pems)
+        pems_to_persist += pems_to_add
+        #logger.debug('updating permissions on {} with {}'.format(self.meta.id, user_pems))
+        self.update(permissions = pems_to_persist)
         self.save()
         return self
         

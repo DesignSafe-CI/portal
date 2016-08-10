@@ -25,7 +25,7 @@ def reindex_agave(self, username, file_id, full_indexing = True,
                            levels = levels)
 
 @shared_task(bind=True)
-def share_agave(self, username, file_id, permissions):
+def share_agave(self, username, file_id, permissions, recursive):
     try:
         n = Notification(event_type = 'data',
                          status = 'INFO',
@@ -45,12 +45,12 @@ def share_agave(self, username, file_id, permissions):
 
         f = AgaveFile.from_file_path(system_id, username, file_path,
                                      agave_client=agave_fm.agave_client)
-        f.share(permissions)
+        f.share(permissions, recursive)
         #reindex_agave.apply_async(args=(self.username, file_id))
         # self.indexer.index(system, file_path, file_user, pems_indexing=True)
         
         esf = Object.from_file_path(system_id, username, file_path)
-        esf.share(username, permissions)
+        esf.share(username, permissions, recursive)
 
         # Notify owner share completed
         n = Notification(event_type = 'data',

@@ -668,7 +668,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         }
         return search_data
 
-    def share(self, file_id, permissions, **kwargs):
+    def share(self, file_id, permissions, recursive = True, **kwargs):
         """Update permissions for a file
 
         The default functionality is to set READ permission on the file
@@ -695,7 +695,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         #
         #esf = Object.from_file_path(system, self.username, file_path)
         #esf.share(self.username, permissions)
-        share_agave.apply_async(args=(self.username, file_id, permissions))
+        share_agave.apply_async(args=(self.username, file_id, permissions, 
+                                      recursive))
         return f.to_dict()
 
     def transfer(self, file_id, dest_resource, dest_file_id):
