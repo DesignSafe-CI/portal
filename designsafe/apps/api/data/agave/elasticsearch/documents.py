@@ -304,7 +304,7 @@ class Object(ExecuteSearchMixin, DocType):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
-        search_fields = ['name._exact', 'keywords']
+        search_fields = ['name', 'name._exact', 'keywords']
 
         if fields:
             search_fields += fields
@@ -717,6 +717,7 @@ class Project(ExecuteSearchMixin, DocType):
                   "fundorg"
                   "fundorgprojid",
                   "name._exact",
+                  "name",
                   "organization.name",
                   "pis.firstName",
                   "pis.lastName",
@@ -787,6 +788,7 @@ class Experiment(ExecuteSearchMixin, DocType):
                   "facility.name",
                   "facility.state",
                   "name._exact",
+                  "name",
                   "project",
                   "startDate",
                   "title"]
@@ -879,7 +881,7 @@ class PublicObject(ExecuteSearchMixin, DocType):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
-        query_fields = ["name._exact"]
+        query_fields = ["name", "name._exact"]
         
         if fields is not None:
             query_fields += fields
