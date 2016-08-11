@@ -37,7 +37,7 @@
             </td>
             <td ng-if = "state.search">
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
-                <a title="{{ file|dsFileUrl }}" href="{{ file|dsFileUrl }}" ng-click="browseAndPreview($event, file)">{{ file.name|dsFileUrl }}</a>
+                <a title="{{ file|dsFileUrl }}" href="{{ file|dsFileUrl }}" ng-click="browseAndPreview($event, file)">{{ file|dsFileDisplayName }}</a>
             </td>
             <td ng-if="state.search">
               <i class="fa fa-fw fa-folder"></i>
