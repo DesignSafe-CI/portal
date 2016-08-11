@@ -6,6 +6,7 @@ from elasticsearch_dsl.connections import connections
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.agave.elasticsearch import utils as query_utils
 import dateutil.parser
+import itertools
 import datetime
 import logging
 import json
@@ -708,7 +709,7 @@ class Project(ExecuteSearchMixin, DocType):
             return None
 
     @classmethod
-    def search_query(cls, system_id, username, qs, fields = None, **kwargs):
+    def search_query(cls, system_id, username, qs, fields = [], **kwargs):
         query_fields = ["description",
                   "endDate",
                   "equipment.component",
@@ -725,7 +726,7 @@ class Project(ExecuteSearchMixin, DocType):
         if fields is not None:
             query_fields += fields
 
-        q = query_utils.files_wildcard_query(q, query_fields)
+        q = query_utils.files_wildcard_query(qs, query_fields)
 
         s = cls.search()
         s.query = q
@@ -744,6 +745,15 @@ class Project(ExecuteSearchMixin, DocType):
         return res, s[offset:limit]
 
     @classmethod
+    def projects_to_files(self, projects):
+        for p in projects:
+            doc = PublicObject.from_file_path(p.systemId, 
+                        u'/{}'.format(p.projectPath.strip('/')))
+            if doc is not None:
+                yield doc
+            else:
+                logger.warning(u'No file found for {}'.format(p.projectPath))
+
     class Meta:
         index = 'nees'
         doc_type = 'project'
@@ -881,6 +891,20 @@ class PublicObject(ExecuteSearchMixin, DocType):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
+        limit = int(kwargs.pop('limit', 100))
+        offset = int(kwargs.pop('offset', 0))
+        limit = offset + limit
+        projects_res, projects_s = Project.search_query(system_id, username, q, 
+                                        fields, limit = limit, offset = offset, 
+                                        **kwargs)
+
+        if projects_res.hits.total:
+            if projects_res.hits.total - offset > limit:
+                return projects_res, projects_s[offset:limit]
+            else:
+                proj_offset = projects_res.hits.total - offset
+                limit -= proj_offset
+
         query_fields = ["name", "name._exact"]
         
         if fields is not None:
@@ -891,9 +915,6 @@ class PublicObject(ExecuteSearchMixin, DocType):
 
         s = s.sort('type', 'path._exact', 'name._exact')
 
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
         res, s = cls._execute_search(s)
         if res.hits.total < limit:
             limit = res.hits.total
@@ -901,7 +922,10 @@ class PublicObject(ExecuteSearchMixin, DocType):
             offset = 0
             limit = 0
 
-        return res, s[offset:limit]
+        logger.debug('offset: {}, limit: {}'.format(offset, limit))
+        s = itertools.chain(Project.projects_to_files(projects_s), s[offset:limit])
+
+        return res, s
 
     @property
     def project_meta(self):
