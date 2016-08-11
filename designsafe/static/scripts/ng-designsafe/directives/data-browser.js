@@ -19,8 +19,8 @@
         onResourceChanged: '&onResourceChanged'
       },
       controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
-
         var self = this;
+        $scope.searchQuery = {query: ''};
 
         /**
          * Checks that the user has the requested permission on all files passed.
@@ -933,6 +933,7 @@
 
         self.search = function(q, fields){
           fields = fields || [];
+          q = q.val;
           $scope.state.loading = true;
           $scope.state.search = true;
           $scope.state.page = 0;
@@ -1097,6 +1098,7 @@
         scope.data = scope.$parent.$parent.data;
         scope.clearSelection = dbCtrl.clearSelection;
         scope.searchbar = (typeof attrs.searchbar === 'undefined') ? false : true;
+        scope.searchQuery = {};
 
         scope.selectTrail = function($event, trailItem) {
           $event.preventDefault();
@@ -1212,7 +1214,7 @@
         };
 
         scope.search = function(){
-          dbCtrl.search(scope.dbSearch);
+          dbCtrl.search(scope.searchQuery);
         };
       }
     };
