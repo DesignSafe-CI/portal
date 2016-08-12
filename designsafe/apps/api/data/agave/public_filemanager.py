@@ -313,7 +313,7 @@ class FileManager(AgaveObject):
             return None
 
     def search(self, **kwargs):
-        res, s = PublicObject.search_query(self.system_id, self.username, **kwargs)
+        res, s = PublicObject.search_query_with_projects(self.system_id, self.username, **kwargs)
         search_data = {
             'source': self.resource,
             'system': 'nees.public',

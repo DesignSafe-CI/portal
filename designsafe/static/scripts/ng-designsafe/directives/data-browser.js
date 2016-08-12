@@ -935,7 +935,6 @@
           fields = fields || [];
           q = q.val;
           $scope.state.loading = true;
-          $scope.state.search = true;
           $scope.state.page = 0;
           $scope.state.reachedEnd = false;
           $scope.state.searchFields = fields;
@@ -945,6 +944,7 @@
               $scope.state.loading = false;
               $scope.data.listing = response.data;
 
+              $scope.state.search = true;
               var handler = $scope.onPathChanged();
               if (handler) {
                 handler($scope.data.listing);

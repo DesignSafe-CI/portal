@@ -5,6 +5,9 @@
 
   mod.filter('dsFileUrl', [function() {
     return function(file, baseHref) {
+      if (typeof file === 'undefined'){
+        return "";
+      }
       var base = $('base');
 
       /*

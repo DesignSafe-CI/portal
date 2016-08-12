@@ -3,16 +3,16 @@
        data-scroll-bottom = "scrollToBottom()"
        data-scroll-top = "scrollToTop()"
        data-bottom-height = "0">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped browser-table-files-list">
         <thead>
-        <th>
+        <th class="browser-filename-column">
             <button class="flo-select-btn" ng-click="selectAll()" ng-mouseenter="state.hover['all'] = true" ng-mouseleave="state.hover['all'] = false" ng-if="enableSelection">
                 <i class="fa fa-fw" ng-class="{'fa-circle-o': (state.selecting || state.hover['all']) && !state.selectAll, 'fa-check-circle': state.selectAll}"></i>
                 <span class="sr-only">Select all</span>
             </button>
             Name
         </th>
-        <th ng-if="state.search">
+        <th ng-if="state.search" class="browser-path-column">
             Path
         </th>
         <th ng-if="display('size')">Size</th>
@@ -33,16 +33,16 @@
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
-                <a href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file|dsFileDisplayName }}</a>
+                <a ng-attr-href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file|dsFileDisplayName }}</a>
             </td>
             <td ng-if = "state.search">
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
-                <a title="{{ file|dsFileUrl }}" href="{{ file|dsFileUrl }}" ng-click="browseAndPreview($event, file)">{{ file|dsFileDisplayName }}</a>
+                <a ng-attr-title="{{ file|dsFileUrl }}" ng-attr-href="{{ file|dsFileUrl }}" ng-click="browseAndPreview($event, file)">{{ file|dsFileDisplayName }}</a>
             </td>
             <td ng-if="state.search">
               <i class="fa fa-fw fa-folder"></i>
-              <a href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}" 
-                 title="{{ file._trail[file._trail.length - 1]|dsFileUrl }}"
+              <a ng-attr-href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}" 
+                 ng-attr-title="{{ file._trail[file._trail.length - 1]|dsFileUrl }}"
                  ng-click = "browseFile($event, file._trail[file._trail.length - 1])">{{ file.path }}</a>
             </td>
             <td ng-if="display('size')">{{ file.size|bytes }}</td>

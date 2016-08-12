@@ -52,7 +52,20 @@ class ExecuteSearchMixin(object):
             res = s.execute()
         return res, s
 
-class Object(ExecuteSearchMixin, DocType):
+class PaginationMixin(object):
+    @staticmethod
+    def get_paginate_limits(res, offset = 0, limit = 100, **kwargs):
+        offset = int(offset)
+        limit = int(limit)
+        limit = offset + limit
+        if res.hits.total < limit:
+            limit = res.hits.total
+        if offset > limit:
+            offset = 0
+            limit = 0
+        return offset, limit
+
+class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     """Class to wrap Elasticsearch (ES) documents.
         
     This class points specifically to the index `designsafe` and the 
@@ -108,14 +121,7 @@ class Object(ExecuteSearchMixin, DocType):
         s = s.sort({'name._exact': 'asc'})
 
         res, s = cls._execute_search(s)
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
-        if res.hits.total < limit:
-            limit = res.hits.total
-        if offset > limit:
-            offset = 0
-            limit = 0
+        offset, limit = cls.get_paginate_limits(res, **kwargs)
 
         return res, s[offset:limit]
 
@@ -318,15 +324,7 @@ class Object(ExecuteSearchMixin, DocType):
         s.query = sq
         s = s.sort('path._exact', 'name._exact')
 
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
-        res, s = cls._execute_search(s)
-        if res.hits.total < limit:
-            limit = res.hits.total
-        if offset > limit:
-            offset = 0
-            limit = 0
+        limit, offset = cls.get_paginate_limits(res, **kwargs)
         logger.debug('limit: %s. offset: %s' % (limit, offset))
         return res, s[offset:limit]
 
@@ -692,7 +690,7 @@ class Object(ExecuteSearchMixin, DocType):
         index = default_index
         doc_type = 'objects'
 
-class Project(ExecuteSearchMixin, DocType):
+class Project(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
     def from_name(cls, name, fields = None):
         name = re.sub(r'\.groups$', '', name)
@@ -732,15 +730,8 @@ class Project(ExecuteSearchMixin, DocType):
         s.query = q
         s = s.sort('name._exact')
 
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
         res, s = cls._execute_search(s)
-        if res.hits.total < limit:
-            limit = res.hits.total
-        if offset > limit:
-            offset = 0
-            limit = 0
+        offset, limit = cls.get_paginate_limits(res, **kwargs)
 
         return res, s[offset:limit]
 
@@ -758,7 +749,7 @@ class Project(ExecuteSearchMixin, DocType):
         index = 'nees'
         doc_type = 'project'
 
-class Experiment(ExecuteSearchMixin, DocType):
+class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
     def from_project(cls, project, fields = None):
         project = re.sub(r'\.groups$', '', project)
@@ -813,15 +804,8 @@ class Experiment(ExecuteSearchMixin, DocType):
 
         s = s.sort('name._exact')
 
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
         res, s = cls._execute_search(s)
-        if res.hits.total < limit:
-            limit = res.hits.total
-        if offset > limit:
-            offset = 0
-            limit = 0
+        offset, limit = cls.get_paginate_limits(res, **kwargs)
 
         return res, s[offset:limit]
 
@@ -829,7 +813,7 @@ class Experiment(ExecuteSearchMixin, DocType):
         index = 'nees'
         doc_type = 'experiment'
 
-class PublicObject(ExecuteSearchMixin, DocType):
+class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
     def __init__(self, *args, **kwargs):
         super(PublicObject, self).__init__(*args, **kwargs)
         self.project_ = None
@@ -876,34 +860,47 @@ class PublicObject(ExecuteSearchMixin, DocType):
         s.query = q
         logger.debug('public listing queyr: {}'.format(s.to_dict()))
         res, s = cls._execute_search(s)
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
-        if res.hits.total < limit:
-            limit = res.hits.total
-        if offset > limit:
-            offset = 0
-            limit = 0
+        offset, limit = cls.get_paginate_limits(res, **kwargs)
+        logger.debug('offset: {}, limit: {}'.format(offset, limit))
         return res, s[offset:limit]
-    
+
     @classmethod
-    def search_query(cls, system_id, username, q, fields = [], **kwargs):
+    def search_query_with_projects(cls, system_id, username, q, fields = [], **kwargs):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
         limit = int(kwargs.pop('limit', 100))
         offset = int(kwargs.pop('offset', 0))
-        limit = offset + limit
+        page = offset / 100
+        logger.debug('offset: {}, limit: {}'.format(offset, limit))
         projects_res, projects_s = Project.search_query(system_id, username, q, 
                                         fields, limit = limit, offset = offset, 
                                         **kwargs)
 
+        logger.debug('projs total: {}'.format(projects_res.hits.total)) 
         if projects_res.hits.total:
             if projects_res.hits.total - offset > limit:
-                return projects_res, projects_s[offset:limit]
+                return projects_res, projects_s
             else:
-                proj_offset = projects_res.hits.total - offset
-                limit -= proj_offset
+                projects_overflow = projects_res.hits.total - ( (projects_res.hits.total / 100) * 100 )
+                files_offset = offset - projects_overflow
+                if files_offset < 0:
+                    files_offset = 0
+                
+                files_limit = limit 
+                if (projects_res.hits.total / 100) >= page:
+                    files_limit = limit - projects_overflow
+
+        logger.debug('files offset: {}, files limit: {}'.format(files_offset, files_limit))
+        files_res, files_s = cls.search_query(system_id, username,
+                                    q, fields, limit = files_limit, offset = files_offset, **kwargs)
+        logger.debug('files total: {}'.format(files_res.hits.total)) 
+        return files_res, itertools.chain(Project.projects_to_files(projects_s), files_s)
+    
+    @classmethod
+    def search_query(cls, system_id, username, q, fields = [], **kwargs):
+        if isinstance(fields, basestring):
+            fields = fields.split(',')
 
         query_fields = ["name", "name._exact"]
         
@@ -916,16 +913,11 @@ class PublicObject(ExecuteSearchMixin, DocType):
         s = s.sort('type', 'path._exact', 'name._exact')
 
         res, s = cls._execute_search(s)
-        if res.hits.total < limit:
-            limit = res.hits.total
-        if offset > limit:
-            offset = 0
-            limit = 0
+        offset, limit = cls.get_paginate_limits(res, **kwargs)
 
-        logger.debug('offset: {}, limit: {}'.format(offset, limit))
-        s = itertools.chain(Project.projects_to_files(projects_s), s[offset:limit])
+        logger.debug('files offset: {}, files limit: {}'.format(offset, limit))
 
-        return res, s
+        return res, s[offset:limit]
 
     @property
     def project_meta(self):

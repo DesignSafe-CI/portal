@@ -508,3 +508,18 @@ ul.metadata-inner-list > li:last-child{
   border-bottom:none;
 }
 
+table.browser-table-files-list {
+    table-layout:fixed;
+}
+
+table .browser-filename-column {
+    width:350px;
+}
+
+table .browser-path-column {
+    width:350px;
+}
+
+table td {
+    word-wrap:break-word;
+}
