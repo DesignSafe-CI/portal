@@ -30,7 +30,7 @@ class SourcesApi(object):
             "resource": "public",
             "defaultPath": None,
             "name": "Public data",
-            "_visible": False,
+            "_visible": True,
             "_indexed": True,
             "_extra": {
                 "icon": "fa-globe"
