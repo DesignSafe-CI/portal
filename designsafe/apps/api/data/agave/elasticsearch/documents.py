@@ -869,15 +869,15 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
-        limit = int(kwargs.pop('limit', 100))
-        offset = int(kwargs.pop('offset', 0))
+        files_limit = limit = int(kwargs.pop('limit', 100))
+        files_offset = offset = int(kwargs.pop('offset', 0))
         page = offset / 100
-        logger.debug('offset: {}, limit: {}'.format(offset, limit))
+        #logger.debug('offset: {}, limit: {}'.format(offset, limit))
         projects_res, projects_s = Project.search_query(system_id, username, q, 
                                         fields, limit = limit, offset = offset, 
                                         **kwargs)
 
-        logger.debug('projs total: {}'.format(projects_res.hits.total)) 
+        #logger.debug('projs total: {}'.format(projects_res.hits.total)) 
         if projects_res.hits.total:
             if projects_res.hits.total - offset > limit:
                 return projects_res, projects_s
@@ -891,10 +891,10 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
                 if (projects_res.hits.total / 100) >= page:
                     files_limit = limit - projects_overflow
 
-        logger.debug('files offset: {}, files limit: {}'.format(files_offset, files_limit))
+        #logger.debug('files offset: {}, files limit: {}'.format(files_offset, files_limit))
         files_res, files_s = cls.search_query(system_id, username,
                                     q, fields, limit = files_limit, offset = files_offset, **kwargs)
-        logger.debug('files total: {}'.format(files_res.hits.total)) 
+        #logger.debug('files total: {}'.format(files_res.hits.total)) 
         return files_res, itertools.chain(Project.projects_to_files(projects_s), files_s)
     
     @classmethod
