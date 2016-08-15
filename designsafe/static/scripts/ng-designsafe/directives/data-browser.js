@@ -1216,6 +1216,12 @@
         scope.search = function(){
           dbCtrl.search(scope.searchQuery);
         };
+
+        scope.clearSearch = function(){
+          scope.searchQuery.val = "";
+          dbCtrl.browseFile({resource: scope.data.listing.source, 
+                            file_path: scope.data.listing.system});
+        };
       }
     };
   }]);

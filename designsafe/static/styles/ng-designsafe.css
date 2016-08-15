@@ -165,13 +165,18 @@
 *
 */
 
-.search-wrap:hover, .search-wrap:focus {
-    width:300px;
-}
-
 .search-wrap {
     position:absolute;
     top:.4em;
+    right:0em;
+}
+
+.searchbar-wrap:hover, .search-wrap:focus {
+    width:300px;
+}
+
+.searchbar-wrap {
+    position:absolute;
     right:1em;
     width:32px;
     height:32px;
@@ -183,14 +188,14 @@
     transition: width .55s ease;
 }
 
-.search-wrap .search-bar {
+.searchbar-wrap .searchbar {
     width:300px;
     vertical-align:middle;
     white-space:nowrap;
     position: relative;
 }
 
-.search-wrap .search-icon {
+.searchbar-wrap .search-icon {
     position: absolute;
     top: 50%;
     margin-left: 1em;
@@ -198,18 +203,26 @@
     z-index: 1;
 }
 
-.search-wrap input#db-search:hover,
-.search-wrap input#db-search:focus {
+.searchbar-wrap .search-clear-icon {
+    position: absolute;
+    right:1em;
+    margin-top: .5em;
+    z-index: 1;
+    padding:0;
+}
+
+.searchbar-wrap input#db-search:hover,
+.searchbar-wrap input#db-search:focus {
     outline: none;
     background: white;
     width: 300px;
 }
 
-.search-wrap:hover input#db-search {
+.searchbar-wrap:hover input#db-search {
     width: 300px;
 }
 
-.search-wrap input#db-search {
+.searchbar-wrap input#db-search {
     width: 32px;
     height: 32px;
     background: white;
@@ -226,6 +239,11 @@
     -ms-transition: width .55s ease;
     -o-transition: width .55s ease;
     transition: width .55s ease;
+}
+
+.search-wrap .search-clear-btn {
+    display:inline-block;
+    float:left;
 }
 
 /**

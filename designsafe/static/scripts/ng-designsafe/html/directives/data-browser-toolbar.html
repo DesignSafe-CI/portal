@@ -50,14 +50,28 @@
             <a href="{{ item|dsFileUrl }}" ng-click="selectTrail($event, item)">{{ item.name }}</a>
         </li>
         <li class="active">{{ data.listing.name }}</li>
-        <li></li>
+        <li ng-if="!state.search"></li>
+        <li ng-if="state.search">
+          <button class="btn btn-sm btn-link" 
+                  ng-click="clearSearch()">
+            <i class="fa fa-times-circle"></i> Clear search result
+          </button>
+        </li>
     </ol>
     <div class="search-wrap" ng-if="searchbar">
-      <div class="search-bar">
-        <form id = "search-form" name="search-form" ng-submit="search()">
-          <span class="search-icon"><i class="fa fa-search"></i></span>
-          <input ng-model="searchQuery.val" name = "query" type="search" id="db-search" placeholder="Search..." />
-        </form>
+      <div class="searchbar-wrap" ng-if="searchbar">
+        <div class="searchbar">
+          <form id = "search-form" name="search-form" ng-submit="search()">
+            <span class="search-icon"><i class="fa fa-search"></i></span>
+            <button class="search-clear-icon btn btn-sm btn-link" 
+                    title="Clear search result"
+                    ng-click="clearSearch()"
+                    ng-if="searchQuery.val && state.search">
+              <i class="fa fa-times-circle"></i>
+            </button>
+            <input ng-model="searchQuery.val" name = "query" type="search" id="db-search" placeholder="Search..." />
+          </form>
+        </div>
       </div>
     </div>
 </div>
