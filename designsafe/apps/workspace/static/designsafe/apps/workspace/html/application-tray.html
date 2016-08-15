@@ -27,7 +27,7 @@
             <div ng-repeat="app in tab.content | orderBy: 'label'"
                  ng-click="launchApp(app)"
                  class="app-wrapper"
-                 ng-class="{'app-active': data.activeApp.label==app.label}">
+                 ng-class="{'app-active': data.activeApp.id==app.id}">
               <div class="app text-center">
                 <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>
                 <div class="app-title">{{app.label}}</div>

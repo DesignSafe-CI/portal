@@ -282,7 +282,7 @@
       $scope.refreshApps();
 
       $scope.launchApp = function(app) {
-        if (!$scope.data.activeApp || $scope.data.activeApp.label !== app.label) {
+        if (!$scope.data.activeApp || $scope.data.activeApp.id !== app.id) {
           $scope.data.activeApp = app;
           $rootScope.$broadcast('launch-app', app);
         }
