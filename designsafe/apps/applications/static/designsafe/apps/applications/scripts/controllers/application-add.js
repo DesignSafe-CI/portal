@@ -91,17 +91,17 @@
             required: function(value) {
               return value ? true : false;
             },
-            invalidCharacters: function(value) {
-              var patt = /^[a-zA-Z0-9_]+$/;
-              if (!patt.test(value)){
-                return false
-              }
-              return true;
-            },
+            // invalidCharacters: function(value) {
+            //   var patt = /^[a-zA-Z0-9_]+$/;
+            //   if (!patt.test(value)){
+            //     return false
+            //   }
+            //   return true;
+            // },
           },
           validationMessage: {
             "required": "Missing required",
-            "invalidCharacters": "Invalid parameter id. Parameters must be alphanumeric strings with no spaces and may include underscores"
+            // "invalidCharacters": "Invalid parameter id. Parameters must be alphanumeric strings with no spaces and may include underscores"
           },
         },
         {
@@ -178,7 +178,7 @@
                   "description": "The URL where users can go for more information about the app",
                   "format": "url",
                   "title": "Help URL",
-                  "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
+                  // "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "label": {
                   "type": "string",
@@ -524,21 +524,21 @@
                         "key": "helpURI",
                         "title": "Help URL",
                         "description": "The URL where users can go for more information about the app",
-                        ngModelOptions: {
-                            updateOnDefault: true
-                        },
-                        $validators: {
-                          invalidCharacters: function(value) {
-                            var patt = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/;
-                            if (!patt.test(value)){
-                              return false
-                            }
-                            return true;
-                          },
-                        },
-                        validationMessage: {
-                          "invalidCharacters": "Invalid URI"
-                        }
+                        // ngModelOptions: {
+                        //     updateOnDefault: true
+                        // },
+                        // $validators: {
+                        //   invalidCharacters: function(value) {
+                        //     var patt = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/;
+                        //     if (!patt.test(value)){
+                        //       return false
+                        //     }
+                        //     return true;
+                        //   },
+                        // },
+                        // validationMessage: {
+                        //   "invalidCharacters": "Invalid URI"
+                        // }
                       },
                       {
                           "key": 'ontology',
@@ -1146,6 +1146,7 @@
                         metadata.value.isPublic = response.data.isPublic;
                         metadata.value.shortDescription = response.data.shortDescription;
                         metadata.value.type = 'agave';
+                        metadata.value.available = true;
 
                         // Check if metadata record exists
                         Apps.getMeta(metadata.value.id)
@@ -1241,7 +1242,7 @@
                   var metadata = {'name': 'ds_app'};
                   metadata.value = {};
                   metadata.value.id = $scope.customModel.label+ '-' + $scope.customModel.version;
-
+                  metadata.value.available = true;
                   _.extend(metadata.value, angular.copy($scope.customModel));
 
                   Apps.getMeta(metadata.value.id)

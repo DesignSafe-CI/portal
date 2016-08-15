@@ -113,7 +113,6 @@
           self.lists['Public'] = [];
 
           angular.forEach(response.data, function(appMeta){
-
             if (appMeta.value.isPublic){
               self.lists['Public'].push({
                 id: appMeta.value.id,

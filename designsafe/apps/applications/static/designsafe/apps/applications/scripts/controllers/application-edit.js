@@ -153,7 +153,7 @@
                   "format": "url",
                   "title": "Help URL",
                   "default": null,
-                  "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
+                  // "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "label": {
                   "type": "string",
@@ -498,21 +498,21 @@
                         "key": "helpURI",
                         "title": "Help URL",
                         "description": "The URL where users can go for more information about the app",
-                        ngModelOptions: {
-                            updateOnDefault: true
-                        },
-                        $validators: {
-                          invalidCharacters: function(value) {
-                            var patt = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/;
-                            if (!patt.test(value)){
-                              return false
-                            }
-                            return true;
-                          },
-                        },
-                        validationMessage: {
-                          "invalidCharacters": "Invalid URI"
-                        }
+                        // ngModelOptions: {
+                        //     updateOnDefault: true
+                        // },
+                        // $validators: {
+                        //   invalidCharacters: function(value) {
+                        //     var patt = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?$/;
+                        //     if (!patt.test(value)){
+                        //       return false
+                        //     }
+                        //     return true;
+                        //   },
+                        // },
+                        // validationMessage: {
+                        //   "invalidCharacters": "Invalid URI"
+                        // }
                       },
                       {
                           "key": 'ontology',

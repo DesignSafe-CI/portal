@@ -11,6 +11,8 @@
             error_app_create: "An error ocurred creating your app - ",
             error_app_delete: "An error ocurred deleting your app",
             error_app_meta: "An error ocurred getting the app",
+            error_app_update: "An error ocurred updating your app - ",
+            error_app_publish: "An error ocurred publishing your app - ",
             error_app_exists: "An app with this name and version already exists. Please change name or version",
             error_app_doesnt_exists: "This app does not exist",
             storage_default: "designsafe.storage.default",

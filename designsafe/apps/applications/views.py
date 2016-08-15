@@ -52,7 +52,11 @@ def call_api(request, service):
                         data['license']['enabled'] = lic is not None
             elif request.method == 'POST':
                 body = json.loads(request.body)
-                data = agave.apps.add(body=body)
+                appId = request.GET.get('appId')
+                if (appId):
+                    data = agave.apps.manage(appId=appId, body=body)
+                else:
+                    data = agave.apps.add(body=body)
             elif request.method == 'DELETE':
                 if app_id:
                     data = agave.apps.delete(appId=app_id)

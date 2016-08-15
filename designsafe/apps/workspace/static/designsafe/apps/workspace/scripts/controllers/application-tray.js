@@ -238,8 +238,8 @@
         $scope.tabs = [];
 
         var promises = [];
-
-        promises.push($scope.addDefaultTabs({'name': 'ds_app'}));
+        // promises.push($scope.addDefaultTabs({'name': 'ds_app'}));
+        promises.push($scope.addDefaultTabs({'name': 'ds_app', 'value.available': true}));
         // promises.push($scope.addUserTabs({'name': 'ds_app_list'}));
 
         $q.all(promises).then(
