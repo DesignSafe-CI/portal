@@ -387,7 +387,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                 logger.error('The request copy source=%s does not exist!', src_resource)
 
             system, username, path = dest_fm.parse_file_id(dest_file_id)
-            dest_fm.indexer.index(system, path, username)
+            dest_fm.indexer.index(system, path, username, levels = 1)
 
             n = Notification(event_type = 'data',
                              status = notify_status,
