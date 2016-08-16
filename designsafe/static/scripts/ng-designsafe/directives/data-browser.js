@@ -1214,6 +1214,7 @@
         };
 
         scope.search = function(){
+          scope.state.page = 0;
           dbCtrl.search(scope.searchQuery);
         };
 
