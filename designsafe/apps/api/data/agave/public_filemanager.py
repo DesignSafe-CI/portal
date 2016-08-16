@@ -159,6 +159,21 @@ class FileManager(AgaveObject):
 
         return list_data
 
+    def is_search(self, file_id):
+        """Checks if `file_id` is a search path
+        
+        For this file manager when a search is executed the path will always 
+        end on **$SHARE**
+        
+        :param str file_id: File identificator
+        
+        :return: True if the path is a search path
+        
+        :rtype: bool
+        """
+         
+        return  file_id.strip('/').split('/')[-1] == '$SEARCH'
+
     def listing(self, file_id=None, **kwargs):
         """
         Lists contents of a folder or details of a file.

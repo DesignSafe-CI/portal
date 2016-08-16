@@ -132,3 +132,15 @@ class AbstractFileManager:
                 - files: Array of serializabe Api file-like objects
         """
         raise NotImplementedError()
+
+    @abstractmethod
+    def is_search(self, file_path):
+        """Function to check if a file path is a search path
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def is_shared(self, file_path):
+        """Function to check if a file path is a shared path
+        """
+        raise NotImplementedError()
