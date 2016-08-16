@@ -486,8 +486,9 @@
                 file: file, 
                 loading: false
               };
-              if(listing.source == 'public'){ 
-                if(typeof listing.metadata === 'undefined'){
+              listing = listing || {};
+              if(listing.source == 'public' || file.source == 'public'){ 
+                if( typeof listing.metadata === 'undefined'){
                   $scope.loading = true;
                   DataService.listPath({resource: file.source, file_id: file.id}).then(
                     function(resp){
