@@ -46,7 +46,6 @@ class BaseView(View):
         self.agave_client = me.agave_oauth.client
 
     def set_context_props(self, request, **kwargs):
-        #import ipdb; ipdb.set_trace();
         #TODO: Getting the filesystem should check in which system is the user in or requesting
         filesystem = kwargs.get('filesystem', self.filesystem)
         settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
@@ -154,7 +153,6 @@ class DataBrowserTestView(BasePublicTemplate):
         except PermissionDenied:
             return self.login_rediect(request)
 
-
     def get_context_data(self, **kwargs):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
 
@@ -172,7 +170,14 @@ class DataBrowserTestView(BasePublicTemplate):
         file_path = kwargs.pop('file_path', None)
         try:
             fm = fm_cls(self.request.user)
-            listing = fm.listing(file_path)
+            if not fm.is_search(file_path):
+                listing = fm.listing(file_path)
+            else:
+                d = {}
+                d.update(kwargs)
+                d.update(self.request.GET.dict())
+                listing = fm.search(**d)
+                   
         except ApiException as e:
             fm = None
             action_url = e.extra.get('action_url', None)
@@ -200,10 +205,12 @@ class DataBrowserTestView(BasePublicTemplate):
                 source_id = 'mydata'
         current_source = sources_api.get(source_id)
         sources_list = sources_api.list()
-
         context['angular_init'] = json.dumps({
             'currentSource': current_source,
             'sources': sources_list,
-            'listing': listing
+            'listing': listing,
+            'state': {
+                'search': fm.is_search(file_path)
+            }
         })
         return context

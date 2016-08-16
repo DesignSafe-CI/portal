@@ -197,6 +197,7 @@
 
 .searchbar-wrap .search-icon {
     position: absolute;
+    left:0;
     top: 50%;
     margin-left: 1em;
     margin-top: .5em;

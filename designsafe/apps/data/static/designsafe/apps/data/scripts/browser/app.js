@@ -54,10 +54,10 @@
 
       $scope.state = {
         loading: Django.context.state && Django.context.state.loading || false,
-        listingError: Django.context.state && Django.context.state.loading || false,
-        selecting: Django.context.state && Django.context.state.loading || false,
-        search: Django.context.state && Django.context.state.loading || false,
-        selected: Django.context.state && Django.context.state.loading || []
+        listingError: Django.context.state && Django.context.state.listingError || false,
+        selecting: Django.context.state && Django.context.state.selecting || false,
+        search: Django.context.state && Django.context.state.search || false,
+        selected: Django.context.state && Django.context.state.selected || []
       };
 
       /* initialize HTML5 history state */
