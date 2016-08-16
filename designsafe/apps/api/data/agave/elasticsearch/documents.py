@@ -324,8 +324,9 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         s.query = sq
         s = s.sort('path._exact', 'name._exact')
 
-        limit, offset = cls.get_paginate_limits(res, **kwargs)
-        logger.debug('limit: %s. offset: %s' % (limit, offset))
+        res, s = cls._execute_search(s)
+        offset, limit = cls.get_paginate_limits(res, **kwargs)
+        #logger.debug('limit: %s. offset: %s' % (limit, offset))
         return res, s[offset:limit]
 
 
@@ -915,7 +916,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         res, s = cls._execute_search(s)
         offset, limit = cls.get_paginate_limits(res, **kwargs)
 
-        logger.debug('files offset: {}, files limit: {}'.format(offset, limit))
+        #logger.debug('files offset: {}, files limit: {}'.format(offset, limit))
 
         return res, s[offset:limit]
 

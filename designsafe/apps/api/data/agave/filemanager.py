@@ -70,9 +70,24 @@ class FileManager(AbstractFileManager, AgaveObject):
             the user.
         """
 
-        file_id = self.parse_file_id(file_id)
-        return not (file_id[0] == settings.AGAVE_STORAGE_SYSTEM and
-                    file_id[1] == self.username)
+        parsed_file_id = self.parse_file_id(file_id)
+        return not (parsed_file_id[0] == settings.AGAVE_STORAGE_SYSTEM and
+                    (parsed_file_id[1] == self.username or self.is_search(file_id)) )
+   
+    def is_search(self, file_id):
+        """Checks if `file_id` is a search path
+        
+        For this file manager when a search is executed the path will always 
+        end on **$SHARE**
+        
+        :param str file_id: File identificator
+        
+        :return: True if the path is a search path
+        
+        :rtype: bool
+        """
+         
+        return  file_id.strip('/').split('/')[-1] == '$SEARCH'
     
     def _agave_listing(self, system, file_path, **kwargs):
         """Returns a "listing" dict constructed with the response from Agave.
