@@ -23,6 +23,23 @@
         $scope.searchQuery = {query: ''};
 
         /**
+         * Checks if the passed file is protected. Some operations are not available on
+         * protected files.
+         * @param file
+         */
+        self.isProtected = function (file) {
+          return file.name === '.Trash';
+        };
+
+        /**
+         * Checks if the passed array of files contains a protected file. This
+         * @param files
+         */
+        self.hasProtected = function (files) {
+          return _.reduce(files, function(memo, f) { return memo || self.isProtected(f); }, false);
+        };
+
+        /**
          * Checks that the user has the requested permission on all files passed.
          * @param {string} permission the permission to check for: read, write, execute
          * @param {Array} files an array of files to check
@@ -382,7 +399,7 @@
                 copy: self.hasPermission('read', [previewFile]),
                 move: previewFile.source === 'agave' && self.hasPermission('write', [parentFile, previewFile]),
                 rename: previewFile.source === 'agave' && self.hasPermission('write', [previewFile]),
-                trash: previewFile.source === 'agave' && self.hasPermission('write', [parentFile, previewFile]),
+                trash: previewFile.name !== '.Trash' && previewFile.source === 'agave' && self.hasPermission('write', [parentFile, previewFile]),
                 metadata: previewFile.source === 'public' || self.hasPermission('read', [previewFile])
               };
 
@@ -1118,28 +1135,38 @@
         };
 
         scope.renameEnabled = function() {
+          var selectedFiles = dbCtrl.selectedFiles();
           return scope.state.selected.length === 1 &&
             scope.data.listing.source === 'agave' &&
-            dbCtrl.hasPermission('write', dbCtrl.selectedFiles());
+            (! dbCtrl.hasProtected(selectedFiles)) &&
+            dbCtrl.hasPermission('write', selectedFiles);
         };
 
         scope.shareEnabled = function() {
+          var selectedFiles = dbCtrl.selectedFiles();
           return scope.data.listing.source === 'agave' &&
+            (! dbCtrl.hasProtected(selectedFiles)) &&
             scope.state.selected.length === 1;
         };
 
         scope.moveEnabled = function() {
+          var selectedFiles = dbCtrl.selectedFiles();
           return scope.data.listing.source === 'agave' &&
+            (! dbCtrl.hasProtected(selectedFiles)) &&
             dbCtrl.hasPermission('write', [scope.data.listing]);
         };
 
         scope.copyEnabled = function() {
-          return dbCtrl.hasPermission('read', dbCtrl.selectedFiles());
+          var selectedFiles = dbCtrl.selectedFiles();
+          return (! dbCtrl.hasProtected(selectedFiles)) && dbCtrl.hasPermission('read', selectedFiles);
         };
 
         scope.moveToTrashEnabled = function() {
-          return scope.data.listing.name !== '.Trash' &&
+          var selectedFiles = dbCtrl.selectedFiles();
+          return selectedFiles.length > 0 &&
             scope.data.listing.source === 'agave' &&
+            (! dbCtrl.isProtected(scope.data.listing)) &&
+            (! dbCtrl.hasProtected(selectedFiles)) &&
             dbCtrl.hasPermission('write', dbCtrl.selectedFiles());
         };
 
