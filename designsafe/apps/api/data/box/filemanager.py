@@ -153,6 +153,12 @@ class FileManager(AbstractFileManager):
     def file(self, file_id, action, path = None, **kwargs):
         pass
 
+    def is_shared(self, *args, **kwargs):
+        return False
+
+    def is_search(self, *args, **kwargs):
+        return False
+
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
         # can only transfer out of box
         from designsafe.apps.api.data import lookup_transfer_service
