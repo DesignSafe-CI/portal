@@ -464,7 +464,7 @@
 
               $scope.metadataFile = function() {
                 $scope.cancel();
-                self.metadataDialog(previewFile);
+                self.metadataDialog(previewFile, $scope.data.listing);
               };
             },
             size: 'lg',
@@ -472,7 +472,7 @@
           });
         };
 
-        self.metadataDialog = function(file) {
+        self.metadataDialog = function(file, listing) {
           var dialog = $uibModal.open({
             templateUrl: '/static/scripts/ng-designsafe/html/directives/data-browser-metadata.html',
             controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
@@ -483,8 +483,26 @@
               $scope.data =  {
                 title: 'Metadata.',
                 metadata: file.meta,
-                file: file
+                file: file, 
+                loading: false
               };
+              if(listing.source == 'public'){ 
+                if(typeof listing.metadata === 'undefined'){
+                  $scope.loading = true;
+                  DataService.listPath({resource: file.source, file_id: file.id}).then(
+                    function(resp){
+                      $scope.data.metadata = resp.data.metadata;
+                      $scope.loading = false;
+                    },
+                    function(err){
+                      $scope.data.metadata = {};
+                      $scope.loading = false;
+                    }
+                  );
+                } else {
+                  $scope.data.metadata = listing.metadata;
+                }
+              }
 
               $scope.saveMeta = function($event) {
                 $event.preventDefault();
@@ -1224,7 +1242,7 @@
           var file;
           if (scope.state.selected.length === 1){
             file = _.findWhere(scope.data.listing.children, {id: scope.state.selected[0]});
-            dbCtrl.metadataDialog(file);
+            dbCtrl.metadataDialog(file, scope.data.listing);
           }
         };
 
