@@ -1,5 +1,22 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.11
+
+Enhancements:
+
+- Public data is back! We've fixed and improved the public data search
+- Search URLs in the Data Browser are now shareable
+- Added a link to submit a ticket if an error page is encountered. The
+  ticket will automatically include the URL of the page that triggered the
+  error as well as the referrer URL.
+
+Fixes:
+
+- Apps properly display name and version in the workspace instead of the
+  internal app identifier.
+- Corrected the state of some operations in the data browser that should
+  not have been available for Public data or Box data.
+
 ## v0.9.10
 
 Fixes:
