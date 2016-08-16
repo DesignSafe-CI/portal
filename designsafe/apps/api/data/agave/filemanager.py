@@ -69,7 +69,8 @@ class FileManager(AbstractFileManager, AgaveObject):
             these checks are False then it is assumed is a shared file for
             the user.
         """
-
+        if file_id is None:
+            return False
         parsed_file_id = self.parse_file_id(file_id)
         return not (parsed_file_id[0] == settings.AGAVE_STORAGE_SYSTEM and
                     (parsed_file_id[1] == self.username or self.is_search(file_id)) )
@@ -86,7 +87,9 @@ class FileManager(AbstractFileManager, AgaveObject):
         
         :rtype: bool
         """
-         
+        if file_id is None:
+            return False
+             
         return  file_id.strip('/').split('/')[-1] == '$SEARCH'
     
     def _agave_listing(self, system, file_path, **kwargs):
