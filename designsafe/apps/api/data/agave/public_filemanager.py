@@ -123,7 +123,7 @@ class FileManager(AgaveObject):
                 list_data = root_listing.to_dict(def_pems = default_pems)
                 list_data['children'] = [o.to_dict(def_pems = default_pems) for o in listing]
                 list_data['metadata'] = {
-                              'project': root_listing.project_meta,
+                              'project': root_listing.project_meta.to_dict(),
                               'experiments': [doc.to_dict() for doc in root_listing.all_experiments_meta]
                                         }
             else:
