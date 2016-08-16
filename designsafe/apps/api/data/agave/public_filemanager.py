@@ -171,7 +171,9 @@ class FileManager(AgaveObject):
         
         :rtype: bool
         """
-         
+        if file_id is None:
+            return False
+                 
         return  file_id.strip('/').split('/')[-1] == '$SEARCH'
 
     def listing(self, file_id=None, **kwargs):
