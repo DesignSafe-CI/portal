@@ -378,12 +378,12 @@
               };
 
               $scope.data.actions = {
-                share: self.hasPermission('write', [previewFile]),
+                share: previewFile.source === 'agave' && self.hasPermission('write', [previewFile]),
                 copy: self.hasPermission('read', [previewFile]),
-                move: self.hasPermission('write', [parentFile, previewFile]),
-                rename: self.hasPermission('write', [previewFile]),
-                trash: self.hasPermission('write', [parentFile, previewFile]),
-                metadata: self.hasPermission('read', [previewFile])
+                move: previewFile.source === 'agave' && self.hasPermission('write', [parentFile, previewFile]),
+                rename: previewFile.source === 'agave' && self.hasPermission('write', [previewFile]),
+                trash: previewFile.source === 'agave' && self.hasPermission('write', [parentFile, previewFile]),
+                metadata: previewFile.source === 'public' || self.hasPermission('read', [previewFile])
               };
 
               $scope.data.previewUrl = {loading: true};
@@ -1097,7 +1097,7 @@
         scope.state = scope.$parent.$parent.state;
         scope.data = scope.$parent.$parent.data;
         scope.clearSelection = dbCtrl.clearSelection;
-        scope.searchbar = (typeof attrs.searchbar === 'undefined') ? false : true;
+        scope.searchbar = (typeof attrs.searchbar !== 'undefined');
         scope.searchQuery = {};
 
         scope.selectTrail = function($event, trailItem) {
@@ -1118,17 +1118,19 @@
         };
 
         scope.renameEnabled = function() {
-          return dbCtrl.hasPermission('write', dbCtrl.selectedFiles()) &&
-            scope.state.selected.length === 1;
+          return scope.state.selected.length === 1 &&
+            scope.data.listing.source === 'agave' &&
+            dbCtrl.hasPermission('write', dbCtrl.selectedFiles());
         };
 
         scope.shareEnabled = function() {
-          return scope.data.currentSource.id === 'mydata' &&
+          return scope.data.listing.source === 'agave' &&
             scope.state.selected.length === 1;
         };
 
         scope.moveEnabled = function() {
-          return dbCtrl.hasPermission('write', [scope.data.listing]);
+          return scope.data.listing.source === 'agave' &&
+            dbCtrl.hasPermission('write', [scope.data.listing]);
         };
 
         scope.copyEnabled = function() {
@@ -1136,13 +1138,15 @@
         };
 
         scope.moveToTrashEnabled = function() {
-          return dbCtrl.hasPermission('write', dbCtrl.selectedFiles()) &&
-            scope.data.listing.name !== '.Trash';
+          return scope.data.listing.name !== '.Trash' &&
+            scope.data.listing.source === 'agave' &&
+            dbCtrl.hasPermission('write', dbCtrl.selectedFiles());
         };
 
         scope.emptyTrashEnabled = function() {
-          return dbCtrl.hasPermission('write', dbCtrl.selectedFiles()) &&
-            scope.data.listing.name === '.Trash';
+          return scope.data.listing.name === '.Trash' &&
+            scope.data.listing.source === 'agave' &&
+            dbCtrl.hasPermission('write', dbCtrl.selectedFiles());
         };
 
         scope.reindexingEnabled = function() {
