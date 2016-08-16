@@ -115,13 +115,17 @@ class FileManager(AgaveObject):
                 'lastModified': None,
                 'children': [o.to_dict(def_pems = default_pems, with_meta = True) for o in listing],
                 '_trail': [],
-                '_pems': default_pems,
+                '_pems': default_pems
             }
         else:
             root_listing = PublicObject.from_file_path(system, file_path)
             if root_listing:
                 list_data = root_listing.to_dict(def_pems = default_pems)
                 list_data['children'] = [o.to_dict(def_pems = default_pems) for o in listing]
+                list_data['metadata'] = {
+                              'project': root_listing.project_meta,
+                              'experiments': [doc.to_dict() for doc in root_listing.all_experiments_meta]
+                                        }
             else:
                 list_data = None
 
