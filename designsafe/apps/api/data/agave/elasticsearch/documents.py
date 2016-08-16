@@ -752,7 +752,7 @@ class Project(ExecuteSearchMixin, PaginationMixin, DocType):
 
 class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
-    def from_project(cls, project, fields = None):
+    def list_by_project(cls, project, fields = None):
         project = re.sub(r'\.groups$', '', project)
         q = Q({'term': {'project._exact': project}})
         s = cls.search()
@@ -761,10 +761,7 @@ class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
             s = s.fields(fields)
 
         res, s = cls._execute_search(s)
-        if res.hits.total:
-            return res[0]
-        else:
-            return None
+        return res, s
 
     @classmethod
     def from_name_and_project(cls, project, name, fields = None):
@@ -820,6 +817,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         self.project_ = None
         self.experiment_ = None
         self.trail_ = None
+        self.all_experiments_ = None
 
     @classmethod
     def listing_recursive(cls, system_id, path):
@@ -937,6 +935,19 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         e = Experiment.from_name_and_project(self.project, self.name)
         self.experiment_ = e
         return self.experiment_
+
+    @property
+    def all_experiments_meta(self):
+        try:
+            if self.all_experiments_:
+                return self.all_experiments_
+
+            res, s = Experiment.list_by_project(self.project)
+            self.all_experiments_ = s
+
+            return self.all_experiments_
+        except Exception as e:
+            logger.error(e, exc_info=True)
   
     @property
     def parent_path(self):
@@ -975,6 +986,15 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
     @property
     def file_id(self):
         return os.path.join(self.systemId, self.full_path)
+
+    def get_full_metadata(self):
+        project = self.project_meta
+        experiments = self.all_experiments_meta
+        d = {
+            'project': project,
+            'experiments': [doc.to_dict() for doc in experiments]
+        }
+        return d
         
     def to_dict(self, get_id = False, def_pems = None, with_meta = True, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
