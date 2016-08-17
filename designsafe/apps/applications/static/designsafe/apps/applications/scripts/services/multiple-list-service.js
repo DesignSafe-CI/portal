@@ -30,7 +30,14 @@
                 }
               }
               if (exists === false){
-                appList.items.push({label: response.data[i].value.id, type: response.data[i].value.type});
+                appList.items.push(
+                  {
+                    id: response.data[i].value.id,
+                    label: response.data[i].value.label,
+                    type: response.data[i].value.type,
+                    version: response.data[i].value.version,
+                    available: response.data[i].value.available
+                  });
               }
             }
             self.lists.push(appList);
@@ -72,7 +79,14 @@
             appList.dragging = false;
             appList.items = [];
             angular.forEach(response.data, function(app){
-              appList.items.push({label: app.value.id, type: app.value.type});
+              appList.items.push(
+                {
+                  id: app.value.id,
+                  label: app.value.label,
+                  type: app.value.type,
+                  version: app.value.version,
+                  available: app.value.available
+                });
             });
             self.lists.push(appList);
 

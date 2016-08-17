@@ -82,7 +82,14 @@
               // simpleList.content.lists[list.listName] = [];
               simpleList.content = [];
               angular.forEach(tab.multiple.lists[1].items, function(item){
-                simpleList.content.push({label: item.label, type: item.type})
+                simpleList.content.push(
+                  {
+                    id: item.id,
+                    label: item.label,
+                    type: item.type,
+                    version: item.version,
+                    available: item.available
+                  })
               });
               simpleList.title = list.listName;
               simpleList.edit = false;
