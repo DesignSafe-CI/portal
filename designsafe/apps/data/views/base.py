@@ -210,7 +210,7 @@ class DataBrowserTestView(BasePublicTemplate):
             'sources': sources_list,
             'listing': listing,
             'state': {
-                'search': fm.is_search(file_path)
+                'search': fm.is_search(file_path) if fm is not None else False
             }
         })
         return context
