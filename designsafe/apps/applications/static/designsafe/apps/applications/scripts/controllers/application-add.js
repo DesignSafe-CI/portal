@@ -1522,11 +1522,11 @@
                         metadata.value = {};
                         metadata.value.id = response.data.id;
                         metadata.value.label = response.data.name;
-                        metadata.value.version = response.data.versions;
+                        metadata.value.version = response.data.version;
                         metadata.value.isPublic = response.data.isPublic;
+                        metadata.value.available = true;
                         metadata.value.shortDescription = response.data.shortDescription;
                         metadata.value.type = 'agave';
-                        metadata.value.available = true;
 
                         // Check if metadata record exists
                         Apps.getMeta(metadata.value.id)
