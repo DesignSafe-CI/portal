@@ -1425,6 +1425,7 @@
                         metadata.value.label = response.data.label;
                         metadata.value.version = response.data.version;
                         metadata.value.isPublic = response.data.isPublic;
+                        metadata.value.available = response.data.available;
                         metadata.value.shortDescription = response.data.shortDescription;
                         metadata.value.type = 'agave';
 

@@ -56,7 +56,15 @@
             metadata.value.type = 'apps-list';
             metadata.value.apps = [];
             angular.forEach(list.items, function(app){
-              metadata.value.apps.push({id: app.label, type: app.type});
+              metadata.value.apps.push(
+                {
+                  id: app.id,
+                  label: app.label,
+                  type: app.type,
+                  version: app.version,
+                  available: app.available,
+                  isPublic: app.isPublic
+                });
             });
           } else {
             // update metadata
@@ -67,7 +75,15 @@
             metadata.value.type = 'apps-list';
             metadata.value.apps = [];
             angular.forEach(list.items, function(app){
-              metadata.value.apps.push({id: app.label, type: app.type});
+              metadata.value.apps.push(
+                {
+                  id: app.id,
+                  label: app.label,
+                  type: app.type,
+                  version: app.version,
+                  available: app.available,
+                  isPublic: app.isPublic
+                });
             });
           }
           $http({
@@ -88,7 +104,8 @@
                     label: item.label,
                     type: item.type,
                     version: item.version,
-                    available: item.available
+                    available: item.available,
+                    isPublic: item.isPublic
                   })
               });
               simpleList.title = list.listName;
@@ -127,7 +144,8 @@
                 label: appMeta.value.label,
                 type: appMeta.value.type,
                 version: appMeta.value.version,
-                available: appMeta.value.available
+                available: appMeta.value.available,
+                isPublic: appMeta.value.isPublic
               });
             } else {
               self.lists['Private'].push({
@@ -135,7 +153,8 @@
                 label: appMeta.value.label,
                 type: appMeta.value.type,
                 version: appMeta.value.version,
-                available: appMeta.value.available
+                available: appMeta.value.available,
+                isPublic: appMeta.value.isPublic
               });
             }
           });

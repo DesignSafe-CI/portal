@@ -16,6 +16,7 @@
           params: {'q': query}
         }).then(
           function(response){
+            
             // Push apps list
             var appList = {};
             appList.listName = 'Apps';
@@ -24,7 +25,7 @@
             for (var i = 0; i < response.data.length; i++){
               var exists = false;
               for (var j = 0; j < apps.length; j++){
-                if (response.data[i].value.id === apps[j].label){
+                if (response.data[i].value.id === apps[j].id){
                   exists = true;
                   break;
                 }
@@ -36,7 +37,8 @@
                     label: response.data[i].value.label,
                     type: response.data[i].value.type,
                     version: response.data[i].value.version,
-                    available: response.data[i].value.available
+                    available: response.data[i].value.available,
+                    isPublic: response.data[i].value.isPublic
                   });
               }
             }
@@ -85,7 +87,8 @@
                   label: app.value.label,
                   type: app.value.type,
                   version: app.value.version,
-                  available: app.value.available
+                  available: app.value.available,
+                  isPublic: app.value.isPublic
                 });
             });
             self.lists.push(appList);
