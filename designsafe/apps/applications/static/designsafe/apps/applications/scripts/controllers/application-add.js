@@ -1566,8 +1566,8 @@
                                     }
                                   )
                               } else {
-                                metadata.uuid = response.data[0].uuid;
-                                Apps.updateMeta(metadata)
+                                // metadata.uuid = response.data[0].uuid;
+                                Apps.updateMeta(metadata, response.data[0].uuid)
                                   .then(
                                     function(response){
                                       $scope.appMeta = response.data.value;

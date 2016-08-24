@@ -1,0 +1,26 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4 class="modal-title">App Permissions</h4>
+</div>
+<div class="modal-body">
+  <p ng-show="error" class="alert alert-danger">{{error}}</p>
+  <p> The current permissions are listed below. You may add, updated, or delete them as needed </p>
+
+    <div class="row text-center" ng-show="requesting">
+        <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+    </div>
+    <div class="row" ng-if="!requesting">
+        <div class="col-md-12">
+          <form
+                sf-schema="schema"
+                sf-form="form"
+                sf-model="tempModel"
+                >
+          </form>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="savePermissionChanges()">Save changes</button>
+</div>
