@@ -39,27 +39,40 @@ def call_api(request, service):
         token = request.user.agave_oauth
         agave = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=token.access_token)
         if service == 'apps':
-            app_id = request.GET.get('app_id')
+            appId = request.GET.get('appId')
+            pems = request.GET.get('pems')
+            # username = request.GET.get('username')
+
             if request.method == 'GET':
-                if app_id:
-                    data = agave.apps.get(appId=app_id)
-                    lic_type = _app_license_type(app_id)
-                    data['license'] = {
-                        'type': lic_type
-                    }
-                    if lic_type is not None:
-                        lic = request.user.licenses.filter(license_type=lic_type).first()
-                        data['license']['enabled'] = lic is not None
+                if appId:
+                    if pems:
+                        data = agave.apps.listPermissions(appId=appId)
+                    else:
+                        data = agave.apps.get(appId=appId)
+                        lic_type = _app_license_type(appId)
+                        data['license'] = {
+                            'type': lic_type
+                        }
+                        if lic_type is not None:
+                            lic = request.user.licenses.filter(license_type=lic_type).first()
+                            data['license']['enabled'] = lic is not None
             elif request.method == 'POST':
                 body = json.loads(request.body)
-                appId = request.GET.get('appId')
                 if (appId):
-                    data = agave.apps.manage(appId=appId, body=body)
+                    if pems:
+                        username = request.GET.get('username')
+                        data = agave.apps.updatePermissionsForUser(appId=appId, username=username, body=body)
+                    else:
+                        data = agave.apps.manage(appId=appId, body=body)
                 else:
                     data = agave.apps.add(body=body)
             elif request.method == 'DELETE':
-                if app_id:
-                    data = agave.apps.delete(appId=app_id)
+                if appId:
+                    if pems:
+                        username = request.GET.get('username')
+                        data = agave.apps.deletePermissionsForUser(appId=appId, username=username)
+                    else:
+                        data = agave.apps.delete(appId=appId)
 
         elif service == 'files':
             system_id = request.GET.get('system_id')
@@ -88,34 +101,41 @@ def call_api(request, service):
                             data = agave.systems.list()
 
         elif service == 'meta':
-            app_id = request.GET.get('app_id')
+            uuid = request.GET.get('uuid')
+            pems = request.GET.get('pems')
+            query = request.GET.get('q')
             if request.method == 'GET':
-                if app_id:
-                    data = agave.meta.get(appId=app_id)
-                    lic_type = _app_license_type(app_id)
-                    data['license'] = {
-                        'type': lic_type
-                    }
-                    if lic_type is not None:
-                        lic = request.user.licenses.filter(license_type=lic_type).first()
-                        data['license']['enabled'] = lic is not None
-
+                if pems:
+                    if uuid:
+                        data = agave.meta.listMetadataPermissions(uuid=uuid)
                 else:
-                    query = request.GET.get('q')
-                    data = agave.meta.listMetadata(q=query)
+                    if uuid:
+                        data = agave.meta.getMetadata(uuid=uuid)
+                    elif query:
+                        data = agave.meta.listMetadata(q=query)
+                    else:
+                        data = agave.meta.listMetadata()
             elif request.method == 'POST':
                 body = json.loads(request.body)
-                if body.has_key('uuid'):
-                    uuid = body['uuid']
-                    del body['uuid']
-                    data = agave.meta.updateMetadata(body=body, uuid=uuid)
+                if pems:
+                    username = request.GET.get('username')
+                    if username:
+                        data = agave.meta.updateMetadataPermissionsForUser(body=body, uuid=uuid, username=username)
+                    else:
+                        data = agave.meta.updateMetadata(body=body, uuid=uuid)
                 else:
-                    data = agave.meta.addMetadata(body=body)
+                    if uuid:
+                        data = agave.meta.updateMetadata(uuid=uuid, body=body)
+                    else:
+                        data = agave.meta.addMetadata(body=body)
 
             elif request.method == 'DELETE':
-                meta_uuid = request.GET.get('uuid')
-                if meta_uuid:
-                    data = agave.meta.deleteMetadata(uuid=meta_uuid)
+                if uuid:
+                    if pems:
+                        username = request.GET.get('username')
+                        data = agave.meta.deleteMetadataPermissionsForUser(uuid=uuid, username=username)
+                    else:
+                        data = agave.meta.deleteMetadata(uuid=uuid)
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
