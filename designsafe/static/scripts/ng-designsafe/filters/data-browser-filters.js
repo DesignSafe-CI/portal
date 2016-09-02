@@ -55,4 +55,41 @@
     };
   }]);
 
+  mod.filter('dsListingDisplayName', [function(){
+    return function(item){
+      if (typeof item.metadata === 'undefined'){
+        return item.name;
+      }
+      if (item.path  === '' || item.path === '/'){
+        return item.metadata.project.title;
+      } else if (item.path.split('/').length == 1 
+                && typeof item.metadata.experiments !== 'undefined'
+                && item.name.toLowerCase().startsWith('experiment')){
+        var meta = _.findWhere(item.metadata.experiments, {name: item.name});
+        var title = meta.title || item.name;
+        return title;
+      } else {
+        return item.name;
+      }
+    };
+  }]);
+
+  mod.filter('dsTrailDisplayName', [function(){
+    return function(item){
+      if (typeof item.project === 'undefined'){
+        return item.name;
+      }
+      var pathComponents = item.path.split('/');
+      if (item.path === '' || item.path == '/'){
+        return item.project;
+      } else if (pathComponents.length === 1){
+        var title = item.experiment || item.name;  
+        return title;
+      } else {
+        return item.name;
+      }
+    };
+  }]);
+
+
 })(window, angular, jQuery, _);

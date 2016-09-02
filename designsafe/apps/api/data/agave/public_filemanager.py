@@ -99,7 +99,9 @@ class FileManager(AgaveObject):
         res, listing  = PublicObject.listing(system, file_path, **kwargs)
 
         default_pems = [{'username': self.username,
-                         'permission': {'read': True, 'write': False, 'execute': True},
+                         'permission': {'read': True, 
+                                        'write': False, 
+                                        'execute': True},
                          'recursive': True}]
 
         if file_path == '/':
@@ -122,10 +124,6 @@ class FileManager(AgaveObject):
             if root_listing:
                 list_data = root_listing.to_dict(def_pems = default_pems)
                 list_data['children'] = [o.to_dict(def_pems = default_pems) for o in listing]
-                list_data['metadata'] = {
-                              'project': root_listing.project_meta.to_dict(),
-                              'experiments': [doc.to_dict() for doc in root_listing.all_experiments_meta]
-                                        }
             else:
                 list_data = None
 
@@ -238,6 +236,8 @@ class FileManager(AgaveObject):
             es_listing = listing.copy() if listing is not None else None
             try:
                 listing = self._agave_listing(system, file_path, **kwargs)
+                if not listing['children']:
+                    listing = es_listing
             except IndexError:
                 listing = es_listing
 

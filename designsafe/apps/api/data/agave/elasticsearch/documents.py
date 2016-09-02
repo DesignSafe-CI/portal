@@ -929,10 +929,11 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
 
     @property
     def experiment_meta(self):
-        if self.experiment_:
+        if self.experiment_ or len(self.full_path.split('/')) <= 1:
             return self.experiment_
 
-        e = Experiment.from_name_and_project(self.project, self.name)
+        experiment_name = self.full_path.split('/')[1]
+        e = Experiment.from_name_and_project(self.project, experiment_name)
         self.experiment_ = e
         return self.experiment_
 
@@ -953,6 +954,12 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
     def parent_path(self):
         return self.path
 
+    def experiment_title(self, trail_path):
+        if trail_path != '' and trail_path != '/':
+            if self.experiment_meta is not None:
+                return self.experiment_meta.title
+        return None
+
     @property
     def trail(self):
         try:
@@ -962,14 +969,17 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
                     path_parts = self.parent_path.split('/')
                     for i, c in enumerate(path_parts):
                         trail_path = '/'.join(path_parts[:i])
-                        self.trail_.append(dict(
+                        trail_meta = dict(
                             source = 'public',
                             system = self.systemId,
                             id = os.path.join(self.systemId, trail_path, c),
                             path = trail_path,
                             name = c,
-                            type = 'folder'
-                        ))
+                            type = 'folder',
+                            project = self.project_meta.title,
+                            experiment = self.experiment_title(trail_path)
+                        )
+                        self.trail_.append(trail_meta)
             return list(self.trail_)
         except:
             logger.debug('Error', exc_info=True)
@@ -1015,7 +1025,8 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
             p = self.project_meta
             d['metadata'] = {
                 'experiment': e.to_dict() if e is not None else {},
-                'project': p.to_dict() if p is not None else {}
+                'project': p.to_dict() if p is not None else {},
+                'experiments': [e.to_dict() for e in self.all_experiments_meta] if self.all_experiments_meta is not None else []
             }
         return d
 
