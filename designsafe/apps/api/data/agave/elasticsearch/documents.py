@@ -317,7 +317,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             search_fields += fields
 
         sq = Q('filtered',
-                query = query_utils.files_wildcard_query(q.lower(), search_fields),
+                query = query_utils.files_wildcard_query(q, search_fields),
                 filter = query_utils.files_access_filter(username)
                 )
         s = cls.search()
@@ -725,7 +725,7 @@ class Project(ExecuteSearchMixin, PaginationMixin, DocType):
         if fields is not None:
             query_fields += fields
 
-        q = query_utils.files_wildcard_query(qs.lower(), query_fields)
+        q = query_utils.files_wildcard_query(qs, query_fields)
 
         s = cls.search()
         s.query = q
@@ -795,7 +795,7 @@ class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
         if fields is not None:
             query_fields += fields
 
-        q = query_utils.files_wildcard_query(q.lower(), query_fields)
+        q = query_utils.files_wildcard_query(q, query_fields)
         s = cls.search()
         s.query = q
         if fields is not None:
@@ -908,7 +908,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
             query_fields += fields
 
         s = cls.search()
-        s.query = query_utils.files_wildcard_query(q.lower(), query_fields)
+        s.query = query_utils.files_wildcard_query(q, query_fields)
 
         s = s.sort('type', 'path._exact', 'name._exact')
 

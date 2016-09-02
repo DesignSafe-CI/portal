@@ -14,7 +14,10 @@ def files_wildcard_query(q, fields, min_should_match = 1):
     wildcards = []
     for f in fields:
         d = {}
-        d[f] = {'value': '*%s*' % q}
+        qs = q
+        if not f.endswith('_exact'):
+            qs = q.lower()
+        d[f] = {'value': '*%s*' % qs}
         wildcards.append(Q({'wildcard': d}))
 
     qo = Q('bool',
