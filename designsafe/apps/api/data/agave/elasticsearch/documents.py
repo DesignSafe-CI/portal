@@ -716,7 +716,6 @@ class Project(ExecuteSearchMixin, PaginationMixin, DocType):
                   "equipment.facility",
                   "fundorg"
                   "fundorgprojid",
-                  "name._exact",
                   "name",
                   "organization.name",
                   "pis.firstName",
