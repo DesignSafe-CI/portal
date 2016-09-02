@@ -78,8 +78,8 @@ class BaseDataView(JSONResponseMixin, BaseApiView):
         d = request.POST.dict()
         d.update(request.GET.dict())
         d.update(kwargs)
-        if request.FILES:
-            d['files'] = request.FILES
+        #if request.FILES:
+        #    d['files'] = request.FILES
         resp = op(**d)
         return resp
 
