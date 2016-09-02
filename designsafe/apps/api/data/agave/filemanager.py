@@ -6,6 +6,8 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.notifications.models import Notification, Broadcast  
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from requests import HTTPError
@@ -801,12 +803,15 @@ class AgaveIndexer(AgaveObject):
     This is because most of the indexing operations take a 
     considerable amount of time.
 
-    **Disclaimer:** A class is used to pack all this functionality together.
+    This class retrieves the agave client using ``ds_admin`` credentials in order to
+    try and normalize the permission's object returned by Agave.
+
+    **Disclaimer**: A class is used to pack all this functionality together.
     This is not necessary and these methods should, probably, live in a separate
     module. The decision to leave this class here, for now, is because of the close
     relation the indexing operations have with the :class:`filemanager` operations.
 
-    **Generators:**
+    **Generators**:
         
         There are two generators implemented in this class 
         :meth:`walk` and :meth:`walk_levels`. The functionality of these generators
@@ -847,9 +852,15 @@ class AgaveIndexer(AgaveObject):
         >>> mgr.indexer.index(...)
 
     """
-    def __init__(self, agave_client, *args, **kwargs):
+    def __init__(self, agave_client = None, *args, **kwargs):
         super(AgaveIndexer, self).__init__(**kwargs)
-        self.agave_client = agave_client
+
+        user_model = get_user_model()
+        try:
+            ds_admin = user_model.objects.get(username='ds_admin')
+            self.agave_client = ds_admin.agave_oauth.client
+        except ObjectDoesNotExist as e:
+            self.agave_client = agave_client
 
     def walk(self, system_id, path, bottom_up = False, yield_base = True):
         """Walk a path in an agave filesystem.

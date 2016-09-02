@@ -643,9 +643,13 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         pems = getattr(self, 'permissions', [])
         pems_translated = self._pems_args_to_es_pems_list(permissions)
         pems_usernames = [o['username'] for o in pems_translated]
+
         pems_to_add = filter(lambda x: not (x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False), pems_translated)
-        pems_to_remove = filter(lambda x: x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] = False, pems_translated)
+
+        pems_to_remove = filter(lambda x: x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False, pems_translated)
+
         pems_to_persist = filter(lambda x: x['username'] not in pems_usernames, pems)
+
         pems_to_persist += pems_to_add
         #logger.debug('updating permissions on {} with {}'.format(self.meta.id, user_pems))
         self.update(permissions = pems_to_persist)
