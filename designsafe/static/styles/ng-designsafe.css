@@ -11,6 +11,10 @@
     margin-bottom: 5px;
 }
 
+.breadcrumb.breadcrumb-ds .breadcrumb-display {
+    line-height:14px;
+}
+
 .flo-select-btn {
     border: 0;
     background: none;
@@ -328,4 +332,16 @@
     background-color: #5bc0de;
     color: #ffffff;
     z-index:9999;
+}
+
+.path-wrap {
+    max-width:120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+
+.path-wrap:hover {
+    max-width: initial;
 }
