@@ -33,8 +33,6 @@ class BaseApiView(View):
                          extra={'username': request.user.username})
         
         resp = {'message': message}
-        if request.FILES:
-            resp['files'] = request.FILES
                                       
         return HttpResponse(json.dumps(resp),
                             status=status, content_type='application/json')
