@@ -760,6 +760,7 @@ class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
         if fields is not None:
             s = s.fields(fields)
 
+        s = s.sort('name._exact')
         res, s = cls._execute_search(s)
         return res, s
 
