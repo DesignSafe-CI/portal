@@ -57,7 +57,7 @@ class FileManagerIndexerGeneratorTestCase(FileManagerBaseTestCase):
             mock_af_cls_calls = mock_af_cls.call_args_list
             cnt = 0
             for o in objs:
-                call = mock.call(agave_client = self.fm.agave_client,
+                call = mock.call(agave_client = self.fm.indexer.agave_client,
                             wrap = o)
                 self.assertIn(call, mock_af_cls_calls)
                 cnt += 1
