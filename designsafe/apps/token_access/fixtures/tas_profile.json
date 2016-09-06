@@ -1,0 +1,24 @@
+{
+  "status": "success",
+  "message": null,
+  "result": {
+    "id": 10000,
+    "username": "ds_user",
+    "email": "user@designsafe-ci.org",
+    "firstName": "DesignSafe",
+    "lastName": "User",
+    "institution": "University of Texas at Austin",
+    "institutionId": 1,
+    "department": "Texas Advanced Computing Center",
+    "departmentId": 127,
+    "country": "United States",
+    "countryId": 230,
+    "citizenship": "United States",
+    "citizenshipId": 230,
+    "piEligibility": "Ineligible",
+    "source": "Standard",
+    "phone": "512 555 1234",
+    "title": "University Research Staff",
+    "emailConfirmations": []
+  }
+}
