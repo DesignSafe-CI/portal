@@ -93,13 +93,12 @@ INSTALLED_APPS = (
     'designsafe.apps.notifications',
     'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
-    # 'designsafe.apps.cilogon',
+    'designsafe.apps.token_access',
 )
 
 AUTHENTICATION_BACKENDS = (
     'designsafe.apps.auth.backends.AgaveOAuthBackend',
     'designsafe.apps.auth.backends.TASBackend',
-    # 'designsafe.apps.cilogon.backends.CILogonBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -119,6 +118,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

@@ -35,7 +35,6 @@ def manage_profile(request):
 
     try:
         demographics = django_user.profile
-
     except ObjectDoesNotExist as e:
         demographics = {}
         logger.info('exception e:{} {}'.format(type(e), e))
