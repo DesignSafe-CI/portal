@@ -1,10 +1,9 @@
-from designsafe.apps.accounts.models import DesignSafeProfile
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from models import DesignSafeProfile
+from .models import DesignSafeProfile, NotificationPreferences
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -412,3 +411,10 @@ class NEESAccountMigrationForm(forms.Form):
     email_address = forms.EmailField(label=_('Your NEEShub Email Address'),
                                      help_text=_('Enter the email address associated '
                                                  'with your NEEShub account.'))
+
+
+class NotificationPreferencesForm(forms.ModelForm):
+
+    class Meta:
+        model = NotificationPreferences
+        exclude = ['user']

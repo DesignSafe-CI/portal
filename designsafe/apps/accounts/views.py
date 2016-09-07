@@ -1,18 +1,18 @@
 from django.shortcuts import render
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response
-
+from django.utils.translation import ugettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.accounts.models import NEESUser, DesignSafeProfile
-
+from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
+                                             NotificationPreferences)
 from pytas.http import TASClient
 from pytas.models import User as TASUser
-
 import logging
 import json
 import re
@@ -74,9 +74,23 @@ def manage_identities(request):
 
 @login_required
 def manage_notifications(request):
+    try:
+        prefs = NotificationPreferences.objects.get(user=request.user)
+    except NotificationPreferences.DoesNotExist:
+        prefs = NotificationPreferences(user=request.user)
+
+    if request.method == 'POST':
+        form = forms.NotificationPreferencesForm(request.POST, instance=prefs)
+        form.save()
+        messages.success(request, _('Your Notification Preferences have been updated!'))
+    else:
+        form = forms.NotificationPreferencesForm(instance=prefs)
+
     context = {
         'title': 'Notification Settings',
+        'form': form,
     }
+
     return render(request, 'designsafe/apps/accounts/manage_notifications.html', context)
 
 
@@ -488,3 +502,16 @@ def departments_json(request):
     else:
         departments = {}
     return HttpResponse(json.dumps(departments), content_type='application/json')
+
+
+@permission_required('view_notification_subscribers', raise_exception=True)
+def mailing_list_subscription(request, list_name):
+    subscribers = ['"Name","Email"']
+    if list_name == 'announcements':
+        su = get_user_model().objects.filter(
+            Q(notification_preferences__isnull=True) |
+            Q(notification_preferences__announcements=True))
+        subscribers += list('"{0}","{1}"'.format(u.get_full_name(), u.email) for u in su)
+
+    return HttpResponse('\n'.join(subscribers), content_type='text/csv')
+
