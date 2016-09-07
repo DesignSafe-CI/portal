@@ -1,8 +1,9 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, signals
 from django.core.urlresolvers import reverse
 from boxsdk.object.user import User
 from designsafe.apps.box_integration.models import BoxUserToken
+from designsafe.apps.auth.signals import on_user_logged_in
 import mock
 
 
@@ -15,34 +16,31 @@ class BoxInitializationTestCase(TestCase):
         user.set_password('password')
         user.save()
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
-    def test_index_view_not_enabled(self, m_task):
+        # disconnect user_logged_in signal
+        signals.user_logged_in.disconnect(on_user_logged_in)
+
+    def test_index_view_not_enabled(self):
         """
         Should render as not enabled
         """
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         response = self.client.get(reverse('box_integration:index'))
         self.assertContains(response, 'Box.com NOT Enabled')
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
-    def test_initialize_token_view(self, m_task):
+    def test_initialize_token_view(self):
         """
         Should respond with a 302 to Box OAuth
         """
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         response = self.client.get(reverse('box_integration:initialize_token'))
         self.assertEqual(response.status_code, 302)
         self.assertIn('https://app.box.com/api/oauth2/authorize', response['Location'])
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @mock.patch('boxsdk.object.user.User.get')
     @mock.patch('boxsdk.auth.oauth2.OAuth2.authenticate')
-    def test_oauth2_callback(self, m_box_oauth_authenticate, m_user_get,
-                             m_check_or_create_agave_home_dir):
+    def test_oauth2_callback(self, m_box_oauth_authenticate, m_user_get):
 
         """
         Tests the Box OAuth2 Callback handler. After completing the OAuth auth code flow,
@@ -52,11 +50,8 @@ class BoxInitializationTestCase(TestCase):
         Args:
             m_box_oauth_authenticate: mock for boxsdk OAuth2.authenticate
             m_user_get: mock for boxsdk User.get
-            m_check_or_create_agave_home_dir: mock for the check_or_create_agave_home_dir
-                                              task
         """
         self.client.login(username='ds_user', password='password')
-        m_check_or_create_agave_home_dir.assert_called_with(args=('ds_user',))
 
         session = self.client.session
         session['box'] = {
@@ -98,18 +93,15 @@ class BoxDisconnectTestCase(TestCase):
         user.set_password('password')
         user.save()
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
-    def test_disconnect(self, m_check_or_create_agave_home_dir):
+        # disconnect user_logged_in signal
+        signals.user_logged_in.disconnect(on_user_logged_in)
+
+    def test_disconnect(self):
         """
         Test disconnecting Box.com.
-
-        Args:
-            m_check_or_create_agave_home_dir: mock for the check_or_create_agave_home_dir
-                                              task
         """
         # log the test user in
         self.client.login(username='ds_user', password='password')
-        m_check_or_create_agave_home_dir.assert_called_with(args=('ds_user',))
 
         # verify we have preconditions
         user = get_user_model().objects.get(username='ds_user')

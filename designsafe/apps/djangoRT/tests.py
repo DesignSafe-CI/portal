@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, signals
+from designsafe.apps.auth.signals import on_user_logged_in
 from unittest import skip
 import mock
 import requests_mock
@@ -76,8 +77,10 @@ class AuthenticatedViewTests(TestCase):
         user.set_password('password')
         user.save()
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
-    def test_index(self, m_task):
+        # disconnect user_logged_in signal
+        signals.user_logged_in.disconnect(on_user_logged_in)
+
+    def test_index(self):
         """
         For authenticated users, the default/index view redirects to the mytickets view.
         :return:
@@ -85,19 +88,16 @@ class AuthenticatedViewTests(TestCase):
 
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         resp = self.client.get(reverse('djangoRT:index'))
         self.assertRedirects(resp, reverse('djangoRT:mytickets'),
                              fetch_redirect_response=False)
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @requests_mock.Mocker()
-    def test_mytickets_none(self, m_task, req_mock):
+    def test_mytickets_none(self, req_mock):
 
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         # mock login
         req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
@@ -109,13 +109,11 @@ class AuthenticatedViewTests(TestCase):
         resp = self.client.get(reverse('djangoRT:mytickets'))
         self.assertContains(resp, 'No tickets to display!')
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @requests_mock.Mocker()
-    def test_mytickets_resolved(self, m_task, req_mock):
+    def test_mytickets_resolved(self, req_mock):
 
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         # mock login
         req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
@@ -127,12 +125,10 @@ class AuthenticatedViewTests(TestCase):
         resp = self.client.get(reverse('djangoRT:mytickets') + '?show_resolved=1')
         self.assertNotContains(resp, 'No tickets to display!')
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @requests_mock.Mocker()
-    def test_detail(self, m_task, req_mock):
+    def test_detail(self, req_mock):
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         # mock login
         req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
@@ -150,20 +146,16 @@ class AuthenticatedViewTests(TestCase):
         resp = self.client.get(reverse('djangoRT:ticketdetail', args=[ticket_id]))
         self.assertContains(resp, 'Test Post, Please Ignore')
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
-    def test_create(self, m_task):
+    def test_create(self):
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         resp = self.client.get(reverse('djangoRT:ticketcreate'))
         self.assertNotContains(resp, 'Captcha')
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
-    def test_create_with_error_context(self, m_task):
+    def test_create_with_error_context(self):
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         query = 'error_page=/page/that/failed&http_referer=https://www.google.com'
         resp = self.client.get(reverse('djangoRT:ticketcreate') + '?' + query)
@@ -174,12 +166,10 @@ class AuthenticatedViewTests(TestCase):
         self.assertContains(resp, '<input id="id_http_referer" name="http_referer" '
                                   'type="hidden" value="https://www.google.com" />')
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @requests_mock.Mocker()
-    def test_reply(self, m_task, req_mock):
+    def test_reply(self, req_mock):
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         # mock login
         req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
@@ -193,12 +183,10 @@ class AuthenticatedViewTests(TestCase):
         resp = self.client.get(reverse('djangoRT:ticketreply', args=[ticket_id]))
         self.assertContains(resp, 'Reply to #{}'.format(ticket_id))
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @requests_mock.Mocker()
-    def test_reopen(self, m_task, req_mock):
+    def test_reopen(self, req_mock):
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         # mock login
         req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
@@ -212,12 +200,10 @@ class AuthenticatedViewTests(TestCase):
         resp = self.client.get(reverse('djangoRT:ticketreply', args=[ticket_id]))
         self.assertContains(resp, 'Reopen #{}'.format(ticket_id))
 
-    @mock.patch('designsafe.apps.auth.tasks.check_or_create_agave_home_dir.apply_async')
     @requests_mock.Mocker()
-    def test_close(self, m_task, req_mock):
+    def test_close(self, req_mock):
         # log user in
         self.client.login(username='ds_user', password='password')
-        m_task.assert_called_with(args=('ds_user',))
 
         # mock login
         req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
