@@ -4,7 +4,6 @@ from designsafe.apps.signals.signals import generic_event
 from .apps import Event
 import datetime
 import json
-import six
 import cgi
 
 
