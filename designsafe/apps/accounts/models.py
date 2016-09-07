@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.db import models
 from django.db import connections, DatabaseError
+from django.utils.translation import ugettext_lazy as _
 import logging
 import six
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -43,3 +44,17 @@ class DesignSafeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
+
+
+class NotificationPreferences(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                related_name='notification_preferences')
+    announcements = models.BooleanField(
+        default=True,
+        verbose_name=_('Receive occasional announcements from DesignSafe'))
+
+    class Meta:
+        permissions = (
+            ('view_notification_subscribers', 'Can view list of users subscribed to a '
+                                              'notification type'),
+        )

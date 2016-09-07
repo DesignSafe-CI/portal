@@ -18,6 +18,9 @@ urlpatterns = patterns(
     url(r'^password-reset/(?:(?P<code>.+)/)?$', 'password_reset', name='password_reset'),
     url(r'^activate/(?:(?P<code>.+)/)?$', 'email_confirmation', name='email_confirmation'),
     url(r'^departments\.json$', 'departments_json', name='departments_json'),
+
+    url(r'^mailing-list/(?P<list_name>.*)/$', 'mailing_list_subscription',
+        name='mailing_list_subscription'),
 )
 
 
