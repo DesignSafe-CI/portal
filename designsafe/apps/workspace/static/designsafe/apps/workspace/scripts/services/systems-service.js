@@ -5,7 +5,7 @@
  */
 (function(window, angular, $, _) {
   'use strict';
-  angular.module('WorkspaceApp').factory('Systems', ['$q', 'djangoUrl', function($q, djangoUrl) {
+  angular.module('WorkspaceApp').factory('Systems', ['$q', '$http', 'djangoUrl', function($q, $http, djangoUrl) {
     var service = {};
 
     var systemsList = [
@@ -30,6 +30,15 @@
           uuid: '8688297665752666597-242ac119-0001-006'
         }
     ];
+
+    service.getMonitor = function(system_id) {
+      return $http({
+        url: djangoUrl.reverse('designsafe_workspace:call_api', ['monitors']),
+        method: 'GET',
+        params: {'target': system_id},
+        cache: false
+      });
+    };
 
     service.list = function() {
       return $q(function(resolve, reject) {
