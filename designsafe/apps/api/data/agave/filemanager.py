@@ -854,13 +854,15 @@ class AgaveIndexer(AgaveObject):
     """
     def __init__(self, agave_client = None, *args, **kwargs):
         super(AgaveIndexer, self).__init__(**kwargs)
+        self.agave_client = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                                  token=settings.AGAVE_SUPER_TOKEN)
 
-        user_model = get_user_model()
-        try:
-            ds_admin = user_model.objects.get(username='ds_admin')
-            self.agave_client = ds_admin.agave_oauth.client
-        except ObjectDoesNotExist as e:
-            self.agave_client = agave_client
+        # user_model = get_user_model()
+        # try:
+        #     ds_admin = user_model.objects.get(username='ds_admin')
+        #     self.agave_client = ds_admin.agave_oauth.client
+        # except ObjectDoesNotExist as e:
+        #     self.agave_client = agave_client
 
     def walk(self, system_id, path, bottom_up = False, yield_base = True):
         """Walk a path in an agave filesystem.
