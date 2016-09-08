@@ -92,8 +92,6 @@ def call_api(request, service):
                 if meta_uuid:
                     data = agave.meta.deleteMetadata(uuid=meta_uuid)
 
-
-
         elif service == 'files':
             system_id = request.GET.get('system_id')
             file_path = request.GET.get('file_path', '')
