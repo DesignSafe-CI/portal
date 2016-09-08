@@ -112,10 +112,10 @@ class FileManager(AbstractFileManager, AgaveObject):
             for more information.
         """
         listing = AgaveFile.listing(system, file_path, self.agave_client, **kwargs)
-        #logger.debug('listing: {}'.format(listing))
+        logger.debug('listing: {}'.format(listing))
 
         root_file = filter(lambda x: x.full_path == file_path, listing)
-        #logger.debug('root_file: {}'.format(root_file[0]))
+        logger.debug('root_file: {}'.format(root_file[0]))
 
         list_data = root_file[0].to_dict()
         list_data['children'] = [o.to_dict() for o in listing if o.full_path != file_path]
