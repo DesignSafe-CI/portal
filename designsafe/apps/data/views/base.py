@@ -27,7 +27,6 @@ class BaseView(View):
     filesystem = None
 
     def __init__(self, **kwargs):
-        self.token = None
         self.agave_client = None
         self.filesystem = None
         self.file_path = None
@@ -38,12 +37,10 @@ class BaseView(View):
 
     def set_agave_props(self, request, **kwargs):
         if request.user.is_authenticated():
-            me = get_user_model().objects.get(username=request.user.username)
+            self.agave_client = request.user.agave_oauth.client
         else:
-            me = get_user_model().objects.get(username='envision')
-
-        self.token = me.agave_oauth
-        self.agave_client = me.agave_oauth.client
+            self.agave_client = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                                      token=settings.AGAVE_SUPER_TOKEN)
 
     def set_context_props(self, request, **kwargs):
         #TODO: Getting the filesystem should check in which system is the user in or requesting
