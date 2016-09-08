@@ -29,8 +29,10 @@
       Files.list({systemId: $scope.data.system.id, path: $scope.data.filePath})
       .then(function(response) {
         $scope.data.filesListing = response.data;
-        $scope.data.filePath = $scope.data.filesListing[0].path;
-        $scope.data.dirPath = $scope.data.filePath.split('/');
+        if ($scope.data.filesListing.length > 0) {
+          $scope.data.filePath = $scope.data.filesListing[0].path;
+          $scope.data.dirPath = $scope.data.filePath.split('/');
+        }
         $scope.data.loading = false;
       }, function(response) {
         logger.log(error);
@@ -48,7 +50,7 @@
         } else {
           $scope.data.dirPath.push(file.name);
         }
-        $scope.data.filePath = $scope.data.dirPath.join('/')
+        $scope.data.filePath = $scope.data.dirPath.join('/');
         $scope.loadFiles();
       }
     };
@@ -65,7 +67,7 @@
         $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
         $scope.data.loading = false;
       });
-    }
+    };
 
     $scope.displayName = function displayName(file) {
       if (file.systemId === 'nees.public') {
