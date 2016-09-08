@@ -1,5 +1,6 @@
-from agavepy.agave import AgaveException
+from agavepy.agave import AgaveException, Agave
 from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
@@ -55,6 +56,11 @@ def call_api(request, service):
                     data = agave.apps.list(publicOnly='true')
                 else:
                     data = agave.apps.list()
+
+        elif service == 'monitors':
+            target = request.GET.get('target')
+            ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            data = ds_admin_client.monitors.list(target=target)
 
         elif service == 'meta':
             app_id = request.GET.get('app_id')
