@@ -558,17 +558,49 @@ class FileManagerPreviewTestCase(FileManagerBaseTestCase):
         file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
 
         mock_agave_file = mock.Mock(autospec = AgaveFile)
-        type(mock_agave_file).name = mock.PropertyMock(return_value = 'text.json')
-        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.json')
+        type(mock_agave_file).name = mock.PropertyMock(return_value = 'preview_file_a.txt')
+        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.txt')
         type(mock_agave_file).path = mock.PropertyMock(
-                    return_value = '%s/path/to' % self.user.username)
-        
-        mock_agave_from_file_path.return_value = mock_agave_file
-        mock_agave_file.download.return_value = {}
+            return_value = '%s/path/to' % self.user.username)
 
-        fm.preview(file_id, format = 'html')
+        mock_agave_from_file_path.return_value = mock_agave_file
+
+        preview_fixture = 'designsafe/apps/api/fixtures/preview_file_a.txt'
+        with open(preview_fixture) as f:
+            mock_agave_file.download.return_value = f.read()
+
+        fm.preview(file_id, format='html')
+
+        preview_tmpl, preview_context = fm.preview(file_id, format='html')
 
         self.assertTrue(mock_agave_file.download.called)
+        self.assertIn('text_preview', preview_context)
+        self.assertIn('Belford bridge', preview_context['text_preview'])
+
+    @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
+    def test_preview_text_file_windows_encoding(self, mock_agave_from_file_path):
+        fm = self.get_filemanager()
+
+        path = '%s/path/to/text.txt' % (self.user.username)
+        file_id = '%s/%s' % (settings.AGAVE_STORAGE_SYSTEM, path)
+
+        mock_agave_file = mock.Mock(autospec = AgaveFile)
+        type(mock_agave_file).name = mock.PropertyMock(return_value = 'preview_file_b.txt')
+        type(mock_agave_file).ext = mock.PropertyMock(return_value = '.txt')
+        type(mock_agave_file).path = mock.PropertyMock(
+            return_value = '%s/path/to' % self.user.username)
+
+        mock_agave_from_file_path.return_value = mock_agave_file
+
+        preview_fixture = 'designsafe/apps/api/fixtures/preview_file_b.txt'
+        with open(preview_fixture) as f:
+            mock_agave_file.download.return_value = f.read()
+
+        preview_tmpl, preview_context = fm.preview(file_id, format='html')
+
+        self.assertTrue(mock_agave_file.download.called)
+        self.assertIn('text_preview', preview_context)
+        self.assertIn('Belford bridge', preview_context['text_preview'])
 
     @mock.patch('designsafe.apps.api.data.agave.file.AgaveFile.from_file_path')
     def test_preview_object_file(self, mock_agave_from_file_path):
