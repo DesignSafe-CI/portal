@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.12
+
+Enhancements:
+
+- Enhanced rendering of public data metadata
+- Added opt-out feature for DesignSafe announce
+- Added monitors for app execution systems
+
 ## v0.9.11
 
 Enhancements:
