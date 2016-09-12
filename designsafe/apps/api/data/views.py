@@ -152,7 +152,6 @@ class DataFileManageView(BaseDataView):
         fmt = request.GET.get('format', 'json')
         resp = self._execute_operation(request, operation, **kwargs)
         if fmt == 'html':
-            logger.debug(resp)
             return render(request, resp[0], resp[1])
         else:
             return self.render_to_json_response(resp)

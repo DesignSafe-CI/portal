@@ -13,6 +13,8 @@ import logging
 import datetime
 import os
 import urllib2
+import chardet
+
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -20,6 +22,7 @@ metrics = logging.getLogger('metrics')
 FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 }
+
 
 class FileManager(AbstractFileManager, AgaveObject):
     resource = 'agave'
@@ -590,7 +593,19 @@ class FileManager(AbstractFileManager, AgaveObject):
                     context['image_preview'] = postit['_links']['self']['href']
                 elif ext in AgaveFile.SUPPORTED_TEXT_PREVIEW_EXTS:
                     content = f.download()
-                    context['text_preview'] = content
+                    try:
+                        encoded = content.encode('utf-8')
+                    except UnicodeError:
+                        try:
+                            encoding = chardet.detect(content)['encoding']
+                            encoded = content.decode(encoding).encode('utf-8')
+                        except UnicodeError:
+                            logger.exception('Failed to preview file',
+                                             extra={'file_id': file_id})
+                            encoded = u'Sorry! We were unable to preview this file due ' \
+                                      u'to a unrecognized content encoding. Please ' \
+                                      u'download the file to view its contents.'
+                    context['text_preview'] = encoded
                 elif ext in AgaveFile.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     postit = f.create_postit(force=False)
                     context['object_preview'] = postit['_links']['self']['href']
