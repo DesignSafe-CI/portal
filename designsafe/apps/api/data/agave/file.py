@@ -524,10 +524,10 @@ class AgaveFile(AbstractFile, AgaveObject):
         Returns:
             Class instasnce for chainability
         """
-        if permission == 'NONE' and (self.parent_path.strip('/').split('/')) > 1:
+        if permission == 'NONE' and len(self.parent_path.strip('/').split('/')) > 1:
             parent_pems = self.from_file_path(self.system, None,
-                                    self.parent_path, self.agave_client)
-            parent_user_pems = filter(lambda x: x['username'] == username_to_update and x['username']['recursive'],
+                                    self.parent_path, self.agave_client).permissions
+            parent_user_pems = filter(lambda x: x['username'] == username_to_update and x['recursive'],
                                         parent_pems)
             if parent_user_pems:
                 raise ApiException('Can not remove permissions when the user has RECURSIVE permissions on parent',
@@ -546,7 +546,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
         except HTTPError as e:
             if e.response.status_code == 502 or e.response.status_code == 503:
-                logger.error('{}: Could not update permissions {}'.format(e.message, permission_body))
+                logger.warning('{}: Could not update permissions {}'.format(e.message, permission_body))
             else:
                 raise
         return self
