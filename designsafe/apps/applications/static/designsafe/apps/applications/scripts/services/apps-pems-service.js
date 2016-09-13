@@ -138,11 +138,8 @@
                                       "enum": [
                                         "ALL",
                                         "READ",
-                                        "WRITE",
-                                        "EXECUTE",
-                                        "READ_WRITE",
                                         "READ_EXECUTE",
-                                        "WRITE_EXECUTE",
+                                        "READ_WRITE",
                                         "NONE"
                                       ]
                                     }
@@ -254,7 +251,7 @@
                       })
                     );
                   }
-
+                  
                   promises.push(
                     $http({
                       url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),

@@ -1430,7 +1430,6 @@
                         metadata.value.type = 'agave';
 
                         // Check if metadata record exists
-
                         Apps.getMeta(metadata.value.id)
                           .then(
                             function(response){
@@ -1455,7 +1454,6 @@
 
                                             $scope.close = function() {
                                               $uibModalInstance.dismiss();
-                                              // $state.transitionTo('applications');
                                             };
 
                                          }
@@ -1469,7 +1467,6 @@
                                     }
                                   )
                               } else {
-                                // metadata.uuid = response.data[0].uuid;
                                 Apps.updateMeta(metadata, response.data[0].uuid)
                                   .then(
                                     function(response){
@@ -1489,7 +1486,6 @@
 
                                             $scope.close = function() {
                                               $uibModalInstance.dismiss();
-                                              // $state.transitionTo('applications');
                                             };
 
                                          }
@@ -1711,65 +1707,96 @@
         if (typeof $stateParams.appMeta === 'undefined' || $stateParams.appMeta === null){
           Apps.getMeta($stateParams.appId)
             .then(
-              function(meta){
+              function(response){
+                var meta = response;
                 if (meta.data.length === 0){
-                  $scope.error = $translate.instant('error_app_doesnt_exists');
+                  $scope.error = $translate.instant('error_app_view');
                   $scope.requesting = false;
                 } else {
-                  // determine if agave or custom
                   $scope.editModel = meta.data[0].value;
+                  Apps.getPermissions(meta.data[0].value.id)
+                    .then(
+                      function(response){
+                        $scope.edit = false;
+                        angular.forEach(response.data, function(permission){
+                          if (Django.user === permission.username){
+                            if (permission.permission.write){
+                              $scope.edit = true;
+                            }
+                          }
+                        });
 
-                  if (meta.data[0].value.type === 'agave'){
-                    Apps.get($stateParams.appId)
-                      .then(
-                        function(response){
-                          delete response.data._links;
-                          delete response.data.uuid;
-                          delete response.data.lastModified;
-                          delete response.data.revision;
-                          delete response.data.available;
-                          $scope.model = angular.copy(response.data);
+                        if ($scope.edit){
+                          // determine if agave or custom
+                          if (meta.data[0].value.type === 'agave'){
+                            Apps.get($stateParams.appId)
+                              .then(
+                                function(response){
+                                  delete response.data._links;
+                                  delete response.data.uuid;
+                                  delete response.data.lastModified;
+                                  delete response.data.revision;
+                                  delete response.data.available;
+                                  $scope.model = angular.copy(response.data);
 
-                          Apps.getSystems()
-                            .then(
-                              function(response){
-                                $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                                $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                                angular.forEach(response.data, function(system){
-                                  if (system.type === 'STORAGE'){
-                                    $scope.form[0].tabs[1].items[1].titleMap.push({"value": system.id, "name": system.id});
-                                  } else {
-                                    $scope.form[0].tabs[2].items[1].titleMap.push({"value": system.id, "name": system.id});
-                                  }
-                                });
-                                AppsWizard.activateTab($scope, $scope.currentTabIndex);
-                              },
-                              function(response){
-                                $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                                $scope.form[0].tabs[1].items[1].titleMap.push({"value": $scope.model.deploymentSystem , "name": $scope.model.deploymentSystem});
+                                  Apps.getSystems()
+                                    .then(
+                                      function(response){
+                                        $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                                        $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                                        angular.forEach(response.data, function(system){
+                                          if (system.type === 'STORAGE'){
+                                            $scope.form[0].tabs[1].items[1].titleMap.push({"value": system.id, "name": system.id});
+                                          } else {
+                                            $scope.form[0].tabs[2].items[1].titleMap.push({"value": system.id, "name": system.id});
+                                          }
+                                        });
+                                        AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                                      },
+                                      function(response){
+                                        $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                                        $scope.form[0].tabs[1].items[1].titleMap.push({"value": $scope.model.deploymentSystem , "name": $scope.model.deploymentSystem});
 
-                                $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                                $scope.form[0].tabs[2].items[1].titleMap.push({"value": $scope.model.executionSystem, "name": $scope.model.executionSystem});
-                                AppsWizard.activateTab($scope, $scope.currentTabIndex);
-                              }
-                            );
+                                        $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                                        $scope.form[0].tabs[2].items[1].titleMap.push({"value": $scope.model.executionSystem, "name": $scope.model.executionSystem});
+                                        AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                                      }
+                                    );
 
-                          AppsWizard.activateTab($scope, $scope.currentTabIndex);
-                          $scope.requesting = false;
-                        },
-                        function(response){
-                          $scope.error = $translate.instant('error_app_meta');
-                          $scope.requesting = false;
+                                  AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                                  $scope.requesting = false;
+                                },
+                                function(response){
+                                  $scope.error = $translate.instant('error_app_meta');
+                                  $scope.requesting = false;
+                                }
+                              );
+                          } else {
+                            // custom app
+                            $scope.customModel = $scope.editModel;
+                            $scope.requesting = false;
+                          }
+                        } else {
+                          $scope.error = $translate.instant('error_app_edit_permissions');
                         }
-                      );
-                  } else {
-                    // custom app
-                    $scope.customModel = $scope.editModel;
-                    $scope.requesting = false;
-                  }
+                      },
+                      function(response){
+                        if (response.data) {
+                          if (response.data.message){
+                            $scope.error = $translate.instant('error_app_permissions') + response.data.message;
+                          } else {
+                            $scope.error = $translate.instant('error_app_permissions') + response.data;
+                          }
+                        } else {
+                          $scope.error = $translate.instant('error_app_permissions');
+                        }
+                      }
+                    );
+
+
                 }
               },
-              function(meta){
+              function(response){
                 $scope.error = $translate.instant('error_app_meta');
                 $scope.requesting = false;
               }
