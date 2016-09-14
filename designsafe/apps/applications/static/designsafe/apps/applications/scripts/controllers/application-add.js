@@ -1521,7 +1521,7 @@
                         metadata.name = 'ds_app';
                         metadata.value = {};
                         metadata.value.id = response.data.id;
-                        metadata.value.label = response.data.name;
+                        metadata.value.label = response.data.label;
                         metadata.value.version = response.data.version;
                         metadata.value.isPublic = response.data.isPublic;
                         metadata.value.available = true;
