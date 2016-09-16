@@ -1,14 +1,34 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
-  app.controller('SharedDataCtrl', ['$scope', '$state', 'Django', 'listing', function ($scope, $state, Django, listing) {
+  app.controller('SharedDataCtrl', ['$scope', '$location', '$stateParams', 'Django', 'DataService', function ($scope, $location, $stateParams, Django, DataService) {
+
+    if (! $stateParams.fileId) {
+      $location.path('/agave/designsafe.storage.default/$SHARE');
+      $stateParams.fileId = 'designsafe.storage.default/$SHARE';
+    }
+
     $scope.data = {
       user: Django.user,
-      listing: listing
+      listing: []
     };
+
+    DataService.listPath({
+      resource: 'agave',
+      file_id: $stateParams.fileId
+    }).then(function(resp) {
+      $scope.data.listing = resp.data;
+    });
 
     $scope.onBrowse = function($event, file) {
       $event.stopPropagation();
-      $state.go('sharedData', { fileId: file.id });
+      $stateParams.fileId = file.id;
+      $location.path('/agave/' + $stateParams.fileId);
+      DataService.listPath({
+        resource: 'agave',
+        file_id: $stateParams.fileId
+      }).then(function(resp) {
+        $scope.data.listing = resp.data;
+      });
     };
 
     $scope.onSelect = function($event, file) {
