@@ -14,19 +14,19 @@
           name: 'Publications',
           collapsible: false,
           active: false,
-          state: 'allPublications'
+          href: '/publications'
         },
         {
           name: 'Community Data',
           collapsible: false,
           active: false,
-          state: 'communityData'
+          href: '/community-data'
         },
         {
           name: 'Training Materials',
           collapsible: false,
           active: false,
-          state: 'trainingMaterials'
+          href: '/training-materials'
         }
       ]
     });
@@ -42,31 +42,31 @@
             name: 'My Data',
             collapsible: false,
             active: true,
-            state: 'myData'
+            href: '/agave/designsafe.storage.default/' + Django.user + '/'
           },
           {
             name: 'My Projects',
             collapsible: false,
             active: false,
-            state: 'myProjects'
+            href: '/projects/'
           },
           {
             name: 'My Publications',
             collapsible: false,
             active: false,
-            state: 'myPublications'
+            href: '/my-publications/'
           },
           {
             name: 'Shared with Me',
             collapsible: false,
             active: false,
-            state: 'sharedData'
+            href: '/agave/designsafe.storage.default/$SHARE/'
           },
           {
             name: 'Box.com',
             collapsible: false,
             active: false,
-            state: 'boxData'
+            href: '/box/'
           }
         ]
       });
@@ -80,19 +80,19 @@
               name: 'Application Catalog',
               collapsible: false,
               active: false,
-              state: 'applicationCatalog'
+              href: '/workspace/catalog/'
             },
             {
               name: 'Run Application',
               collapsible: false,
               active: false,
-              state: 'runApplication'
+              href: '/workspace/run/'
             },
             {
               name: 'Job History',
               collapsible: false,
               active: false,
-              state: 'jobHistory'
+              href: '/workspace/history/'
             }
           ]
         }

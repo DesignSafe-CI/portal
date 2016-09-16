@@ -13,69 +13,30 @@
     $stateProvider
 
       /* Private */
-      .state('myData', {
-        url: '/agave/{fileId:[./]*}',
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
-        onEnter: function($state, $stateParams, $timeout, DataService) {
-          if ($stateParams.fileId) {
-            var parsedFileId = DataService.parseFileId($stateParams.fileId);
-            if (parsedFileId.user !== Django.user) {
-              $timeout(function() {
-                $state.go('sharedData', {fileId: $stateParams.fileId});
-              });
-            }
-          }
-        },
-        resolve: {
-          listing: function($stateParams, DataService) {
-            return DataService.listPath({
-              resource: 'agave',
-              file_id: $stateParams.fileId
-            }).then(function(resp) {
-              return resp.data
-            });
-          }
-        }
+      .state('agave', {
+        url: '/agave/{fileId:any}',
+        abstract: true
       })
-      .state('sharedData', {
-        url: '/agave/{fileId:.*}',
+      .state('agave.myData', {
+        url: '',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html'
+      })
+      .state('agave.sharedData', {
+        url: '',
         controller: 'SharedDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
-        onEnter: function($state, $stateParams, $timeout, DataService) {
-          if ($stateParams.fileId) {
-            var parsedFileId = DataService.parseFileId($stateParams.fileId);
-            if (parsedFileId.user === Django.user) {
-              $timeout(function () {
-                $state.go('myData', {fileId: $stateParams.fileId});
-              });
-            }
-          }
-        },
-        resolve: {
-          listing: function($stateParams, DataService) {
-            return DataService.listPath({
-              resource: 'agave',
-              file_id: $stateParams.fileId
-            }).then(function(resp) {
-              return resp.data
-            });
-          }
-        },
-        params: {
-          'fileId': 'designsafe.storage.default/$SHARE/'
-        }
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html'
       })
       .state('myProjects', {
-        url: '/projects',
+        url: '/projects/{fileId:any}',
         templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
       })
       .state('myPublications', {
-        url: '/my-publications',
+        url: '/my-publications/{fileId:any}',
         templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
       })
       .state('boxData', {
-        url: '/box/{fileId:.*}?',
+        url: '/box/{fileId:any}?',
         templateUrl: '/static/scripts/data-depot/templates/external-data-listing.html'
       })
 
@@ -99,14 +60,16 @@
         template: '<pre>local/applicationCatalog.html</pre>'
       })
       .state('runApplication', {
-        url: '/workspace/run/{appId:.*}?',
+        url: '/workspace/run/{appId:any}?',
         template: '<pre>local/runApplication.html</pre>'
       })
       .state('jobHistory', {
-        url: '/workspace/history/{jobId:.*}?',
+        url: '/workspace/history/{jobId:any}?',
         template: '<pre>local/jobHistory.html</pre>'
       })
     ;
+
+    $urlRouterProvider.otherwise('/agave/');
   }
 
   dataDepotApp.config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', config]);
