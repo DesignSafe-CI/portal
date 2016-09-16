@@ -646,7 +646,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
 
         pems_to_add = filter(lambda x: not (x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False), pems_translated)
 
-        pems_to_remove = filter(lambda x: x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False, pems_translated)
+        #pems_to_remove = filter(lambda x: x['permission']['read'] == False and x['permission']['write'] == False and x['permission']['execute'] == False, pems_translated)
 
         pems_to_persist = filter(lambda x: x['username'] not in pems_usernames, pems)
 
