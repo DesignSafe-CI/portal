@@ -1,6 +1,7 @@
 import logging
 import os
 import urllib2
+import urlparse
 from datetime import datetime
 import dateutil.parser
 import json
@@ -140,6 +141,26 @@ class AgaveFile(AbstractFile, AgaveObject):
     @property
     def ext(self):
         return os.path.splitext(self.name)[1]
+
+    @property
+    def uuid(self):
+        """
+        In the files `_links` is an href to metadata via associationIds. The
+        `associationId` is the UUID of this file. Use urlparse to parse the URL and then
+        the query. The `q` query parameter is a JSON string in the form::
+
+            {"assocationIds": "{{ uuid }}"}
+
+        :return: string: the UUID for the file
+        """
+        if 'metadata' in self._links:
+            assoc_meta_href = self._links['metadata']['href']
+            parsed_href = urlparse.urlparse(assoc_meta_href)
+            query_dict = urlparse.parse_qs(parsed_href.query)
+            if 'q' in query_dict:
+                meta_q = json.loads[query_dict['q'][0]]
+                return meta_q.get('associationIds')
+        return None
 
     @property
     def full_path(self):
