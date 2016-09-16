@@ -13,10 +13,8 @@ operation: Can be any of these:
                                  More specific action should live in the body.
 
 """
-urlpatterns = patterns(
-    'designsafe.apps.api.projects.views',
-    url(r'^$', views.IndexView.as_view(), name='index'),
-
-    url(r'^(?P<project_id>[a-z0-9\-]+)/$', views.InstanceView.as_view(), name='project'),
-
-)
+urlpatterns = [
+    url(r'^$', views.ProjectCollectionView.as_view(), name='index'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/$', views.ProjectInstanceView.as_view(), name='project'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/data/$', views.ProjectDataView.as_view(), name='project_data'),
+]
