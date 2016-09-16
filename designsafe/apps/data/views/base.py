@@ -1,27 +1,27 @@
+import json
+import logging
+
+from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
-from .mixins import SecureMixin, JSONResponseMixin
+from django.utils.decorators import method_decorator
 from django.views.generic.base import View, TemplateView
+from django.views.decorators.csrf import ensure_csrf_cookie
 from requests.exceptions import ConnectionError, HTTPError
-from dsapi.agave.daos import shared_with_me
-from django.contrib.auth import get_user_model
-from agavepy.agave import Agave
-from django.conf import settings
 
-from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
-
-import logging
-import json
-
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.notifications.views import get_number_unread_notifications
+from dsapi.agave.daos import shared_with_me
+from .mixins import SecureMixin, JSONResponseMixin
 
 logger = logging.getLogger(__name__)
 
-# Create your views here.
+
 class BaseView(View):
 
     filesystem = None
@@ -144,6 +144,7 @@ class DataBrowserTestView(BasePublicTemplate):
         return redirect_to_login(
             path, resolved_login_url)
 
+    @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         try:
             return super(BasePublicTemplate, self).dispatch(request, *args, **kwargs)
