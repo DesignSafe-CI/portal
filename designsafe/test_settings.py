@@ -60,28 +60,28 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
             'propagate': True,
         },
         'designsafe': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
         },
         'dsapi': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
         },
         'celery': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
         },
         'opbeat': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'WARNING',
         },
         'metrics': {
             'handlers': ['metrics'],
-            'level': 'INFO',
+            'level': 'WARNING',
         },
     },
 }
