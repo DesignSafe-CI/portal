@@ -1,0 +1,9 @@
+<div ng-if="data.project">
+    <h2>{{ data.project.value.title }}</h2>
+</div>
+
+<div ng-if="! data.project" class="jumbotron">
+    <p class="text-center">
+        <i class="fa fa-spinner fa-spin"></i> Loading project...
+    </p>
+</div>

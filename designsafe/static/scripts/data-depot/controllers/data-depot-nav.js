@@ -1,8 +1,11 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
-  app.controller('DataDepotNavCtrl', ['$scope', 'Django', function($scope, Django) {
+  app.controller('DataDepotNavCtrl', ['$scope', '$rootScope', '$state', 'Django', function($scope, $rootScope, $state, Django) {
 
     $scope.routerItems = [];
+
+    $scope.myDataFileId = 'designsafe.storage.default/' + Django.user + '/';
+    $scope.sharedFileId = 'designsafe.storage.default/$SHARE/';
 
     $scope.routerItems.push({
       name: 'Public',
@@ -14,19 +17,19 @@
           name: 'Publications',
           collapsible: false,
           active: false,
-          href: '/publications'
+          state: 'publications'
         },
         {
           name: 'Community Data',
           collapsible: false,
           active: false,
-          href: '/community-data'
+          state: 'communityData'
         },
         {
           name: 'Training Materials',
           collapsible: false,
           active: false,
-          href: '/training-materials'
+          state: 'trainingMaterials'
         }
       ]
     });
@@ -42,31 +45,31 @@
             name: 'My Data',
             collapsible: false,
             active: true,
-            href: '/agave/designsafe.storage.default/' + Django.user + '/'
+            state: 'myData'
           },
           {
             name: 'My Projects',
             collapsible: false,
             active: false,
-            href: '/projects/'
+            state: 'myProjects'
           },
           {
             name: 'My Publications',
             collapsible: false,
             active: false,
-            href: '/my-publications/'
+            state: 'myPublications'
           },
           {
             name: 'Shared with Me',
             collapsible: false,
             active: false,
-            href: '/agave/designsafe.storage.default/$SHARE/'
+            state: 'sharedData'
           },
           {
             name: 'Box.com',
             collapsible: false,
             active: false,
-            href: '/box/'
+            state: 'boxData'
           }
         ]
       });
@@ -80,19 +83,19 @@
               name: 'Application Catalog',
               collapsible: false,
               active: false,
-              href: '/workspace/catalog/'
+              state: 'applicationCatalog'
             },
             {
               name: 'Run Application',
               collapsible: false,
               active: false,
-              href: '/workspace/run/'
+              state: 'runApplication'
             },
             {
               name: 'Job History',
               collapsible: false,
               active: false,
-              href: '/workspace/history/'
+              state: 'jobHistory'
             }
           ]
         }
