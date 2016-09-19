@@ -1,0 +1,21 @@
+<div class="table-responsive">
+    <table class="table table-bordered table-striped" style="background-color: #fff;">
+        <thead>
+        <th ng-repeat="col in columns">{{ col.label }}</th>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="item in listing"
+            ng-click="onSelect()($event, item)"
+            ng-class="{'ds-data-selected': item._ui.selected}"
+        >
+            <td ng-repeat="col in columns">
+                <a ng-if="$first" href="{{ item.uuid }}" ng-click="onBrowse()($event, item)">
+                    {{ item.getValue(col.key)|| col.defaultValue }}
+                </a>
+                <span ng-if="! $first">{{ item.getValue(col.key)|| col.defaultValue }}</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
