@@ -9,6 +9,7 @@
     <script src="{% static 'vendor/angular/angular.min.js' %}"></script>
     <script src="{% static 'vendor/angular-sanitize/angular-sanitize.min.js' %}"></script>
     <script src="{% static 'vendor/angular-toastr/dist/angular-toastr.tpls.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-httpi/build/httpi.min.js' %}"></script>
 
     {% addtoblock "js" %}
         <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
@@ -21,6 +22,7 @@
 
         <!-- move these elsewhere later -->
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/metadata-listing.js' %}"></script>
         <!-- -->
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
@@ -29,6 +31,7 @@
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-service.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/project-service.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/user-service.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
 
