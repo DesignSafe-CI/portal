@@ -5,6 +5,7 @@ from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.connections import connections
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.data.agave.elasticsearch import utils as query_utils
+from itertools import takewhile
 import dateutil.parser
 import itertools
 import datetime
@@ -43,7 +44,7 @@ class ExecuteSearchMixin(object):
 
         .. todo:: this should probably be a wrapper so we can use it everywhere.
         """
-        logger.debug('es query: {}'.format(s.to_dict()))
+        #logger.debug('es query: {}'.format(s.to_dict()))
         try:
             res = s.execute()
         except TransportError as e:
@@ -64,6 +65,60 @@ class PaginationMixin(object):
             offset = 0
             limit = 0
         return offset, limit
+
+
+def merge_listing(system, username, file_path, s):
+    logger.debug('Merging - system: {}, username: {}, file_path: {}'.format(system, username, file_path))
+    listing = []
+    if not s.count():
+        return []
+    
+    prev_doc = Object.from_file_path(system, username, file_path)
+    
+    if file_path == '/' or file_path == '':
+        lfp = 0 
+    else:
+        lfp = len(file_path.strip('/').split('/'))
+                  
+    common_cnt = 0
+    #We use slicing because when using .scan() sorting is not ensured.
+    for doc in s[:s.count()]:
+        owner = doc.full_path.strip('/').split('/')[0]
+        if owner == username:
+            continue
+
+        if not prev_doc:
+            prev_doc = doc
+            continue
+        
+        logger.debug('prev_doc: {}'.format(prev_doc.full_path))
+        logger.debug('doc: {}'.format(doc.full_path))
+
+        prev_comps = prev_doc.full_path.strip('/').split('/')
+        doc_comps = doc.full_path.strip('/').split('/')
+        common = u''
+        for index, f_name in enumerate(prev_comps):
+            if f_name == doc_comps[index]:
+                common += u'{}/'.format(f_name)
+            else:
+                break
+
+        logger.debug('common: {}'.format(common)) 
+
+        if not common:
+            listing.append(prev_doc)
+            prev_doc = doc
+        elif len(prev_doc.parent_path.split('/')) > len(common.strip('/').split('/')):
+            logger.debug('Lets get {}'.format(common))
+            prev_doc = Object.from_file_path(system, prev_doc.parent_path.split('/')[0], common.strip('/')) or prev_doc
+
+        if doc.parent_path.strip('/') == file_path:
+            listing.append(doc)
+
+    if listing and listing[-1].full_path != prev_doc.full_path and prev_doc.full_path != file_path:
+        listing.append(prev_doc)
+    
+    return listing
 
 class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     """Class to wrap Elasticsearch (ES) documents.
@@ -156,17 +211,72 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             return res[0]
         else:
             return None
+    @classmethod
+    def listing_recursive(cls, system, username, file_path, **kwargs):
+        """Do a listing recursevly
+
+        This method will first check if the file_path that is been listing
+        is not a shared file, if so, it will use :func:`_listing_recursive`.
+        If ``file_path`` is a shared file it will combine the listing into
+        common denominators. This approach is neccesary in order to avoid
+        showing empty shared directories or directories where there are
+        no files shared with the requesting user. This gives the user
+        a more fluent navigation.
+
+        .. example::
+            **Reasoning behind combining the listing into common 
+            denomintaros**.
+
+            Say there are three folders ``a/b``, ``a/c`` and ``a/d``.
+            And say a user has shared a few files and directories
+            like this:
+            - ``a/b/path/to/folder``
+            - ``a/b/path/to/folder/file1.txt``
+            - ``a/c/path/another/folder``
+            - ``a/c/path/another/folder2``
+            - ``a/d/file``
+            Then the listing should show as this:
+            - ``a/b/path/to/folder``
+            - ``a/c/path/another``
+            - ``a/d/file``
+            Thus making a more fluent navigation.
+        .. note::
+            This function assumes than when listing the root path 
+            (``/`` or `` ``) then we are doing a listing of shared
+            files.
+        """
+        owner = file_path.split('/')[0]
+        #If we are listing something inside the requesting user's home dir.
+        if username == owner or username == 'ds_admin':
+            return cls._listing_recursive(system, username, file_path)
+        
+        #Everything else should be something shared. If we are listing the
+        #root path get everything.
+        if file_path == '/' or file_path == '':
+            q = Q('filtered',
+                  filter = query_utils.files_access_filter(username, system)
+                  )
+            s = cls.search()
+            s = s.sort('path._path', 'name._exact')
+            s.query = q
+            logger.debug('Recursive Listing query: {}'.format(s.to_dict()))
+            r, s = cls._execute_search(s)
+        else:
+            #Get recursive listing for shared path.
+            r, s = cls._listing_recursive(system, username, file_path)
+
+        listing = merge_listing(system, username, file_path, s)
+        r.hits.total = len(listing)
+        offset, limit = cls.get_paginate_limits(r, **kwargs)
+        return r, listing[offset:limit]
 
     @classmethod
-    def listing_recursive(cls, system, username, file_path):
+    def _listing_recursive(cls, system, username, file_path):
         """Do a listing recursively
 
         This method is an efficient way to recursively do a "listing" of a 
         folder. This is because of the hierarcical tokenizer we have in 
-        `path._path`. There is a caveat about this recurisve listing.
-        The returned object is a list of instances of this class, but sorting
-        is not ensured on this list. Sorting this list is left to the consumer
-        of the api.
+        `path._path`. The returning listing will be sorted by path and name
 
         :param str system: system id
         :param str username: username making the request
@@ -175,7 +285,6 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         :returns: list of :class:`Object`
         :rtype: list
 
-        .. note:: sorting is not ensure on the returned list
         .. note:: the returned list does not contain the parent file
 
         Examples:
@@ -194,6 +303,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
                 and alphabetically.
 
         """
+        #logger.debug('Using username: {}'.format(username))
         q = Q('filtered',
               query = Q('bool',
                         must = [
@@ -203,6 +313,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
               filter = query_utils.files_access_filter(username, system)
               )
         s = cls.search()
+        s = s.sort('path._exact', 'name._exact')
         s.query = q
         return cls._execute_search(s)
 
@@ -506,9 +617,10 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 o.update_pems(permissions)
-        
-        if update_parent_path:
-            self._update_pems_on_parent_path(permissions)
+       
+        #Commenting out to try new pems model 
+        #if update_parent_path:
+        #    self._update_pems_on_parent_path(permissions)
 
         self.update_pems(permissions)
         self.save()
@@ -652,6 +764,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
 
         pems_to_persist += pems_to_add
         #logger.debug('updating permissions on {} with {}'.format(self.meta.id, user_pems))
+        logger.debug('updating permissions: file: {} , pems: {}'.format(self.full_path, pems_to_add))
         self.update(permissions = pems_to_persist)
         self.save()
         return self

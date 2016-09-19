@@ -33,7 +33,8 @@
                     <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
                 </button>
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
-                <a ng-attr-href="{{ file|dsFileUrl }}" ng-click="browseFile($event, file)">{{ file|dsFileDisplayName }}</a>
+                <a ng-attr-href="{{ file|dsFileUrl }}" 
+                   ng-click="browseFile($event, file)">{{ file|dsFileDisplayName }}</a>
             </td>
             <td ng-if = "state.search">
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
