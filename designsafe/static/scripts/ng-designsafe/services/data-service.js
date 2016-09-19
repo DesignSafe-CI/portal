@@ -9,7 +9,6 @@
 
     var service = {};
 
-
     /**
      * Get a list of Data Sources.
      * @returns {HttpPromise} that will be resolved with a list of available data sources.
