@@ -1,11 +1,6 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
-  app.controller('MyDataCtrl', ['$scope', '$location', '$stateParams', 'Django', 'DataService', function ($scope, $location, $stateParams, Django, DataService) {
-
-    if (! $stateParams.fileId) {
-      $stateParams.fileId = 'designsafe.storage.default/' + Django.user + '/';
-      $location.path('/agave/' + $stateParams.fileId);
-    }
+  app.controller('MyDataCtrl', ['$scope', '$location', '$state', '$stateParams', 'Django', 'DataService', function ($scope, $location, $state, $stateParams, Django, DataService) {
 
     $scope.data = {
       user: Django.user,
@@ -21,14 +16,7 @@
 
     $scope.onBrowse = function($event, file) {
       $event.stopPropagation();
-      $stateParams.fileId = file.id;
-      $location.path('/agave/' + $stateParams.fileId);
-      DataService.listPath({
-        resource: 'agave',
-        file_id: $stateParams.fileId
-      }).then(function(resp) {
-        $scope.data.listing = resp.data;
-      });
+      $state.go('myData', {fileId: file.id});
     };
 
     $scope.onSelect = function($event, file) {

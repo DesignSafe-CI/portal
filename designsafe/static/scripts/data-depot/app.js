@@ -9,64 +9,78 @@
     $locationProvider.html5Mode(true);
     $urlMatcherFactoryProvider.strictMode(false);
 
+    $urlRouterProvider.rule(function($injector, $location) {
+
+    });
 
     $stateProvider
 
       /* Private */
-      .state('agave', {
+      .state('agaveDataDefault', {
+        url: '/agave/',
+        abstract: true,
+        controller: ['$state', function($state) {}],
+        template: '<ui-view/>'
+      })
+      .state('agaveData', {
         url: '/agave/{fileId:any}',
-        abstract: true
+        abstract: true,
+        controller: ['$state', function($state) {}],
+        template: '<ui-view/>'
       })
-      .state('agave.myData', {
-        url: '',
+      .state('myData', {
         controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html'
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        params: {
+          fileId: 'designsafe.storage.default/' + Django.user + '/'
+        }
       })
-      .state('agave.sharedData', {
-        url: '',
+      .state('sharedData', {
         controller: 'SharedDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html'
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        params: {
+          fileId: 'designsafe.storage.default/$SHARE/'
+        }
       })
       .state('myProjects', {
-        url: '/projects/{fileId:any}',
-        templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
+        url: '/projects/{projectId}/{fileId:any}',
+        controller: 'ProjectListingCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/project-listing.html',
+        resolve: {
+          'projectId': function($stateParams) { return $stateParams.projectId; },
+          'fileId': function($stateParams) { return $stateParams.fileId; }
+        }
       })
       .state('myPublications', {
-        url: '/my-publications/{fileId:any}',
+        url: '/my-publications/{publicationId}}/{fileId:any}',
         templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
       })
       .state('boxData', {
-        url: '/box/{fileId:any}?',
+        url: '/box/{fileId:any}/',
         templateUrl: '/static/scripts/data-depot/templates/external-data-listing.html'
       })
 
       /* Public */
-      .state('allPublications', {
-        url: '/publications',
-        template: '<pre>local/allPublications.html</pre>'
-      })
-      .state('communityData', {
-        url: '/community-data',
-        template: '<pre>local/communityData.html</pre>'
-      })
-      .state('trainingMaterials', {
-        url: '/training-materials',
-        template: '<pre>local/trainingMaterials.html</pre>'
-      })
+      // .state('allPublications', {
+      //   template: '<pre>local/allPublications.html</pre>'
+      // })
+      // .state('communityData', {
+      //   template: '<pre>local/communityData.html</pre>'
+      // })
+      // .state('trainingMaterials', {
+      //   template: '<pre>local/trainingMaterials.html</pre>'
+      // })
 
       /* Workspace */
-      .state('applicationCatalog', {
-        url: '/workspace/catalog',
-        template: '<pre>local/applicationCatalog.html</pre>'
-      })
-      .state('runApplication', {
-        url: '/workspace/run/{appId:any}?',
-        template: '<pre>local/runApplication.html</pre>'
-      })
-      .state('jobHistory', {
-        url: '/workspace/history/{jobId:any}?',
-        template: '<pre>local/jobHistory.html</pre>'
-      })
+      // .state('applicationCatalog', {
+      //   template: '<pre>local/applicationCatalog.html</pre>'
+      // })
+      // .state('runApplication', {
+      //   template: '<pre>local/runApplication.html</pre>'
+      // })
+      // .state('jobHistory', {
+      //   template: '<pre>local/jobHistory.html</pre>'
+      // })
     ;
 
     $urlRouterProvider.otherwise('/agave/');

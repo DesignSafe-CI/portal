@@ -1,0 +1,12 @@
+<div ng-if="data.projects">
+    <metadata-listing listing="data.projects"
+                      columns="data.columns"
+                      on-browse="onBrowse">
+</div>
+<div ng-if="! data.projects" class="jumbotron">
+    <p class="text-center">
+        <i class="fa fa-spinner fa-spin"></i> Loading projects...
+    </p>
+</div>
+
+<ui-view/>

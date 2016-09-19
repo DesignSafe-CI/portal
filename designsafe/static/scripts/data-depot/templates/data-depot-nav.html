@@ -5,7 +5,10 @@
     </a>
 
     <div class="list-group collapse" ng-if="routerItem.children.length > 0" ng-class="{'in': !routerItem.collapse}" ng-repeat-end>
-        <a class="list-group-item" ng-repeat="childItem in routerItem.children" ng-href="childItem.href" ui-sref-active="active">
+        <a class="list-group-item"
+           ng-repeat="childItem in routerItem.children"
+           ui-sref="{{ childItem.state }}"
+           ui-sref-active="active">
             {{ childItem.name }}
         </a>
     </div>
