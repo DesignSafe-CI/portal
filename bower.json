@@ -33,7 +33,8 @@
     "angular-mocks": "~1.4.8",
     "angular-toastr": "^1.7.0",
     "angular-drag-and-drop-lists": "1.4.0",
-    "angular-xeditable": "0.1.12"
+    "angular-xeditable": "0.1.12",
+    "angular-httpi": "*"
   },
   "resolutions": {
     "angular": "~1.4.8",

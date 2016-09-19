@@ -1,0 +1,14 @@
+{
+  "name": "angular-httpi",
+  "homepage": "https://github.com/bennadel/httpi",
+  "_release": "0575d7bd12",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "0575d7bd12aa67bf633b008476dcdda75878c694"
+  },
+  "_source": "https://github.com/bennadel/httpi.git",
+  "_target": "*",
+  "_originalSource": "angular-httpi",
+  "_direct": true
+}
