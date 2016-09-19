@@ -1,0 +1,176 @@
+<!doctype html>
+<html ng-app="Demo">
+<head>
+	<meta charset="utf-8" />
+	
+	<title>
+		Using The httpi Service To Make AJAX Requests In AngularJS
+	</title>
+
+</head>
+<body ng-controller="DemoController">
+
+	<h1>
+		Using The httpi Service To Make AJAX Requests In AngularJS
+	</h1>
+
+	<p>
+		<em>View the browser console - where all the action is taking place.</em>
+	</p>
+
+
+	<!-- Initialize scripts. -->
+	<script type="text/javascript" src="vendor/angular-1.2.16.min.js"></script>
+	<script type="text/javascript" src="../build/httpi.min.js"></script>
+	<script type="text/javascript">
+
+		// Define the module for our AngularJS application.
+		var app = angular.module( "Demo", [ "httpi" ] );
+
+		
+		// -------------------------------------------------- //
+		// -------------------------------------------------- //
+
+
+		// I control the main demo.
+		app.controller(
+			"DemoController",
+			function( $scope, httpi ) {
+
+				console.warn( "None of the API endpoints exist - they will all throw 404." );
+
+				// NOTE: The (.|.) notation will be stripped out automatically; it's only
+				// here to improve readability of the "happy paths" for the interpolation
+				// labels. The following urls are pre-processed to be identical:
+				// --
+				// api/friends/( :listCommand | :id/:itemCommand )
+				// api/friends/:listCommand:id/:itemCommand
+				var resource = httpi.resource( "api/friends/( :listCommand | :id/:itemCommand )" );
+
+				// Clear list of friends - matching listCommand.
+				var promise = resource.post({
+					data: {
+						listCommand: "reset"
+					}
+				});
+
+				// Create a new friend - no matching URL parameters.
+				var promise = resource.post({
+					data: {
+						name: "Tricia"
+					}
+				});
+
+				// Get a given friend - ID matching.
+				var promise = resource.get({
+					data: {
+						id: 4
+					}
+				});
+
+				// Make best friend - ID, itemCommand matching.
+				var promise = resource.post({
+					data: {
+						id: 4,
+						itemCommand: "make-best-friend"
+					}
+				});
+
+				// Get gets friends - no matching URL parameters.
+				var promise = resource.get({
+					params: {
+						limit: "besties"
+					}
+				});
+
+				// Get a friend as a JSONP request.
+				// --
+				// NOTE: The "resource" will auto-inject the "JSON_CALLBACK" marker that
+				// AngularJS will automatically replace with an internal callback name.
+				var promise = resource.jsonp({
+					data: {
+						id: 43
+					}
+				});
+
+				// Try to abort a request - notice that the request prmise has an 
+				// .abort() method.
+				var promise = resource.get({
+					params: {
+						id: 4
+					}
+				});
+
+				promise.abort();
+
+				// Try to abort a request that is already using the .timeout config.
+				var promise = resource.get({
+					params: {
+						id: 4
+					},
+					timeout: 2000
+				});
+
+				// NOTE: This won't work - see console.warn() output.
+				promise.abort();
+
+
+				// ------------------------------------------ //
+				// ------------------------------------------ //
+
+
+				// By default, the URL interpolation of the httpi module (and resource)
+				// will strip off the trailing slash. However, some APIs require it to be
+				// there; as such, you can optionally tell the httpi and the HttpiResource
+				// to keep the trailing slash if it exists in the resultant URL.
+				var resource = httpi
+					.resource( "api/friends/( :listCommand | :id/:itemCommand )/" )
+					.setKeepTrailingSlash( true )
+				;
+
+				// Clear list of friends - matching listCommand.
+				var promise = resource.post({
+					data: {
+						listCommand: "reset"
+					}
+				});
+
+				// Create a new friend - no matching URL parameters.
+				var promise = resource.post({
+					data: {
+						name: "Tricia"
+					}
+				});
+
+				// Get a given friend - ID matching.
+				var promise = resource.get({
+					data: {
+						id: 4
+					}
+				});
+
+				// Make best friend - ID, itemCommand matching.
+				var promise = resource.post({
+					data: {
+						id: 4,
+						itemCommand: "make-best-friend"
+					}
+				});
+
+				// Get gets friends - no matching URL parameters.
+				// --
+				// NOTE: We are overriding the resource-level keepTrailingSlash setting.
+				var promise = resource.get({
+					params: {
+						limit: "besties"
+					},
+					keepTrailingSlash: false
+				});
+
+			}
+		);
+
+	</script>
+
+</body>
+</html>
