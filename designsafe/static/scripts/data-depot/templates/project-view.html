@@ -7,3 +7,7 @@
         <i class="fa fa-spinner fa-spin"></i> Loading project...
     </p>
 </div>
+
+<div ng-if="data.listing">
+    <dd-listing listing="data.listing" on-browse="onBrowseData"></dd-listing>
+</div>
