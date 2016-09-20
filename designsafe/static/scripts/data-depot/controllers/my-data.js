@@ -16,7 +16,7 @@
 
     $scope.onBrowse = function($event, file) {
       $event.stopPropagation();
-      $state.go('myData', {fileId: file.id});
+      $state.go('agaveData', {fileId: file.id});
     };
 
     $scope.onSelect = function($event, file) {

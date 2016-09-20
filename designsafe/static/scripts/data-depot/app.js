@@ -16,43 +16,69 @@
     $stateProvider
 
       /* Private */
-      .state('agaveDataDefault', {
-        url: '/agave/',
-        abstract: true,
-        controller: ['$state', function($state) {}],
-        template: '<ui-view/>'
-      })
       .state('agaveData', {
-        url: '/agave/{fileId:any}',
-        abstract: true,
-        controller: ['$state', function($state) {}],
-        template: '<ui-view/>'
+        url: '/agave/{fileId:any}/',
+        controllerProvider: ['$stateParams', 'DataService', function($stateParams, DataService) {
+          var parsedFileId = DataService.parseFileId($stateParams.fileId);
+          if (parsedFileId.user === Django.user) {
+            return 'MyDataCtrl';
+          } else {
+            return 'SharedDataCtrl';
+          }
+        }],
+        templateUrl: function() {
+          return '/static/scripts/data-depot/templates/agave-data-listing.html';
+        }
       })
       .state('myData', {
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        controller: ['$state', function($state) {
+          $state.go('agaveData', {fileId: $state.params.fileId});
+        }],
+        template: '',
         params: {
-          fileId: 'designsafe.storage.default/' + Django.user + '/'
+          fileId: 'designsafe.storage.default/' + Django.user
         }
       })
       .state('sharedData', {
-        controller: 'SharedDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        controller: ['$state', function($state) {
+          $state.go('agaveData', {fileId: $state.params.fileId});
+        }],
+        template: '',
         params: {
-          fileId: 'designsafe.storage.default/$SHARE/'
+          fileId: 'designsafe.storage.default/$SHARE'
         }
       })
-      .state('myProjects', {
-        url: '/projects/{projectId}/{fileId:any}',
+      .state('projects', {
+        url: '/projects/',
+        abstract: true,
+        controller: 'ProjectRootCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/project-root.html'
+      })
+      .state('projects.list', {
+        url: '',
         controller: 'ProjectListingCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-listing.html',
+        templateUrl: '/static/scripts/data-depot/templates/project-listing.html'
+      })
+      .state('projects.view', {
+        url: '{projectId}/',
+        controller: 'ProjectViewCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/project-view.html',
         resolve: {
           'projectId': function($stateParams) { return $stateParams.projectId; },
-          'fileId': function($stateParams) { return $stateParams.fileId; }
+          'filePath': function() { return ''; }
+        }
+      })
+      .state('projects.viewData', {
+        url: '{projectId}/{filePath:any}/',
+        controller: 'ProjectViewCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/project-view.html',
+        resolve: {
+          'projectId': function($stateParams) { return $stateParams.projectId; },
+          'filePath': function($stateParams) { return $stateParams.filePath; }
         }
       })
       .state('myPublications', {
-        url: '/my-publications/{publicationId}}/{fileId:any}',
+        url: '/my-publications/{publicationId}}/{fileId:any}/',
         templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
       })
       .state('boxData', {
