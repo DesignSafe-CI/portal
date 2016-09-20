@@ -77,6 +77,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         if file_id is None:
             return False
         parsed_file_id = self.parse_file_id(file_id)
+        logger.debug('parsed_file_id: {}'.format(parsed_file_id))
         return not (parsed_file_id[0] == settings.AGAVE_STORAGE_SYSTEM and
                     (parsed_file_id[1] == self.username or self.is_search(file_id)) )
    
@@ -145,12 +146,13 @@ class FileManager(AbstractFileManager, AgaveObject):
             for more information.
         """
         listing_owner = file_path.strip('/').split('/')[0]
-        if file_path != '/' and listing_owner == username:
+        is_shared = listing_owner != username
+        if file_path != '/' and not is_shared:
             res, listing = Object.listing(system, username, file_path, **kwargs)
         else:
             res, listing = Object.listing_recursive(system, username, file_path, **kwargs)
 
-        logger.debug('listing: {}'.format([o.full_path for o in listing]))
+        logger.debug('file_id: {}'.format(file_path))
 
         if system == settings.AGAVE_STORAGE_SYSTEM and file_path == '/':
             list_data = {
@@ -166,12 +168,14 @@ class FileManager(AbstractFileManager, AgaveObject):
                 'children': [o.to_file_dict() for o in listing if o.name != username],
                 '_trail': [],
                 '_pems': [{'username': self.username, 'permission': {'read': True}}],
+                'shared': is_shared
             }
         else:
             root_listing = Object.from_file_path(system, listing_owner, file_path)
             if root_listing:
                 list_data = root_listing.to_file_dict()
                 list_data['children'] = [o.to_file_dict() for o in listing]
+                list_data['shared'] = is_shared
             else:
                 list_data = None
 

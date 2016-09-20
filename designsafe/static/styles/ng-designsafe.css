@@ -12,7 +12,7 @@
 }
 
 .breadcrumb.breadcrumb-ds .breadcrumb-display {
-    line-height:14px;
+    line-height:18px;
 }
 
 .flo-select-btn {
@@ -340,8 +340,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
+    vertical-align:text-bottom;
+    height:18px;
 }
 
 .path-wrap:hover {
     max-width: initial;
+}
+
+.share-path {
+    color:#999;
+}
+
+.share-path:hover {
+    max-width:120px;
 }

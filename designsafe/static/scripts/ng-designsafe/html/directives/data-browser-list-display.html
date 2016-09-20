@@ -34,7 +34,13 @@
                 </button>
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])" ng-if="!enableSelection"></i>
                 <a ng-attr-href="{{ file|dsFileUrl }}" 
-                   ng-click="browseFile($event, file)">{{ file|dsFileDisplayName }}</a>
+                   ng-click="browseFile($event, file)"
+                   ng-if="!data.listing.shared">{{ file|dsFileDisplayName }}</a>
+
+                <div class="path-wrap share-path">{{file.path|dsSharedFilePath:data.listing}}</div>
+                <a ng-attr-href="{{ file|dsFileUrl }}" 
+                   ng-click="browseFile($event, file)"
+                   ng-if="data.listing.shared">{{ file|dsFileDisplayName }}</a>
             </td>
             <td ng-if = "state.search">
                 <i class="fa fa-fw" ng-class="getIconClass(file, state.hover[file.id])"></i>
