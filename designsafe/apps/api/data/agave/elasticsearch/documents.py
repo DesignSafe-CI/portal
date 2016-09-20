@@ -120,6 +120,62 @@ def merge_listing(system, username, file_path, s):
     
     return listing
 
+def _names_equal(name):
+    return all(n==name[0] for n in name[1:])
+
+def _common_prefix(paths):
+    levels = zip(*[p.full_path.split('/') for p in paths])
+    return '/'.join(x[0] for x in takewhile(_names_equal, levels))
+
+def merge_file_paths(system, username, file_path, s):
+    logger.debug('Merging - system: {}, username: {}, file_path: {}'.format(system, username, file_path))
+    listing = []
+    if not s.count():
+        return []
+
+    file_path_comps = file_path.strip('/').split('/')
+    if file_path == '/' or file_path == '':
+        lfp = 1
+    else:
+        lfp = len(file_path_comps) + 1
+
+    common_paths = {}
+    for doc in s[:s.count()]:
+        if doc.owner == username or doc.full_path.strip('/') == file_path:
+            continue
+
+        logger.debug('doc: {}'.format(doc.full_path))
+
+        common_path = '/'.join(doc.full_path.split('/')[:lfp])
+        logger.debug('common_path: {}'.format(common_path))
+        if common_path not in common_paths:
+            common_paths[common_path] = [doc]
+        else:
+            common_paths[common_path].append(doc)
+
+    for key, val in six.iteritems(common_paths):
+        #If only one children on the common path key
+        #then it's supposed to show on the listing
+        if len(val) == 1:
+            listing += val
+            continue
+
+        common_prefix = _common_prefix(val)
+        #If they don't have a common prefix or the level of the common_prefix is the same  
+        #as the file_path being listed then they're all on the same level
+        #and are children of the listing
+        if not common_prefix:
+            listing += val
+            continue
+        
+        #Add the common_prefix document to the listing.
+        #As long as it's valid.
+        d = Object.from_file_path(system, common_prefix.split('/')[0], common_prefix)
+        if d:
+            listing.append(d)
+
+    return listing
+
 class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     """Class to wrap Elasticsearch (ES) documents.
         
@@ -265,7 +321,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             #Get recursive listing for shared path.
             r, s = cls._listing_recursive(system, username, file_path)
 
-        listing = merge_listing(system, username, file_path, s)
+        listing = merge_file_paths(system, username, file_path, s)
         r.hits.total = len(listing)
         offset, limit = cls.get_paginate_limits(r, **kwargs)
         return r, listing[offset:limit]
@@ -531,6 +587,17 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         :rtype: str
         """
         return os.path.join(self.path, self.name)
+
+    @property
+    def owner(self):
+        """Returns the owner of the file.
+
+        The owner is, basically, the first folder of the filepath
+
+        :returns: owner's username
+        :rtype: str
+        """
+        return self.full_path.strip('/').split('/')[0]
 
     @property
     def parent_path(self):
