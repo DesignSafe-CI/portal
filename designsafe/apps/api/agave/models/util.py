@@ -1,5 +1,5 @@
 from django.core.serializers.json import DjangoJSONEncoder
-from .agave import BaseAgaveResource
+from . import BaseAgaveResource
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,5 @@
-from designsafe.apps.api.agave import BaseMetadataResource, BaseMetadataPermissionResource
+from designsafe.apps.api.agave.models.metadata import (BaseMetadataResource,
+                                                       BaseMetadataPermissionResource)
 from designsafe.apps.api.data.agave.file import AgaveFile
 import json
 

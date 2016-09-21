@@ -5,7 +5,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.agave import get_service_account_client
-from designsafe.apps.api.agave.util import AgaveJSONEncoder
+from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 import logging
 
 logger = logging.getLogger(__name__)
