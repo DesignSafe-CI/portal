@@ -1,26 +1,5 @@
-from agavepy.agave import Agave
-from django.conf import settings
 import json
-
-
-def get_service_account_client():
-    return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                 token=settings.AGAVE_SUPER_TOKEN)
-
-
-class BaseAgaveResource(object):
-    """
-    Base Class that all Agave API Resource objects inherit from.
-    """
-
-    def __init__(self, agave_client):
-        """
-        :param agave_client: agavepy.Agave instance this model will use
-        """
-        self._agave = agave_client
-
-    def from_result(self, **kwargs):
-        raise NotImplementedError("Subclasses should implement this method")
+from . import BaseAgaveResource
 
 
 class BaseMetadataResource(BaseAgaveResource):
@@ -109,8 +88,6 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
         self.metadata_uuid = metadata_uuid
         self.username = None
         self._pems = {}
-        self.read = False
-        self.write = False
         self.from_result(**kwargs)
 
     def from_result(self, **kwargs):
@@ -205,6 +182,3 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
         """
         records = agave_client.meta.listMetadataPermissions(uuid=metadata_uuid)
         return [cls(metadata_uuid, agave_client, **r) for r in records]
-
-
-
