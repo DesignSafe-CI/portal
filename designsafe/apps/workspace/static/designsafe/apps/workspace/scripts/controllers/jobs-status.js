@@ -16,8 +16,7 @@
             if(resp.data._embedded.metadata[i].name === 'interactiveJobDetails') {
               var meta = resp.data._embedded.metadata[i];
               $scope.data.interactive = true;
-              $scope.data.connection_address = 'https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname='
-                + meta.value.host + '&port=' + meta.value.port + '&autoconnect=true&password=' + meta.value.password;
+              $scope.data.connection_address = meta.value.extra.target_uri;
               break;
             }
           }

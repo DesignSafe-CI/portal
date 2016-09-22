@@ -31,12 +31,16 @@ def generic_webhook_handler(request):
     if event_type == 'VNC':
         job_owner = request.POST.get('owner', '')
         host = request.POST.get('host', '')
-        port = request.POST.get('port','')
-        password = request.POST.get('password','')
+        port = request.POST.get('port', '')
+        password = request.POST.get('password', '')
+        address = request.POST.get('address', '')
         job_uuid = password
-        vnc_connect_link = \
-            'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
-            'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
+        if(host == 'designsafe-exec-01.tacc.utexas.edu'):
+            target_uri = 'https://' + address + '&port=%s&autoconnect=true' % (port)
+        else:
+            target_uri = \
+                'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
+                'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
 
         event_data = {
             Notification.EVENT_TYPE: event_type,
@@ -46,9 +50,10 @@ def generic_webhook_handler(request):
             Notification.EXTRA: {
                 'host': host,
                 'port': port,
+                'address': address,
                 'password': password,
                 'associationIds': job_uuid,
-                'target_uri': vnc_connect_link
+                'target_uri': target_uri
             }
         }
         n = Notification.objects.create(**event_data)

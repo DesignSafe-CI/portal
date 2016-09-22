@@ -90,7 +90,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="https://vis.tacc.utexas.edu/no-vnc/vnc.html?hostname={{msg.extra.host}}&port={{msg.extra.port}}&autoconnect=true&password={{msg.extra.password}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+        <a href="{{msg.extra.target_uri}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
         <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
     </div>
 </script>
