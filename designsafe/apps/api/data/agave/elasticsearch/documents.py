@@ -66,60 +66,6 @@ class PaginationMixin(object):
             limit = 0
         return offset, limit
 
-
-def merge_listing(system, username, file_path, s):
-    logger.debug('Merging - system: {}, username: {}, file_path: {}'.format(system, username, file_path))
-    listing = []
-    if not s.count():
-        return []
-    
-    prev_doc = Object.from_file_path(system, username, file_path)
-    
-    if file_path == '/' or file_path == '':
-        lfp = 0 
-    else:
-        lfp = len(file_path.strip('/').split('/'))
-                  
-    common_cnt = 0
-    #We use slicing because when using .scan() sorting is not ensured.
-    for doc in s[:s.count()]:
-        owner = doc.full_path.strip('/').split('/')[0]
-        if owner == username:
-            continue
-
-        if not prev_doc:
-            prev_doc = doc
-            continue
-        
-        logger.debug('prev_doc: {}'.format(prev_doc.full_path))
-        logger.debug('doc: {}'.format(doc.full_path))
-
-        prev_comps = prev_doc.full_path.strip('/').split('/')
-        doc_comps = doc.full_path.strip('/').split('/')
-        common = u''
-        for index, f_name in enumerate(prev_comps):
-            if f_name == doc_comps[index]:
-                common += u'{}/'.format(f_name)
-            else:
-                break
-
-        logger.debug('common: {}'.format(common)) 
-
-        if not common:
-            listing.append(prev_doc)
-            prev_doc = doc
-        elif len(prev_doc.parent_path.split('/')) > len(common.strip('/').split('/')):
-            logger.debug('Lets get {}'.format(common))
-            prev_doc = Object.from_file_path(system, prev_doc.parent_path.split('/')[0], common.strip('/')) or prev_doc
-
-        if doc.parent_path.strip('/') == file_path:
-            listing.append(doc)
-
-    if listing and listing[-1].full_path != prev_doc.full_path and prev_doc.full_path != file_path:
-        listing.append(prev_doc)
-    
-    return listing
-
 def _names_equal(name):
     return all(n==name[0] for n in name[1:])
 
@@ -128,7 +74,6 @@ def _common_prefix(paths):
     return '/'.join(x[0] for x in takewhile(_names_equal, levels))
 
 def merge_file_paths(system, username, file_path, s):
-    logger.debug('Merging - system: {}, username: {}, file_path: {}'.format(system, username, file_path))
     listing = []
     if not s.count():
         return []
@@ -144,10 +89,8 @@ def merge_file_paths(system, username, file_path, s):
         if doc.owner == username or doc.full_path.strip('/') == file_path:
             continue
 
-        logger.debug('doc: {}'.format(doc.full_path))
 
         common_path = '/'.join(doc.full_path.split('/')[:lfp])
-        logger.debug('common_path: {}'.format(common_path))
         if common_path not in common_paths:
             common_paths[common_path] = [doc]
         else:
