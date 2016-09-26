@@ -13,7 +13,7 @@ class NotificationPreferencesTests(TestCase):
         # configure admin user
         user = get_user_model().objects.get(pk=1)
         user.set_password('admin/password')
-        perm = Permission.objects.get(codename='designsafe_accounts.view_notification_subscribers')
+        perm = Permission.objects.get(codename='view_notification_subscribers')
         user.user_permissions.add(perm)
         user.save()
 
@@ -38,8 +38,11 @@ class NotificationPreferencesTests(TestCase):
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 403)
         self.client.logout()
+        user = get_user_model().objects.get(pk=2)
+        perm = Permission.objects.get(codename='view_notification_subscribers')
+        user.user_permissions.add(perm)
 
-        self.client.login(username='ds_admin', password='admin/password')
+        self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, '"Name","Email"')

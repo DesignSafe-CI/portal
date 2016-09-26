@@ -70,8 +70,8 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 ### Importing data from production
 
-If you need or want to import data from production to a local development instance 
-running SQLite, you will need to create a `datadump.json` file using the Django `dumpdata` 
+If you need or want to import data from production to a local development instance
+running SQLite, you will need to create a `datadump.json` file using the Django `dumpdata`
 command.
 
 To dump data from the production database you will first need an environment/configuration
@@ -115,7 +115,7 @@ install all the Python/Django/npm dependencies locally (ideally within a virtual
 is already done in the docker container.
 
 We assume you have the image built or checked out locally and it is called
-`designsafeci/portal`.
+`portal_django`.
 
 ### Django tests
 
@@ -124,7 +124,7 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker run -it --rm designsafe/portal python manage.py test
+$ docker run -it --rm portal_django python manage.py test --settings=designsafe.test_settings
 ```
 
 ### Frontend tests
@@ -136,7 +136,7 @@ To run frontend tests, ensure that all scripts and test scripts are configured i
 [`karma-conf.js`](karma-conf.js) and then run the command:
 
 ```shell
-$ docker run -it --rm designsafe/portal bin/run-tests.sh
+$ docker run -it --rm portal_django bin/run-tests.sh
 ```
 
 ## Development setup
