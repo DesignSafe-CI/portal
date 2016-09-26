@@ -504,14 +504,13 @@ def departments_json(request):
     return HttpResponse(json.dumps(departments), content_type='application/json')
 
 
-@permission_required('view_notification_subscribers', raise_exception=True)
+@permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def mailing_list_subscription(request, list_name):
     subscribers = ['"Name","Email"']
     if list_name == 'announcements':
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
             Q(notification_preferences__announcements=True))
-        subscribers += list('"{0}","{1}"'.format(u.get_full_name(), u.email) for u in su)
+        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'), u.email.encode('utf-8')) for u in su)
 
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
-
