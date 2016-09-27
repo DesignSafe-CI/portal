@@ -9,30 +9,7 @@ class BaseMetadataResource(BaseAgaveResource):
     """
 
     def __init__(self, agave_client, **kwargs):
-        super(BaseMetadataResource, self).__init__(agave_client)
-        self.uuid = None
-        self.owner = None
-        self.schemaId = None
-        self.internalUsername = None
-        self.associationIds = []
-        self.name = None
-        self.value = {}
-        self.lastUpdated = None
-        self.created = None
-        self._links = {}
-        self.from_result(**kwargs)
-
-    def from_result(self, **kwargs):
-        self.uuid = kwargs.get('uuid')
-        self.owner = kwargs.get('owner')
-        self.schemaId = kwargs.get('schemaId')
-        self.internalUsername = kwargs.get('internalUsername')
-        self.associationIds = kwargs.get('associationIds', [])
-        self.name = kwargs.get('name')
-        self.value = kwargs.get('value', {})
-        self.lastUpdated = kwargs.get('lastUpdated')
-        self.created = kwargs.get('created')
-        self._links = kwargs.get('_links')
+        super(BaseMetadataResource, self).__init__(agave_client, **kwargs)
 
     @property
     def request_body(self):
@@ -65,17 +42,10 @@ class BaseMetadataResource(BaseAgaveResource):
         self.from_result(**result)
         return self
 
-    def fetch(self):
-        """
-        Gets fetches/refreshes this record from the API.
-
-        :return: self
-        :rtype: :class:`BaseMetadataResource`
-        """
-        if self.uuid:
-            result = self._agave.meta.getMetadata(uuid=self.uuid)
-            self.from_result(**result)
-        return self
+    @classmethod
+    def from_uuid(cls, agave_client, uuid):
+        result = agave_client.meta.getMetadata(uuid=uuid)
+        return cls(agave_client=agave_client, **result)
 
 
 class BaseMetadataPermissionResource(BaseAgaveResource):
@@ -91,6 +61,7 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
         self.from_result(**kwargs)
 
     def from_result(self, **kwargs):
+        super(BaseMetadataPermissionResource, self).from_result(**kwargs)
         self.username = kwargs.get('username')
         self._pems = kwargs.get('permission', {})
 
