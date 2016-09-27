@@ -129,10 +129,10 @@ class FileManager(AbstractFileManager, AgaveObject):
     def _es_listing(self, system, username, file_path, **kwargs):
         """Returns a "listing" dict constructed with the response from Elasticsearch.
 
-        :param str system: system id
-        :param str username: username which is requesting the listing. 
+        :param basestring system: system id
+        :param basestring username: username which is requesting the listing.
                              This is to check the permissions in the ES docs.
-        :param str file_path: path to list
+        :param basestring file_path: path to list
 
         :returns: A dict with information of the listed file and, when possible, 
         a list of :class:`~designsafe.apps.api.data.agave.elasticsearch.documents.Object` objects
@@ -359,7 +359,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         --------
             Delete a file. `fm` is an instance of FileManager
             >>> fm.delete(system = 'designsafe.storage.default',
-            >>>         file_path = 'username/.Trash/file.jpg', 
+            >>>         path = 'username/.Trash/file.jpg',
             >>>         file_user = 'username')
         """
         system, file_user, file_path = self.parse_file_id(file_id)

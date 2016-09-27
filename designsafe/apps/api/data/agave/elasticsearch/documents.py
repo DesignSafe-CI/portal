@@ -330,7 +330,9 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         is done to retrieve the file's permissions and add them to the document.
 
         :param str username: username making the request
-        :param object file_obj: :class:`~designsafe.apps.api.data.agave.file.AgaveFile` obj
+        :param AgaveFile file_obj: the
+            :class:`~designsafe.apps.api.data.agave.file.AgaveFile` object to get ES index
+            data for
         :param bool auto_update: if set to `True` and the `file_obj` document exists
             then the document will be updated and returned
         :param bool get_pems: if set to `True` permissions will be retrieved by accessing
