@@ -448,8 +448,8 @@ class AgaveFile(AbstractFile, AgaveObject):
         for pem in pems_args:
             self.update_pems(pem['user_to_share'], pem['permission'], recursive)
         
-        if update_parent_path:
-            self._update_pems_on_parent_path(pems_args)
+        #if update_parent_path:
+        #    self._update_pems_on_parent_path(pems_args)
 
         return self
 

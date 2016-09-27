@@ -1142,15 +1142,18 @@
         };
 
         scope.downloadEnabled = function() {
-          return true;
+          var selectedFiles = dbCtrl.selectedFiles();
+          return dbCtrl.hasPermission('read', selectedFiles);
         };
 
         scope.metadataEnabled = function() {
-          return scope.state.selected.length === 1;
+          var selectedFiles = dbCtrl.selectedFiles();
+          return scope.state.selected.length === 1 && dbCtrl.hasPermission('read', selectedFiles);
         };
 
         scope.previewEnabled = function() {
-          return scope.state.selected.length === 1;
+          var selectedFiles = dbCtrl.selectedFiles();
+          return scope.state.selected.length === 1 && dbCtrl.hasPermission('read', selectedFiles);
         };
 
         scope.renameEnabled = function() {
@@ -1163,9 +1166,11 @@
 
         scope.shareEnabled = function() {
           var selectedFiles = dbCtrl.selectedFiles();
-          return scope.data.listing.source === 'agave' &&
+          return scope.state.selected.length === 1 &&
+            scope.data.listing.source === 'agave' &&
             (! dbCtrl.hasProtected(selectedFiles)) &&
-            scope.state.selected.length === 1;
+            (dbCtrl.hasPermission('write', selectedFiles))
+            ;
         };
 
         scope.moveEnabled = function() {

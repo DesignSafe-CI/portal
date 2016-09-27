@@ -5,5 +5,5 @@ ELASTIC_SEARCH = {
             'designsafe-es02.tacc.utexas.edu',
         ]
     },
-    'default_index': 'designsafe'
+    'default_index': 'pemstesting'
 }

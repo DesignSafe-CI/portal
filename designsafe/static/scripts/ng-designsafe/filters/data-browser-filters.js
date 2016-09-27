@@ -62,9 +62,9 @@
       }
       if (item.path  === '' || item.path === '/'){
         return item.metadata.project.title;
-      } else if (item.path.split('/').length == 1 
-                && typeof item.metadata.experiments !== 'undefined'
-                && item.name.toLowerCase().startsWith('experiment')){
+      } else if (item.path.split('/').length == 1 && 
+                 typeof item.metadata.experiments !== 'undefined' && 
+                 item.name.toLowerCase().startsWith('experiment')){
         var meta = _.findWhere(item.metadata.experiments, {name: item.name});
         var title = meta.title || item.name;
         return title;
@@ -88,6 +88,28 @@
       } else {
         return item.name;
       }
+    };
+  }]);
+
+  mod.filter('dsSharedFilePath', [function(){
+    return function(path, listing){
+      if (typeof listing === 'undefined' ||
+          !listing || listing === null){
+          listing = '';
+      }
+      var basePath = '';
+      if (listing.name.toLowerCase() !== '$share'){
+        if (listing.path == '/'){
+          basePath = listing.name;
+        } else {
+          basePath = listing.path + '/' + listing.name;
+        }
+      } else {
+        basePath = '';
+      }
+      var re = new RegExp('^' + basePath + '/?');
+      var retPath = path.replace(re, '');
+      return retPath;
     };
   }]);
 

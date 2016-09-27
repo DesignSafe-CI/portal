@@ -388,7 +388,8 @@ class FileShareTestCase(FileBaseTestCase):
             self.assertEqual(args[0][0]['permission'], pems)
 
         self.assertEqual(mock_update_pems.call_count, len(listing_json) + 1)
-        self.assertEqual(mock_obj().save.call_count, len(file_path_comps))
+        # we are not updating parent directory anymore.
+        #self.assertEqual(mock_obj().save.call_count, len(file_path_comps))
         mock_listing_recursive.assert_called_with(self.afolder_json['system'],
                         self.user.username, self.afolder_json['path'])
         self.assertTrue(mock_save.called)
