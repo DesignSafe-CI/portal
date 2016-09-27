@@ -25,13 +25,13 @@
 
   mod.factory('ProjectService', ['httpi', '$interpolate', '$q', 'Logging', function(httpi, $interpolate, $q, Logging) {
 
-    var logger = Logging.getLogger('ngDesignSafe.ProjectService');
+    var logger = Logging.getLogger('DataDepot.ProjectService');
 
     var service = {};
 
     var projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     var collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
-    var dataResource = httpi.resource('/api/projects/:uuid/data/').setKeepTrailingSlash(true);
+    var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
 
     /**
      * Get a list of Projects for the current user
@@ -102,12 +102,13 @@
 
     /**
      *
-     * @param project
-     * @param {string} project.uuid The Project uuid
+     * @param options
+     * @param {string} options.uuid The Project uuid
+     * @param {string} [options.fileId] the Project data file id to list
      * @returns {HttpPromise}
      */
-    service.projectData = function(project) {
-      return dataResource.get({params: project});
+    service.projectData = function(options) {
+      return dataResource.get({params: options});
     };
 
     return service;

@@ -1,0 +1,8 @@
+<dd-breadcrumb listing="data.listing" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
+<dd-listing ng-if="data.listing.type === 'dir'" listing="data.listing"
+            on-browse="onBrowse"
+            on-select="onSelect"
+            on-detail="onDetail"></dd-listing>
+<div ng-if="data.listing.type === 'file'">
+    Preview {{ data.listing }}
+</div>

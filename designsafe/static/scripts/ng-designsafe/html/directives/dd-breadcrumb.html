@@ -1,0 +1,6 @@
+<ul class="breadcrumb">
+    <li ng-repeat="item in listing.trail">
+        <span ng-if="$last">{{ item.name }}</span>
+        <a href="{{ itemHref()(item) }}" ng-if="! $last">{{ item.name }}</a>
+    </li>
+</ul>

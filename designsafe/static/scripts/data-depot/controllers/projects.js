@@ -26,10 +26,14 @@
         });
 
         // TODO build this for each path component
-        $scope.data.navItems.push({
-          label: toStateParams.filePath,
-          href: $state.href('projects.viewData', {projectId: toStateParams.projectId, filePath: toStateParams.filePath}),
-          params: toStateParams.projectId,
+        _.each(toStateParams.filePath.split('/'), function(e, i, l) {
+          $scope.data.navItems.push({
+            label: e,
+            href: $state.href('projects.viewData', {
+              projectId: toStateParams.projectId,
+              filePath: l.slice(0, i + 1).join('/')
+            })
+          });
         });
       }
     });
@@ -75,16 +79,24 @@
       $scope.data.project = project;
     });
 
-    DataService.listPath({
-      resource: 'agave',
-      file_id: ['designsafe.storage.projects', projectId, filePath].join('/')}
-    ).then(function(resp) {
+    ProjectService.projectData({
+      uuid: projectId,
+      fileId: filePath
+    }).then(function(resp) {
       $scope.data.listing = resp.data;
+      $scope.data.listing.href = $state.href('projects.viewData', {
+        projectId: projectId,
+        filePath: $scope.data.listing.path.split('/').slice(2).join('/')
+      });
+      $scope.data.listing.children = _.map($scope.data.listing.children, function(f) {
+        f.href = $state.href('projects.viewData', {projectId: projectId, filePath: f.path.split('/').slice(2).join('/')});
+        return f;
+      });
     });
 
     $scope.onBrowseData = function onBrowse($event, file) {
       $event.preventDefault();
-      var filePath = file.id.split('/').slice(2).join('/');
+      var filePath = file.path.split('/').slice(2).join('/');
       $state.go('projects.viewData', {projectId: projectId, filePath: filePath});
     };
 
