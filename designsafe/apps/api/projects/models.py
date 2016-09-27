@@ -1,6 +1,6 @@
 from designsafe.apps.api.agave.models.metadata import (BaseMetadataResource,
                                                        BaseMetadataPermissionResource)
-from designsafe.apps.api.data.agave.file import AgaveFile
+from designsafe.apps.api.agave.models.files import BaseFileResource
 import json
 
 
@@ -84,8 +84,8 @@ class Project(BaseMetadataResource):
         :return: The AgaveFile for this project's root dir
         :rtype: :class:`AgaveFile`
         """
-        return AgaveFile.from_file_path(Project.storage_system_id,
-                                        file_path=self.uuid,
+        return BaseFileResource.listing(system=Project.storage_system_id,
+                                        path=self.uuid,
                                         agave_client=self._agave)
 
     @project_directory.setter
@@ -105,6 +105,6 @@ class Project(BaseMetadataResource):
     @property
     def project_data_listing(self, path=''):
         file_path = '/'.join([self.uuid, path])
-        return AgaveFile.listing(Project.storage_system_id,
-                                 file_path=file_path,
-                                 agave_client=self._agave)
+        return BaseFileResource.listing(system=Project.storage_system_id,
+                                        path=file_path,
+                                        agave_client=self._agave)

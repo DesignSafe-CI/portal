@@ -1,39 +1,16 @@
 import json
 import os
-from datetime import datetime
+import urllib
 from . import BaseAgaveResource
 
 
-class BaseAgaveFile(BaseAgaveResource):
-    """
+class BaseFileResource(BaseAgaveResource):
+    """Represents an Agave Files API Resource"""
 
-    """
-
-    def __init__(self, agave_client, **kwargs):
-        super(BaseAgaveFile, self).__init__(agave_client)
-        self.name = None
-        self.path = None
-        self.lastModified = None
-        self.length = 0
-        self.permissions = None
-        self.format = None
-        self.mimeType = None
-        self.type = None
-        self.system = None
-        self._links = {}
-        self.from_result(**kwargs)
-
-    def from_result(self, **kwargs):
-        self.name = kwargs.get('name')
-        self.path = kwargs.get('path')
-        self.lastModified = kwargs.get('lastModified')
-        self.length = kwargs.get('length', 0)
-        self.permissions = kwargs.get('permissions')
-        self.format = kwargs.get('format')
-        self.mimeType = kwargs.get('mimeType')
-        self.type = kwargs.get('type')
-        self.system = kwargs.get('system')
-        self._links = kwargs.get('_links', {})
+    def __init__(self, agave_client, system, path, **kwargs):
+        super(BaseFileResource, self).__init__(agave_client, system=system, path=path,
+                                               **kwargs)
+        self._children = None
 
     def __str__(self):
         return self.id
@@ -41,48 +18,90 @@ class BaseAgaveFile(BaseAgaveResource):
     def __repr__(self):
         return '<BaseAgaveFile: {}>'.format(self._links['self']['href'])
 
-    @classmethod
-    def from_path(cls, agave_client, system, file_path):
-        list_result = agave_client.files.list(systemId=system, filePath=file_path)
-        file_result = list_result[0]
-        if file_result['type'] == 'dir':
-            # directory names display as "." from API
-            file_result['name'] = os.path.basename(file_result['path'])
-        return cls(agave_client=agave_client, **file_result)
+    @property
+    def id(self):
+        return '/'.join([self.system, self.path])
 
-    def copy(self, destination, new_name=None):
+    @property
+    def children(self):
+        if self.type == 'dir' and self._children is None:
+            listing = self.listing(self._agave, self.system, self.path)
+            self._children = listing._children
+        return self._children
+
+    @children.setter
+    def children(self, value):
+        self._children = value
+
+    @property
+    def trail(self):
+        """
+        Parses the path of the file to return a list of dicts representing the paths/files
+        that progressively lead up to this file. For example, if the file has the path::
+
+            /foo/bar/bin/file.txt
+
+        then the trail will be::
+
+            [
+                {'path': '/', 'name': '/'},
+                {'path': '/foo', 'name': 'foo'},
+                {'path': '/foo/bar', 'name': 'bar'},
+                {'path': '/foo/bar/bin', 'name': 'bin'},
+                {'path': '/foo/bar/bin/file.txt', 'name': 'file.txt'},
+            ]
+
+        :return: The file trail
+        :rtype:
+        """
+        path_comps = self.path.split('/')
+
+        # the first item in path_comps is '', which represents '/'
+        trail_comps = [{'name': path_comps[i] or '/',
+                        'path': '/'.join(path_comps[0:i+1]) or '/',
+                        } for i in range(0, len(path_comps))]
+        return trail_comps
+
+    def as_json(self):
+        ser = super(BaseFileResource, self).as_json()
+        if self._children is not None:
+            ser['children'] = [c.as_json() for c in self._children]
+
+        ser['trail'] = self.trail
+        return ser
+
+    def copy(self, dest_path, file_name=None):
         """
         Copies the current file to the provided destination path. If new_name is provided
         the copied file will be renamed as that. If new_name is not provided then the file
         will be copied with the same name.
-        :param str destination: The full path to the destination directory. This path must
+        :param str dest_path: The full path to the destination directory. This path must
             exist on the same system as the original file.
-        :param str new_name: The name for the newly copied file. Defaults to the same name
-            as the original file.
-        :return: The newly copied file.
-        :rtype: BaseAgaveFile
+        :param str file_name: (optional) The name for the copied file. Defaults to the
+            same name as the original file.
+        :return: The copied file.
+        :rtype: :class:`BaseFileResource`
         """
-        if new_name is None:
-            new_name = self.name
-        body = {'action': 'copy', 'path': '/'.join([destination, new_name])}
-        copy_result = self._agave.files.manage(systemId=self.system, filePath=self.path,
+        if file_name is None:
+            file_name = self.name
+
+        body = {'action': 'copy', 'path': '/'.join([dest_path, file_name])}
+        copy_result = self._agave.files.manage(systemId=self.system,
+                                               filePath=urllib.quote(self.path),
                                                body=body)
-        return BaseAgaveFile.from_path(self._agave, self.system, copy_result['path'])
+        return BaseFileResource.listing(self._agave, self.system, copy_result['path'])
 
     def delete(self):
         """
         Removes this file from the remote system.
-        :return:
+        :return: None
         """
-        self._agave.files.delete(systemId=self.system, filePath=self.path)
+        self._agave.files.delete(systemId=self.system, filePath=urllib.quote(self.path))
 
     def history(self):
-        history = self._agave.files.getHistory(systemId=self.system, filePath=self.path)
+        history = self._agave.files.getHistory(systemId=self.system,
+                                               filePath=urllib.quote(self.path))
         return [BaseAgaveFileHistoryRecord(self._agave, **h) for h in history]
-
-    @property
-    def id(self):
-        return '/'.join([self.system, self.path])
 
     def list_permissions(self, username=None):
         """
@@ -90,33 +109,139 @@ class BaseAgaveFile(BaseAgaveResource):
         for that user, otherwise returns all permissions.
         :param str username: A user to restrict the permissions listing results.
         :return: A list of BaseAgaveFilePermission
-        :rtype: list[BaseAgaveFilePermission]
+        :rtype: list[BaseFilePermissionResource]
         """
-        return BaseAgaveFilePermission.list_permissions(self._agave, self, username)
+        return BaseFilePermissionResource.list_permissions(self._agave, self, username)
 
-    def move(self):
-        pass
+    @classmethod
+    def listing(cls, agave_client, system, path):
+        """
+        List the File for the given systen and path.
 
-    def rename(self):
-        pass
+        :param agavepy.agave.Agave agave_client: Agave API client for the acting user
+        :param str system: The Agave system ID where this file path exists
+        :param str path: The path to the file
+        :return: The file
+        :rtype: :class:`BaseFileResource`
+        :raises HTTPError: If an error occurs.
+
+            - 403 If the user represented by the passed ``agave_client`` does not have
+                READ permission on ``path`` on ``system``.
+            - 404 If the ``path`` does not exist on ``system``.
+        """
+        list_result = agave_client.files.list(systemId=system,
+                                              filePath=urllib.quote(path))
+        listing = cls(agave_client=agave_client, **list_result[0])
+        if listing.type == 'dir':
+            # directory names display as "." from API
+            listing.name = os.path.basename(listing.path)
+
+            # put rest of listing as ``children``
+            listing._children = [cls(agave_client=agave_client, **f)
+                                 for f in list_result[1:]]
+        return listing
+
+    @classmethod
+    def mkdir(cls, agave_client, system, dir_path, dir_name):
+        """
+        Create a new directory on the system at ``dir_path`` with the name ``dir_name``.
+
+        :param agavepy.agave.Agave agave_client: Agave API client for the acting user
+        :param str system: The Agave system ID
+        :param str dir_path: The path to the directory in which to create the new directory
+        :param str dir_name: The name of the new directory
+        :return: The newly created directory
+        :rtype: :class:`BaseFileResource`
+        :raises HTTPError: If an error occurs.
+
+            - 400 If error occurred preventing the directory creation. For
+                example, if a directory with the same name already exists at ``dir_path``.
+            - 403 If the user represented by the passed ``agave_client`` does not have
+                WRITE permission on ``dir_path``.
+            - 404 If the ``dir_path`` does not exist.
+        """
+        body = {
+            'action': 'mkdir',
+            'name': dir_name
+        }
+        result = agave_client.files.manage(systemId=system,
+                                           filePath=urllib.quote(dir_path),
+                                           body=body)
+        return BaseFileResource(agave_client=agave_client, **result)
+
+    def move(self, dest_path, file_name=None):
+        """
+        Moves the current file to the provided destination path. If file_name is provided,
+        the moved file will be renamed to that. If file_name is not provided then the file
+        will be moved with the same name (default).
+        :param str dest_path: The full path to the destination directory. This path must
+            exist on the same system as the original file.
+        :param str file_name: (optional) The name for the moved file. Defaults to the same
+            name as the original file.
+        :return: The newly moved file.
+        :rtype: :class:`BaseFileResource`
+
+        """
+        if file_name is None:
+            file_name = self.name
+        body = {'action': 'move', 'path': '/'.join([dest_path, file_name])}
+        move_result = self._agave.files.manage(systemId=self.system,
+                                               filePath=urllib.quote(self.path),
+                                               body=body)
+        return BaseFileResource.listing(self._agave, self.system, move_result['path'])
+
+    def rename(self, new_name):
+        """
+        Convenience method for renaming a file. Delegates to BaseAgaveFile.move.
+
+        :param new_name:
+        :return: The renamed file
+        :rtype: :class:`BaseFileResource`
+        """
+        return self.move(os.path.dirname(self.path), new_name)
     
-    def share(self):
-        pass
+    def share(self, username, permission):
+        """
+        Updates the permissions on this file for the provided username.
 
-    @property
-    def trail(self):
-        path_comps = self.path.split('/')
-        if path_comps[-1] == '':
-            path_comps.pop()  # if path had a trailing slash, skip it
+        :param str username: The username of the user to update share permissions for
+        :param str permission: The new permission to set. This should be one of the
+            permissions constants, e.g., READ, WRITE, EXECUTE, ALL, etc. See
+            :class:`BaseAgaveFilePermission` for details.
+        :return: self for chaining
+        :rtype: :class:`BaseFileResource`
+        """
+        self._agave.files.updatePermissions(
+            systemId=self.system,
+            filePath=urllib.quote(self.path),
+            body={'username': username, 'permission': permission})
+        return self
 
-        trail_comps = [{'name': path_comps[-i],
-                        'trail': '/'.join(path_comps[:-i]) or '/',
-                        } for i in range(1, len(path_comps))][::-1]
-        trail_comps.insert(0, {
-            'name': '',
-            'path': '/',
-        })
-        return trail_comps
+    def unshare(self, username):
+        """
+        Sets share permissions on this file for the provided username to NONE. This is a
+        shortcut for ``BaseAgaveFile.share('username', 'NONE')``.
+
+        :param str username: The username of the user to remove permissions for
+        :return: self for chaining
+        :rtype: :class:`BaseFileResource`
+        """
+        self._agave.files.updatePermissions(
+            systemId=self.system,
+            filePath=urllib.quote(self.path),
+            body={'username': username, 'permission': BaseFilePermissionResource.NONE})
+        return self
+
+    def unshare_all(self):
+        """
+        Removes all share permissions on this for except for those of the owner.
+
+        :return: self for chaining
+        :rtype: :class:`BaseFileResource`
+        """
+        self._agave.files.deletePermissions(systemId=self.system,
+                                            filePath=urllib.quote(self.path))
+        return self
 
 
 class BaseAgaveFileHistoryRecord(BaseAgaveResource):
@@ -145,22 +270,32 @@ class BaseAgaveFileHistoryRecord(BaseAgaveResource):
         return '<BaseAgaveFileHistoryRecord: {}>'.format(str(self))
 
 
-class BaseAgaveFilePermission(BaseAgaveResource):
+class BaseFilePermissionResource(BaseAgaveResource):
+
+    READ = 'READ'
+    READ_WRITE = 'READ_WRITE'
+    READ_EXECUTE = 'READ_EXECUTE'
+    WRITE = 'WRITE'
+    WRITE_EXECUTE = 'WRITE_EXECUTE'
+    EXECUTE = 'EXECUTE'
+    ALL = 'ALL'
+    NONE = 'NONE'
 
     def __init__(self, agave_client, agave_file, **kwargs):
         """
 
         :param agavepy.agave.Agave agave_client:
-        :param BaseAgaveFile agave_file:
+        :param BaseFileResource agave_file:
         :param kwargs:
         """
-        super(BaseAgaveFilePermission, self).__init__(agave_client)
+        super(BaseFilePermissionResource, self).__init__(agave_client)
         self.agave_file = agave_file
         self.username = None
         self._pems = {}
         self.from_result(**kwargs)
 
     def from_result(self, **kwargs):
+        super(BaseFilePermissionResource, self).from_result(**kwargs)
         self.username = kwargs.get('username')
         self._pems = kwargs.get('permission', {})
 
@@ -193,50 +328,50 @@ class BaseAgaveFilePermission(BaseAgaveResource):
         if self.read:
             if self.write:
                 if self.execute:
-                    return 'ALL'
-                return 'READ_WRITE'
+                    return BaseFilePermissionResource.ALL
+                return BaseFilePermissionResource.READ_WRITE
             elif self.execute:
-                return 'READ_EXECUTE'
-            return 'READ'
+                return BaseFilePermissionResource.READ_EXECUTE
+            return BaseFilePermissionResource.READ
         elif self.write:
             if self.execute:
-                return 'WRITE_EXECUTE'
-            return 'WRITE'
+                return BaseFilePermissionResource.WRITE_EXECUTE
+            return BaseFilePermissionResource.WRITE
         elif self.execute:
-            return 'EXECUTE'
-        return 'NONE'
+            return BaseFilePermissionResource.EXECUTE
+        return BaseFilePermissionResource.NONE
 
     @permission_bit.setter
     def permission_bit(self, value):
-        if value == 'READ':
+        if value == BaseFilePermissionResource.READ:
             self.read = True
             self.write = False
             self.execute = False
-        elif value == 'READ_WRITE':
+        elif value == BaseFilePermissionResource.READ_WRITE:
             self.read = True
             self.write = True
             self.execute = False
-        elif value == 'READ_EXECUTE':
+        elif value == BaseFilePermissionResource.READ_EXECUTE:
             self.read = True
             self.write = False
             self.execute = True
-        elif value == 'WRITE':
+        elif value == BaseFilePermissionResource.WRITE:
             self.read = False
             self.write = True
             self.execute = False
-        elif value == 'WRITE_EXECUTE':
+        elif value == BaseFilePermissionResource.WRITE_EXECUTE:
             self.read = False
             self.write = True
             self.execute = True
-        elif value == 'EXECUTE':
+        elif value == BaseFilePermissionResource.EXECUTE:
             self.read = False
             self.write = False
             self.execute = True
-        elif value == 'ALL':
+        elif value == BaseFilePermissionResource.ALL:
             self.read = True
             self.write = True
             self.execute = True
-        elif value == 'NONE':
+        elif value == BaseFilePermissionResource.NONE:
             self.read = False
             self.write = False
             self.execute = False
@@ -253,7 +388,7 @@ class BaseAgaveFilePermission(BaseAgaveResource):
         Persist this permission
 
         :return: self
-        :rtype: :class:`BaseAgaveFilePermission`
+        :rtype: :class:`BaseFilePermissionResource`
         """
         result = self._agave.files.updatePermissions(
             systemId=self.agave_file.system,
@@ -269,7 +404,7 @@ class BaseAgaveFilePermission(BaseAgaveResource):
 
         :return: None
         """
-        self.permission_bit = 'NONE'
+        self.permission_bit = BaseFilePermissionResource.NONE
         self.save()
 
     @classmethod
@@ -279,11 +414,11 @@ class BaseAgaveFilePermission(BaseAgaveResource):
         only the provided username.
 
         :param agavepy.agave.Agave agave_client: API client instance.
-        :param BaseAgaveFile agave_file: the File for which to list permissions.
+        :param BaseFileResource agave_file: the File for which to list permissions.
         :param str username: A user to restrict the permissions listing results.
 
         :return: List of permissions for the passed File.
-        :rtype: list of BaseAgaveFilePermission
+        :rtype: list of BaseFilePermissionResource
         """
         records = agave_client.files.listPermissions(systemId=agave_file.system,
                                                      filePath=agave_file.path)

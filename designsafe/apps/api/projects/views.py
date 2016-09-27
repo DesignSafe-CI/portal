@@ -1,10 +1,9 @@
 from django.http import JsonResponse
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
-from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
-from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave.models.files import BaseFileResource, BaseFilePermissionResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 import logging
 
@@ -51,8 +50,8 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
         p.add_collaborator(request.user.username)
 
         # create the data directory File and grant user permissions
-        project_dir = AgaveFile.mkdir(Project.storage_system_id, None, '/', p.uuid, ag)
-        project_dir.update_pems(request.user.username, 'ALL', True)
+        project_dir = BaseFileResource.mkdir(ag, Project.storage_system_id, '/', p.uuid)
+        project_dir.share(request.user.username, BaseFilePermissionResource.ALL)
 
         # relate the Project as metadata for the File
         p.project_directory = project_dir
@@ -70,8 +69,7 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
         :rtype: JsonResponse
         """
         ag = request.user.agave_oauth.client
-        project = Project(uuid=project_id, agave_client=ag)
-        project.fetch()
+        project = Project.from_uuid(agave_client=ag, uuid=project_id)
         return JsonResponse(project, encoder=AgaveJSONEncoder, safe=False)
 
     def put(self, request):
@@ -81,22 +79,20 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
         :return:
         """
         ag = request.user.agave_oauth.client
-
-        
-
+        raise NotImplementedError
 
 
 class ProjectDataView(BaseApiView, SecureMixin):
 
-    def get(self, request, project_id):
+    def get(self, request, project_id, file_path=''):
         """
 
         :return: The root directory for the Project's data
         :rtype: JsonResponse
         """
         ag = request.user.agave_oauth.client
-        project = Project(uuid=project_id, agave_client=ag)
-        project_dir = project.project_directory
-        data = project_dir.to_dict()
-        data['children'] = [f.to_dict() for f in project.project_data_listing[1:]]
-        return JsonResponse(data)
+
+        list_path = '/'.join([project_id, file_path])
+        listing = BaseFileResource.listing(ag, Project.storage_system_id, list_path)
+
+        return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
