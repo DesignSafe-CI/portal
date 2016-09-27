@@ -99,6 +99,7 @@
             publications: "Publications",
 
             // public data - experiment
+            creators: "Creators",
             project: "Project",
             facility: "Facility",
             type: "Experiment Type",

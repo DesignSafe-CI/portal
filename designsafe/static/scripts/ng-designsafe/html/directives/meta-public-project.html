@@ -137,6 +137,17 @@
                                             {{experiment.title}}
                                         </td>
                                     </tr>
+                                    <tr ng-if="experiment.creators">
+                                        <td>
+                                            Creators
+                                        </td>
+                                        <td>
+                                            <div ng-repeat="creator in experiment.creators | orderBy: 'firstName'">
+                                                {{creator.firstName}} {{creator.lastName}}
+                                                <br>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <tr ng-if="experiment.doi">
                                         <td>
                                             DOI
