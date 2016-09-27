@@ -1,5 +1,25 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.13
+
+Enhancements:
+
+- Improved shared files display; no longer need to click though multiple
+  directory levels to access shared content
+
+Fixes:
+
+- Fixed bug with text preview and non-unicode content encoding
+- Fixed bug with connecting to VNC sessions from Job Status modal
+- Fixed CSRF errors when accessing Public Data as Anonymous
+- Fixed permissions on accessing mailing list subscribers
+- Fixed unicode encoding bugs on mailing list subscribers
+- Fixed Application display to show label instead of app ID
+
+Other:
+
+- Improved server logs
+
 ## v0.9.12
 
 Enhancements:
