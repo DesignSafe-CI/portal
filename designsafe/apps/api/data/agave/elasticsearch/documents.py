@@ -85,7 +85,7 @@ def merge_file_paths(system, username, file_path, s):
         lfp = len(file_path_comps) + 1
 
     common_paths = {}
-    for doc in s[:s.count()]:
+    for doc in s.scan():
         if doc.owner == username or doc.full_path.strip('/') == file_path:
             continue
 
