@@ -1,4 +1,4 @@
-agavepy>=0.3.11
+agavepy>=0.3.13
 
 Django<1.9.0
 django-bootstrap3==6.1.0
