@@ -83,8 +83,14 @@ docker run -it --rm -v $(pwd):/datadump \
     designsafeci/portal:latest bin/dumpdata.sh
 ```
 
-This will created a file named `datadump-YYYYMMDD.json` in the current directory. You can
-load that data back into your local instance with the command:
+This will created a file named `datadump-YYYYMMDD.json` in the current 
+directory. 
+
+DO NOT RUN THE FOLLOWING COMMAND WITH THE PRODUCTION CONFIGURATION. IT 
+WILL DESTROY THE DATABASE.
+
+You can load the `datadump-YYYYMMDD.json` file into your local instance 
+with the command:
 
 ```
 docker run -it --rm -v $(pwd):/datadump \
@@ -183,24 +189,7 @@ of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
 
 ## Production setup
 
-The production setup registers the container composition as a systemd service.
-
-1. Create a non-root user in the docker group, e.g., portal.
-2. Create the directory `/designsafe` owned by portal
-3. Create `/designsafe/media` for user-uploaded data and `/designsafe/certs`.
-4. Place the main site TLS certificate/key in `/designsafe/certs/www` and the EF site TLS
-   certificate/key in `/designsafe/certs/ef`.
-5. Copy [`docker-compose-prod.yml`](docker-compose-prod.yml) to `/designsafe/docker-compose.yml`.
-6. Copy ['etc/designsafe.service'](etc/designsafe.service) to `/etc/systemd/system/designsafe.service`.
-7. Copy [`designsafe.env.sample`](designsafe.env.sample) to `/designsafe/designsafe.env` and configure
-   as necessary.
-8. Enable and start the service:
-
-   ```
-   $ systemctl enable designsafe
-   $ systemctl start designsafe
-   ```
-
+Production deployment is managed by ansible. See https://github.com/designsafe-ci/ansible. 
 
 
 [1]: https://docs.docker.com/
