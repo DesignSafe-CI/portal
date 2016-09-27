@@ -1,22 +1,19 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
-  app.controller('MyDataCtrl', ['$scope', '$location', '$state', '$stateParams', 'Django', 'DataService', function ($scope, $location, $state, $stateParams, Django, DataService) {
+  app.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'listing', function ($scope, $state, Django, listing) {
 
     $scope.data = {
       user: Django.user,
-      listing: []
+      listing: listing
     };
 
-    DataService.listPath({
-      resource: 'agave',
-      file_id: $stateParams.fileId
-    }).then(function(resp) {
-      $scope.data.listing = resp.data;
-    });
+    $scope.resolveBreadcrumbHref = function(trailItem) {
+      return $state.href('myData', {systemId: listing.system, filePath: trailItem.path});
+    };
 
     $scope.onBrowse = function($event, file) {
       $event.stopPropagation();
-      $state.go('agaveData', {fileId: file.id});
+      $state.go('myData', {systemId: file.system, filePath: file.path});
     };
 
     $scope.onSelect = function($event, file) {

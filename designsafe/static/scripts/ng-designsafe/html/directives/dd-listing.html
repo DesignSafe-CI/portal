@@ -13,12 +13,12 @@
             ng-class="{'ds-data-selected': item._ui.selected}"
         >
             <td>
-                <a class="btn btn-link" ng-click="onBrowse()($event, item)">
-                    <i class="fa" ng-class="{'fa-file': item.type==='file', 'fa-folder': item.type==='folder'}"></i>
+                <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
+                    <i class="fa" ng-class="{'fa-file': item.type==='file', 'fa-folder': item.type==='dir'}"></i>
                     {{ item.name }}
                 </a>
             </td>
-            <td>{{ item.size|bytes }}</td>
+            <td>{{ item.length|bytes }}</td>
             <td>{{ item.lastModified|date:"short" }}</td>
             <td>
                 <a class="btn btn-info btn-xs" ng-click="onDetail()($event, item)">

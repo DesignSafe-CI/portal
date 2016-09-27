@@ -9,43 +9,69 @@
     $locationProvider.html5Mode(true);
     $urlMatcherFactoryProvider.strictMode(false);
 
-    $urlRouterProvider.rule(function($injector, $location) {
-
-    });
-
     $stateProvider
 
       /* Private */
-      .state('agaveData', {
-        url: '/agave/{fileId:any}/',
-        controllerProvider: ['$stateParams', 'DataService', function($stateParams, DataService) {
-          var parsedFileId = DataService.parseFileId($stateParams.fileId);
-          if (parsedFileId.user === Django.user) {
-            return 'MyDataCtrl';
-          } else {
-            return 'SharedDataCtrl';
-          }
-        }],
-        templateUrl: function() {
-          return '/static/scripts/data-depot/templates/agave-data-listing.html';
-        }
-      })
       .state('myData', {
-        controller: ['$state', function($state) {
-          $state.go('agaveData', {fileId: $state.params.fileId});
-        }],
-        template: '',
+        url: '/agave/{systemId}/{filePath:any}/',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
         params: {
-          fileId: 'designsafe.storage.default/' + Django.user
+          systemId: 'designsafe.storage.default',
+          filePath: Django.user
+        },
+        resolve: {
+          'listing': ['$stateParams', 'FilesService', function($stateParams, FilesService) {
+            var systemId = $stateParams.systemId || 'designsafe.storage.default';
+            var filePath = $stateParams.filePath || Django.user + '/';
+            if (filePath === '/') {
+              filePath = Django.user;
+            }
+            return FilesService.listPath({fileMgr: 'agave', systemId: systemId, filePath: filePath})
+              .then(function(resp) {
+                return resp.data;
+              });
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
         }
       })
       .state('sharedData', {
-        controller: ['$state', function($state) {
-          $state.go('agaveData', {fileId: $state.params.fileId});
-        }],
-        template: '',
+        url: '/shared/{systemId}/{filePath:any}/',
+        controller: 'SharedDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
         params: {
-          fileId: 'designsafe.storage.default/$SHARE'
+          systemId: 'designsafe.storage.default',
+          filePath: '$SHARE'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'FilesService', function($stateParams, FilesService) {
+            var systemId = $stateParams.systemId || 'designsafe.storage.default';
+            var filePath = $stateParams.filePath || '$SHARE/';
+
+            return FilesService.listPath({fileMgr: 'agave', systemId: systemId, filePath: filePath})
+              .then(function(resp) {
+                return resp.data;
+              });
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
         }
       })
       .state('projects', {
@@ -87,31 +113,63 @@
       })
 
       /* Public */
-      // .state('allPublications', {
-      //   template: '<pre>local/allPublications.html</pre>'
-      // })
-      // .state('communityData', {
-      //   template: '<pre>local/communityData.html</pre>'
-      // })
-      // .state('trainingMaterials', {
-      //   template: '<pre>local/trainingMaterials.html</pre>'
-      // })
-
-      /* Workspace */
-      // .state('applicationCatalog', {
-      //   template: '<pre>local/applicationCatalog.html</pre>'
-      // })
-      // .state('runApplication', {
-      //   template: '<pre>local/runApplication.html</pre>'
-      // })
-      // .state('jobHistory', {
-      //   template: '<pre>local/jobHistory.html</pre>'
-      // })
+      .state('publicData', {
+        url: '/public/',
+        template: '<pre>local/allPublications.html</pre>'
+      })
+      .state('communityData', {
+        url: '/community/',
+        template: '<pre>local/communityData.html</pre>'
+      })
+      .state('trainingMaterials', {
+        url: '/training/',
+        template: '<pre>local/trainingMaterials.html</pre>'
+      })
     ;
 
-    $urlRouterProvider.otherwise('/agave/');
+    $urlRouterProvider.otherwise(function($injector, $location) {
+      var $state = $injector.get('$state');
+
+      /* Default to MyData for authenticated users, PublicData for anonymous */
+      if (Django.context.authenticated) {
+        $state.go('myData', {
+          systemId: 'designsafe.storage.default',
+          filePath: Django.user
+        });
+      } else {
+        $state.go('publicData');
+      }
+    });
   }
 
-  dataDepotApp.config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', config]);
+  dataDepotApp
+    .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', config])
+    .run(['$rootScope', '$location', '$state', 'Django', function($rootScope, $location, $state, Django) {
+      $rootScope.$state = $state;
+
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
+        if (toState.name === 'myData' || toState.name === 'sharedData') {
+          var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
+          if (toState.name === 'myData' && !ownerPath) {
+            event.preventDefault();
+            $state.go('sharedData', toParams);
+          } else if (toState.name === 'sharedData' && ownerPath) {
+            event.preventDefault();
+            $state.go('myData', toParams);
+          }
+        }
+      });
+
+      $rootScope.$on('$stateChangeSuccess', function() {
+
+      });
+
+      $rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
+        if (error.type === 'authn') {
+          var redirectUrl = $state.href(toState.name, toParams);
+          window.location = '/login/?next=' + redirectUrl;
+        }
+      });
+    }]);
 
 })(window, angular);

@@ -15,7 +15,7 @@
         {
           name: 'Publications',
           collapsible: false,
-          state: 'publications'
+          state: 'publicData'
         },
         {
           name: 'Community Data',
@@ -34,7 +34,7 @@
       $scope.routerItems.splice(0, 0, {
         name: 'Private',
         collapsible: true,
-        collapse: false,
+        collapse: true,
         children: [
           {
             name: 'My Data',
@@ -63,30 +63,32 @@
           }
         ]
       });
-      $scope.routerItems.push({
-          name: 'Workspace',
-          collapsible: true,
-          collapse: true,
-          children: [
-            {
-              name: 'Application Catalog',
-              collapsible: false,
-              state: 'applicationCatalog'
-            },
-            {
-              name: 'Run Application',
-              collapsible: false,
-              state: 'runApplication'
-            },
-            {
-              name: 'Job History',
-              collapsible: false,
-              state: 'jobHistory'
-            }
-          ]
-        }
-      );
+      // $scope.routerItems.push({
+      //     name: 'Workspace',
+      //     collapsible: true,
+      //     collapse: true,
+      //     children: [
+      //       {
+      //         name: 'Application Catalog',
+      //         collapsible: false,
+      //         state: 'applicationCatalog'
+      //       },
+      //       {
+      //         name: 'Run Application',
+      //         collapsible: false,
+      //         state: 'runApplication'
+      //       },
+      //       {
+      //         name: 'Job History',
+      //         collapsible: false,
+      //         state: 'jobHistory'
+      //       }
+      //     ]
+      //   }
+      // );
     }
+
+    $scope.routerItems[0].collapse = false;
 
     $scope.itemClicked = function(routerItem) {
       if (routerItem.collapsible) {
