@@ -10,6 +10,7 @@
             <div ng-controller="MainCtrl">
                 <div class="row">
                     <div class="col-sm-3 col-md-2">
+                        <div ng-controller="DataDepotNewCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-new.html" %}'"></div>
                         <div ng-controller="DataDepotNavCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-nav.html" %}'"></div>
                     </div>
                     <div class="col-sm-9 col-md-10">
@@ -34,6 +35,7 @@
 
     {% addtoblock "js" %}
         <script type="text/javascript" src="{% static 'scripts/data-depot/app.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/data-depot/controllers/data-depot-new.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/data-depot/controllers/data-depot-nav.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/data-depot/controllers/external-data.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/data-depot/controllers/main.js' %}"></script>

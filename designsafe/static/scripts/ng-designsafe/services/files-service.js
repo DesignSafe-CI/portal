@@ -145,21 +145,23 @@
     /**
      *
      * @param options
-     * @param options.file_id The file_id of path in which to create the directory
-     * @param options.resource The resource on which file_id is sourced
-     * @param options.dir_name The name of the new directory
+     * @param {string} options.fileMgr the FileManager to list
+     * @param {string} options.systemId the ID of the system where the file resides
+     * @param {string} options.filePath the path to the file
+     * @param {string} options.dirname the name of the new directory
      */
     service.mkdir = function(options) {
       options = options || {};
       var params = {
-        'file_id': options.file_id,
-        'resource': options.resource
+        'file_mgr_name': options.fileMgr,
+        'system_id': options.systemId,
+        'file_path': options.filePath
       };
       var body = {
         'action': 'mkdir',
-        'dir_name': options.dir_name
+        'dir_name': options.dirname
       };
-      return $http.put(djangoUrl.reverse('designsafe_api:file', params), body);
+      return $http.put(djangoUrl.reverse('designsafe_api:files', params), body);
     };
 
 
