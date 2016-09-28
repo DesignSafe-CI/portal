@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.14
+
+Fixes:
+
+- Fixed bug in old public data browser
+
 ## v0.9.13
 
 Enhancements:
