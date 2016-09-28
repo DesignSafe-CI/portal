@@ -1,7 +1,12 @@
 import json
 import logging
 
-from django.contrib.auth import get_user_model
+from agavepy.agave import Agave
+from designsafe.apps.api.data import lookup_file_manager
+from designsafe.apps.api.data.sources import SourcesApi
+from designsafe.apps.api.exceptions import ApiException
+from designsafe.apps.notifications.views import get_number_unread_notifications
+from dsapi.agave.daos import shared_with_me
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -12,11 +17,6 @@ from django.views.generic.base import View, TemplateView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from requests.exceptions import ConnectionError, HTTPError
 
-from designsafe.apps.api.data import lookup_file_manager
-from designsafe.apps.api.data.sources import SourcesApi
-from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.notifications.views import get_number_unread_notifications
-from dsapi.agave.daos import shared_with_me
 from .mixins import SecureMixin, JSONResponseMixin
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,6 @@ class BaseView(View):
     def set_context_props(self, request, **kwargs):
         #TODO: Getting the filesystem should check in which system is the user in or requesting
         filesystem = kwargs.get('filesystem', self.filesystem)
-        settings_fs = getattr(settings, 'AGAVE_STORAGE_SYSTEM')
         self.file_path = kwargs.get('file_path', None)
 
         self.is_public = False
