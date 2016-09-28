@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 
 urlpatterns = patterns(
     '',
@@ -78,6 +78,9 @@ urlpatterns = patterns(
 
     # webhooks
     url(r'^webhooks/', include('designsafe.webhooks')),
+
+    # version check
+    url(r'^version/', 'designsafe.views.project_version'),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
