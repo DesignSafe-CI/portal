@@ -53,6 +53,30 @@
                 return result;
               };
 
+              $scope.mapAppPemsToMetaPems = function(permission) {
+                var result = angular.copy(permission);
+
+                switch(result.permission){
+                    case "ALL":
+                    case "READ":
+                    case "WRITE":
+                        return result;
+                    case "WRITE_EXECUTE":
+                        result.permission = "READ_WRITE";
+                        return result;
+                    case "EXECUTE":
+                    case "READ_EXECUTE":
+                        result.permission = "READ";
+                        return result;
+                    case "READ_WRITE":
+                        return result;
+                    case "NONE":
+                        return result;
+                    default:
+                        return result;
+                }
+              };
+
               $scope.transformAgaveToRwx = function(agavePermission) {
                 var rwxObj = $scope.getRwxObj();
 
@@ -95,6 +119,7 @@
                 $scope.requesting = true;
                 var query = {'name': 'ds_app', 'value.id': $scope.resource.id};
 
+                // get metadata uuid to save later
                 $http({
                   url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                   method: 'GET',
@@ -104,10 +129,15 @@
                     $scope.uuid = '';
                     if (response.data.length > 0){
                       $scope.uuid = response.data[0].uuid;
+                      // $http({
+                      //   url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+                      //   method: 'GET',
+                      //   params: {'pems': true, 'uuid': $scope.uuid}
+                      // }).then(
                       $http({
-                        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+                        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
                         method: 'GET',
-                        params: {'pems': true, 'uuid': $scope.uuid}
+                        params: {'appId': $scope.resource.id, 'pems': true}
                       }).then(
                         function(response) {
                           $scope.model = {};
@@ -138,8 +168,10 @@
                                       "enum": [
                                         "ALL",
                                         "READ",
-                                        "READ_EXECUTE",
+                                        "EXECUTE",
                                         "READ_WRITE",
+                                        "READ_EXECUTE",
+                                        "WRITE_EXECUTE",
                                         "NONE"
                                       ]
                                     }
@@ -177,11 +209,18 @@
                             }
                           ];
 
+                          var tempList = [];
                           $scope.tempModel.permissions = [];
 
                           angular.forEach(response.data, function(permission){
-                            $scope.tempModel.permissions.push({username: permission.username, permission:  $scope.transformRwxToAgave(permission.permission)});
+                            tempList.push({username: permission.username, permission:  $scope.transformRwxToAgave(permission.permission)});
                           });
+
+                          // remove double listing of permissions for admin app owners
+                          var uniqueTempList = _.uniq(tempList, function(permission){
+                            return permission.username;
+                          });
+                          $scope.tempModel.permissions = angular.copy(uniqueTempList);
 
                           $scope.model.permissions = _.clone($scope.tempModel.permissions);
                           $scope.requesting = false;
@@ -251,12 +290,12 @@
                       })
                     );
                   }
-                  
+
                   promises.push(
                     $http({
                       url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                       method: 'POST',
-                      data: permission,
+                      data: $scope.mapAppPemsToMetaPems(permission),
                       params: {'uuid': $scope.uuid, 'username': permission.username, 'pems': true}
                     })
                   );
