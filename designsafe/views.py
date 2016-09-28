@@ -13,13 +13,13 @@ def project_version(request):
             # we're on a branch
             branch = head.split(':')[1].strip()
             with open('.git/{0}'.format(branch)) as f:
-                rev = f.readline()
+                version = '{}:{}'.format(branch, f.readline())
         else:
-            # we're in a detached head
-            rev = head
+            # we're in a detached head, e.g., a tag. would be nice to show tag name...
+            version = head
 
     except IOError:
         logger.warn('Unable to read project version from git HEAD')
-        rev = 'UNKNOWN'
+        version = 'UNKNOWN'
 
-    return HttpResponse(rev, content_type='text/plain')
+    return HttpResponse(version, content_type='text/plain')
