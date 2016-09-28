@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.15
+
+Fixes:
+
+- Fixed ISE when token refresh fails and user is logged out; this triggers
+  a logout message but MessagesMiddleware wasn't available yet.
+
 ## v0.9.14
 
 Fixes:
