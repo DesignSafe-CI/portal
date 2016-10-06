@@ -9,6 +9,6 @@ class AgaveJSONEncoder(DjangoJSONEncoder):
 
     def default(self, o):
         if isinstance(o, BaseAgaveResource):
-            return o.as_json()
+            return o.to_dict()
 
         return super(AgaveJSONEncoder, self).default(o)
