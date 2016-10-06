@@ -1,0 +1,80 @@
+<div class="modal-header">
+    <h3 class="modal-title">Share File: {{ file.name }}</h3>
+</div>
+<div class="modal-body">
+    <div ng-if="data.busy">
+        <p class="lead">
+            <i class="fa fa-spinner fa-spin"></i>
+            Checking existing share permissions...
+        </p>
+    </div>
+    <div ng-if="! data.busy && data.errorMessage">
+        <p class="alert alert-danger lead">
+            {{ data.errorMessage }}
+        </p>
+    </div>
+    <div ng-if="! (data.busy || data.errorMessage)">
+        <form>
+            <div class="alert alert-info" ng-if="form.currentPermissions.length === 0">
+                This file is not shared with anyone!
+            </div>
+            <div ng-if="form.currentPermissions.length > 0">
+                <p>The following user(s) have permissions on this file. You can update their permissions below.</p>
+                <div class="form-group" ng-repeat="pem in form.currentPermissions">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <p class="form-control-static"><b>{{ pem.username }}</b></p>
+                        </div>
+                        <div class="col-xs-5">
+                            <label class="sr-only" for="id_form_permission">Permission</label>
+                            <select id="id_form_permission" class="form-control"
+                                    ng-model="pem.permission"
+                                    ng-options="perm.label for perm in data.permissionOptions"
+                            ></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="well well-sm">
+                <p>Share with new user(s):</p>
+                <div class="form-group" ng-repeat="pem in form.addPermissions">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <input type="text" class="form-control" id="id_form_user" ng-model="pem.username"
+                                   placeholder="Lookup user by username or email address"
+                                   autocomplete="off" uib-typeahead="user for user in searchUsers($viewValue)"
+                                   typeahead-loading="searching"
+                                   typeahead-no-results="noResults"
+                                   typeahead-input-formatter="formatSelection($result)"
+                                   typeahead-template-url="local/share_user_search_result.html"
+                            >
+                            <span class="text-muted" ng-show="searching"><i class="fa fa-spinner fa-spin"></i> Searching for users...</span>
+                            <div ng-show="noResults">
+                                <i class="fa fa-remove"></i> No users found.
+                            </div>
+                        </div>
+                        <div class="col-xs-5">
+                            <select class="form-control" ng-model="pem.permission"
+                                    ng-options="opt.label for opt in data.permissionOptions"></select>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-info btn-sm" ng-click="addNewPermission()">
+                    <i class="fa fa-plus"></i> Add another user
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button ng-disabled="data.busy || data.errorMessage" class="btn btn-primary" type="button" ng-click="doShareFiles($event)">
+            Save Share Settings
+        </button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
+<script type="text/ng-template" id="local/share_user_search_result.html">
+    <a>{{ match.model.first_name }} {{ match.model.last_name }} ({{ match.model.username }}) &lt;{{ match.model.email }}&gt;</a>
+</script>

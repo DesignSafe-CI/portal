@@ -13,8 +13,8 @@
             ng-class="{'ds-data-selected': item._ui.selected}"
         >
             <td>
+                <i class="fa {{ item.icon() }}"></i>
                 <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
-                    <i class="fa" ng-class="{'fa-file': item.type==='file', 'fa-folder': item.type==='dir'}"></i>
                     {{ item.name }}
                 </a>
             </td>

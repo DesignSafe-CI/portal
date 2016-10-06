@@ -1,0 +1,52 @@
+<div class="modal-header">
+    <h3 class="modal-title">Select the destination to move the following files</h3>
+</div>
+<div class="modal-body">
+    <ul>
+        <li ng-repeat="file in data.files">
+            {{ file.name }}
+        </li>
+    </ul>
+
+
+    <dd-breadcrumb skip-root="true" listing="listing" on-browse="onBrowse"></dd-breadcrumb>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" style="background-color: #fff;">
+            <thead>
+            <th>Name</th>
+            <th>Action</th>
+            </thead>
+
+            <tbody>
+            <tr ng-repeat="item in listing.children">
+                <td>
+                    <i class="fa {{ item.icon() }}"></i>
+                    <a ng-href="{{ item.href || '#' }}" ng-click="onBrowse($event, item)">
+                        {{ item.name }}
+                    </a>
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-xs"
+                       ng-if="validDestination(item)"
+                       ng-click="chooseDestination(item)">
+                        Move to {{ item.name }}
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-primary" type="button"
+                ng-disabled="! validDestination(listing)"
+                ng-click="chooseDestination(listing)"
+        >
+            Move to {{ listing.name }}
+        </button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</div>

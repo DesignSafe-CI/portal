@@ -1,0 +1,61 @@
+<div class="modal-header">
+    <h3 class="modal-title">File Preview: {{ file.name }}</h3>
+</div>
+<div class="modal-body">
+    <div class="thumbnail">
+        <div class="text-center">
+            <div ng-if="busy">
+                <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
+            </div>
+            <div ng-if="! busy && previewError">
+                <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
+                <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
+            </div>
+            <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && previewHref">
+                <iframe class="embed-responsive-item" ng-src="{{ previewHref }}"></iframe>
+            </div>
+        </div>
+        <div class="caption text-center">
+            <h4>{{ file.name }}</h4>
+            <p>
+                {{ file.length|bytes }} &mdash; Last modified: {{ file.lastModified|date:"short" }}
+            </p>
+        </div>
+    </div>
+    <div class="actions text-center">
+        <button class="btn btn-sm btn-default" ng-if="tests.canDownload" ng-click="download()">
+            <i class="fa fa-cloud-download"></i> Download
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
+            <i class="fa fa-send"></i> Share
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canCopy" ng-click="copy()">
+            <i class="fa fa-copy"></i> Copy
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canMove" ng-click="move()">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canRename" ng-click="rename()">
+            <i class="fa fa-pencil"></i> Rename
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
+            <i class="fa fa-book"></i>View / Edit Metadata
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
+            <i class="fa fa-trash"></i> Move to Trash
+        </button>
+
+        <button class="btn btn-sm btn-danger" ng-if="tests.canDelete" ng-click="rm()">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="close()">Close</button>
+</div>
