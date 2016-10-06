@@ -71,7 +71,7 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataService', 'projectId', 'filePath', function ($scope, $state, Django, ProjectService, DataService, projectId, filePath) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath) {
 
     $scope.data = {};
 
@@ -79,25 +79,37 @@
       $scope.data.project = project;
     });
 
-    ProjectService.projectData({
-      uuid: projectId,
-      fileId: filePath
-    }).then(function(resp) {
-      $scope.data.listing = resp.data;
-      $scope.data.listing.href = $state.href('projects.viewData', {
-        projectId: projectId,
-        filePath: $scope.data.listing.path.split('/').slice(2).join('/')
+    DataBrowserService.browse({system: 'designsafe.storage.projects', path: projectId + '/' + filePath})
+      .then(function (result) {
+        $scope.browser = DataBrowserService.state();
       });
-      $scope.data.listing.children = _.map($scope.data.listing.children, function(f) {
-        f.href = $state.href('projects.viewData', {projectId: projectId, filePath: f.path.split('/').slice(2).join('/')});
-        return f;
-      });
-    });
 
-    $scope.onBrowseData = function onBrowse($event, file) {
+    $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
       var filePath = file.path.split('/').slice(2).join('/');
       $state.go('projects.viewData', {projectId: projectId, filePath: filePath});
+    };
+
+    $scope.onSelectData = function onSelectData($event, file) {
+      $event.stopPropagation();
+
+      if ($event.ctrlKey || $event.metaKey) {
+        var selectedIndex = $scope.browser.selected.indexOf(file);
+        if (selectedIndex > -1) {
+          DataBrowserService.deselect([file]);
+        } else {
+          DataBrowserService.select([file]);
+        }
+      } else if ($event.shiftKey && $scope.browser.selected.length > 0) {
+        var lastFile = $scope.browser.selected[$scope.browser.selected.length - 1];
+        var lastIndex = $scope.browser.listing.children.indexOf(lastFile);
+        var fileIndex = $scope.browser.listing.children.indexOf(file);
+        var min = Math.min(lastIndex, fileIndex);
+        var max = Math.max(lastIndex, fileIndex);
+        DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
+      } else {
+        DataBrowserService.select([file], true);
+      }
     };
 
   }]);
