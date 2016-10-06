@@ -8,6 +8,8 @@
     </p>
 </div>
 
-<div ng-if="data.listing">
-    <dd-listing listing="data.listing" on-browse="onBrowseData"></dd-listing>
+<div ng-if="browser.busy">
+    <i class="fa fa-spinner fa-spin"></i>
+    Loading project data...
 </div>
+<dd-listing listing="browser.listing" on-select="onSelectData" on-browse="onBrowseData"></dd-listing>

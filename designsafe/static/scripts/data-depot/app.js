@@ -21,16 +21,15 @@
           filePath: Django.user
         },
         resolve: {
-          'listing': ['$stateParams', 'FilesService', function($stateParams, FilesService) {
-            var systemId = $stateParams.systemId || 'designsafe.storage.default';
-            var filePath = $stateParams.filePath || Django.user + '/';
-            if (filePath === '/') {
-              filePath = Django.user;
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var options = {
+              system: ($stateParams.systemId || 'designsafe.storage.default'),
+              path: ($stateParams.filePath || Django.user)
+            };
+            if (options.path === '/') {
+              options.path = Django.user;
             }
-            return FilesService.listPath({fileMgr: 'agave', systemId: systemId, filePath: filePath})
-              .then(function(resp) {
-                return resp.data;
-              });
+            return DataBrowserService.browse(options);
           }],
           'auth': function($q) {
             if (Django.context.authenticated) {
@@ -53,14 +52,11 @@
           filePath: '$SHARE'
         },
         resolve: {
-          'listing': ['$stateParams', 'FilesService', function($stateParams, FilesService) {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
             var systemId = $stateParams.systemId || 'designsafe.storage.default';
             var filePath = $stateParams.filePath || '$SHARE/';
 
-            return FilesService.listPath({fileMgr: 'agave', systemId: systemId, filePath: filePath})
-              .then(function(resp) {
-                return resp.data;
-              });
+            return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q) {
             if (Django.context.authenticated) {
