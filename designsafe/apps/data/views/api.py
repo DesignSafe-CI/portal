@@ -79,7 +79,7 @@ class UploadView(BasePrivateJSONView):
         ufs = request.FILES
         mgr = FileManager(self.agave_client)
         mfs, fs = mgr.upload_files(ufs, system_id = self.filesystem, path = self.file_path)
-        return self.render_to_json_response({'files': [o.as_json() for o in fs],
+        return self.render_to_json_response({'files': [o.to_dict() for o in fs],
                                              'filesMeta': [o.to_dict(get_id = True) for o in mfs]})
 
 class ManageView(BasePrivateJSONView):
