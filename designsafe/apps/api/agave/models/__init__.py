@@ -13,7 +13,7 @@ class BaseAgaveResource(object):
         self._agave = agave_client
         self._wrapped = kwargs
 
-    def as_json(self):
+    def to_dict(self):
         return self._wrapped
 
     def __getattr__(self, name):

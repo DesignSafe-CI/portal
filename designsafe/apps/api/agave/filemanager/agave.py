@@ -15,7 +15,7 @@ class AgaveFileManager(BaseFileManager):
         self._ag = agave_client
 
     def copy(self, system, file_path, dest_path=None, dest_name=None):
-        f = BaseFileResource(self._ag, system, file_path)
+        f = BaseFileResource.listing(self._ag, system, file_path)
 
         # default to same path
         if dest_path is None:
@@ -29,13 +29,17 @@ class AgaveFileManager(BaseFileManager):
         if dest_name == f.name and dest_path == f.path:
             dest_name = '{0}_copy{1}'.format(*os.path.splitext(dest_name))
 
-        return f.copy(dest_path, dest_name)
+        copied_file = f.copy(dest_path, dest_name)
+
+        # schedule celery task to index new copy
+
+        return copied_file
 
     def delete(self, system, path):
-        BaseFileResource(self._ag, system, path).delete()
+        return BaseFileResource(self._ag, system, path).delete()
 
-    def download(self):
-        pass
+    def download(self, system, path):
+        return BaseFileResource.listing(self._ag, system, path).download_postit()
 
     def import_url(self):
         pass
@@ -48,16 +52,29 @@ class AgaveFileManager(BaseFileManager):
 
     def mkdir(self, system, file_path, dir_name):
         f = BaseFileResource(self._ag, system, file_path)
-        f.mkdir(dir_name)
-        pass
+        return f.mkdir(dir_name)
 
-    def move(self, system, file_path, dest_path):
-        pass
+    def move(self, system, file_path, dest_path, dest_name=None):
+        f = BaseFileResource.listing(self._ag, system, file_path)
+        return f.move(dest_path, dest_name)
 
-    def share(self):
-        pass
+    def rename(self, system, file_path, rename_to):
+        f = BaseFileResource.listing(self._ag, system, file_path)
+        return f.rename(rename_to)
 
-    def trash(self):
+    def share(self, system, file_path, username, permission):
+        f = BaseFileResource(self._ag, system, file_path)
+        pem = BaseFilePermissionResource(self._ag, f)
+        pem.username = username
+        pem.permission_bit = permission
+        return pem.save()
+
+    def list_permissions(self, system, file_path):
+        f = BaseFileResource(self._ag, system, file_path)
+        return BaseFilePermissionResource.list_permissions(self._ag, f)
+
+    def trash(self, system, file_path):
+        f = BaseFileResource(self._ag, system, file_path)
         pass
 
     def upload(self):
