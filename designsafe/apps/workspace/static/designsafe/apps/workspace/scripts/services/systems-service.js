@@ -49,7 +49,7 @@
     service.get = function(systemId) {
       return $q(function(resolve, reject) {
         var system;
-        for (s in systemsList) {
+        for (var s in systemsList) {
           if (s.id === systemId) {
             system = s;
             break;
