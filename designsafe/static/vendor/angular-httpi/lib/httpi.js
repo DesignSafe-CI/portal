@@ -204,7 +204,7 @@
 				this._http = http;
 
 				// Store the URL to inject.
-				this._url = url;
+				this.url = url;
 
 				// I determine if the trailing slash should be kept in place.
 				this._keepTrailingSlash = false;
@@ -301,7 +301,7 @@
 
 					// Inject resource-related properties.
 					config.method = method;
-					config.url = this._url;
+					config.url = this.url;
 					
 					// Only inject trailing slash property if it's not already in the config.
 					if ( ! config.hasOwnProperty( "keepTrailingSlash" ) ) {
@@ -330,7 +330,7 @@
 					var callbackName = "JSON_CALLBACK";
 
 					// Check to see if it's in the URL already.
-					if ( this._url.indexOf( callbackName ) !== -1 ) {
+					if ( this.url.indexOf( callbackName ) !== -1 ) {
 						
 						return;
 
