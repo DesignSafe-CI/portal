@@ -25,8 +25,12 @@
     /* Map service functions to toolbar buttons */
     $scope.ops = {
       details: function() {
-        // preview the current listing
-        DataBrowserService.preview($scope.browser.listing);
+        // preview the last selected file or current listing if none selected
+        if ($scope.browser.selected.length > 0) {
+          DataBrowserService.preview($scope.browser.selected.slice(-1)[0]);
+        } else {
+          DataBrowserService.preview($scope.browser.listing);
+        }
       },
       download: function() {
         DataBrowserService.download($scope.browser.selected);
