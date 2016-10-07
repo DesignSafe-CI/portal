@@ -24,6 +24,10 @@
 
     /* Map service functions to toolbar buttons */
     $scope.ops = {
+      details: function() {
+        // preview the current listing
+        DataBrowserService.preview($scope.browser.listing);
+      },
       download: function() {
         DataBrowserService.download($scope.browser.selected);
       },

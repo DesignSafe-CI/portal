@@ -9,11 +9,11 @@
 
     /**
      *
-     * @type {{busy: boolean, listing: {}, selected: Array}}
+     * @type {{busy: boolean, listing: FileListing, selected: Array}}
      */
     var currentState = {
       busy: false,
-      listing: {},
+      listing: null,
       selected: []
     };
 
@@ -753,15 +753,18 @@
 
 
     function _trashPath() {
-      switch (currentState.listing.system) {
-        case 'designsafe.storage.default':
-          return ['', Django.user, '.Trash'].join('/');
-        case 'designsafe.storage.projects':
-          var projectDir = currentState.listing.path.split('/')[1];
-          return ['', projectDir, '.Trash'].join('/');
-        default:
-          return undefined;
+      if (currentState.listing && currentState.listing.system) {
+        switch (currentState.listing.system) {
+          case 'designsafe.storage.default':
+            return ['', Django.user, '.Trash'].join('/');
+          case 'designsafe.storage.projects':
+            var projectDir = currentState.listing.path.split('/')[1];
+            return ['', projectDir, '.Trash'].join('/');
+          default:
+            return undefined;
+        }
       }
+      return undefined;
     }
 
 
@@ -944,7 +947,7 @@
       browse: browse,
       copy: copy,
       deselect: deselect,
-      details: details,
+      // details: details,
       download: download,
       getFileManagers: getFileManagers,
       hasPermission: hasPermission,
