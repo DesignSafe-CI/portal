@@ -132,6 +132,26 @@ class BaseFileResource(BaseAgaveResource):
         return self._agave.files.delete(systemId=self.system,
                                         filePath=urllib.quote(self.path))
 
+    @classmethod
+    def ensure_path(cls, agave_client, system, path):
+        """
+        Ensures that the given path exists. Creates any missing directories.
+
+        :param agavepy.agave.Agave agave_client: Agave API client for the acting user
+        :param str system: The Agave system ID where this file path exists
+        :param str path: The full path to ensure
+        :return: The file representing the deepest ensured directory
+        :rtype: :class:`BaseFileResource`
+        """
+        path_comps = path.split('/')
+        ensured_path = path_comps[0]
+        ensure_result = cls.listing(agave_client, system, ensured_path)
+        for pc in path_comps[1:]:
+            checked = ensure_result.mkdir(pc)
+            ensured_path = os.path.join(ensured_path, pc)
+            ensure_result = checked
+        return ensure_result
+
     def history(self):
         history = self._agave.files.getHistory(systemId=self.system,
                                                filePath=urllib.quote(self.path))
@@ -291,6 +311,17 @@ class BaseFileResource(BaseAgaveResource):
         self._agave.files.deletePermissions(systemId=self.system,
                                             filePath=urllib.quote(self.path))
         return self
+
+    def upload(self, upload_file):
+        """
+        Upload a file to this directory
+
+        :param upload_file:
+        :return:
+        """
+        return self._agave.files.importData(systemId=self.system,
+                                            filePath=urllib.quote(self.path),
+                                            fileToUpload=upload_file)
 
 
 class BaseAgaveFileHistoryRecord(BaseAgaveResource):

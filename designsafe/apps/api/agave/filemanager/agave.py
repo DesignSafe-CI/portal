@@ -1,11 +1,18 @@
 import os
+from datetime import datetime
+from designsafe.apps.api.agave.filemanager.base import BaseFileManager
 from designsafe.apps.api.agave.models.files import (BaseFileResource,
                                                     BaseFilePermissionResource,
                                                     BaseAgaveFileHistoryRecord)
-from .base import BaseFileManager
+from requests import HTTPError
 
 
 class AgaveFileManager(BaseFileManager):
+    """
+    TODO !!
+
+    trigger celery indexing tasks on CRUD operations
+    """
 
     DEFAULT_SYSTEM_ID = 'designsafe.storage.default'
 
@@ -41,14 +48,18 @@ class AgaveFileManager(BaseFileManager):
     def download(self, system, path):
         return BaseFileResource.listing(self._ag, system, path).download_postit()
 
-    def import_url(self):
-        pass
-
-    def index(self):
-        pass
+    # def import_url(self):
+    #     pass
+    #
+    # def index(self):
+    #     pass
 
     def listing(self, system, file_path):
         return BaseFileResource.listing(self._ag, system, file_path)
+
+    def list_permissions(self, system, file_path):
+        f = BaseFileResource(self._ag, system, file_path)
+        return BaseFilePermissionResource.list_permissions(self._ag, f)
 
     def mkdir(self, system, file_path, dir_name):
         f = BaseFileResource(self._ag, system, file_path)
@@ -69,13 +80,29 @@ class AgaveFileManager(BaseFileManager):
         pem.permission_bit = permission
         return pem.save()
 
-    def list_permissions(self, system, file_path):
-        f = BaseFileResource(self._ag, system, file_path)
-        return BaseFilePermissionResource.list_permissions(self._ag, f)
+    def trash(self, system, file_path, trash_path):
 
-    def trash(self, system, file_path):
+        name = os.path.basename(file_path)
         f = BaseFileResource(self._ag, system, file_path)
-        pass
 
-    def upload(self):
-        pass
+        # first ensure trash_path exists
+        BaseFileResource.ensure_path(self._ag, system, trash_path)
+
+        # check if file with same name exists in trash; expect 404
+        try:
+            check = os.path.join(trash_path, name)
+            BaseFileResource.listing(self._ag, system, check)
+
+            # if we did not 404, then we have a conflict; append date to name
+            name_ext = os.path.splitext(name)
+            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+            name = '{0} {1}{2}'.format(name_ext[0], timestamp, name_ext[1])
+        except HTTPError as e:
+            if e.response.status_code != 404:
+                raise
+
+        return f.move(trash_path, name)
+
+    def upload(self, system, file_path, upload_file):
+        f = BaseFileResource(self._ag, system, file_path)
+        return f.upload(upload_file)

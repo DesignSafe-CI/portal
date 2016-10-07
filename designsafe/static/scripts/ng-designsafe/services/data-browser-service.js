@@ -223,12 +223,12 @@
     }
 
 
-    /**
-     * TODO
-     */
-    function details () {
-      throw new Error('not implemented')
-    }
+    // /**
+    //  *
+    //  */
+    // function details () {
+    //   throw new Error('not implemented')
+    // }
 
 
     /**
@@ -766,12 +766,125 @@
 
 
     /**
-     * TODO
+     * Upload files or folders to the currently listed destination
      *
      * @param {boolean} directoryUpload
+     * @param {FileList} [files] Initial selected file(s) to upload
      */
-    function upload(directoryUpload) {
-      throw new Error('not implemented')
+    function upload(directoryUpload, files) {
+      var modal = $uibModal.open({
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-upload.html',
+        controller: function ($scope, $q, $uibModalInstance, Modernizr, directoryUpload, destination, files) {
+
+          $scope.data = {
+            destination: destination,
+            selectedFiles: files || [],
+            uploads: []
+          };
+
+          $scope.state = {
+            uploading: false,
+            retry: false,
+            directoryUpload: directoryUpload,
+            directoryUploadSupported: Modernizr.fileinputdirectory
+          };
+
+          $scope.$watch('data.selectedFiles', function(newValue) {
+            _.each(newValue, function(val) {
+              $scope.data.uploads.push({
+                file: val,
+                state: 'pending',
+                promise: null
+              });
+            });
+
+            // reset file control since we want to allow multiple selection events
+            $('#id-choose-files').val(null);
+          });
+
+          $scope.upload = function() {
+            $scope.state.uploading = true;
+            var tasks = _.map($scope.data.uploads, function(upload) {
+              upload.state = 'uploading';
+
+              var formData = new window.FormData();
+              formData.append('file', upload.file);
+              if (upload.file.webkitRelativePath) {
+                formData.append('relative_path', upload.file.webkitRelativePath);
+              }
+              return currentState.listing.upload(formData).then(
+                function (resp) {
+                  upload.state = 'success';
+                  return {status: 'success', response: resp};
+                },
+                function (err) {
+                  upload.state = 'error';
+                  upload.error = err.data;
+                  return {status: 'error', response: err.data};
+                }
+              )
+            });
+
+            $q.all(tasks).then(function (results) {
+              $scope.state.uploading = false;
+
+              currentState.busy = true;
+              currentState.listing.fetch().then(function () {
+                currentState.busy = false;
+              });
+
+              var errors = _.filter(results, function (result) {
+                return result.status === 'error';
+              });
+
+              if (errors.length > 0) {
+                // oh noes...give the user another chance with any errors
+                $scope.state.retry = true;
+              } else {
+                // it's all good; close the modal
+                $uibModalInstance.close();
+              }
+            });
+          };
+
+          $scope.retry = function() {
+            $scope.data.uploads = _.where($scope.data.uploads, {state: 'error'});
+            $scope.upload();
+            $scope.state.retry = false;
+          };
+
+          /**
+           * Remove an upload from the list of staged uploads.
+           *
+           * @param index
+           */
+          $scope.removeUpload = function (index) {
+            $scope.data.uploads.splice(index, 1);
+          };
+
+          /**
+           * Clear all staged uploads.
+           */
+          $scope.reset = function () {
+            // reset models
+            $scope.data.selectedFiles = [];
+            $scope.data.uploads = [];
+          };
+
+          /**
+           * Cancel and close upload dialog.
+           */
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+          };
+        },
+        size: 'lg',
+        resolve: {
+          directoryUpload: function() { return directoryUpload; },
+          destination: function() { return currentState.listing; },
+          files: function() { return files; }
+        }
+      });
     }
 
 

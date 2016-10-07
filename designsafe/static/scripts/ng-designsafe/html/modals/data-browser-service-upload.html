@@ -7,47 +7,62 @@
         This browser does not support folder upload. You can still upload multiple files.
     </p>
     <p>
-        Uploading to <code><i class="fa fa-folder"></i> {{ data.destinationNicePath }}</code>:
+        Uploading to <code><i class="fa fa-folder"></i> {{ data.destination.path }}</code>:
     </p>
     <form>
         <div class="form-group">
             <label for="id-choose-files">Select {{ state.directoryUpload && state.directoryUploadSupported ? 'folder' : 'files' }}</label>
             <input type="file" multiple class="form-control" id="id-choose-files" name="choose-files"
-                   ng-disabled="state.uploading"
+                   ng-disabled="state.uploading || state.retry"
                    ng-attr-directory="{{ state.directoryUpload && 'true' || undefined }}"
                    ng-attr-webkitdirectory="{{ state.directoryUpload && 'true' || undefined }}"
                    accessfiles="data.selectedFiles">
         </div>
-        <div class="form-group">
+        <p ng-if="! (state.uploading || state.retry)">{{ data.uploads|length }} files staged for upload</p>
+        <p ng-if="state.uploading">{{ data.uploads|length }} files uploading</p>
+        <div ng-if="state.retry" class="alert alert-warning">
+            <p>
+                {{ data.uploads|filter:{"state":"error"}|length }} uploads encountered an error.
+                See below for details. Click "Retry" to retry uploading files with errors.
+            </p>
+            <button class="btn btn-warning" ng-click="retry()">Retry Upload</button>
+        </div>
+        <div class="form-group" style="max-height:400px;overflow-y:scroll">
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="upload in data.selectedFiles">
+                <li class="list-group-item" ng-repeat="upload in data.uploads">
                     <div class="row">
-                        <div class="col-sm-6 col-xs-9">{{  upload.webkitRelativePath || upload.name }}</div>
-                        <div class="col-sm-3 hidden-xs">({{ upload.size|bytes }})</div>
+                        <div class="col-sm-6 col-xs-9">{{  upload.file.webkitRelativePath || upload.file.name }}</div>
+                        <div class="col-sm-3 hidden-xs">({{ upload.file.size|bytes }})</div>
                         <div class="col-sm-3 col-xs-3">
-                            <span ng-if="state.progress[$index].state === 'pending'" class="text-muted">
+                            <span ng-if="upload.state === 'pending'" class="text-muted">
                                 <i class="fa fa-clock-o"></i> <span class="sr-only">Pending</span>
+                                <button ng-click="removeUpload($index)" class="btn btn-default btn-xs">Remove</button>
                             </span>
-                            <span ng-if="state.progress[$index].state === 'uploading'" class="text-info">
+                            <span ng-if="upload.state === 'uploading'" class="text-info">
                                 <i class="fa fa-refresh fa-spin"></i> <span class="sr-only">Upload in progress</span>
                             </span>
-                            <span ng-if="state.progress[$index].state === 'success'" class="text-success">
+                            <span ng-if="upload.state === 'success'" class="text-success">
                                 <i class="fa fa-check-circle"></i> <span class="sr-only">Uploaded</span>
                             </span>
-                            <span ng-if="state.progress[$index].state === 'error'" class="text-danger" title="{{ state.progress[$index].message }}">
-                                <i class="fa fa-times-circle"></i> <span class="sr-only">Error</span>
+                            <span ng-if="upload.state === 'error'" class="text-danger">
+                                <i class="fa fa-times-circle"></i> <span>{{ upload.error }}</span>
                             </span>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
-        <div class="actions text-right">
-            <button class="btn btn-primary" ng-disabled="state.uploading || (data.selectedFiles|length) === 0" type="button" ng-click="upload()">
-                <span ng-if="! state.uploading">Begin upload</span>
-                <span ng-if="state.uploading"><i class="fa fa-refresh fa-spin"></i> Uploading</span>
-            </button>
-            <button class="btn btn-default" ng-disabled="state.uploading" type="button" ng-click="cancel()">Cancel</button>
+        <div class="actions clearfix">
+            <div class="pull-left">
+                <button class="btn btn-default" ng-disabled="state.uploading || (data.uploads|length) === 0" type="button" ng-click="reset()">Reset</button>
+            </div>
+            <div class="pull-right">
+                <button class="btn btn-primary" ng-disabled="state.uploading || state.retry || (data.uploads|length) === 0" type="button" ng-click="upload()">
+                    <span ng-if="! state.uploading">Begin upload</span>
+                    <span ng-if="state.uploading"><i class="fa fa-refresh fa-spin"></i> Uploading</span>
+                </button>
+                <button class="btn btn-default" ng-disabled="state.uploading" type="button" ng-click="cancel()">Cancel</button>
+            </div>
         </div>
     </form>
 </div>
