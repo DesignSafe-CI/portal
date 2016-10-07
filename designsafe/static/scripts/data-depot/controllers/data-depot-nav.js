@@ -10,7 +10,7 @@
     $scope.routerItems.push({
       name: 'Public',
       collapsible: true,
-      collapse: true,
+      collapse: false,
       children: [
         {
           name: 'Publications',
@@ -34,7 +34,7 @@
       $scope.routerItems.splice(0, 0, {
         name: 'Private',
         collapsible: true,
-        collapse: true,
+        collapse: false,
         children: [
           {
             name: 'My Data',
@@ -63,6 +63,7 @@
           }
         ]
       });
+
       // $scope.routerItems.push({
       //     name: 'Workspace',
       //     collapsible: true,
@@ -87,8 +88,6 @@
       //   }
       // );
     }
-
-    $scope.routerItems[0].collapse = false;
 
     $scope.itemClicked = function(routerItem) {
       if (routerItem.collapsible) {
