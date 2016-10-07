@@ -308,13 +308,14 @@
     };
 
     /**
-     * Upload the Blob as a new file
-     * @param {Blob} data
-     * @param {object} options upload options
-     * @param {string} options.name the file name
+     * Upload as a new file
+     * @param {FormData} data The Multipart FormData
      */
-    FileListing.prototype.upload = function (data, options) {
-      throw new Error('not implemented')
+    FileListing.prototype.upload = function (data) {
+      return $http.post(this.mediaUrl(), data, {headers: {'Content-Type': undefined}})
+        .then(function (result) {
+          return result.data;
+        });
     };
 
 

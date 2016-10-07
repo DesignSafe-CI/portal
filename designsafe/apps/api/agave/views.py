@@ -1,6 +1,7 @@
 import chardet
 import logging
 import json
+import os
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
@@ -32,11 +33,6 @@ class FileManagersView(View):
 
 
 class FileListingView(View):
-
-    @staticmethod
-    def default_listing_file_id(user):
-        # TODO this should be in the AgaveFileManager
-        return '/'.join([settings.AGAVE_STORAGE_SYSTEM, user.username])
 
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
 
@@ -106,6 +102,27 @@ class FileMediaView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+    def post(self, request, file_mgr_name, system_id, file_path):
+        if file_mgr_name == AgaveFileManager.NAME:
+            agave_client = request.user.agave_oauth.client
+            fm = AgaveFileManager(agave_client=agave_client)
+            if request.FILES:
+                upload_file = request.FILES['file']
+                upload_dir = file_path
+
+                relative_path = request.POST.get('relative_path', None)
+                if relative_path:
+                    # user uploaded a folder structure; ensure path exists
+                    upload_dir = os.path.join(file_path, os.path.dirname(relative_path))
+                    BaseFileResource.ensure_path(agave_client, system_id, upload_dir)
+
+                result = fm.upload(system_id, upload_dir, upload_file)
+                logger.debug(result)
+
+            return JsonResponse({'status': 'ok'})
+
+        return HttpResponseBadRequest("Unsupported operation")
+
     def put(self, request, file_mgr_name, system_id, file_path):
         if request.is_ajax():
             body = json.loads(request.body)
@@ -168,30 +185,13 @@ class FileMediaView(View):
             elif action == 'trash':
                 trash_path = request.user.username + '/.Trash'
 
-                # first ensure ~/.Trash directory exists; if not try to create
                 try:
-                    fm.listing(system_id, trash_path)
-                except HTTPError as e:
-                    if e.response.status_code == 404:
-                        try:
-                            fm.mkdir(system_id, request.user.username, '.Trash')
-                        except HTTPError as e:
-                            return HttpResponseBadRequest(e.response.text)
-                    else:
-                        return HttpResponseBadRequest(e.response.text)
-
-                # move file to ~/.Trash
-                try:
-                    trashed = fm.move(system_id, file_path, trash_path)
+                    trashed = fm.trash(system_id, file_path, trash_path)
                     return JsonResponse(trashed, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
-                    # TODO try to rename with timestamp and trash again
                     logger.error(e.response.text)
                     return HttpResponseBadRequest(e.response.text)
 
-        return HttpResponseBadRequest("Unsupported operation")
-
-    def post(self, request, file_mgr_name, system_id, file_path):
         return HttpResponseBadRequest("Unsupported operation")
 
     def delete(self, request, file_mgr_name, system_id, file_path):

@@ -6,9 +6,13 @@
 
     $scope.createProject = function() {};
 
-    $scope.uploadFiles = function() {};
+    $scope.uploadFiles = function() {
+      DataBrowserService.upload(false);
+    };
 
-    $scope.uploadFolders = function() {};
+    $scope.uploadFolders = function() {
+      DataBrowserService.upload(true);
+    };
 
   }]);
 
