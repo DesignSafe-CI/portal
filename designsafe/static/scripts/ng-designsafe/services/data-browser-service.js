@@ -8,7 +8,6 @@
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
     /**
-     *
      * @type {{busy: boolean, listing: FileListing, selected: Array}}
      */
     var currentState = {
@@ -34,7 +33,7 @@
     /**
      * Gets the state of the DataBrowserService.
      *
-     * @returns {{listing: {object}}}}
+     * @return {{busy: boolean, listing: FileListing, selected: Array}}
      */
     function state() {
       return currentState;
