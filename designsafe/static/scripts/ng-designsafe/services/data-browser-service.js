@@ -22,7 +22,7 @@
      * @readonly
      * @enum {string}
      */
-    var eventTypes = {
+    var FileEvents = {
       FILE_ADDED: 'FileAdded',
       FILE_COPIED: 'FileCopied',
       FILE_MOVED: 'FileMoved',
@@ -54,7 +54,7 @@
         f._ui.selected = true;
       });
       currentState.selected = _.union(currentState.selected, files);
-      notify(eventTypes.FILE_SELECTION, currentState.selected);
+      notify(FileEvents.FILE_SELECTION, currentState.selected);
     }
 
 
@@ -68,7 +68,7 @@
         f._ui.selected = false;
       });
       currentState.selected = _.difference(currentState.selected, files);
-      notify(eventTypes.FILE_SELECTION, currentState.selected);
+      notify(FileEvents.FILE_SELECTION, currentState.selected);
     }
 
 
@@ -109,13 +109,14 @@
     function browse (options) {
       currentState.busy = true;
       return FileListing.get(options).then(function (listing) {
+        select([], true);
         currentState.busy = false;
         currentState.listing = listing;
         return listing;
       }, function (err) {
         currentState.busy = false;
         // TODO Toastr error message
-        window.alert(err);
+        window.alert(err.data);
       });
     }
 
@@ -210,8 +211,10 @@
         function (result) {
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
-            deselect([f]);
-            return f.copy({path: result.path});
+            return f.copy({path: result.path}).then(function (result) {
+              notify(FileEvents.FILE_COPIED, f);
+              return result;
+            });
           });
           return $q.all(copyPromises).then(function (results) {
             currentState.busy = false;
@@ -334,7 +337,7 @@
           name: folderName
         }).then(function(newDir) {
           currentState.busy = false;
-          notify(eventTypes.FILE_ADDED, newDir);
+          notify(FileEvents.FILE_ADDED, newDir);
         }, function(err) {
           // TODO better error handling
           $scope.$emit('designsafe:notify', {
@@ -409,8 +412,11 @@
         function (result) {
           currentState.busy = true;
           var movePromises = _.map(files, function (f) {
-            deselect([f]);
-            return f.move({path: result.path});
+            return f.move({path: result.path}).then(function (result) {
+              deselect([f]);
+              notify(FileEvents.FILE_MOVED, f);
+              return result;
+            });
           });
           return $q.all(movePromises).then(function (results) {
             currentState.busy = false;
@@ -563,7 +569,11 @@
         function (files) {
           currentState.busy = true;
           var deletePromises = _.map(files, function (file) {
-            return file.rm();
+            return file.rm().then(function (result) {
+              deselect([file]);
+              notify(FileEvents.FILE_REMOVED, file);
+              return result;
+            });
           });
           return $q.all(deletePromises).then(
             function (result) {
@@ -658,7 +668,7 @@
               });
           };
 
-          $scope.formatSelection = function($result) {
+          $scope.formatSelection = function() {
             if (this.pem.username) {
               return this.pem.username.first_name +
                 ' ' + this.pem.username.last_name +
@@ -737,7 +747,7 @@
       currentState.busy = true;
       var trashPromises = _.map(files, function(file) {
         return file.trash().then(function(trashed) {
-          notify(eventTypes.FILE_MOVED, trashed);
+          notify(FileEvents.FILE_MOVED, trashed);
           return trashed;
         });
       });
@@ -899,9 +909,17 @@
     function viewMetadata (file) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-view-metadata.html',
-        controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
-        }]
+        controller: ['$scope', 'file', function ($scope, file) {
+          $scope.data = {file: file};
+
+          $scope.close();
+        }],
+        size: 'lg',
+        resolve: {
+          'file': function() { return file; }
+        }
       });
+
       return modal.result;
     }
 
@@ -911,7 +929,7 @@
      * @callback subscribeCallback
      * @param {object} $event
      * @param {object} eventData
-     * @param {eventTypes} eventData.type
+     * @param {FileEvents} eventData.type
      * @param {object} eventData.context
      */
     /**
@@ -926,7 +944,7 @@
 
     /**
      *
-     * @param {eventTypes} eventType The event
+     * @param {FileEvents} eventType The event
      * @param {object} eventContext The object/context of the event. The value of this parameter depends on the `eventType`
      */
     function notify(eventType, eventContext) {
@@ -938,10 +956,10 @@
 
     return {
       /* properties */
-      eventTypes: eventTypes,
+      FileEvents: FileEvents,
       state: state,
 
-      /* functions */
+      /* data/files functions */
       allowedActions: allowedActions,
       browse: browse,
       copy: copy,

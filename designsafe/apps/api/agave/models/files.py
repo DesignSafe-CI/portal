@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import urllib
+import urlparse
 from . import BaseAgaveResource
 
 logger = logging.getLogger(__name__)
@@ -94,6 +95,26 @@ class BaseFileResource(BaseAgaveResource):
                         'path': '/'.join(path_comps[0:i+1]) or '/',
                         } for i in range(0, len(path_comps))]
         return trail_comps
+
+    @property
+    def uuid(self):
+        """
+        In the files `_links` is an href to metadata via associationIds. The
+        `associationId` is the UUID of this file. Use urlparse to parse the URL and then
+        the query. The `q` query parameter is a JSON string in the form::
+
+            {"assocationIds": "{{ uuid }}"}
+
+        :return: string: the UUID for the file
+        """
+        if 'metadata' in self._links:
+            assoc_meta_href = self._links['metadata']['href']
+            parsed_href = urlparse.urlparse(assoc_meta_href)
+            query_dict = urlparse.parse_qs(parsed_href.query)
+            if 'q' in query_dict:
+                meta_q = json.loads(query_dict['q'][0])
+                return meta_q.get('associationIds')
+        return None
 
     def to_dict(self):
         ser = super(BaseFileResource, self).to_dict()

@@ -29,7 +29,7 @@ class BaseApiView(View):
         except (ConnectionError, HTTPError) as e:
             status = e.response.status_code
             message = e.response.reason
-            logger.error('{}'.format(message), exc_info=True,
+            logger.error('{}: {}'.format(message, e.response.text), exc_info=True,
                          extra={'username': request.user.username})
         
         resp = {'message': message}

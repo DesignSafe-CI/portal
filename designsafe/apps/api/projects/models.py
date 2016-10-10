@@ -13,8 +13,15 @@ class Project(BaseMetadataResource):
     associated to the project and to other Files objects within the Project collection.
     """
 
-    name = 'designsafe.project'
-    storage_system_id = 'designsafe.storage.projects'
+    NAME = 'designsafe.project'
+    STORAGE_SYSTEM_ID = 'designsafe.storage.projects'
+
+    def __init__(self, agave_client, **kwargs):
+        defaults = {
+            'name': Project.NAME
+        }
+        defaults.update(kwargs)
+        super(Project, self).__init__(agave_client, **defaults)
 
     @classmethod
     def list_projects(cls, agave_client):
@@ -24,7 +31,7 @@ class Project(BaseMetadataResource):
         :return:
         """
         query = {
-            'name': Project.name
+            'name': Project.NAME
         }
         records = agave_client.meta.listMetadata(q=json.dumps(query), privileged=False)
         return [cls(agave_client=agave_client, **r) for r in records]
@@ -84,7 +91,7 @@ class Project(BaseMetadataResource):
         :return: The AgaveFile for this project's root dir
         :rtype: :class:`AgaveFile`
         """
-        return BaseFileResource.listing(system=Project.storage_system_id,
+        return BaseFileResource.listing(system=Project.STORAGE_SYSTEM_ID,
                                         path=self.uuid,
                                         agave_client=self._agave)
 
@@ -105,6 +112,6 @@ class Project(BaseMetadataResource):
     @property
     def project_data_listing(self, path=''):
         file_path = '/'.join([self.uuid, path])
-        return BaseFileResource.listing(system=Project.storage_system_id,
+        return BaseFileResource.listing(system=Project.STORAGE_SYSTEM_ID,
                                         path=file_path,
                                         agave_client=self._agave)

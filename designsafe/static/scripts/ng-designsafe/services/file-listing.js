@@ -3,7 +3,7 @@
 
   var module = angular.module('ng.designsafe');
 
-  module.factory('FileListing', ['$http', 'Logging', function($http, Logging) {
+  module.factory('FileListing', ['$http', '$q', 'Logging', function($http, $q, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.FileListing');
 
@@ -204,9 +204,15 @@
      * @return {Promise}
      */
     FileListing.prototype.listPermissions = function() {
-      return $http.get(this.pemsUrl()).then(function (resp) {
-        return resp.data;
-      });
+      if (this._permissions) {
+        return $q.resolve(this._permissions);
+      } else {
+        var self = this;
+        return $http.get(this.pemsUrl()).then(function (resp) {
+          self._permissions = resp.data;
+          return self._permissions;
+        });
+      }
     };
 
     /**

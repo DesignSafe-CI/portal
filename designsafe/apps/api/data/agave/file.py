@@ -158,7 +158,7 @@ class AgaveFile(AbstractFile, AgaveObject):
             parsed_href = urlparse.urlparse(assoc_meta_href)
             query_dict = urlparse.parse_qs(parsed_href.query)
             if 'q' in query_dict:
-                meta_q = json.loads[query_dict['q'][0]]
+                meta_q = json.loads(query_dict['q'][0])
                 return meta_q.get('associationIds')
         return None
 
