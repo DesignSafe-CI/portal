@@ -15,11 +15,27 @@
                 <iframe class="embed-responsive-item" ng-src="{{ previewHref }}"></iframe>
             </div>
         </div>
-        <div class="caption text-center">
-            <h4>{{ file.name }}</h4>
-            <p>
-                {{ file.length|bytes }} &mdash; Last modified: {{ file.lastModified|date:"short" }}
-            </p>
+        <div class="caption">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>File name</th>
+                    <td>{{ file.name }}</td>
+                </tr>
+                <tr>
+                    <th>File path</th>
+                    <td>{{ file.path }}</td>
+                </tr>
+                <tr>
+                    <th>File size</th>
+                    <td>{{ file.length|bytes }}</td>
+                </tr>
+                <tr>
+                    <th>Last modified</th>
+                    <td>{{ file.lastModified|date:"short" }}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="actions text-center">

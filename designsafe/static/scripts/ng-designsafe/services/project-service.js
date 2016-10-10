@@ -23,7 +23,7 @@
 
   var mod = angular.module('ng.designsafe');
 
-  mod.factory('ProjectService', ['httpi', '$interpolate', '$q', 'Logging', function(httpi, $interpolate, $q, Logging) {
+  mod.factory('ProjectService', ['httpi', '$interpolate', '$q', '$uibModal', 'Logging', function(httpi, $interpolate, $q, $uibModal, Logging) {
 
     var logger = Logging.getLogger('DataDepot.ProjectService');
 
@@ -35,7 +35,7 @@
 
     /**
      * Get a list of Projects for the current user
-     * @returns {Array.<Project>}
+     * @returns {Project[]}
      */
     service.list = function() {
       return projectResource.get().then(function(resp) {
@@ -47,7 +47,7 @@
      * Get a specific Project
      * @param {Object} options
      * @param {string} options.uuid The Project UUID
-     * @returns {HttpPromise}
+     * @returns {Promise}
      */
     service.get = function(options) {
       return projectResource.get({params: options}).then(function(resp) {
@@ -58,21 +58,23 @@
     /**
      * Save or update a Project
      * @param {Object} options
-     * @param {string} options.uuid The Project uuid, if updating existing record, otherwise null
+     * @param {string} [options.uuid] The Project uuid, if updating existing record, otherwise null
      * @param {string} options.title The Project title
-     * @param {string} options.pi The username for Project PI
-     * @param {Array.<string>} options.coPis List of usernames for Project Co-PIs
-     * @returns {HttpPromise}
+     * @param {string} [options.pi] The username for Project PI
+     * @param {string[]} [options.coPis] List of usernames for Project Co-PIs
+     * @returns {Promise}
      */
     service.save = function(options) {
-      return projectResource.post({data: options});
+      return projectResource.post({data: options}).then(function (resp) {
+        return new Project(resp.data);
+      });
     };
 
     /**
      * Get a list of usernames for users that are collaborators on the Project
      * @param {Object} options
      * @param {string} options.uuid The Project uuid
-     * @returns {HttpPromise}
+     * @returns {Promise}
      */
     service.getCollaborators = function(options) {
       return collabResource.get({params: options});
@@ -83,7 +85,7 @@
      * @param options
      * @param {string} options.uuid The Project uuid
      * @param {string} options.username The username of the collaborator to add
-     * @returns {HttpPromise}
+     * @returns {Promise}
      */
     service.addCollaborator = function(options) {
       return collabResource.post({data: options});
@@ -94,7 +96,7 @@
      * @param options
      * @param {string} options.uuid The Project uuid
      * @param {string} options.username The username of the collaborator to add
-     * @returns {HttpPromise}
+     * @returns {Promise}
      */
     service.removeCollaborator = function(options) {
       return collabResource.delete({data: options});
@@ -105,10 +107,56 @@
      * @param options
      * @param {string} options.uuid The Project uuid
      * @param {string} [options.fileId] the Project data file id to list
-     * @returns {HttpPromise}
+     * @returns {Promise}
      */
     service.projectData = function(options) {
       return dataResource.get({params: options});
+    };
+
+
+    /**
+     *
+     * @return {Promise}
+     */
+    service.createProject = function() {
+      var modal = $uibModal.open({
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-create-project.html',
+        controller: ['$scope', '$uibModalInstance', 'UserService', function ($scope, $uibModalInstance, UserService) {
+          $scope.form = {
+            title: '',
+            pi: ''
+          };
+
+          $scope.searchUsers = function(q) {
+            return UserService.search({q: q})
+              .then(function(resp) {
+                return resp.data;
+              });
+          };
+
+          $scope.formatSelection = function() {
+            if (this.form.pi) {
+              return this.form.pi.first_name +
+                ' ' + this.form.pi.last_name +
+                ' (' + this.form.pi.username + ')';
+            }
+          };
+
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss();
+          };
+
+          $scope.save = function () {
+            var projectData = {
+              title: $scope.form.title,
+              pi: $scope.form.pi.username
+            };
+            return service.save(projectData)
+          };
+        }]
+      });
+
+      return modal.result;
     };
 
     return service;

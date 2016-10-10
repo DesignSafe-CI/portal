@@ -5,7 +5,7 @@
     $scope.browser = DataBrowserService.state();
 
     DataBrowserService.subscribe($scope, function($event, eventData) {
-      if (eventData.type === DataBrowserService.eventTypes.FILE_SELECTION) {
+      if (eventData.type === DataBrowserService.FileEvents.FILE_SELECTION) {
         updateToolbar();
       }
     });

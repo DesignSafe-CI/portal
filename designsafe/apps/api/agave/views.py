@@ -37,6 +37,9 @@ class FileListingView(View):
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
 
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             if system_id is None:
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
@@ -68,6 +71,9 @@ class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             f = fm.listing(system_id, file_path)
             if request.GET.get('preview', False):
@@ -104,6 +110,9 @@ class FileMediaView(View):
 
     def post(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             agave_client = request.user.agave_oauth.client
             fm = AgaveFileManager(agave_client=agave_client)
             if request.FILES:
@@ -130,6 +139,9 @@ class FileMediaView(View):
             body = request.POST.copy()
 
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             action = body.get('action', '')
             if action == 'copy':
@@ -196,6 +208,9 @@ class FileMediaView(View):
 
     def delete(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             try:
                 fm.delete(system_id, file_path)
@@ -215,6 +230,9 @@ class FilePermissionsView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             pems = fm.list_permissions(system_id, file_path)
             return JsonResponse(pems, encoder=AgaveJSONEncoder, safe=False)
@@ -228,6 +246,9 @@ class FilePermissionsView(View):
             body = request.POST.copy()
 
         if file_mgr_name == AgaveFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             username = body.get('username')
             permission = body.get('permission')

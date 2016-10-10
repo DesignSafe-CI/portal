@@ -6,6 +6,7 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.files import BaseFileResource, BaseFilePermissionResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -42,15 +43,24 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
         ag = get_service_account_client()
 
         # create Project (metadata)
+        if request.is_ajax():
+            post_data = json.loads(request.body)
+        else:
+            post_data = request.POST.copy()
+
         p = Project(ag)
-        p.title = request.POST.get('title')
+        p.title = post_data.get('title')
+        p.pi = post_data.get('pi', None)
         p.save()
 
         # grant creating user permissions
         p.add_collaborator(request.user.username)
+        if p.pi:
+            p.add_collaborator(p.pi)
 
         # create the data directory File and grant user permissions
-        project_dir = BaseFileResource.mkdir(ag, Project.storage_system_id, '/', p.uuid)
+        project_storage_root = BaseFileResource(ag, Project.STORAGE_SYSTEM_ID, '/')
+        project_dir = project_storage_root.mkdir(p.uuid)
         project_dir.share(request.user.username, BaseFilePermissionResource.ALL)
 
         # relate the Project as metadata for the File
@@ -93,6 +103,6 @@ class ProjectDataView(BaseApiView, SecureMixin):
         ag = request.user.agave_oauth.client
 
         list_path = '/'.join([project_id, file_path])
-        listing = BaseFileResource.listing(ag, Project.storage_system_id, list_path)
+        listing = BaseFileResource.listing(ag, Project.STORAGE_SYSTEM_ID, list_path)
 
         return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)

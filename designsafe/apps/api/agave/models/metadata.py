@@ -1,5 +1,8 @@
 import json
+import logging
 from . import BaseAgaveResource
+
+logger = logging.getLogger(__name__)
 
 
 class BaseMetadataResource(BaseAgaveResource):
@@ -9,7 +12,15 @@ class BaseMetadataResource(BaseAgaveResource):
     """
 
     def __init__(self, agave_client, **kwargs):
-        super(BaseMetadataResource, self).__init__(agave_client, **kwargs)
+        defaults = {
+            'uuid': None,
+            'schemaId': None,
+            'associationIds': [],
+            'name': None,
+            'value': {}
+        }
+        defaults.update(kwargs)
+        super(BaseMetadataResource, self).__init__(agave_client, **defaults)
 
     @property
     def request_body(self):
@@ -42,6 +53,10 @@ class BaseMetadataResource(BaseAgaveResource):
         self.from_result(**result)
         return self
 
+    def delete(self):
+        self._agave.meta.deleteMetadata(uuid=self.uuid)
+        return self
+
     @classmethod
     def from_uuid(cls, agave_client, uuid):
         result = agave_client.meta.getMetadata(uuid=uuid)
@@ -54,32 +69,30 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
     """
 
     def __init__(self, metadata_uuid, agave_client, **kwargs):
-        super(BaseMetadataPermissionResource, self).__init__(agave_client)
+        defaults = {
+            'permission': {},
+            'recursive': False,
+            'username': None
+        }
+        defaults.update(**kwargs)
+        super(BaseMetadataPermissionResource, self).__init__(agave_client, **defaults)
         self.metadata_uuid = metadata_uuid
-        self.username = None
-        self._pems = {}
-        self.from_result(**kwargs)
-
-    def from_result(self, **kwargs):
-        super(BaseMetadataPermissionResource, self).from_result(**kwargs)
-        self.username = kwargs.get('username')
-        self._pems = kwargs.get('permission', {})
 
     @property
     def read(self):
-        return self._pems.get('read', False)
+        return self.permission.get('read', False)
 
     @read.setter
     def read(self, value):
-        self._pems['read'] = value
+        self.permission['read'] = value
 
     @property
     def write(self):
-        return self._pems['write']
+        return self.permission['write']
 
     @write.setter
     def write(self, value):
-        self._pems['write'] = value
+        self.permission['write'] = value
 
     @property
     def permission_bit(self):
@@ -114,8 +127,9 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
     @property
     def request_body(self):
         return json.dumps({
-            "username": self.username,
-            "permission": self.permission_bit
+            'username': self.username,
+            'recursive': self.recursive,
+            'permission': self.permission_bit
         })
 
     def save(self):
@@ -125,9 +139,9 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
         :return: self
         :rtype: :class:`BaseMetadataPermissionResource`
         """
-        result = self._agave.meta.updateMetadataPermissions(
-            self.metadata_uuid, body=self.request_body)
-        self.from_result(**result)
+        result = self._agave.meta.updateMetadataPermissions(uuid=self.metadata_uuid,
+                                                            body=self.request_body)
+        self._wrapped.update(**result)
         return self
 
     def delete(self):
@@ -145,7 +159,8 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
     def list_permissions(cls, metadata_uuid, agave_client):
         """
         Get the permissions for a metadata object
-        :param metadata_uuid: string: the UUID of the metadata for which to list permissions
+        :param metadata_uuid: string: the UUID of the metadata for which to list
+            permissions
         :param agave_client: agavepy.Agave: API client instance
 
         :return: List of permissions for the passed Metadata UUID
