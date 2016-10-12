@@ -8,7 +8,7 @@
         </thead>
 
         <tbody>
-        <tr ng-repeat="item in listing.children"
+        <tr ng-repeat="item in browser.listing.children"
             ng-click="onSelect()($event, item)"
             ng-class="{'ds-data-selected': item._ui.selected}"
         >
@@ -27,16 +27,26 @@
             </td>
         </tr>
         </tbody>
-        <caption ng-if="! listing" class="text-center text-muted" style="background-color: #fff;border: 1px solid #ddd;">
-            <p class="lead">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-            </p>
-        </caption>
-        <caption ng-if="listing && (listing.children|length) === 0" class="text-center text-muted" style="background-color: #fff;border: 1px solid #ddd;">
-            <p class="lead">
-                This folder is empty!
-                <br><i class="fa fa-folder-open-o"></i>
-            </p>
+        <caption style="padding:0">
+
+            <div ng-if="browser.busy" style="margin-bottom:-38px" class="text-right">
+                <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </div>
+
+            <div ng-if="! browser.busy && browser.error" class="text-center">
+                <p class="alert alert-danger">
+                    {{ browser.error.message || browser.error }}
+                </p>
+            </div>
+
+            <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
+                <p class="lead">
+                    This folder is empty!
+                    <br><i class="fa fa-folder-open-o"></i>
+                </p>
+            </div>
         </caption>
     </table>
 </div>

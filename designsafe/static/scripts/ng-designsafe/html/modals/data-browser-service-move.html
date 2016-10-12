@@ -34,6 +34,20 @@
                 </td>
             </tr>
             </tbody>
+            <caption class="text-center" ng-if="state.busy">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </caption>
+            <caption class="text-center" ng-if="! state.busy && state.error">
+                <p class="alert alert-danger">
+                    {{ state.error.message || state.error }}
+                </p>
+            </caption>
+            <caption class="text-center" ng-if="! state.busy && ! state.error && (listing.children|length) === 0">
+                <p class="lead">
+                    This folder is empty!
+                    <br><i class="fa fa-folder-open-o"></i>
+                </p>
+            </caption>
         </table>
     </div>
 

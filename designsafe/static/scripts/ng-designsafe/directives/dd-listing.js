@@ -12,7 +12,7 @@
       replace: true,
       templateUrl: '/static/scripts/ng-designsafe/html/directives/dd-listing.html',
       scope: {
-        listing: '=',
+        browser: '=',
         onBrowse: '&',
         onSelect: '&',
         onDetail: '&'
