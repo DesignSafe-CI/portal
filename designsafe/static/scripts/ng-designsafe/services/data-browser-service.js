@@ -12,6 +12,7 @@
      */
     var currentState = {
       busy: false,
+      error: null,
       listing: null,
       selected: []
     };
@@ -108,6 +109,7 @@
      */
     function browse (options) {
       currentState.busy = true;
+      currentState.error = null;
       return FileListing.get(options).then(function (listing) {
         select([], true);
         currentState.busy = false;
@@ -115,8 +117,8 @@
         return listing;
       }, function (err) {
         currentState.busy = false;
-        // TODO Toastr error message
-        window.alert(err.data);
+        currentState.listing = null;
+        currentState.error = err.data;
       });
     }
 
@@ -138,7 +140,8 @@
           $scope.data = data;
 
           $scope.state = {
-            busy: false
+            busy: false,
+            error: null
           };
 
           $scope.options = [

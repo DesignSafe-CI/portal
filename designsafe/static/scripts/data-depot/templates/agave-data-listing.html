@@ -1,8 +1,6 @@
 <dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
-<dd-listing ng-if="browser.listing.type === 'dir'" listing="browser.listing"
+<dd-listing browser="browser"
             on-browse="onBrowse"
             on-select="onSelect"
-            on-detail="onDetail"></dd-listing>
-<div ng-if="browser.listing.type === 'file'">
-    Preview {{ browser.listing }}
-</div>
+            on-detail="onDetail">
+</dd-listing>

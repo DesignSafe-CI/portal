@@ -8,9 +8,6 @@
     <div class="container">
         <div ng-app="DataDepotApp">
             <div ng-controller="MainCtrl" style="position: relative;">
-                <div ng-if="browser.busy" class="bg-info" style="padding: 8px 15px;position: absolute;top: 1px;right: 1px;z-index: 9999;line-height: 1.5;font-size: 16px;">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
-                </div>
                 <div ng-controller="DataDepotToolbarCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-toolbar.html" %}'"></div>
                 <div class="row">
                     <div class="col-sm-3 col-md-2">
