@@ -155,4 +155,39 @@
     };
   });
 
+  mod.directive('dsUser', ['UserService', function(UserService) {
+    return {
+      restrict: 'EA',
+      scope: {
+        username: '=',
+        format: '@'
+      },
+      link: function(scope, element) {
+        var format = scope.format || 'name';
+
+        UserService.get(scope.username).then(function (user) {
+          switch (format) {
+            case 'name':
+              element.text(user.first_name + ' ' + user.last_name);
+              break;
+            case 'email':
+              element.text(user.email);
+              break;
+            case 'name-email':
+              element.text(user.first_name + ' ' + user.last_name + ' <' + user.email + '>');
+              break;
+            case 'name-username':
+              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ')');
+              break;
+            case 'name-username-email':
+              element.text(user.first_name + ' ' + user.last_name + ' (' + user.username + ') <' + user.email + '>');
+              break;
+            default:
+              element.text(user.username);
+          }
+        });
+      }
+    }
+  }]);
+
 })(angular, jQuery);

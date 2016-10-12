@@ -27,5 +27,16 @@
             </td>
         </tr>
         </tbody>
+        <caption ng-if="! listing" class="text-center text-muted" style="background-color: #fff;border: 1px solid #ddd;">
+            <p class="lead">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </p>
+        </caption>
+        <caption ng-if="listing && (listing.children|length) === 0" class="text-center text-muted" style="background-color: #fff;border: 1px solid #ddd;">
+            <p class="lead">
+                This folder is empty!
+                <br><i class="fa fa-folder-open-o"></i>
+            </p>
+        </caption>
     </table>
 </div>

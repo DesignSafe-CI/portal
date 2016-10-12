@@ -44,25 +44,6 @@
 
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'Django', 'ProjectService', function ($scope, $state, Django, ProjectService) {
 
-    $scope.data = {
-      columns: [
-        {
-          key: 'value.title',
-          label: 'Name',
-          defaultValue: 'Please provide'
-        },
-        {
-          key: 'value.pi',
-          label: 'PI',
-          defaultValue: 'Please provide'
-        },
-        {
-          key: 'created',
-          label: 'Created'
-        }
-      ]
-    };
-
     ProjectService.list().then(function(projects) {
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
@@ -89,6 +70,14 @@
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
       .then(function () {
         $scope.browser = DataBrowserService.state();
+        $scope.browser.listing.href = $state.href('projects.view.data', {
+          projectId: projectId, filePath: $scope.browser.listing.path
+        });
+        _.each($scope.browser.listing.children, function (child) {
+          child.href = $state.href('projects.view.data', {
+            projectId: projectId, filePath: child.path
+          });
+        });
       });
 
     $scope.onBrowseData = function onBrowseData($event, file) {
