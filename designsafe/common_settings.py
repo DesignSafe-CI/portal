@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import json
 gettext = lambda s: s
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -503,6 +504,30 @@ AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+
+PROJECT_STORAGE_SYSTEM_TEMPLATE = {
+    'id': 'project-',
+    'site': 'tacc.utexas.edu',
+    'default': False,
+    'status': 'UP',
+    'description': 'The projects storage space for DesignSafe-CI Project-',
+    'name': 'Project ',
+    'globalDefault': False,
+    'available': True,
+    'public': False,
+    'type': 'STORAGE',
+    'storage': {
+        'mirror': False,
+        'port': 22,
+        'homeDir': '/home',
+        'protocol': 'SFTP',
+        'host': 'dtn01.prod.agaveapi.co',
+        'publicAppsDir': None,
+        'proxy': None,
+        'rootDir': '/corral-repl/tacc/NHERI/projects/',
+        'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
+    }
+}
 
 from box_settings import *
 from elasticsearch_settings import *

@@ -1,7 +1,13 @@
 from designsafe.apps.api.agave.models.metadata import (BaseMetadataResource,
                                                        BaseMetadataPermissionResource)
-from designsafe.apps.api.agave.models.files import BaseFileResource
+from designsafe.apps.api.agave.models.files import (BaseFileResource,
+                                                    BaseFilePermissionResource)
+from designsafe.apps.api.agave.models.systems import BaseSystemResource
+from designsafe.apps.api.agave.models.systems import roles as system_roles
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Project(BaseMetadataResource):
@@ -23,6 +29,10 @@ class Project(BaseMetadataResource):
         defaults.update(kwargs)
         super(Project, self).__init__(agave_client, **defaults)
 
+        # initialize properties cache attributes
+        self._project_directory = None
+        self._project_system = None
+
     @classmethod
     def list_projects(cls, agave_client):
         """
@@ -43,11 +53,17 @@ class Project(BaseMetadataResource):
         return [pem.username for pem in permissions]
 
     def add_collaborator(self, username):
+        logger.info('Adding collaborator "{}" to project "{}"'.format(username, self.uuid))
+
+        # Set permissions on the metadata record
         pem = BaseMetadataPermissionResource(self.uuid, self._agave)
         pem.username = username
         pem.read = True
         pem.write = True
         pem.save()
+
+        # Set roles on project system
+        self.project_system.add_role(username, system_roles.USER)
 
     @property
     def title(self):
@@ -88,30 +104,27 @@ class Project(BaseMetadataResource):
         """
         Queries for the File object that represents the root of this Project's files.
 
-        :return: The AgaveFile for this project's root dir
-        :rtype: :class:`AgaveFile`
+        :return: The project's root dir
+        :rtype: :class:`BaseFileResource`
         """
-        return BaseFileResource.listing(system=Project.STORAGE_SYSTEM_ID,
-                                        path=self.uuid,
-                                        agave_client=self._agave)
-
-    @project_directory.setter
-    def project_directory(self, value):
-        """
-        Sets the passed :class:`AgaveFile` as the root dir for this Project's data by
-        adding the :func:`AgaveFile.uuid` to the Project's `associationIds`.
-
-        :param value: :class:`designsafe.apps.api.data.agave.file.AgaveFile`: The
-        AgaveFile for this Project's root data dir.
-        """
-        # TODO
-        # extract the UUID of the File and set it in the associationIds for the Project
-        file_uuid = value.uuid
-        self.associationIds.append(file_uuid)
+        if self._project_directory is None:
+            self._project_directory = BaseFileResource.listing(
+                system=self.project_system_id, path='/', agave_client=self._agave)
+        return self._project_directory
 
     @property
-    def project_data_listing(self, path=''):
-        file_path = '/'.join([self.uuid, path])
-        return BaseFileResource.listing(system=Project.STORAGE_SYSTEM_ID,
-                                        path=file_path,
+    def project_system(self):
+        if self._project_system is None:
+            self._project_system = BaseSystemResource.from_id(self._agave,
+                                                              self.project_system_id)
+        return self._project_system
+
+    @property
+    def project_system_id(self):
+        return 'project-{}'.format(self.uuid)
+
+    @property
+    def project_data_listing(self, path='/'):
+        return BaseFileResource.listing(system=self.project_system_id,
+                                        path=path,
                                         agave_client=self._agave)
