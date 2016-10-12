@@ -44,6 +44,10 @@ class BaseFileResource(BaseAgaveResource):
         return '<BaseAgaveFile: {}>'.format(self._links['self']['href'])
 
     @property
+    def agave_uri(self):
+        return 'agave://{}/{}'.format(self.system, self.path)
+
+    @property
     def id(self):
         return '/'.join([self.system, self.path])
 
@@ -165,6 +169,8 @@ class BaseFileResource(BaseAgaveResource):
         :rtype: :class:`BaseFileResource`
         """
         path_comps = path.split('/')
+        if path.startswith('/'):
+            path_comps[0] = '/'
         ensured_path = path_comps[0]
         ensure_result = cls.listing(agave_client, system, ensured_path)
         for pc in path_comps[1:]:
@@ -290,7 +296,7 @@ class BaseFileResource(BaseAgaveResource):
         """
         return self.move(os.path.dirname(self.path), new_name)
     
-    def share(self, username, permission):
+    def share(self, username, permission, recursive=False):
         """
         Updates the permissions on this file for the provided username.
 
@@ -298,13 +304,19 @@ class BaseFileResource(BaseAgaveResource):
         :param str permission: The new permission to set. This should be one of the
             permissions constants, e.g., READ, WRITE, EXECUTE, ALL, etc. See
             :class:`BaseAgaveFilePermission` for details.
+        :param bool recursive: If this permission should be set recursively
         :return: self for chaining
         :rtype: :class:`BaseFileResource`
         """
+        permission_body = {'username': username,
+                           'permission': permission,
+                           'recursive': recursive}
+        logger.info('Updating file permissions on {}: {}'.format(self.agave_uri,
+                                                                 permission_body))
         self._agave.files.updatePermissions(
             systemId=self.system,
             filePath=urllib.quote(self.path),
-            body={'username': username, 'permission': permission})
+            body=permission_body)
         return self
 
     def unshare(self, username):
@@ -388,13 +400,13 @@ class BaseFilePermissionResource(BaseAgaveResource):
         :param BaseFileResource agave_file:
         :param kwargs:
         """
-        if kwargs.get('permission') is None:
-            kwargs['permission'] = {}
-
-        if kwargs.get('username') is None:
-            kwargs['username'] = None
-
-        super(BaseFilePermissionResource, self).__init__(agave_client, **kwargs)
+        defaults = {
+            'permission': {},
+            'recursive': False,
+            'username': None
+        }
+        defaults.update(**kwargs)
+        super(BaseFilePermissionResource, self).__init__(agave_client, **defaults)
 
         self.agave_file = agave_file
 
@@ -478,8 +490,9 @@ class BaseFilePermissionResource(BaseAgaveResource):
     @property
     def request_body(self):
         return json.dumps({
-            "username": self.username,
-            "permission": self.permission_bit
+            'username': self.username,
+            'recursive': self.recursive,
+            'permission': self.permission_bit
         })
 
     def save(self):
