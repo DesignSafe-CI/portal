@@ -7,9 +7,4 @@
         <i class="fa fa-spinner fa-spin"></i> Loading project...
     </p>
 </div>
-
-<div ng-if="browser.busy">
-    <i class="fa fa-spinner fa-spin"></i>
-    Loading project data...
-</div>
-<dd-listing listing="browser.listing" on-select="onSelectData" on-browse="onBrowseData"></dd-listing>
+<ui-view></ui-view>

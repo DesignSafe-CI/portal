@@ -1,7 +1,7 @@
 <ul class="breadcrumb">
     <li ng-repeat="item in data.navItems">
-        <a ng-if="item.href" ng-href="{{ item.href }}">{{ item.label }}</a>
-        <span ng-if="!item.href">{{ item.label }}</span>
+        <a ng-if="! $last" ng-href="{{ item.href }}">{{ item.label }}</a>
+        <span ng-if="$last">{{ item.label }}</span>
     </li>
 </ul>
 <ui-view></ui-view>
