@@ -25,7 +25,14 @@
     FileListing.prototype._baseUrl = '/api/agave/files';
 
     FileListing.prototype.listingUrl = function () {
-      return [this._baseUrl, 'listing', this.fileMgr, this.system, this.path].join('/');
+      var urlParts = [this._baseUrl, 'listing', this.fileMgr];
+      if (this.system) {
+        urlParts.push(this.system);
+      }
+      if (this.path) {
+        urlParts.push(this.path);
+      }
+      return urlParts.join('/');
     };
 
     FileListing.prototype.mediaUrl = function () {
