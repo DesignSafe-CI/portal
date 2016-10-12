@@ -2,7 +2,6 @@ import chardet
 import logging
 import json
 import os
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseServerError)
@@ -11,6 +10,7 @@ from django.views.generic.base import View
 from django.http import JsonResponse
 from .filemanager.agave import AgaveFileManager
 from .filemanager.search_index import ElasticFileManager
+from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from requests import HTTPError
@@ -125,8 +125,12 @@ class FileMediaView(View):
                     upload_dir = os.path.join(file_path, os.path.dirname(relative_path))
                     BaseFileResource.ensure_path(agave_client, system_id, upload_dir)
 
-                result = fm.upload(system_id, upload_dir, upload_file)
-                logger.debug(result)
+                try:
+                    result = fm.upload(system_id, upload_dir, upload_file)
+                    logger.debug(result)
+                except HTTPError as e:
+                    logger.error(e.response.text)
+                    return HttpResponseBadRequest(e.response.text)
 
             return JsonResponse({'status': 'ok'})
 
@@ -233,7 +237,8 @@ class FilePermissionsView(View):
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
-            fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            # list permissions as the portal user
+            fm = AgaveFileManager(agave_client=get_service_account_client())
             pems = fm.list_permissions(system_id, file_path)
             return JsonResponse(pems, encoder=AgaveJSONEncoder, safe=False)
 
