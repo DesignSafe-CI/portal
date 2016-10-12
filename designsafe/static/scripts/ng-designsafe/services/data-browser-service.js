@@ -340,10 +340,6 @@
           notify(FileEvents.FILE_ADDED, newDir);
         }, function(err) {
           // TODO better error handling
-          $scope.$emit('designsafe:notify', {
-            level: 'warning',
-            message: 'Unable to create directory: ' + err.data.message
-          });
           logger.error(err);
           currentState.busy = false;
         });
