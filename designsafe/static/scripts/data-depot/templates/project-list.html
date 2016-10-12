@@ -1,7 +1,28 @@
-<div ng-if="data.projects">
-    <metadata-listing listing="data.projects"
-                      columns="data.columns"
-                      on-browse="onBrowse">
+<div class="table-responsive" ng-if="data.projects">
+    <table class="table table-bordered table-striped" style="background-color: #fff;">
+        <thead>
+        <th>Project title</th>
+        <th>PI</th>
+        <th>Created</th>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="project in data.projects">
+            <td ng-click="onBrowse($event, project)">
+                <i class="fa fa-briefcase"></i>
+                <a ng-href="{{ project.href }}">
+                    {{ project.value.title }}
+                </a>
+            </td>
+            <td>
+                <ds-user username="project.value.pi" format="name-username"></ds-user>
+            </td>
+            <td>
+                {{ project.created|date:"short" }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <div ng-if="! data.projects" class="jumbotron">
     <p class="text-center">
