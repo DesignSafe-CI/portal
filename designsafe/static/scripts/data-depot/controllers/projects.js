@@ -8,33 +8,36 @@
     };
 
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
-      $scope.data.navItems = [{href: false, label: 'Projects'}];
+      $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
-      if (toState.name !== 'projects.list') {
-        $scope.data.navItems[0].href = $state.href('projects.list');
-      }
-
-      if (toState.name === 'projects.view') {
-        $scope.data.navItems.push({
-          label: toStateParams.projectId,
-          href: $state.href('projects.view', {projectId: toStateParams.projectId}),
-        });
-      } else if (toState.name === 'projects.viewData') {
-        $scope.data.navItems.push({
-          label: toStateParams.projectId,
-          href: $state.href('projects.view', {projectId: toStateParams.projectId}),
-        });
-
-        // TODO build this for each path component
-        _.each(toStateParams.filePath.split('/'), function(e, i, l) {
+      if (toStateParams.filePath) {
+        if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({
-            label: e,
-            href: $state.href('projects.viewData', {
+            label: toStateParams.projectId,
+            href: $state.href('projects.view.data', {
               projectId: toStateParams.projectId,
-              filePath: l.slice(0, i + 1).join('/')
+              filePath: '/'
             })
           });
-        });
+        } else {
+          _.each(toStateParams.filePath.split('/'), function (e, i, l) {
+            var filePath = l.slice(0, i + 1).join('/');
+            if (filePath === '') {
+              filePath = '/';
+            }
+            $scope.data.navItems.push({
+              label: e || toStateParams.projectId,
+              href: $state.href('projects.view.data', {
+                projectId: toStateParams.projectId,
+                filePath: filePath
+              })
+            });
+          });
+        }
+      }
+
+      if ($state.current.name === 'projects') {
+        $state.go('projects.list');
       }
     });
   }]);
@@ -66,12 +69,12 @@
 
     $scope.onBrowse = function onBrowse($event, project) {
       $event.preventDefault();
-      $state.go('projects.view', {projectId: project.uuid});
+      $state.go('projects.view.data', {projectId: project.uuid, filePath: '/'});
     };
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId) {
 
     $scope.data = {};
 
@@ -79,15 +82,18 @@
       $scope.data.project = project;
     });
 
-    DataBrowserService.browse({system: 'designsafe.storage.projects', path: projectId + '/' + filePath})
-      .then(function (result) {
+  }]);
+
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath) {
+
+    DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
+      .then(function () {
         $scope.browser = DataBrowserService.state();
       });
 
     $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
-      var filePath = file.path.split('/').slice(2).join('/');
-      $state.go('projects.viewData', {projectId: projectId, filePath: filePath});
+      $state.go('projects.view.data', {projectId: projectId, filePath: file.path});
     };
 
     $scope.onSelectData = function onSelectData($event, file) {

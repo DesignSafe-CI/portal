@@ -30,7 +30,9 @@
 
     $scope.createProject = function($event) {
       if ($scope.test.createProject) {
-        ProjectService.createProject();
+        ProjectService.createProject().then(function (project) {
+          $state.go('projects.view', {projectId: project.id});
+        });
       } else {
         $event.preventDefault();
         $event.stopPropagation();
