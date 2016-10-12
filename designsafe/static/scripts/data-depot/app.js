@@ -72,31 +72,30 @@
       })
       .state('projects', {
         url: '/projects/',
-        abstract: true,
         controller: 'ProjectRootCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-root.html'
       })
       .state('projects.list', {
         url: '',
         controller: 'ProjectListingCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-listing.html'
+        templateUrl: '/static/scripts/data-depot/templates/project-list.html'
       })
       .state('projects.view', {
         url: '{projectId}/',
+        abstract: true,
         controller: 'ProjectViewCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-view.html',
         resolve: {
-          'projectId': function($stateParams) { return $stateParams.projectId; },
-          'filePath': function() { return ''; }
+          'projectId': function($stateParams) { return $stateParams.projectId; }
         }
       })
-      .state('projects.viewData', {
-        url: '{projectId}/{filePath:any}/',
-        controller: 'ProjectViewCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-view.html',
+      .state('projects.view.data', {
+        url: '{filePath:any}',
+        controller: 'ProjectDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/project-data.html',
         resolve: {
           'projectId': function($stateParams) { return $stateParams.projectId; },
-          'filePath': function($stateParams) { return $stateParams.filePath; }
+          'filePath': function($stateParams) { return $stateParams.filePath || '/'; }
         }
       })
       .state('myPublications', {
