@@ -38,6 +38,11 @@ class BaseMetadataResource(BaseAgaveResource):
             "value": self.value
         })
 
+    def fetch(self):
+        result = self._agave.meta.getMetadata(uuid=self.uuid)
+        self._wrapped.update(result)
+        return self
+
     def save(self):
         """
         Saves or updates this metadata record.
@@ -46,14 +51,18 @@ class BaseMetadataResource(BaseAgaveResource):
         :rtype: :class:`BaseMetadataResource`
         """
         if self.uuid is None:
+            logger.info('Saving "{}" metadata: {}'.format(self.name, self.request_body))
             result = self._agave.meta.addMetadata(body=self.request_body)
         else:
+            logger.info('Updating "{}" metadata {}: {}'.format(self.name, self.uuid,
+                                                               self.request_body))
             result = self._agave.meta.updateMetadata(uuid=self.uuid,
                                                      body=self.request_body)
-        self.from_result(**result)
+        self._wrapped.update(**result)
         return self
 
     def delete(self):
+        logger.info('Deleting "{}" metadata {}'.format(self.name, self.uuid))
         self._agave.meta.deleteMetadata(uuid=self.uuid)
         return self
 
@@ -71,7 +80,6 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
     def __init__(self, metadata_uuid, agave_client, **kwargs):
         defaults = {
             'permission': {},
-            'recursive': False,
             'username': None
         }
         defaults.update(**kwargs)
@@ -128,7 +136,6 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
     def request_body(self):
         return json.dumps({
             'username': self.username,
-            'recursive': self.recursive,
             'permission': self.permission_bit
         })
 
@@ -139,6 +146,8 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
         :return: self
         :rtype: :class:`BaseMetadataPermissionResource`
         """
+        logger.info('Updating metadata permissions: {} {}'.format(self.metadata_uuid,
+                                                                  self.request_body))
         result = self._agave.meta.updateMetadataPermissions(uuid=self.metadata_uuid,
                                                             body=self.request_body)
         self._wrapped.update(**result)
