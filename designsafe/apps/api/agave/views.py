@@ -237,7 +237,9 @@ class FilePermissionsView(View):
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
-            # list permissions as the portal user
+            # List permissions as the portal user rather than logged in user.
+            # This also works around the issue where pems on private systems are
+            # inconsistent.
             fm = AgaveFileManager(agave_client=get_service_account_client())
             pems = fm.list_permissions(system_id, file_path)
             return JsonResponse(pems, encoder=AgaveJSONEncoder, safe=False)
