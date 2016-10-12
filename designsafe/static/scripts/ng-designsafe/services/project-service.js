@@ -128,10 +128,7 @@
           };
 
           $scope.searchUsers = function(q) {
-            return UserService.search({q: q})
-              .then(function(resp) {
-                return resp.data;
-              });
+            return UserService.search({q: q});
           };
 
           $scope.formatSelection = function() {
