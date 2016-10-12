@@ -2,6 +2,7 @@ import logging
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
 from django.contrib.auth import get_user_model
+from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse
 from django.views.generic.base import View
 
@@ -16,7 +17,7 @@ class SearchView(SecureMixin, View):
         q = request.GET.get('username')
         if q:
             user = model.objects.get(username=q)
-            return JsonResponse(user)
+            return JsonResponse(model_to_dict(user))
 
         q = request.GET.get('q')
 
