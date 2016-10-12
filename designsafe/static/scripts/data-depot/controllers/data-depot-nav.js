@@ -44,7 +44,7 @@
           {
             name: 'My Projects',
             collapsible: false,
-            state: 'projects.list'
+            state: 'projects'
           },
           {
             name: 'My Publications',
