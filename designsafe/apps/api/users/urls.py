@@ -1,7 +1,6 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url
 from designsafe.apps.api.users.views import SearchView
 
-urlpatterns = patterns(
-    'designsafe.apps.api.users.views',
+urlpatterns = [
     url(r'^$', SearchView.as_view(), name='user_search'),
-)
+]
