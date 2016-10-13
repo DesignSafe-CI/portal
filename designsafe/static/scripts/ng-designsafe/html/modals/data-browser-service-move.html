@@ -9,7 +9,7 @@
     </ul>
 
 
-    <dd-breadcrumb skip-root="true" listing="listing" on-browse="onBrowse"></dd-breadcrumb>
+    <dd-breadcrumb listing="listing" on-browse="onBrowse"></dd-breadcrumb>
     <div class="table-responsive">
         <table class="table table-bordered table-striped" style="background-color: #fff;">
             <thead>
@@ -39,7 +39,7 @@
             </caption>
             <caption class="text-center" ng-if="! state.busy && state.error">
                 <p class="alert alert-danger">
-                    {{ state.error.message || state.error }}
+                    {{ state.error }}
                 </p>
             </caption>
             <caption class="text-center" ng-if="! state.busy && ! state.error && (listing.children|length) === 0">

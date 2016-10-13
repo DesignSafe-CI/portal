@@ -353,42 +353,48 @@
     /**
      *
      * @param {FileListing|FileListing[]} files
+     * @param {FileListing} initialDestination
      * @returns {Promise}
      */
-    function move (files) {
+    function move (files, initialDestination) {
       if (! Array.isArray(files)) {
         files = [files];
       }
 
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-move.html',
-        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', function ($scope, $uibModalInstance, FileListing, data) {
+        controller: ['$scope', '$uibModalInstance', 'FileListing', 'files', 'initialDestination', function ($scope, $uibModalInstance, FileListing, files, initialDestination) {
 
-          $scope.data = data;
+          $scope.data = {
+            files: files
+          };
+          $scope.listing = initialDestination;
 
           $scope.state = {
-            busy: false
+            busy: false,
+            error: null
           };
-
-          $scope.state.busy = true;
-          FileListing.get({}).then(function (listing) {
-            $scope.listing = listing;
-            $scope.state.busy = false;
-          });
 
           $scope.onBrowse = function ($event, fileListing) {
             $event.preventDefault();
             $event.stopPropagation();
 
             $scope.state.busy = true;
-            FileListing.get({system: fileListing.system, path: fileListing.path}).then(function (listing) {
-              $scope.listing = listing;
-              $scope.state.busy = false;
-            });
+            $scope.state.error = null;
+            FileListing.get({system: fileListing.system, path: fileListing.path}).then(
+              function (listing) {
+                $scope.listing = listing;
+                $scope.state.busy = false;
+              },
+              function (error) {
+                $scope.state.busy = false;
+                $scope.state.error = error.data.message || error.data;
+              }
+            );
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -401,9 +407,8 @@
 
         }],
         resolve: {
-          data: {
-            files: files
-          }
+          files: function () { return files; },
+          initialDestination: function () { return initialDestination; }
         }
       });
 
