@@ -506,12 +506,12 @@ AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
-    'id': 'project-',
+    'id': 'project-{}',
     'site': 'tacc.utexas.edu',
     'default': False,
     'status': 'UP',
-    'description': 'The projects storage space for DesignSafe-CI Project-',
-    'name': 'Project ',
+    'description': '{}',
+    'name': '{}',
     'globalDefault': False,
     'available': True,
     'public': False,
@@ -524,7 +524,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'host': 'dtn01.prod.agaveapi.co',
         'publicAppsDir': None,
         'proxy': None,
-        'rootDir': '/corral-repl/tacc/NHERI/projects/',
+        'rootDir': '/corral-repl/tacc/NHERI/projects/{}',
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }

@@ -5,7 +5,6 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.files import BaseFileResource
-from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 import logging
 import json
@@ -13,12 +12,13 @@ import json
 logger = logging.getLogger(__name__)
 
 
-def template_project_storage_system(project_uuid):
+def template_project_storage_system(project):
     system_template = settings.PROJECT_STORAGE_SYSTEM_TEMPLATE.copy()
-    system_template['id'] += project_uuid
-    system_template['name'] += project_uuid
-    system_template['description'] += project_uuid
-    system_template['storage']['rootDir'] += project_uuid
+    system_template['id'] = system_template['id'].format(project.uuid)
+    system_template['name'] = project.title
+    system_template['description'] = project.title
+    system_template['storage']['rootDir'] = \
+        system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
 
@@ -69,7 +69,7 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
         project_storage_root.mkdir(p.uuid)
 
         # Wrap Project Directory as private system for project
-        project_system_tmpl = template_project_storage_system(p.uuid)
+        project_system_tmpl = template_project_storage_system(p)
         ag.systems.add(body=project_system_tmpl)
 
         # grant initial permissions for creating user and PI, if exists
@@ -92,14 +92,28 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
         return JsonResponse(project, encoder=AgaveJSONEncoder, safe=False)
 
-    def put(self, request):
+    def post(self, request, project_id):
         """
 
         :param request:
         :return:
         """
-        ag = request.user.agave_oauth.client
-        raise NotImplementedError
+        ag = get_service_account_client()
+
+        if request.is_ajax():
+            post_data = json.loads(request.body)
+        else:
+            post_data = request.POST.copy()
+
+        # save Project (metadata)
+        p = Project.from_uuid(ag, project_id)
+        p.title = post_data.get('title')
+        new_pi = post_data.get('pi', None)
+        if p.pi != new_pi:
+            p.pi = new_pi
+            p.add_collaborator(new_pi)
+        p.save()
+        return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 
 class ProjectCollaboratorsView(BaseApiView, SecureMixin):

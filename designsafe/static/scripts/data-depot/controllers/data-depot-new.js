@@ -1,6 +1,6 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
-  app.controller('DataDepotNewCtrl', ['$scope', 'Django', 'ProjectService', 'DataBrowserService', function($scope, Django, ProjectService, DataBrowserService) {
+  app.controller('DataDepotNewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', function($scope, $state, Django, ProjectService, DataBrowserService) {
 
     $scope.test = {
       enabled: Django.context.authenticated,
@@ -30,8 +30,8 @@
 
     $scope.createProject = function($event) {
       if ($scope.test.createProject) {
-        ProjectService.createProject().then(function (project) {
-          $state.go('projects.view', {projectId: project.id});
+        ProjectService.editProject().then(function (project) {
+          $state.go('projects.view.data', {projectId: project.uuid, filePath: '/'});
         });
       } else {
         $event.preventDefault();
