@@ -102,6 +102,38 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
         raise NotImplementedError
 
 
+class ProjectCollaboratorsView(BaseApiView, SecureMixin):
+
+    def get(self, request, project_id):
+        ag = request.user.agave_oauth.client
+        project = Project(agave_client=ag, uuid=project_id)
+        return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
+
+    def post(self, request, project_id):
+        if request.is_ajax():
+            post_data = json.loads(request.body)
+        else:
+            post_data = request.POST.copy()
+
+        ag = get_service_account_client()
+        project = Project.from_uuid(agave_client=ag, uuid=project_id)
+
+        project.add_collaborator(post_data.get('username'))
+        return JsonResponse({'status': 'ok'})
+
+    def delete(self, request, project_id):
+        if request.is_ajax():
+            post_data = json.loads(request.body)
+        else:
+            post_data = request.POST.copy()
+
+        ag = get_service_account_client()
+        project = Project.from_uuid(agave_client=ag, uuid=project_id)
+
+        project.remove_collaborator(post_data.get('username'))
+        return JsonResponse({'status': 'ok'})
+
+
 class ProjectDataView(BaseApiView, SecureMixin):
 
     def get(self, request, project_id, file_path=''):

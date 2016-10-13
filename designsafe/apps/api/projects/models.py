@@ -65,6 +65,19 @@ class Project(BaseMetadataResource):
         # Set roles on project system
         self.project_system.add_role(username, system_roles.USER)
 
+    def remove_collaborator(self, username):
+        logger.info('Removing collaborator "{}" from project "{}"'.format(username, self.uuid))
+
+        # Set permissions on the metadata record
+        pem = BaseMetadataPermissionResource(self.uuid, self._agave)
+        pem.username = username
+        pem.read = False
+        pem.write = False
+        pem.save()
+
+        # Set roles on project system
+        self.project_system.remove_role(username)
+
     @property
     def title(self):
         return self.value.get('title')
