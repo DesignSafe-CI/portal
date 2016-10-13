@@ -16,6 +16,7 @@ operation: Can be any of these:
 urlpatterns = [
     url(r'^$', views.ProjectCollectionView.as_view(), name='index'),
     url(r'^(?P<project_id>[a-z0-9\-]+)/$', views.ProjectInstanceView.as_view(), name='project'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/collaborators/$', views.ProjectCollaboratorsView.as_view(), name='project_collaborators'),
     url(r'^(?P<project_id>[a-z0-9\-]+)/data/$', views.ProjectDataView.as_view(), name='project_data'),
     url(r'^(?P<project_id>[a-z0-9\-]+)/data/(?P<file_path>.*)/$', views.ProjectDataView.as_view(), name='project_data'),
 ]
