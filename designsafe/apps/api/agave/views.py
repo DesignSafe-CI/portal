@@ -13,6 +13,7 @@ from .filemanager.search_index import ElasticFileManager
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
+from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from requests import HTTPError
 
 
@@ -264,3 +265,23 @@ class FilePermissionsView(View):
             return JsonResponse(pem, encoder=AgaveJSONEncoder, safe=False)
 
         return HttpResponseBadRequest("Unsupported operation")
+
+
+class SystemsView(View):
+
+    def get(self, request, system_id=None):
+        params = request.GET.copy()
+        if request.user.is_authenticated():
+            ag = request.user.agave_oauth.client
+            if system_id is None:
+                systems = BaseSystemResource.list(ag, **params)
+                return JsonResponse(systems, encoder=AgaveJSONEncoder, safe=False)
+            else:
+                system = BaseSystemResource.from_id(ag, system_id)
+                return JsonResponse(system, encoder=AgaveJSONEncoder, safe=False)
+        else:
+            # Force public=true
+            params.pop('public', None)
+            ag = get_service_account_client()
+            systems = BaseSystemResource.list(ag, public=True, **params)
+            return JsonResponse(systems, encoder=AgaveJSONEncoder, safe=False)

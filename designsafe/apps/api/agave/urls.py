@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from designsafe.apps.api.agave.views import (FileManagersView, FileListingView,
                                              FileSearchView, FileMediaView,
-                                             FilePermissionsView)
+                                             FilePermissionsView, SystemsView)
 
 urlpatterns = [
 
@@ -46,4 +46,9 @@ urlpatterns = [
     #     DELETE  /pems/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^files/pems/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
         FilePermissionsView.as_view(), name='files_pems'),
+
+
+    # Systems
+    url(r'^systems/$', SystemsView.as_view(), name='systems'),
+    url(r'^systems/(?P<system_id>[\w.-]+)/$', SystemsView.as_view(), name='systems'),
 ]
