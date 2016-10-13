@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 def template_project_storage_system(project):
     system_template = settings.PROJECT_STORAGE_SYSTEM_TEMPLATE.copy()
     system_template['id'] = system_template['id'].format(project.uuid)
-    system_template['name'] = project.title
-    system_template['description'] = project.title
+    system_template['name'] = system_template['name'].format(project.title)
+    system_template['description'] = system_template['description'].format(project.title)
     system_template['storage']['rootDir'] = \
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
