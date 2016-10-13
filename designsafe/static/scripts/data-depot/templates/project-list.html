@@ -15,7 +15,9 @@
                 </a>
             </td>
             <td>
-                <ds-user username="project.value.pi" format="name-username"></ds-user>
+                <ds-user username="project.value.pi" format="name-username">
+                    {{ project.value.pi }}
+                </ds-user>
             </td>
             <td>
                 {{ project.created|date:"short" }}

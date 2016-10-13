@@ -668,8 +668,7 @@
             if (this.pem.username) {
               return this.pem.username.first_name +
                 ' ' + this.pem.username.last_name +
-                ' (' + this.pem.username.username + ')' +
-                ' <' + this.pem.username.email + '>';
+                ' (' + this.pem.username.username + ')';
             }
           };
 

@@ -59,9 +59,23 @@
 
     $scope.data = {};
 
-    ProjectService.get({uuid: projectId}).then(function(project) {
+    ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
     });
+
+    $scope.editProject = function($event) {
+      $event.preventDefault();
+      ProjectService.edit({uuid: projectId}).then(function (project) {
+        $scope.data.project = project;
+      });
+    };
+
+    $scope.manageCollabs = function($event) {
+      $event.preventDefault();
+      ProjectService.manageCollaborators({uuid: projectId}).then(function (project) {
+        $scope.data.project = project;
+      });
+    };
 
   }]);
 
