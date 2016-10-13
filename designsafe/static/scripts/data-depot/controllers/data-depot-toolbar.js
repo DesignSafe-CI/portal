@@ -48,7 +48,7 @@
         DataBrowserService.copy($scope.browser.selected);
       },
       move: function () {
-        DataBrowserService.move($scope.browser.selected);
+        DataBrowserService.move($scope.browser.selected, $scope.browser.listing);
       },
       rename: function () {
         DataBrowserService.rename($scope.browser.selected[0]);

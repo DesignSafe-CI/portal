@@ -97,7 +97,11 @@
 
     $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
-      $state.go('projects.view.data', {projectId: projectId, filePath: file.path});
+      if (file.type === 'file') {
+        DataBrowserService.preview(file);
+      } else {
+        $state.go('projects.view.data', {projectId: projectId, filePath: file.path});
+      }
     };
 
     $scope.onSelectData = function onSelectData($event, file) {
