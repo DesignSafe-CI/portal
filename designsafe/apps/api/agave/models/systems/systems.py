@@ -46,6 +46,11 @@ class BaseSystemResource(BaseAgaveResource):
         return cls(agave_client, **result)
 
     @classmethod
+    def list(cls, agave_client, **kwargs):
+        result = agave_client.systems.list(**kwargs)
+        return [cls(agave_client, **s) for s in result]
+
+    @classmethod
     def from_id(cls, agave_client, system_id):
         """
 
