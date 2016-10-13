@@ -1,0 +1,71 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+        {{ data.project.value.title }}<br>
+        <small>Add Collaborator</small>
+    </h3>
+</div>
+<div class="modal-body">
+    <div ng-if="data.busy">
+        <p class="lead">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading existing collaborators...
+        </p>
+    </div>
+    <div ng-if="! data.busy && data.error">
+        <p class="alert alert-danger lead">
+            {{ data.error }}
+        </p>
+    </div>
+    <div ng-if="! (data.busy || data.error)">
+        <form>
+            <p>Remove current collaborator(s):</p>
+            <div class="form-group" ng-repeat="cur in form.curUsers">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="cur.remove" ng-disabled="! canManage(cur.user.username)">
+                        <ds-user username="cur.user.username" format="name-email"></ds-user>
+                        <span class="label label-info" ng-if="data.project.value.pi === cur.user.username">PI</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="well well-sm">
+                <p>Add new collaborator(s):</p>
+                <div class="form-group" ng-repeat="add in form.addUsers">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" id="id_form_user" ng-model="add.user"
+                                   placeholder="Lookup user by name or email address"
+                                   autocomplete="off" uib-typeahead="user for user in searchUsers($viewValue)"
+                                   typeahead-loading="searching"
+                                   typeahead-no-results="noResults"
+                                   typeahead-input-formatter="formatSelection()"
+                                   typeahead-template-url="local/share_user_search_result.html"
+                            >
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="text-muted" ng-show="searching"><i class="fa fa-spinner fa-spin"></i> Searching for users...</span>
+                            <div ng-show="noResults">
+                                <i class="fa fa-remove"></i> No users found.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-info btn-sm" ng-click="addAnother()">
+                    <i class="fa fa-plus"></i> Add another
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button ng-disabled="data.busy || data.error" class="btn btn-primary" type="button" ng-click="saveCollaborators($event)">
+            Save Collaborator Settings
+        </button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
+<script type="text/ng-template" id="local/share_user_search_result.html">
+    <a>{{ match.model.first_name }} {{ match.model.last_name }} ({{ match.model.username }})</a>
+</script>

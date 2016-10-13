@@ -106,6 +106,107 @@
      *
      * @param options
      * @param {string} options.uuid The Project uuid
+     * @returns {Promise}
+     */
+    service.manageCollaborators = function(options) {
+      var modal = $uibModal.open({
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-add-collaborator.html',
+        controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
+          $scope.data = {
+            busy: true
+          };
+          $scope.form = {
+            curUsers: [],
+            addUsers: [{}]
+          };
+          var loads = [
+            projectResource.get({params: angular.copy(options)}),
+            collabResource.get({params: angular.copy(options)})
+          ];
+          $q.all(loads).then(function (results) {
+            $scope.data.busy = false;
+            $scope.data.project = results[0].data;
+
+            $scope.form.curUsers = _.map(results[1].data, function (collab) {
+              return {
+                user: {username: collab},
+                remove: false
+              }
+            });
+          }, function (error) {
+            $scope.data.busy = false;
+            $scope.data.error = error.data.message || error.data;
+          });
+
+          $scope.canManage = function (user) {
+            var noManage = $scope.data.project.value.pi === user ||
+              Django.user === user ||
+              user === 'ds_admin';
+            return ! noManage;
+          };
+
+          $scope.formatSelection = function() {
+            if (this.add.user) {
+              return this.add.user.first_name +
+                ' ' + this.add.user.last_name +
+                ' (' + this.add.user.username + ')';
+            }
+          };
+
+          $scope.addAnother = function () {
+            $scope.form.addUsers.push({});
+          };
+
+          $scope.searchUsers = function (q) {
+            return UserService.search({q: q});
+          };
+
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss();
+          };
+
+          $scope.saveCollaborators = function ($event) {
+            $event.preventDefault();
+            $scope.data.busy = true;
+
+            var removeActions = _.map($scope.form.curUsers, function (cur) {
+              if (cur.remove) {
+                return collabResource.delete({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: cur.user.username
+                }});
+              }
+            });
+
+            var addActions = _.map($scope.form.addUsers, function (add) {
+              if (add.user && add.user.username) {
+                return collabResource.post({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: add.user.username
+                }});
+              }
+            });
+
+            var tasks = removeActions.concat(addActions);
+            $q.all(tasks).then(
+              function (results) {
+                $uibModalInstance.close(results);
+              },
+              function (error) {
+                $uibModalInstance.reject(error.data);
+              }
+            )
+          };
+        }]
+      });
+
+      return modal.result;
+    };
+
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
      * @param {string} [options.fileId] the Project data file id to list
      * @returns {Promise}
      */
