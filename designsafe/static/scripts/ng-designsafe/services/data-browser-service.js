@@ -146,9 +146,17 @@
 
           $scope.options = [
             {label: 'My Data', conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
-            {label: 'Projects', conf: {system: 'designsafe.storage.projects', path: ''}}
+            {label: 'Shared with me', conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
           ];
+          
+          // SystemService.list({type: 'storage', public: false}).then(function (list) {
+          //   $scope.options = $scope.options.concat(_.map(list, function (sys) {
+          //     return {
+          //       label: sys.name,
+          //       conf: {system: sys.id, path: '/'}
+          //     }
+          //   }));
+          // });
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
@@ -467,7 +475,7 @@
             copy(file);
           };
           $scope.move = function() {
-            move(file);
+            move(file, currentState.listing);
           };
           $scope.rename = function() {
             rename(file);
