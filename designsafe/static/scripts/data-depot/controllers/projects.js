@@ -65,9 +65,10 @@
 
     $scope.editProject = function($event) {
       $event.preventDefault();
-      ProjectService.edit({uuid: projectId}).then(function (project) {
-        $scope.data.project = project;
-      });
+      ProjectService.editProject($scope.data.project)
+        .then(function (project) {
+          $scope.data.project = project;
+        });
     };
 
     $scope.manageCollabs = function($event) {

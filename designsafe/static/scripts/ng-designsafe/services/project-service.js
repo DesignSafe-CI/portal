@@ -106,6 +106,17 @@
      *
      * @param options
      * @param {string} options.uuid The Project uuid
+     * @param {string} [options.fileId] the Project data file id to list
+     * @returns {Promise}
+     */
+    service.projectData = function(options) {
+      return dataResource.get({params: options});
+    };
+
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
      * @returns {Promise}
      */
     service.manageCollaborators = function(options) {
@@ -203,30 +214,25 @@
       return modal.result;
     };
 
-    /**
-     *
-     * @param options
-     * @param {string} options.uuid The Project uuid
-     * @param {string} [options.fileId] the Project data file id to list
-     * @returns {Promise}
-     */
-    service.projectData = function(options) {
-      return dataResource.get({params: options});
-    };
-
 
     /**
-     *
+     * @param {Project} [project]
      * @return {Promise}
      */
-    service.createProject = function() {
+    service.editProject = function(project) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-create-project.html',
-        controller: ['$scope', '$uibModalInstance', 'UserService', function ($scope, $uibModalInstance, UserService) {
-          $scope.form = {
-            title: '',
-            pi: ''
-          };
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-edit-project.html',
+        controller: ['$scope', '$uibModalInstance', 'UserService', 'project', function ($scope, $uibModalInstance, UserService, project) {
+
+          $scope.form = {};
+          if (project) {
+            $scope.form.uuid = project.uuid;
+            $scope.form.title = project.value.title;
+            UserService.get(project.value.pi).then(function (user) {
+              $scope.form.pi = user;
+            });
+          }
+
 
           $scope.searchUsers = function(q) {
             return UserService.search({q: q});
@@ -249,9 +255,17 @@
               title: $scope.form.title,
               pi: $scope.form.pi.username
             };
-            return service.save(projectData)
+            if ($scope.form.uuid) {
+              projectData.uuid = $scope.form.uuid;
+            }
+            service.save(projectData).then(function (project) {
+              $uibModalInstance.close(project);
+            });
           };
-        }]
+        }],
+        resolve: {
+          project: function () { return project; }
+        }
       });
 
       return modal.result;
