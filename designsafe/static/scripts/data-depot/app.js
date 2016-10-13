@@ -155,9 +155,7 @@
         }
       });
 
-      $rootScope.$on('$stateChangeSuccess', function() {
-
-      });
+      // $rootScope.$on('$stateChangeSuccess', function() {});
 
       $rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
         if (error.type === 'authn') {
