@@ -171,7 +171,7 @@
         $scope.data.appLicenseEnabled = false;
       }
 
-      $scope.$on('close-app', closeApp)
+      $scope.$on('close-app', closeApp);
 
       $scope.closeApp = function() {
         $rootScope.$broadcast('close-app', $scope.data.app.id);

@@ -126,7 +126,7 @@
               type: 'string',
               format: 'agaveFile',
               'x-schema-form': {notitle: true}
-            }
+            };
             if (input.semantics.maxCardinality > 1) {
               field.maxItems = input.semantics.maxCardinality;
             }
