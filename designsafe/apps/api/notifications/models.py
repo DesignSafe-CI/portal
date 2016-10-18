@@ -7,6 +7,10 @@ import json
 logger = logging.getLogger(__name__)
 
 class BaseNotify(models.Model):
+    """Abstract base notification class.
+
+    These are the base fields that every notification should have.
+    """
     event_type = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
     #Status should be SUCCESS, INFO, ERROR, WARNING, 
@@ -33,7 +37,7 @@ class BaseNotify(models.Model):
             'status': self.status,
             'operation': self.operation,
             'message': self.message,
-            'extra': self.extra
+            'extra': json.loads(self.extra)
         }
         return d
 
