@@ -4,14 +4,21 @@
         var processors = {};
 
         function init(){
+          logger.log('Connecting to local broadcast channels');
           $rootScope.$on('ds.wsBus:notify', processMessage);
           $rootScope.$on('ds.notify:default', processToastr);
         }
 
         function processMessage(e, msg){
           processToastr(e, msg);
-          var proc = processors[msg.type].process();
-          proc(msg);
+          if (typeof processors[msg.event_type] !== 'undefined' &&
+              typeof processors[msg.event_type].process !== 'undefined' &&
+              typeof processors[msg.event_type].process === 'function'){
+
+              processors[msg.event_type].process(msg);
+          } else {
+            logger.warning('Process var is not a function for this event type. ', processors);
+          }
         }
         
         function processToastr(e, msg){
@@ -30,14 +37,15 @@
 
           var toastMessage = '<p>' + msg.message + '</p>';
           var toastOp = toastr[toastLevel] || toast.info;
-          var toastViewLinkFunc = processors[msg.type].renderLink();
-          var toastViewLink = null;
+          if (typeof processors[msg.event_type] === 'undefined'){
+            console.warning('No proessor for this type of event. ', msg);
+            return;
+          }
+          var toastViewLink = processors[msg.event_type].renderLink(msg);
           if (typeof toastViewLink !== 'undefined'){
-            toastViewLink = toastViewLinkFunc(msg);
             toastMessage += '<a href="' + toastViewLink + '">View</a>';
           }
           toastOp(toastMessage, toastTitle, {allowHtml: true});
-
         }
 
       return {
@@ -50,10 +58,6 @@
     function NotificationServiceProvider($injector){
         // var configURL = '';
         this.$get = ['$rootScope', 'logger', 'toastr', NotificationBusHelper];
-
-        // this.setUrl = function setUrl(url){
-            // configURL = url;
-        // };
         function NotificationBusHelper($rootScope, logger, toastr){
             return new NotificationService($rootScope, logger, toastr);
         }
