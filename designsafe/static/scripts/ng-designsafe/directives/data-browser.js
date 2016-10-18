@@ -19,7 +19,17 @@
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
       },
-      controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
+      controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', 'NotificationService', function($scope, $element, $q, $uibModal, DataService, UserService, NotificationService) {
+        NotificationService.processors.data = {
+          'process': function notifyProcessor(msg){
+            logger.log('processing msg: ', msg);
+            return msg.extra;
+          }, 
+          'renderLink': function renderLink(msg){
+            logger.log('rendering linlk: ', msg);
+            return msg.extra;
+          }
+        };
         var self = this;
         $scope.searchQuery = {query: ''};
 
