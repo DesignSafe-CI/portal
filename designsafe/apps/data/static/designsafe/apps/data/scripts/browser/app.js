@@ -9,7 +9,7 @@
     'ngCookies',
     'djng.urls',
     'ui.bootstrap',
-    'designsafe',
+    'ds.notifications',
     'django.context',
     'toastr',
     'ds.wsBus'
@@ -18,7 +18,6 @@
   app.config(['WSBusServiceProvider', '$httpProvider', '$locationProvider', 'toastrConfig',
     function config(WSBusServiceProvider, $httpProvider, $locationProvider, toastrConfig) {
       $locationProvider.html5Mode(true);
-
       /*
        * https://github.com/Foxandxss/angular-toastr#toastr-customization
        */
@@ -35,6 +34,16 @@
       );
     }
   ]);
+
+  app.run(['WSBusService', 'logger', 
+                function init(WSBusService, logger){
+    logger.log(WSBusService.url);
+    WSBusService.init(WSBusService.url);
+  }]);
+  app.run(['NotificationService', 'logger', 
+                function init(NotificationService, logger){
+    NotificationService.init();
+  }]);
 
   app.controller('DataDepotBrowserCtrl', 
     ['$rootScope', '$scope', '$location', '$filter', 'toastr', 'Logging', 'Django',
@@ -69,34 +78,6 @@
         }
       });
 
-      $rootScope.$on('ds.wsBus:default', function($event, data){
-        logger.log('Message received: ', data);
-        var toastop = toastr[data._toast.level] || toastr.info;
-        var message = '<p>' + data._toast.message + '</p>';
-        if (data.extra.target_path) {
-           message += '<a href="' + data.extra.target_path + '">View</a>';
-        }
-        toastop(message, data._toast.title, {allowHtml: true});
-      });
-
-      /**
-       *
-       * @param $event {event}
-       * @param data {object}
-       * @param data.level {string} info, success, warning, error
-       * @param data.message {string}
-       * @param data.title {string}
-       * @param data.opts {object}
-       */
-      function toastNotify ($event, data) {
-        var level = data.level || 'info';
-        var toastop = toastr[level] || toastr.info;
-        var opts = _.extend({allowHtml: true}, data.opts);
-        toastop(data.message, data.title, opts);
-      }
-
-      $scope.$on('designsafe:notify', toastNotify);
-
       $scope.onPathChanged = function(listing) {
         var path = $filter('dsFileUrl')(listing);
         $location.state({'data': angular.copy($scope.data), 
@@ -113,11 +94,6 @@
         }
       };
 
-    }]);
-
-    app.run(['WSBusService', 'logger', function init(WSBusService, logger){
-      logger.log(WSBusService.url);
-      WSBusService.init(WSBusService.url);
     }]);
 
 })(window, angular, jQuery, _);
