@@ -24,11 +24,11 @@
           'process': function notifyProcessor(msg){
             logger.log('processing msg: ', msg);
             return msg.extra;
-          },
-          // 'renderLink': function renderLink(msg){
-          //   logger.log('rendering linlk: ', msg);
-          //   return msg.extra;
-          // }
+          }, 
+          'renderLink': function renderLink(msg){
+            logger.log('rendering linlk: ', msg);
+            return msg.extra;
+          }
         };
         var self = this;
         $scope.searchQuery = {query: ''};
