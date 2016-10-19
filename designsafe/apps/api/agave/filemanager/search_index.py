@@ -36,9 +36,6 @@ def merge_file_paths(system, user_context, file_path, s):
     def _common_prefix(paths):
         levels = zip(*[os.path.join(p.path.strip('/'), p.name).split('/') for p in paths])
         return '/'.join(x[0] for x in takewhile(_names_equal, levels))
-        listing = []
-        if not s.count():
-            return []
 
     listing = []
     if not s.count():
@@ -65,6 +62,7 @@ def merge_file_paths(system, user_context, file_path, s):
             common_paths[common_path].append(doc)
 
     for key, val in six.iteritems(common_paths):
+        logger.debug('key %s', key)
         #If only one children on the common path key
         #then it's supposed to show on the listing
         if len(val) == 1:
@@ -146,6 +144,7 @@ class ElasticFileManager(BaseFileManager):
         f = Q('bool', must=filter_parts)
 
         if file_path == '$SHARE':
+            file_path = '/'
             query = Q('filtered', filter=f)
         else:
             query = Q('filtered', query=q, filter=f)
