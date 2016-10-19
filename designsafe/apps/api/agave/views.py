@@ -1,15 +1,18 @@
-import chardet
+""" Main views for agave api. api/agave/* 
+    All these views return :class:`JsonResponse`s"""
+
 import logging
 import json
 import os
+import chardet
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
                          HttpResponseForbidden, HttpResponseServerError)
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import JsonResponse
-from .filemanager.agave import AgaveFileManager
-from .filemanager.search_index import ElasticFileManager
+from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
@@ -21,8 +24,11 @@ logger = logging.getLogger(__name__)
 
 
 class FileManagersView(View):
+    """Main view for File Managers. Used to get current available file managers."""
 
     def get(self, request, file_mgr_name=None):
+        """Overwrite get. Fired on GET HTTP verb"""
+
         if file_mgr_name is not None:
             return JsonResponse({'file_mgr_name': file_mgr_name})
         else:
@@ -34,9 +40,9 @@ class FileManagersView(View):
 
 
 class FileListingView(View):
+    """Main File Listing View. Used to list agave resources."""
 
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
-
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
@@ -46,11 +52,15 @@ class FileListingView(View):
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
             if file_path is None:
                 file_path = request.user.username
+            
+            if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
+                (file_path.strip('/') == '$SHARE' or
+                 file_path.strip('/').split('/')[0] != request.user.username):
 
-            if file_path.strip('/') == '$SHARE':
                 listing = ElasticFileManager.listing(system=system_id,
-                                                     file_path='/',
+                                                     file_path=file_path,
                                                      user_context=request.user.username)
+                logger.debug('listing: {}'.format(listing))
                 return JsonResponse(listing)
             else:
                 try:
