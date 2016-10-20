@@ -81,6 +81,37 @@
 
 
     /**
+     * TODO right now this only supports agave systems!
+     * @param fileId
+     * @returns {{systemId: *, user: *, filePath: *}}
+     */
+    service.parseFileId = function(fileId) {
+      var systemId;
+      var user;
+      var filePath;
+
+      if (fileId) {
+        var parts = fileId.split('/');
+        systemId = parts[0];
+        user = parts[1];
+        filePath = parts.slice(1).join('/')
+      } else {
+        systemId = 'designsafe.storage.default';
+        /* TODO get from django.context constants; */
+        user = '';
+        /* TODO get from django.context constants */
+        filePath = '';
+      }
+
+      return {
+        systemId: systemId,
+        user: user,
+        filePath: filePath
+      };
+    };
+
+
+    /**
      *
      * @param options {object}
      * @param options.resource {string} the `source` to list.

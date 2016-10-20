@@ -7,4 +7,6 @@ urlpatterns = patterns(
     url(r'^logger/$', LoggerApi.as_view(), name='logger'),
     url(r'^notifications/%', include('designsafe.apps.api.notifications.urls')),
     url(r'^users/', include('designsafe.apps.api.users.urls')),
+    url(r'^projects/', include('designsafe.apps.api.projects.urls',
+                               namespace='ds_projects_api'))
 )

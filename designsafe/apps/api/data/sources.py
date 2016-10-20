@@ -15,6 +15,17 @@ class SourcesApi(object):
             },
         },
         {
+            "id": "myprojects",
+            "resource": "projects",
+            "defaultPath": "designsafe.storage.projects",
+            "name": "My projects",
+            "_visible": True,
+            "_indexed": True,
+            "_extra": {
+                "icon": "fa-briefcase"
+            },
+        },
+        {
             "id": "$share",
             "resource": "agave",
             "defaultPath": '/'.join([settings.AGAVE_STORAGE_SYSTEM, '$share']),

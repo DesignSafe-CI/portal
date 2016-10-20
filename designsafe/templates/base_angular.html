@@ -18,6 +18,11 @@
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/data-browser.js' %}"></script>
+
+        <!-- move these elsewhere later -->
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-listing.js' %}"></script>
+        <!-- -->
+
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/data-browser-filters.js' %}"></script>
@@ -37,8 +42,8 @@
 
         <script type="text/javascript">
             (function(angular) {
-                var initial = angular.module('django.context', []);
-                initial.value('Django', {
+                var django = angular.module('django.context', []);
+                django.constant('Django', {
                     user: "{{ request.user }}",
                     context: {{ angular_init|default:"{}"|safe }}
                 });
