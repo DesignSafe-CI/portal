@@ -65,7 +65,7 @@ def merge_file_paths(system, user_context, file_path, s):
         #If only one children on the common path key
         #then it's supposed to show on the listing
         if len(val) == 1:
-            listing += val
+            listing += [Object(wrap=indexed) for indexed in val]
             continue
 
         common_prefix = _common_prefix(val)
@@ -73,7 +73,7 @@ def merge_file_paths(system, user_context, file_path, s):
         #as the file_path being listed then they're all on the same level
         #and are children of the listing
         if not common_prefix:
-            listing += val
+            listing += [Object(wrap=indexed) for indexed in val]
             continue
         #Add the common_prefix document to the listing.
         #As long as it's valid.
@@ -90,36 +90,39 @@ class IndexedFile(DocType):
         doc_type = 'objects'
 
 class Object(object):
-    def __init__(self, system_id, user_context, file_path,
-                 *args, **kwargs):
-        self.indexed_file = IndexedFile()
-        s = IndexedFile.search()
-        path, name = os.path.split(file_path)
-        path = path or '/'
-        q = Q('filtered', 
-            query = Q('bool',
-                    must = [
-                      Q({'term': {'path._exact': path}}),
-                      Q({'term': {'name._exact': name}})
-                    ]),
-            filter = Q('bool', 
-                must = [
-                    Q({'term': {'permissions.username': user_context}}),
-                    Q({'term': {'deleted': False}}),
-                    Q({'term': {'systemId': system_id}})
-            ]))
-        s.query = q
-        try:
-            res = s.execute()
-        except TransportError as e:
-            if e.status_code == 404:
-                raise
-            res = s.execute()
-        
-        if res.hits.total:
-            self._wrap = res[0]
+    def __init__(self, system_id = None, user_context = None, 
+                 file_path = None, wrap = None, *args, **kwargs):
+        if wrap is not None:
+            self._wrap = wrap
         else:
-            self._wrap = None
+            self.indexed_file = IndexedFile()
+            s = IndexedFile.search()
+            path, name = os.path.split(file_path)
+            path = path or '/'
+            q = Q('filtered', 
+                query = Q('bool',
+                        must = [
+                          Q({'term': {'path._exact': path}}),
+                          Q({'term': {'name._exact': name}})
+                        ]),
+                filter = Q('bool', 
+                    must = [
+                        Q({'term': {'permissions.username': user_context}}),
+                        Q({'term': {'deleted': False}}),
+                        Q({'term': {'systemId': system_id}})
+                ]))
+            s.query = q
+            try:
+                res = s.execute()
+            except TransportError as e:
+                if e.status_code == 404:
+                    raise
+                res = s.execute()
+            
+            if res.hits.total:
+                self._wrap = res[0]
+            else:
+                self._wrap = None
 
     def user_pems(self, user_context):
         """Converts from ES pems to user specific pems
@@ -242,9 +245,11 @@ class ElasticFileManager(BaseFileManager):
                 'path': file_path,
                 'system': system,
                 'type': 'dir',
-                'children': []
+                'children': [],
+                'permissions': 'READ'
             }
 
         for f in listing:
+            logger.debug(f.__class__)
             result['children'].append(f.to_dict(user_context=user_context))
         return result
