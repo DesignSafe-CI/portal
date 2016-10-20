@@ -46,7 +46,7 @@
       .state('sharedData', {
         url: '/shared/{systemId}/{filePath:any}/',
         controller: 'SharedDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        templateUrl: '/static/scripts/data-depot/templates/agave-shared-data-listing.html',
         params: {
           systemId: 'designsafe.storage.default',
           filePath: '$SHARE'
