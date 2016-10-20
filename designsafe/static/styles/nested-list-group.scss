@@ -1,0 +1,48 @@
+.list-group.list-group-root {
+  background-color: #eee;
+  padding: 0;
+  overflow: hidden;
+}
+
+.list-group.list-group-root .list-group {
+  margin-bottom: 0;
+}
+
+.list-group.list-group-root .list-group-item {
+  border-radius: 0;
+  border-width: 0 0 0 5px;
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.list-group.list-group-root > .list-group-item {
+  border-width: 2px 0 0 0;
+  border-top-color: #cccccc;
+}
+
+.list-group.list-group-root > .list-group > .list-group-item {
+  padding-left: 25px;
+}
+
+.list-group.list-group-root > .list-group > .list-group > .list-group-item {
+  padding-left: 40px;
+}
+
+.list-group-item .glyphicon,
+.list-group-item .fa {
+  margin-right: 5px;
+}
+
+.list-group.list-group-root .list-group-item:hover,
+.list-group.list-group-root .list-group-item:focus {
+  background-color: #e1e1e1;
+  border-left-color: #cccccc;
+}
+
+.list-group.list-group-root .list-group-item.active,
+.list-group.list-group-root .list-group-item.active:hover,
+.list-group.list-group-root .list-group-item.active:focus {
+  color: inherit;
+  background-color: #fff;
+  border-left-color: #337ab7;
+}

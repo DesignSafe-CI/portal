@@ -415,6 +415,7 @@ PIPELINE_CSS = {
             'styles/main.css',
             'styles/corner-ribbon.css',
             'styles/base.scss',
+            'styles/nested-list-group.scss',
         ),
         'output_filename': 'css/main.css',
     },

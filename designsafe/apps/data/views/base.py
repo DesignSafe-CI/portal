@@ -211,3 +211,32 @@ class DataBrowserTestView(BasePublicTemplate):
             }
         })
         return context
+
+
+class DataDepotView(BasePublicTemplate):
+    """
+    Primary Data Depot View
+    """
+
+    @staticmethod
+    def login_redirect(request):
+        path = request.get_full_path()
+        resolved_login_url = resolve_url(settings.LOGIN_URL)
+        from django.contrib.auth.views import redirect_to_login
+        return redirect_to_login(
+            path, resolved_login_url)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super(BasePublicTemplate, self).dispatch(request, *args, **kwargs)
+        except PermissionDenied:
+            return DataDepotView.login_redirect(request)
+
+    def get_context_data(self, **kwargs):
+        context = super(DataDepotView, self).get_context_data(**kwargs)
+
+        context['angular_init'] = json.dumps({
+            'authenticated': self.request.user.is_authenticated(),
+        })
+
+        return context

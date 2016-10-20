@@ -1,0 +1,31 @@
+<div class="table-responsive">
+    <table class="table table-bordered table-striped" style="background-color: #fff;">
+        <thead>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Last modified</th>
+        <th>Actions</th>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="item in listing.children"
+            ng-click="onSelect()($event, item)"
+            ng-class="{'ds-data-selected': item._ui.selected}"
+        >
+            <td>
+                <a class="btn btn-link" ng-click="onBrowse()($event, item)">
+                    <i class="fa" ng-class="{'fa-file': item.type==='file', 'fa-folder': item.type==='folder'}"></i>
+                    {{ item.name }}
+                </a>
+            </td>
+            <td>{{ item.size|bytes }}</td>
+            <td>{{ item.lastModified|date:"short" }}</td>
+            <td>
+                <a class="btn btn-info btn-xs" ng-click="onDetail()($event, item)">
+                    <i class="fa fa-info-circle"></i><span class="sr-only">Details</span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

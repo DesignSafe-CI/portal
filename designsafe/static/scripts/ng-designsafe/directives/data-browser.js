@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe', ['ngSanitize', 'ng.modernizr']);
+  var module = angular.module('ng.designsafe');
 
   module.directive('dsDataBrowser', ['Logging', function(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowser');
