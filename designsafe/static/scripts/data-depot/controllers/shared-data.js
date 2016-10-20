@@ -23,7 +23,7 @@
       if (file.path == '/'){
         filePath = file.path + file.name;
       } else {
-        filePath = file.path + '/' + file.name;
+        filePath = file.path;
       }
       $state.go('sharedData', {systemId: systemId, filePath: filePath});
     };
@@ -52,8 +52,8 @@
 
     $scope.showFullPath = function(item){
       if ($scope.browser.listing.path != '$SHARED' && 
-          item.path != $scope.browser.listing.path &&
-          item.path != '/'){
+          item.parentPath() != $scope.browser.listing.path &&
+          item.parentPath() != '/'){
         return true;
       } else {
         return false;
