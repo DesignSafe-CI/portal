@@ -62,7 +62,6 @@ def merge_file_paths(system, user_context, file_path, s):
             common_paths[common_path].append(doc)
 
     for key, val in six.iteritems(common_paths):
-        logger.debug('key %s', key)
         #If only one children on the common path key
         #then it's supposed to show on the listing
         if len(val) == 1:
@@ -78,7 +77,7 @@ def merge_file_paths(system, user_context, file_path, s):
             continue
         #Add the common_prefix document to the listing.
         #As long as it's valid.
-        d = Object(system, common_prefix.split('/')[0], common_prefix)._wrap
+        d = Object(system, common_prefix.split('/')[0], common_prefix)
         if d:
             listing.append(d)
 
@@ -91,7 +90,8 @@ class IndexedFile(DocType):
         doc_type = 'objects'
 
 class Object(object):
-    def __init__(self, system_id, user_context, file_path):
+    def __init__(self, system_id, user_context, file_path,
+                 *args, **kwargs):
         self.indexed_file = IndexedFile()
         s = IndexedFile.search()
         path, name = os.path.split(file_path)
@@ -121,8 +121,60 @@ class Object(object):
         else:
             self._wrap = None
 
-    def to_dict(self):
-        return self._wrap.to_dict()
+    def user_pems(self, user_context):
+        """Converts from ES pems to user specific pems
+
+        When doing an agave file listing the permissions returned
+        represent the permissions for the requesting user on that
+        specific file. The permissions that are indexed in the
+        ES index is the result of doing a permissions listing on the file
+        which results on an array of permissions for EVERY user that
+        has any type of permission on that file. This function is in
+        charge of doing that conversion.
+        
+        ..example:: ES indexed permissions:
+            ``{
+                'permissions: [ 
+                { 'username': 'my_user',
+                  'permission': {
+                    'read': 'true',
+                    'write': 'true',
+                    'execute': 'true'
+                }
+                  'recursive': 'true'
+              ]``
+              Agave file listing permissions:
+            `` 'permissions': 'ALL' ``
+        """
+        pems = [pem for pem in self._wrap.permissions if \
+                pem['username'] == user_context]
+        if not pems:
+            return 'NONE'
+        
+        pem = pems[0]
+        user_pem = ''
+        if pem['permission']['read']:
+            user_pem += 'READ_'
+        if pem['permission']['write']:
+            user_pem += 'WRITE_'
+        if pem['permission']['execute']:
+            user_pem += 'EXECUTE_'
+
+        user_pem = user_pem.strip('_')
+        if user_pem == 'RED_WRITE_EXECUTE':
+            user_pem = 'ALL'
+
+        return user_pem
+
+    def to_dict(self, user_context=None):
+        file_dict = self._wrap.to_dict()
+        if user_context:
+            file_dict['permissions'] = self.user_pems(user_context)
+        
+        file_dict['path'] = os.path.join(self._wrap.path, self._wrap.name)
+        file_dict['system'] = self._wrap['systemId']
+        return file_dict
+        
     
 class ElasticFileManager(BaseFileManager):
     def __init__(self):
@@ -172,7 +224,8 @@ class ElasticFileManager(BaseFileManager):
                 'path': '/$SHARE',
                 'system': system,
                 'type': 'dir',
-                'children': []
+                'children': [],
+                'permissions': 'NONE'
             }
         else:
             file_path_comps = file_path.split('/')
@@ -193,5 +246,5 @@ class ElasticFileManager(BaseFileManager):
             }
 
         for f in listing:
-            result['children'].append(f.to_dict())
+            result['children'].append(f.to_dict(user_context = user_context))
         return result
