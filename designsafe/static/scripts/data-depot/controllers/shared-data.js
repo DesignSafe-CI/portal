@@ -17,7 +17,7 @@
 
     $scope.onBrowse = function($event, file) {
       $event.stopPropagation();
-
+    
       var systemId = file.system || file.systemId;
       var filePath;
       if (file.path == '/'){
@@ -25,7 +25,11 @@
       } else {
         filePath = file.path;
       }
-      $state.go('sharedData', {systemId: systemId, filePath: filePath});
+      if (file.type === 'file'){
+        DataBrowserService.preview(file);
+      } else {
+        $state.go('sharedData', {systemId: file.system, filePath: file.path});
+      }
     };
 
     $scope.onSelect = function($event, file) {
