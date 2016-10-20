@@ -132,7 +132,7 @@ class ElasticFileManager(BaseFileManager):
     def listing(system, file_path, user_context):
         file_path = file_path or '/'
         if file_path.strip('/').split('/')[0] != user_context:
-            q = Q('bool', must = Q({'term': {'path': file_path}}))
+            q = Q('bool', must = Q({'term': {'path._path': file_path}}))
         else:    
             q = Q('bool', must = Q({'term': {'path._exact': file_path}}))
         filter_parts = [
@@ -163,15 +163,34 @@ class ElasticFileManager(BaseFileManager):
             res = search.execute()
         
         listing = merge_file_paths(system, user_context, file_path, search)
+        
+        if file_path == '/':
+            result = {
+                'trail': [{'name': '$SHARE', 'path': '/$SHARE'}],
+                'name': '$SHARE',
+                'path': '/$SHARE',
+                'system': system,
+                'type': 'dir',
+                'children': []
+            }
+        else:
+            file_path_comps = file_path.split('/')
+            if file_path_comps != '':
+                file_path_comps.insert(0, '')
 
-        result = {
-            'trail': [{'name': '$SHARE', 'path': '/$SHARE'}],
-            'name': '$SHARE',
-            'path': '/$SHARE',
-            'system': system,
-            'type': 'dir',
-            'children': []
-        }
+            trail_comps = [{'name': file_path_comps[i] or '/',
+                            'system': system,
+                            'path': '/'.join(file_path_comps[0:i+1]) or '/',
+                           } for i in range(0, len(file_path_comps))]
+            result = {
+                'trail': trail_comps,
+                'name': os.path.split(file_path)[1],
+                'path': file_path,
+                'system': system,
+                'type': 'dir',
+                'children': []
+            }
+
         for f in listing:
             result['children'].append(f.to_dict())
         return result
