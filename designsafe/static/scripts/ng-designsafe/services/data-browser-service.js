@@ -3,7 +3,11 @@
 
   var module = angular.module('ng.designsafe');
 
-  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django', 'FileListing', 'Logging', function($rootScope, $http, $q, $uibModal, $state, Django, FileListing, Logging) {
+  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django', 
+                                        'FileListing', 'Logging', 'SystemsService',
+                                        function($rootScope, $http, $q, $uibModal, 
+                                                 $state, Django, FileListing, Logging, 
+                                                 SystemsService) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
@@ -149,14 +153,14 @@
             {label: 'Shared with me', conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
           ];
           
-          // SystemService.list({type: 'storage', public: false}).then(function (list) {
-          //   $scope.options = $scope.options.concat(_.map(list, function (sys) {
-          //     return {
-          //       label: sys.name,
-          //       conf: {system: sys.id, path: '/'}
-          //     }
-          //   }));
-          // });
+          SystemsService.list({type: 'storage', public: false}).then(function (list) {
+            $scope.options = $scope.options.concat(_.map(list, function (sys) {
+              return {
+                label: sys.name,
+                conf: {system: sys.id, path: '/'}
+              };
+            }));
+          });
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
@@ -187,7 +191,7 @@
             var system = fileListing.system || fileListing.systemId;
             var path = fileListing.path;
             if (system === 'designsafe.storage.default' && path === '/') {
-              path = path + fileListing.name
+              path = path + fileListing.name;
             }
 
             $scope.state.busy = true;
@@ -222,7 +226,7 @@
         function (result) {
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
-            return f.copy({path: result.path}).then(function (result) {
+            return f.copy({system: result.system, path: result.path}).then(function (result) {
               notify(FileEvents.FILE_COPIED, f);
               return result;
             });
@@ -596,7 +600,7 @@
               logger.error(err);
               currentState.busy = false;
             }
-          )
+          );
         }
       );
     }
@@ -608,7 +612,7 @@
      * @param options
      */
     function search (options) {
-      throw new Error('not implemented')
+      throw new Error('not implemented');
     }
 
 
@@ -761,7 +765,7 @@
       });
       return $q.all(trashPromises).then(function(val) {
         currentState.busy = false;
-        return val
+        return val;
       }, function(err) {
         logger.error(err);
         currentState.busy = false;
@@ -842,7 +846,7 @@
                   upload.error = err.data;
                   return {status: 'error', response: err.data};
                 }
-              )
+              );
             });
 
             $q.all(tasks).then(function (results) {
