@@ -109,8 +109,30 @@
 
       /* Public */
       .state('publicData', {
-        url: '/public/',
-        template: '<pre>local/allPublications.html</pre>'
+        url: '/public/{systemId}/{filePath:any}/',
+        templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
+        params: {
+          systemId: 'nees.public',
+          filePath: '/'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'nees.public';
+            var filePath = $stateParams.filePath || '/';
+
+            return DataBrowserService.browse({system: systemId, path: filePath});
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
       })
       .state('communityData', {
         url: '/community/',

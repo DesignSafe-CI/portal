@@ -21,6 +21,15 @@ class AgaveFileManager(BaseFileManager):
     def __init__(self, agave_client):
         self._ag = agave_client
 
+    def import_data(self, system, file_path, from_system, from_file_path):
+        file_path = file_path or '/'
+        if file_path != '/':
+            file_path.strip('/')
+        from_file_path = from_file_path.strip('/')
+        f = BaseFileResource.listing(self._ag, system, file_path)
+        res = f.import_data(from_system, from_file_path)# 
+        return res
+
     def copy(self, system, file_path, dest_path=None, dest_name=None):
         f = BaseFileResource.listing(self._ag, system, file_path)
 
