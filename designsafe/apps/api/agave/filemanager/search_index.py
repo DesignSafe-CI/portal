@@ -131,6 +131,7 @@ class ElasticFileManager(BaseFileManager):
     @staticmethod
     def listing(system, file_path, user_context):
         file_path = file_path or '/'
+        file_path = file_path.strip('/')
         if file_path.strip('/').split('/')[0] != user_context:
             q = Q('bool', must = Q({'term': {'path._path': file_path}}))
         else:    

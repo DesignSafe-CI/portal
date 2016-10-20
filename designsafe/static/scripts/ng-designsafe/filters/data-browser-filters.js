@@ -102,7 +102,7 @@
         if (listing.path == '/'){
           basePath = listing.name;
         } else {
-          basePath = listing.path + '/' + listing.name;
+          basePath = listing.path;
         }
       } else {
         basePath = '';
@@ -112,6 +112,5 @@
       return retPath;
     };
   }]);
-
 
 })(window, angular, jQuery, _);

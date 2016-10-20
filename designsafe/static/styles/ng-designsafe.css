@@ -356,10 +356,12 @@
     max-width: initial;
 }
 
-.share-path {
-    color:#999;
-}
-
-.share-path:hover {
+.shared-path-listing {
     max-width:120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: bottom;
+    color: #ccc;
 }

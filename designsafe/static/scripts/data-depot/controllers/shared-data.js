@@ -20,7 +20,11 @@
 
       var systemId = file.system || file.systemId;
       var filePath;
-      filePath = file.path + '/' + file.name;
+      if (file.path == '/'){
+        filePath = file.path + file.name;
+      } else {
+        filePath = file.path + '/' + file.name;
+      }
       $state.go('sharedData', {systemId: systemId, filePath: filePath});
     };
 
@@ -43,6 +47,16 @@
         DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
       } else {
         DataBrowserService.select([file], true);
+      }
+    };
+
+    $scope.showFullPath = function(item){
+      if ($scope.browser.listing.path != '$SHARED' && 
+          item.path != $scope.browser.listing.path &&
+          item.path != '/'){
+        return true;
+      } else {
+        return false;
       }
     };
 
