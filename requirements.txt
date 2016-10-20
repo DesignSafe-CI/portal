@@ -1,4 +1,5 @@
-agavepy>=0.3.13
+#agavepy>=0.3.11
+-e git+https://github.com/mrhanlon/agavepy.git@listMetadata/privileged#egg=agavepy
 
 Django<1.9.0
 django-bootstrap3==6.1.0
