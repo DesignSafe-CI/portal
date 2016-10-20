@@ -20,11 +20,7 @@
 
       var systemId = file.system || file.systemId;
       var filePath;
-      if (file.path === '/') {
-        filePath = file.path + file.name;
-      } else {
-        filePath = file.path;
-      }
+      filePath = file.path + '/' + file.name;
       $state.go('sharedData', {systemId: systemId, filePath: filePath});
     };
 
