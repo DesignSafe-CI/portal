@@ -17,7 +17,7 @@
                 <div class="shared-path-listing"
                      title="{{ item.path }}"
                      ng-show="showFullPath()(item)">
-                    {{ item.path | dsSharedFilePath:browser.listing}}
+                    {{ item.parentPath() | dsSharedFilePath:browser.listing}}
                 </div>
                 <a href = "#" ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
                     {{ item.name }}

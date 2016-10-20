@@ -102,7 +102,8 @@
         if (listing.path == '/'){
           basePath = listing.name;
         } else {
-          basePath = listing.path;
+          pathComps = listing.path.split('/');
+          basePath = pathComps.slice(0, pathComps.length - 1).join('/');
         }
       } else {
         basePath = '';

@@ -78,7 +78,7 @@ def merge_file_paths(system, user_context, file_path, s):
         #Add the common_prefix document to the listing.
         #As long as it's valid.
         d = Object(system, common_prefix.split('/')[0], common_prefix)
-        if d:
+        if d._wrap:
             listing.append(d)
 
     return listing 
@@ -246,5 +246,5 @@ class ElasticFileManager(BaseFileManager):
             }
 
         for f in listing:
-            result['children'].append(f.to_dict(user_context = user_context))
+            result['children'].append(f.to_dict(user_context=user_context))
         return result

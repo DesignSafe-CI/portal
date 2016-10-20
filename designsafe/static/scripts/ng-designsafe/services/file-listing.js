@@ -20,6 +20,11 @@
       }
     }
 
+    FileListing.prototype.parentPath = function(){
+      var pathComps = this.path.split('/');
+      return pathComps.slice(0, pathComps.length - 1).join('/');
+    };
+
     FileListing.prototype.fileMgr = 'agave';
 
     FileListing.prototype._baseUrl = '/api/agave/files';
@@ -286,7 +291,7 @@
     FileListing.prototype.share = function (options) {
       return $http.post(this.pemsUrl(), options).then(function (resp) {
         return resp.data;
-      })
+      });
     };
 
 
