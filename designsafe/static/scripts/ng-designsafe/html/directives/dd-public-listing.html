@@ -1,0 +1,57 @@
+<div class="table-responsive">
+   <table class="table table-bordered table-striped" style="background-color: #fff;">
+        <thead>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Last modified</th>
+        <th>Details</th>
+        </thead>
+
+        <tbody>
+        <tr ng-repeat="item in browser.listing.children"
+            ng-click="onSelect()($event, item)"
+            ng-class="{'ds-data-selected': item._ui.selected}"
+        >
+            <td>
+                <i class="fa {{ item.icon() }}"></i>
+                <div class="shared-path-listing"
+                     title="{{ item.path }}"
+                     ng-show="showFullPath()(item)">
+                    {{ item.parentPath() | dsSharedFilePath:browser.listing}}
+                </div>
+                <a href = "#" ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
+                    {{ item.name }}
+                </a>
+            </td>
+            <td>{{ item.length|bytes }}</td>
+            <td>{{ item.lastModified|date:"short" }}</td>
+            <td>
+                <a class="btn btn-info btn-xs" ng-click="onDetail()($event, item)">
+                    <i class="fa fa-info-circle"></i><span class="sr-only">Details</span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+        <caption style="padding:0">
+
+            <div ng-if="browser.busy" style="margin-bottom:-38px" class="text-right">
+                <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </div>
+
+            <div ng-if="! browser.busy && browser.error" class="text-center">
+                <p class="alert alert-danger">
+                    {{ browser.error.message || browser.error }}
+                </p>
+            </div>
+
+            <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
+                <p class="lead">
+                    This folder is empty!
+                    <br><i class="fa fa-folder-open-o"></i>
+                </p>
+            </div>
+        </caption>
+    </table>
+</div>
