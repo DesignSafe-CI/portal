@@ -128,6 +128,17 @@ class BaseFileResource(BaseAgaveResource):
         ser['trail'] = self.trail
         return ser
 
+    def import_data(self, from_system, from_file_path):
+        remote_url = 'agave://{}/{}'.format(from_system, from_file_path)
+        file_name = os.path.split(from_file_path)[1]
+        logger.debug('SystemId: %s, filePath: %s, fileName: %s, urlToingest: %s',
+                     self.system, self.path, file_name, remote_url)
+        result = self._agave.files.importData(systemId=self.system,
+                                              filePath=self.path,
+                                              fileName=file_name,
+                                              urlToIngest=remote_url)
+        return BaseFileResource.listing(self._agave, self.system, result['path'])
+
     def copy(self, dest_path, file_name=None):
         """
         Copies the current file to the provided destination path. If new_name is provided

@@ -161,7 +161,11 @@ class FileMediaView(View):
             action = body.get('action', '')
             if action == 'copy':
                 try:
-                    copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
+                    if body.get('system') != system_id:
+                        copied = fm.import_data(body.get('system'), body.get('path'),
+                                                system_id, file_path)
+                    else:
+                        copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
                     return JsonResponse(copied, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
