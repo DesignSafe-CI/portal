@@ -16,7 +16,7 @@
           name: 'Publications',
           collapsible: false,
           state: 'publicData'
-        },
+        }/*,
         {
           name: 'Community Data',
           collapsible: false,
@@ -26,7 +26,7 @@
           name: 'Training Materials',
           collapsible: false,
           state: 'trainingMaterials'
-        }
+        }*/
       ]
     });
 
@@ -45,12 +45,12 @@
             name: 'My Projects',
             collapsible: false,
             state: 'projects'
-          },
+          },/*
           {
             name: 'My Publications',
             collapsible: false,
             state: 'myPublications'
-          },
+          },*/
           {
             name: 'Shared with Me',
             collapsible: false,
