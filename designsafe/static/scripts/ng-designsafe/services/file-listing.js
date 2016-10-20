@@ -63,6 +63,7 @@
     FileListing.prototype.copy = function (options) {
       var body = {
         "action": "copy",
+        "system": options.system,
         "path": options.path,
         "name": options.name
       };
