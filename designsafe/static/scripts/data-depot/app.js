@@ -29,6 +29,8 @@
             if (options.path === '/') {
               options.path = Django.user;
             }
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
             return DataBrowserService.browse(options);
           }],
           'auth': function($q) {
@@ -56,6 +58,8 @@
             var systemId = $stateParams.systemId || 'designsafe.storage.default';
             var filePath = $stateParams.filePath || '$SHARE/';
 
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
             return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q) {
@@ -110,6 +114,7 @@
       /* Public */
       .state('publicData', {
         url: '/public/{systemId}/{filePath:any}/',
+        controller: 'PublicationDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
         params: {
           systemId: 'nees.public',
@@ -119,18 +124,12 @@
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
             var systemId = $stateParams.systemId || 'nees.public';
             var filePath = $stateParams.filePath || '/';
-
+            DataBrowserService.apiParams.fileMgr = 'public';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
             return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q) {
-            if (Django.context.authenticated) {
               return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
           }
         }
       })
