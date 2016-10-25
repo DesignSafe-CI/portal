@@ -1,7 +1,10 @@
 from django.conf.urls import url
-from designsafe.apps.api.agave.views import (FileManagersView, FileListingView,
-                                             FileSearchView, FileMediaView,
-                                             FilePermissionsView, SystemsView)
+from designsafe.apps.api.agave.views import (FileManagersView,
+                                             FileListingView,
+                                             FileSearchView,
+                                             FileMediaView,
+                                             FilePermissionsView,
+                                             SystemsView)
 
 urlpatterns = [
 
@@ -27,7 +30,8 @@ urlpatterns = [
     #
     #     GET     /search/<file_mgr_name>/
     #     POST    /search/<file_mgr_name>/
-    url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/$', FileSearchView.as_view(), name='files_search'),
+    url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/$',
+        FileSearchView.as_view(), name='files_search'),
 
     # File operations:
     #

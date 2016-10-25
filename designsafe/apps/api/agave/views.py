@@ -38,7 +38,6 @@ class FileManagersView(View):
                 'public',
             ], safe=False)
 
-
 class FileListingView(View):
     """Main File Listing View. Used to list agave resources."""
 
@@ -60,7 +59,6 @@ class FileListingView(View):
                 listing = ElasticFileManager.listing(system=system_id,
                                                      file_path=file_path,
                                                      user_context=request.user.username)
-                logger.debug('listing: {}'.format(listing))
                 return JsonResponse(listing)
             else:
                 try:

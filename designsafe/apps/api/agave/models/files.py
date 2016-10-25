@@ -3,6 +3,7 @@ import logging
 import os
 import urllib
 import urlparse
+from requests.exceptions import HTTPError
 from . import BaseAgaveResource
 
 logger = logging.getLogger(__name__)
@@ -542,8 +543,15 @@ class BaseFilePermissionResource(BaseAgaveResource):
         :return: List of permissions for the passed File.
         :rtype: list of BaseFilePermissionResource
         """
-        records = agave_client.files.listPermissions(systemId=agave_file.system,
-                                                     filePath=agave_file.path)
+        try:
+            records = agave_client.files.listPermissions(systemId=agave_file.system,
+                                                         filePath=agave_file.path)
+        except HTTPError as error:
+            if error.response.status_code != 404:
+                raise
+
+            return []
+
         if username is not None:
             records = [r for r in records if r['username'] == username]
 
