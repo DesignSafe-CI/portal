@@ -7,16 +7,15 @@
   $scope.browser = DataBrowserService.state();
 
   $scope.data = {
-    user: Django.user,
     customRoot: {
       name: 'Publications',
-      href: $steate.href('publications', {systemId: $scope.browser.listing.system, 
+      href: $state.href('publications', {systemId: $scope.browser.listing.system, 
                                           filePath: 'public/'})
     }
   };
 
     $scope.resolveBreadcrumbHref = function(trailItem) {
-      return $state.href('sharedData', {systemId: $scope.browser.listing.system, filePath: trailItem.path});
+      return $state.href('publicData', {systemId: $scope.browser.listing.system, filePath: trailItem.path});
     };
 
     $scope.onBrowse = function($event, file) {
@@ -32,11 +31,12 @@
       if (file.type === 'file'){
         DataBrowserService.preview(file);
       } else {
-        $state.go('sharedData', {systemId: file.system, filePath: file.path});
+        $state.go('publicData', {systemId: file.system, filePath: file.path});
       }
     };
 
     $scope.onSelect = function($event, file) {
+      $event.preventDefault();
       $event.stopPropagation();
 
       if ($event.ctrlKey || $event.metaKey) {
