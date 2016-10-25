@@ -125,20 +125,22 @@ class PublicObject(object):
                         Q({'term': {'path._exact': base_path}}),
                         Q({'term': {'systemId': system}})])
         search.query = query
-        logger.debug(search.to_dict())
         res = search.execute()
         if res.hits.total:
             listing = cls(doc=res[0])
+            list_path = path.strip('/')
         elif not path or path == '/':
             listing = cls(PublicObjectIndexed(systemId=PublicElasticFileManager.DEFAULT_SYSTEM_ID,
                                               path='/',
                                               name=''))
             listing.system = system
+            list_path = '/'
         else:
             raise TransportError()
 
+        
         list_search._search.query = Q('bool',
-                                      must=[Q({'term': {'path._exact': path}}),
+                                      must=[Q({'term': {'path._exact': list_path}}),
                                             Q({'term': {'systemId': system}})])
         res = list_search.execute()
         if res.hits.total:
@@ -175,9 +177,11 @@ class PublicObject(object):
         project_name = self.project_name()
         experiment_name = self.experiment_name()
         experiment_search = PublicExperimentIndexed.search()
-        experiment_search.query = Q('bool',
-                                    must=[Q({'term': {'name._exact': experiment_name}}),
-                                          Q({'term': {'project._exact': project_name}})])
+        must_list = [Q({'term': {'project._exact': project_name}})]
+        if experiment_name:
+            must_list.append(Q({'term': {'name._exact': experiment_name}}))
+
+        experiment_search.query = Q('bool',must=must_list)
         res = experiment_search.execute()
         if res.hits.total:
             return [experiment.to_dict() for experiment in experiment_search.scan()]
@@ -187,7 +191,7 @@ class PublicObject(object):
     def metadata(self):
         if self._metadata is None:
             self._metadata = {'project': self.project(), 
-                              'experiment': self.experiment()}
+                              'experiments': self.experiments()}
         return self._metadata
 
     def to_dict(self):
@@ -196,6 +200,7 @@ class PublicObject(object):
         obj_dict['path'] = self.path
         obj_dict['children'] = [doc.to_dict() for doc in self.children]
         obj_dict['metadata'] = self.metadata()
+        obj_dict['permissions'] = 'READ'
         return obj_dict
 
     @classmethod
@@ -224,13 +229,3 @@ class PublicElasticFileManager(BaseFileManager):
         file_path = file_path or '/'
         listing = PublicObject.listing(system, file_path)
         return listing
-
-    # def listing(self, system, file_path):
-    #     file_path = file_path or '/'
-    #     search = PublicObject.search()
-    #     query = Q('bool',
-    #               must=[Q({'term': {'path._exact': file_path}}),
-    #                     Q({'term': {'systemId': system}})])
-    #     search.query = query
-    #     search.sort({'project._exact': 'asc'})
-    #     return search.scan()
