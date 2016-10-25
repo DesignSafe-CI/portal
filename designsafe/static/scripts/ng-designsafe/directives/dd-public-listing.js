@@ -16,7 +16,8 @@
         onBrowse: '&',
         onSelect: '&',
         onDetail: '&',
-        renderPath: '&'
+        renderPath: '&',
+        renderName: '&'
       }
     };
   });

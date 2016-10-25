@@ -6,6 +6,16 @@
 
   $scope.browser = DataBrowserService.state();
 
+  if (! $scope.browser.error){
+    $scope.browser.listing.href = $state.href('publicData', {
+      system: $scope.browser.listing.system,
+      filePath: $scope.browser.listing.path
+    });
+    _.each($scope.browser.listing.children, function (child) {
+      child.href = $state.href('publicData', {system: child.system, filePath: child.path});
+    });
+  }
+
   $scope.data = {
     customRoot: {
       name: 'Publications',
@@ -71,6 +81,25 @@
     $scope.onDetail = function($event, file) {
       $event.stopPropagation();
       DataBrowserService.preview(file);
+    };
+
+    $scope.renderName = function(file){
+      if (typeof file.metadata === 'undefined' ||
+          file.metadata === null ||
+          _.isEmpty(file.metadata)){
+        return file.name;
+      }
+      var pathComps = file.path.split('/');
+      var experiment_re = /^experiment/;
+      if (file.path[0] === '/' && pathComps.length === 2) {
+        return file.metadata.project.title;
+      } 
+      else if (file.path[0] !== '/' && 
+               pathComps.length === 2 &&
+               experiment_re.test(file.name.toLowerCase())){
+        return file.metadata.experiments[0].title; 
+      }
+      return file.name;
     };
 
   }]);
