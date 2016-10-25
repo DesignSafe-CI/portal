@@ -250,6 +250,5 @@ class ElasticFileManager(BaseFileManager):
             }
 
         for f in listing:
-            logger.debug(f.__class__)
             result['children'].append(f.to_dict(user_context=user_context))
         return result

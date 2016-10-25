@@ -1,6 +1,3 @@
-from django.conf.urls import patterns, url, include
-from designsafe.apps.api.projects import views
-
 """
 The basic url architecture when calling a Data Api should be:
 api/data/<[listing | file | search]>/<resource>/<filepath>
@@ -13,10 +10,19 @@ operation: Can be any of these:
                                  More specific action should live in the body.
 
 """
+from django.conf.urls import patterns, url, include
+from designsafe.apps.api.projects.views import (ProjectCollectionView,
+                                                ProjectDataView,
+                                                ProjectCollaboratorsView,
+                                                ProjectInstanceView)
+
 urlpatterns = [
-    url(r'^$', views.ProjectCollectionView.as_view(), name='index'),
-    url(r'^(?P<project_id>[a-z0-9\-]+)/$', views.ProjectInstanceView.as_view(), name='project'),
-    url(r'^(?P<project_id>[a-z0-9\-]+)/collaborators/$', views.ProjectCollaboratorsView.as_view(), name='project_collaborators'),
-    url(r'^(?P<project_id>[a-z0-9\-]+)/data/$', views.ProjectDataView.as_view(), name='project_data'),
-    url(r'^(?P<project_id>[a-z0-9\-]+)/data/(?P<file_path>.*)/$', views.ProjectDataView.as_view(), name='project_data'),
+    url(r'^$', ProjectCollectionView.as_view(), name='index'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/$', ProjectInstanceView.as_view(), name='project'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/collaborators/$',
+        ProjectCollaboratorsView.as_view(), name='project_collaborators'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/data/$',
+        ProjectDataView.as_view(), name='project_data'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/data/(?P<file_path>.*)/$',
+        ProjectDataView.as_view(), name='project_data'),
 ]

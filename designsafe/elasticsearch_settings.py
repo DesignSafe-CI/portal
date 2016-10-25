@@ -1,3 +1,4 @@
+"""Elastic search connection configuration"""
 ELASTIC_SEARCH = {
     'cluster': {
         'hosts': [
@@ -5,5 +6,6 @@ ELASTIC_SEARCH = {
             'designsafe-es02.tacc.utexas.edu',
         ]
     },
-    'default_index': 'designsafe'
+    'default_index': 'designsafe',
+    'published_index': 'nees'
 }
