@@ -21,6 +21,11 @@
       selected: []
     };
 
+    var apiParams = {
+      fileMgr : 'agave',
+      baseUrl : '/api/agave/files'
+    };
+
     /**
      * Enumeration of event `DataBrowserService::Event` types
      *
@@ -114,7 +119,7 @@
     function browse (options) {
       currentState.busy = true;
       currentState.error = null;
-      return FileListing.get(options).then(function (listing) {
+      return FileListing.get(options, apiParams).then(function (listing) {
         select([], true);
         currentState.busy = false;
         currentState.listing = listing;
@@ -995,7 +1000,8 @@
 
       /* events */
       subscribe: subscribe,
-      notify: notify
+      notify: notify,
+      apiParams: apiParams
     };
 
   }]);
