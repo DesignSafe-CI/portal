@@ -7,7 +7,7 @@
 
     var logger = Logging.getLogger('ngDesignSafe.FileListing');
 
-    function FileListing(json) {
+    function FileListing(json, apiParams) {
       angular.extend(this, json);
 
       // wrap children as FileListing instances
@@ -18,6 +18,11 @@
           return fl;
         }, this);
       }
+      if (typeof apiParams !== 'undefined' && 
+          apiParams !== null &&
+          !_.isEmpty(apiParams)){
+        this.apiParams = apiParams;
+      }
     }
 
     FileListing.prototype.parentPath = function(){
@@ -25,12 +30,28 @@
       return pathComps.slice(0, pathComps.length - 1).join('/');
     };
 
-    FileListing.prototype.fileMgr = 'agave';
+    FileListing.prototype.fileMgr = function(){
+      if (typeof this.apiParams !== 'undefined' &&
+          this.apiParams !== null &&
+          !_.isEmpty(this.apiParams)){
+        return this.apiParams.fileMgr;
+      } else{
+        return 'agave';
+      }
+    };
 
-    FileListing.prototype._baseUrl = '/api/agave/files';
+    FileListing.prototype._baseUrl = function(){
+      if (typeof this.apiParams !== 'undefined' &&
+          this.apiParams !== null &&
+          !_.isEmpty(this.apiParams)){
+        return this.apiParams.baseUrl;
+      } else{
+        return '/api/agave/files';
+      }
+    };
 
     FileListing.prototype.listingUrl = function () {
-      var urlParts = [this._baseUrl, 'listing', this.fileMgr];
+      var urlParts = [this._baseUrl(), 'listing', this.fileMgr()];
       if (this.system) {
         urlParts.push(this.system);
       }
@@ -41,11 +62,11 @@
     };
 
     FileListing.prototype.mediaUrl = function () {
-      return [this._baseUrl, 'media', this.fileMgr, this.system, this.path].join('/');
+      return [this._baseUrl(), 'media', this.fileMgr(), this.system, this.path].join('/');
     };
 
     FileListing.prototype.pemsUrl = function () {
-      return [this._baseUrl, 'pems', this.fileMgr, this.system, this.path].join('/');
+      return [this._baseUrl(), 'pems', this.fileMgr(), this.system, this.path].join('/');
     };
 
     FileListing.prototype.agaveUri = function() {
@@ -370,8 +391,8 @@
      * @param {string} options.path
      * @returns {Promise}
      */
-    function get(options) {
-      var fl = new FileListing(options);
+    function get(options, apiParams) {
+      var fl = new FileListing(options, apiParams);
       return fl.fetch();
     }
 
