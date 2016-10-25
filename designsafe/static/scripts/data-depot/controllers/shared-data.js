@@ -4,6 +4,16 @@
 
     $scope.browser = DataBrowserService.state();
 
+  if (! $scope.browser.error){
+    $scope.browser.listing.href = $state.href('publicData', {
+      system: $scope.browser.listing.system,
+      filePath: $scope.browser.listing.path
+    });
+    _.each($scope.browser.listing.children, function (child) {
+      child.href = $state.href('sharedData', {system: child.system, filePath: child.path});
+    });
+  }
+
     $scope.data = {
       user: Django.user,
       customRoot: {
