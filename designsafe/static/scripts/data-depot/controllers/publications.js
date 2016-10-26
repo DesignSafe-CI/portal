@@ -63,6 +63,9 @@
         var min = Math.min(lastIndex, fileIndex);
         var max = Math.max(lastIndex, fileIndex);
         DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
+      } else if (typeof file._ui !== 'undefined' &&
+                 file._ui.selected){
+        DataBrowserService.deselect([file]);
       } else {
         DataBrowserService.select([file], true);
       }
