@@ -30,9 +30,15 @@
                 blank. You can edit the Project's details later.
             </p>
         </div>
-        <div class="text-right">
-            <button class="btn btn-default" type="button" ng-click="cancel()" ng-disabled="ui.busy">Cancel</button>
-            <button class="btn btn-primary" type="submit" ng-click="save($event)" ng-disabled="ui.busy">Save Project</button>
+        <div class="text-right" ng-if="!ui.busy">
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="submit" ng-click="save($event)">Save Project</button>
+        </div>
+        <div ng-if="data.busy">
+            <p class="lead">
+                <i class="fa fa-spinner fa-spin"></i>
+                Saving project...
+            </p>
         </div>
     </form>
 </div>
