@@ -97,9 +97,13 @@
         url: '{filePath:any}',
         controller: 'ProjectDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-data.html',
+        params: {
+          projectTitle: ''
+        },
         resolve: {
           'projectId': function($stateParams) { return $stateParams.projectId; },
-          'filePath': function($stateParams) { return $stateParams.filePath || '/'; }
+          'filePath': function($stateParams) { return $stateParams.filePath || '/'; },
+          'projectTitle': function($stateParams) { return $stateParams.projectTitle; }
         }
       })
       .state('myPublications', {

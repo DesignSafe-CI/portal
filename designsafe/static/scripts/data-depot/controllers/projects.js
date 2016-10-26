@@ -13,10 +13,11 @@
       if (toStateParams.filePath) {
         if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({
-            label: toStateParams.projectId,
+            label: toStateParams.projectTitle,
             href: $state.href('projects.view.data', {
               projectId: toStateParams.projectId,
-              filePath: '/'
+              filePath: '/',
+              projectTitle: toStateParams.projectTitle
             })
           });
         } else {
@@ -26,10 +27,11 @@
               filePath = '/';
             }
             $scope.data.navItems.push({
-              label: e || toStateParams.projectId,
+              label: e || toStateParams.projectTitle,
               href: $state.href('projects.view.data', {
                 projectId: toStateParams.projectId,
-                filePath: filePath
+                filePath: filePath,
+                projectTitle: toStateParams.projectTitle
               })
             });
           });
@@ -50,7 +52,9 @@
 
     $scope.onBrowse = function onBrowse($event, project) {
       $event.preventDefault();
-      $state.go('projects.view.data', {projectId: project.uuid, filePath: '/'});
+      $state.go('projects.view.data', {projectId: project.uuid, 
+                                       filePath: '/',
+                                       projectTitle: project.value.title});
     };
 
   }]);
@@ -80,17 +84,21 @@
 
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
 
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
       .then(function () {
         $scope.browser = DataBrowserService.state();
         $scope.browser.listing.href = $state.href('projects.view.data', {
-          projectId: projectId, filePath: $scope.browser.listing.path
+          projectId: projectId, 
+          filePath: $scope.browser.listing.path,
+          projectTitle: projectTitle
         });
         _.each($scope.browser.listing.children, function (child) {
           child.href = $state.href('projects.view.data', {
-            projectId: projectId, filePath: child.path
+            projectId: projectId, 
+            filePath: child.path,
+            projectTitle: projectTitle
           });
         });
       });
@@ -100,7 +108,9 @@
       if (file.type === 'file') {
         DataBrowserService.preview(file);
       } else {
-        $state.go('projects.view.data', {projectId: projectId, filePath: file.path});
+        $state.go('projects.view.data', {projectId: projectId, 
+                                         filePath: file.path,
+                                         projectTitle: projectTitle});
       }
     };
 
