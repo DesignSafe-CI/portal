@@ -8,8 +8,17 @@
         </li>
     </ul>
 
-
-    <dd-breadcrumb listing="listing" on-browse="onBrowse"></dd-breadcrumb>
+    <div class="row">
+        <div class="col-sm-3">
+            <form>
+                <label for="id_currentOption" class="sr-only">Jump to</label>
+                <select class="form-control" id="id_currentOption" name="currentOption" ng-model="currentOption" ng-options="option as option.label for option in options"></select>
+            </form>
+        </div>
+        <div class="col-sm-9">
+          <dd-breadcrumb skip-root="true" custom-root="customRoot" listing="listing" on-browse="onBrowse"></dd-breadcrumb>
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table table-bordered table-striped" style="background-color: #fff;">
             <thead>
