@@ -208,7 +208,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -385,6 +385,8 @@
           $scope.data = {
             files: files
           };
+          //$scope.data = data;
+
           $scope.listing = initialDestination;
 
           $scope.state = {
@@ -392,9 +394,51 @@
             error: null
           };
 
+          $scope.options = [
+            {label: 'My Data', conf: {system: 'designsafe.storage.default', path: ''}}]; /*,
+            {label: 'Shared with me', conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
+          ];
+          
+          SystemsService.list({type: 'storage', public: false}).then(function (list) {
+            $scope.options = $scope.options.concat(_.map(list, function (sys) {
+              return {
+                label: sys.name,
+                conf: {system: sys.id, path: '/'}
+              };
+            }));
+          });*/
+
+          $scope.currentOption = null;
+          $scope.$watch('currentOption', function () {
+            $scope.state.busy = true;
+            FileListing.get($scope.currentOption.conf)
+              .then(function (listing) {
+                $scope.listing = listing;
+                $scope.state.busy = false;
+              });
+
+            if ($scope.currentOption.label === 'My Data') {
+              $scope.customRoot = null;
+            } else {
+              $scope.customRoot = {
+                name: $scope.currentOption.label,
+                href: '#',
+                system: $scope.currentOption.conf.system,
+                path: $scope.currentOption.conf.path
+              };
+            }
+          });
+          $scope.currentOption = $scope.options[0];
+
           $scope.onBrowse = function ($event, fileListing) {
             $event.preventDefault();
             $event.stopPropagation();
+
+            var system = fileListing.system || fileListing.systemId;
+            var path = fileListing.path;
+            if (system === 'designsafe.storage.default' && path === '/') {
+              path = path + fileListing.name;
+            }
 
             $scope.state.busy = true;
             $scope.state.error = null;
@@ -432,6 +476,9 @@
       return modal.result.then(
         function (result) {
           currentState.busy = true;
+          if (result.system !== files[0].system){
+            return $q.when(files);
+          }
           var movePromises = _.map(files, function (f) {
             return f.move({path: result.path}).then(function (result) {
               deselect([f]);
