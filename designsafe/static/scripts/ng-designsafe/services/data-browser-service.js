@@ -538,13 +538,7 @@
           };
           $scope.viewMetadata = function() {
             $scope.close();
-            if (typeof file.metadata === 'undefined' || 
-                (typeof file.metadata !== 'undefined' && 
-                 file.metadata.project === 'undefined')){
-              viewMetadata(file);
-            } else {
-              viewPublishedMetadata(file);
-            }
+            viewMetadata(file);
           };
           $scope.trash = function() {
             trash(file);
@@ -978,8 +972,13 @@
      * @return {HttpPromise}
      */
     function viewMetadata (file) {
+      var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-metadata.html';
+      if (typeof file.metadata !== 'undefined' && 
+         file.metadata.project !== 'undefined'){
+        template ='/static/scripts/ng-designsafe/html/modals/data-browser-service-published-metadata.html';
+      } 
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-metadata.html',
+        templateUrl: template,
         controller: ['$scope', 'file', function ($scope, file) {
           $scope.data = {file: file};
 
@@ -993,30 +992,6 @@
 
       return modal.result;
     }
-
-    /**
-     * TODO
-     *
-     * @param {FileListing} file The file to view metadata for
-     * @return {HttpPromise}
-     */
-    function viewPublishedMetadata (file) {
-      var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-published-metadata.html',
-        controller: ['$scope', 'file', function ($scope, file) {
-          $scope.data = {file: file};
-
-          //$uibModalInstance.close();
-        }],
-        size: 'lg',
-        resolve: {
-          'file': function() { return file; }
-        }
-      });
-
-      return modal.result;
-    }
-
 
 
     /**
