@@ -223,7 +223,8 @@
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-edit-project.html',
         controller: ['$scope', '$uibModalInstance', 'UserService', 'project', function ($scope, $uibModalInstance, UserService, project) {
-
+          $scope.ui = {busy: false,
+                       error: null};
           $scope.form = {};
           if (project) {
             $scope.form.uuid = project.uuid;
@@ -251,6 +252,7 @@
           };
 
           $scope.save = function () {
+            $scope.ui.busy = true;
             var projectData = {
               title: $scope.form.title,
               pi: $scope.form.pi.username
@@ -260,6 +262,7 @@
             }
             service.save(projectData).then(function (project) {
               $uibModalInstance.close(project);
+              $scope.ui.busy = false;
             });
           };
         }],
