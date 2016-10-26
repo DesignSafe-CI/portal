@@ -142,7 +142,7 @@
               return {
                 user: {username: collab},
                 remove: false
-              }
+              };
             });
           }, function (error) {
             $scope.data.busy = false;
@@ -206,7 +206,7 @@
               function (error) {
                 $uibModalInstance.reject(error.data);
               }
-            )
+            );
           };
         }]
       });
