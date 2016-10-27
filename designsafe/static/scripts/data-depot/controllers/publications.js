@@ -18,7 +18,7 @@
 
   $scope.data = {
     customRoot: {
-      name: 'Publications',
+      name: 'Published',
       href: $state.href('publications', {systemId: $scope.browser.listing.system, 
                                           filePath: 'public/'})
     }
