@@ -13,7 +13,7 @@
       collapse: false,
       children: [
         {
-          name: 'Publications',
+          name: 'Published',
           collapsible: false,
           state: 'publicData'
         }/*,

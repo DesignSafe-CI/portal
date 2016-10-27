@@ -114,6 +114,7 @@ class PublicObject(object):
         self.path = os.path.join(doc.path, doc.name)
         self.children = []
         self._metadata = None
+        self._trail = []
 
     @classmethod
     def listing(cls, system, path):
@@ -181,7 +182,9 @@ class PublicObject(object):
         if experiment_name:
             must_list.append(Q({'term': {'name._exact': experiment_name}}))
 
-        experiment_search.query = Q('bool',must=must_list)
+        experiment_search.query = Q('bool', must=must_list)
+        experiment_search = experiment_search.sort('path._exact', 
+                                                    'name._exact')
         res = experiment_search.execute()
         if res.hits.total:
             return [experiment.to_dict() for experiment in experiment_search.scan()]
@@ -194,6 +197,33 @@ class PublicObject(object):
                               'experiments': self.experiments()}
         return self._metadata
 
+
+    def trail(self):
+        if self._trail:
+            return self._trail
+
+        path_comps = os.path.join(self._doc.path, self._doc.name).split('/')
+        self._trail.append({'name': '/', 'system': self.system, 'path': '/'})
+        for i in range(0, len(path_comps)):
+            trail_item = {'name': path_comps[i] or '/',
+                          'system': self.system,
+                          'path': '/'.join(path_comps[:i+1]) or '/'}
+            if i == 0:
+                trail_item['name'] = self.project()['title']
+            elif i == 1:
+                experiment = filter(lambda x: x['name'] == path_comps[i], self.experiments())
+                if experiment:
+                    trail_item['name'] = experiment[0]['title']
+
+            self._trail.append(trail_item)
+        
+        return self._trail
+
+        return [{'name': path_comps[i] or '/',
+                 'system': self.system,
+                 'path': '/'.join(path_comps[:i+1]) or '/'
+                 } for i in range(0, len(path_comps))]
+
     def to_dict(self):
         obj_dict = self._doc.to_dict()
         obj_dict['system'] = self.system
@@ -201,6 +231,7 @@ class PublicObject(object):
         obj_dict['children'] = [doc.to_dict() for doc in self.children]
         obj_dict['metadata'] = self.metadata()
         obj_dict['permissions'] = 'READ'
+        obj_dict['trail'] = self.trail()
         return obj_dict
 
     @classmethod
