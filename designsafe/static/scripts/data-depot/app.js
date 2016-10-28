@@ -1,5 +1,13 @@
 (function(window, angular) {
-  var dataDepotApp = angular.module('DataDepotApp', ['ui.router', 'djng.urls', 'ui.bootstrap', 'ng.designsafe', 'django.context']);
+  var dataDepotApp = angular.module('DataDepotApp', [
+                                    'ui.router', 
+                                    'djng.urls', 
+                                    'ui.bootstrap', 
+                                    'ng.designsafe', 
+                                    'django.context',
+                                    'ds.notifications',
+                                    'ds.wsBus',
+									'logging']);
 
   function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django) {
 
@@ -189,5 +197,24 @@
         }
       });
     }]);
+  
+  dataDepotApp
+    .config(['WSBusServiceProvider', function(WSBusServiceProvider){
+      
+        WSBusServiceProvider.setUrl(
+            (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+            window.location.hostname +
+            (window.location.port ? ':' + window.location.port : '') +
+            '/ws/websockets?subscribe-broadcast&subscribe-user'
+        );
+	}])
+	.run(['WSBusService', 'logger', function init(WSBusService, logger){
+	  logger.debug(WSBusService.url);
+	  WSBusService.init(WSBusService.url);
+    }]);
+  dataDepotApp
+	.run(['NotificationService', 'logger', function init(NotificationService, logger){
+	  NotificationService.init();
+}]);
 
 })(window, angular);

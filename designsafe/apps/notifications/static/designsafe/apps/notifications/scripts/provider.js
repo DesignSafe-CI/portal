@@ -4,6 +4,7 @@
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
+            $rootScope.$on('DataBrowserService::event', processDataBrowserMessage);
             // toastr.info('should log the toast once this closes', 'Notification testcallback',
             //     {
             //         closeButton: true,
@@ -17,6 +18,10 @@
             //         extendedTimeOut: 1000000,
             //         tapToDismiss: false
             // });
+        }
+
+        function processDataBrowserMessage(e, msg){
+          toastr.success(msg.msg);
         }
 
         function processMessage(e, msg){

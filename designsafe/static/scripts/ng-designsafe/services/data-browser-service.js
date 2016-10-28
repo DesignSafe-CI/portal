@@ -41,6 +41,20 @@
     };
 
     /**
+     * Enumeration of event `DataBrowserService::EventMessage` strings
+     *
+     * @readonly
+     * @enum {string}
+     */
+    var FileEventsMsg = {
+      'FILE_ADDED': 'Your file was added.',
+      'FILE_COPIED': 'Your file was copied.',
+      'FILE_MOVED': 'Your file was moved.',
+      'FILE_REMOVED': 'Your file was remove.',
+      'FILE_SELECTION': 'Your file has been selected'
+    };
+
+    /**
      * Gets the state of the DataBrowserService.
      *
      * @return {{busy: boolean, listing: FileListing, selected: Array}}
@@ -1024,7 +1038,8 @@
     function notify(eventType, eventContext) {
       $rootScope.$emit('DataBrowserService::Event', {
         type: eventType,
-        context: eventContext
+        context: eventContext,
+        msg: FileEventsMsg[eventType]
       });
     }
 
