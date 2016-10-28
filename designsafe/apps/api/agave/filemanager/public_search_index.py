@@ -209,11 +209,11 @@ class PublicObject(object):
                           'system': self.system,
                           'path': '/'.join(path_comps[:i+1]) or '/'}
             if i == 0:
-                trail_item['name'] = self.project()['title']
+                trail_item['name'] = self.project().get('title', path_comps[i])
             elif i == 1:
                 experiment = filter(lambda x: x['name'] == path_comps[i], self.experiments())
                 if experiment:
-                    trail_item['name'] = experiment[0]['title']
+                    trail_item['name'] = experiment[0].get('title', path_comps[i])
 
             self._trail.append(trail_item)
         

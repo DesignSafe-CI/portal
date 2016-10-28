@@ -365,3 +365,7 @@
     vertical-align: bottom;
     color: #ccc;
 }
+
+.files-listing-table td{
+    word-wrap: break-word;
+}

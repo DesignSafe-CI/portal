@@ -154,14 +154,19 @@
           };
 
           $scope.options = [
-            {label: 'My Data', conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
+            {label: 'My Data', 
+             type: 'Private',
+             conf: {system: 'designsafe.storage.default', path: ''}},
+            {label: 'Shared with me', 
+             type: 'Private',
+             conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
           ];
           
           SystemsService.list({type: 'storage', public: false}).then(function (list) {
             $scope.options = $scope.options.concat(_.map(list, function (sys) {
               return {
                 label: sys.name,
+                type: 'My Projects',
                 conf: {system: sys.id, path: '/'}
               };
             }));
