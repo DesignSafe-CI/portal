@@ -132,8 +132,8 @@ class BaseFileResource(BaseAgaveResource):
     def import_data(self, from_system, from_file_path):
         remote_url = 'agave://{}/{}'.format(from_system, from_file_path)
         file_name = os.path.split(from_file_path)[1]
-        logger.debug('SystemId: %s, filePath: %s, fileName: %s, urlToingest: %s',
-                     self.system, self.path, file_name, remote_url)
+        #logger.debug('SystemId: %s, filePath: %s, fileName: %s, urlToingest: %s',
+        #             self.system, self.path, file_name, remote_url)
         result = self._agave.files.importData(systemId=self.system,
                                               filePath=self.path,
                                               fileName=file_name,
