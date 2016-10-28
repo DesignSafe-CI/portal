@@ -47,6 +47,7 @@
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'Django', 'ProjectService', function ($scope, $state, Django, ProjectService) {
 
     ProjectService.list().then(function(projects) {
+
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
 
@@ -85,7 +86,10 @@
   }]);
 
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
-
+    $scope.browser = DataBrowserService.state();
+    if (typeof $scope.browser !== 'undefined'){
+      $scope.browser.busy = true;
+    }
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
       .then(function () {
         $scope.browser = DataBrowserService.state();
@@ -104,6 +108,7 @@
       });
 
     $scope.onBrowseData = function onBrowseData($event, file) {
+      
       $event.preventDefault();
       if (file.type === 'file') {
         DataBrowserService.preview(file);

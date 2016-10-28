@@ -8,7 +8,7 @@
         <th>Details</th>
         </thead>
 
-        <tbody>
+        <tbody ng-if="!browser.busy">
         <tr ng-repeat="item in browser.listing.children"
             ng-click="onSelect()($event, item)"
             ng-class="{'ds-data-selected': item._ui.selected}"
