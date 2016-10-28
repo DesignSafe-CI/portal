@@ -16,6 +16,7 @@
      */
     var currentState = {
       busy: false,
+      busyListing: false,
       error: null,
       listing: null,
       selected: []
@@ -132,14 +133,17 @@
      */
     function browse (options) {
       currentState.busy = true;
+      currentState.busyListing = true;
       currentState.error = null;
       return FileListing.get(options, apiParams).then(function (listing) {
         select([], true);
         currentState.busy = false;
+        currentState.busyListing = false;
         currentState.listing = listing;
         return listing;
       }, function (err) {
         currentState.busy = false;
+        currentState.busyListing = false;
         currentState.listing = null;
         currentState.error = err.data;
       });
