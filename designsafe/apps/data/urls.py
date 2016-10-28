@@ -11,7 +11,7 @@ urlpatterns = patterns(
         name='my_data'),
     url(r'^public/$', BasePublicTemplate.as_view(template_name='data/file-manager/public_data.html'),
         name='public_data'),
-    url(r'^browser/$',
+    url(r'^browser-legacy/$',
         DataBrowserTestView.as_view(template_name='data/browser.html'),
         name='data_browser'),
     url(r'^browser/(?P<resource>[\w.-]+)/$',
@@ -21,7 +21,7 @@ urlpatterns = patterns(
         DataBrowserTestView.as_view(template_name='data/browser.html'),
         name='data_browser'),
 
-    url(r'^browser2/', DataDepotView.as_view(template_name='data/data_depot.html'),
+    url(r'^browser/', DataDepotView.as_view(template_name='data/data_depot.html'),
         name='data_depot')
 
 )
