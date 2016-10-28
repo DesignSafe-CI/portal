@@ -47,11 +47,11 @@
      * @enum {string}
      */
     var FileEventsMsg = {
-      'FILE_ADDED': 'Your file was added.',
-      'FILE_COPIED': 'Your file was copied.',
-      'FILE_MOVED': 'Your file was moved.',
-      'FILE_REMOVED': 'Your file was remove.',
-      'FILE_SELECTION': 'Your file has been selected'
+      FILE_ADDED: 'Your file was added.',
+      FILE_COPIED: 'Your file was copied.',
+      FILE_MOVED: 'Your file was moved.',
+      FILE_REMOVED: 'Your file was remove.',
+      FILE_SELECTION: 'Your file has been selected'
     };
 
     /**

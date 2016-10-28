@@ -212,6 +212,7 @@
 	  logger.debug(WSBusService.url);
 	  WSBusService.init(WSBusService.url);
     }]);
+
   dataDepotApp
 	.run(['NotificationService', 'logger', function init(NotificationService, logger){
 	  NotificationService.init();
