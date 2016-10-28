@@ -209,7 +209,6 @@
         );
 	}])
 	.run(['WSBusService', 'logger', function init(WSBusService, logger){
-	  logger.debug(WSBusService.url);
 	  WSBusService.init(WSBusService.url);
     }]);
 
