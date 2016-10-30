@@ -79,7 +79,8 @@
         f._ui.selected = true;
       });
       currentState.selected = _.union(currentState.selected, files);
-      notify(FileEvents.FILE_SELECTION, currentState.selected);
+      notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION, 
+             currentState.selected);
     }
 
 
@@ -93,7 +94,8 @@
         f._ui.selected = false;
       });
       currentState.selected = _.difference(currentState.selected, files);
-      notify(FileEvents.FILE_SELECTION, currentState.selected);
+      notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION,
+             currentState.selected);
     }
 
 
@@ -255,7 +257,7 @@
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
             return f.copy({system: result.system, path: result.path}).then(function (result) {
-              notify(FileEvents.FILE_COPIED, f);
+              notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
               return result;
             });
           });
@@ -380,7 +382,7 @@
           name: folderName
         }).then(function(newDir) {
           currentState.busy = false;
-          notify(FileEvents.FILE_ADDED, newDir);
+          notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
         }, function(err) {
           // TODO better error handling
           logger.error(err);
@@ -505,7 +507,7 @@
           var movePromises = _.map(files, function (f) {
             return f.move({path: result.path}).then(function (result) {
               deselect([f]);
-              notify(FileEvents.FILE_MOVED, f);
+              notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
               return result;
             });
           });
@@ -663,7 +665,7 @@
           var deletePromises = _.map(files, function (file) {
             return file.rm().then(function (result) {
               deselect([file]);
-              notify(FileEvents.FILE_REMOVED, file);
+              notify(FileEvents.FILE_REMOVED, FileEventsMsg.FILE_REMOVED, file);
               return result;
             });
           });
@@ -835,7 +837,7 @@
       currentState.busy = true;
       var trashPromises = _.map(files, function(file) {
         return file.trash().then(function(trashed) {
-          notify(FileEvents.FILE_MOVED, trashed);
+          notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
           return trashed;
         });
       });
@@ -1039,11 +1041,11 @@
      * @param {FileEvents} eventType The event
      * @param {object} eventContext The object/context of the event. The value of this parameter depends on the `eventType`
      */
-    function notify(eventType, eventContext) {
+    function notify(eventType, eventMsg, eventContext) {
       $rootScope.$emit('DataBrowserService::Event', {
         type: eventType,
         context: eventContext,
-        msg: FileEventsMsg[eventType]
+        msg: eventMsg
       });
     }
 

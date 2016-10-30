@@ -29,6 +29,7 @@
     };
 
     $scope.onBrowse = function($event, file) {
+      $event.preventDefault();
       $event.stopPropagation();
     
       var systemId = file.system || file.systemId;
