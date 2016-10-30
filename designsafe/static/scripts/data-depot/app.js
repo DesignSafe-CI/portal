@@ -130,7 +130,7 @@
         templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
         params: {
           systemId: 'nees.public',
-          filePath: '/'
+          filePath: ''
         },
         resolve: {
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
