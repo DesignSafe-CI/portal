@@ -4,7 +4,7 @@
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
-            $rootScope.$on('DataBrowserService::event', processDataBrowserMessage);
+            $rootScope.$on('DataBrowserService::Event', processDataBrowserMessage);
             // toastr.info('should log the toast once this closes', 'Notification testcallback',
             //     {
             //         closeButton: true,
@@ -21,7 +21,10 @@
         }
 
         function processDataBrowserMessage(e, msg){
-          toastr.success(msg.msg);
+          logger.debug('msg: ', msg);
+          if (msg.type != 'FileSelection'){
+            toastr.success(msg.msg);
+          }
         }
 
         function processMessage(e, msg){
