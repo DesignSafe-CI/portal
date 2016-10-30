@@ -14,10 +14,10 @@ urlpatterns = patterns(
     url(r'^browser-legacy/$',
         DataBrowserTestView.as_view(template_name='data/browser.html'),
         name='data_browser'),
-    url(r'^browser/(?P<resource>[\w.-]+)/$',
+    url(r'^browser-legacy/(?P<resource>[\w.-]+)/$',
         DataBrowserTestView.as_view(template_name='data/browser.html'),
         name='data_browser'),
-    url(r'^browser/(?P<resource>[\w.-]+)/(?P<file_path>[ \S]+)/?$',
+    url(r'^browser-legacy/(?P<resource>[\w.-]+)/(?P<file_path>[ \S]+)/?$',
         DataBrowserTestView.as_view(template_name='data/browser.html'),
         name='data_browser'),
 
