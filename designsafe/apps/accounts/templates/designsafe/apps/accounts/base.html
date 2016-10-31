@@ -27,6 +27,9 @@
 
           {% url 'designsafe_accounts:manage_applications' as item_url %}
           <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">3rd Party Apps</a></li>
+
+          {% url 'tc_view_page' as item_url %}
+          <li {% if request.path == item_url %}class="active"{% endif %}><a href="{{item_url}}">Terms and Conditions</a></li>
         </ul>
         <br>
       </div>
