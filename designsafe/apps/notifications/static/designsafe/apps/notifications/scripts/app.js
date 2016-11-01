@@ -13,14 +13,15 @@
         );
   }
 
-  var app = angular.module('NotificationList', ['djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr'])
+  var app = angular.module('NotificationList', ['djng.urls','ds.wsBus', 'ds.notifications', 'Logging', 'toastr'])
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
   
-  angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'logger', function($scope,$rootScope,notificationFactory, logger) {
+  angular.module('NotificationList').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'Logging', function($scope,$rootScope,notificationFactory, Logging) {
       $scope.data = {};
       $scope.showRawMessage = false;
       $scope.data.notifications = [];
+      logger = Logging.getLogger('DesignSafe.notifications');
 
       $scope.list = function(){
         notificationFactory.list().then(function(resp) {
@@ -31,7 +32,7 @@
               $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
               $scope.data.notifications[i]['fields']['notification_time'] = Date.parse($scope.data.notifications[i]['fields']['notification_time']);
             }
-            logger.log($scope.data.notifications)
+            logger.debug($scope.data.notifications)
         })
       };
       $scope.list();
