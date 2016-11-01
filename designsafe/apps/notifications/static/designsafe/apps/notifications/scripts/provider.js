@@ -1,6 +1,7 @@
 (function(){
     'use strict';
-    function NotificationService($rootScope, logger, toastr) {
+    function NotificationService($rootScope, Logging, toastr, toastrConfig) {
+        var logger = Logging.getLogger('DesignSafe.notifications');
 
         function init(){
             $rootScope.$on('ds.wsBus:default', processMessage);
@@ -21,7 +22,6 @@
         }
 
         function processDataBrowserMessage(e, msg){
-          logger.debug('msg: ', msg);
           if (msg.type != 'FileSelection'){
             toastr.success(msg.msg);
           }
@@ -29,7 +29,7 @@
 
         function processMessage(e, msg){
             //var rScope = $injector.get('$rootScope');
-            logger.log('websockets msg', msg);
+            logger.debug('websockets msg', msg);
             if (msg.toast) {
                 switch(msg.toast.type) {
                     case 'success':
@@ -39,8 +39,8 @@
                                 closeButton: true,
                                 closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
                                 onHidden: function undo(clicked, toast){
-                                    logger.log('clicked', clicked)
-                                    logger.log('toast', toast)
+                                    logger.debug('clicked', clicked);
+                                    logger.debug('toast', toast);
 
                                 }
                             });
@@ -55,8 +55,8 @@
                                 closeButton: true,
                                 closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
                                 onHidden: function undo(clicked, toast){
-                                    logger.log('clicked', clicked)
-                                    logger.log('toast', toast)
+                                    logger.debug('clicked', clicked);
+                                    logger.debug('toast', toast);
 
                                 }
                             });
@@ -71,8 +71,8 @@
                                 closeButton: true,
                                 closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
                                 onHidden: function undo(clicked, toast){
-                                    logger.log('clicked', clicked)
-                                    logger.log('toast', toast)
+                                    logger.debug('clicked', clicked);
+                                    logger.debug('toast', toast);
 
                                 }
                             });
@@ -87,8 +87,8 @@
                                 closeButton: true,
                                 closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
                                 onHidden: function undo(clicked, toast){
-                                    logger.log('clicked', clicked)
-                                    logger.log('toast', toast)
+                                    logger.debug('clicked', clicked);
+                                    logger.debug('toast', toast);
 
                                 }
                             });
@@ -114,8 +114,8 @@
             }
             if (msg.status == 'FINISHED' || msg.status == 'FAILED') {
                 var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
-                notification_badge.removeClass('label-default')
-                notification_badge.addClass('label-info')
+                notification_badge.removeClass('label-default');
+                notification_badge.addClass('label-info');
 
                 var numNotifications = notification_badge.html();
                 if (isNaN(numNotifications)) {
@@ -134,13 +134,13 @@
 
     function NotificationServiceProvider($injector){
         // var configURL = '';
-        this.$get = ['$rootScope', 'logger', 'toastr', NotificationBusHelper];
+        this.$get = ['$rootScope', 'Logging', 'toastr', 'toastrConfig', NotificationBusHelper];
 
         // this.setUrl = function setUrl(url){
             // configURL = url;
         // };
-        function NotificationBusHelper($rootScope, logger, toastr){
-            return new NotificationService($rootScope, logger, toastr);
+        function NotificationBusHelper($rootScope, Logging, toastr){
+            return new NotificationService($rootScope, Logging, toastr);
         }
     }
 
