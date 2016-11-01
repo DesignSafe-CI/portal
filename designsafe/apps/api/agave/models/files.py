@@ -5,6 +5,8 @@ import urllib
 import urlparse
 from requests.exceptions import HTTPError
 from . import BaseAgaveResource
+from agavepy.agave import AgaveException
+from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 
 logger = logging.getLogger(__name__)
 
@@ -130,14 +132,20 @@ class BaseFileResource(BaseAgaveResource):
         return ser
 
     def import_data(self, from_system, from_file_path):
-        remote_url = 'agave://{}/{}'.format(from_system, from_file_path)
+        remote_url = 'agave://{}/{}'.format(from_system, urllib.quote(from_file_path))
         file_name = os.path.split(from_file_path)[1]
         #logger.debug('SystemId: %s, filePath: %s, fileName: %s, urlToingest: %s',
         #             self.system, self.path, file_name, remote_url)
         result = self._agave.files.importData(systemId=self.system,
-                                              filePath=self.path,
+                                              filePath=urllib.quote(self.path),
                                               fileName=file_name,
                                               urlToIngest=remote_url)
+        async_resp = AgaveAsyncResponse(self._agave, result)
+        async_status = async_resp.result(600)
+
+        if async_status == 'FAILED':
+            logger.error('Import Data failed; from: %s/%s' % (from_system, from_file_path))
+
         return BaseFileResource.listing(self._agave, self.system, result['path'])
 
     def copy(self, dest_path, file_name=None):
