@@ -7,15 +7,21 @@
                                     'django.context',
                                     'ds.notifications',
                                     'ds.wsBus',
+                                    'toastr',
 									'logging']);
 
-  function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django) {
+  function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig) {
 
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     $locationProvider.html5Mode(true);
     $urlMatcherFactoryProvider.strictMode(false);
+
+    angular.extend(toastrConfig, {
+      positionClass: 'toast-bottom-left',
+      timeOut: 20000
+    });
 
     $stateProvider
 
@@ -171,7 +177,7 @@
   }
 
   dataDepotApp
-    .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', config])
+    .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', 'toastrConfig', config])
     .run(['$rootScope', '$location', '$state', 'Django', function($rootScope, $location, $state, Django) {
       $rootScope.$state = $state;
 
@@ -208,12 +214,12 @@
             '/ws/websockets?subscribe-broadcast&subscribe-user'
         );
 	}])
-	.run(['WSBusService', 'logger', function init(WSBusService, logger){
+	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
 	  WSBusService.init(WSBusService.url);
     }]);
 
   dataDepotApp
-	.run(['NotificationService', 'logger', function init(NotificationService, logger){
+	.run(['NotificationService', 'Logging', function init(NotificationService, logger){
 	  NotificationService.init();
 }]);
 
