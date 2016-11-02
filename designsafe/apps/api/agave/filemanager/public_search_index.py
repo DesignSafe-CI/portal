@@ -108,6 +108,19 @@ class PublicSearchManager(object):
                 for doc in self._search[res_offset:res_limit]:
                     yield self._doc_class(doc)
 
+    def results(self, offset):
+        res = self._search.execute()
+        limit = offset + self._page_size
+        if res.hits.total < limit:
+            limit = res.hits.total
+
+        if offset > limit:
+            offset = 0
+            limit = 0
+
+        for doc in self._search[offset:limit]:
+            yield self._doc_class(doc)
+
     def __iter__(self):
         for doc in self._search.execute():
             yield self._doc_class(doc)
@@ -173,8 +186,10 @@ class PublicObject(object):
         self._trail = []
 
     @classmethod
-    def listing(cls, system, path):
-        list_search = PublicSearchManager(PublicObject, PublicObjectIndexed.search())
+    def listing(cls, system, path, offset, limit):
+        list_search = PublicSearchManager(PublicObject,
+                                          PublicObjectIndexed.search(),
+                                          page_size=limit)
         base_path, name = os.path.split(path)
         search = PublicObjectIndexed.search()
         query = Q('bool',
@@ -200,7 +215,7 @@ class PublicObject(object):
                                       must=[Q({'term': {'path._exact': list_path}}),
                                             Q({'term': {'systemId': system}})])
         list_search.sort({'project._exact': 'asc'})
-        listing.children = list_search.all()
+        listing.children = list_search.results(offset)
 
         return listing
 
@@ -306,7 +321,7 @@ class PublicElasticFileManager(BaseFileManager):
     def __init__(self):
         super(PublicElasticFileManager, self).__init__()
 
-    def listing(self, system, file_path):
+    def listing(self, system, file_path, offset=0, limit=100):
         file_path = file_path or '/'
-        listing = PublicObject.listing(system, file_path)
+        listing = PublicObject.listing(system, file_path, offset, limit)
         return listing
