@@ -1,7 +1,19 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('designsafe').controller('JobsStatusCtrl',
-  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger) {
+  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
+
+    NotificationService.processors.job = {
+          'process': function notifyProcessor(msg){
+            logger.log('processing msg: ', msg);
+            return msg.extra;
+          },
+          'renderLink': function renderLink(msg){
+          logger.log('rendering link: ', msg);
+              return msg.extra['target_path'] // this will only be present when indexing is completed
+          }
+        };
+
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
       hasMoreJobs: true,
@@ -76,8 +88,8 @@
       }
       else {
         for (var i=0; i < $scope.data.jobs.length; i++){
-            if ($scope.data.jobs[i]['id'] == msg.extra.job_id) {
-              $scope.data.jobs[i]['status'] = msg.extra.job_status;
+            if ($scope.data.jobs[i]['id'] == msg.extra.id) {
+              $scope.data.jobs[i]['status'] = msg.extra.status;
               $scope.$apply();
               break;
             }
