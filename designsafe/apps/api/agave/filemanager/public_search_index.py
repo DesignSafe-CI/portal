@@ -52,15 +52,27 @@ class PublicObjectIndexed(DocType):
         index = published_index
         doc_type = 'object' 
 
-class PublicObjectSearchManager(object):
+class PublicSearchManager(object):
     """ Wraps elastic search result object
 
         This class wraps the elasticsearch result object
         to add extra functionality"""
 
-    def __init__(self, search, page_size=100):
+    def __init__(self, doc_class, search, page_size=100):
+        self._doc_class = doc_class
         self._search = search
         self._page_size = page_size
+
+    def count(self):
+        return self._search.count()
+    
+    def source(self, **kwargs):
+        self._search = self._search.source(**kwargs)
+        return self._search
+
+    def filter(self, *args, **kwargs):
+        self._search = self._search.filter(*args, **kwargs)
+        return self._search
 
     def sort(self, *keys):
         self._search = self._search.sort(*keys)
@@ -73,17 +85,37 @@ class PublicObjectSearchManager(object):
             if err.status_code == 404:
                 raise
             res = self._search.execute()
-        
+
         return res
+
+    def all(self):
+        res = self._search.execute()
+        if res.success() and res.hits.total:
+            res_offset = 0
+            page_size = len(res)
+            res_limit = page_size
+            while res_limit <= res.hits.total:
+                for doc in self._search[res_offset:res_limit]:
+                    yield self._doc_class(doc)
+
+                res_limit += page_size
+                res_offset += page_size
+
+            res_limit = res.hits.total - ((res.hits.total / page_size) * page_size)
+            if res_limit > 0:
+                res_offset -= page_size
+                res_limit += res_offset
+                for doc in self._search[res_offset:res_limit]:
+                    yield self._doc_class(doc)
 
     def __iter__(self):
         for doc in self._search.execute():
-            yield PublicObject(doc)
+            yield self._doc_class(doc)
 
     def scan(self):
-        res = self._search.execute()
+        self._search.execute()
         for doc in self._search.scan():
-            yield PublicObject(doc)
+            yield self._doc_class(doc)
 
     def __getitem__(self, index):
         return self._search.__getitem__(index)
@@ -94,7 +126,31 @@ class PublicObjectSearchManager(object):
         if val:
             return val
         else:
-            raise AttributeError('\'PublicObjectSearchManager\' has no attribute \'{}\''.format(name))
+            raise AttributeError('\'PublicSearchManager\' has no attribute \'{}\''.format(name))
+
+class PublicExpermient(object):
+    """Wraps elastic search experiment
+    """
+
+    def __init__(self, doc):
+        self._doc = doc
+
+    def to_dict(self):
+        obj_dict = self._doc.to_dict()
+        return obj_dict
+
+    @classmethod
+    def search(cls, using=None, index=None):
+        search = PublicExperimentIndexed.search(using, index)
+        return PublicSearchManager(cls, search)
+
+    def __getattr__(self, name):
+        val = getattr(self._doc, name, None)
+        if val:
+            return val
+        else:
+            raise AttributeError('\'PublicExperiment\' has no attribute \'{}\''.\
+                                 format(name))
 
 class PublicObject(object):
     """Wraps elastic search object
@@ -118,7 +174,7 @@ class PublicObject(object):
 
     @classmethod
     def listing(cls, system, path):
-        list_search = PublicObjectSearchManager(PublicObjectIndexed.search())
+        list_search = PublicSearchManager(PublicObject, PublicObjectIndexed.search())
         base_path, name = os.path.split(path)
         search = PublicObjectIndexed.search()
         query = Q('bool',
@@ -143,9 +199,8 @@ class PublicObject(object):
         list_search._search.query = Q('bool',
                                       must=[Q({'term': {'path._exact': list_path}}),
                                             Q({'term': {'systemId': system}})])
-        res = list_search.execute()
-        if res.hits.total:
-            listing.children = list_search.scan()
+        list_search.sort({'project._exact': 'asc'})
+        listing.children = list_search.all()
 
         return listing
 
@@ -177,19 +232,14 @@ class PublicObject(object):
     def experiments(self):
         project_name = self.project_name()
         experiment_name = self.experiment_name()
-        experiment_search = PublicExperimentIndexed.search()
+        experiment_search = PublicSearchManager(PublicExpermient, PublicExperimentIndexed.search())
         must_list = [Q({'term': {'project._exact': project_name}})]
         if experiment_name:
             must_list.append(Q({'term': {'name._exact': experiment_name}}))
 
-        experiment_search.query = Q('bool', must=must_list)
-        experiment_search = experiment_search.sort('path._exact', 
-                                                    'name._exact')
-        res = experiment_search.execute()
-        if res.hits.total:
-            return [experiment.to_dict() for experiment in experiment_search.scan()]
-        else:
-            return []
+        experiment_search._search.query = Q('bool', must=must_list)
+        experiment_search = experiment_search.sort('name._exact', 'path._exact')
+        return [experiment.to_dict() for experiment in experiment_search.all()]
 
     def metadata(self):
         if self._metadata is None:
@@ -237,7 +287,7 @@ class PublicObject(object):
     @classmethod
     def search(cls, using=None, index=None):
         search = PublicObjectIndexed.search(using, index)
-        return PublicObjectSearchManager(search)
+        return PublicSearchManager(cls, search)
 
     def __getattr__(self, name):
         val = getattr(self._doc, name, None)
