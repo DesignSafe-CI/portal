@@ -87,7 +87,6 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                 job_status = event_data[Notification.EXTRA]['status'] = 'INDEXING'
 
             job_name = job['name']
-
             archive_id = 'agave/%s/%s' % (job['archiveSystem'], job['archivePath'].split('/'))
 
             if job_status == 'FAILED':

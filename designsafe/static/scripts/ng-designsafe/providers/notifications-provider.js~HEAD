@@ -1,7 +1,20 @@
 (function(){
     'use strict';
-    function NotificationService($rootScope, logger, toastr) {
+
+    function NotificationService($rootScope, logger, toastr, djangoUrl) {
         var processors = {};
+
+        function renderLink(msg){
+          if (msg.status == 'SUCCESS') {
+            if (msg.event_type == 'job') {
+              var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
+              return url
+            } else if (msg.event_type == 'data') {
+              var url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
+              return url
+            }
+          }
+        }
 
         function init(){
           logger.log('Connecting to local broadcast channels');
@@ -9,13 +22,22 @@
           $rootScope.$on('ds.notify:default', processToastr);
         }
 
+        function processDataBrowserMessage(e, msg){
+          if (msg.type != 'FileSelection'){
+            toastr.success(msg.msg);
+          }
+        }
+
         function processMessage(e, msg){
           processToastr(e, msg);
+          processors['notifs'].process(msg)
+
           if (typeof processors[msg.event_type] !== 'undefined' &&
               typeof processors[msg.event_type].process !== 'undefined' &&
               typeof processors[msg.event_type].process === 'function'){
 
               processors[msg.event_type].process(msg);
+
           } else {
             logger.warn('Process var is not a function for this event type. ', processors);
           }
@@ -38,13 +60,13 @@
 
           var toastMessage = '<p>' + msg.message + '</p>';
           var toastOp = toastr[toastLevel] || toast.info;
-          if (typeof processors[msg.event_type] === 'undefined'){
-            logger.warn('No processor for this type of event. ', msg);
-            return;
-          }
-          var toastViewLink = processors[msg.event_type].renderLink(msg);
+          // if (typeof processors[msg.event_type] === 'undefined'){
+          //   logger.warn('No processor for this type of event. ', msg);
+          //   return;
+          // }
+          var toastViewLink = renderLink(msg);
           if (typeof toastViewLink !== 'undefined'){
-            toastMessage += '<a href="' + toastViewLink + '">View</a>';
+            toastMessage += '<a href="' + toastViewLink + '" target="_blank">View</a>';
           }
           toastOp(toastMessage, toastTitle, {allowHtml: true});
         }
@@ -58,12 +80,12 @@
 
     function NotificationServiceProvider($injector){
         // var configURL = '';
-        this.$get = ['$rootScope', 'logger', 'toastr', NotificationBusHelper];
-        function NotificationBusHelper($rootScope, logger, toastr){
-            return new NotificationService($rootScope, logger, toastr);
+        this.$get = ['$rootScope', 'logger', 'toastr', 'djangoUrl', NotificationBusHelper];
+        function NotificationBusHelper($rootScope, logger, toastr, djangoUrl){
+            return new NotificationService($rootScope, logger, toastr, djangoUrl);
         }
     }
 
-    angular.module('ds.notifications')
-    .provider('NotificationService', NotificationServiceProvider);
+    angular.module('ds.notifications').provider('NotificationService', NotificationServiceProvider);
+
 })();
