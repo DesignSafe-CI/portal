@@ -44,7 +44,9 @@ class PublicDataListView(BaseApiView):
             system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
 
         file_mgr = PublicElasticFileManager()
-        listing = file_mgr.listing(system_id, file_path)
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+        listing = file_mgr.listing(system_id, file_path, offset, limit)
 
         return JsonResponse(listing.to_dict())
 
