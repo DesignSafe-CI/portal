@@ -151,6 +151,35 @@
       });
     }
 
+    /**
+     *
+     * @param options
+     * @param options.system
+     * @param options.path
+     * @param options.page
+     */
+    function browsePage (options) {
+      currentState.busy = true;
+      currentState.busyListingPage = true;
+      currentState.error = null;
+      var limit = 100;
+      var offset = 0;
+      if (options.page){
+        offset += limit * options.page;
+      }
+      var params = {limit: limit, offset: offset};
+      return FileListing.get(options, apiParams, params).then(function (listing) {
+        select([], true);
+        currentState.busy = false;
+        currentState.busyListingPage = false;
+        currentState.listing.children = currentState.listing.children.concat(listing.children);
+        return listing;
+      }, function (err) {
+        currentState.busy = false;
+        currentState.busyListingPage = false;
+      });
+    }
+
 
     /**
      *
@@ -1057,6 +1086,7 @@
       /* data/files functions */
       allowedActions: allowedActions,
       browse: browse,
+      browsePage: browsePage,
       copy: copy,
       deselect: deselect,
       // details: details,
