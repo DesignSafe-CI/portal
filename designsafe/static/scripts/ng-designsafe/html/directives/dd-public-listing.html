@@ -1,5 +1,8 @@
 <div class="table-responsive">
-  <div class="ds-table-display-wrapper">
+  <div class="ds-table-display-wrapper" ds-infinite-scroll
+    data-scroll-bottom = "scrollToBottom()()"
+    data-scroll-top = "scrollToTop()()"
+    data-bottom-height = "0">
    <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
         <thead>
         <th style="width: 400px;">Name</th>
@@ -24,6 +27,13 @@
                     <i class="fa fa-info-circle"></i><span class="sr-only">Details</span>
                 </a>
             </td>
+        </tr>
+        <tr ng-if="browser.busyListingPage">
+          <td>
+                <span class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+          </td>
         </tr>
         </tbody>
         <caption style="padding:0">

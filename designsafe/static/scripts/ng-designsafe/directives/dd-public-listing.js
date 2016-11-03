@@ -17,7 +17,9 @@
         onSelect: '&',
         onDetail: '&',
         renderPath: '&',
-        renderName: '&'
+        renderName: '&',
+        scrollToBottom: '&',
+        scrollToTop: '&'
       }
     };
   });
