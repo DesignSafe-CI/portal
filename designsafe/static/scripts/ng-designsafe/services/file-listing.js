@@ -102,9 +102,9 @@
       });
     };
 
-    FileListing.prototype.fetch = function () {
+    FileListing.prototype.fetch = function (params) {
       var self = this;
-      return $http.get(this.listingUrl()).then(function (resp) {
+      return $http.get(this.listingUrl(), {params: params}).then(function (resp) {
         angular.extend(self, resp.data);
 
         // wrap children as FileListing instances
@@ -391,9 +391,13 @@
      * @param {string} options.path
      * @returns {Promise}
      */
-    function get(options, apiParams) {
+    function get(options, apiParams, params) {
       var fl = new FileListing(options, apiParams);
-      return fl.fetch();
+      if (params){
+        return fl.fetch(params) ;
+      } else {
+        return fl.fetch();
+      }
     }
 
 
