@@ -55,7 +55,10 @@
       if (this.system) {
         urlParts.push(this.system);
       }
-      if (this.path) {
+      if (this.id && this.id.indexOf('/') > -1){
+        urlParts.push(this.id);
+      } 
+      else if (this.path) {
         urlParts.push(this.path);
       }
       return urlParts.join('/');
