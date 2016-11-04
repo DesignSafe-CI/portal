@@ -126,12 +126,13 @@
       })
       .state('boxData', {
         url: '/box/{fileId:any}/',
+        controller: 'ExternalDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/external-data-listing.html'
       })
 
       /* Public */
       .state('publicData', {
-        url: '/public/{systemId}/{filePath:any}/',
+        url: '/public/{systemId}/{filePath:any}',
         controller: 'PublicationDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
         params: {
