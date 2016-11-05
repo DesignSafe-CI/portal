@@ -25,7 +25,7 @@ urlpatterns = [
     #     GET     /search/<file_mgr_name>/
     #     POST    /search/<file_mgr_name>/
     url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/$',
-        FileSearchView.as_view(), name='files_search'),
+        FileSearchView.as_view(), name='public_files_search'),
 
     # File operations:
     #
@@ -34,7 +34,7 @@ urlpatterns = [
     #     PUT     /media/<file_mgr_name>/<system_id>/<file_path>/
     #     DELETE  /media/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^files/media/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
-        FileMediaView.as_view(), name='files_media'),
+        FileMediaView.as_view(), name='public_files_media'),
 
 
     # Permission operations:
@@ -43,7 +43,7 @@ urlpatterns = [
     #     POST    /pems/<file_mgr_name>/<system_id>/<file_path>/
     #     DELETE  /pems/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^files/pems/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
-        FilePermissionsView.as_view(), name='files_pems'),
+        FilePermissionsView.as_view(), name='public_files_pems'),
 
 
     # Systems
