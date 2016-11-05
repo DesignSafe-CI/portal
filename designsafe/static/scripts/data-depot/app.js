@@ -135,7 +135,7 @@
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
             var filePath = $stateParams.filePath || '/';
             DataBrowserService.apiParams.fileMgr = 'box';
-            DataBrowserService.apiParams.baseUrl = '/api/external-data/files';
+            DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
             return DataBrowserService.browse({path: filePath});
           }],
           'auth': function($q) {
