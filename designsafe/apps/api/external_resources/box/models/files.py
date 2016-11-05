@@ -84,8 +84,10 @@ class BoxFile(object):
     @property
     def trail(self):
         try:
-            return [BoxFile(File(None, e['id'], e)).to_dict()
+            trail = [BoxFile(File(None, e['id'], e)).to_dict()
                     for e in self._item.path_collection['entries']]
+            trail.append(self.to_dict(trail=False))
+            return trail
         except AttributeError as e:
             return []
 
@@ -117,9 +119,9 @@ class BoxFile(object):
 
         return parts[0], parts[1]
 
-    def to_dict(self, **kwargs):
+    def to_dict(self, trail=True, **kwargs):
         pems = kwargs.get('default_pems', [])
-        return {
+        obj_dict = {
             'system': None,
             'id': self.id,
             'type': self.type,
@@ -128,7 +130,10 @@ class BoxFile(object):
             'ext': self.ext,
             'size': self.size,
             'lastModified': self.last_modified,
-            '_trail': self.trail,
             '_actions': [],
             'permissions': pems,
         }
+        if trail:
+            obj_dict['trail'] = self.trail
+
+        return obj_dict
