@@ -8,26 +8,32 @@ logger = logging.getLogger(__name__)
 class BoxFile(object):
     """Represents a box file"""
 
-    SUPPORTED_PREVIEW_EXTENSIONS = [
-      # FILES
+    SUPPORTED_IMAGE_PREVIEW_EXTS = [
+      '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
+      '.dcm', '.dicm', '.dicom', '.svs', '.tga',
+    ]
+
+    SUPPORTED_TEXT_PREVIEWS = [
       '.as', '.as3', '.asm', '.bat', '.c', '.cc', '.cmake', '.cpp', '.cs', '.css', '.csv', '.cxx',
       '.diff', '.doc', '.docx', '.erb', '.gdoc', '.groovy', '.gsheet', '.h', '.haml', '.hh', '.htm',
       '.html', '.java', '.js', '.less', '.m', '.make', '.ml', '.mm', '.msg', '.ods', '.odt', '.odp',
-      '.pdf', '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
+      '.php', '.pl', '.ppt', '.pptx', '.properties', '.py', '.rb', '.rtf', '.sass', '.scala',
       '.scm', '.script', '.sh', '.sml', '.sql', '.txt', '.vi', '.vim', '.wpd', '.xls', '.xlsm',
       '.xlsx', '.xml', '.xsd', '.xsl', '.yaml',
+    ]
 
-      # IMAGES
-      '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
-      '.dcm', '.dicm', '.dicom', '.svs', '.tga',
-
-      # AUDIO
+    SUPPORTED_OBJECT_PREVIEW_EXTS = [
+      '.pdf', 
       '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
 
       # VIDEO
       '.3g2', '.3gp', '.avi', '.m2v', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpg',
       '.ogg', '.mts', '.qt', '.wmv',
     ]
+
+    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS + 
+                                    SUPPORTED_TEXT_PREVIEWS + 
+                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
 
     def __init__(self, box_item, parent=None):
         self._item = box_item
@@ -93,7 +99,7 @@ class BoxFile(object):
 
     @property
     def previewable(self):
-        return self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
+        return self.type != 'folder' and self.ext in self.SUPPORTED_PREVIEW_EXTENSIONS
 
     @staticmethod
     def parse_file_id(file_id):
