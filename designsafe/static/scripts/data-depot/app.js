@@ -127,7 +127,21 @@
       .state('boxData', {
         url: '/box/{fileId:any}/',
         controller: 'ExternalDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/external-data-listing.html'
+        templateUrl: '/static/scripts/data-depot/templates/box-data-listing.html',
+        params: {
+          filePath: ''
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var filePath = $stateParams.filePath || '/';
+            DataBrowserService.apiParams.fileMgr = 'box';
+            DataBrowserService.apiParams.baseUrl = '/api/external-data/files';
+            return DataBrowserService.browse({path: filePath});
+          }],
+          'auth': function($q) {
+              return true;
+          }
+        }
       })
 
       /* Public */
