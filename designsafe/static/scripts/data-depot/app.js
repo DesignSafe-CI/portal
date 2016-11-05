@@ -125,7 +125,7 @@
         templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
       })
       .state('boxData', {
-        url: '/box/{fileId:any}/',
+        url: '/box/{filePath:any}',
         controller: 'ExternalDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/box-data-listing.html',
         params: {
@@ -139,7 +139,14 @@
             return DataBrowserService.browse({path: filePath});
           }],
           'auth': function($q) {
+            if (Django.context.authenticated) {
               return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
           }
         }
       })

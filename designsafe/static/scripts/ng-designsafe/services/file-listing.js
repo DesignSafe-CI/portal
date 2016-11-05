@@ -124,7 +124,7 @@
     };
 
     FileListing.prototype.icon = function() {
-      if (this.type === 'dir') {
+      if (this.type === 'dir' || this.type === 'folder') {
         return 'fa-folder';
       }
 

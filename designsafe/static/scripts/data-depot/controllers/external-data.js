@@ -22,7 +22,7 @@
   };
 
    $scope.resolveBreadcrumbHref = function(trailItem) {
-      return $state.href('boxData', {filePath: trailItem.id});
+      return $state.href('boxData', {filePath: trailItem.path});
     };
 
     $scope.onBrowse = function($event, file) {
