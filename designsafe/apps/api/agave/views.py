@@ -79,7 +79,8 @@ class FileListingView(View):
 class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
-        if file_mgr_name == AgaveFileManager.NAME:
+        if file_mgr_name == AgaveFileManager.NAME \
+            or file_mgr_name == 'public':
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
@@ -118,7 +119,8 @@ class FileMediaView(View):
         return HttpResponseBadRequest("Unsupported operation")
 
     def post(self, request, file_mgr_name, system_id, file_path):
-        if file_mgr_name == AgaveFileManager.NAME:
+        if file_mgr_name == AgaveFileManager.NAME \
+            or file_mgr_name == 'public':
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
@@ -151,7 +153,8 @@ class FileMediaView(View):
         else:
             body = request.POST.copy()
 
-        if file_mgr_name == AgaveFileManager.NAME:
+        if file_mgr_name == AgaveFileManager.NAME \
+            or file_mgr_name == 'public':
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
@@ -246,7 +249,8 @@ class FileSearchView(View):
 class FilePermissionsView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
-        if file_mgr_name == AgaveFileManager.NAME:
+        if file_mgr_name == AgaveFileManager.NAME \
+            or file_mgr_name == 'public':
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
@@ -265,7 +269,8 @@ class FilePermissionsView(View):
         else:
             body = request.POST.copy()
 
-        if file_mgr_name == AgaveFileManager.NAME:
+        if file_mgr_name == AgaveFileManager.NAME \
+            or file_mgr_name == 'public':
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 

@@ -113,7 +113,7 @@
         // wrap children as FileListing instances
         if (self.children && self.children instanceof Array) {
           self.children = _.map(self.children, function (child) {
-            var fl = new FileListing(child);
+            var fl = new FileListing(child, self.apiParams);
             fl._parent = self;
             return fl;
           }, self);
