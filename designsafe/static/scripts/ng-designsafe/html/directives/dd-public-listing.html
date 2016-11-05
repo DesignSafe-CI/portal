@@ -15,7 +15,7 @@
             <td>
                 <i class="fa {{ item.icon() }}"></i>
                 <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
-                    {{ item.name }}
+                    {{ renderName()(item) }}
                 </a>
             </td>
             <td>{{ item.length|bytes }}</td>

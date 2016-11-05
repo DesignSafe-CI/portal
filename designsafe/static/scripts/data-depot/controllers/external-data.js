@@ -1,8 +1,8 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
-  app.controller('ExternalDataCtrl', ['$scope', 'Django', 
+  app.controller('ExternalDataCtrl', ['$scope', '$state', 'Django', 
                                       'DataBrowserService',
-                  function ($scope, Django) {
+                  function ($scope, $state, Django, DataBrowserService) {
   $scope.browser = DataBrowserService.state();
 
   if (! $scope.browser.error){

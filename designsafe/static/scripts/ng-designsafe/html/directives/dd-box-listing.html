@@ -1,8 +1,5 @@
 <div class="table-responsive">
-  <div class="ds-table-display-wrapper" ds-infinite-scroll
-    data-scroll-bottom = "scrollToBottom()()"
-    data-scroll-top = "scrollToTop()()"
-    data-bottom-height = "0">
+  <div class="ds-table-display-wrapper">
    <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
         <thead>
         <th style="width: 400px;">Name</th>
@@ -18,7 +15,7 @@
             <td>
                 <i class="fa {{ item.icon() }}"></i>
                 <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
-                    {{ renderName()(item) }}
+                    {{ item.name }}
                 </a>
             </td>
             <td>{{ item.length|bytes }}</td>
