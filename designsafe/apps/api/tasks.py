@@ -454,11 +454,14 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
         # If it is an agave file id then the first component is a system id
         agave_system_id = dest_file_path_comps[0]
         # Start construction the actual real path into the NSF mount
-        dest_real_path = os.path.join(*dest_file_path_comps[1:])
+        if dest_file_path_comps[1:]:
+            dest_real_path = os.path.join(*dest_file_path_comps[1:])
+        else:
+            dest_real_path = '/'
         # Get what the system id maps to
         base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
         # Add actual path
-        dest_real_path = os.path.join(base_mounted_path, dest_real_path)
+        dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
         logger.debug('dest_real_path: {}'.format(dest_real_path))
 
         box_fm = BoxFileManager(user)
