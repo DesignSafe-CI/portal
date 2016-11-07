@@ -1,3 +1,4 @@
+import re
 import os
 from datetime import datetime
 from designsafe.apps.api.agave.filemanager.base import BaseFileManager
@@ -18,8 +19,24 @@ class AgaveFileManager(BaseFileManager):
 
     NAME = 'agave'
 
+    SYSTEM_ID_PATHS = [
+        {'regex': r'^designsafe.storage.default$',
+         'path': '/corral-repl/tacc/NHERI/shared'},
+        {'regex': r'^project\-',
+         'path': '/corral-repl/tacc/NHERI/projects'}
+    ]
+
     def __init__(self, agave_client):
         self._ag = agave_client
+
+    def base_mounted_path(self, string):
+        path = None
+        for mapping in self.SYSTEM_ID_PATHS:
+            if re.search(mapping['regex'], string):
+                path = mapping['path']
+                break
+
+        return path
 
     def import_data(self, system, file_path, from_system, from_file_path):
         file_path = file_path or '/'
