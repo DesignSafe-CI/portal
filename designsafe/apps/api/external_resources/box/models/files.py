@@ -58,11 +58,11 @@ class BoxFile(object):
         except AttributeError:
             if self._parent:
                 if self._parent.id == 'folder/0':  # Suppress 'All Files' name in path
-                    path = ''
+                    path = '/{}'.format(self.name)
                 else:
                     path = '/'.join([self._parent.path, self.name])
             else:
-                path = None
+                path = ''
         return path
 
     @property
