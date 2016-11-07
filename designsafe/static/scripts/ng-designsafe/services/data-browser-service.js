@@ -193,42 +193,57 @@
 
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-copy.html',
-        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', function ($scope, $uibModalInstance, FileListing, data) {
+        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService', 
+                     function ($scope, $uibModalInstance, FileListing, data, ProjectService) {
 
           $scope.data = data;
 
           $scope.state = {
             busy: false,
-            error: null
+            error: null,
+            listingProjects: false
           };
 
           $scope.options = [
             {label: 'My Data', 
-             type: 'Private',
              conf: {system: 'designsafe.storage.default', path: ''}},
             {label: 'Shared with me', 
-             type: 'Private',
-             conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
+             conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
+            {label: 'My Projects',
+             conf: {system: 'projects', path: ''}}
           ];
           
-          SystemsService.list({type: 'storage', public: false}).then(function (list) {
-            $scope.options = $scope.options.concat(_.map(list, function (sys) {
-              return {
-                label: sys.name,
-                type: 'My Projects',
-                conf: {system: sys.id, path: '/'}
-              };
-            }));
-          });
+          //SystemsService.list({type: 'storage', public: false}).then(function (list) {
+          //  $scope.options = $scope.options.concat(_.map(list, function (sys) {
+          //    return {
+          //      label: sys.name,
+          //      type: 'My Projects',
+          //      conf: {system: sys.id, path: '/'}
+          //    };
+          //  }));
+          //});
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
             $scope.state.busy = true;
-            FileListing.get($scope.currentOption.conf)
-              .then(function (listing) {
-                $scope.listing = listing;
-                $scope.state.busy = false;
+            var conf = $scope.currentOption.conf;
+            if (conf.system != 'projects'){
+              $scope.state.listingProjects = false;
+              FileListing.get(conf)
+                .then(function (listing) {
+                  $scope.listing = listing;
+                  $scope.state.busy = false;
+                });
+            } else {
+              $scope.state.listingProjects = true;
+              ProjectService.list()
+                .then(function(projects){
+                  $scope.projects = _.map(projects, function(p) {
+                    p.href = $state.href('projects.view', {projectId: p.uuid});
+                    return p;});
+                  $scope.state.busy = false;
               });
+            }
 
             if ($scope.currentOption.label === 'My Data') {
               $scope.customRoot = null;
@@ -246,9 +261,13 @@
           $scope.onBrowse = function ($event, fileListing) {
             $event.preventDefault();
             $event.stopPropagation();
-
+            $scope.state.listingProjects = false;
             var system = fileListing.system || fileListing.systemId;
             var path = fileListing.path;
+            if (typeof system === 'undefined' && typeof path === 'undefined' && fileListing.value){
+                system = 'project-' + fileListing.uuid;
+                path = '/';
+            }
             if (system === 'designsafe.storage.default' && path === '/') {
               path = path + fileListing.name;
             }
