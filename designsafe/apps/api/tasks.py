@@ -420,3 +420,80 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                          extra = {})
         n.save()
 
+@shared_task(bind=True)
+def box_resource_download(self, username, src_file_id, dest_file_id):
+    """
+    :param self:
+    :param username:
+    :param src_file_id:
+    :param dest_file_id:
+    :return:
+    """
+
+    logger.debug('Downloading box://%s for user %s to %s',
+                 src_file_id, username, dest_file_id)
+
+    try:
+        n = Notification(event_type='data',
+                         status=Notification.INFO,
+                         operation='box_download_start',
+                         message='Starting download file %s from box.' % (src_file_id,),
+                         user=username,
+                         extra={})
+        n.save()
+        logger.debug('username: {}, src_file_id: {}, dest_file_id: {}'.format(username, src_file_id, dest_file_id))
+        user = get_user_model().objects.get(username=username)
+
+        from designsafe.apps.api.external_resources.box.filemanager.manager import \
+             FileManager as BoxFileManager
+        from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+        # Initialize agave filemanager
+        agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
+        # Split destination file path
+        dest_file_path_comps = dest_file_id.strip('/').split('/')
+        # If it is an agave file id then the first component is a system id
+        agave_system_id = dest_file_path_comps[0]
+        # Start construction the actual real path into the NSF mount
+        dest_real_path = os.path.join(*dest_file_path_comps[1:])
+        # Get what the system id maps to
+        base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
+        # Add actual path
+        dest_real_path = os.path.join(base_mounted_path, dest_real_path)
+        logger.debug('dest_real_path: {}'.format(dest_real_path))
+
+        box_fm = BoxFileManager(user)
+        box_file_type, box_file_id = box_fm.parse_file_id(file_id=src_file_id)
+
+        levels = 0
+        downloaded_file_path = None
+        if box_file_type == 'file':
+            downloaded_file_path = box_fm.download_file(box_file_id, dest_real_path)
+            levels = 1
+        elif box_file_type == 'folder':
+            downloaded_file_path = box_fm.download_folder(box_file_id, dest_real_path)
+
+        #if downloaded_file_path is not None:
+        #    downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
+        #    system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
+
+        n = Notification(event_type='data',
+                         status=Notification.SUCCESS,
+                         operation='box_download_end',
+                         message='File %s has been copied from box successfully!' % (src_file_id, ),
+                         user=username,
+                         extra={})
+        n.save()
+    except:
+        logger.exception('Unexpected task failure: box_download', extra={
+            'username': username,
+            'box_file_id': src_file_id,
+            'dest_file_id': dest_file_id
+        })
+        n = Notification(event_type='data',
+                         status=Notification.ERROR,
+                         operation='box_download_error',
+                         message='We were unable to get the specified file from box. '
+                                 'Please try again...',
+                         user=username,
+                         extra={})
+        n.save()
