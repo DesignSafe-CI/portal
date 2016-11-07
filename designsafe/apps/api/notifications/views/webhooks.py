@@ -74,12 +74,6 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
 
             user = get_user_model().objects.get(username=username)
 
-            job_status = job['status']
-            if job_status == 'FINISHED':
-                job_status = 'INDEXING'
-
-            job_name = job['name']
-
             event_data = {
                 Notification.EVENT_TYPE: 'job',
                 Notification.STATUS: '',
@@ -87,6 +81,13 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                 Notification.MESSAGE: '',
                 Notification.EXTRA: job
             }
+
+            job_status = job['status']
+            if job_status == 'FINISHED':
+                job_status = event_data[Notification.EXTRA]['status'] = 'INDEXING'
+
+            job_name = job['name']
+
             archive_id = 'agave/%s/%s' % (job['archiveSystem'], job['archivePath'].split('/'))
 
             if job_status == 'FAILED':
@@ -118,7 +119,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                     target_path = reverse('designsafe_data:data_browser', args=['agave', archive_id])
 
                     event_data[Notification.STATUS] = Notification.SUCCESS
-                    event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
+                    event_data[Notification.EXTRA]['status'] = 'FINISHED'
                     event_data[Notification.EXTRA]['target_path'] = target_path
                     event_data[Notification.MESSAGE] = 'Job "%s" has finished!' % (job_name, )
                     event_data[Notification.OPERATION] = 'job_finished'

@@ -4,15 +4,15 @@
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
 
     NotificationService.processors.job = {
-          'process': function notifyProcessor(msg){
-            logger.log('processing msg: ', msg);
-            return msg.extra;
-          },
-          'renderLink': function renderLink(msg){
-          logger.log('rendering link: ', msg);
-              return msg.extra['target_path'] // this will only be present when indexing is completed
-          }
-        };
+      'process': function notifyProcessor(msg){
+        logger.log('processing msg: ', msg);
+        return msg.extra;
+      },
+      'renderLink': function renderLink(msg){
+        logger.log('rendering link: ', msg);
+        return msg.extra['target_path'] // this will only be present when indexing is complete
+      }
+    };
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
@@ -75,7 +75,8 @@
      * modal dialog in the workspace letting the user know their job is ready
      * to connect to.
      */
-    $scope.$on('ds.wsBus:default', function update_job(e, msg){
+    // $scope.$on('ds.wsBus:default', function update_job(e, msg){
+    $scope.$on('ds.wsBus:notify', function update_job(e, msg){
       if('event_type' in msg && msg.event_type === 'VNC') {
         $uibModal.open({
           templateUrl: 'local/vncjob-details-modal.html',
