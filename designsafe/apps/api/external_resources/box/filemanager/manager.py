@@ -1,5 +1,6 @@
 """ Box filemanager"""
-
+import os
+import sys
 import logging
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
@@ -198,5 +199,64 @@ class FileManager(object):
 
     #    return {'message': 'Your file(s) have been scheduled for upload to box.'}
 
-    def search(self, q, **kwargs):
-        pass
+
+    def download_file(self, box_file_id, download_directory_path):
+        """
+        Downloads the file for box_file_id to the given download_path.
+
+        :param box_file_manager:
+        :param box_file_id:
+        :param download_directory_path:
+        :return: the full path to the downloaded file
+        """
+        box_file = self.box_api.file(box_file_id).get()
+        # convert utf-8 chars
+        safe_filename = box_file.name.encode(sys.getfilesystemencoding(), 'ignore')
+        file_download_path = os.path.join(download_directory_path, safe_filename)
+        logger.debug('Download file %s <= box://file/%s', file_download_path, box_file_id)
+
+        with open(file_download_path, 'wb') as download_file:
+            box_file.download_to(download_file)
+
+        return file_download_path
+
+
+    def download_folder(self, box_folder_id, download_path):
+        """
+        Recursively the folder for box_folder_id, and all of its contents, to the given
+        download_path.
+
+        :param box_file_manager:
+        :param box_folder_id:
+        :param download_path:
+        :return:
+        """
+        box_folder = self.box_api.folder(box_folder_id).get()
+        # convert utf-8 chars
+        safe_dirname = box_folder.name.encode(sys.getfilesystemencoding(), 'ignore')
+        directory_path = os.path.join(download_path, safe_dirname)
+        logger.debug('Creating directory %s <= box://folder/%s', directory_path, box_folder_id)
+        try:
+            os.mkdir(directory_path, 0o0755)
+        except OSError as e:
+            if e.errno == 17:  # directory already exists?
+                pass
+            else:
+                logger.exception('Error creating directory: %s', directory_path)
+                raise
+
+        limit = 100
+        offset = 0
+        while True:
+            items = box_folder.get_items(limit, offset)
+            for item in items:
+                if item.type == 'file':
+                    self.download_file(item.object_id, directory_path)
+                elif item.type == 'folder':
+                    self.download_folder(item.object_id, directory_path)
+            if len(items) == limit:
+                offset += limit
+            else:
+                break
+
+        return directory_path
