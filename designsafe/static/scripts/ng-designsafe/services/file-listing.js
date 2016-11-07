@@ -65,11 +65,31 @@
     };
 
     FileListing.prototype.mediaUrl = function () {
-      return [this._baseUrl(), 'media', this.fileMgr(), this.system, this.path].join('/');
+      var urlParts = [this._baseUrl(), 'media', this.fileMgr()];
+      if (this.system){
+        urlParts.push(this.system);
+      }
+      if (this.id && this.id.indexOf('/') > -1){
+        urlParts.push(this.id);
+      }
+      else if (this.path) {
+        urlParts.push(this.path);
+      }
+      return urlParts.join('/');
     };
 
     FileListing.prototype.pemsUrl = function () {
-      return [this._baseUrl(), 'pems', this.fileMgr(), this.system, this.path].join('/');
+      var urlParts = [this._baseUrl(), 'pems', this.fileMgr()];
+      if (this.system){
+        urlParts.push(this.system);
+      }
+      if (this.id && this.id.indexOf('/') > -1){
+        urlParts.push(this.id);
+      }
+      else if (this.path) {
+        urlParts.push(this.path);
+      }
+      return urlParts.join('/');
     };
 
     FileListing.prototype.agaveUri = function() {
