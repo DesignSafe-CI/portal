@@ -17,22 +17,21 @@
                     id="id_currentOption" 
                     name="currentOption" 
                     ng-model="currentOption" 
-                    ng-options="option as option.label group by option.type
-                                    for option in options"></select>
+                    ng-options="option as option.label for option in options"></select>
             </form>
         </div>
         <div class="col-sm-9">
             <dd-breadcrumb skip-root="true" custom-root="customRoot" listing="listing" on-browse="onBrowse"></dd-breadcrumb>
         </div>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive" ng-if="!state.listingProjects">
         <table class="table table-bordered table-striped" style="background-color: #fff;">
             <thead>
             <th>Name</th>
             <th>Action</th>
             </thead>
 
-            <tbody>
+            <tbody ng-if="!state.busy">
             <tr ng-repeat="item in listing.children">
                 <td>
                     <i class="fa {{ item.icon() }}"></i>
@@ -49,7 +48,73 @@
                 </td>
             </tr>
             </tbody>
+            <caption style="padding:0">
+
+                <div ng-if="state.busy" style="margin-bottom:-38px" class="text-right">
+                    <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </span>
+                </div>
+
+                <div ng-if="! state.busy && state.error" class="text-center">
+                    <p class="alert alert-danger">
+                        {{ browser.error.message || browser.error }}
+                    </p>
+                </div>
+
+                <div ng-if="! state.busy && ! state.error && (listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
+                    <p class="lead">
+                        This folder is empty!
+                        <br><i class="fa fa-folder-open-o"></i>
+                    </p>
+                </div>
+            </caption>
         </table>
+    </div>
+
+    <div class="table-responsive" ng-if="state.listingProjects">
+      <table class="table table-bordered tables-striped" style="background-color: #fff;">
+        <thead>
+         <th>Name</th>
+         <th>PI</th>
+        </thead>
+        <tbody ng-if="!sate.busy">
+          <tr ng-repeat="item in projects">
+            <td>
+              <i class="fa fa-briefcase"></i>
+              <a ng-href="{{ item.href || '#' }}" ng-click = "onBrowse($event, item)">
+                {{item.value.title}}
+              </a>
+            </td>
+            <td>
+              <ds-user username="item.value.pi" format = "name-username">
+                {{ item.value.pi }}
+              </ds-user>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <caption style="padding:0">
+
+          <div ng-if="state.busy" style="margin-bottom:-38px" class="text-right">
+              <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
+                  <i class="fa fa-spinner fa-spin"></i> Loading...
+              </span>
+          </div>
+
+          <div ng-if="! state.busy && state.error" class="text-center">
+              <p class="alert alert-danger">
+                  {{ browser.error.message || browser.error }}
+              </p>
+          </div>
+
+          <div ng-if="! state.busy && ! state.error && (listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
+              <p class="lead">
+                  This folder is empty!
+                  <br><i class="fa fa-folder-open-o"></i>
+              </p>
+          </div>
+      </caption>
     </div>
 
 
@@ -59,6 +124,7 @@
         <button class="btn btn-primary" type="button"
                 ng-disabled="! validDestination(listing)"
                 ng-click="chooseDestination(listing)"
+                ng-if="!state.listingProjects"
         >
             Copy to {{ listing.name }}
         </button>
