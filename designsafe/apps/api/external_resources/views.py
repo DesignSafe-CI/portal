@@ -16,6 +16,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.external_resources.box.filemanager.manager \
     import FileManager as BoxFileManager
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
+from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,17 @@ class FileMediaView(BaseApiView, SecureMixin):
                     return HttpResponseBadRequest('Preview not available for this item.')
             except HTTPError as e:
                 logger.exception('Unable to preview file')
+                return HttpResponseBadRequest(e.response.text)
+
+        elif action == 'copy':
+            try:
+                tasks.box_resource_download.apply_async(kwargs={
+                    'username': request.user.username,
+                    'src_file_id': file_id,
+                    'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))})
+                return JsonResponse({'status': 200, 'message': 'OK'})
+            except HTTPError as e:
+                logger.exception('Unable to copy file')
                 return HttpResponseBadRequest(e.response.text)
 
         return HttpResponseBadRequest("Operation not implemented.")
