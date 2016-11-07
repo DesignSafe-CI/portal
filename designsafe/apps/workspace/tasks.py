@@ -44,7 +44,7 @@ def submit_job(request, username, job_post):
         logger.debug('Job Submission Response: {}'.format(response))
 
         # watch job status
-        # watch_job_status.apply_async(args=[username, response['id']], countdown=10) trying to use agave notifications now
+        # watch_job_status.apply_async(args=[username, response['id']], countdown=10) #trying to use agave notifications now
         return response
 
     except ConnectionError as e:
