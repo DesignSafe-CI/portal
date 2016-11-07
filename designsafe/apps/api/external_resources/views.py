@@ -91,6 +91,17 @@ class FileMediaView(BaseApiView, SecureMixin):
                 logger.exception('Unable to copy file')
                 return HttpResponseBadRequest(e.response.text)
 
+        elif action == 'download':
+            try:
+                download_dict = fmgr.download(file_id)
+                if not download_dict:
+                    HttpResponseBadRequest('Operation not permitted')
+                
+                return JsonResponse(download_dict)
+            except HTTPError as err:
+                logger.exception('Unable to download box file')
+                return HttpResponseBadRequest(err.response.text)
+
         return HttpResponseBadRequest("Operation not implemented.")
 
 class FilePermissionsView(BaseApiView, SecureMixin):
