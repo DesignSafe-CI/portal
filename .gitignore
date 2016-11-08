@@ -1,6 +1,9 @@
 # ignore intellij IDE things
 .idea/
 
+# OsX DS_Store nonsense
+.DS_Store
+
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env
 
