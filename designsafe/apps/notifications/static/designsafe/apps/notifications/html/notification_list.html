@@ -14,11 +14,21 @@
           <a name="delete" ng-click="delete(x.pk)">Delete</a>
           <div ng-class="(x.fields.read) ? 'text-muted' : 'text-info'">
             <dl class="dl-horizontal">
-              <div ng-if = "x.fields.body">
+              <div>
                 <dt>Type</dt>
                 <dd>{{ x.fields.event_type }}</dd>
                 <dt>Time</dt>
-                <dd>{{x.fields.notification_time| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+                <dd>{{x.fields.datetime| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+                <dt>Operation</dt>
+                <dd>{{x.fields.operation}}</dd>
+                <dt>Status</dt>
+                <dd>{{x.fields.status}}</dd>
+                <dt>Message</dt>
+                <dd>{{x.fields.message}}</dd>
+                <div ng-if="x.fields.extra.target_path">
+                  <dt>View Files</dt>
+                  <dd>{{x.fields.extra.target_path}}</dd>
+                </div>
                 <div ng-repeat="item in x.fields.body.html">
                   <div ng-repeat="(key, val) in item">
                     <dt>{{key}}</dt>
@@ -44,7 +54,7 @@
                   <p ng-show="showRawMessage">{{x}}</p>
                 </dd>
               </div>
-              <div ng-if="x.fields.datetime">
+<!--               <div ng-if="x.fields.datetime">
                 <dt>Type</dt>
                 <dd>{{ x.fields.event_type}} </dd>
                 <dt>Time</dt>
@@ -55,11 +65,11 @@
                 <dd>{{x.fields.status}}</dd>
                 <dt>Message</dt>
                 <dd>{{x.fields.message}}</dd>
-                <div ng-repeat"(key, val) in x.fields.extra">
+                <div ng-repeat="(key, val) in x.fields.extra">
                   <dt>{{key}}</dt>
                   <dd>{{val}}</dd>
                 </div>
-              </div>
+              </div> -->
             </dl>
             <div ng-if="x.fields.body.action_link">
               <a href="{{x.fields.body.action_link.value}}" target="_blank" class="btn btn-primary">{{x.fields.body.action_link.label}}</a>

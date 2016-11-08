@@ -106,6 +106,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                 # notify
                 event_data[Notification.STATUS] = Notification.INFO
                 event_data[Notification.MESSAGE] = 'Job %s status has been updated to INDEXING' % (job_name, )
+                event_data[Notification.OPERATION] = 'job_status_update'
                 logger.debug('ws event_data: {}'.format(event_data))
                 n = Notification.objects.create(**event_data)
                 n.save()
