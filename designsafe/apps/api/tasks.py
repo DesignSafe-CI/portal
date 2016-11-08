@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 import shutil
 import logging
+import re
 import os
 import sys
 
@@ -461,7 +462,11 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
         # Get what the system id maps to
         base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
         # Add actual path
-        dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
+        if re.search(r'^project-', agave_system_id):
+            project_dir = agave_system_id.replace('project-', '', 1)
+            dest_real_path = os.path.join(base_mounted_path, project_dir, dest_real_path.strip('/'))
+        else:
+            dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
         logger.debug('dest_real_path: {}'.format(dest_real_path))
 
         box_fm = BoxFileManager(user)
