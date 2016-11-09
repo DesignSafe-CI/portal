@@ -328,7 +328,6 @@ class PublicElasticFileManager(BaseFileManager):
 
     def search(self, system, query_string, 
                file_path=None, offset=0, limit=100):
-        logger.debug('offset: %s, limit: %s, query_string: %s' % (str(offset), str(limit), query_string))
         files_limit = limit
         files_offset = offset
         projects_limit = limit
