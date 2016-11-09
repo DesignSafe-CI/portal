@@ -1,7 +1,11 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
 
-  app.controller('ProjectRootCtrl', ['$scope', '$state', function ($scope, $state) {
+  app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
+
+    DataBrowserService.apiParams.fileMgr = 'agave';
+    DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+    DataBrowserService.apiParams.searchState = undefined;
 
     $scope.data = {
       navItems: []

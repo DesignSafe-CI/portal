@@ -257,8 +257,12 @@ class FileSearchView(View):
             system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
 
         fmgr = ElasticFileManager()
-        listing = fmgr.search(system_id, request.user.username, query_string,
-                              offset=offset, limit=limit)
+        if not request.GET.get('shared', False):
+            listing = fmgr.search(system_id, request.user.username, query_string,
+                                  offset=offset, limit=limit)
+        else:
+            listing = fmgr.search_shared(system_id, request.user.username, query_string,
+                                         offset=offset, limit=limit)
 
         return JsonResponse(listing)
 
