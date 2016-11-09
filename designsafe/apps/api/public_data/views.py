@@ -65,3 +65,23 @@ class PublicMediaView(BaseApiView):
         listing = file_mgr.listing(system_id, file_path)
 
         return JsonResponse(listing.to_dict())
+
+class PublicSearchView(BaseApiView):
+    """ Search view """
+    def get(self, request, file_mgr_name,
+            system_id=None, file_path=None):
+        """GET handler"""
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+        query_string = request.GET.get('query_string')
+        logger.debug('offset: %s, limit: %s, query_string: %s' % (str(offset), str(limit), query_string))
+        if file_mgr_name != PublicElasticFileManager.NAME or not query_string:
+            return HttpResponseBadRequest()
+
+        if system_id is None:
+            system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
+
+        file_mgr = PublicElasticFileManager()
+        listing = file_mgr.search(system_id, query_string,
+                                  offset=offset, limit=limit)
+        return JsonResponse(listing)
