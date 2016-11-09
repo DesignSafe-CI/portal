@@ -1,5 +1,9 @@
 <div class="clearfix btn-toolbar-ds">
-    <div class="btn-toolbar btn-toolbar-left" role="toolbar" aria-label="Data Browser Search" style="with:300px; float:left; margin-left:15px;">
+    <div class="btn-toolbar btn-toolbar-left"
+         role="toolbar"
+         aria-label="Data Browser Search"
+         style="with:300px; float:left; margin-left:15px;"
+         ng-if="apiParams.searchState">
         <form id="dd-search-form" name="dd-search-form" ng-submit="ops.search()" style="width:300px; float:left; display:inline-block;">
           <input ng-model="search.queryString" name="queryString" type="search" id="dd-search" placeholder="Search..."/>
         </form>

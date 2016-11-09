@@ -243,8 +243,24 @@ class FileMediaView(View):
 
 
 class FileSearchView(View):
-    pass
+    """ File Search View"""
+    def get(self, request, file_mgr_name, system_id = None, file_path = None):
+        """ GET handler """
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+        query_string = request.GET.get('query_string')
 
+        if file_mgr_name != ElasticFileManager.NAME or not query_string:
+            return HttpResponseBadRequest()
+        
+        if system_id is None:
+            system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
+
+        fmgr = ElasticFileManager()
+        listing = fmgr.search(system_id, request.user.username, query_string,
+                              offset=offset, limit=limit)
+
+        return JsonResponse(listing)
 
 class FilePermissionsView(View):
 

@@ -3,6 +3,7 @@
   app.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
+    $scope.searchState = DataBrowserService.apiParams.searchState;
 
     if (! $scope.browser.error) {
       $scope.browser.listing.href = $state.href('myData', {
