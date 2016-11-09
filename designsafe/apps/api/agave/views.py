@@ -303,6 +303,35 @@ class FilePermissionsView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+class FileMetaView(View):
+    def get(self, request, file_mgr_name, system_id, file_path):
+        if file_mgr_name == ElasticFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
+            fmgr = ElasticFileManager()
+            file_obj = fmgr.get(system_id, file_path, request.user.username)
+            return JsonResponse(file_obj.to_dict())
+        
+        return HttpResponseBadRequest('Unsupported file manager.')
+
+    def put(self, request, file_mgr_name, system_id, file_path):
+        post_body = json.loads(request.body)
+        metadata = post_body.get('metadata', {})
+        logger.debug('metadata: %s' % (metadata, ))
+        if file_mgr_name == ElasticFileManager.NAME or not metadata:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
+            fmgr = ElasticFileManager()
+            file_obj = fmgr.get(system_id, file_path, request.user.username)
+            if file_obj:
+                file_obj.update_metadata(metadata)
+                return JsonResponse(file_obj.to_dict())
+            else:
+                return HttpResponseBadRequest('No file found')
+        
+        return HttpResponseBadRequest('Unsupported file manager.')
 
 class SystemsView(View):
 

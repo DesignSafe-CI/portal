@@ -38,7 +38,8 @@
       FILE_COPIED: 'FileCopied',
       FILE_MOVED: 'FileMoved',
       FILE_REMOVED: 'FileRemoved',
-      FILE_SELECTION: 'FileSelection'
+      FILE_SELECTION: 'FileSelection',
+      FILE_META_UPDATED: 'MetadataUpdated'
     };
 
     /**
@@ -52,7 +53,8 @@
       FILE_COPIED: 'Your file was copied.',
       FILE_MOVED: 'Your file was moved.',
       FILE_REMOVED: 'Your file was remove.',
-      FILE_SELECTION: 'Your file has been selected'
+      FILE_SELECTION: 'Your file has been selected.',
+      FILE_META_UPDATED: 'Metadata object updated.',
     };
 
     /**
@@ -1073,18 +1075,65 @@
       } 
       var modal = $uibModal.open({
         templateUrl: template,
-        controller: ['$scope', 'file', function ($scope, file) {
-          $scope.data = {file: file};
+        controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
+          file.getMeta();
+          $scope.data = {file: file,
+						 form: {metadataTags: '',
+                                tagsToDelete: []}};
+            
+         
+		  $scope.doSaveMetadata = function($event) {
+			$event.preventDefault();
+			$uibModalInstance.close($scope.data);
+		  };
 
-          //$uibModalInstance.close();
+		  $scope.isMarkedDeleted = function(tag){
+			return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
+		  };
+
+		  $scope.toggleTag = function(tag){
+			var id = $scope.data.form.tagsToDelete.indexOf(tag);
+			if (id > -1){
+			  $scope.data.form.tagsToDelete.splice(id, 1);
+			} else {
+			  $scope.data.form.tagsToDelete.push(tag);
+			}
+		  }; 
+
+          /**
+           * Cancel and close upload dialog.
+           */
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+          };
         }],
         size: 'lg',
         resolve: {
-          'file': function() { return file; }
+          'file': function() { return file; },
+          'form': function() { return {metadataTags: ''}; },
         }
       });
 
-      return modal.result;
+      return modal.result.then(function(data){
+        var file = data.file;
+        var form = data.form;
+        var metaObj = {
+          keywords: file.keywords || []
+        };
+        if (form.metadataTags) {
+          metaObj.keywords = metaObj.keywords.concat(form.metadataTags.split(','));
+        }
+        if (form.tagsToDelete.length){
+          metaObj.keywords = metaObj.keywords.filter(function(value){
+            return form.tagsToDelete.indexOf(value) < 0;
+          });
+        }
+        currentState.busy = true;
+        file.updateMeta({'metadata': metaObj}).then(function(file_resp){
+          notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
+          currentState.busy = false;
+        });
+      });
     }
 
 

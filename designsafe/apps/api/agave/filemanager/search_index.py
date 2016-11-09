@@ -95,10 +95,9 @@ class Object(object):
         if wrap is not None:
             self._wrap = wrap
         else:
-            self.indexed_file = IndexedFile()
             s = IndexedFile.search()
             path, name = os.path.split(file_path)
-            path = path or '/'
+            path = path.strip('/') or '/'
             q = Q('filtered', 
                 query = Q('bool',
                         must = [
@@ -112,6 +111,7 @@ class Object(object):
                         Q({'term': {'systemId': system_id}})
                 ]))
             s.query = q
+            logger.debug('serach query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
             except TransportError as e:
@@ -123,6 +123,32 @@ class Object(object):
                 self._wrap = res[0]
             else:
                 self._wrap = None
+
+    def success(self):
+        if self._wrap:
+            return True
+        
+        return False
+
+    def update_metadata(self, meta_obj):
+        """Update metadata of an object
+
+        The matadata this method updates is only the user metadata.
+        This first version only focuses on **keywords**.
+        This metadata should grow in the future.
+
+        :param obj meta_obj: object with which the document will be updated
+
+        .. warning:: This method blindly replaces the data in the
+            saved document. The only sanitization it does is to remove
+            repeated elements.
+        """
+
+        keywords = list(set(meta_obj['keywords']))
+        keywords = [kw.strip() for kw in keywords]
+        self._wrap.update(keywords=keywords)
+        self._wrap.save()
+        return self
 
     def user_pems(self, user_context):
         """Converts from ES pems to user specific pems
@@ -185,6 +211,14 @@ class ElasticFileManager(BaseFileManager):
 
     def __init__(self):
         super(ElasticFileManager, self).__init__()
+
+    def get(self, system, file_path, user_context):
+        file_object = Object(system_id=system, user_context=user_context,
+                             file_path=file_path)
+        if file_object.success():
+            return file_object
+        
+        return None
     
     @staticmethod
     def listing(system, file_path, user_context):
