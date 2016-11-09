@@ -21,7 +21,7 @@
 
     /* Set initial toolbar status */
     updateToolbar();
-
+    $scope.apiParams = DataBrowserService.apiParameters();
     /* Map service functions to toolbar buttons */
     $scope.ops = {
       details: function() {
@@ -60,10 +60,7 @@
         DataBrowserService.rm($scope.browser.selected);
       },
       search: function(){
-        var state = '';            
-        if ( $scope.browser.listing.system === 'nees.public') {
-            state = 'publicDataSearch';
-        }
+        var state = $scope.apiParams.searchState;
         $state.go(state, {'query_string': $scope.search.queryString,
                    'systemId': $scope.browser.listing.system,
                    'filePath': '$SEARCH'});

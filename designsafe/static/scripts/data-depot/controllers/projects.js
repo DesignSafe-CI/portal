@@ -88,6 +88,7 @@
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+    DataBrowserService.apiParams.searchState = undefined;
     $scope.browser = DataBrowserService.state();
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;

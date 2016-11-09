@@ -56,6 +56,13 @@
     };
 
     /**
+     * Gets the apiParams of the DataBrowserService.
+     */
+    function apiParameters(){
+      return apiParams;
+    }
+
+    /**
      * Gets the state of the DataBrowserService.
      *
      * @return {{busy: boolean, listing: FileListing, selected: Array}}
@@ -1115,6 +1122,7 @@
       /* properties */
       FileEvents: FileEvents,
       state: state,
+      apiParameters: apiParameters,
 
       /* data/files functions */
       allowedActions: allowedActions,
