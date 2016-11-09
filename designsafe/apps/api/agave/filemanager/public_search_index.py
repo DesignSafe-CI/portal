@@ -325,3 +325,86 @@ class PublicElasticFileManager(BaseFileManager):
         file_path = file_path or '/'
         listing = PublicObject.listing(system, file_path, offset, limit)
         return listing
+
+    def search(self, system, query_string, 
+               file_path=None, offset=0, limit=100):
+        logger.debug('offset: %s, limit: %s, query_string: %s' % (str(offset), str(limit), query_string))
+        files_limit = limit
+        files_offset = offset
+        projects_limit = limit
+        projects_offset = offset
+        projects_search = PublicProjectIndexed.search()
+
+        projects_query = Q('filtered',
+                           filter=Q('bool',
+                                    must=Q({'term': {'systemId': system}}),
+                                    must_not=Q({'term': {'path._exact': '/'}})),
+                           query=Q({'simple_query_string':{
+                                    'query': query_string,
+                                    'fields': ["description",
+                                               "endDate",
+                                               "equipment.component",
+                                               "equipment.equipmentClass",
+                                               "equipment.facility",
+                                               "fundorg"
+                                               "fundorgprojid",
+                                               "name",
+                                               "organization.name",
+                                               "pis.firstName",
+                                               "pis.lastName",
+                                               "title"]}}))
+        projects_search.query = projects_query
+        projects_search = projects_search.sort('name._exact')
+        logger.debug('projects_search: %s' % (projects_search.to_dict(), ))
+        projects_res = projects_search.execute()
+        
+        files_search = PublicObjectIndexed.search()
+
+        files_query = Q('filtered', 
+                        query=Q({'simple_query_string': {
+                                 'query': query_string,
+                                 'fields': ['name']}}),
+                        filter=Q('bool',
+                                 must=Q({'term': {'systemId': system}}),
+                                 must_not=Q({'term': {'path._exact': '/'}})))
+        files_search.query = files_query
+        logger.debug('files_search: %s' % (files_search.to_dict(), ))
+        files_res = files_search.execute()
+        
+        if projects_res.hits.total:
+            if projects_res.hits.total - offset > limit:
+                files_offset = 0
+                files_limit = 0
+            elif projects_res.hits.total - offset < 0:
+                projects_offset = 0
+                projects_limit = 0
+            else:
+                projects_limit = projects_res.hits.total
+                files_limit = limit - projects_limit
+
+        logger.debug('projects_total: %s, files_total: %s' % (str(projects_res.hits.total), str(files_res.hits.total), ))
+        children = []
+        for project in projects_search[projects_offset:projects_limit]:
+            search = PublicObjectIndexed.search()
+            search.query = Q('bool',
+                             must=[
+                                Q({'term': {'path._exact': '/'}}),
+                                Q({'term': {'name._exact': project.projectPath}}),
+                                Q({'term': {'systemId': system}})])
+            res = search.execute()
+            if res.hits.total:
+                children.append(PublicObject(res[0]).to_dict())
+        
+        for file_doc in files_search[files_offset:files_limit]:
+            children.append(PublicObject(file_doc).to_dict())
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result
