@@ -92,6 +92,20 @@
       return urlParts.join('/');
     };
 
+    FileListing.prototype.metaUrl = function () {
+      var urlParts = [this._baseUrl(), 'meta', this.fileMgr()];
+      if (this.system){
+        urlParts.push(this.system);
+      }
+      if (this.id && this.id.indexOf('/') > -1){
+        urlParts.push(this.id);
+      }
+      else if (this.path) {
+        urlParts.push(this.path);
+      }
+      return urlParts.join('/');
+    };
+
     FileListing.prototype.searchUrl = function () {
       var urlParts = [this._baseUrl(), 'search', this.fileMgr()];
       if (this.system){
@@ -162,6 +176,22 @@
           }, self);
         }
 
+        return self;
+      });
+    };
+
+    FileListing.prototype.getMeta = function() {
+      var self = this;
+      return $http.get(this.metaUrl()).then(function (resp){
+        angular.extend(self, resp.data);
+        return self;
+      });
+    };
+
+    FileListing.prototype.updateMeta = function(metaObj){
+      var self = this;
+      return $http.put(this.metaUrl(), metaObj).then(function (resp){
+        angular.extend(self, resp.data);
         return self;
       });
     };
