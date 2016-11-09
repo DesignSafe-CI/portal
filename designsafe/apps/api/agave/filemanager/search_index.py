@@ -283,3 +283,33 @@ class ElasticFileManager(BaseFileManager):
             'permissions': 'READ'
         }
         return result
+
+    def search_shared(self, system, username, query_string,
+               file_path=None, offset=0, limit=100):
+        
+        search = IndexedFile.search()
+        query = Q('filtered',
+                  filter=Q('bool',
+                           must=[Q({'term': {'systemId': system}}),
+                                 Q({'term': {'permissions.username': username}})],
+                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}}),
+                                     Q({'prefix': {'path._exact': username}})]),
+                   query=Q({'simple_query_string':{
+                            'query': query_string,
+                            'fields': ['name', 'name._exact', 'keywords']}}))
+        search.query = query
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCHSHARED', 'path': '/$SEARCH'}],
+            'name': '$SEARCHSHARED',
+            'path': '/$SEARCHSHARED',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result

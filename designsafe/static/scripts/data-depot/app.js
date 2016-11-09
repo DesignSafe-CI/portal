@@ -109,8 +109,43 @@
 
             DataBrowserService.apiParams.fileMgr = 'agave';
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            DataBrowserService.apiParams.searchState = 'sharedDtaSearch';
+            DataBrowserService.apiParams.searchState = 'sharedDataSearch';
             return DataBrowserService.browse({system: systemId, path: filePath});
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
+      })
+      .state('sharedDataSearch',{ 
+        url: '/shared-search/?query_string&offset&limit&shared',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.default',
+          filePath: '$SEARCHSHARED',
+          shared: 'true'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'designsafe.storage.default';
+            var filePath = $stateParams.filePath || Django.user;
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'sharedDataSearch';
+            var queryString = $stateParams.query_string;
+            if (/[^A-Za-z0-9]/.test(queryString)){
+              queryString = '"' + queryString + '"';
+            }
+            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
+            return DataBrowserService.search(options);
           }],
           'auth': function($q) {
             if (Django.context.authenticated) {
