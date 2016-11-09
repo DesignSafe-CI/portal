@@ -92,6 +92,20 @@
       return urlParts.join('/');
     };
 
+    FileListing.prototype.searchUrl = function () {
+      var urlParts = [this._baseUrl(), 'search', this.fileMgr()];
+      if (this.system){
+        urlParts.push(this.system);
+      }
+      if (this.id && this.id.indexOf('/') > -1){
+        urlParts.push(this.id);
+      }
+      else if (this.path) {
+        urlParts.push(this.path);
+      }
+      return urlParts.join('/');
+    };
+
     FileListing.prototype.agaveUri = function() {
       return 'agave://' + this.system + '/' + this.path;
     };
@@ -122,6 +136,21 @@
       };
       return $http.put(this.mediaUrl(), body).then(function (resp) {
         return resp.data;
+      });
+    };
+
+    FileListing.prototype.search = function(params) {
+      var self = this;
+      return $http.get(this.searchUrl(), {params: params}).then(function(res){
+        angular.extend(self, res.data);
+        if (self.children && self.children instanceof Array) {
+          self.children = _.map(self.children, function (child) {
+            var fl = new FileListing(child, self.apiParams);
+            fl._parent = self;
+            return fl;
+          }, self);
+        }
+        return self;
       });
     };
 
@@ -423,12 +452,25 @@
       }
     }
 
+    /**
+     * @param {object} options
+     * @param {string} options.system
+     * @param {string} options.q
+     * @param {int} options.offset
+     * @param {int} options.limit
+     */
+    function search(options, apiParams){
+      var fl = new FileListing(options, apiParams);
+      return fl.search(options);
+    }
+
 
     /**
      * Public API
      */
     return {
-      get: get
+      get: get,
+      search: search
     };
 
   }]);
