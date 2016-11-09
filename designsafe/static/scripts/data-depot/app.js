@@ -152,6 +152,32 @@
       })
 
       /* Public */
+      .state('publicDataSearch',{ 
+        url: '/public-search/?query_string&offset&limit',
+        controller: 'PublicationDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
+        params: {
+          systemId: 'nees.public',
+          filePath: '$SEARCH'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'nees.public';
+            var filePath = $stateParams.filePath || '/';
+            DataBrowserService.apiParams.fileMgr = 'public';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            var queryString = $stateParams.query_string;
+            if (/[^A-Za-z0-9]/.test(queryString)){
+              queryString = '"' + queryString + '"';
+            }
+            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit};
+            return DataBrowserService.search(options);
+          }],
+          'auth': function($q) {
+              return true;
+          }
+        }
+      })
       .state('publicData', {
         url: '/public/{systemId}/{filePath:any}',
         controller: 'PublicationDataCtrl',

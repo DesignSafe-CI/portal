@@ -738,7 +738,21 @@
      * @param options
      */
     function search (options) {
-      throw new Error('not implemented');
+      currentState.busy = true;
+      currentState.busyListing = true;
+      currentState.error = null;
+      return FileListing.search(options, apiParams).then(function (listing) {
+        select([], true);
+        currentState.busy = false;
+        currentState.busyListing = false;
+        currentState.listing = listing;
+        return listing;
+      }, function (err) {
+        currentState.busy = false;
+        currentState.busyListing = false;
+        currentState.listing = null;
+        currentState.error = err.data;
+      });
     }
 
 

@@ -1,7 +1,7 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
   app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', function ($scope, $state, $uibModal, Django, DataBrowserService) {
-
+    $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();
 
     DataBrowserService.subscribe($scope, function($event, eventData) {
@@ -58,8 +58,17 @@
       },
       rm: function () {
         DataBrowserService.rm($scope.browser.selected);
+      },
+      search: function(){
+        var state = '';            
+        if ( $scope.browser.listing.system === 'nees.public') {
+            state = 'publicDataSearch';
+        }
+        $state.go(state, {'query_string': $scope.search.queryString,
+                   'systemId': $scope.browser.listing.system,
+                   'filePath': '$SEARCH'});
       }
-    }
+    };
 
 
   }]);
