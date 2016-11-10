@@ -3,6 +3,28 @@
     function NotificationService($rootScope, logger, toastr) {
         var processors = {};
 
+        processors.job = {
+          'process': function notifyProcessor(msg){
+            logger.log('processing msg: ', msg);
+            return msg.extra;
+          },
+          'renderLink': function renderLink(msg){
+            logger.log('rendering link: ', msg);
+            return msg.extra['target_path'] // this will only be present when indexing is complete
+          }
+        };
+
+        processors.data = {
+          'process': function notifyProcessor(msg){
+            logger.log('processing msg: ', msg);
+            return msg.extra;
+          },
+          'renderLink': function renderLink(msg){
+            logger.log('rendering linlk: ', msg);
+            return msg.extra;
+          }
+        };
+
         function init(){
           logger.log('Connecting to local broadcast channels');
           $rootScope.$on('ds.wsBus:notify', processMessage);
@@ -16,6 +38,17 @@
               typeof processors[msg.event_type].process === 'function'){
 
               processors[msg.event_type].process(msg);
+
+              var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
+              notification_badge.removeClass('label-default')
+              notification_badge.addClass('label-info')
+
+              var numNotifications = notification_badge.html();
+              if (isNaN(numNotifications)) {
+                  notification_badge.html(1);
+              } else {
+                  notification_badge.html(Number(numNotifications) + 1);
+              }
           } else {
             logger.warn('Process var is not a function for this event type. ', processors);
           }
