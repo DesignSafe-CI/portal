@@ -1076,11 +1076,17 @@
       var modal = $uibModal.open({
         templateUrl: template,
         controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
-          file.getMeta();
           $scope.data = {file: file,
 						 form: {metadataTags: '',
                                 tagsToDelete: []}};
-            
+          $scope.ui = {};
+          $scope.ui.busy = true;
+          file.getMeta().then(function(file){
+            $scope.ui.busy = false;
+          }, function(err){
+            $scope.ui.busy = false;
+            $scope.ui.error = err;
+          });
          
 		  $scope.doSaveMetadata = function($event) {
 			$event.preventDefault();
