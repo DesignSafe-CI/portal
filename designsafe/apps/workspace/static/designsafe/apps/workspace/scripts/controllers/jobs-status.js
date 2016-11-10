@@ -3,16 +3,16 @@
   angular.module('designsafe').controller('JobsStatusCtrl',
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
 
-    NotificationService.processors.job = {
-      'process': function notifyProcessor(msg){
-        logger.log('processing msg: ', msg);
-        return msg.extra;
-      },
-      'renderLink': function renderLink(msg){
-        logger.log('rendering link: ', msg);
-        return msg.extra['target_path'] // this will only be present when indexing is complete
-      }
-    };
+    // NotificationService.processors.job = {
+    //   'process': function notifyProcessor(msg){
+    //     logger.log('processing msg: ', msg);
+    //     return msg.extra;
+    //   },
+    //   'renderLink': function renderLink(msg){
+    //     logger.log('rendering link: ', msg);
+    //     return msg.extra['target_path'] // this will only be present when indexing is complete
+    //   }
+    // };
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
