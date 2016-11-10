@@ -27,7 +27,7 @@
       $event.preventDefault();
       $event.stopPropagation();
       if (file.type === 'file') {
-        DataBrowserService.preview(file);
+        DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('myData', {systemId: file.system, filePath: file.path});
       }
@@ -60,7 +60,7 @@
 
     $scope.onDetail = function($event, file) {
       $event.stopPropagation();
-      DataBrowserService.preview(file);
+      DataBrowserService.preview(file, $scope.browser.listing);
     };
 
   }]);

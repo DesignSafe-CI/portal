@@ -118,7 +118,7 @@
       
       $event.preventDefault();
       if (file.type === 'file') {
-        DataBrowserService.preview(file);
+        DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('projects.view.data', {projectId: projectId, 
                                          filePath: file.path,
