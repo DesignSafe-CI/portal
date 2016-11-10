@@ -1,15 +1,47 @@
 import json
 import logging
+import re
 import os
 import urllib
 import urlparse
 from requests.exceptions import HTTPError
 from . import BaseAgaveResource
+from designsafe.apps.api.agave.models.metadata import BaseMetadataResource
 from agavepy.agave import AgaveException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 
 logger = logging.getLogger(__name__)
 
+class BaseFileMetadata(BaseMetadataResource):
+    """
+    Base class for Agave File Metadata
+    """
+    def __init__(self, agave_client, file_obj, **kwargs):
+        query = '{{"associationIds": "{}", "name": "designsafe.file"}}'.format(file_obj.uuid)
+        meta_objs = agave_client.meta.listMetadata(q=query)
+        if meta_objs:
+            defaults = meta_objs[0]
+        else:
+            defaults = kwargs
+            defaults['name'] = 'designsafe.file'
+            defaults['value'] = {'fileUUID': file_obj.uuid,
+                                 'keywords': []}
+            defaults['associationIds'] = [file_obj.uuid]
+
+        project_uuid = kwargs.get('project_uuid')
+        if re.search(r'^project-', file_obj.system) or project_uuid:
+            project_uuid = project_uuid or file_obj.system.replace('project-', '', 1)
+            defaults['value'].update({'projectUUID': project_uuid})
+            defaults['associationIds'].append(project_uuid)
+
+        super(BaseFileMetadata, self).__init__(agave_client, **defaults)
+
+    def update(self, metadata):
+        keywords = list(set(metadata.get('keywords', '')))
+        keywords = [kw.strip() for kw in keywords]
+        self.value['keywords'] = keywords
+        self.save()
+        return self
 
 class BaseFileResource(BaseAgaveResource):
     """Represents an Agave Files API Resource"""
@@ -39,6 +71,7 @@ class BaseFileResource(BaseAgaveResource):
         super(BaseFileResource, self).__init__(agave_client, system=system, path=path,
                                                **kwargs)
         self._children = None
+        self._metadata = None
 
     def __str__(self):
         return self.id
@@ -104,6 +137,16 @@ class BaseFileResource(BaseAgaveResource):
         return trail_comps
 
     @property
+    def metadata(self):
+        try:
+            if self._metadata is None:
+                self._metadata = BaseFileMetadata(self._agave, self)
+
+            return self._metadata
+        except Exception as exc:
+            logger.debug('Couldn\'t get metadata %s', exc)
+
+    @property
     def uuid(self):
         """
         In the files `_links` is an href to metadata via associationIds. The
@@ -114,14 +157,17 @@ class BaseFileResource(BaseAgaveResource):
 
         :return: string: the UUID for the file
         """
-        if 'metadata' in self._links:
-            assoc_meta_href = self._links['metadata']['href']
-            parsed_href = urlparse.urlparse(assoc_meta_href)
-            query_dict = urlparse.parse_qs(parsed_href.query)
-            if 'q' in query_dict:
-                meta_q = json.loads(query_dict['q'][0])
-                return meta_q.get('associationIds')
-        return None
+        try:
+            if 'metadata' in self._wrapped['_links']:
+                assoc_meta_href = self._links['metadata']['href']
+                parsed_href = urlparse.urlparse(assoc_meta_href)
+                query_dict = urlparse.parse_qs(parsed_href.query)
+                if 'q' in query_dict:
+                    meta_q = json.loads(query_dict['q'][0])
+                    return meta_q.get('associationIds')
+            return None
+        except Exception as exc:
+            logger.debug('Couldn\'t get uuid %s', exc)
 
     def to_dict(self):
         ser = super(BaseFileResource, self).to_dict()
