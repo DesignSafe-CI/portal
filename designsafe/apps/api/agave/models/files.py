@@ -2,13 +2,16 @@ import json
 import logging
 import re
 import os
+import six
 import urllib
 import urlparse
 from requests.exceptions import HTTPError
 from . import BaseAgaveResource
-from designsafe.apps.api.agave.models.metadata import BaseMetadataResource
+from designsafe.apps.api.agave.models.metadata import BaseMetadataResource, BaseMetadataPermissionResource
+from designsafe.apps.api.agave.models.systems import roles as system_roles_list
 from agavepy.agave import AgaveException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
+from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
 
@@ -16,32 +19,110 @@ class BaseFileMetadata(BaseMetadataResource):
     """
     Base class for Agave File Metadata
     """
-    def __init__(self, agave_client, file_obj, **kwargs):
-        query = '{{"associationIds": "{}", "name": "designsafe.file"}}'.format(file_obj.uuid)
-        meta_objs = agave_client.meta.listMetadata(q=query)
-        if meta_objs:
-            defaults = meta_objs[0]
+    NAME = 'designsafe.file'
+
+    def __init__(self, agave_client, file_obj=None, **kwargs):
+        meta_objs = []
+        if file_obj:
+            query = '{{"associationIds": "{}", "name": "designsafe.file"}}'.format(file_obj.uuid)
+            meta_objs = agave_client.meta.listMetadata(q=query)
+            if meta_objs:
+                defaults = meta_objs[0]
+            if not meta_objs:
+                defaults = kwargs
+                defaults['name'] = 'designsafe.file'
+                defaults['value'] = {'fileUUID': file_obj.uuid,
+                                     'keywords': []}
+                defaults['associationIds'] = [file_obj.uuid]
+
+            project_uuid = kwargs.get('project_uuid')
+            if re.search(r'^project-', file_obj.system) or project_uuid:
+                project_uuid = project_uuid or file_obj.system.replace('project-', '', 1)
+                defaults['value'].update({'projectUUID': project_uuid})
+                defaults['associationIds'].append(project_uuid)
         else:
             defaults = kwargs
-            defaults['name'] = 'designsafe.file'
-            defaults['value'] = {'fileUUID': file_obj.uuid,
-                                 'keywords': []}
-            defaults['associationIds'] = [file_obj.uuid]
-
-        project_uuid = kwargs.get('project_uuid')
-        if re.search(r'^project-', file_obj.system) or project_uuid:
-            project_uuid = project_uuid or file_obj.system.replace('project-', '', 1)
-            defaults['value'].update({'projectUUID': project_uuid})
-            defaults['associationIds'].append(project_uuid)
-
         super(BaseFileMetadata, self).__init__(agave_client, **defaults)
 
+    @classmethod
+    def search(cls, agave_client, q):
+        if isinstance(q, dict):
+            q = json.dumps(q)
+        logger.debug('meta q: %s', q)
+        result = agave_client.meta.listMetadata(q=q)
+        logger.debug('meta result: %d', len(result))
+        return [cls(agave_client=agave_client, file_obj=None, **r) for r in result]
+
     def update(self, metadata):
-        keywords = list(set(metadata.get('keywords', '')))
+        keywords = metadata.get('keywords', '')
         keywords = [kw.strip() for kw in keywords]
+        keywords = list(set(keywords))
+        logger.debug('keywords: {}'.format(keywords))
         self.value['keywords'] = keywords
         self.save()
         return self
+
+    def _update_pems_with_system_roles(self, system_roles, meta_pems):
+        """Updates this metadata object's permissions with those of a system's roles
+
+            :param list system_roles: A list of :class:`dict` representing the user roles of a system.
+             This should be the response from :func:`~agavepy.agave.Agave.systems.listRoles`.
+            :param list meta_pems: A list of
+             :class:`~designsafe.apps.api.agave.models.metadata.BaseMetadataPermissionResource`.
+             This should be the response from
+             :func:`~designsafe.apps.api.agave.models.metadata.BaseMetadataPermissionResource.list_permissions`
+
+            :returns: A :class:`dict` where the keys are the usernames who do not have a role set on the system and the value
+             of each key is the :class:`~designsafe.apps.api.agave.models.metadata.BaseMetadataPermissionResource` object.
+            :rtype: dict
+        """
+        meta_pems_users = {pem.username: pem for pem in meta_pems}
+        for role_obj in system_roles:
+            username = role_obj['username']
+            role = role_obj['role']
+            try:
+                pem = meta_pems_users.pop(username)
+            except KeyError:
+                pem = BaseMetadataPermissionResource(self.uuid, self._agave)
+                pem.username = username
+
+            if role == system_roles_list.GUEST and \
+                (not pem.read or pem.write):
+                pem.read = True
+                pem.save()
+                logger.debug('Created or Updated %s', pem)
+            elif role == system_roles_list.USER and \
+                (not pem.read or pem.write):
+                pem.read = True
+                pem.write = True
+                pem.save()
+                logger.debug('Created or Updated %s', pem)
+
+        return meta_pems_users
+
+    def match_pems_to_project(self, project_uuid = None):
+        project_uuid = project_uuid or self.value.get('projectUUID')
+        logger.debug('matchins pems to project: %s', project_uuid)
+        if not project_uuid:
+            return self
+
+        project_roles = self._agave.systems.listRoles(systemId='project-{}'.format(project_uuid))
+        project_roles = filter(lambda x: x['username'] != 'ds_admin', project_roles)
+        meta_pems = BaseMetadataPermissionResource.list_permissions(self.uuid, self._agave)
+        meta_pems_users = self._update_pems_with_system_roles(project_roles, meta_pems)
+        for username, pem in six.iteritems(meta_pems_users):
+            pem.delete()
+
+        return self
+
+    def save(self):
+        if self.uuid is None:
+            super(BaseFileMetadata, self).save()
+            #self.match_pems_to_project()
+            if self.value.get('projectUUID'):
+                tasks.check_project_meta_pems.apply_async(args=[self.uuid])
+        else:
+            super(BaseFileMetadata, self).save()
 
 class BaseFileResource(BaseAgaveResource):
     """Represents an Agave Files API Resource"""
