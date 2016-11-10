@@ -8,11 +8,17 @@
             <input type="text" class="form-control" id="id-metadata-tags" name="metadata-tags" placeholder="tag1, tag2, tag three" ng-model="data.form.metadataTags" autofocus select-on-focus>
         </div>
 
-        <div ng-if="!data.file.keywords.length">
+        <div ng-if="!data.file.keywords.length && !ui.busy">
             <p class="alert alert-info">There is no metadata to show. Please add tags separated by commas.</p>
         </div>
 
-        <div class="tags-wrapper">
+        <div ng-if="ui.busy" style="margin-bottom:-38px">
+            <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </span>
+        </div>
+
+        <div class="tags-wrapper" ng-if="!ui.busy">
           <ul class="tags-list">
              <li ng-repeat="tag in data.file.keywords" 
                  class="tag-item"
