@@ -491,7 +491,13 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
                          user=username,
                          extra={})
         n.save()
-        agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+        if re.search(r'^project-', agave_system_id):
+            project_dir = agave_system_id.replace('project-', '', 1)
+            project_dir = os.path.join(base_mounted_path.strip('/'), project_dir)
+            agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
+        else:
+            agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+
         reindex_agave.apply_async(kwargs={
                                   'username': user.username,
                                   'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
