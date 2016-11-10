@@ -139,7 +139,8 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                 event_data[Notification.STATUS] = Notification.INFO
                 event_data[Notification.MESSAGE] = 'Job "%s" status has been updated to %s.' % (job_name, job_status)
                 event_data[Notification.OPERATION] = 'job_status_update'
-                Notification.objects.create(**event_data)
+                n = Notification.objects.create(**event_data)
+                n.save()
 
         except ObjectDoesNotExist:
             logger.exception('Unable to locate local user account: %s' % username)
