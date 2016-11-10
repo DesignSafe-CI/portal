@@ -138,7 +138,6 @@ class FileMediaView(View):
 
                 try:
                     result = fm.upload(system_id, upload_dir, upload_file)
-                    logger.debug(result)
                 except HTTPError as e:
                     logger.error(e.response.text)
                     return HttpResponseBadRequest(e.response.text)

@@ -491,6 +491,11 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
                          user=username,
                          extra={})
         n.save()
+        agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+        reindex_agave.apply_async(kwargs={
+                                  'username': user.username,
+                                  'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
+                                  })
     except:
         logger.exception('Unexpected task failure: box_download', extra={
             'username': username,
