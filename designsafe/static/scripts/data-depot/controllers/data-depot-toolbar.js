@@ -36,10 +36,10 @@
         DataBrowserService.download($scope.browser.selected);
       },
       preview: function () {
-        DataBrowserService.preview($scope.browser.selected[0]);
+        DataBrowserService.preview($scope.browser.selected[0], $scope.browser.listing);
       },
       viewMetadata: function () {
-        DataBrowserService.viewMetadata($scope.browser.selected[0]);
+        DataBrowserService.viewMetadata($scope.browser.selected[0], $scope.browser.listing);
       },
       share: function () {
         DataBrowserService.share($scope.browser.selected[0]);

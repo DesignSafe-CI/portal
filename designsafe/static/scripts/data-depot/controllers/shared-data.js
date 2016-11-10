@@ -36,7 +36,7 @@
         filePath = file.path;
       }
       if (file.type === 'file'){
-        DataBrowserService.preview(file);
+        DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('sharedData', {systemId: file.system, filePath: file.path});
       }
@@ -79,7 +79,7 @@
 
     $scope.onDetail = function($event, file) {
       $event.stopPropagation();
-      DataBrowserService.preview(file);
+      DataBrowserService.preview(file, $scope.browser.listing);
     };
   }]);
 })(window, angular);
