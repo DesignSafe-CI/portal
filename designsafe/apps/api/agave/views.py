@@ -310,7 +310,14 @@ class FileMetaView(View):
 
             fmgr = ElasticFileManager()
             file_obj = fmgr.get(system_id, file_path, request.user.username)
-            return JsonResponse(file_obj.to_dict())
+            if file_obj is not None:
+                return JsonResponse(file_obj.to_dict())
+            else:
+                fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+                file_obj = fmgr.listing(system_id, file_path)
+                file_dict = file_obj.to_dict()
+                file_dict['keywords'] = file_obj.metadata.value['keywords']
+                return JsonResponse(file_dict)
         
         return HttpResponseBadRequest('Unsupported file manager.')
 
@@ -328,7 +335,12 @@ class FileMetaView(View):
                 file_obj.update_metadata(metadata)
                 return JsonResponse(file_obj.to_dict())
             else:
-                return HttpResponseBadRequest('No file found')
+                fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+                file_obj = fmgr.listing(system_id, file_path)
+                file_obj.metadata.update(metadata)
+                file_dict = file_obj.to_dict()
+                file_dict['keyword'] = file_obj.metadata.value['keywords']
+                return JsonResponse(file_dict)
         
         return HttpResponseBadRequest('Unsupported file manager.')
 
