@@ -72,6 +72,7 @@ class BaseMetadataResource(BaseAgaveResource):
         return cls(agave_client=agave_client, **result)
 
 
+
 class BaseMetadataPermissionResource(BaseAgaveResource):
     """
     Permissions object for a :class:`BaseMetadataResource`.

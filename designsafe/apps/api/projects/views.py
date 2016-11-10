@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.http import JsonResponse
+from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.projects.models import Project
@@ -133,6 +134,7 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.add_collaborator(post_data.get('username'))
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ])
         return JsonResponse({'status': 'ok'})
 
     def delete(self, request, project_id):
@@ -145,6 +147,7 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.remove_collaborator(post_data.get('username'))
+        tasks.check_project_files_meta_pems(project.uuid)
         return JsonResponse({'status': 'ok'})
 
 

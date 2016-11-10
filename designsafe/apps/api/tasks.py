@@ -2,6 +2,7 @@ from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.apps.api.agave import get_service_account_client
 import shutil
 import logging
 import re
@@ -516,3 +517,21 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
                          user=username,
                          extra={})
         n.save()
+
+@shared_task(bind=True)
+def check_project_files_meta_pems(self, project_uuid):
+    from designsafe.apps.api.agave.models.files import BaseFileMetadata
+    logger.debug('Checking metadata pems linked to a project')
+    service = get_service_account_client()
+    metas = BaseFileMetadata.search(service, {'associationIds': project_uuid,
+                                              'name': BaseFileMetadata.NAME})
+    for meta in metas:
+        meta.match_pems_to_project(project_uuid)
+
+@shared_task(bind=True)
+def check_project_meta_pems(self, metadata_uuid):
+    from designsafe.apps.api.agave.models.files import BaseFileMetadata
+    logger.debug('Checking single metadata pems linked to a project %s', metadata_uuid)
+    service = get_service_account_client()
+    bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
+    bfm.match_pems_to_project()
