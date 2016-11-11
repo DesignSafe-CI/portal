@@ -2,11 +2,17 @@
 
 ## v0.9.17
 
-- Data Depot - New Versino
-  - Projects collaboration space.
+Enhancements:
+
+- Data Depot - New Version
   - Improved UI.
   - Improved search.
-  - Improved file transfers.a
+  - Improved file transfers.
+  - Projects collaboration space.
+
+
+Fixes: 
+
 - Improving system monitors
 - Added terms and conditions link to profile page.
 - Changes to header and footer.
