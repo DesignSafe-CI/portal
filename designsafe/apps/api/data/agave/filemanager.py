@@ -1190,7 +1190,7 @@ class AgaveIndexer(AgaveObject):
                 del folders[:]
 
         if index_full_path:
-            path_comp = path.split('/')
+            path_comp = path.split('/')[:-1]
             for i in range(len(path_comp)):
                 file_path = '/'.join(path_comp)
                 path, name = os.path.split(path)

@@ -121,7 +121,7 @@ class AgaveFileManager(BaseFileManager):
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
-                                            'level': 1})
+                                            'levels': 1})
         return resp
 
     def share(self, system, file_path, username, permission):

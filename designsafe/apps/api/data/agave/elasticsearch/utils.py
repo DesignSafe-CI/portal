@@ -28,9 +28,11 @@ def files_wildcard_query(q, fields, min_should_match = 1):
 
 def files_access_filter(username, system = None, deleted = False):
     must_queries = [
-            Q({'term': {'permissions.username': username}}),
             Q({'term': {'deleted': deleted}})
           ]
+    if not system.startswith('project-'):
+        must_queries.append(Q({'term': {'permissions.username': username}}))
+
     if system is not None:
         must_queries.append(Q({'term': {'systemId': system}}))
 
