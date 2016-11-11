@@ -1,5 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.17
+
+- Data Depot - New Versino
+  - Projects collaboration space.
+  - Improved UI.
+  - Improved search.
+  - Improved file transfers.a
+- Improving system monitors
+- Added terms and conditions link to profile page.
+- Changes to header and footer.
+
+## v0.9.16
+
+- Add RAPID facility site config.
+
 ## v0.9.15
 
 Fixes:
