@@ -16,7 +16,7 @@
           params: {'q': query}
         }).then(
           function(response){
-            
+
             // Push apps list
             var appList = {};
             appList.listName = 'Apps';

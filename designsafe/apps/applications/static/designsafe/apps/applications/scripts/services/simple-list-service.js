@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').factory('SimpleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+  angular.module('ApplicationsApp').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
 
     var SimpleList = function(){
       this.selected = null,
@@ -50,7 +50,7 @@
           var metadata = {};
           if (response.data.length === 0){
             // create metadata
-            metadata.name = 'ds_app_list';
+            metadata.name = $translate.instant('apps_metadata_list_name');
             metadata.value = {};
             metadata.value.label = list.listName;
             metadata.value.type = 'apps-list';
@@ -69,7 +69,7 @@
           } else {
             // update metadata
             metadata.uuid = response.data[0].uuid;
-            metadata.name = 'ds_app_list';
+            metadata.name = $translate.instant('apps_metadata_list_name');
             metadata.value = {};
             metadata.value.label = list.listName;
             metadata.value.type = 'apps-list';
@@ -94,8 +94,6 @@
             function(resp){
               var simpleList = tab;
               simpleList.content.selected = null;
-              // simpleList.content.lists = {};
-              // simpleList.content.lists[list.listName] = [];
               simpleList.content = [];
               angular.forEach(tab.multiple.lists[1].items, function(item){
                 simpleList.content.push(
@@ -106,7 +104,8 @@
                     version: item.version,
                     available: item.available,
                     isPublic: item.isPublic
-                  })
+                  }
+                )
               });
               simpleList.title = list.listName;
               simpleList.edit = false;
@@ -137,25 +136,14 @@
           self.lists['Public'] = [];
 
           angular.forEach(response.data, function(appMeta){
-
-            if (appMeta.value.isPublic){
-              self.lists['Public'].push({
-                id: appMeta.value.id,
-                label: appMeta.value.label,
-                type: appMeta.value.type,
-                version: appMeta.value.version,
-                available: appMeta.value.available,
-                isPublic: appMeta.value.isPublic
-              });
+            if (appMeta.value.definition.isPublic){
+              self.lists['Public'].push(
+                appMeta.value
+              );
             } else {
-              self.lists['Private'].push({
-                id: appMeta.value.id,
-                label: appMeta.value.label,
-                type: appMeta.value.type,
-                version: appMeta.value.version,
-                available: appMeta.value.available,
-                isPublic: appMeta.value.isPublic
-              });
+              self.lists['Private'].push(
+                appMeta.value
+            );
             }
           });
 

@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider) {
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -11,6 +11,12 @@
             (window.location.port ? ':' + window.location.port : '') +
             '/ws/websockets?subscribe-broadcast&subscribe-user'
         );
+
+    angular.extend(toastrConfig, {
+      positionClass: 'toast-bottom-left',
+      timeOut: 4000,
+      tapToDismiss: true,
+    });
 
     $urlRouterProvider.otherwise("/");
 
@@ -50,7 +56,7 @@
     'ui.router',
     'ui.codemirror',
     'xeditable',
-  ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$stateProvider', '$urlRouterProvider', config]);
+  ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$stateProvider', '$urlRouterProvider', 'toastrConfig', config]);
 
 
   app.run(['WSBusService', 'logger', function init(WSBusService, logger){

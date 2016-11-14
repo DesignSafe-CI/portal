@@ -10,6 +10,7 @@
             error_app_exists: "An app with this name and version already exists. Please change name or version",
             error_app_meta: "An error ocurred getting the app",
             error_app_permissions: "An error ocurred getting app permissions - ",
+            error_app_permissions_update: "An error ocurred updating app permissions - ",
             error_app_publish: "An error ocurred publishing your app - ",
             error_app_publish_permission: "An error ocurred publishing your app - User does not have permissions to publish apps",
             error_app_update: "An error ocurred updating your app - ",
@@ -21,7 +22,12 @@
             error_tab_edit: "An error ocurred editing your app tray",
 
             storage_default: "designsafe.storage.default",
-            execution_default: "designsafe.community.exec.stampede"
+            execution_default: "designsafe.community.exec.stampede",
+            apps_metadata_custom: "html",
+            apps_metadata_name: "ds_apps",
+            apps_metadata_list_name: "ds_apps_list",
+            apps_sync_success: "Successfully updated ",
+            apps_sync_todate: "All Apps are up to date",
         });
         $translateProvider.preferredLanguage('en');
     }]);

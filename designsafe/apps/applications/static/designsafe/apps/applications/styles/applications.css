@@ -170,14 +170,112 @@ Bootstrap Wizard
   height: auto;
 }
 
-.thumbnail {
-  min-height:100px; cursor: pointer;
+/*.thumbnail {
+  min-height:100px;
+  max-height:200px;
+}*/
+
+.enabled{
+  color: #999999;
 }
 
-.thumbnail-enabled {
-  background: #dff0d8;
+.disabled{
+  color: #D8746F;
 }
 
-.thumbnail-disabled {
-  background: #f2dede;
+.material-card{
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0 20px 0;
+    background-color: #fff;
+    color: #3D4051;
+    border-radius: 2px;
+    height: 300px;
+    cursor: pointer;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
+
+}
+
+.material-card .card-body{
+  padding: 20px;
+    border-radius: 0 0 2px 2px;
+}
+.material-card .card-body h1{
+  margin: 0;
+  padding: 0;
+  font-size: 22px;
+  line-height: 40px;
+}
+.material-card .card-body p{
+  font-size: 14px;
+  line-height: 24px;
+  color: #666;
+}
+.material-card .card-bottom{
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 20px;
+}
+.material-card .card-bottom a{
+  margin-right: 20px;
+  text-transform: uppercase;
+}
+
+/*---------Primary---------*/
+.material-card.primary{
+  background: #337ab7;
+  color: #fff;
+}
+.material-card.primary p{
+  color: rgba(255, 255, 255, 0.8);
+}
+.material-card.primary .card-bottom a{
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/*--------------danger-------*/
+.material-card.danger{
+  background: #c9302c;
+  color: #fff;
+}
+.material-card.danger p{
+  color: rgba(255, 255, 255, 0.8);
+}
+.material-card.danger .card-bottom a{
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/*--------------warning-------*/
+.material-card.warning{
+  background: #f0ad4e;
+  color: #fff;
+}
+.material-card.warning p{
+  color: rgba(255, 255, 255, 0.8);
+}
+.material-card.warning .card-bottom a{
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/*--------------success-------*/
+.material-card.success{
+  background: #5cb85c;
+  color: #fff;
+}
+.material-card.success p{
+  color: rgba(255, 255, 255, 0.8);
+}
+.material-card.success .card-bottom a{
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/*--------------info-------*/
+.material-card.info{
+  background: #5bc0de;
+  color: #fff;
+}
+.material-card.info p{
+  color: rgba(255, 255, 255, 0.8);
+}
+.material-card.info .card-bottom a{
+  color: rgba(255, 255, 255, 0.9);
 }
