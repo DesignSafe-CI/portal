@@ -138,11 +138,11 @@
           angular.forEach(response.data, function(appMeta){
             if (appMeta.value.definition.isPublic){
               self.lists['Public'].push(
-                appMeta.value
+                appMeta
               );
             } else {
               self.lists['Private'].push(
-                appMeta.value
+                appMeta
             );
             }
           });

@@ -170,10 +170,13 @@ Bootstrap Wizard
   height: auto;
 }
 
-/*.thumbnail {
-  min-height:100px;
-  max-height:200px;
-}*/
+
+/* fix for dividers in dropdown */
+hr{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-width: 0.1px;
+}
 
 .enabled{
   color: #999999;
@@ -185,20 +188,20 @@ Bootstrap Wizard
 
 .material-card{
     position: relative;
-    overflow: hidden;
     margin: 10px 0 20px 0;
     background-color: #fff;
     color: #3D4051;
     border-radius: 2px;
     height: 300px;
-    cursor: pointer;
+    min-width: 220px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 3px 1px -2px rgba(0,0,0,0.2),0 1px 5px 0 rgba(0,0,0,0.12);
-
 }
 
 .material-card .card-body{
-  padding: 20px;
-    border-radius: 0 0 2px 2px;
+  height: 200px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 0 0 2px 2px;
 }
 .material-card .card-body h1{
   margin: 0;
@@ -217,7 +220,6 @@ Bootstrap Wizard
 }
 .material-card .card-bottom a{
   margin-right: 20px;
-  text-transform: uppercase;
 }
 
 /*---------Primary---------*/
