@@ -406,6 +406,15 @@ class UserRegistrationForm(forms.Form):
         return tas_user
 
 
+class ProfessionalProfileForm(forms.Form):
+
+    bio = forms.CharField(
+        widget=forms.Textarea,
+        required=False,
+    )
+    website = forms.CharField(required=False, max_length=256)
+
+
 class NEESAccountMigrationForm(forms.Form):
 
     email_address = forms.EmailField(label=_('Your NEEShub Email Address'),

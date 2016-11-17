@@ -48,6 +48,36 @@ def manage_profile(request):
 
 
 @login_required
+def manage_pro_profile(request):
+    user = request.user
+    context = {
+        'title': 'Manage Professional Profile',
+        'user': user
+    }
+    logger.debug(user)
+    ds_profile = DesignSafeProfile.objects.get(user_id=user.id)
+    logger.debug(ds_profile)
+    return render(request, 'designsafe/apps/accounts/professional_profile.html', context)
+
+
+@login_required
+def pro_profile_edit(request):
+    context = {}
+    user = request.user
+    ds_profile = DesignSafeProfile.objects.get(designsafe__user=user)
+    logger.debug(ds_profile)
+    if request.method == 'POST':
+        form = forms.ProfessionalProfileForm(request.POST)
+        if form.is_valid():
+            logger.debug(form.cleaned_data['bio'])
+            return HttpResponseRedirect(reverse('designsafe_accounts:manage_pro_profile'))
+    else:
+        form = forms.ProfessionalProfileForm()
+    context["form"] = form
+    return render(request, 'designsafe/apps/accounts/professional_profile_edit.html', context)
+
+
+@login_required
 def manage_authentication(request):
     if request.method == 'POST':
         form = forms.ChangePasswordForm(request.POST, username=request.user.username)

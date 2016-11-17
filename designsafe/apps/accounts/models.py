@@ -44,6 +44,8 @@ class DesignSafeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
+    bio = models.CharField(max_length=4096, default=None)
+    website = models.CharField(max_length=256, default=None)
 
 
 class NotificationPreferences(models.Model):

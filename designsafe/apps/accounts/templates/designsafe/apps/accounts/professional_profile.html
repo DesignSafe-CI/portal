@@ -1,0 +1,34 @@
+{% extends "designsafe/apps/accounts/base.html" %}
+
+{% block title %}Professoinal Biography{% endblock %}
+
+{% block panel_content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h2>My Professional Profile</h2>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <dt>My Bio</dt>
+                <dd> {{user.bio }} </dd>
+                
+            </div>
+            <div class="col-md-6">
+                <dl>
+                    <dt>Ethnicity</dt>
+                    <dd>{{demographics.ethnicity|default:'<span class="text-warning">Please provide</span>'}}</dd>
+
+                    <dt>Gender</dt>
+                    <dd>{{demographics.gender|default:'<span class="text-warning">Please provide</span>'}}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <hr>
+
+        <a href="{% url 'designsafe_accounts:pro_profile_edit' %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit Bio
+        </a>
+
+    </div>
+</div>
+{% endblock %}
