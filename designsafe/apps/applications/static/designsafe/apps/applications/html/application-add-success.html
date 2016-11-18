@@ -1,26 +1,62 @@
 <div modal="addSuccessModal">
     <div class="modal-header">
-      <h3 class="modal-title">Successfully added {{appMeta.id}}</h3>
+      <h3 class="modal-title">Successfully added {{appMeta.definition.id}}</h3>
     </div>
     <div class="modal-body">
       <div ng-if="appMeta" class="table-responsive">
         <table class="table table-bordered">
           <tbody>
-            <tr ng-if="appMeta.id">
+            <tr ng-if="appMeta.definition.id">
               <td>ID</td>
-              <td><strong>{{appMeta.id}}</strong></td>
+              <td><strong>{{appMeta.definition.id}}</strong></td>
             </tr>
-            <tr ng-if="appMeta.label">
+            <tr ng-if="appMeta.definition.name">
               <td>Name</td>
-              <td>{{appMeta.label}}</td>
+              <td>{{appMeta.definition.name}}</td>
             </tr>
-            <tr ng-if="appMeta.shortDescription">
+            <tr ng-if="appMeta.definition.shortDescription">
               <td>Description</td>
-              <td>{{appMeta.shortDescription}}</td>
+              <td>{{appMeta.definition.shortDescription}}</td>
             </tr>
-            <tr ng-if="appMeta.html">
-              <td>html</td>
-              <td><div ng-bind-html="appMeta.html | toTrusted"></div></td>
+            <tr ng-if="appMeta.definition.label">
+              <td>Label</td>
+              <td>{{appMeta.definition.label}}</td>
+            </tr>
+            <tr>
+              <td>Public</td>
+              <td>{{appMeta.definition.isPublic}}</td>
+            </tr>
+            <tr>
+              <td>Available</td>
+              <td>{{appMeta.definition.available}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.deploymentSystem">
+              <td>Deployment System</td>
+              <td>{{appMeta.definition.deploymentSystem}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.deploymentPath">
+              <td>Deployment Path</td>
+              <td>{{appMeta.definition.deploymentPath}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.executionSystem">
+              <td>Execution System</td>
+              <td>{{appMeta.definition.executionSystem}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.executionType">
+              <td>Execution Type</td>
+              <td>{{appMeta.definition.executionType}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.parallelism">
+              <td>Parallelism</td>
+              <td>{{appMeta.definition.parallelism}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.revision">
+              <td>Revision</td>
+              <td>{{appMeta.definition.revision}}</td>
+            </tr>
+            <tr ng-if="appMeta.definition.lastModified">
+              <td>Last Modified</td>
+              <td>{{appMeta.definition.lastModified}}</td>
             </tr>
           </tbody>
         </table>

@@ -138,7 +138,6 @@ class FileMediaView(View):
 
                 try:
                     result = fm.upload(system_id, upload_dir, upload_file)
-                    logger.debug(result)
                 except HTTPError as e:
                     logger.error(e.response.text)
                     return HttpResponseBadRequest(e.response.text)
@@ -243,8 +242,28 @@ class FileMediaView(View):
 
 
 class FileSearchView(View):
-    pass
+    """ File Search View"""
+    def get(self, request, file_mgr_name, system_id = None, file_path = None):
+        """ GET handler """
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 100))
+        query_string = request.GET.get('query_string')
 
+        if file_mgr_name != ElasticFileManager.NAME or not query_string:
+            return HttpResponseBadRequest()
+        
+        if system_id is None:
+            system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
+
+        fmgr = ElasticFileManager()
+        if not request.GET.get('shared', False):
+            listing = fmgr.search(system_id, request.user.username, query_string,
+                                  offset=offset, limit=limit)
+        else:
+            listing = fmgr.search_shared(system_id, request.user.username, query_string,
+                                         offset=offset, limit=limit)
+
+        return JsonResponse(listing)
 
 class FilePermissionsView(View):
 
@@ -283,6 +302,36 @@ class FilePermissionsView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+class FileMetaView(View):
+    def get(self, request, file_mgr_name, system_id, file_path):
+        if file_mgr_name == ElasticFileManager.NAME:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
+            fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            file_obj = fmgr.listing(system_id, file_path)
+            file_dict = file_obj.to_dict()
+            file_dict['keywords'] = file_obj.metadata.value['keywords']
+            return JsonResponse(file_dict)
+        
+        return HttpResponseBadRequest('Unsupported file manager.')
+
+    def put(self, request, file_mgr_name, system_id, file_path):
+        post_body = json.loads(request.body)
+        metadata = post_body.get('metadata', {})
+        logger.debug('metadata: %s' % (metadata, ))
+        if file_mgr_name == ElasticFileManager.NAME or not metadata:
+            if not request.user.is_authenticated():
+                return HttpResponseForbidden('Log in required')
+
+            fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            file_obj = fmgr.listing(system_id, file_path)
+            file_obj.metadata.update(metadata)
+            file_dict = file_obj.to_dict()
+            file_dict['keyword'] = file_obj.metadata.value['keywords']
+            return JsonResponse(file_dict)
+        
+        return HttpResponseBadRequest('Unsupported file manager.')
 
 class SystemsView(View):
 

@@ -48,15 +48,15 @@
                 "minLength": 3,
                 "maxLength": 16
             },
-            "type": {
-              "title": "Select application type",
-              "type": "string",
-              "enum": [
-                "html"
-              ],
-              "default": "html",
-              "readonly": true
-            },
+            // "type": {
+            //   "title": "Select application type",
+            //   "type": "string",
+            //   "enum": [
+            //     "html"
+            //   ],
+            //   "default": "html",
+            //   "readonly": true
+            // },
             "shortDescription": {
                 "type": "string",
                 "description": "Short description of this app",
@@ -123,7 +123,7 @@
             "invalidCharacters": "Invalid version format. Should be #.#.#"
           },
         },
-        "type",
+        // "type",
         "shortDescription",
         "isPublic",
         {
@@ -1518,18 +1518,13 @@
                     .then(
                       function(response){
                         var metadata = {};
-                        metadata.name = 'ds_app';
+                        metadata.name = $translate.instant('apps_metadata_name');
                         metadata.value = {};
-                        metadata.value.id = response.data.id;
-                        metadata.value.label = response.data.label;
-                        metadata.value.version = response.data.version;
-                        metadata.value.isPublic = response.data.isPublic;
-                        metadata.value.available = true;
-                        metadata.value.shortDescription = response.data.shortDescription;
+                        metadata.value.definition = response.data;
                         metadata.value.type = 'agave';
 
                         // Check if metadata record exists
-                        Apps.getMeta(metadata.value.id)
+                        Apps.getMeta(metadata.value.definition.id)
                           .then(
                             function(response){
                               if (response.data.length === 0){
@@ -1566,7 +1561,6 @@
                                     }
                                   )
                               } else {
-                                // metadata.uuid = response.data[0].uuid;
                                 Apps.updateMeta(metadata, response.data[0].uuid)
                                   .then(
                                     function(response){
@@ -1618,14 +1612,16 @@
                 break;
               case 'Custom':
                 if ($scope.myCustomForm.$valid){
-
-                  var metadata = {'name': 'ds_app'};
+                  var metadata = {'name': $translate.instant('apps_metadata_name')};
                   metadata.value = {};
-                  metadata.value.id = $scope.customModel.label+ '-' + $scope.customModel.version;
-                  metadata.value.available = true;
-                  _.extend(metadata.value, angular.copy($scope.customModel));
+                  metadata.value.definition = {};
+                  metadata.value.definition.id = $scope.customModel.label+ '-' + $scope.customModel.version;
+                  metadata.value.definition.available = true;
+                  metadata.value.definition.isPublic = false;
+                  metadata.value.type = 'html';
+                  _.extend(metadata.value.definition, angular.copy($scope.customModel));
 
-                  Apps.getMeta(metadata.value.id)
+                  Apps.getMeta(metadata.value.definition.id)
                     .then(
                       function(response){
                         if (response.data.length === 0){

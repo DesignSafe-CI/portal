@@ -38,7 +38,8 @@
       FILE_COPIED: 'FileCopied',
       FILE_MOVED: 'FileMoved',
       FILE_REMOVED: 'FileRemoved',
-      FILE_SELECTION: 'FileSelection'
+      FILE_SELECTION: 'FileSelection',
+      FILE_META_UPDATED: 'MetadataUpdated'
     };
 
     /**
@@ -52,8 +53,16 @@
       FILE_COPIED: 'Your file was copied.',
       FILE_MOVED: 'Your file was moved.',
       FILE_REMOVED: 'Your file was remove.',
-      FILE_SELECTION: 'Your file has been selected'
+      FILE_SELECTION: 'Your file has been selected.',
+      FILE_META_UPDATED: 'Metadata object updated.',
     };
+
+    /**
+     * Gets the apiParams of the DataBrowserService.
+     */
+    function apiParameters(){
+      return apiParams;
+    }
 
     /**
      * Gets the state of the DataBrowserService.
@@ -573,12 +582,17 @@
      * @param {FileListing} file
      * @return {Promise}
      */
-    function preview (file) {
+    function preview (file, listing) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
         controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
-
           $scope.file = file;
+          if (typeof listing !== 'undefined' &&
+              typeof listing.metadata !== 'undefined' &&
+              !_.isEmpty(listing.metadata.project)){
+            var _listing = angular.copy(listing);
+            $scope.file.metadata = _listing.metadata;
+          }
           $scope.busy = true;
 
           file.preview().then(
@@ -738,7 +752,21 @@
      * @param options
      */
     function search (options) {
-      throw new Error('not implemented');
+      currentState.busy = true;
+      currentState.busyListing = true;
+      currentState.error = null;
+      return FileListing.search(options, apiParams).then(function (listing) {
+        select([], true);
+        currentState.busy = false;
+        currentState.busyListing = false;
+        currentState.listing = listing;
+        return listing;
+      }, function (err) {
+        currentState.busy = false;
+        currentState.busyListing = false;
+        currentState.listing = null;
+        currentState.error = err.data;
+      });
     }
 
 
@@ -1044,7 +1072,7 @@
      * @param {FileListing} file The file to view metadata for
      * @return {HttpPromise}
      */
-    function viewMetadata (file) {
+    function viewMetadata (file, listing) {
       var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-metadata.html';
       if (typeof file.metadata !== 'undefined' && 
          file.metadata.project !== 'undefined'){
@@ -1052,18 +1080,78 @@
       } 
       var modal = $uibModal.open({
         templateUrl: template,
-        controller: ['$scope', 'file', function ($scope, file) {
-          $scope.data = {file: file};
+        controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
+          $scope.data = {file: file,
+						 form: {metadataTags: '',
+                                tagsToDelete: []}};
+          $scope.ui = {};
+          $scope.ui.busy = true;
+          if (typeof listing !== 'undefined' &&
+              typeof listing.metadata !== 'undefined' &&
+              !_.isEmpty(listing.metadata.project)){
+            var _listing = angular.copy(listing);
+            $scope.file.metadata = _listing.metadata;
+          }else{
+            file.getMeta().then(function(file){
+              $scope.ui.busy = false;
+            }, function(err){
+              $scope.ui.busy = false;
+              $scope.ui.error = err;
+            });
+          }
+         
+		  $scope.doSaveMetadata = function($event) {
+			$event.preventDefault();
+			$uibModalInstance.close($scope.data);
+		  };
 
-          //$uibModalInstance.close();
+		  $scope.isMarkedDeleted = function(tag){
+			return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
+		  };
+
+		  $scope.toggleTag = function(tag){
+			var id = $scope.data.form.tagsToDelete.indexOf(tag);
+			if (id > -1){
+			  $scope.data.form.tagsToDelete.splice(id, 1);
+			} else {
+			  $scope.data.form.tagsToDelete.push(tag);
+			}
+		  }; 
+
+          /**
+           * Cancel and close upload dialog.
+           */
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+          };
         }],
         size: 'lg',
         resolve: {
-          'file': function() { return file; }
+          'file': function() { return file; },
+          'form': function() { return {metadataTags: ''}; },
         }
       });
 
-      return modal.result;
+      return modal.result.then(function(data){
+        var file = data.file;
+        var form = data.form;
+        var metaObj = {
+          keywords: file.keywords || []
+        };
+        if (form.metadataTags) {
+          metaObj.keywords = metaObj.keywords.concat(form.metadataTags.split(','));
+        }
+        if (form.tagsToDelete.length){
+          metaObj.keywords = metaObj.keywords.filter(function(value){
+            return form.tagsToDelete.indexOf(value) < 0;
+          });
+        }
+        currentState.busy = true;
+        file.updateMeta({'metadata': metaObj}).then(function(file_resp){
+          notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
+          currentState.busy = false;
+        });
+      });
     }
 
 
@@ -1101,6 +1189,7 @@
       /* properties */
       FileEvents: FileEvents,
       state: state,
+      apiParameters: apiParameters,
 
       /* data/files functions */
       allowedActions: allowedActions,

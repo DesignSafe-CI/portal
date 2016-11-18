@@ -1,7 +1,8 @@
 from designsafe.apps.api.agave.models.metadata import (BaseMetadataResource,
                                                        BaseMetadataPermissionResource)
 from designsafe.apps.api.agave.models.files import (BaseFileResource,
-                                                    BaseFilePermissionResource)
+                                                    BaseFilePermissionResource,
+                                                    BaseFileMetadata)
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.agave.models.systems import roles as system_roles
 import json
