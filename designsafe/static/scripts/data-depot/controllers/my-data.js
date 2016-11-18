@@ -3,6 +3,7 @@
   app.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
+    $scope.searchState = DataBrowserService.apiParams.searchState;
 
     if (! $scope.browser.error) {
       $scope.browser.listing.href = $state.href('myData', {
@@ -26,7 +27,7 @@
       $event.preventDefault();
       $event.stopPropagation();
       if (file.type === 'file') {
-        DataBrowserService.preview(file);
+        DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('myData', {systemId: file.system, filePath: file.path});
       }
@@ -59,7 +60,7 @@
 
     $scope.onDetail = function($event, file) {
       $event.stopPropagation();
-      DataBrowserService.preview(file);
+      DataBrowserService.preview(file, $scope.browser.listing);
     };
 
   }]);

@@ -4,6 +4,7 @@ from designsafe.apps.api.agave.views import (FileManagersView,
                                              FileSearchView,
                                              FileMediaView,
                                              FilePermissionsView,
+                                             FileMetaView,
                                              SystemsView)
 
 urlpatterns = [
@@ -30,7 +31,7 @@ urlpatterns = [
     #
     #     GET     /search/<file_mgr_name>/
     #     POST    /search/<file_mgr_name>/
-    url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/$',
+    url(r'^files/search/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/?$',
         FileSearchView.as_view(), name='files_search'),
 
     # File operations:
@@ -41,6 +42,13 @@ urlpatterns = [
     #     DELETE  /media/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^files/media/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
         FileMediaView.as_view(), name='files_media'),
+
+    # File metadata operations:
+    #
+    #     GET     /media/<file_mgr_name>/<system_id>/<file_path>/
+    #     PUT     /media/<file_mgr_name>/<system_id>/<file_path>/
+    url(r'^files/meta/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
+        FileMetaView.as_view(), name='files_metadata'),
 
 
     # Permission operations:

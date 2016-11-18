@@ -364,7 +364,7 @@ LOGGING = {
         },
         'celery': {
             'handlers': ['console', 'opbeat'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
         'opbeat': {
             'handlers': ['console'],
@@ -519,7 +519,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'storage': {
         'mirror': False,
         'port': 22,
-        'homeDir': '/home',
+        'homeDir': '/',
         'protocol': 'SFTP',
         'host': 'dtn01.prod.agaveapi.co',
         'publicAppsDir': None,

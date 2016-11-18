@@ -1,7 +1,7 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
   app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', function ($scope, $state, $uibModal, Django, DataBrowserService) {
-
+    $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();
 
     DataBrowserService.subscribe($scope, function($event, eventData) {
@@ -21,7 +21,7 @@
 
     /* Set initial toolbar status */
     updateToolbar();
-
+    $scope.apiParams = DataBrowserService.apiParameters();
     /* Map service functions to toolbar buttons */
     $scope.ops = {
       details: function() {
@@ -36,10 +36,10 @@
         DataBrowserService.download($scope.browser.selected);
       },
       preview: function () {
-        DataBrowserService.preview($scope.browser.selected[0]);
+        DataBrowserService.preview($scope.browser.selected[0], $scope.browser.listing);
       },
       viewMetadata: function () {
-        DataBrowserService.viewMetadata($scope.browser.selected[0]);
+        DataBrowserService.viewMetadata($scope.browser.selected[0], $scope.browser.listing);
       },
       share: function () {
         DataBrowserService.share($scope.browser.selected[0]);
@@ -58,8 +58,14 @@
       },
       rm: function () {
         DataBrowserService.rm($scope.browser.selected);
+      },
+      search: function(){
+        var state = $scope.apiParams.searchState;
+        $state.go(state, {'query_string': $scope.search.queryString,
+                   'systemId': $scope.browser.listing.system,
+                   'filePath': '$SEARCH'});
       }
-    }
+    };
 
 
   }]);

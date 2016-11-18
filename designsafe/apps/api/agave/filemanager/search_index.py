@@ -95,10 +95,9 @@ class Object(object):
         if wrap is not None:
             self._wrap = wrap
         else:
-            self.indexed_file = IndexedFile()
             s = IndexedFile.search()
             path, name = os.path.split(file_path)
-            path = path or '/'
+            path = path.strip('/') or '/'
             q = Q('filtered', 
                 query = Q('bool',
                         must = [
@@ -112,6 +111,7 @@ class Object(object):
                         Q({'term': {'systemId': system_id}})
                 ]))
             s.query = q
+            logger.debug('serach query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
             except TransportError as e:
@@ -123,6 +123,32 @@ class Object(object):
                 self._wrap = res[0]
             else:
                 self._wrap = None
+
+    def success(self):
+        if self._wrap:
+            return True
+        
+        return False
+
+    def update_metadata(self, meta_obj):
+        """Update metadata of an object
+
+        The matadata this method updates is only the user metadata.
+        This first version only focuses on **keywords**.
+        This metadata should grow in the future.
+
+        :param obj meta_obj: object with which the document will be updated
+
+        .. warning:: This method blindly replaces the data in the
+            saved document. The only sanitization it does is to remove
+            repeated elements.
+        """
+
+        keywords = list(set(meta_obj['keywords']))
+        keywords = [kw.strip() for kw in keywords]
+        self._wrap.update(keywords=keywords)
+        self._wrap.save()
+        return self
 
     def user_pems(self, user_context):
         """Converts from ES pems to user specific pems
@@ -180,8 +206,19 @@ class Object(object):
         
     
 class ElasticFileManager(BaseFileManager):
+    NAME = 'agave'
+    DEFAULT_SYSTEM_ID = 'designsafe.storage.default'
+
     def __init__(self):
         super(ElasticFileManager, self).__init__()
+
+    def get(self, system, file_path, user_context):
+        file_object = Object(system_id=system, user_context=user_context,
+                             file_path=file_path)
+        if file_object.success():
+            return file_object
+        
+        return None
     
     @staticmethod
     def listing(system, file_path, user_context):
@@ -208,8 +245,6 @@ class ElasticFileManager(BaseFileManager):
         search = IndexedFile.search()
         search.query = query
         search = search.sort('path._path', 'name._exact')
-
-        logger.debug('Query: {}'.format(search.to_dict()))
 
         try:
             res = search.execute()
@@ -251,4 +286,64 @@ class ElasticFileManager(BaseFileManager):
 
         for f in listing:
             result['children'].append(f.to_dict(user_context=user_context))
+        return result
+
+    def search(self, system, username, query_string,
+               file_path=None, offset=0, limit=100):
+        
+        search = IndexedFile.search()
+        query = Q('filtered',
+                  filter=Q('bool',
+                           must=[Q({'term': {'systemId': system}}),
+                                 Q({'term': {'permissions.username': username}}),
+                                 Q({'prefix': {'path._exact': username}})],
+                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
+                   query=Q({'simple_query_string':{
+                            'query': query_string,
+                            'fields': ['name', 'name._exact', 'keywords']}}))
+        search.query = query
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result
+
+    def search_shared(self, system, username, query_string,
+               file_path=None, offset=0, limit=100):
+        
+        search = IndexedFile.search()
+        query = Q('filtered',
+                  filter=Q('bool',
+                           must=[Q({'term': {'systemId': system}}),
+                                 Q({'term': {'permissions.username': username}})],
+                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}}),
+                                     Q({'prefix': {'path._exact': username}})]),
+                   query=Q({'simple_query_string':{
+                            'query': query_string,
+                            'fields': ['name', 'name._exact', 'keywords']}}))
+        search.query = query
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCHSHARED', 'path': '/$SEARCH'}],
+            'name': '$SEARCHSHARED',
+            'path': '/$SEARCHSHARED',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
         return result

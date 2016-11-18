@@ -3,4 +3,4 @@
 
   var module = angular.module('ng.designsafe');
 
-})(angular, window, JQuery, _);
+})(angular, window, jQuery, _);

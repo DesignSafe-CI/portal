@@ -75,7 +75,7 @@
 
     $scope.onDetail = function($event, file) {
       $event.stopPropagation();
-      DataBrowserService.preview(file);
+      DataBrowserService.preview(file, $scope.browser.listing);
     };
 
   }]);

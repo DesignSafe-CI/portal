@@ -22,10 +22,11 @@ def index(request):
             'agave': json.dumps(request.session[token_key])
         }
     context['unreadNotifications'] = get_number_unread_notifications(request)
-    if request.user.is_superuser:
-        return render(request, 'designsafe/apps/applications/index.html', context)
-    else:
-        return render(request, 'designsafe/apps/applications/denied.html', context)
+    return render(request, 'designsafe/apps/applications/index.html', context)
+    # if request.user.is_superuser:
+    #     return render(request, 'designsafe/apps/applications/index.html', context)
+    # else:
+    #     return render(request, 'designsafe/apps/applications/denied.html', context)
 
 
 def _app_license_type(app_id):
@@ -41,11 +42,14 @@ def call_api(request, service):
         if service == 'apps':
             appId = request.GET.get('appId')
             pems = request.GET.get('pems')
+            history = request.GET.get('history')
             # username = request.GET.get('username')
 
             if request.method == 'GET':
                 if appId:
                     if pems:
+                        data = agave.apps.listPermissions(appId=appId)
+                    elif history:
                         data = agave.apps.listPermissions(appId=appId)
                     else:
                         data = agave.apps.get(appId=appId)
@@ -56,6 +60,8 @@ def call_api(request, service):
                         if lic_type is not None:
                             lic = request.user.licenses.filter(license_type=lic_type).first()
                             data['license']['enabled'] = lic is not None
+                else:
+                    data = agave.apps.list(search={'filter': '*', 'available': True})
             elif request.method == 'POST':
                 body = json.loads(request.body)
                 if (appId):
@@ -136,6 +142,25 @@ def call_api(request, service):
                         data = agave.meta.deleteMetadataPermissionsForUser(uuid=uuid, username=username)
                     else:
                         data = agave.meta.deleteMetadata(uuid=uuid)
+        elif service == 'sync':
+            uuid = request.GET.get('uuid')
+            pems = request.GET.get('pems')
+            appId = request.GET.get('appId')
+            query = request.GET.get('q')
+
+            ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+
+            if request.method == 'GET':
+                if appId and pems:
+                    data = ds_admin_client.apps.listPermissions(appId=appId)
+                else:
+                    data = ds_admin_client.meta.listMetadata(q=query)
+
+            elif request.method == 'POST':
+                body = json.loads(request.body)
+                username = request.GET.get('username')
+                if pems and username:
+                    data = ds_admin_client.meta.updateMetadataPermissionsForUser(body=body, uuid=uuid, username=username)
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)

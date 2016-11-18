@@ -2,6 +2,7 @@ from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.apps.api.agave import get_service_account_client
 import shutil
 import logging
 import re
@@ -19,6 +20,7 @@ def reindex_agave(self, username, file_id, full_indexing = True,
     from designsafe.apps.api.data import AgaveFileManager
     agave_fm = AgaveFileManager(user)
     system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
+    logger.debug('reindexing file_user %s', file_user)
     agave_fm.indexer.index(system_id, file_path, file_user, 
                            full_indexing = full_indexing, 
                            pems_indexing = pems_indexing, 
@@ -491,6 +493,17 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
                          user=username,
                          extra={})
         n.save()
+        if re.search(r'^project-', agave_system_id):
+            project_dir = agave_system_id.replace('project-', '', 1)
+            project_dir = os.path.join(base_mounted_path.strip('/'), project_dir)
+            agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
+        else:
+            agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+
+        reindex_agave.apply_async(kwargs={
+                                  'username': user.username,
+                                  'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
+                                  })
     except:
         logger.exception('Unexpected task failure: box_download', extra={
             'username': username,
@@ -505,3 +518,21 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
                          user=username,
                          extra={})
         n.save()
+
+@shared_task(bind=True)
+def check_project_files_meta_pems(self, project_uuid):
+    from designsafe.apps.api.agave.models.files import BaseFileMetadata
+    logger.debug('Checking metadata pems linked to a project')
+    service = get_service_account_client()
+    metas = BaseFileMetadata.search(service, {'associationIds': project_uuid,
+                                              'name': BaseFileMetadata.NAME})
+    for meta in metas:
+        meta.match_pems_to_project(project_uuid)
+
+@shared_task(bind=True)
+def check_project_meta_pems(self, metadata_uuid):
+    from designsafe.apps.api.agave.models.files import BaseFileMetadata
+    logger.debug('Checking single metadata pems linked to a project %s', metadata_uuid)
+    service = get_service_account_client()
+    bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
+    bfm.match_pems_to_project()

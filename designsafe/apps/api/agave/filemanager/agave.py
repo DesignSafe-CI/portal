@@ -5,6 +5,7 @@ from designsafe.apps.api.agave.filemanager.base import BaseFileManager
 from designsafe.apps.api.agave.models.files import (BaseFileResource,
                                                     BaseFilePermissionResource,
                                                     BaseAgaveFileHistoryRecord)
+from designsafe.apps.api.tasks import reindex_agave
 from requests import HTTPError
 
 
@@ -45,6 +46,8 @@ class AgaveFileManager(BaseFileManager):
         from_file_path = from_file_path.strip('/')
         f = BaseFileResource.listing(self._ag, system, file_path)
         res = f.import_data(from_system, from_file_path)# 
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, file_path)})
         return res
 
     def copy(self, system, file_path, dest_path=None, dest_name=None):
@@ -65,11 +68,17 @@ class AgaveFileManager(BaseFileManager):
         copied_file = f.copy(dest_path, dest_name)
 
         # schedule celery task to index new copy
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}/{}'.format(system, dest_path.strip('/'), dest_name)})
 
         return copied_file
 
     def delete(self, system, path):
-        return BaseFileResource(self._ag, system, path).delete()
+        resp = BaseFileResource(self._ag, system, path).delete()
+        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, parent_path)})
+        return resp
 
     def download(self, system, path):
         return BaseFileResource.listing(self._ag, system, path).download_postit()
@@ -89,22 +98,41 @@ class AgaveFileManager(BaseFileManager):
 
     def mkdir(self, system, file_path, dir_name):
         f = BaseFileResource(self._ag, system, file_path)
-        return f.mkdir(dir_name)
+        resp = f.mkdir(dir_name)
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, file_path)})
+        return resp
 
     def move(self, system, file_path, dest_path, dest_name=None):
         f = BaseFileResource.listing(self._ag, system, file_path)
-        return f.move(dest_path, dest_name)
+        resp = f.move(dest_path, dest_name)
+        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, parent_path),
+                                            'levels': 1})
+
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, os.path.join(dest_path, dest_name))})
+        return resp
 
     def rename(self, system, file_path, rename_to):
         f = BaseFileResource.listing(self._ag, system, file_path)
-        return f.rename(rename_to)
+        resp = f.rename(rename_to)
+        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, parent_path),
+                                            'levels': 1})
+        return resp
 
     def share(self, system, file_path, username, permission):
         f = BaseFileResource(self._ag, system, file_path)
         pem = BaseFilePermissionResource(self._ag, f)
         pem.username = username
         pem.permission_bit = permission
-        return pem.save()
+        resp = pem.save()
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, file_path)})
+        return resp
 
     def trash(self, system, file_path, trash_path):
 
@@ -127,8 +155,21 @@ class AgaveFileManager(BaseFileManager):
             if e.response.status_code != 404:
                 raise
 
-        return f.move(trash_path, name)
+        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, parent_path),
+                                            'levels': 1})
+        resp = f.move(trash_path, name)
+        file_path = os.path.join(trash_path, name)
+        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, parent_path)})
+        return resp
 
     def upload(self, system, file_path, upload_file):
         f = BaseFileResource(self._ag, system, file_path)
-        return f.upload(upload_file)
+        resp = f.upload(upload_file)
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, file_path),
+                                            'levels': 1})
+        return resp

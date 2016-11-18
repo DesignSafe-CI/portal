@@ -45,7 +45,42 @@
             }
             DataBrowserService.apiParams.fileMgr = 'agave';
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'dataSearch';
             return DataBrowserService.browse(options);
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
+      })
+      .state('dataSearch',{ 
+        url: '/agave-search/?query_string&offset&limit',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.default',
+          filePath: '$SEARCH'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'designsafe.storage.default';
+            var filePath = $stateParams.filePath || Django.user;
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'dataSearch';
+            var queryString = $stateParams.query_string;
+            if (/[^A-Za-z0-9]/.test(queryString)){
+              queryString = '"' + queryString + '"';
+            }
+            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit};
+            return DataBrowserService.search(options);
           }],
           'auth': function($q) {
             if (Django.context.authenticated) {
@@ -74,7 +109,43 @@
 
             DataBrowserService.apiParams.fileMgr = 'agave';
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'sharedDataSearch';
             return DataBrowserService.browse({system: systemId, path: filePath});
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
+      })
+      .state('sharedDataSearch',{ 
+        url: '/shared-search/?query_string&offset&limit&shared',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.default',
+          filePath: '$SEARCHSHARED',
+          shared: 'true'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'designsafe.storage.default';
+            var filePath = $stateParams.filePath || Django.user;
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'sharedDataSearch';
+            var queryString = $stateParams.query_string;
+            if (/[^A-Za-z0-9]/.test(queryString)){
+              queryString = '"' + queryString + '"';
+            }
+            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
+            return DataBrowserService.search(options);
           }],
           'auth': function($q) {
             if (Django.context.authenticated) {
@@ -136,6 +207,7 @@
             var filePath = $stateParams.filePath || '/';
             DataBrowserService.apiParams.fileMgr = 'box';
             DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
+            DataBrowserService.apiParams.searchState = undefined;
             return DataBrowserService.browse({path: filePath});
           }],
           'auth': function($q) {
@@ -152,6 +224,33 @@
       })
 
       /* Public */
+      .state('publicDataSearch',{ 
+        url: '/public-search/?query_string&offset&limit',
+        controller: 'PublicationDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
+        params: {
+          systemId: 'nees.public',
+          filePath: '$SEARCH'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'nees.public';
+            var filePath = $stateParams.filePath || '/';
+            DataBrowserService.apiParams.fileMgr = 'public';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            DataBrowserService.apiParams.searchState = 'publicDataSearch';
+            var queryString = $stateParams.query_string;
+            if (/[^A-Za-z0-9]/.test(queryString)){
+              queryString = '"' + queryString + '"';
+            }
+            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit};
+            return DataBrowserService.search(options);
+          }],
+          'auth': function($q) {
+              return true;
+          }
+        }
+      })
       .state('publicData', {
         url: '/public/{systemId}/{filePath:any}',
         controller: 'PublicationDataCtrl',
@@ -166,6 +265,7 @@
             var filePath = $stateParams.filePath || '/';
             DataBrowserService.apiParams.fileMgr = 'public';
             DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            DataBrowserService.apiParams.searchState = 'publicDataSearch';
             return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q) {

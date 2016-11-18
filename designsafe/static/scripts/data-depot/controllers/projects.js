@@ -1,7 +1,11 @@
 (function(window, angular) {
   var app = angular.module('DataDepotApp');
 
-  app.controller('ProjectRootCtrl', ['$scope', '$state', function ($scope, $state) {
+  app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
+
+    DataBrowserService.apiParams.fileMgr = 'agave';
+    DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+    DataBrowserService.apiParams.searchState = undefined;
 
     $scope.data = {
       navItems: []
@@ -88,6 +92,7 @@
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+    DataBrowserService.apiParams.searchState = undefined;
     $scope.browser = DataBrowserService.state();
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
@@ -113,7 +118,7 @@
       
       $event.preventDefault();
       if (file.type === 'file') {
-        DataBrowserService.preview(file);
+        DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('projects.view.data', {projectId: projectId, 
                                          filePath: file.path,
