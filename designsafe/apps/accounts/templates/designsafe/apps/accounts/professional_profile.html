@@ -10,17 +10,17 @@
         <div class="row">
             <div class="col-md-6">
                 <dt>My Bio</dt>
-                <dd> {{user.bio }} </dd>
+                <dd> {{profile.bio }} </dd>
+                <dt> My website </dt>
+                <dd> {{profile.website}} </dd>
                 
             </div>
-            <div class="col-md-6">
-                <dl>
-                    <dt>Ethnicity</dt>
-                    <dd>{{demographics.ethnicity|default:'<span class="text-warning">Please provide</span>'}}</dd>
 
-                    <dt>Gender</dt>
-                    <dd>{{demographics.gender|default:'<span class="text-warning">Please provide</span>'}}</dd>
-                </dl>
+            <div class="col-md-6">
+                <dt> Natural Hazards Interests </dt>
+                {% for interest in profile.nh_interests.all %}
+                    <dd> {{ interest.description }} </dd>
+                {% endfor %}
             </div>
         </div>
 

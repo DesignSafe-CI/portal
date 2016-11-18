@@ -424,7 +424,7 @@ class ProfessionalProfileForm(forms.ModelForm):
         label="Natural Hazards Interets"
     )
     bio = forms.CharField(max_length=4096, widget=forms.Textarea, required=False)
-    website = forms.CharField(max_length=256, required=False)
+    website = forms.CharField(max_length=256, required=False, label="Personal Website")
 
     class Meta:
         model = DesignSafeProfile

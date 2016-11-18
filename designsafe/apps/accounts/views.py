@@ -50,13 +50,12 @@ def manage_profile(request):
 @login_required
 def manage_pro_profile(request):
     user = request.user
+    ds_profile = DesignSafeProfile.objects.get(user__id=user.id)
     context = {
         'title': 'Manage Professional Profile',
-        'user': user
+        'user': user, 
+        'profile': ds_profile
     }
-    logger.debug(user.id)
-
-    ds_profile = DesignSafeProfile.objects.get(user__id=user.id)
     logger.debug(ds_profile)
     return render(request, 'designsafe/apps/accounts/professional_profile.html', context)
 
