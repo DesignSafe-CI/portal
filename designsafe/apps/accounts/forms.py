@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
-from .models import DesignSafeProfile, NotificationPreferences
+from .models import DesignSafeProfile, NotificationPreferences, DesignSafeProfileNHInterests
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -61,6 +61,16 @@ GENDER_OPTIONS = (
     ('Male', 'Male'),
     ('Female', 'Female'),
     ('Other', 'Other'),
+)
+
+PROFESSIONAL_LEVEL_OPTIONS = (
+    ('Undergraduate Student', 'Undergraduate Student'),
+    ('Graduate Student', 'Graduate Student'),
+    ('Postdoctoral Researcher', 'Postdoctoral Researcher'),
+    ('Faculty or Researcher', 'Faculty or Researcher'),
+    ('Staff (support, administration, etc)', 'Staff (support, administration, etc)'),
+    ('Practicing Engineer or Architect', 'Practicing Engineer or Architect'),
+    ('Other', 'Other')
 )
 
 
@@ -406,13 +416,19 @@ class UserRegistrationForm(forms.Form):
         return tas_user
 
 
-class ProfessionalProfileForm(forms.Form):
-
-    bio = forms.CharField(
-        widget=forms.Textarea,
+class ProfessionalProfileForm(forms.ModelForm):
+    nh_interests = forms.ModelMultipleChoiceField(
+        queryset=DesignSafeProfileNHInterests.objects.all(),
         required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Natural Hazards Interets"
     )
-    website = forms.CharField(required=False, max_length=256)
+    bio = forms.CharField(max_length=4096, widget=forms.Textarea, required=False)
+    website = forms.CharField(max_length=256, required=False)
+
+    class Meta:
+        model = DesignSafeProfile
+        exclude = ['user', 'ethnicity', 'gender']
 
 
 class NEESAccountMigrationForm(forms.Form):

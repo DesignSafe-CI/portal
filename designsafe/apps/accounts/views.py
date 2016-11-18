@@ -65,15 +65,12 @@ def manage_pro_profile(request):
 def pro_profile_edit(request):
     context = {}
     user = request.user
-    ds_profile = DesignSafeProfile.objects.get(designsafe__user=user)
-    logger.debug(ds_profile)
+    ds_profile = DesignSafeProfile.objects.get(user_id=user.id)
+    form = forms.ProfessionalProfileForm(request.POST or None, instance=ds_profile)
     if request.method == 'POST':
-        form = forms.ProfessionalProfileForm(request.POST)
         if form.is_valid():
-            logger.debug(form.cleaned_data['bio'])
+            form.save()
             return HttpResponseRedirect(reverse('designsafe_accounts:manage_pro_profile'))
-    else:
-        form = forms.ProfessionalProfileForm()
     context["form"] = form
     return render(request, 'designsafe/apps/accounts/professional_profile_edit.html', context)
 

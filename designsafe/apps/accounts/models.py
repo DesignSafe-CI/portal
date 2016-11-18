@@ -40,12 +40,20 @@ class NEESUser(object):
             raise DatabaseError('The NEES users database connection is unavailable.')
 
 
+class DesignSafeProfileNHInterests(models.Model):
+    description = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.description
+
+
 class DesignSafeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
     bio = models.CharField(max_length=4096, default=None, null=True)
     website = models.CharField(max_length=256, default=None, null=True)
+    nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
 
 
 class NotificationPreferences(models.Model):
