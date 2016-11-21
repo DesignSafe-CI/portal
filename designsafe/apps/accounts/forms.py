@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
 from .models import DesignSafeProfile, NotificationPreferences, DesignSafeProfileNHInterests
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
@@ -425,6 +426,17 @@ class ProfessionalProfileForm(forms.ModelForm):
     )
     bio = forms.CharField(max_length=4096, widget=forms.Textarea, required=False)
     website = forms.CharField(max_length=256, required=False, label="Personal Website")
+
+    def clean_website(self):
+        ws = self.cleaned_data['website']
+        if ws is not None and not ws.startswith('http://'):
+            ws = "http://" + ws
+        return ws
+
+    def clean_bio(self):
+        bio = self.cleaned_data['bio']
+        bio = escape(bio)
+        return bio
 
     class Meta:
         model = DesignSafeProfile

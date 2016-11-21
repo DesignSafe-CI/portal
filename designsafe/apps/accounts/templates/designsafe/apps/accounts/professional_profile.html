@@ -10,9 +10,9 @@
         <div class="row">
             <div class="col-md-6">
                 <dt>My Bio</dt>
-                <dd> {{profile.bio }} </dd>
+                <dd> {{profile.bio | escape}} </dd>
                 <dt> My website </dt>
-                <dd> {{profile.website}} </dd>
+                <dd> <a href={{profile.website}}> {{ profile.website }} </a> </dd>
                 
             </div>
 
