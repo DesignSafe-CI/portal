@@ -7,7 +7,7 @@ from designsafe.apps.auth.signals import on_user_logged_in
 
 class NotificationPreferencesTests(TestCase):
 
-    fixtures = ['user-data.json']
+    fixtures = ['user-data.json', 'profile-data.json']
 
     def setUp(self):
         # configure admin user
@@ -84,6 +84,10 @@ class NotificationPreferencesTests(TestCase):
         self.assertNotContains(
             resp, '"{0}","{1}"'.format(ds_user.get_full_name(), ds_user.email))
 
-    def test_professional_profile_edit(self):
-        url = url = reverse('designsafe_accounts:manage_pro_profile')
+    def test_professional_profile_manage(self):
+        url = reverse('designsafe_accounts:manage_pro_profile')
         self.client.login(username='ds_admin', password='admin/password')
+        resp = self.client.get(url)
+        assert 'TEST BIO' in resp.content
+        assert 'test@test.com' in resp.content
+

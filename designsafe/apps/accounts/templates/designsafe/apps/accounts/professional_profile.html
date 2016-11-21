@@ -10,9 +10,20 @@
         <div class="row">
             <div class="col-md-6">
                 <dt>My Bio</dt>
+                {% if profile.bio %}
                 <dd> {{profile.bio | escape}} </dd>
+                {% else %}
+                <dd> Please add a bio </dd>
+                {% endif %}
+
                 <dt> My website </dt>
+                {% if profile.website %}
                 <dd> <a href={{profile.website}}> {{ profile.website }} </a> </dd>
+                {% else %}
+                <dd> No website given </dd>
+                {% endif %}
+                
+                
                 <dt> Professional Level </dt>
                 <dd> {{ profile.professional_level }}
             </div>

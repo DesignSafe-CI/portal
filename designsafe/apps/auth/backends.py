@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
+from designsafe.apps.accounts.models import DesignSafeProfile
 from pytas.http import TASClient
 import logging
 import re
@@ -83,6 +84,8 @@ class TASBackend(ModelBackend):
                         last_name=tas_user['lastName'],
                         email=tas_user['email']
                         )
+                    profile = DesignSafeProfile(user=user)
+                    profile.save()
 
         return user
 
@@ -130,6 +133,8 @@ class AgaveOAuthBackend(ModelBackend):
                         last_name=agave_user['last_name'],
                         email=agave_user['email']
                         )
+                    profile = DesignSafeProfile(user=user)
+                    profile.save()
 
                 self.logger.info('Login successful for user "%s"' % username)
             else:
