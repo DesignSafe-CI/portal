@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
-from .models import DesignSafeProfile, NotificationPreferences, DesignSafeProfileNHInterests
+from .models import (DesignSafeProfile, NotificationPreferences,
+    DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
 from pytas.http import TASClient
 import re
@@ -426,6 +427,16 @@ class ProfessionalProfileForm(forms.ModelForm):
     )
     bio = forms.CharField(max_length=4096, widget=forms.Textarea, required=False)
     website = forms.CharField(max_length=256, required=False, label="Personal Website")
+    professional_level = forms.ChoiceField(
+        choices=PROFESSIONAL_LEVEL_OPTIONS,
+        widget=forms.RadioSelect,
+        required=False)
+    research_activities = forms.ModelMultipleChoiceField(
+        queryset=DesignSafeProfileResearchActivities.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label="Research Activities"
+    )
 
     def clean_website(self):
         ws = self.cleaned_data['website']

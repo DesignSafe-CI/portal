@@ -47,6 +47,13 @@ class DesignSafeProfileNHInterests(models.Model):
         return self.description
 
 
+class DesignSafeProfileResearchActivities(models.Model):
+    description = models.CharField(max_length=300)
+
+    def __unicode__(self):
+        return self.description
+
+
 class DesignSafeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
     ethnicity = models.CharField(max_length=255)
@@ -54,6 +61,8 @@ class DesignSafeProfile(models.Model):
     bio = models.CharField(max_length=4096, default=None, null=True)
     website = models.CharField(max_length=256, default=None, null=True)
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
+    professional_level = models.CharField(max_length=256, default=None, null=True)
+    research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
 
 
 class NotificationPreferences(models.Model):

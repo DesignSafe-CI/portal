@@ -83,3 +83,7 @@ class NotificationPreferencesTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertNotContains(
             resp, '"{0}","{1}"'.format(ds_user.get_full_name(), ds_user.email))
+
+    def test_professional_profile_edit(self):
+        url = url = reverse('designsafe_accounts:manage_pro_profile')
+        self.client.login(username='ds_admin', password='admin/password')

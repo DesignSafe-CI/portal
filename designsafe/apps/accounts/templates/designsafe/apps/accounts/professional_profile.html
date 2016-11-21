@@ -13,7 +13,8 @@
                 <dd> {{profile.bio | escape}} </dd>
                 <dt> My website </dt>
                 <dd> <a href={{profile.website}}> {{ profile.website }} </a> </dd>
-                
+                <dt> Professional Level </dt>
+                <dd> {{ profile.professional_level }}
             </div>
 
             <div class="col-md-6">
@@ -21,12 +22,18 @@
                 {% for interest in profile.nh_interests.all %}
                     <dd> {{ interest.description }} </dd>
                 {% endfor %}
+
+                <dt> Research Activities </dt>
+                {% for ra in profile.research_activities.all %}
+                    <dd> {{ ra.description }} </dd>
+                {% endfor %}
+
             </div>
         </div>
 
         <hr>
 
-        <a href="{% url 'designsafe_accounts:pro_profile_edit' %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit Bio
+        <a href="{% url 'designsafe_accounts:pro_profile_edit' %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit Professional Profile
         </a>
 
     </div>
