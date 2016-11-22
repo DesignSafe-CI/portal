@@ -22,26 +22,22 @@
             appList.listName = 'Apps';
             appList.dragging = false;
             appList.items = [];
+
             for (var i = 0; i < response.data.length; i++){
               var exists = false;
               for (var j = 0; j < apps.length; j++){
-                if (response.data[i].value.id === apps[j].id){
+                if (response.data[i].value.definition.id === apps[j].value.definition.id){
                   exists = true;
                   break;
                 }
               }
               if (exists === false){
                 appList.items.push(
-                  {
-                    id: response.data[i].value.id,
-                    label: response.data[i].value.label,
-                    type: response.data[i].value.type,
-                    version: response.data[i].value.version,
-                    available: response.data[i].value.available,
-                    isPublic: response.data[i].value.isPublic
-                  });
+                  response.data[i]
+                );
               }
             }
+
             self.lists.push(appList);
 
             // Push user new list
@@ -82,14 +78,16 @@
             appList.items = [];
             angular.forEach(response.data, function(app){
               appList.items.push(
-                {
-                  id: app.value.id,
-                  label: app.value.label,
-                  type: app.value.type,
-                  version: app.value.version,
-                  available: app.value.available,
-                  isPublic: app.value.isPublic
-                });
+                // {
+                //   id: app.value.id,
+                //   label: app.value.label,
+                //   type: app.value.type,
+                //   version: app.value.version,
+                //   available: app.value.available,
+                //   isPublic: app.value.isPublic
+                // }
+                app
+              );
             });
             self.lists.push(appList);
 
