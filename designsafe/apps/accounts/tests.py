@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from designsafe.apps.auth.signals import on_user_logged_in
 
 
-class NotificationPreferencesTests(TestCase):
+class AccountsTests(TestCase):
 
     fixtures = ['user-data.json', 'profile-data.json']
 
@@ -90,4 +90,15 @@ class NotificationPreferencesTests(TestCase):
         resp = self.client.get(url)
         assert 'TEST BIO' in resp.content
         assert 'test@test.com' in resp.content
+
+    def test_professional_profile_post(self):
+        url = reverse('designsafe_accounts:pro_profile_edit')
+        self.client.login(username='ds_admin', password='admin/password')
+        data = {'bio': 'NEW TEST BIO', 'website': 'NEW_WEBSITE'}
+        resp = self.client.post(url, data)
+        url = reverse('designsafe_accounts:manage_pro_profile')
+        resp = self.client.get(url)
+        print resp.content
+        assert 'NEW TEST BIO' in resp.content
+        assert 'NEW_WEBSITE' in resp.content
 
