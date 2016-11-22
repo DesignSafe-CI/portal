@@ -4,7 +4,8 @@
 
     var SimpleList = function(){
       this.selected = null,
-      this.lists = {}
+      this.lists = {},
+      this.map = {}
     };
 
     SimpleList.prototype.deleteList = function(query, tab){
@@ -23,16 +24,18 @@
               method: 'DELETE',
               params: {'uuid': response.data[0].uuid},
             }).then(
-              function(resp){
+              function(response){
                 deferred.resolve(self);
               },
               function(error){
-                deferred.reject();
+                deferred.reject(response);
               });
+          } else {
+            deferred.reject();
           }
         },
-        function(apps){
-          deferred.reject();
+        function(response){
+          deferred.reject(response);
         });
 
       return deferred.promise;
@@ -53,18 +56,9 @@
             metadata.name = $translate.instant('apps_metadata_list_name');
             metadata.value = {};
             metadata.value.label = list.listName;
-            metadata.value.type = 'apps-list';
             metadata.value.apps = [];
             angular.forEach(list.items, function(app){
-              metadata.value.apps.push(
-                {
-                  id: app.id,
-                  label: app.label,
-                  type: app.type,
-                  version: app.version,
-                  available: app.available,
-                  isPublic: app.isPublic
-                });
+              metadata.value.apps.push(app);
             });
           } else {
             // update metadata
@@ -72,18 +66,9 @@
             metadata.name = $translate.instant('apps_metadata_list_name');
             metadata.value = {};
             metadata.value.label = list.listName;
-            metadata.value.type = 'apps-list';
             metadata.value.apps = [];
             angular.forEach(list.items, function(app){
-              metadata.value.apps.push(
-                {
-                  id: app.id,
-                  label: app.label,
-                  type: app.type,
-                  version: app.version,
-                  available: app.available,
-                  isPublic: app.isPublic
-                });
+              metadata.value.apps.push(app);
             });
           }
           $http({
@@ -95,17 +80,8 @@
               var simpleList = tab;
               simpleList.content.selected = null;
               simpleList.content = [];
-              angular.forEach(tab.multiple.lists[1].items, function(item){
-                simpleList.content.push(
-                  {
-                    id: item.id,
-                    label: item.label,
-                    type: item.type,
-                    version: item.version,
-                    available: item.available,
-                    isPublic: item.isPublic
-                  }
-                )
+              angular.forEach(tab.multiple.lists[1].items, function(app){
+                simpleList.content.push(app)
               });
               simpleList.title = list.listName;
               simpleList.edit = false;
@@ -131,11 +107,11 @@
         params: {'q': query}
       }).then(
         function(response){
-          // default tabs
           self.lists['Private'] = [];
           self.lists['Public'] = [];
 
           angular.forEach(response.data, function(appMeta){
+            self.map[appMeta.value.definition.id] = appMeta;
             if (appMeta.value.definition.isPublic){
               self.lists['Public'].push(
                 appMeta
@@ -147,6 +123,34 @@
             }
           });
 
+          deferred.resolve(self);
+        },
+        function(apps){
+          deferred.reject();
+        }
+      )
+      return deferred.promise;
+    };
+
+
+    SimpleList.prototype.getUserLists = function(query) {
+      var self = this;
+      var deferred = $q.defer();
+
+      $http({
+        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+        method: 'GET',
+        params: {'q': query}
+      }).then(
+        function(response){
+          if (response.data.length > 0){
+            _.each(response.data, function(appListMeta){
+              self.lists[appListMeta.value.label] = [];
+              _.each(appListMeta.value.apps, function(app){
+                self.lists[appListMeta.value.label].push(self.map[app.value.definition.id]);
+              });
+            });
+          }
           deferred.resolve(self);
         },
         function(apps){
