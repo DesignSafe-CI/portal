@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -50,7 +50,11 @@ def manage_profile(request):
 @login_required
 def manage_pro_profile(request):
     user = request.user
-    ds_profile = DesignSafeProfile.objects.get(user__id=user.id)
+    try:
+        ds_profile = DesignSafeProfile.objects.get(user__id=user.id)
+    except DesignSafeProfile.DoesNotExist:
+        logout(request)
+        return HttpResponseRedirect(reverse('designsafe_auth:login'))
     context = {
         'title': 'Manage Professional Profile',
         'user': user,

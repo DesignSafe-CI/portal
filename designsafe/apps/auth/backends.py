@@ -84,6 +84,10 @@ class TASBackend(ModelBackend):
                         last_name=tas_user['lastName'],
                         email=tas_user['email']
                         )
+
+                try:
+                    profile = DesignSafeProfile.objects.get(user=user)
+                except DesignSafeProfile.DoesNotExist:
                     profile = DesignSafeProfile(user=user)
                     profile.save()
 
@@ -133,6 +137,10 @@ class AgaveOAuthBackend(ModelBackend):
                         last_name=agave_user['last_name'],
                         email=agave_user['email']
                         )
+
+                try:
+                    profile = DesignSafeProfile.objects.get(user=user)
+                except DesignSafeProfile.DoesNotExist:
                     profile = DesignSafeProfile(user=user)
                     profile.save()
 
