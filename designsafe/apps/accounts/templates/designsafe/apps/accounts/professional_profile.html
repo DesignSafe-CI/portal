@@ -11,7 +11,7 @@
             <div class="col-md-6">
                 <dt>My Bio</dt>
                 {% if profile.bio %}
-                <dd> {{profile.bio | escape}} </dd>
+                <dd> {{profile.bio}} </dd>
                 {% else %}
                 <dd class='text-warning'> Please add a bio </dd>
                 {% endif %}

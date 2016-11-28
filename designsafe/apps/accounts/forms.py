@@ -444,10 +444,10 @@ class ProfessionalProfileForm(forms.ModelForm):
             ws = "http://" + ws
         return ws or None
 
-    def clean_bio(self):
-        bio = self.cleaned_data['bio']
-        bio = escape(bio)
-        return bio
+    # def clean_bio(self):
+    #     bio = self.cleaned_data['bio']
+    #     bio = escape(bio)
+    #     return bio
 
     class Meta:
         model = DesignSafeProfile
