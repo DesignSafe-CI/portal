@@ -423,7 +423,7 @@ class ProfessionalProfileForm(forms.ModelForm):
         queryset=DesignSafeProfileNHInterests.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
-        label="Natural Hazards Interets"
+        label="Natural Hazards Interests"
     )
     bio = forms.CharField(max_length=4096, widget=forms.Textarea, required=False)
     website = forms.CharField(max_length=256, required=False, label="Personal Website")
