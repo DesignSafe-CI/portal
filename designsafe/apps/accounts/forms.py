@@ -440,9 +440,9 @@ class ProfessionalProfileForm(forms.ModelForm):
 
     def clean_website(self):
         ws = self.cleaned_data['website']
-        if ws is not None and not ws.startswith('http://'):
+        if (ws != '') and (not ws.startswith('http://')):
             ws = "http://" + ws
-        return ws
+        return ws or None
 
     def clean_bio(self):
         bio = self.cleaned_data['bio']
