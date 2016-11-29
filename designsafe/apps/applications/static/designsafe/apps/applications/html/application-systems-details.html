@@ -1,0 +1,54 @@
+<div modal="systemDetailsModal">
+    <div class="modal-header">
+      <h3 class="modal-title">System Details</h3>
+    </div>
+    <div class="modal-body">
+      <p ng-show="error" class="alert alert-danger">{{error}}</p>
+      <div class="text-center" ng-show="requesting">
+          <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+      </div>
+      <div ng-if="systemDetails">
+        <div ng-switch="systemDetails.value.type">
+          <div ng-if="systemDetails" class="table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+               <tr ng-if="systemDetails.id">
+                 <td>ID</td>
+                 <td><strong>{{systemDetails.id}}</strong></td>
+               </tr>
+               <tr ng-if="systemDetails.name">
+                 <td>Name</td>
+                 <td>{{systemDetails.name}}</td>
+               </tr>
+               <tr ng-if="systemDetails.description">
+                 <td>Description</td>
+                 <td>{{systemDetails.description}}</td>
+               </tr>
+               <tr ng-if="systemDetails.type">
+                 <td>Type</td>
+                 <td>{{systemDetails.type}}</td>
+               </tr>
+               <tr>
+                 <td>Public</td>
+                 <td>{{systemDetails.public}}</td>
+               </tr>
+               <tr ng-if="systemDetails.status">
+                 <td>Status</td>
+                 <td>{{systemDetails.status}}</td>
+               </tr>
+               <tr ng-if="systemDetails.lastUpdated">
+                 <td>Last Updated</td>
+                 <td>{{systemDetails.lastUpdated}}</td>
+               </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    <div class="modal-footer top-buffer">
+      <div class="text-center">
+        <button class="btn btn-default" ng-click="cancel()">Exit</button>
+      </div>
+    </div>
+</div>

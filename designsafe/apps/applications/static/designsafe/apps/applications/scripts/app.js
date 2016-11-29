@@ -1,5 +1,5 @@
 (function(window, angular, $) {
-  "use strict";
+  'use strict';
 
   function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -14,29 +14,39 @@
 
     angular.extend(toastrConfig, {
       positionClass: 'toast-bottom-left',
-      timeOut: 4000,
+      timeOut: 5000,
       tapToDismiss: true,
     });
 
-    $urlRouterProvider.otherwise("/");
+    $urlRouterProvider.otherwise('/');
 
     $stateProvider
       .state('applications', {
-          url:"/",
-          templateUrl: "/static/designsafe/apps/applications/html/application-tray.html",
-          controller: "ApplicationTrayCtrl"
+          url:'/',
+          templateUrl: '/static/designsafe/apps/applications/html/application-tray.html',
+          controller: 'ApplicationTrayCtrl'
+      })
+      .state('applications-add-admin', {
+          url: '/admin',
+          templateUrl: '/static/designsafe/apps/applications/html/application-add-admin.html',
+          controller: 'ApplicationAddCtrl'
       })
       .state('applications-add', {
-          url: "/add",
-          templateUrl: "/static/designsafe/apps/applications/html/application-add.html",
-          controller: "ApplicationAddCtrl"
+          url: '/add',
+          templateUrl: '/static/designsafe/apps/applications/html/application-add.html',
+          controller: 'ApplicationAddCtrl'
       })
       .state('applications-edit', {
-          url: "/edit/:appId",
+          url: '/edit/:appId',
           params: {appMeta: null},
-          templateUrl: "/static/designsafe/apps/applications/html/application-edit.html",
-          controller: "ApplicationEditCtrl"
+          templateUrl: '/static/designsafe/apps/applications/html/application-edit.html',
+          controller: 'ApplicationEditCtrl'
       })
+      .state('applications-systems', {
+          url: '/systems',
+          templateUrl: '/static/designsafe/apps/applications/html/application-systems-role.html',
+          controller: 'ApplicationSystemsRoleCtrl'
+      });
   }
 
   var app = angular.module('ApplicationsApp', [

@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, toastrConfig) {
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider,  $stateProvider, $urlRouterProvider, toastrConfig) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -17,12 +17,23 @@
         (window.location.port ? ':' + window.location.port : '') +
         '/ws/websockets?subscribe-broadcast&subscribe-user'
     );
+
+    $urlRouterProvider.otherwise('/');
+
+    $stateProvider
+      .state('tray', {
+          url: '/:appId',
+          templateUrl: '/static/designsafe/apps/workspace/html/main.html',
+          controller: 'ApplicationTrayCtrl'
+      })
+
   }
 
   angular.module('WorkspaceApp', [
     'ngCookies',
     'djng.urls',
     'ui.bootstrap',
+    'ui.router',
     'schemaForm',
     'ng.designsafe',
     'ds.wsBus',
@@ -33,7 +44,7 @@
     'xeditable',
     'pascalprecht.translate',
     'ngStorage'
-  ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', 'toastrConfig', config]);
+  ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider',  '$stateProvider', '$urlRouterProvider', 'toastrConfig', config]);
 
   angular.module('WorkspaceApp')
     .run(['WSBusService', function init(WSBusService){
