@@ -29,18 +29,18 @@
         // };
 
         function renderLink(msg){
-          // if (msg.status == 'SUCCESS') { for testing
-          if (msg.event_type == 'job') {
-            var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
-            console.log('job url link', url)
-            return url
-          } else if (msg.event_type == 'data') {
-            var url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
-            // var url=djangoUrl.reverse('designsafe_api:process_notification');
-            console.log('data url link', url)
-            return url
+          if (msg.status == 'SUCCESS') {
+            if (msg.event_type == 'job') {
+              var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
+              console.log('job url link', url)
+              return url
+            } else if (msg.event_type == 'data') {
+              var url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
+              // var url=djangoUrl.reverse('designsafe_api:process_notification');
+              console.log('data url link', url)
+              return url
+            }
           }
-          // }
         }
 
         function init(){
@@ -51,22 +51,24 @@
 
         function processMessage(e, msg){
           processToastr(e, msg);
+          processors['notifs'].process(msg)
+
           if (typeof processors[msg.event_type] !== 'undefined' &&
               typeof processors[msg.event_type].process !== 'undefined' &&
               typeof processors[msg.event_type].process === 'function'){
 
               processors[msg.event_type].process(msg);
 
-              var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
-              notification_badge.removeClass('label-default')
-              notification_badge.addClass('label-info')
+              // var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
+              // notification_badge.removeClass('label-default')
+              // notification_badge.addClass('label-info')
 
-              var numNotifications = notification_badge.html(); //is there a better way to do this? having trouble using scope variables
-              if (isNaN(numNotifications)) {
-                  notification_badge.html(1);
-              } else {
-                  notification_badge.html(Number(numNotifications) + 1);
-              }
+              // var numNotifications = notification_badge.html(); //is there a better way to do this? having trouble using scope variables
+              // if (isNaN(numNotifications)) {
+              //     notification_badge.html(1);
+              // } else {
+              //     notification_badge.html(Number(numNotifications) + 1);
+              // }
           } else {
             logger.warn('Process var is not a function for this event type. ', processors);
           }
@@ -89,10 +91,10 @@
 
           var toastMessage = '<p>' + msg.message + '</p>';
           var toastOp = toastr[toastLevel] || toast.info;
-          if (typeof processors[msg.event_type] === 'undefined'){
-            logger.warn('No processor for this type of event. ', msg);
-            return;
-          }
+          // if (typeof processors[msg.event_type] === 'undefined'){
+          //   logger.warn('No processor for this type of event. ', msg);
+          //   return;
+          // }
           var toastViewLink = renderLink(msg);
           if (typeof toastViewLink !== 'undefined'){
             toastMessage += '<a href="' + toastViewLink + '" target="_blank">View</a>';
