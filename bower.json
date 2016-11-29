@@ -34,7 +34,8 @@
     "angular-toastr": "^1.7.0",
     "angular-drag-and-drop-lists": "1.4.0",
     "angular-xeditable": "0.1.12",
-    "angular-httpi": "*"
+    "angular-httpi": "*",
+    "d3": "^4.4.0"
   },
   "resolutions": {
     "angular": "~1.4.8",
