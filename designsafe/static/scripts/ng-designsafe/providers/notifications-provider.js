@@ -3,41 +3,13 @@
     function NotificationService($rootScope, logger, toastr, djangoUrl) {
         var processors = {};
 
-        // processors.job = {
-        //   'process': function notifyProcessor(msg){
-        //     logger.log('processing msg: ', msg);
-        //     return msg.extra;
-        //   },
-        //   'renderLink': function renderLink(msg){
-        //     logger.log('rendering link: ', msg);
-        //     return msg.extra['target_path'] // this will only be present when indexing is complete
-        //   }
-        // };
-
-        // processors.data = {
-        //   'process': function notifyProcessor(msg){
-        //     logger.log('processing msg: ', msg);
-        //     return msg.extra;
-        //   },
-        //   'renderLink': function renderLink(msg){
-        //     logger.log('rendering link: ', msg);
-        //     if (msg.status == 'ERROR'){
-        //       return;
-        //     }
-        //     return msg.extra;
-        //   }
-        // };
-
         function renderLink(msg){
           if (msg.status == 'SUCCESS') {
             if (msg.event_type == 'job') {
               var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
-              console.log('job url link', url)
               return url
             } else if (msg.event_type == 'data') {
               var url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
-              // var url=djangoUrl.reverse('designsafe_api:process_notification');
-              console.log('data url link', url)
               return url
             }
           }
@@ -59,16 +31,6 @@
 
               processors[msg.event_type].process(msg);
 
-              // var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
-              // notification_badge.removeClass('label-default')
-              // notification_badge.addClass('label-info')
-
-              // var numNotifications = notification_badge.html(); //is there a better way to do this? having trouble using scope variables
-              // if (isNaN(numNotifications)) {
-              //     notification_badge.html(1);
-              // } else {
-              //     notification_badge.html(Number(numNotifications) + 1);
-              // }
           } else {
             logger.warn('Process var is not a function for this event type. ', processors);
           }
