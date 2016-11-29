@@ -1,0 +1,8 @@
+
+.ds-chart .bar { 
+  fill: steelblue; 
+}
+
+.ds-chart .axis .tick line{
+  stroke: #d3d3d3;
+}

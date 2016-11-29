@@ -430,6 +430,7 @@ PIPELINE_JS = {
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
+            'vender/d3/d3.min.js'
         ),
         'output_filename': 'js/vendor.js',
     },

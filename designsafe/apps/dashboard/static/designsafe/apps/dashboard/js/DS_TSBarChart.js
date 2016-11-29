@@ -13,20 +13,20 @@ function DS_TSBarChart (element_id) {
 
   function exports () {
     d3.select(element_id).html('');
-    x = d3.time.scale().range([0, width]);
-    y = d3.scale.linear().range([height, 0]);
+    x = d3.scaleBand().range([0, width]).padding(0.1);
+    y = d3.scaleLinear().range([height, 0]);
+
+    svg = d3.select(element_id).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom); 
     
-    xAxis = d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
+    xAxis = d3.axisBottom(x)
               .ticks(5)
               .tickPadding(6)
-              .tickSize(-height, 1, 0);
-              // .tickFormat(d3.format(".1s"));
+              .tickSize(-height, 1, 0)
+              .tickFormat(d3.timeFormat("%m/%d"));
 
-    yAxis = d3.svg.axis()
-              .scale(y)
-              .orient("left")
+    yAxis = d3.axisLeft(y)
               .tickSize(-width, 0, 0)
               .tickFormat(d3.format(",.2s"));
 
@@ -36,23 +36,32 @@ function DS_TSBarChart (element_id) {
   }
 
   function draw () {
-    x.domain(d3.extent(data.map(xSelector)));
-    y.domain(d3.extent(data.map(ySelector)));
-    focus.select(".x.axis").call(xAxis);
-    focus.select(".y.axis").call(yAxis); 
-    // generate line paths
+    x.domain(data.map(xSelector));
+    y.domain(d3.extent(data, ySelector));
+    focus.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "x axis")
+      .call(xAxis);
+    focus.append("g")
+      .attr("class", "y axis")
+      .attr("fill", "#e3e3e3")
+      .call(yAxis); 
     focus.selectAll('.bar').remove();
-    
-    var lines = focus.selectAll(".line")
-                  .data(data)
-                  .enter().append("path")
-                    .attr("d",line)
-                    .attr("class", "line");
+     
+    focus.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function (d) { console.log(x(xSelector(d))); return x(xSelector(d));})
+      .attr("width", x.bandwidth())
+      .attr("y", function (d) {return y(ySelector(d));})
+      .attr("height", function(d) { console.log(y(ySelector(d))); return height - y(ySelector(d)); });
   }
 
   exports.data = function (_data) {
     if (!(arguments.length)) return data;
     data = _data;
+    draw();
     return this;
   };
 
