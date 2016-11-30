@@ -1,24 +1,12 @@
 (function(){
     'use strict';
-    function NotificationService($rootScope, Logging, toastr, toastrConfig) {
-        var logger = Logging.getLogger('DesignSafe.notifications');
+
+    function NotificationService($rootScope, logger, toastr) {
+        var processors = {};
 
         function init(){
-            $rootScope.$on('ds.wsBus:default', processMessage);
-            $rootScope.$on('DataBrowserService::Event', processDataBrowserMessage);
-            // toastr.info('should log the toast once this closes', 'Notification testcallback',
-            //     {
-            //         closeButton: true,
-            //         // closeHtml: '<button onclick="alert(\'js in the closehtml!\')">close</button>',
-            //         // closeHtml: '<a onclick="alert(\'js in the closehtml!\')">close link</a>',
-            //         onHidden: function callback(clicked, toast){
-            //             logger.log('clicked', clicked)
-            //             logger.log('toast', toast)
-            //         },
-            //         timeOut: 500000,
-            //         extendedTimeOut: 1000000,
-            //         tapToDismiss: false
-            // });
+          $rootScope.$on('ds.wsBus:notify', processMessage);
+          $rootScope.$on('ds.notify:default', processToastr);
         }
 
         function processDataBrowserMessage(e, msg){
@@ -28,106 +16,39 @@
         }
 
         function processMessage(e, msg){
-            //var rScope = $injector.get('$rootScope');
-            logger.debug('websockets msg', msg);
-            if (msg.toast) {
-                switch(msg.toast.type) {
-                    case 'success':
-                        if(msg.action_link) {
-                            toastr.success(msg.toast.msg,
-                            {
-                                closeButton: true,
-                                closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
-                                onHidden: function undo(clicked, toast){
-                                    logger.debug('clicked', clicked);
-                                    logger.debug('toast', toast);
+          processToastr(e, msg);
+          var proc = processors[msg.type].process();
+          proc(msg);
+        }
 
-                                }
-                            });
-                        } else {
-                            toastr.success(msg.toast.msg);
-                        }
-                        break;
-                    case 'error':
-                        if(msg.action_link) {
-                            toastr.error(msg.toast.msg,
-                            {
-                                closeButton: true,
-                                closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
-                                onHidden: function undo(clicked, toast){
-                                    logger.debug('clicked', clicked);
-                                    logger.debug('toast', toast);
+        function processToastr(e, msg){
+          try{
+            msg.extra = JSON.parse(msg.extra);
+          }catch(error){
+            logger.error('Message\'s extra is not JSON string. Error: ', error);
+          }
+          var toastLevel = msg.status.toLowerCase();
+          //Convert operation name to title case.
+          //Operation name might be something like 'copy_file', 'job_submission' or 'publish'
+          var toastTitle = msg.operation.replace(/_/g, ' ').replace(/\w\S*/,
+            function(s){
+              return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
+            });
 
-                                }
-                            });
-                        } else {
-                            toastr.error(msg.toast.msg);
-                        }
-                        break;
-                    case 'warning':
-                        if(msg.action_link) {
-                            toastr.warning(msg.toast.msg,
-                            {
-                                closeButton: true,
-                                closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
-                                onHidden: function undo(clicked, toast){
-                                    logger.debug('clicked', clicked);
-                                    logger.debug('toast', toast);
-
-                                }
-                            });
-                        } else {
-                            toastr.warning(msg.toast.msg);
-                        }
-                        break;
-                    default:
-                        if(msg.action_link) {
-                            toastr.info(msg.toast.msg,
-                            {
-                                closeButton: true,
-                                closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
-                                onHidden: function undo(clicked, toast){
-                                    logger.debug('clicked', clicked);
-                                    logger.debug('toast', toast);
-
-                                }
-                            });
-                        } else {
-                            toastr.info(msg.toast.msg);
-                        }
-                        break;
-                }
-                // if(msg.action_link) {
-                //     toastr.info(msg.toast.msg,
-                //     {
-                //         closeButton: true,
-                //         closeHtml: '<a target="_blank" href="' + msg.action_link.value + '">' + msg.action_link.label + '</a>',
-                //         onHidden: function undo(clicked, toast){
-                //             logger.log('clicked', clicked)
-                //             logger.log('toast', toast)
-
-                //         }
-                //     });
-                // } else {
-                //     toastr.info(msg.toast.msg);
-                // }
-            }
-            if (msg.status == 'FINISHED' || msg.status == 'FAILED') {
-                var notification_badge = angular.element( document.querySelector( '#notification_badge' ) );
-                notification_badge.removeClass('label-default');
-                notification_badge.addClass('label-info');
-
-                var numNotifications = notification_badge.html();
-                if (isNaN(numNotifications)) {
-                    notification_badge.html(1);
-                } else {
-                    notification_badge.html(Number(numNotifications) + 1);
-                }
-            }
+          var toastMessage = '<p>' + msg.message + '</p>';
+          var toastOp = toastr[toastLevel] || toast.info;
+          var toastViewLinkFunc = processors[msg.type].renderLink();
+          var toastViewLink = null;
+          if (typeof toastViewLink !== 'undefined'){
+            toastViewLink = toastViewLinkFunc(msg);
+            toastMessage += '<a href="' + toastViewLink + '">View</a>';
+          }
+          toastOp(toastMessage, toastTitle, {allowHtml: true});
         }
 
       return {
-        init: init
+        init: init,
+        processors: processors
       };
 
     }
