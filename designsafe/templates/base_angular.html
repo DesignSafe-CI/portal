@@ -1,61 +1,16 @@
 {% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 
-{% block styles %}
-    <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
-{% endblock %}
-
 {% block scripts %}
 
     {% addtoblock "js" %}
-        <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
-
-        <script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>
-
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/data-browser.js' %}"></script>
 
-        <!-- move these elsewhere later -->
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-search-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-shared-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-public-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-public-search-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-box-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-breadcrumb.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/metadata-listing.js' %}"></script>
-        <!-- -->
-
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
-
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/data-browser-filters.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-service.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/user-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/file-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-browser-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/project-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/systems-service.js' %}"></script>
 
-        <script src="{%static 'scripts/ng-designsafe/modules/ws-module.js' %}"></script>
-        <script src="{%static 'scripts/ng-designsafe/providers/ws-provider.js' %}"></script>
-
-        <script src="{%static 'designsafe/apps/notifications/scripts/module.js' %}"></script>
-        <script src="{%static 'designsafe/apps/notifications/scripts/provider.js' %}"></script>
-
-        <script src="{%static 'scripts/logging/logger.js' %}"></script>
-
-        <script type="text/javascript">
-            (function(angular) {
-                var django = angular.module('django.context', []);
-                django.constant('Django', {
-                    user: "{{ request.user }}",
-                    context: {{ angular_init|default:"{}"|safe }}
-                });
-            })(angular);
-        </script>
     {% endaddtoblock %}
 {% endblock %}
