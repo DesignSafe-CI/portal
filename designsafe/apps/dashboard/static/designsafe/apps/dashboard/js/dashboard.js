@@ -21,4 +21,7 @@ $(document).ready(function () {
           .ySelector(function (d) { return d.count;})
           .xSelector(function (d) { return d.date;})
           .data(data);
+  chart.on('bar_click', function (ev) {
+    console.log('in view', ev);
+  });
 });

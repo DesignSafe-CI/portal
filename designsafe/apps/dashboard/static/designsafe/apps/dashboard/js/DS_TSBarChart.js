@@ -9,7 +9,8 @@ function DS_TSBarChart (element_id) {
       data,
       x, y, xAxis, yAxis,
       axis_label, focus, 
-      svg;
+      svg, 
+      dispatch = d3.dispatch('bar_click');
 
   function exports () {
     d3.select(element_id).html('');
@@ -35,6 +36,16 @@ function DS_TSBarChart (element_id) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   }
 
+  exports.on = function() {
+    var value = dispatch.on.apply(dispatch, arguments);
+    return value === dispatch ? exports : value;
+  };
+
+  function bar_click (ev, d) {
+    console.log(ev, d);
+    dispatch.call("bar_click", this, ev);
+  }
+
   function draw () {
     x.domain(data.map(xSelector));
     y.domain([0, d3.max(data, ySelector)]);
@@ -55,7 +66,8 @@ function DS_TSBarChart (element_id) {
       .attr("x", function (d) { console.log(x(xSelector(d))); return x(xSelector(d));})
       .attr("width", x.bandwidth())
       .attr("y", function (d) {return y(ySelector(d));})
-      .attr("height", function(d) { console.log(y(ySelector(d))); return height - y(ySelector(d)); });
+      .attr("height", function(d) { console.log(y(ySelector(d))); return height - y(ySelector(d)); })
+      .on('click', bar_click);
   }
 
   exports.data = function (_data) {
