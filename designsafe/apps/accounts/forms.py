@@ -72,7 +72,7 @@ PROFESSIONAL_LEVEL_OPTIONS = (
     ('Faculty or Researcher', 'Faculty or Researcher'),
     ('Staff (support, administration, etc)', 'Staff (support, administration, etc)'),
     ('Practicing Engineer or Architect', 'Practicing Engineer or Architect'),
-    ('Other', 'Other')
+    ('Other', 'Other (Please describe in your interests above)')
 )
 
 
@@ -419,13 +419,24 @@ class UserRegistrationForm(forms.Form):
 
 
 class ProfessionalProfileForm(forms.ModelForm):
+    bio_placeholder = (
+        'Please provide a brief summary of your professional profile, '
+        'the natural hazards activities with which you are involved or '
+        'would like to be involved, and any other comments that would help ' 
+        'identify your experience and interest within the community. '
+    )
     nh_interests = forms.ModelMultipleChoiceField(
         queryset=DesignSafeProfileNHInterests.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
-        label="Natural Hazards Interests"
+        label="Natural Hazards Interests (check all that apply)"
     )
-    bio = forms.CharField(max_length=4096, widget=forms.Textarea, required=False)
+    bio = forms.CharField(
+        max_length=4096,
+        widget=forms.Textarea(attrs={'placeholder': bio_placeholder}),
+        label='Professional and Research Interests',
+        required=False
+    )
     website = forms.CharField(max_length=256, required=False, label="Personal Website")
     professional_level = forms.ChoiceField(
         choices=PROFESSIONAL_LEVEL_OPTIONS,
@@ -435,7 +446,7 @@ class ProfessionalProfileForm(forms.ModelForm):
         queryset=DesignSafeProfileResearchActivities.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple,
-        label="Research Activities"
+        label="Research Activities (check all that apply)"
     )
 
     def clean_website(self):
