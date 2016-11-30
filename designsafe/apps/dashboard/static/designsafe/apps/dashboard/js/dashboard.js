@@ -17,6 +17,7 @@ $(document).ready(function () {
   ];
   //9 $.getJSON()
   chart = DS_TSBarChart('#ds_jobs_chart')
+          .height(250)
           .ySelector(function (d) { return d.count;})
           .xSelector(function (d) { return d.date;})
           .data(data);

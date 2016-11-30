@@ -37,7 +37,7 @@ function DS_TSBarChart (element_id) {
 
   function draw () {
     x.domain(data.map(xSelector));
-    y.domain(d3.extent(data, ySelector));
+    y.domain([0, d3.max(data, ySelector)]);
     focus.append("g")
       .attr("transform", "translate(0," + height + ")")
       .attr("class", "x axis")
@@ -93,6 +93,7 @@ function DS_TSBarChart (element_id) {
   exports.height = function (d) {
     if (!arguments.length) return height;
     height = d;
+    exports();
     return exports;
   };
 
