@@ -32,6 +32,11 @@
     <!-- scripts -->
     {% javascript 'vendor' %}
     {% javascript 'main' %}
+
+    <script src="{% static 'vendor/angular/angular.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-sanitize/angular-sanitize.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-toastr/dist/angular-toastr.tpls.min.js' %}"></script>
+
     {% block scripts %}{% endblock %}
     {% render_block "js" %}
     {% include 'includes/analytics.html' %}
