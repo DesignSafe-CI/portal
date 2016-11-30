@@ -1,0 +1,45 @@
+<div class="modal-header">
+    <h3 class="modal-title">Clone {{app.value.definition.id}}</h3>
+</div>
+<div class="modal-body" ng-show="!clone">
+  <div class="row">
+    <div class="col-md-12">
+      <h3>DesignSafe-CI Apps Developer</h3>
+      <p>Hey there! Looks like you need app developer activation.</p>
+      <p>To request activation, please open a support ticket and DesignSafe-CI support will enable your account for app creation.</p>
+
+      <a class="btn btn-lg btn-default text-center"
+         href="/help/new-ticket/?category=OTHER&subject=App+developer+permissions+request"
+         target="_blank"
+      >
+          Request Developer Permissions
+      </a>
+    </div>
+  </div>
+</div>
+<div class="modal-body" ng-show="clone">
+    <p ng-show="error" class="alert alert-danger top-buffer">{{error}}</p>
+    <div class="text-center" ng-show="requesting">
+        <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+        <div>Loading...</div>
+    </div>
+    <div ng-show="!requesting">
+      <p>
+        When cloning public apps, the entire app bundle will be recreated on the <code>deploymentSystem</code> you specify or your default storage system. The same is not true for private apps.
+        Cloning a private app will copy the job description, but not the app bundle. This is to honor the original ownership of the assets and prevent them from leaking out to the public space without the owner’s permission.
+        If you need direct access to the app’s assets, request that the owner give you read access to the folder listed as the <code>deploymentPath</code> in the app description.
+      </p>
+      <p>Please provide a new ID for the clone</p>
+      <form
+          name="myForm"
+          sf-schema="schema"
+          sf-form="form"
+          sf-model="model"
+          >
+      </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="submit()" ng-show="clone">Submit</button>
+</div>

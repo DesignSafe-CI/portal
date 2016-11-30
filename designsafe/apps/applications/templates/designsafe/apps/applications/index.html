@@ -1,1 +1,62 @@
-{% extends "base_angular.html" %}{% load cms_tags staticfiles sekizai_tags pipeline %}{% block title %}Applications{% endblock %}{% block content %}<div class="container">    <h1 class="headline headline-research">        <a href="/applications" class="hl hl-research">Apps</a>    </h1></div><div class="container" role="main" ng-app="ApplicationsApp" id="applications">  <div ui-view="">  </div></div>{% addtoblock "css" %}<link href="{% static 'vendor/codemirror/lib/codemirror.css' %}" rel="stylesheet"><link href="{% static 'vendor/codemirror/theme/neo.css' %}" rel="stylesheet" rel="stylesheet"><link href="{% static 'designsafe/apps/applications/styles/applications.css' %}" rel="stylesheet">{% endaddtoblock %}{% addtoblock "js" %}<script type="text/javascript" src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-sanitize/angular-sanitize.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-ui-router/release/angular-ui-router.js' %}"></script><script type="text/javascript" src="{% static 'vendor/tv4/tv4.js' %}"></script><script type="text/javascript" src="{% static 'vendor/objectpath/lib/ObjectPath.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/schema-form.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script><script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script><script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script><script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script><script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script><script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-xeditable/dist/js/xeditable.js' %}"></script><script type-"text/javascript" src="{% static 'vendor/codemirror/lib/codemirror.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-ui-codemirror/ui-codemirror.js' %}"></script><script type="text/javascript" src="{% static 'vendor/angular-schema-form-ui-codemirror/bootstrap-ui-codemirror.js' %}"></script>{% endaddtoblock %}{% addtoblock 'js' %}<script src="{% static 'designsafe/apps/applications/scripts/app.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/controllers/application-tray.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/controllers/application-add.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/controllers/application-edit.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/services/apps-pems-service.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/services/apps-service.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/services/apps-wizard-service.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/services/simple-list-service.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/services/multiple-list-service.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/filters/sanitize.js' %}"></script><script src="{% static 'designsafe/apps/applications/scripts/providers/translations.js' %}"></script>{% endaddtoblock %}{% endblock %}
+{% extends "base_angular.html" %}
+{% load cms_tags staticfiles sekizai_tags pipeline %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h1 class="headline headline-research">
+        <a href="/applications" class="hl hl-research">Apps</a>
+    </h1>
+</div>
+
+<div class="container" role="main" ng-app="ApplicationsApp" id="applications">
+  <div ui-view="">
+  </div>
+</div>
+
+{% addtoblock "css" %}
+<link href="{% static 'vendor/codemirror/lib/codemirror.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/codemirror/theme/neo.css' %}" rel="stylesheet" rel="stylesheet">
+<link href="{% static 'designsafe/apps/applications/styles/applications.css' %}" rel="stylesheet">
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-sanitize/angular-sanitize.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-ui-router/release/angular-ui-router.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/tv4/tv4.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/objectpath/lib/ObjectPath.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/schema-form.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
+<script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
+<script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
+<script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-xeditable/dist/js/xeditable.js' %}"></script>
+<script type-"text/javascript" src="{% static 'vendor/codemirror/lib/codemirror.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-ui-codemirror/ui-codemirror.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/angular-schema-form-ui-codemirror/bootstrap-ui-codemirror.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'js' %}
+<script src="{% static 'designsafe/apps/applications/scripts/app.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/controllers/application-tray.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/controllers/application-add.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/controllers/application-edit.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/controllers/application-systems-role.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/services/apps-pems-service.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/services/apps-service.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/services/apps-wizard-service.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/services/simple-list-service.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/services/multiple-list-service.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/filters/sanitize.js' %}"></script>
+<script src="{% static 'designsafe/apps/applications/scripts/providers/translations.js' %}"></script>
+{% endaddtoblock %}
+
+{% endblock %}

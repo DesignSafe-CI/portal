@@ -1,9 +1,43 @@
 <p ng-show="error" class="alert alert-danger">{{error}}</p>
+<div ng-show='!requesting'>
+  <form
+    sf-schema="addSchema"
+    sf-form="addForm"
+    sf-model="addModel"
+    >
+  </form>
+</div>
 <div class="text-center" ng-show="requesting">
   <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
   <div>Loading...</div>
 </div>
-<div ng-show="!requesting">
+<div ng-show="addModel.select === 'Custom' && !requesting">
+  <div class="row">
+    <div class="col-md-6">
+      <form
+        name="myCustomForm"
+        sf-schema="customSchema"
+        sf-form="customForm"
+        sf-model="customModel"
+        >
+      </form>
+    </div>
+    <div class="col-md-6">
+      <b>HTML Content Preview</b>
+      <div ng-bind-html="customModel.html | toTrusted"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="schema-form-actions">
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-primary" ng-click="submit()">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div ng-show="addModel.select === 'Agave' && !requesting">
   <div class="row">
       <div class="col-md-6">
         <div class="text-center">

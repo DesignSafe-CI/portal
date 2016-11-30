@@ -1478,31 +1478,61 @@
       $scope.codeview = false;
 
       $scope.init = function() {
-          Apps.getSystems()
-            .then(
-              function(response){
-                $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                angular.forEach(response.data, function(system){
-                  if (system.type === 'STORAGE'){
-                    $scope.form[0].tabs[1].items[1].titleMap.push({"value": system.id, "name": system.id});
-                  } else {
-                    $scope.form[0].tabs[2].items[1].titleMap.push({"value": system.id, "name": system.id});
-                  }
-                });
-                AppsWizard.activateTab($scope, $scope.currentTabIndex);
-              },
-              function(response){
-                $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                $scope.form[0].tabs[1].items[1].titleMap.push({"value": $translate.instant('storage_default'), "name": $translate.instant('storage_default')});
+          if (Django.user !== $translate.instant('admin_username')){
+            Apps.getSystems()
+              .then(
+                function(response){
+                  $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[2].items[1].titleMap.push({"value": $translate.instant('execution_default'), "name": $translate.instant('execution_default')});
 
-                $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
-                $scope.form[0].tabs[2].items[1].titleMap.push({"value": $translate.instant('execution_default'), "name": $translate.instant('storage_execution')});
-                AppsWizard.activateTab($scope, $scope.currentTabIndex);
-              }
-            )
+                  angular.forEach(response.data, function(system){
+                    if (system.type === 'STORAGE'){
+                      $scope.form[0].tabs[1].items[1].titleMap.push({"value": system.id, "name": system.id});
+                    }
+                  });
+                  AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                },
+                function(response){
+                  $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[1].items[1].titleMap.push({"value": $translate.instant('storage_default'), "name": $translate.instant('storage_default')});
 
-      }
+                  $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[2].items[1].titleMap.push({"value": $translate.instant('execution_default'), "name": $translate.instant('storage_execution')});
+                  AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                }
+              )
+            // set the model to type agave for submit
+            $scope.addModel.select = 'Agave';
+
+          } else {
+            Apps.getSystems()
+              .then(
+                function(response){
+                  $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  angular.forEach(response.data, function(system){
+                    if (system.type === 'STORAGE'){
+                      $scope.form[0].tabs[1].items[1].titleMap.push({"value": system.id, "name": system.id});
+                    } else {
+                      $scope.form[0].tabs[2].items[1].titleMap.push({"value": system.id, "name": system.id});
+                    }
+                  });
+                  AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                },
+                function(response){
+                  $scope.form[0].tabs[1].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[1].items[1].titleMap.push({"value": $translate.instant('storage_default'), "name": $translate.instant('storage_default')});
+
+                  $scope.form[0].tabs[2].items[1].titleMap = [{"value": '', "name": 'Select a system'}];
+                  $scope.form[0].tabs[2].items[1].titleMap.push({"value": $translate.instant('execution_default'), "name": $translate.instant('storage_execution')});
+                  AppsWizard.activateTab($scope, $scope.currentTabIndex);
+                }
+              )
+          }
+
+
+      };
 
 
       $scope.init();
