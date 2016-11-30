@@ -5,7 +5,7 @@
  */
 (function(window, angular, $, _) {
   'use strict';
-  angular.module('WorkspaceApp').factory('Systems', ['$q', '$http', 'djangoUrl', function($q, $http, djangoUrl) {
+  angular.module('designsafe').factory('Systems', ['$q', '$http', 'djangoUrl', function($q, $http, djangoUrl) {
     var service = {};
 
     var systemsList = [

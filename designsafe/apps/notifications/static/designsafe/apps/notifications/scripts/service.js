@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  angular.module('NotificationList').factory('notificationFactory', ['$http', 'djangoUrl', function($http, djangoUrl) {
+  angular.module('designsafe').factory('notificationFactory', ['$http', 'djangoUrl', function($http, djangoUrl) {
     var service = {};
 
     service.list = function() {

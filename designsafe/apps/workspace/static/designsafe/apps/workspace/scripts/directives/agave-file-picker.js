@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  angular.module('WorkspaceApp').directive('agaveFilePicker', function() {
+  angular.module('designsafe').directive('agaveFilePicker', function() {
     return {
       restrict: 'EA',
       require: 'ngModel',
@@ -36,7 +36,7 @@
         $scope.stopWant = function($event) {
           $event.preventDefault();
           stopWant();
-        }
+        };
 
         $scope.$on('provides-file', function($event, args) {
           var requestKey = args.requestKey || '';

@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('WorkspaceApp').factory('Files',
+  angular.module('designsafe').factory('Files',
   ['$rootScope', '$http', 'djangoUrl', function($rootScope, $http, djangoUrl) {
     var service = {};
 
@@ -29,7 +29,7 @@
         title: title,
         description: description
       });
-    }
+    };
 
     /**
      * Provide a file to another controller. Broadcasts a 'provides-file' event with

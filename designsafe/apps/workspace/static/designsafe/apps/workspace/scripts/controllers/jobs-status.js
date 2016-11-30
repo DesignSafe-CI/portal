@@ -1,6 +1,6 @@
 (function(window, angular, $) {
   "use strict";
-  angular.module('WorkspaceApp').controller('JobsStatusCtrl',
+  angular.module('designsafe').controller('JobsStatusCtrl',
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger) {
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
@@ -88,7 +88,7 @@
 
   }]);
 
-  angular.module('WorkspaceApp').controller('JobDetailsModalCtrl',
+  angular.module('designsafe').controller('JobDetailsModalCtrl',
     [ '$scope', '$uibModalInstance','$http', 'Jobs', 'job', 'djangoUrl', 'logger', function($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
 
     $scope.job = job;
@@ -124,7 +124,7 @@
 
   }]);
 
-  angular.module('WorkspaceApp').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
+  angular.module('designsafe').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
     $scope.msg = msg;
     $scope.dismiss = function() {
       $uibModalInstance.dismiss('cancel');

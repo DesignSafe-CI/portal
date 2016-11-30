@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('WorkspaceApp').factory('Jobs', ['$http', 'djangoUrl', function($http, djangoUrl) {
+  angular.module('designsafe').factory('Jobs', ['$http', 'djangoUrl', function($http, djangoUrl) {
     var service = {};
 
     service.list = function(options) {
