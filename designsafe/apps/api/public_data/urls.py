@@ -1,7 +1,8 @@
 from django.conf.urls import url
 from designsafe.apps.api.public_data.views import (PublicDataListView,
                                                    PublicMediaView,
-                                                   PublicSearchView)
+                                                   PublicSearchView,
+                                                   PublicPemsView)
 from designsafe.apps.api.agave.views import (FileMediaView,
                                              FilePermissionsView,
                                              SystemsView)
@@ -40,10 +41,8 @@ urlpatterns = [
     # Permission operations:
     #
     #     GET     /pems/<file_mgr_name>/<system_id>/<file_path>/
-    #     POST    /pems/<file_mgr_name>/<system_id>/<file_path>/
-    #     DELETE  /pems/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^files/pems/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
-        FilePermissionsView.as_view(), name='public_files_pems'),
+        PublicPemsView.as_view(), name='public_files_pems'),
 
 
     # Systems
