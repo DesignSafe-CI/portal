@@ -44,6 +44,8 @@ function DS_TSBarChart (element_id) {
   function bar_click (ev, d) {
     console.log(ev, d);
     dispatch.call("bar_click", this, ev);
+    focus.selectAll('.bar').style('fill', 'steelblue');
+    d3.select(this).style("fill", "#BF5700");
   }
 
   function draw () {
@@ -63,10 +65,10 @@ function DS_TSBarChart (element_id) {
       .data(data)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function (d) { console.log(x(xSelector(d))); return x(xSelector(d));})
+      .attr("x", function (d) { return x(xSelector(d));})
       .attr("width", x.bandwidth())
       .attr("y", function (d) {return y(ySelector(d));})
-      .attr("height", function(d) { console.log(y(ySelector(d))); return height - y(ySelector(d)); })
+      .attr("height", function(d) { return height - y(ySelector(d)); })
       .on('click', bar_click);
   }
 
