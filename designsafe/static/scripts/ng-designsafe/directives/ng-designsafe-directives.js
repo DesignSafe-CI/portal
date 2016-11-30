@@ -1,7 +1,7 @@
 (function(angular, $){
   "use strict";
 
-  var mod = angular.module('ng.designsafe');
+  var mod = angular.module('designsafe');
 
   mod.directive('accessfiles', function() {
     return {

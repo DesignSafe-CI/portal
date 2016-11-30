@@ -1,10 +1,7 @@
 (function(window, angular, $) {
   'use strict';
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider) {
         WSBusServiceProvider.setUrl(
             (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
             window.location.hostname +
@@ -49,7 +46,8 @@
       });
   }
 
-  var app = angular.module('ApplicationsApp', [
+  var app = angular.module('designsafe');
+  app.requires.push(
     'django.context',
     'djng.urls',
     'dndLists',
@@ -57,7 +55,7 @@
     'ds.notifications',
     'logging',
     'ngCookies',
-    'ng.designsafe',
+    'designsafe',
     'pascalprecht.translate',
     'schemaForm',
     'schemaFormWizard',
@@ -65,9 +63,9 @@
     'ui.bootstrap',
     'ui.router',
     'ui.codemirror',
-    'xeditable',
-  ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$stateProvider', '$urlRouterProvider', 'toastrConfig', config]);
-
+    'xeditable'
+  );
+  app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$stateProvider', '$urlRouterProvider', config]);
 
   app.run(['WSBusService', 'logger', function init(WSBusService, logger){
         logger.log(WSBusService.url);

@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('designsafe');
 
   module.factory('DataService', ['$rootScope', '$http', '$q', 'djangoUrl', 'Logging', function($rootScope, $http, $q, djangoUrl, Logging) {
 

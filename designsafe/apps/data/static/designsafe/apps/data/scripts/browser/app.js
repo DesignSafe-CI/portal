@@ -4,22 +4,19 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var app = angular.module('DataDepotBrowser', [
+  var app = angular.module('designsafe');
+  app.requires.push(
     'ngCookies',
     'djng.urls',
     'ui.bootstrap',
-    'ng.designsafe',
+    'designsafe',
     'django.context',
     'toastr',
     'ds.wsBus'
-  ]);
+  );
 
   app.config(['WSBusServiceProvider', '$httpProvider', '$locationProvider', 'toastrConfig',
     function config(WSBusServiceProvider, $httpProvider, $locationProvider, toastrConfig) {
-      $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-      $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-      $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-
       $locationProvider.html5Mode(true);
 
       /*

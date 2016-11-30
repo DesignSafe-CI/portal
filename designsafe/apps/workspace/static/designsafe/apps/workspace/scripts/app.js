@@ -1,11 +1,7 @@
 (function(window, angular, $) {
   "use strict";
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider,  $stateProvider, $urlRouterProvider, toastrConfig) {
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, toastrConfig) {
     angular.extend(toastrConfig, {
       positionClass: 'toast-bottom-left',
       timeOut: 20000
@@ -29,13 +25,13 @@
 
   }
 
-  angular.module('WorkspaceApp', [
+  angular.module('designsafe').requires.push(
     'ngCookies',
     'djng.urls',
     'ui.bootstrap',
     'ui.router',
     'schemaForm',
-    'ng.designsafe',
+    'designsafe',
     'ds.wsBus',
     'ds.notifications',
     'logging',
@@ -44,9 +40,10 @@
     'xeditable',
     'pascalprecht.translate',
     'ngStorage'
-  ]).config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider',  '$stateProvider', '$urlRouterProvider', 'toastrConfig', config]);
+  );
+  angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', 'toastrConfig', config]);
 
-  angular.module('WorkspaceApp')
+  angular.module('designsafe')
     .run(['WSBusService', function init(WSBusService){
         WSBusService.init(WSBusService.url);
     }])
