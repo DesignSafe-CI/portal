@@ -45,12 +45,13 @@ class AgaveFileManager(BaseFileManager):
     def import_data(self, system, file_path, from_system, from_file_path):
         file_path = file_path or '/'
         if file_path != '/':
-            file_path.strip('/')
+            file_path = file_path.strip('/')
         from_file_path = from_file_path.strip('/')
         f = BaseFileResource.listing(self._ag, system, file_path)
-        res = f.import_data(from_system, from_file_path)# 
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, file_path)})
+        res = f.import_data(from_system, from_file_path)
+        file_name = from_file_path.split('/')[-1]
+        reindex_agave.apply_async(kwargs={'username': 'ds_admin',
+                                          'file_id': '{}/{}'.format(system, os.path.join(file_path, file_name))})
         return res
 
     def copy(self, system, file_path, dest_path=None, dest_name=None):
@@ -78,9 +79,10 @@ class AgaveFileManager(BaseFileManager):
 
     def delete(self, system, path):
         resp = BaseFileResource(self._ag, system, path).delete()
-        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        parent_path = '/'.join(path.strip('/').split('/')[:-1])
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, parent_path)})
+                                            'file_id': '{}/{}'.format(system, parent_path),
+                                            'levels': 1})
         return resp
 
     def download(self, system, path):
