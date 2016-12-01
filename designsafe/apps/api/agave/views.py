@@ -221,7 +221,9 @@ class FileMediaView(View):
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'trash':
-                trash_path = request.user.username + '/.Trash'
+                trash_path = '/Trash'
+                if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID:
+                    trash_path = request.user.username + '/.Trash'
 
                 try:
                     trashed = fm.trash(system_id, file_path, trash_path)

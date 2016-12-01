@@ -132,7 +132,7 @@
       tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
 
       var trashPath = _trashPath();
-      tests.canTrash = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
+      tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
       tests.canDelete = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path === trashPath;
 
       return tests;
@@ -928,6 +928,7 @@
       });
       return $q.all(trashPromises).then(function(val) {
         currentState.busy = false;
+        browse(currentState.listing, apiParams);
         return val;
       }, function(err) {
         logger.error(err);

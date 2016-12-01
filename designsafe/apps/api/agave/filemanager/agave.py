@@ -117,7 +117,8 @@ class AgaveFileManager(BaseFileManager):
                                             'file_id': '{}/{}'.format(system, parent_path),
                                             'levels': 1})
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, os.path.join(dest_path, resp.name))})
+                                            'file_id': '{}/{}'.format(system, os.path.join(dest_path, resp.name)),
+                                            'levels': 1})
         return resp
 
     def rename(self, system, file_path, rename_to):
@@ -161,15 +162,15 @@ class AgaveFileManager(BaseFileManager):
             if e.response.status_code != 404:
                 raise
 
+        resp = f.move(trash_path, name)
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        parent_path = parent_path.strip('/') or '/'
+        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                            'file_id': '{}/{}'.format(system, trash_path),
+                                            'levels': 1})
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
                                             'levels': 1})
-        resp = f.move(trash_path, name)
-        file_path = os.path.join(trash_path, name)
-        parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
-        reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, parent_path)})
         return resp
 
     def upload(self, system, file_path, upload_file):
