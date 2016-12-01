@@ -7,6 +7,9 @@ from designsafe.apps.api.agave.models.files import (BaseFileResource,
                                                     BaseAgaveFileHistoryRecord)
 from designsafe.apps.api.tasks import reindex_agave
 from requests import HTTPError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AgaveFileManager(BaseFileManager):
@@ -107,12 +110,12 @@ class AgaveFileManager(BaseFileManager):
         f = BaseFileResource.listing(self._ag, system, file_path)
         resp = f.move(dest_path, dest_name)
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
+        parent_path = parent_path.strip('/') or '/'
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
                                             'levels': 1})
-
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, os.path.join(dest_path, dest_name))})
+                                            'file_id': '{}/{}'.format(system, os.path.join(dest_path, resp.name))})
         return resp
 
     def rename(self, system, file_path, rename_to):
