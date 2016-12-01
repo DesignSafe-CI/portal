@@ -655,6 +655,7 @@ class BaseFilePermissionResource(BaseAgaveResource):
             systemId=self.agave_file.system,
             filePath=self.agave_file.path,
             body=self.request_body)
+        logger.info('Setting permissions: %s', self.request_body)
         return self
 
     def delete(self):

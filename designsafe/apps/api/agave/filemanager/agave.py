@@ -129,7 +129,8 @@ class AgaveFileManager(BaseFileManager):
 
     def share(self, system, file_path, username, permission):
         f = BaseFileResource(self._ag, system, file_path)
-        pem = BaseFilePermissionResource(self._ag, f)
+        recursive = True
+        pem = BaseFilePermissionResource(self._ag, f, recursive=recursive)
         pem.username = username
         pem.permission_bit = permission
         resp = pem.save()
