@@ -1,12 +1,10 @@
 <div class="list-group list-group-root well">
-    <a class="list-group-item" ng-repeat-start="routerItem in routerItems" ng-click="itemClicked(routerItem)">
-        <i class="fa" ng-class="{'fa-caret-right': routerItem.collapse, 'fa-caret-down': !routerItem.collapse}"></i>
-        {{ routerItem.name }}
-    </a>
 
-    <div class="list-group collapse" ng-if="routerItem.children.length > 0" ng-class="{'in': !routerItem.collapse}" ng-repeat-end>
+    <div class="list-group collapse" 
+         ng-class="{'in': !routerItem.collapse}" 
+         ng-repeat="childItem in routerItems">
+
         <a class="list-group-item"
-           ng-repeat="childItem in routerItem.children"
            ui-sref="{{ childItem.state }}"
            ui-sref-active="active">
             {{ childItem.name }}
