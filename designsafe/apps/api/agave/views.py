@@ -62,7 +62,10 @@ class FileListingView(View):
                 return JsonResponse(listing)
             else:
                 try:
-                    listing = fm.listing(system=system_id, file_path=file_path)
+                    offset = int(request.GET.get('offset', 0))
+                    limit = int(request.GET.get('limit', 100))
+                    listing = fm.listing(system=system_id, file_path=file_path,
+                                         offset=offset, limit=limit)
                     return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception('Unable to list files')

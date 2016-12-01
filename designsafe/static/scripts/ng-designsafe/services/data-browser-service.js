@@ -19,7 +19,10 @@
       busyListing: false,
       error: null,
       listing: null,
-      selected: []
+      selected: [],
+      loadingMore: false,
+      reachedEnd: false,
+      page: 0
     };
 
     var apiParams = {
@@ -146,6 +149,10 @@
       currentState.busy = true;
       currentState.busyListing = true;
       currentState.error = null;
+      currentState.loadingMore = false;
+      currentState.reachedEnd = false;
+      currentState.busyListingPage = false;
+      currentState.page = 0;
       return FileListing.get(options, apiParams).then(function (listing) {
         select([], true);
         currentState.busy = false;
@@ -1185,6 +1192,36 @@
       });
     }
 
+    function scrollToTop(){
+      return;
+    }
+
+    function scrollToBottom(){
+      if (currentState.loadingMore || currentState.reachedEnd){
+        return;
+      }
+      currentState.loadingMore = true;
+      if (currentState.listing && currentState.listing.children &&
+          currentState.listing.children.length < 100){
+        currentState.reachedEnd = true;
+        return;
+      }
+      currentState.page += 1;
+      currentState.loadingMore = true;
+      browsePage({system: currentState.listing.system,
+                  path: currentState.listing.path,
+                  page: currentState.page})
+      .then(function(listing){
+          currentState.loadingMore = false;
+          if (listing.children.length < 100) {
+            currentState.reachedEnd = true;
+          }
+        }, function (err){
+             currentState.loadingMore = false;
+             currentState.reachedEnd = true;
+        });
+    }
+
     return {
       /* properties */
       FileEvents: FileEvents,
@@ -1195,6 +1232,8 @@
       allowedActions: allowedActions,
       browse: browse,
       browsePage: browsePage,
+      scrollToTop: scrollToTop,
+      scrollToBottom: scrollToBottom,
       copy: copy,
       deselect: deselect,
       // details: details,

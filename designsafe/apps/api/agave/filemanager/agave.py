@@ -89,8 +89,8 @@ class AgaveFileManager(BaseFileManager):
     # def index(self):
     #     pass
 
-    def listing(self, system, file_path):
-        return BaseFileResource.listing(self._ag, system, file_path)
+    def listing(self, system, file_path, offset, limit):
+        return BaseFileResource.listing(self._ag, system, file_path, offset, limit)
 
     def list_permissions(self, system, file_path):
         f = BaseFileResource(self._ag, system, file_path)
