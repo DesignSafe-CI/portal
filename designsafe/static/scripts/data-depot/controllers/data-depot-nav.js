@@ -7,11 +7,7 @@
     $scope.myDataFileId = 'designsafe.storage.default/' + Django.user + '/';
     $scope.sharedFileId = 'designsafe.storage.default/$SHARE/';
 
-    $scope.routerItems.push({
-      name: 'Public',
-      collapsible: true,
-      collapse: false,
-      children: [
+    $scope.routerItems.push(
         {
           name: 'Published',
           collapsible: false,
@@ -27,15 +23,10 @@
           collapsible: false,
           state: 'trainingMaterials'
         }*/
-      ]
-    });
+    );
 
     if (Django.context.authenticated) {
-      $scope.routerItems.splice(0, 0, {
-        name: 'Private',
-        collapsible: true,
-        collapse: false,
-        children: [
+      $scope.routerItems.splice(0, 0, 
           {
             name: 'My Data',
             collapsible: false,
@@ -61,8 +52,7 @@
             collapsible: false,
             state: 'boxData'
           }
-        ]
-      });
+      );
 
       // $scope.routerItems.push({
       //     name: 'Workspace',

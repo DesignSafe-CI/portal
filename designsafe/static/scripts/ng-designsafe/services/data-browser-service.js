@@ -19,7 +19,10 @@
       busyListing: false,
       error: null,
       listing: null,
-      selected: []
+      selected: [],
+      loadingMore: false,
+      reachedEnd: false,
+      page: 0
     };
 
     var apiParams = {
@@ -129,7 +132,7 @@
       tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
 
       var trashPath = _trashPath();
-      tests.canTrash = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
+      tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
       tests.canDelete = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path === trashPath;
 
       return tests;
@@ -146,6 +149,10 @@
       currentState.busy = true;
       currentState.busyListing = true;
       currentState.error = null;
+      currentState.loadingMore = false;
+      currentState.reachedEnd = false;
+      currentState.busyListingPage = false;
+      currentState.page = 0;
       return FileListing.get(options, apiParams).then(function (listing) {
         select([], true);
         currentState.busy = false;
@@ -221,16 +228,6 @@
             {label: 'My Projects',
              conf: {system: 'projects', path: ''}}
           ];
-          
-          //SystemsService.list({type: 'storage', public: false}).then(function (list) {
-          //  $scope.options = $scope.options.concat(_.map(list, function (sys) {
-          //    return {
-          //      label: sys.name,
-          //      type: 'My Projects',
-          //      conf: {system: sys.id, path: '/'}
-          //    };
-          //  }));
-          //});
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
@@ -462,7 +459,7 @@
 
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-move.html',
-        controller: ['$scope', '$uibModalInstance', 'FileListing', 'files', 'initialDestination', function ($scope, $uibModalInstance, FileListing, files, initialDestination) {
+        controller: ['$scope', '$uibModalInstance', 'FileListing', 'files', 'initialDestination', 'ProjectService', function ($scope, $uibModalInstance, FileListing, files, initialDestination, ProjectService) {
 
           $scope.data = {
             files: files
@@ -473,32 +470,40 @@
 
           $scope.state = {
             busy: false,
-            error: null
+            error: null,
+            listingProjects: false
           };
 
           $scope.options = [
-            {label: 'My Data', conf: {system: 'designsafe.storage.default', path: ''}}]; /*,
-            {label: 'Shared with me', conf: {system: 'designsafe.storage.default', path: '$SHARE'}}
+            {label: 'My Data', 
+             conf: {system: 'designsafe.storage.default', path: ''}},
+            {label: 'Shared with me', 
+             conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
+            {label: 'My Projects',
+             conf: {system: 'projects', path: ''}}
           ];
-          
-          SystemsService.list({type: 'storage', public: false}).then(function (list) {
-            $scope.options = $scope.options.concat(_.map(list, function (sys) {
-              return {
-                label: sys.name,
-                conf: {system: sys.id, path: '/'}
-              };
-            }));
-          });*/
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
             $scope.state.busy = true;
-            FileListing.get($scope.currentOption.conf)
-              .then(function (listing) {
-                $scope.listing = listing;
-                $scope.state.busy = false;
+            var conf = $scope.currentOption.conf;
+            if (conf.system != 'projects'){
+                $scope.state.listingProjects = false;
+                FileListing.get(conf)
+                  .then(function (listing) {
+                    $scope.listing = listing;
+                    $scope.state.busy = false;
+                  });
+            } else {
+              $scope.state.listingProjects = true;
+              ProjectService.list()
+                .then(function(projects){
+                  $scope.projects = _.map(projects, function(p) {
+                    p.href = $state.href('projects.view', {projectId: p.uuid});
+                    return p;});
+                  $scope.state.busy = false;
               });
-
+            }
             if ($scope.currentOption.label === 'My Data') {
               $scope.customRoot = null;
             } else {
@@ -515,16 +520,20 @@
           $scope.onBrowse = function ($event, fileListing) {
             $event.preventDefault();
             $event.stopPropagation();
-
+            $scope.state.listingProjects = false;
             var system = fileListing.system || fileListing.systemId;
             var path = fileListing.path;
+            if (typeof system === 'undefined' && typeof path === 'undefined' && fileListing.value){
+                system = 'project-' + fileListing.uuid;
+                path = '/';
+            }
             if (system === 'designsafe.storage.default' && path === '/') {
               path = path + fileListing.name;
             }
 
             $scope.state.busy = true;
             $scope.state.error = null;
-            FileListing.get({system: fileListing.system, path: fileListing.path}).then(
+            FileListing.get({system: system, path: path}).then(
               function (listing) {
                 $scope.listing = listing;
                 $scope.state.busy = false;
@@ -558,11 +567,11 @@
       return modal.result.then(
         function (result) {
           currentState.busy = true;
-          if (result.system !== files[0].system){
-            return $q.when(files);
-          }
+          //if (result.system !== files[0].system){
+          //  return $q.when(files);
+          //}
           var movePromises = _.map(files, function (f) {
-            return f.move({path: result.path}).then(function (result) {
+            return f.move({system: result.system, path: result.path}).then(function (result) {
               deselect([f]);
               notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
               return result;
@@ -919,6 +928,7 @@
       });
       return $q.all(trashPromises).then(function(val) {
         currentState.busy = false;
+        browse(currentState.listing, apiParams);
         return val;
       }, function(err) {
         logger.error(err);
@@ -1185,6 +1195,36 @@
       });
     }
 
+    function scrollToTop(){
+      return;
+    }
+
+    function scrollToBottom(){
+      if (currentState.loadingMore || currentState.reachedEnd){
+        return;
+      }
+      currentState.loadingMore = true;
+      if (currentState.listing && currentState.listing.children &&
+          currentState.listing.children.length < 100){
+        currentState.reachedEnd = true;
+        return;
+      }
+      currentState.page += 1;
+      currentState.loadingMore = true;
+      browsePage({system: currentState.listing.system,
+                  path: currentState.listing.path,
+                  page: currentState.page})
+      .then(function(listing){
+          currentState.loadingMore = false;
+          if (listing.children.length < 100) {
+            currentState.reachedEnd = true;
+          }
+        }, function (err){
+             currentState.loadingMore = false;
+             currentState.reachedEnd = true;
+        });
+    }
+
     return {
       /* properties */
       FileEvents: FileEvents,
@@ -1195,6 +1235,8 @@
       allowedActions: allowedActions,
       browse: browse,
       browsePage: browsePage,
+      scrollToTop: scrollToTop,
+      scrollToBottom: scrollToBottom,
       copy: copy,
       deselect: deselect,
       // details: details,

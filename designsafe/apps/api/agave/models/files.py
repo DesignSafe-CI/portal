@@ -342,7 +342,7 @@ class BaseFileResource(BaseAgaveResource):
         return BaseFilePermissionResource.list_permissions(self._agave, self, username)
 
     @classmethod
-    def listing(cls, agave_client, system, path):
+    def listing(cls, agave_client, system, path, offset=0, limit=100):
         """
         List the File for the given systen and path.
 
@@ -358,9 +358,11 @@ class BaseFileResource(BaseAgaveResource):
             - 404 If the ``path`` does not exist on ``system``.
         """
         list_result = agave_client.files.list(systemId=system,
-                                              filePath=urllib.quote(path))
+                                              filePath=urllib.quote(path), 
+                                              offset=offset,
+                                              limit=limit)
         listing = cls(agave_client=agave_client, **list_result[0])
-        if listing.type == 'dir':
+        if listing.type == 'dir' or offset:
             # directory names display as "." from API
             listing.name = os.path.basename(listing.path)
 
@@ -653,6 +655,7 @@ class BaseFilePermissionResource(BaseAgaveResource):
             systemId=self.agave_file.system,
             filePath=self.agave_file.path,
             body=self.request_body)
+        logger.info('Setting permissions: %s', self.request_body)
         return self
 
     def delete(self):

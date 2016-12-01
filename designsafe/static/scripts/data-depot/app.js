@@ -79,7 +79,7 @@
             if (/[^A-Za-z0-9]/.test(queryString)){
               queryString = '"' + queryString + '"';
             }
-            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit};
+            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
             return DataBrowserService.search(options);
           }],
           'auth': function($q) {
@@ -144,7 +144,7 @@
             if (/[^A-Za-z0-9]/.test(queryString)){
               queryString = '"' + queryString + '"';
             }
-            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
+            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
             return DataBrowserService.search(options);
           }],
           'auth': function($q) {
@@ -243,7 +243,7 @@
             if (/[^A-Za-z0-9]/.test(queryString)){
               queryString = '"' + queryString + '"';
             }
-            var options = {system: $stateParams.systemId, query_string: $stateParams.query_string, offset: $stateParams.offset, limit: $stateParams.limit};
+            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
             return DataBrowserService.search(options);
           }],
           'auth': function($q) {

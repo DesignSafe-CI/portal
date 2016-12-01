@@ -19,6 +19,13 @@
       user: Django.user
     };
 
+    $scope.scrollToTop = function(){
+      return;
+    };
+    $scope.scrollToBottom = function(){
+      DataBrowserService.scrollToBottom();
+    };
+
     $scope.resolveBreadcrumbHref = function (trailItem) {
       return $state.href('myData', {systemId: $scope.browser.listing.system, filePath: trailItem.path});
     };

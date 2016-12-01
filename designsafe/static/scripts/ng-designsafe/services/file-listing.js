@@ -292,6 +292,7 @@
       var self = this;
       var body = {
         "action": "move",
+        "system": options.system,
         "path": options.path,
         "name": options.name
       };

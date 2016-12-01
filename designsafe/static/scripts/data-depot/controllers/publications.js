@@ -37,29 +37,7 @@
       return;
     };
     $scope.scrollToBottom = function(){
-      if ($scope.state.loadingMore || $scope.state.reachedEnd){
-        return;
-      }
-      $scope.state.loadingMore = true;
-      if ($scope.browser.listing && $scope.browser.listing.children &&
-          $scope.browser.listing.children.length < 100){
-        $scope.state.reachedEnd = true;
-        return;
-      }
-      $scope.state.page += 1;
-      $scope.state.loadingMore = true;
-      DataBrowserService.browsePage({system: $scope.browser.listing.system,
-                                 path: $scope.browser.listing.path,
-                                 page: $scope.state.page})
-                         .then(function(listing){
-                           $scope.state.loadingMore = false;
-                           if (listing.children.length < 100) {
-                             $scope.state.reachedEnd = true;
-                           }
-                         }, function (err){
-                           $scope.state.loadingMore = false;
-                           $scope.state.reachedEnd = true;
-                         });
+      DataBrowserService.scrollToBottom();
     };
 
     $scope.onBrowse = function($event, file) {

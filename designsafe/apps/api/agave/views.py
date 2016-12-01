@@ -62,7 +62,10 @@ class FileListingView(View):
                 return JsonResponse(listing)
             else:
                 try:
-                    listing = fm.listing(system=system_id, file_path=file_path)
+                    offset = int(request.GET.get('offset', 0))
+                    limit = int(request.GET.get('limit', 100))
+                    listing = fm.listing(system=system_id, file_path=file_path,
+                                         offset=offset, limit=limit)
                     return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception('Unable to list files')
@@ -186,7 +189,11 @@ class FileMediaView(View):
 
             elif action == 'move':
                 try:
-                    moved = fm.move(system_id, file_path, body.get('path'), body.get('name'))
+                    if body.get('system') != system_id:
+                        moved = fm.import_data(body.get('system'), body.get('path'), system_id, file_path)
+                        fm.delete(system_id, file_path)
+                    else:
+                        moved = fm.move(system_id, file_path, body.get('path'), body.get('name'))
                     return JsonResponse(moved, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
@@ -214,7 +221,9 @@ class FileMediaView(View):
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'trash':
-                trash_path = request.user.username + '/.Trash'
+                trash_path = '/Trash'
+                if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID:
+                    trash_path = request.user.username + '/.Trash'
 
                 try:
                     trashed = fm.trash(system_id, file_path, trash_path)

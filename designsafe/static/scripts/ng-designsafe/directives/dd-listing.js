@@ -15,7 +15,9 @@
         browser: '=',
         onBrowse: '&',
         onSelect: '&',
-        onDetail: '&'
+        onDetail: '&',
+        scrollToTop: '&',
+        scrollToBottom: '&',
       }
     };
   });

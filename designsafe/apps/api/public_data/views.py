@@ -85,3 +85,30 @@ class PublicSearchView(BaseApiView):
         listing = file_mgr.search(system_id, query_string,
                                   offset=offset, limit=limit)
         return JsonResponse(listing)
+
+class PublicPemsView(BaseApiView):
+    """ Pems View.
+        Since this are the permissions for the published data,
+        we will only return an array with the request username and
+        READ permission. """
+    def get(self, request, file_mgr_name,
+            system_id = None, file_path = None):
+        """ GET handler """
+        if file_mgr_name != PublicElasticFileManager.NAME:
+            return HttpResponseBadRequest()
+
+        if system_id is None:
+            system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
+
+        pems = [{'username': 'AnonymousUser', 
+                'permission': {'read': True,
+                               'write': False,
+                               'execute': False}}]
+        if request.user.is_authenticated():
+            pems.append({'username': request.user.username, 
+                         'permission': {'read': True,
+                                        'write': False,
+                                        'execute': False}})
+                             
+        return JsonResponse(pems, safe=False)
+

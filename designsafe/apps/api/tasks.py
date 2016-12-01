@@ -1,6 +1,7 @@
 from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 import shutil
@@ -20,7 +21,15 @@ def reindex_agave(self, username, file_id, full_indexing = True,
     from designsafe.apps.api.data import AgaveFileManager
     agave_fm = AgaveFileManager(user)
     system_id, file_user, file_path = agave_fm.parse_file_id(file_id)
-    logger.debug('reindexing file_user %s', file_user)
+    if system_id != settings.AGAVE_STORAGE_SYSTEM:
+        file_id_comps = file_id.strip('/').split('/')
+        system_id = file_id_comps[0]
+        file_user = username
+        if len(file_id_comps) > 1:
+            file_path = os.path.join(*file_id_comps[1:])
+        else:
+            file_path = '/'
+
     agave_fm.indexer.index(system_id, file_path, file_user, 
                            full_indexing = full_indexing, 
                            pems_indexing = pems_indexing, 
