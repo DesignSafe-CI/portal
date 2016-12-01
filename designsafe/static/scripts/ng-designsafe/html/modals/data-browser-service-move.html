@@ -31,7 +31,7 @@
             <th>Action</th>
             </thead>
 
-            <tbody>
+            <tbody ng-if="!state.busy">
             <tr ng-repeat="item in listing.children">
                 <td>
                     <i class="fa {{ item.icon() }}"></i>

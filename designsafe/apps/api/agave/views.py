@@ -189,7 +189,11 @@ class FileMediaView(View):
 
             elif action == 'move':
                 try:
-                    moved = fm.move(system_id, file_path, body.get('path'), body.get('name'))
+                    if body.get('system') != system_id:
+                        moved = fm.import_data(body.get('system'), body.get('path'), system_id, file_path)
+                        fm.delete(system_id, file_path)
+                    else:
+                        moved = fm.move(system_id, file_path, body.get('path'), body.get('name'))
                     return JsonResponse(moved, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)

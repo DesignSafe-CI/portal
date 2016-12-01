@@ -567,11 +567,11 @@
       return modal.result.then(
         function (result) {
           currentState.busy = true;
-          if (result.system !== files[0].system){
-            return $q.when(files);
-          }
+          //if (result.system !== files[0].system){
+          //  return $q.when(files);
+          //}
           var movePromises = _.map(files, function (f) {
-            return f.move({path: result.path}).then(function (result) {
+            return f.move({system: result.system, path: result.path}).then(function (result) {
               deselect([f]);
               notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
               return result;
