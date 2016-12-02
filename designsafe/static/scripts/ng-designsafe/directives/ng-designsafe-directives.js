@@ -198,11 +198,13 @@
       link: function (scope, element, attrs) {
         var topClass = attrs.dsFixTop; // get CSS class from directive's attribute value
  		 
-		var offsetTop = $('.site-banner').height();
+        var navbar = $('.navbar-ds');
+		var offsetTop = 0;
         $win.on('scroll', function (e) {
-            offsetTop = $('.site-banner').height();
-          if ($win.scrollTop() >= offsetTop) {
+            offsetTop = $('.site-banner').height() + (navbar.height() / 2);
+           if ($win.scrollTop() >= offsetTop) {
             element.addClass(topClass);
+			element.css({top: navbar.position().top + navbar.height()});
           } else {
             element.removeClass(topClass);
           }

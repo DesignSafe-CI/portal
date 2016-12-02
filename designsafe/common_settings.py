@@ -28,6 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
 # SESSION_ENGINE = 'redis_sessions.session'
 # SESSION_REDIS_HOST = 'redis'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
