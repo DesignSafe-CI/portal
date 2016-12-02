@@ -48,16 +48,13 @@ class BaseFileMetadata(BaseMetadataResource):
     def search(cls, agave_client, q):
         if isinstance(q, dict):
             q = json.dumps(q)
-        logger.debug('meta q: %s', q)
         result = agave_client.meta.listMetadata(q=q)
-        logger.debug('meta result: %d', len(result))
         return [cls(agave_client=agave_client, file_obj=None, **r) for r in result]
 
     def update(self, metadata):
         keywords = metadata.get('keywords', '')
         keywords = [kw.strip() for kw in keywords]
         keywords = list(set(keywords))
-        logger.debug('keywords: {}'.format(keywords))
         self.value['keywords'] = keywords
         self.save()
         return self

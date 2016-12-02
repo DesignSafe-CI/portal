@@ -26,6 +26,7 @@
     };
 
     $scope.onBrowse = function($event, file) {
+      $event.preventDefault();
       $event.stopPropagation();
     
       var systemId = file.system || file.systemId;
@@ -43,6 +44,7 @@
     };
 
     $scope.onSelect = function($event, file) {
+      $event.preventDefault();
       $event.stopPropagation();
 
       if ($event.ctrlKey || $event.metaKey) {
@@ -78,6 +80,7 @@
     };
 
     $scope.onDetail = function($event, file) {
+      $event.preventDefault();
       $event.stopPropagation();
       DataBrowserService.preview(file, $scope.browser.listing);
     };

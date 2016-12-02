@@ -152,5 +152,10 @@
       }
     };
 
+    $scope.onDetail = function($event, file) {
+      $event.stopPropagation();
+      DataBrowserService.preview(file, $scope.browser.listing);
+    };
+
   }]);
 })(window, angular);
