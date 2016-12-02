@@ -369,3 +369,9 @@
 .files-listing-table td{
     word-wrap: break-word;
 }
+
+.dd-toolbar-fixed-top {
+    position: fixed;
+    border: 1px black solid;
+    z-index: 1099;
+}
