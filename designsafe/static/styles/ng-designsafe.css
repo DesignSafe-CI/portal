@@ -374,4 +374,7 @@
     position: fixed;
     border: 1px black solid;
     z-index: 1099;
+    top:55px;
+	left:22%;
+	right:10%;
 }

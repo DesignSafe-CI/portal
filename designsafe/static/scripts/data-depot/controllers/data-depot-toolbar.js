@@ -66,7 +66,5 @@
                    'filePath': '$SEARCH'});
       }
     };
-
-
   }]);
 })(window, angular);

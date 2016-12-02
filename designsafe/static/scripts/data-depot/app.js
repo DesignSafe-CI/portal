@@ -346,21 +346,3 @@
 }]);
 
 })(window, angular);
-
-(function(window, $, undefined){
-  var supportPageOffset = window.pageXOffset !== undefined;
-  var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
-
-  var fixer = function(e) {
-    var h = $('.site-banner').height() + $('.navbar').height() + 3;
-    var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
-    if (y > h) {
-      $('.dd-toolbar').addClass('dd-toolbar-fixed-top');
-      $('.dd-toolbar').style('top: ' + y + 'px;');
-    } else {
-      $('.dd-toolbar').removeClass('dd-toolbar-fixed-top');
-    }
-  };
-  $(document).on('scroll', window.throttle(fixer, 100));
-  fixer();
-})(window, jQuery, undefined);    
