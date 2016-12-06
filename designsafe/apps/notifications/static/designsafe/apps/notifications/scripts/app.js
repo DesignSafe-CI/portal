@@ -14,11 +14,12 @@
   app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr');
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
-  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'logger', function($scope,$rootScope,notificationFactory, logger) {
+  
+  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'Logging', function($scope,$rootScope,notificationFactory, Logging) {
       $scope.data = {};
       $scope.showRawMessage = false;
       $scope.data.notifications = [];
-      logger = Logging.getLogger('DesignSafe.notifications');
+      var logger = Logging.getLogger('DesignSafe.notifications');
 
       $scope.list = function(){
         notificationFactory.list().then(function(resp) {

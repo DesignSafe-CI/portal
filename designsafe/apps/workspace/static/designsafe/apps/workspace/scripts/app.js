@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, toastrConfig) {
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $urlRouterProvider, $stateProvider, toastrConfig) {
     angular.extend(toastrConfig, {
       positionClass: 'toast-bottom-left',
       timeOut: 20000
@@ -41,7 +41,7 @@
     'pascalprecht.translate',
     'ngStorage'
   );
-  angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', 'toastrConfig', config]);
+  angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$urlRouterProvider', '$stateProvider', 'toastrConfig', config]);
 
   angular.module('designsafe')
     .run(function(editableOptions) {
