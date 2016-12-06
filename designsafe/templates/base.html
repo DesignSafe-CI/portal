@@ -53,18 +53,46 @@
 
     <script type="text/javascript" src="{% static 'scripts/logging/logger.js' %}"></script>
 
+    <script src="{% static 'vendor/angular-httpi/build/httpi.min.js' %}"></script>
+
+    {% block scripts %}{% endblock %}
+    {% render_block "js" %}
+
+        <!-- DATA BROWSER DIRECTIVES/SREVICES -->
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-search-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-shared-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-public-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-public-search-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-box-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-breadcrumb.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/metadata-listing.js' %}"></script>
+        <!-- -->
+
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
+
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/data-browser-filters.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
+
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-service.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/user-service.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/file-listing.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-browser-service.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/project-service.js' %}"></script>
+        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/systems-service.js' %}"></script>
+		<!-- DATA BROWSER DIRECTIVES/SERVICES -->
+
     <script type="text/javascript">
         (function(angular) {
-            var initial = angular.module('django.context', []);
-            initial.value('Django', {
+            var django = angular.module('django.context', []);
+            django.constant('Django', {
                 user: "{{ request.user }}",
                 context: {{ angular_init|default:"{}"|safe }}
             });
         })(angular);
     </script>
 
-    {% block scripts %}{% endblock %}
-    {% render_block "js" %}
     {% include 'includes/analytics.html' %}
   </body>
 </html>
