@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseBadRequest
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
@@ -32,13 +33,22 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         n.read = read
         n.save()
 
-    def delete(self, request, *args, **kwargs):
-        body_json = json.loads(request.body)
-        nid = body_json['id']
-        deleted = body_json['deleted']
-        n = Notification.get(id = nid)
-        n.deleted = deleted
-        n.save()
+    def delete(self, request, pk, *args, **kwargs):
+        # body_json = json.loads(request.body)
+        # nid = body_json['id']
+        # deleted = body_json['deleted']
+        # n = Notification.objects.get(pk = pk)
+        # n.deleted = deleted
+        # n.save()
+        if pk == 'all':
+            items=Notification.objects.filter(deleted=False, user=str(request.user))
+            for i in items:
+                i.mark_deleted()
+        else:
+            x = Notification.objects.get(pk=pk)
+            x.mark_deleted()
+
+        return HttpResponse('OK')
 
 class NotificationsBadgeView(SecureMixin, JSONResponseMixin, BaseApiView):
 

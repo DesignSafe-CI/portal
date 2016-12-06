@@ -16,18 +16,18 @@
             <dl class="dl-horizontal">
               <div>
                 <dt>Type</dt>
-                <dd>{{ x.fields.event_type }}</dd>
+                <dd>{{ x.event_type }}</dd>
                 <dt>Time</dt>
-                <dd>{{x.fields.datetime| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
+                <dd>{{x.datetime| date:'yyyy-MM-dd HH:mm:ss Z'}}</dd>
                 <dt>Operation</dt>
-                <dd>{{x.fields.operation}}</dd>
+                <dd>{{x.operation}}</dd>
                 <dt>Status</dt>
-                <dd>{{x.fields.status}}</dd>
+                <dd>{{x.status}}</dd>
                 <dt>Message</dt>
-                <dd>{{x.fields.message}}</dd>
+                <dd>{{x.message}}</dd>
                 <div ng-if="x.fields.extra.target_path">
                   <dt>View Files</dt>
-                  <dd>{{x.fields.extra.target_path}}</dd>
+                  <dd>{{x.extra.target_path}}</dd>
                 </div>
                 <div ng-repeat="item in x.fields.body.html">
                   <div ng-repeat="(key, val) in item">
@@ -79,7 +79,7 @@
     </ul>
 </div>
 
-<div ng-if="!data.notifications.length" class="jumbotron text-center">
+<div ng-if="data.notifications.length === 0" class="jumbotron text-center">
   <i class="fa fa-bell fa-2x text-muted"></i>
   <h2>No unread notifications.</h2>
   <p>
