@@ -22,7 +22,13 @@
                 {% else %}
                 <dd class='text-warning'> No website given </dd>
                 {% endif %}
-                
+               
+                <dt> Orcid ID </dt>
+                {% if profile.orcid_id %}
+                <dd> {{ profile.orcid_id }} </a> </dd>
+                {% else %}
+                <dd class='text-warning'> Not given </dd>
+                {% endif %} 
                 
                 <dt> Professional Level </dt>
                 {% if profile.professional_level %}
