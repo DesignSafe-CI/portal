@@ -14,8 +14,8 @@
   app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr');
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
-  
-  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'Logging', function($scope,$rootScope,notificationFactory, Logging) {
+
+  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'Logging', 'djangoUrl', function($scope,$rootScope,notificationFactory,Logging, djangoUrl) {
       $scope.data = {};
       $scope.showRawMessage = false;
       $scope.data.notifications = [];
@@ -29,6 +29,12 @@
               $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
               // $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
               $scope.data.notifications[i]['datetime'] = Date($scope.data.notifications[i]['datetime']);
+
+              if ($scope.data.notifications[i]['event_type'] == 'job') {
+                $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': $scope.data.notifications[i]['pk']});
+              } else if ($scope.data.notifications[i]['event_type'] == 'data') {
+                $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
+              }
             }
         });
       };

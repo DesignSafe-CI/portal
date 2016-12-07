@@ -71,8 +71,11 @@
                 </div>
               </div> -->
             </dl>
-            <div ng-if="x.fields.body.action_link">
+            <!-- <div ng-if="x.fields.body.action_link">
               <a href="{{x.fields.body.action_link.value}}" target="_blank" class="btn btn-primary">{{x.fields.body.action_link.label}}</a>
+            </div> -->
+            <div>
+              <a href="{{x.action_link}}" target="_blank" class="btn btn-primary">View</a>
             </div>
           </div>
         </li>

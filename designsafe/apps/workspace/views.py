@@ -281,5 +281,6 @@ def process_notification(request, pk, **kwargs):
     archive_id = '%s/%s' % (archiveSystem, archivePath)
 
     target_path = reverse('designsafe_data:data_browser', args=['agave', archive_id])
+    # target_path = reverse('designsafe_data:data_depot', args=['agave', archive_id])
 
     return redirect(target_path)
