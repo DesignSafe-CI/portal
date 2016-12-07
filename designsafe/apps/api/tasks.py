@@ -92,8 +92,7 @@ def share_agave(self, username, file_id, permissions, recursive):
                                  operation = 'share_finished',
                                  message = message,
                                  user = pem['user_to_share'],
-                                 extra = {'target_path': reverse('designsafe_data:data_browser',
-                                                                 args=['agave', file_id])})
+                                 extra = f_dict)
                 n.save()
 
     except:
@@ -109,7 +108,9 @@ def share_agave(self, username, file_id, permissions, recursive):
                          message='We were unable to share the specified folder/file(s). '
                                  'Please try again...',
                          user=username,
-                         extra={})
+                         extra={'system': system_id,
+                                'path': file_path
+                         })
         n.save()
 
 @shared_task(bind=True)
@@ -135,7 +136,10 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                          operation='box_download_start',
                          message='Starting download file %s from box.' % (src_file_id,),
                          user=username,
-                         extra={'target_path': target_path})
+                         # extra={'target_path': target_path})
+                         extra={'system': dest_resource,
+                                'path': dest_file_id
+                         })
         n.save()
 
         user = get_user_model().objects.get(username=username)
@@ -169,7 +173,9 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                          operation='box_download_end',
                          message='File %s has been copied from box successfully!' % (src_file_id, ),
                          user=username,
-                         extra={'target_path': target_path})
+                         extra={'system': dest_resource,
+                                'path': dest_file_id
+                         })
         n.save()
     except:
         logger.exception('Unexpected task failure: box_download', extra={
@@ -186,7 +192,11 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                          message='We were unable to get the specified file from box. '
                                  'Please try again...',
                          user=username,
-                         extra={'target_path': target_path})
+                         extra={'system': dest_resource,
+                                'path': dest_file_id,
+                                'src_file_id': src_file_id,
+                                'src_resource': src_resource
+                         })
         n.save()
 
 
@@ -270,7 +280,8 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          operation = 'box_upload_start',
                          message = 'Starting import file %s into box.' % src_file_id,
                          user = username,
-                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+                         extra={'path': src_file_id})
         n.save()
         user = get_user_model().objects.get(username=username)
 
@@ -311,7 +322,8 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          operation = 'box_upload_end',
                          message = 'File(s) %s succesfully uploaded into box!' % src_file_id,
                          user = username,
-                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), dest_resource, dest_file_id)})
+                         extra={'path': src_file_id})
+                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), dest_resource, dest_file_id)})
         n.save()
     except:
         logger.exception('Unexpected task failure: box_upload', extra={
@@ -326,7 +338,13 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          operation = 'box_download_error',
                          message = 'We were unable to get the specified file from box. Please try again...',
                          user = username,
-                         extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+                         extra={
+                                'src_resource': src_resource,
+                                'path': src_file_id,
+                                'dest_resource': dest_resource,
+                                'dest_file_id': dest_file_id,
+                            })
+                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
         n.save()
 
 
@@ -384,7 +402,11 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                          operation = 'copy_public_to_mydata_start',
                          message = 'Copying folder/files %s from public data to your private data. Please wait...' % (src_file_id, ),
                          user = username,
-                         extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), src_file_id)})
+                         extra={
+                                'system': dest_resource,
+                                'path': dest_file_id,
+                            })
+                         # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), src_file_id)})
         n.save()
         notify_status = 'SUCCESS'
         from designsafe.apps.api.data import lookup_file_manager
@@ -415,7 +437,11 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                              operation = 'copy_public_to_mydata_end',
                              message = 'Files have been copied to your private data.',
                              user = username,
-                             extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), dest_file_id)})
+                             extra={
+                                'system': dest_resource,
+                                'path': dest_file_id,
+                            })
+                             # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), dest_file_id)})
             n.save()
         else:
             logger.error('Unable to load file managers for both source=%s and destination=%s',
@@ -427,7 +453,11 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                              message = '''There was an error copying the files to your public data.
                                           Plese try again.''',
                              user = username,
-                             extra = {})
+                             extra={
+                                'system': dest_resource,
+                                'path': dest_file_id,
+                            })
+                             # extra = {})
             n.save()
     except:
         logger.exception('Unexpected task failure')
@@ -438,7 +468,11 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                          message = '''There was an error copying the files to your public data.
                                       Plese try again.''',
                          user = username,
-                         extra = {})
+                         extra={
+                                'system': dest_resource,
+                                'path': dest_file_id,
+                        })
+                         # extra = {})
         n.save()
 
 @shared_task(bind=True)
