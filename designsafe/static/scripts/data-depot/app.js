@@ -337,13 +337,13 @@
             '/ws/websockets?subscribe-broadcast&subscribe-user'
         );
 	}])
-	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
-	  WSBusService.init(WSBusService.url);
-    }]);
+// 	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
+// 	  WSBusService.init(WSBusService.url);
+//     }]);
 
-  module
-	.run(['NotificationService', 'Logging', function init(NotificationService, logger){
-	  NotificationService.init();
-}]);
+//   module
+// 	.run(['NotificationService', 'Logging', function init(NotificationService, logger){
+// 	  NotificationService.init();
+// }]);
 
 })(window, angular);

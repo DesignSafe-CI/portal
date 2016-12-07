@@ -4,7 +4,7 @@
         var processors = {};
 
         function renderLink(msg){
-          if (msg.status == 'SUCCESS') {
+          if (msg.status != 'ERROR') {
             if (msg.event_type == 'job') {
               var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
               return url
