@@ -14,7 +14,6 @@
   app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr');
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
-
   angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'logger', function($scope,$rootScope,notificationFactory, logger) {
       $scope.data = {};
       $scope.showRawMessage = false;
@@ -30,7 +29,6 @@
               $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
               $scope.data.notifications[i]['fields']['notification_time'] = Date.parse($scope.data.notifications[i]['fields']['notification_time']);
             }
-            logger.debug($scope.data.notifications)
         });
       };
       $scope.list();

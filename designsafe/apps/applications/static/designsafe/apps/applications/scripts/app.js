@@ -47,7 +47,7 @@
   }
 
   var app = angular.module('designsafe');
-  app.requires.push(
+  app.requires.push( 
     'django.context',
     'djng.urls',
     'dndLists',
@@ -55,6 +55,7 @@
     'ds.notifications',
     'logging',
     'ngCookies',
+    'designsafe',
     'pascalprecht.translate',
     'schemaForm',
     'schemaFormWizard',

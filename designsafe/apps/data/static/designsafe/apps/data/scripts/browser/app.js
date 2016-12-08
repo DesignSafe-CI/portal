@@ -10,6 +10,7 @@
     'djng.urls',
     'ui.bootstrap',
     'ds.notifications',
+    'designsafe',
     'django.context',
     'toastr',
     'ds.wsBus'
