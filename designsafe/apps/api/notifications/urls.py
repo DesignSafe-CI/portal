@@ -1,10 +1,11 @@
 from django.conf.urls import include, url, patterns
 
-from designsafe.apps.api.notifications.views.api import ManageNotificationsView
+from designsafe.apps.api.notifications.views.api import ManageNotificationsView, NotificationsBadgeView
 from designsafe.apps.api.notifications.views.webhooks import JobsWebhookView, FilesWebhookView
 
 urlpatterns = patterns('designsafe.apps.notifications.views.api',
     url(r'^$', ManageNotificationsView.as_view(), name='index'),
+    url(r'^badge/$', NotificationsBadgeView.as_view(), name='badge'),
     url(r'^(?P<event_type>\w+)/?$', ManageNotificationsView.as_view(),
                                         name='event_type_notifications'),
 )

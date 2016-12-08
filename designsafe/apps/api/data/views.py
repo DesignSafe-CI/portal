@@ -184,17 +184,15 @@ class ProcessNotificationView(BaseDataView):
     """
     View to handle redirects from notification links
     """
-    def get(self, request, *args, **kwargs):
-        pk = request.GET.get('pk')
-        logger.info('pk: {}'.format(request.GET))
-        n = Notification.objects.get(pk=pk).to_dict()
+    def get(self, request, pk, *args, **kwargs):
+        n = Notification.objects.get(pk=pk)
+        extra = n.extra_content
+        logger.info('extra: {}'.format(extra))
 
         try:
-            target_path = n['extra']['target_path']
-
+            target_path = extra['target_path']
         except KeyError as e:
-            file_id = n['extra']['id']
+            file_id = extra['id']
             target_path = reverse('designsafe_data:data_browser',
                               args=['agave', file_id])
-
         return redirect(target_path)

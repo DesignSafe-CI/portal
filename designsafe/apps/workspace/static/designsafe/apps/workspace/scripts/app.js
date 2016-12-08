@@ -44,12 +44,12 @@
   angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', 'toastrConfig', config]);
 
   angular.module('designsafe')
-    .run(['WSBusService', function init(WSBusService){
-        WSBusService.init(WSBusService.url);
-    }])
-    .run(['NotificationService', function init(NotificationService){
-        NotificationService.init();
-    }])
+    // .run(['WSBusService', function init(WSBusService){
+    //     WSBusService.init(WSBusService.url);
+    // }])
+    // .run(['NotificationService', function init(NotificationService){
+    //     NotificationService.init();
+    // }])
     .run(function(editableOptions) {
       editableOptions.theme = 'bs3';
     });

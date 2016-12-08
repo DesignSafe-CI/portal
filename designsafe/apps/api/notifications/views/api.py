@@ -12,7 +12,7 @@ import json
 
 class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
 
-    def get(self, request, event_type, *args, **kwargs):
+    def get(self, request, event_type = None, *args, **kwargs):
         if event_type is not None:
             notifs = Notification.objects.filter(event_type = event_type,
                           deleted = False,
@@ -39,3 +39,10 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         n = Notification.get(id = nid)
         n.deleted = deleted
         n.save()
+
+class NotificationsBadgeView(SecureMixin, JSONResponseMixin, BaseApiView):
+
+    def get(self, request, *args, **kwargs):
+        unread = Notification.objects.filter(deleted = False, read = False,
+                      user = request.user.username).count()
+        return self.render_to_json_response({'unread': unread})

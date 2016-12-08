@@ -1,0 +1,8 @@
+<a href="{{data.notificationsurl}}" class="btn btn-link">
+    <span class="sr-only">Notifications</span>
+    <span id="notification_badge" class="label label-as-badge"
+    ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
+
+      {{data.unread}}
+    </span>
+</a>

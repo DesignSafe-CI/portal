@@ -35,17 +35,17 @@
     }
   ]);
 
-  app.run(['WSBusService', 'logger', 
-                function init(WSBusService, logger){
-    logger.log(WSBusService.url);
-    WSBusService.init(WSBusService.url);
-  }]);
-  app.run(['NotificationService', 'logger', 
-                function init(NotificationService, logger){
-    NotificationService.init();
-  }]);
+  // app.run(['WSBusService', 'logger',
+  //               function init(WSBusService, logger){
+  //   logger.log(WSBusService.url);
+  //   WSBusService.init(WSBusService.url);
+  // }]);
+  // app.run(['NotificationService', 'logger',
+  //               function init(NotificationService, logger){
+  //   NotificationService.init();
+  // }]);
 
-  app.controller('DataDepotBrowserCtrl', 
+  app.controller('DataDepotBrowserCtrl',
     ['$rootScope', '$scope', '$location', '$filter', 'toastr', 'Logging', 'Django',
     function($rootScope, $scope, $location, $filter, toastr, Logging, Django) {
 
@@ -80,7 +80,7 @@
 
       $scope.onPathChanged = function(listing) {
         var path = $filter('dsFileUrl')(listing);
-        $location.state({'data': angular.copy($scope.data), 
+        $location.state({'data': angular.copy($scope.data),
                          'state': angular.copy($scope.state)});
         $location.path(path);
         if (listing.name == '$SEARCH') {
