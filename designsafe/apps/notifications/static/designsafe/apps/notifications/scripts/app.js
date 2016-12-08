@@ -18,7 +18,6 @@
   angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'Logging', 'djangoUrl', function($scope,$rootScope,notificationFactory,Logging, djangoUrl) {
       $scope.data = {};
       $scope.showRawMessage = false;
-      $scope.data.notifications = [];
       var logger = Logging.getLogger('DesignSafe.notifications');
 
       $scope.list = function(){
