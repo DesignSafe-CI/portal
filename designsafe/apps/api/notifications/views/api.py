@@ -21,6 +21,9 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         else:
             notifs = Notification.objects.filter(deleted = False,
                           user = request.user.username).order_by('-datetime')
+        for n in notifs:
+            if not n.read:
+                n.mark_read()
 
         notifs = [n.to_dict() for n in notifs]
         return self.render_to_json_response(notifs)
