@@ -7,5 +7,5 @@
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     }
 
-    angular.module('ds.notifications', ['logging', 'toastr']).config(config);
+    angular.module('ds.notifications', ['logging', 'toastr', 'djng.urls']).config(config);
 })();

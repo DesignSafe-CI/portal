@@ -1,30 +1,46 @@
 (function(){
     'use strict';
 
-    function NotificationService($rootScope, logger, toastr) {
+    function NotificationService($rootScope, logger, toastr, djangoUrl) {
         var processors = {};
 
-        processors.job = {
-          'process': function notifyProcessor(msg){
-            logger.log('processing msg: ', msg);
-            return msg.extra;
-          },
-          'renderLink': function renderLink(msg){
-            logger.log('rendering link: ', msg);
-            return msg.extra['target_path'] // this will only be present when indexing is complete
-          }
-        };
+        // processors.job = {
+        //   'process': function notifyProcessor(msg){
+        //     logger.log('processing msg: ', msg);
+        //     return msg.extra;
+        //   },
+        //   'renderLink': function renderLink(msg){
+        //     logger.log('rendering link: ', msg);
+        //     return msg.extra['target_path'] // this will only be present when indexing is complete
+        //   }
+        // };
 
-        processors.data = {
-          'process': function notifyProcessor(msg){
-            logger.log('processing msg: ', msg);
-            return msg.extra;
-          },
-          'renderLink': function renderLink(msg){
-            logger.log('rendering linlk: ', msg);
-            return msg.extra;
+        // processors.data = {
+        //   'process': function notifyProcessor(msg){
+        //     logger.log('processing msg: ', msg);
+        //     return msg.extra;
+        //   },
+        //   'renderLink': function renderLink(msg){
+        //     logger.log('rendering link: ', msg);
+        //     if (msg.status == 'ERROR'){
+        //       return;
+        //     }
+        //     return msg.extra;
+        //   }
+        // };
+
+        function renderLink(msg){
+          // if (msg.status == 'SUCCESS') { for testing
+          if (msg.event_type == 'job') {
+            var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
+            return url
+          } else if (msg.event_type == 'data') {
+            var url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
+            // var url=djangoUrl.reverse('designsafe_api:process_notification');
+            return url
           }
-        };
+          // }
+        }
 
         function init(){
           logger.log('Connecting to local broadcast channels');
@@ -50,7 +66,7 @@
               notification_badge.removeClass('label-default')
               notification_badge.addClass('label-info')
 
-              var numNotifications = notification_badge.html();
+              var numNotifications = notification_badge.html(); //is there a better way to do this? having trouble using scope variables
               if (isNaN(numNotifications)) {
                   notification_badge.html(1);
               } else {
@@ -82,9 +98,9 @@
             logger.warn('No processor for this type of event. ', msg);
             return;
           }
-          var toastViewLink = processors[msg.event_type].renderLink(msg);
+          var toastViewLink = renderLink(msg);
           if (typeof toastViewLink !== 'undefined'){
-            toastMessage += '<a href="' + toastViewLink + '">View</a>';
+            toastMessage += '<a href="' + toastViewLink + '" target="_blank">View</a>';
           }
           toastOp(toastMessage, toastTitle, {allowHtml: true});
         }
@@ -98,12 +114,12 @@
 
     function NotificationServiceProvider($injector){
         // var configURL = '';
-        this.$get = ['$rootScope', 'logger', 'toastr', NotificationBusHelper];
-        function NotificationBusHelper($rootScope, logger, toastr){
-            return new NotificationService($rootScope, logger, toastr);
+        this.$get = ['$rootScope', 'logger', 'toastr', 'djangoUrl', NotificationBusHelper];
+        function NotificationBusHelper($rootScope, logger, toastr, djangoUrl){
+            return new NotificationService($rootScope, logger, toastr, djangoUrl);
         }
     }
 
-    angular.module('ds.notifications')
-    .provider('NotificationService', NotificationServiceProvider);
+    angular.module('ds.notifications').provider('NotificationService', NotificationServiceProvider);
+
 })();

@@ -11,7 +11,7 @@ from designsafe.apps.api.exceptions import ApiException
 import json
 
 class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
-    
+
     def get(self, request, event_type, *args, **kwargs):
         if event_type is not None:
             notifs = Notification.objects.filter(event_type = event_type,

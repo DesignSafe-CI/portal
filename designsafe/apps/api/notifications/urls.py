@@ -5,7 +5,7 @@ from designsafe.apps.api.notifications.views.webhooks import JobsWebhookView, Fi
 
 urlpatterns = patterns('designsafe.apps.notifications.views.api',
     url(r'^$', ManageNotificationsView.as_view(), name='index'),
-    url(r'^(?P<event_type>\w+)/?$', ManageNotificationsView.as_view(), 
+    url(r'^(?P<event_type>\w+)/?$', ManageNotificationsView.as_view(),
                                         name='event_type_notifications'),
 )
 

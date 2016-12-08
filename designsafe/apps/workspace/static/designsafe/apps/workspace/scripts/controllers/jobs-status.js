@@ -3,16 +3,35 @@
   angular.module('designsafe').controller('JobsStatusCtrl',
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
 
-    // NotificationService.processors.job = {
-    //   'process': function notifyProcessor(msg){
-    //     logger.log('processing msg: ', msg);
-    //     return msg.extra;
-    //   },
-    //   'renderLink': function renderLink(msg){
-    //     logger.log('rendering link: ', msg);
-    //     return msg.extra['target_path'] // this will only be present when indexing is complete
-    //   }
-    // };
+    NotificationService.processors.job = {
+      'process': function notifyProcessor(msg){
+        logger.log('processing msg: ', msg);
+        if('event_type' in msg && msg.event_type === 'VNC') {
+          $uibModal.open({
+            templateUrl: 'local/vncjob-details-modal.html',
+            controller: 'VNCJobDetailsModalCtrl',
+            scope: $scope,
+            resolve: {
+              msg: msg
+            }
+          });
+        }
+        else {
+          for (var i=0; i < $scope.data.jobs.length; i++){
+              if ($scope.data.jobs[i]['id'] == msg.extra.id) {
+                $scope.data.jobs[i]['status'] = msg.extra.status;
+                $scope.$apply();
+                break;
+              }
+          }
+        }
+        return msg.extra;
+      },
+      // 'renderLink': function renderLink(msg){
+      //   logger.log('rendering link: ', msg);
+      //   return msg.extra['target_path'] // this will only be present when indexing is complete
+      // }
+    };
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
@@ -76,27 +95,27 @@
      * to connect to.
      */
     // $scope.$on('ds.wsBus:default', function update_job(e, msg){
-    $scope.$on('ds.wsBus:notify', function update_job(e, msg){
-      if('event_type' in msg && msg.event_type === 'VNC') {
-        $uibModal.open({
-          templateUrl: 'local/vncjob-details-modal.html',
-          controller: 'VNCJobDetailsModalCtrl',
-          scope: $scope,
-          resolve: {
-            msg: msg
-          }
-        });
-      }
-      else {
-        for (var i=0; i < $scope.data.jobs.length; i++){
-            if ($scope.data.jobs[i]['id'] == msg.extra.id) {
-              $scope.data.jobs[i]['status'] = msg.extra.status;
-              $scope.$apply();
-              break;
-            }
-        }
-      }
-    });
+    // $scope.$on('ds.wsBus:notify', function update_job(e, msg){
+    //   if('event_type' in msg && msg.event_type === 'VNC') {
+    //     $uibModal.open({
+    //       templateUrl: 'local/vncjob-details-modal.html',
+    //       controller: 'VNCJobDetailsModalCtrl',
+    //       scope: $scope,
+    //       resolve: {
+    //         msg: msg
+    //       }
+    //     });
+    //   }
+    //   else {
+    //     for (var i=0; i < $scope.data.jobs.length; i++){
+    //         if ($scope.data.jobs[i]['id'] == msg.extra.id) {
+    //           $scope.data.jobs[i]['status'] = msg.extra.status;
+    //           $scope.$apply();
+    //           break;
+    //         }
+    //     }
+    //   }
+    // });
 
 
   }]);

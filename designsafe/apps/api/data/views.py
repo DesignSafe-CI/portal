@@ -1,12 +1,13 @@
 from django.http.response import HttpResponseBadRequest
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
+from designsafe.apps.api.notifications.models import Notification, Broadcast
 
 import logging
 import json
@@ -34,7 +35,7 @@ class BaseDataView(JSONResponseMixin, BaseApiView):
     def _get_file_manager(self, request, resource, **kwargs):
         """
         Instantiates the correct file manager class
-        
+
         Args:
             request: Request object. Used to get the user object.
             resource: Resource name to decide which class to instantiate.
@@ -171,10 +172,29 @@ class DataFileManageView(BaseDataView):
 class DataSearchView(BaseDataView):
     """
     Data view to handle search.
-    It will pass all the keyword arguments as well as the 
-    Query String parameters as a dictionary on to the `search` 
+    It will pass all the keyword arguments as well as the
+    Query String parameters as a dictionary on to the `search`
     method of the file manager class.
     """
     def get(self, request, *args, **kwargs):
-        resp = self._execute_operation(request, 'search', **kwargs)        
+        resp = self._execute_operation(request, 'search', **kwargs)
         return self.render_to_json_response(resp)
+
+class ProcessNotificationView(BaseDataView):
+    """
+    View to handle redirects from notification links
+    """
+    def get(self, request, *args, **kwargs):
+        pk = request.GET.get('pk')
+        logger.info('pk: {}'.format(request.GET))
+        n = Notification.objects.get(pk=pk).to_dict()
+
+        try:
+            target_path = n['extra']['target_path']
+
+        except KeyError as e:
+            file_id = n['extra']['id']
+            target_path = reverse('designsafe_data:data_browser',
+                              args=['agave', file_id])
+
+        return redirect(target_path)

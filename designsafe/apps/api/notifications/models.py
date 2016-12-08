@@ -13,7 +13,7 @@ class BaseNotify(models.Model):
     """
     event_type = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
-    #Status should be SUCCESS, INFO, ERROR, WARNING, 
+    #Status should be SUCCESS, INFO, ERROR, WARNING,
     status = models.CharField(max_length = 255)
     operation = models.CharField(max_length = 255, default = '')
     message = models.TextField(default='')
@@ -37,7 +37,8 @@ class BaseNotify(models.Model):
             'status': self.status,
             'operation': self.operation,
             'message': self.message,
-            'extra': json.loads(self.extra)
+            'extra': json.loads(self.extra),
+            'pk': self.pk
         }
         return d
 
@@ -46,7 +47,7 @@ class BaseNotify(models.Model):
             self.extra = json.dumps(self.extra)
 
         super(BaseNotify, self).save(*args, **kwargs)
-    
+
     @property
     def extra_content(self):
         return json.loads(self.extra)

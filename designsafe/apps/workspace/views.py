@@ -268,3 +268,8 @@ def call_api(request, service):
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
                         content_type='application/json')
+
+
+def process_notification(request, **kwargs):
+    return redirect('designsafe_data:data_browser', args=['agave', 'designsafe.storage.default/mlm55/1elem.tcl']) #for testing
+    return redirect('designsafe_data:data_browser', args=['agave', archive_id])

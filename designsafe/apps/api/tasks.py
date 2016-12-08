@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True)
-def reindex_agave(self, username, file_id, full_indexing = True, 
+def reindex_agave(self, username, file_id, full_indexing = True,
                   levels = 0, pems_indexing = True, index_full_path = True):
     user = get_user_model().objects.get(username=username)
 
@@ -33,20 +33,20 @@ def reindex_agave(self, username, file_id, full_indexing = True,
     agave_fm.indexer.index(system_id, file_path, file_user, 
                            full_indexing = full_indexing, 
                            pems_indexing = pems_indexing, 
-                           index_full_path = index_full_path, 
+                           index_full_path = index_full_path,
                            levels = levels)
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions, recursive):
     try:
-        n = Notification(event_type = 'data',
-                         status = 'INFO',
-                         operation = 'share_initializing',
-                         message = 'File sharing is initializing. Please wait...',
-                         user = username,
-                         extra = {'target_path': reverse('designsafe_data:data_browser',
-                                                         args=['agave', file_id])})
-        n.save()
+        # n = Notification(event_type = 'data',
+        #                  status = 'INFO',
+        #                  operation = 'share_initializing',
+        #                  message = 'File sharing is initializing. Please wait...',
+        #                  user = username,
+        #                  extra = {'target_path': reverse('designsafe_data:data_browser',
+        #                                                  args=['agave', file_id])})
+        # n.save()
         user = get_user_model().objects.get(username=username)
 
         from designsafe.apps.api.data import AgaveFileManager
@@ -57,10 +57,20 @@ def share_agave(self, username, file_id, permissions, recursive):
 
         f = AgaveFile.from_file_path(system_id, username, file_path,
                                      agave_client=agave_fm.agave_client)
+        f_dict = f.to_dict()
+
+        n = Notification(event_type = 'data',
+                         status = 'INFO',
+                         operation = 'share_initializing',
+                         message = 'File sharing is initializing. Please wait...',
+                         user = username,
+                         extra = f_dict)
+        n.save()
+
         f.share(permissions, recursive)
         #reindex_agave.apply_async(args=(self.username, file_id))
         # self.indexer.index(system, file_path, file_user, pems_indexing=True)
-        
+
         esf = Object.from_file_path(system_id, username, file_path)
         esf.share(username, permissions, recursive)
 
@@ -70,8 +80,7 @@ def share_agave(self, username, file_id, permissions, recursive):
                          operation = 'share_finished',
                          message = 'File permissions were updated successfully.',
                          user = username,
-                         extra = {'target_path': reverse('designsafe_data:data_browser',
-                                                         args=['agave', file_id])})
+                         extra = f_dict)
         n.save()
 
         # Notify users they have new shared files
