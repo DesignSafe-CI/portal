@@ -54,8 +54,8 @@
           $scope.$apply();
           return;
         },
-
       };
+
 
       $scope.data = {
         'notificationsurl': djangoUrl.reverse('designsafe_notifications:index', [])
@@ -70,6 +70,10 @@
 
       $scope.count()
 
+      $scope.init = function() {
+          $rootScope.$on('notifications:read', $scope.count());
+      }
+      $scope.init();
     }]);
 
 })(window, angular, jQuery);

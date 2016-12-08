@@ -35,6 +35,8 @@
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
               }
             }
+            logger.debug($scope.data.notifications)
+            $rootScope.$emit('notifications:read', 'all')
         });
       };
       $scope.list();
