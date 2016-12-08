@@ -12,7 +12,8 @@
     'ds.notifications',
     'django.context',
     'toastr',
-    'ds.wsBus'
+    'ds.wsBus',
+    'logging'
   );
 
   app.config(['WSBusServiceProvider', '$httpProvider', 'toastrConfig',
@@ -44,10 +45,8 @@
   }]);
 
   app.controller('NotificationBadgeCtrl',
-    ['$rootScope', '$scope', '$filter', 'djangoUrl', 'Logging', 'Django', 'NotificationService', '$http',
-    function($rootScope, $scope, $filter, djangoUrl, Logging, Django, NotificationService, $http) {
-
-      // var logger = Logging.getLogger('DataDepotBrowser.DataDepotBrowserCtrl');
+    ['$rootScope', '$scope', '$filter', 'djangoUrl', 'Logging', 'Django', 'NotificationService', '$http', 'logger',
+    function($rootScope, $scope, $filter, djangoUrl, Logging, Django, NotificationService, $http, logger) {
 
       NotificationService.processors.notifs = {
         'process': function notifyProcessor(msg){
@@ -61,9 +60,6 @@
       $scope.data = {
         'notificationsurl': djangoUrl.reverse('designsafe_notifications:index', [])
       };
-      // $scope.init = function() {
-
-      // }
 
       $scope.count = function() {
         $http.get(djangoUrl.reverse('designsafe_api:badge', [])).then(
