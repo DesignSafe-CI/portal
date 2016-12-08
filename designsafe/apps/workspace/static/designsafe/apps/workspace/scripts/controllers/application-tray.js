@@ -42,7 +42,6 @@
         return deferred.promise;
       };
 
-
       $scope.data = {
         activeApp: null,
         publicOnly: false,

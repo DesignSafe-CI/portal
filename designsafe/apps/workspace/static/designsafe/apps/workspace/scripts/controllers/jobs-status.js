@@ -33,6 +33,7 @@
       // }
     };
 
+  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger) {
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
       hasMoreJobs: true,

@@ -55,7 +55,6 @@
     'ds.notifications',
     'logging',
     'ngCookies',
-    'designsafe',
     'pascalprecht.translate',
     'schemaForm',
     'schemaFormWizard',
