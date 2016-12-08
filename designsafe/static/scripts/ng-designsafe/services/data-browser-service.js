@@ -1,12 +1,13 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('designsafe');
+  module.requires.push('django.context');
 
-  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django', 
+  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
                                         'FileListing', 'Logging', 'SystemsService',
-                                        function($rootScope, $http, $q, $uibModal, 
-                                                 $state, Django, FileListing, Logging, 
+                                        function($rootScope, $http, $q, $uibModal,
+                                                 $state, Django, FileListing, Logging,
                                                  SystemsService) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
@@ -91,7 +92,7 @@
         f._ui.selected = true;
       });
       currentState.selected = _.union(currentState.selected, files);
-      notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION, 
+      notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION,
              currentState.selected);
     }
 
@@ -209,7 +210,7 @@
 
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-copy.html',
-        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService', 
+        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService',
                      function ($scope, $uibModalInstance, FileListing, data, ProjectService) {
 
           $scope.data = data;
@@ -221,9 +222,9 @@
           };
 
           $scope.options = [
-            {label: 'My Data', 
+            {label: 'My Data',
              conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', 
+            {label: 'Shared with me',
              conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
             {label: 'My Projects',
              conf: {system: 'projects', path: ''}}
@@ -1084,10 +1085,10 @@
      */
     function viewMetadata (file, listing) {
       var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-metadata.html';
-      if (typeof file.metadata !== 'undefined' && 
+      if (typeof file.metadata !== 'undefined' &&
          file.metadata.project !== 'undefined'){
         template ='/static/scripts/ng-designsafe/html/modals/data-browser-service-published-metadata.html';
-      } 
+      }
       var modal = $uibModal.open({
         templateUrl: template,
         controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
@@ -1109,7 +1110,7 @@
               $scope.ui.error = err;
             });
           }
-         
+
 		  $scope.doSaveMetadata = function($event) {
 			$event.preventDefault();
 			$uibModalInstance.close($scope.data);
@@ -1126,7 +1127,7 @@
 			} else {
 			  $scope.data.form.tagsToDelete.push(tag);
 			}
-		  }; 
+		  };
 
           /**
            * Cancel and close upload dialog.

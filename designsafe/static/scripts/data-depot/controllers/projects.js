@@ -1,5 +1,6 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
 
   app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
 
@@ -57,7 +58,7 @@
 
     $scope.onBrowse = function onBrowse($event, project) {
       $event.preventDefault();
-      $state.go('projects.view.data', {projectId: project.uuid, 
+      $state.go('projects.view.data', {projectId: project.uuid,
                                        filePath: '/',
                                        projectTitle: project.value.title});
     };
@@ -101,13 +102,13 @@
       .then(function () {
         $scope.browser = DataBrowserService.state();
         $scope.browser.listing.href = $state.href('projects.view.data', {
-          projectId: projectId, 
+          projectId: projectId,
           filePath: $scope.browser.listing.path,
           projectTitle: projectTitle
         });
         _.each($scope.browser.listing.children, function (child) {
           child.href = $state.href('projects.view.data', {
-            projectId: projectId, 
+            projectId: projectId,
             filePath: child.path,
             projectTitle: projectTitle
           });
@@ -115,12 +116,12 @@
       });
 
     $scope.onBrowseData = function onBrowseData($event, file) {
-      
+
       $event.preventDefault();
       if (file.type === 'file') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
-        $state.go('projects.view.data', {projectId: projectId, 
+        $state.go('projects.view.data', {projectId: projectId,
                                          filePath: file.path,
                                          projectTitle: projectTitle});
       }
@@ -143,7 +144,7 @@
         var min = Math.min(lastIndex, fileIndex);
         var max = Math.max(lastIndex, fileIndex);
         DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
-      } else if( typeof file._ui !== 'undefined' && 
+      } else if( typeof file._ui !== 'undefined' &&
                  file._ui.selected){
         DataBrowserService.deselect([file]);
       }

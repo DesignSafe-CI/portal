@@ -1,6 +1,8 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
-  app.controller('ExternalDataCtrl', ['$scope', '$state', 'Django', 
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
+  app.controller('ExternalDataCtrl', ['$scope', '$state', 'Django',
                                       'DataBrowserService',
                   function ($scope, $state, Django, DataBrowserService) {
   $scope.browser = DataBrowserService.state();
@@ -28,7 +30,7 @@
     $scope.onBrowse = function($event, file) {
       $event.preventDefault();
       $event.stopPropagation();
-    
+
       var filePath = file.id;
       if (file.type === 'file'){
         DataBrowserService.preview(file);
@@ -62,9 +64,9 @@
         DataBrowserService.select([file], true);
       }
     };
-    
+
     $scope.showFullPath = function(item){
-      if ($scope.browser.listing.path != '/' && 
+      if ($scope.browser.listing.path != '/' &&
           item.parentPath() != $scope.browser.listing.path &&
           item.parentPath() != '/'){
         return true;

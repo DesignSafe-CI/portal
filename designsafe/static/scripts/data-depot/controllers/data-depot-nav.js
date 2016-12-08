@@ -1,5 +1,7 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
   app.controller('DataDepotNavCtrl', ['$scope', '$rootScope', '$state', 'Django', function($scope, $rootScope, $state, Django) {
 
     $scope.routerItems = [];

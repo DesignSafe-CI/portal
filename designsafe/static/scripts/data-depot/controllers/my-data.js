@@ -1,5 +1,7 @@
 (function(window, angular, _) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
   app.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
@@ -57,7 +59,7 @@
         var min = Math.min(lastIndex, fileIndex);
         var max = Math.max(lastIndex, fileIndex);
         DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
-      } else if( typeof file._ui !== 'undefined' && 
+      } else if( typeof file._ui !== 'undefined' &&
                  file._ui.selected){
         DataBrowserService.deselect([file]);
       } else {

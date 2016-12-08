@@ -21,7 +21,8 @@
     return self;
   }
 
-  var mod = angular.module('ng.designsafe');
+  var mod = angular.module('designsafe');
+  mod.requires.push('django.context');
 
   mod.factory('ProjectService', ['httpi', '$interpolate', '$q', '$uibModal', 'Logging', function(httpi, $interpolate, $q, $uibModal, Logging) {
 
