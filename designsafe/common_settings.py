@@ -330,7 +330,9 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s info=%(info)s'
+            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
+                      ' %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' info=%(info)s'
         },
     },
     'handlers': {
