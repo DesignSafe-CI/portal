@@ -17,10 +17,12 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
+from designsafe.apps.api.notifications.models import Notification
 from requests import HTTPError
 
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger('metrics')
 
 
 class FileManagersView(View):
@@ -136,13 +138,50 @@ class FileMediaView(View):
                 relative_path = request.POST.get('relative_path', None)
                 if relative_path:
                     # user uploaded a folder structure; ensure path exists
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'agave_folder_structure',
+                                     'info': {
+                                         'filePath': file_path,
+                                         'relativePath': os.path.dirname(relative_path),
+                                         'systemId': system_id,
+                                         'uploadDir': upload_dir}
+                                 })
                     upload_dir = os.path.join(file_path, os.path.dirname(relative_path))
                     BaseFileResource.ensure_path(agave_client, system_id, upload_dir)
 
                 try:
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'agave_file_upload',
+                                     'info': {
+                                         'systemId': system_id,
+                                         'uploadDir': upload_dir,
+                                         'uploadFile': upload_file}
+                                 })
                     result = fm.upload(system_id, upload_dir, upload_file)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'File Upload is succesfull.',
+                        Notification.EXTRA: result
+                    }
+                    Notification.objects.create(**event_data)
                 except HTTPError as e:
                     logger.error(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'There was an error uploading one or more file(s).',
+                        Notification.EXTRA: {'system': system_id, 'path': file_path}
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
             return JsonResponse({'status': 'ok'})
@@ -165,9 +204,31 @@ class FileMediaView(View):
             if action == 'copy':
                 try:
                     if body.get('system') != system_id:
+                        metrics.info('Data Depot',
+                                     extra = {
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'agave_file_copy_import',
+                                         'info': {
+                                             'destSystemId': body.get('system'),
+                                             'destFilePath': body.get('path'),
+                                             'fromSystemId': system_id,
+                                             'fromFilePath': file_path}
+                                     })
                         copied = fm.import_data(body.get('system'), body.get('path'),
                                                 system_id, file_path)
                     else:
+                        metrics.info('Data Depot',
+                                     extra = {
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'agave_file_copy',
+                                         'info': {
+                                             'systemId': body.get('system'),
+                                             'filePath': body.get('path'),
+                                             'destSystemId': system_id,
+                                             'destFilePath': file_path}
+                                     })
                         copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
                     return JsonResponse(copied, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
