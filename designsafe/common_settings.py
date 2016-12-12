@@ -330,7 +330,7 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(message)s user=%(user)s op=%(operation)s info=%(info)s'
+            'format': '[METRICS] %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s info=%(info)s'
         },
     },
     'handlers': {
@@ -511,8 +511,8 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'site': 'tacc.utexas.edu',
     'default': False,
     'status': 'UP',
-    'description': 'Project: {}',
-    'name': 'Project: {}',
+    'description': '{}',
+    'name': '{}',
     'globalDefault': False,
     'available': True,
     'public': False,
