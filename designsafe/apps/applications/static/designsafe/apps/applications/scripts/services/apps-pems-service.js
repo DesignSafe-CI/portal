@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').service('AppsPems', ['$http', '$q', '$rootScope', '$uibModal', '$translate', 'djangoUrl', function($http, $q, $rootScope, $uibModal, $translate, djangoUrl) {
+  angular.module('designsafe').service('AppsPems', ['$http', '$q', '$rootScope', '$uibModal', '$translate', 'djangoUrl', function($http, $q, $rootScope, $uibModal, $translate, djangoUrl) {
 
     var self = this;
 
