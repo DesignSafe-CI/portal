@@ -313,11 +313,21 @@ class BaseFileResource(BaseAgaveResource):
         :rtype: :class:`BaseFileResource`
         """
         path_comps = path.split('/')
-        if path.startswith('/'):
-            path_comps[0] = '/'
-        ensured_path = path_comps[0]
-        ensure_result = cls.listing(agave_client, system, ensured_path)
-        for pc in path_comps[1:]:
+        ensured_path = path_comps[0] or '/'
+
+        path_index_start = 1
+        try:
+            ensure_result = cls.listing(agave_client, system, ensured_path)
+        except HTTPError as err:
+            if err.response.status_code == 400 or err.response.status_code == 403\
+                 and len(path_comps) >= 2:
+                ensured_path = path_comps[1]
+                path_index_start = 2
+                ensure_result = cls.listing(agave_client, system, ensured_path)
+            else:
+                raise
+
+        for pc in path_comps[path_index_start:]:
             checked = ensure_result.mkdir(pc)
             ensured_path = os.path.join(ensured_path, pc)
             ensure_result = checked
