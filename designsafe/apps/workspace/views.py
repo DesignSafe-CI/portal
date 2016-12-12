@@ -235,8 +235,8 @@ def call_api(request, service):
                     archive_system_path = '{}/{}'.format(data['archiveSystem'],
                                                          data['archivePath'])
                     data['archiveUrl'] = reverse(
-                        'designsafe_data:data_browser',
-                        args=['agave', archive_system_path])
+                        'designsafe_data:data_depot')
+                    data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
 
                 # list jobs
                 else:
