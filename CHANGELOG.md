@@ -1,5 +1,32 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.19
+
+Fixes:
+
+- Uploading folders to 'My Data'.
+- Allow creation of projects with long titles.
+- Correctly redirecting to new Data Depot view from job 'output' button.
+
+## v0.9.18
+
+Features:
+
+- Professional profile in account profile.
+
+Improvements:
+
+- File toolbar is more visible.
+- File toolbar icons show legends for easier use.
+- Move to trash functionality in Projects.
+- Search capability on every data depot section.
+
+Fixes:
+
+- Data Depot UI.
+- Notification toasters showing up correctly.
+- Information button correctly wired.
+
 ## v0.9.17
 
 Enhancements:
