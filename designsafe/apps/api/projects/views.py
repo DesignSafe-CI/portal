@@ -11,12 +11,13 @@ import logging
 import json
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger('metrics')
 
 
 def template_project_storage_system(project):
     system_template = settings.PROJECT_STORAGE_SYSTEM_TEMPLATE.copy()
     system_template['id'] = system_template['id'].format(project.uuid)
-    system_template['name'] = system_template['name'].format(project.title)
+    system_template['name'] = system_template['name'].format(project.uuid)
     system_template['description'] = system_template['description'].format(project.title)
     system_template['storage']['rootDir'] = \
         system_template['storage']['rootDir'].format(project.uuid)
@@ -60,20 +61,59 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
             post_data = request.POST.copy()
 
         # create Project (metadata)
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'metadata_create',
+                            'info': {'postData': post_data} })
         p = Project(ag)
         p.title = post_data.get('title')
         p.pi = post_data.get('pi', None)
         p.save()
 
         # create Project Directory on Managed system
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'base_directory_create',
+                            'info': {
+                                'systemId': Project.STORAGE_SYSTEM_ID,
+                                'uuid': p.uuid
+                            }})
         project_storage_root = BaseFileResource(ag, Project.STORAGE_SYSTEM_ID, '/')
         project_storage_root.mkdir(p.uuid)
 
         # Wrap Project Directory as private system for project
         project_system_tmpl = template_project_storage_system(p)
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'private_system_create',
+                            'info': {
+                                'id': project_system_tmpl.get('id'),
+                                'site': project_system_tmpl.get('site'),
+                                'default': project_system_tmpl.get('default'),
+                                'status': project_system_tmpl.get('status'),
+                                'description': project_system_tmpl.get('description'),
+                                'name': project_system_tmpl.get('name'),
+                                'globalDefault': project_system_tmpl.get('globalDefault'),
+                                'available': project_system_tmpl.get('available'),
+                                'public': project_system_tmpl.get('public'),
+                                'type': project_system_tmpl.get('type'),
+                                'storage': {
+                                    'homeDir': project_system_tmpl.get('storage', {}).get('homeDir'),
+                                    'rootDir': project_system_tmpl.get('storage', {}).get('rootDir')
+                                }
+                             }})
         ag.systems.add(body=project_system_tmpl)
 
         # grant initial permissions for creating user and PI, if exists
+        project_system_tmpl = template_project_storage_system(p)
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'initial_pems_create',
+                            'info': {'collab': request.user.username, 'pi': p.pi} })
         p.add_collaborator(request.user.username)
         if p.pi and p.pi != request.user.username:
             p.add_collaborator(p.pi)
