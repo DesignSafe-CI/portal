@@ -1,6 +1,6 @@
 (function(angular) {
     "use strict";
-    angular.module('ApplicationsApp').config(['$translateProvider', function($translateProvider) {
+    angular.module('designsafe').config(['$translateProvider', function($translateProvider) {
         $translateProvider.translations('en', {
             error_app_create: "An error ocurred creating your app - ",
             error_app_delete: "An error ocurred deleting your app - ",

@@ -312,7 +312,7 @@
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
             return f.copy({system: result.system, path: result.path}).then(function (result) {
-              notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
+              //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
               return result;
             });
           });
@@ -437,7 +437,7 @@
           name: folderName
         }).then(function(newDir) {
           currentState.busy = false;
-          notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
+          //notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
         }, function(err) {
           // TODO better error handling
           logger.error(err);
@@ -574,7 +574,7 @@
           var movePromises = _.map(files, function (f) {
             return f.move({system: result.system, path: result.path}).then(function (result) {
               deselect([f]);
-              notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
+              //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
               return result;
             });
           });
@@ -737,7 +737,7 @@
           var deletePromises = _.map(files, function (file) {
             return file.rm().then(function (result) {
               deselect([file]);
-              notify(FileEvents.FILE_REMOVED, FileEventsMsg.FILE_REMOVED, file);
+              //notify(FileEvents.FILE_REMOVED, FileEventsMsg.FILE_REMOVED, file);
               return result;
             });
           });
@@ -923,7 +923,7 @@
       currentState.busy = true;
       var trashPromises = _.map(files, function(file) {
         return file.trash().then(function(trashed) {
-          notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
+          //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
           return trashed;
         });
       });
@@ -1159,7 +1159,7 @@
         }
         currentState.busy = true;
         file.updateMeta({'metadata': metaObj}).then(function(file_resp){
-          notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
+          //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
           currentState.busy = false;
         });
       });
@@ -1206,7 +1206,7 @@
       }
       currentState.loadingMore = true;
       if (currentState.listing && currentState.listing.children &&
-          currentState.listing.children.length < 100){
+          currentState.listing.children.length < 99){
         currentState.reachedEnd = true;
         return;
       }
@@ -1217,7 +1217,7 @@
                   page: currentState.page})
       .then(function(listing){
           currentState.loadingMore = false;
-          if (listing.children.length < 100) {
+          if (listing.children.length < 99) {
             currentState.reachedEnd = true;
           }
         }, function (err){

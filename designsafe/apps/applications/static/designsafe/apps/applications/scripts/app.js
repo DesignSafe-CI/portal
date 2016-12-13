@@ -1,13 +1,7 @@
 (function(window, angular, $) {
   'use strict';
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider) {
-        WSBusServiceProvider.setUrl(
-            (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-            window.location.hostname +
-            (window.location.port ? ':' + window.location.port : '') +
-            '/ws/websockets?subscribe-broadcast&subscribe-user'
-        );
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
 
     angular.extend(toastrConfig, {
       positionClass: 'toast-bottom-left',
@@ -64,16 +58,9 @@
     'ui.codemirror',
     'xeditable'
   );
-  app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$stateProvider', '$urlRouterProvider', config]);
+  app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$stateProvider', '$urlRouterProvider', 'toastrConfig', config]);
 
-  app.run(['WSBusService', 'logger', function init(WSBusService, logger){
-        logger.log(WSBusService.url);
-        WSBusService.init(WSBusService.url);
-    }])
-    .run(['NotificationService', function init(NotificationService){
-        NotificationService.init();
-    }])
-    .run(function(editableOptions) {
+  app.run(function(editableOptions) {
       editableOptions.theme = 'bs3';
     });
 })(window, angular, jQuery);

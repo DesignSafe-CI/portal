@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').filter('toTrusted', function ($sce) {
+  angular.module('designsafe').filter('toTrusted', function ($sce) {
     return function (value) {
         return $sce.trustAsHtml(value);
     };

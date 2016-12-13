@@ -4,6 +4,7 @@
 import logging
 import json
 import os
+import re
 import chardet
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
@@ -17,10 +18,12 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
+from designsafe.apps.api.notifications.models import Notification
 from requests import HTTPError
 
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger('metrics')
 
 
 class FileManagersView(View):
@@ -138,11 +141,49 @@ class FileMediaView(View):
                     # user uploaded a folder structure; ensure path exists
                     upload_dir = os.path.join(file_path, os.path.dirname(relative_path))
                     BaseFileResource.ensure_path(agave_client, system_id, upload_dir)
-
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'data_depot_folder_upload',
+                                     'info': {
+                                         'filePath': file_path,
+                                         'relativePath': os.path.dirname(relative_path),
+                                         'systemId': system_id,
+                                         'uploadDir': upload_dir}
+                                 })
                 try:
                     result = fm.upload(system_id, upload_dir, upload_file)
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'data_depot_file_upload',
+                                     'info': {
+                                         'systemId': system_id,
+                                         'uploadDir': upload_dir,
+                                         'uploadFile': upload_file}
+                                 })
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_file_upload',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'File Upload is succesfull.',
+                        Notification.EXTRA: result
+                    }
+                    Notification.objects.create(**event_data)
                 except HTTPError as e:
                     logger.error(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_file_upload',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'There was an error uploading one or more file(s).',
+                        Notification.EXTRA: {'system': system_id, 'path': file_path}
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
             return JsonResponse({'status': 'ok'})
@@ -167,24 +208,104 @@ class FileMediaView(View):
                     if body.get('system') != system_id:
                         copied = fm.import_data(body.get('system'), body.get('path'),
                                                 system_id, file_path)
+                        metrics.info('Data Depot',
+                                     extra = {
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'data_depot_copy',
+                                         'info': {
+                                             'destSystemId': body.get('system'),
+                                             'destFilePath': body.get('path'),
+                                             'fromSystemId': system_id,
+                                             'fromFilePath': file_path}
+                                     })
                     else:
                         copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
+                        metrics.info('Data Depot',
+                                     extra = {
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'data_depot_copy',
+                                         'info': {
+                                             'destSystemId': system_id,
+                                             'destFilePath': file_path,
+                                             'fromSystemId': body.get('system'),
+                                             'fromFilePath': body.get('path')}
+                                     })
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_copy',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'Data has been copied.',
+                        Notification.EXTRA: copied.to_json()
+                    }
+                    Notification.objects.create(**event_data)
                     return JsonResponse(copied, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_copy',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'There was an error copying data.',
+                        Notification.EXTRA: {'message': e.response.text}
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'download':
+                metrics.info('Data Depot',
+                             extra = {
+                                 'user': request.user.username,
+                                 'sessionId': getattr(request.session, 'session_key', ''),
+                                 'operation': 'agave_file_download',
+                                 'info': {
+                                     'systemId': system_id,
+                                     'filePath': file_path}
+                             })
                 return JsonResponse({
                     'href': fm.download(system_id, file_path)
                 })
 
             elif action == 'mkdir':
                 try:
-                    new_dir = fm.mkdir(system_id, file_path, body.get('name'))
+                    dir_name = body.get('name')
+                    dir_name = re.sub('[^a-zA-Z\_\- ]', '_', dir_name)
+                    dir_name = re.sub('\_+', '_', dir_name)
+                    new_dir = fm.mkdir(system_id, file_path, dir_name)
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'agave_file_download',
+                                     'info': {
+                                         'systemId': system_id,
+                                         'filePath': file_path,
+                                         'dirName': dir_name}
+                                 })
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_mkdir',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'Directory created.',
+                        Notification.EXTRA: new_dir.to_dict()
+                    }
+                    Notification.objects.create(**event_data)
                     return JsonResponse(new_dir, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_mkdir',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'Error creating directory.',
+                        Notification.EXTRA: {'message': e.response.text}
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'move':
@@ -192,11 +313,51 @@ class FileMediaView(View):
                     if body.get('system') != system_id:
                         moved = fm.import_data(body.get('system'), body.get('path'), system_id, file_path)
                         fm.delete(system_id, file_path)
+                        metrics.info('Data Depot',
+                                     extra = {
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'agave_file_copy_move',
+                                         'info': {
+                                             'destSystemId': body.get('system'),
+                                             'destFilePath': body.get('path'),
+                                             'fromSystemId': system_id,
+                                             'fromFilePath': file_path}
+                                     })
                     else:
                         moved = fm.move(system_id, file_path, body.get('path'), body.get('name'))
+                        metrics.info('Data Depot',
+                                     extra = {
+                                         'user': request.user.username,
+                                         'sessionId': getattr(request.session, 'session_key', ''),
+                                         'operation': 'agave_file_copy',
+                                         'info': {
+                                             'destSystemId': system_id,
+                                             'destFilePath': file_path,
+                                             'fromSystemId': body.get('system'),
+                                             'fromFilePath': body.get('path')}
+                                     })
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.OPERATION: 'data_depot_move',
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'Data has been moved.',
+                        Notification.EXTRA: moved.to_json()
+                    }
+                    Notification.objects.create(**event_data)
                     return JsonResponse(moved, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot_move',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.OPERATION: 'data_depot_move',
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'There was an error moving your data.',
+                        Notification.EXTRA: {'message': e.response.text}
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'preview':
@@ -215,9 +376,35 @@ class FileMediaView(View):
             elif action == 'rename':
                 try:
                     renamed = fm.rename(system_id, file_path, body.get('name'))
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'agave_file_rename',
+                                     'info': {
+                                         'systemId': system_id,
+                                         'filePath': file_path,
+                                         'name': body.get('name')}
+                                 })
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot_rename',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'File/folder has been renamed.',
+                        Notification.EXTRA: renamed.to_json()
+                    }
+                    Notification.objects.create(**event_data)
                     return JsonResponse(renamed, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot_rename',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'There was an error renaming a file/folder.',
+                        Notification.EXTRA: renamed.to_json()
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'trash':
@@ -227,9 +414,37 @@ class FileMediaView(View):
 
                 try:
                     trashed = fm.trash(system_id, file_path, trash_path)
+                    metrics.info('Data Depot',
+                                 extra = {
+                                     'user': request.user.username,
+                                     'sessionId': getattr(request.session, 'session_key', ''),
+                                     'operation': 'agave_file_trash',
+                                     'info': {
+                                         'systemId': system_id,
+                                         'filePath': file_path,
+                                         'trashPath': trash_path}
+                                 })
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.OPERATION: 'data_depot_trash',
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'File/folder was moved to trash.',
+                        Notification.EXTRA: renamed.to_json()
+                    }
+                    Notification.objects.create(**event_data)
                     return JsonResponse(trashed, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.error(e.response.text)
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot_trash',
+                        Notification.STATUS: Notification.ERROR,
+                        Notification.OPERATION: 'data_depot_trash',
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'There was an error moving file/folder to trash.',
+                        Notification.EXTRA: {'message': e.response.text}
+                    }
+                    Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
 
         return HttpResponseBadRequest("Unsupported operation")
@@ -242,9 +457,36 @@ class FileMediaView(View):
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             try:
                 fm.delete(system_id, file_path)
+                metrics.info('Data Depot',
+                             extra = {
+                                 'user': request.user.username,
+                                 'sessionId': getattr(request.session, 'session_key', ''),
+                                 'operation': 'agave_file_delete',
+                                 'info': {
+                                     'systemId': system_id,
+                                     'filePath': file_path}
+                             })
+                event_data = {
+                    Notification.EVENT_TYPE: 'data_depot',
+                    Notification.OPERATION: 'data_depot_delete',
+                    Notification.STATUS: Notification.SUCCESS,
+                    Notification.USER: request.user.username,
+                    Notification.MESSAGE: 'File/folder has been deleted.',
+                    Notification.EXTRA: {'message': 'ok'}
+                }
+                Notification.objects.create(**event_data)
                 return JsonResponse({'status': 'ok'})
             except HTTPError as e:
                 logger.exception(e.response.text)
+                event_data = {
+                    Notification.EVENT_TYPE: 'data_depot',
+                    Notification.OPERATION: 'data_depot_delete',
+                    Notification.STATUS: Notification.ERROR,
+                    Notification.USER: request.user.username,
+                    Notification.MESSAGE: 'There was an error deleting a file/folder.',
+                    Notification.EXTRA: {'message': 'ok'}
+                }
+                Notification.objects.create(**event_data)
                 return HttpResponseBadRequest(e.response.text)
 
         return HttpResponseBadRequest("Unsupported operation")
@@ -305,8 +547,41 @@ class FilePermissionsView(View):
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             username = body.get('username')
             permission = body.get('permission')
-
-            pem = fm.share(system_id, file_path, username, permission)
+            try:
+                pem = fm.share(system_id, file_path, username, permission)
+                metrics.info('Data Depot',
+                             extra = {
+                                 'user': request.user.username,
+                                 'sessionId': getattr(request.session, 'session_key', ''),
+                                 'operation': 'data_depot_share',
+                                 'info': {
+                                     'systemId': system_id,
+                                     'filePath': file_path}
+                             })
+                event_data = {
+                    Notification.EVENT_TYPE: 'data_depot',
+                    Notification.OPERATION: 'data_depot_share',
+                    Notification.STATUS: Notification.SUCCESS,
+                    Notification.USER: request.user.username,
+                    Notification.MESSAGE: 'Permissions for a file/folder has been updated.',
+                    Notification.EXTRA: {'system': system_id,
+                                         'path': file_path,
+                                         'username': username,
+                                         'permission': permission}
+                }
+                Notification.objects.create(**event_data)
+            except HTTPError as err:
+                logger.debug(err.response.text)
+                event_data = {
+                    Notification.EVENT_TYPE: 'data_depot_share',
+                    Notification.STATUS: Notification.ERROR,
+                    Notification.OPERATION: 'data_depot_share',
+                    Notification.USER: request.user.username,
+                    Notification.MESSAGE: 'There was an error updating permissions for a file/folder.',
+                    Notification.EXTRA: {'message': err.response.text}
+                }
+                Notification.objects.create(**event_data)
+                return HttpResponseBadRequest(e.response.text)
             return JsonResponse(pem, encoder=AgaveJSONEncoder, safe=False)
 
         return HttpResponseBadRequest("Unsupported operation")
@@ -328,16 +603,50 @@ class FileMetaView(View):
     def put(self, request, file_mgr_name, system_id, file_path):
         post_body = json.loads(request.body)
         metadata = post_body.get('metadata', {})
-        logger.debug('metadata: %s' % (metadata, ))
         if file_mgr_name == ElasticFileManager.NAME or not metadata:
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
-            file_obj = fmgr.listing(system_id, file_path)
-            file_obj.metadata.update(metadata)
-            file_dict = file_obj.to_dict()
-            file_dict['keyword'] = file_obj.metadata.value['keywords']
+            try:
+                file_obj = fmgr.listing(system_id, file_path)
+                file_obj.metadata.update(metadata)
+                file_dict = file_obj.to_dict()
+                file_dict['keyword'] = file_obj.metadata.value['keywords']
+                metrics.info('Data Depot',
+                             extra = {
+                                 'user': request.user.username,
+                                 'sessionId': getattr(request.session, 'session_key', ''),
+                                 'operation': 'data_depot_metadata_update',
+                                 'info': {
+                                     'systemId': system_id,
+                                     'filePath': file_path,
+                                     'metadata': metadata}
+                             })
+                event_data = {
+                    Notification.EVENT_TYPE: 'data_depot',
+                    Notification.OPERATION: 'data_depot_metadata_update',
+                    Notification.STATUS: Notification.SUCCESS,
+                    Notification.USER: request.user.username,
+                    Notification.MESSAGE: 'Metadata has been updated successfully.',
+                    Notification.EXTRA: {'systemId': system_id,
+                                         'filePath': file_path,
+                                         'metadata': metadata}
+                }
+                Notification.objects.create(**event_data)
+            except HTTPError as err:
+                logger.debug(err.response.text)
+                event_data = {
+                    Notification.EVENT_TYPE: 'data_depot',
+                    Notification.STATUS: Notification.ERROR,
+                    Notification.OPERATION: 'data_depot_metadata_update',
+                    Notification.USER: request.user.username,
+                    Notification.MESSAGE: 'Metadata has been updated successfully.',
+                    Notification.EXTRA: {'systemId': system_id,
+                                         'filePath': file_path,
+                                         'metadata': metadata}
+                }
+                Notification.objects.create(**event_data)
             return JsonResponse(file_dict)
         
         return HttpResponseBadRequest('Unsupported file manager.')
