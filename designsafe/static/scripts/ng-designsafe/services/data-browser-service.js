@@ -1206,7 +1206,7 @@
       }
       currentState.loadingMore = true;
       if (currentState.listing && currentState.listing.children &&
-          currentState.listing.children.length < 100){
+          currentState.listing.children.length < 99){
         currentState.reachedEnd = true;
         return;
       }
@@ -1217,7 +1217,7 @@
                   page: currentState.page})
       .then(function(listing){
           currentState.loadingMore = false;
-          if (listing.children.length < 100) {
+          if (listing.children.length < 99) {
             currentState.reachedEnd = true;
           }
         }, function (err){
