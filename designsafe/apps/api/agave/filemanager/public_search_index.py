@@ -11,6 +11,7 @@ import logging
 import json 
 import os
 import re
+import datetime
 from django.conf import settings
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, DocType
@@ -244,6 +245,7 @@ class PublicObject(object):
         else:
             return {}
 
+    # TODO: This should not make more calls, kills performance
     def experiments(self):
         project_name = self.project_name()
         experiment_name = self.experiment_name()
@@ -263,7 +265,9 @@ class PublicObject(object):
         return self._metadata
 
 
+    # TODO: This should not make more calls, kills performance
     def trail(self):
+
         if self._trail:
             return self._trail
 
@@ -281,15 +285,11 @@ class PublicObject(object):
                     trail_item['name'] = experiment[0].get('title', path_comps[i])
 
             self._trail.append(trail_item)
-        
+
         return self._trail
 
-        return [{'name': path_comps[i] or '/',
-                 'system': self.system,
-                 'path': '/'.join(path_comps[:i+1]) or '/'
-                 } for i in range(0, len(path_comps))]
-
     def to_dict(self):
+        # logger.debug(self._doc.to_dict())
         obj_dict = self._doc.to_dict()
         obj_dict['system'] = self.system
         obj_dict['path'] = self.path
@@ -327,7 +327,7 @@ class PublicElasticFileManager(BaseFileManager):
         return listing
 
     def search(self, system, query_string, 
-               file_path=None, offset=0, limit=100):
+               file_path=None, offset=0, limit=100, sort=None):
         files_limit = limit
         files_offset = offset
         projects_limit = limit
@@ -353,10 +353,14 @@ class PublicElasticFileManager(BaseFileManager):
                                                "pis.lastName",
                                                "title"]}}))
         projects_search.query = projects_query
-        projects_search = projects_search.sort('name._exact')
-        logger.debug('projects_search: %s' % (projects_search.to_dict(), ))
+        if sort:
+            projects_search = projects_search.sort(sort)
+        else:
+            projects_search = projects_search.sort('name._exact')
+
+        t1 = datetime.datetime.now()
         projects_res = projects_search.execute()
-        
+        logger.debug(datetime.datetime.now() - t1)
         files_search = PublicObjectIndexed.search()
 
         files_query = Q('filtered', 
@@ -367,9 +371,10 @@ class PublicElasticFileManager(BaseFileManager):
                                  must=Q({'term': {'systemId': system}}),
                                  must_not=Q({'term': {'path._exact': '/'}})))
         files_search.query = files_query
-        logger.debug('files_search: %s' % (files_search.to_dict(), ))
-        files_res = files_search.execute()
         
+        t1 = datetime.datetime.now()
+        files_res = files_search.execute()
+        logger.debug(datetime.datetime.now() - t1)
         if projects_res.hits.total:
             if projects_res.hits.total - offset > limit:
                 files_offset = 0
@@ -381,22 +386,38 @@ class PublicElasticFileManager(BaseFileManager):
                 projects_limit = projects_res.hits.total
                 files_limit = limit - projects_limit
 
-        logger.debug('projects_total: %s, files_total: %s' % (str(projects_res.hits.total), str(files_res.hits.total), ))
+        # TODO: This is rather SLOW
         children = []
-        for project in projects_search[projects_offset:projects_limit]:
-            search = PublicObjectIndexed.search()
-            search.query = Q('bool',
-                             must=[
-                                Q({'term': {'path._exact': '/'}}),
-                                Q({'term': {'name._exact': project.projectPath}}),
-                                Q({'term': {'systemId': system}})])
-            res = search.execute()
-            if res.hits.total:
-                children.append(PublicObject(res[0]).to_dict())
-        
-        for file_doc in files_search[files_offset:files_limit]:
-            children.append(PublicObject(file_doc).to_dict())
+        project_paths = [p.projectPath for p in projects_res]
+        # for project in projects_search[projects_offset:projects_limit]:
+        #     logger.debug(project)
+        #     search = PublicObjectIndexed.search()
+        #     search.query = Q('bool',
+        #                      must=[
+        #                         Q({'term': {'path._exact': '/'}}),
+        #                         Q({'term': {'name._exact': project.projectPath}}),
+        #                         Q({'term': {'systemId': system}})])
+        #     res = search.execute()
+        #     print res
+        #     if res.hits.total:
+        #         children.append(PublicObject(res[0]).to_dict())
+        search = PublicObjectIndexed.search()
+        search.query = Q('bool',
+            must=[
+                Q({'term': {'path._exact': '/'}}),
+                Q({'terms': {'name._exact': project_paths}}),
+                Q({'term': {'systemId': system}})
+            ])
+        res = search.execute()
+        logger.debug(datetime.datetime.now() - t1)
 
+        # for r in res[projects_offset:projects_limit]:
+        #     children.append(PublicObject(r).to_dict())
+
+        for file_doc in files_search[files_offset:files_limit]:
+            logger.debug(file_doc)
+            children.append(PublicObject(file_doc).to_dict())
+        logger.debug(datetime.datetime.now() - t1)
         result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
             'name': '$SEARCH',

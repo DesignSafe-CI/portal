@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^logger/$', LoggerApi.as_view(), name='logger'),
     url(r'^notifications/', include('designsafe.apps.api.notifications.urls')),
     url(r'^users/', include('designsafe.apps.api.users.urls')),
+    url(r'^search/', include('designsafe.apps.api.search.urls')),
+
 ]
