@@ -389,27 +389,27 @@ class PublicElasticFileManager(BaseFileManager):
         # TODO: This is rather SLOW
         children = []
         project_paths = [p.projectPath for p in projects_res]
-        # for project in projects_search[projects_offset:projects_limit]:
-        #     logger.debug(project)
-        #     search = PublicObjectIndexed.search()
-        #     search.query = Q('bool',
-        #                      must=[
-        #                         Q({'term': {'path._exact': '/'}}),
-        #                         Q({'term': {'name._exact': project.projectPath}}),
-        #                         Q({'term': {'systemId': system}})])
-        #     res = search.execute()
-        #     print res
-        #     if res.hits.total:
-        #         children.append(PublicObject(res[0]).to_dict())
-        search = PublicObjectIndexed.search()
-        search.query = Q('bool',
-            must=[
-                Q({'term': {'path._exact': '/'}}),
-                Q({'terms': {'name._exact': project_paths}}),
-                Q({'term': {'systemId': system}})
-            ])
-        res = search.execute()
-        logger.debug(datetime.datetime.now() - t1)
+        for project in projects_search[projects_offset:projects_limit]:
+            logger.debug(project)
+            search = PublicObjectIndexed.search()
+            search.query = Q('bool',
+                             must=[
+                                Q({'term': {'path._exact': '/'}}),
+                                Q({'term': {'name._exact': project.projectPath}}),
+                                Q({'term': {'systemId': system}})])
+            res = search.execute()
+            print res
+            if res.hits.total:
+                children.append(PublicObject(res[0]).to_dict())
+        # search = PublicObjectIndexed.search()
+        # search.query = Q('bool',
+        #     must=[
+        #         Q({'term': {'path._exact': '/'}}),
+        #         Q({'terms': {'name._exact': project_paths}}),
+        #         Q({'term': {'systemId': system}})
+        #     ])
+        # res = search.execute()
+        # logger.debug(datetime.datetime.now() - t1)
 
         # for r in res[projects_offset:projects_limit]:
         #     children.append(PublicObject(r).to_dict())

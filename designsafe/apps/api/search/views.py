@@ -32,7 +32,7 @@ class SearchView(BaseApiView):
         file_mgr = PublicElasticFileManager()
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
-        listing = file_mgr.search(system_id, q, offset=offset, limit=limit, sort='_score')
+        listing = file_mgr.search(system_id, q, offset=offset, limit=limit)
         return JsonResponse(listing)
 
 
