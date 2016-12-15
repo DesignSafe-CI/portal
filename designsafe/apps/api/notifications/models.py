@@ -3,6 +3,7 @@ from designsafe.apps.signals.signals import generic_event
 import datetime
 import logging
 import json
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -31,20 +32,33 @@ class BaseNotify(models.Model):
     OPERATION = 'operation'
 
     def to_dict(self):
+        try:
+            extra = json.loads(self.extra)
+        except ValueError:
+            logger.debug('extra: %s, id: %s', self.extra, self.id)
+            extra = {}
         d = {
             'event_type': self.event_type,
             'datetime': self.datetime.strftime('%s'),
             'status': self.status,
             'operation': self.operation,
             'message': self.message,
-            'extra': json.loads(self.extra),
+            'extra': extra,
             'pk': self.pk
         }
         return d
 
     def save(self, *args, **kwargs):
         if isinstance(self.extra, dict):
-            self.extra = json.dumps(self.extra)
+            try:
+                self.extra = json.dumps(self.extra)
+            except TypeError:
+                for key in six.iterkeys(self.extra):
+                    try:
+                        json.dumps(self.extra[key])
+                    except TypeError:
+                        logger.debug('Keys with error: %s . Value: %s', key, self.extra[key])
+                        raise
 
         super(BaseNotify, self).save(*args, **kwargs)
 
