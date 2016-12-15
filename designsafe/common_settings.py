@@ -96,6 +96,7 @@ INSTALLED_APPS = (
     'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
+    'designsafe.apps.search',
 )
 
 AUTHENTICATION_BACKENDS = (
