@@ -8,7 +8,7 @@
     might come from different external resources."""
 
 import logging
-import json 
+import json
 import os
 import re
 import datetime
