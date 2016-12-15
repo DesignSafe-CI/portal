@@ -5,6 +5,8 @@ from designsafe.apps.api.agave.models.files import (BaseFileResource,
                                                     BaseFileMetadata)
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.agave.models.systems import roles as system_roles
+from designsafe.apps.api.agave import to_camel_case
+import six
 import json
 import logging
 
@@ -79,6 +81,28 @@ class Project(BaseMetadataResource):
         # Set roles on project system
         self.project_system.remove_role(username)
 
+    def update(self, **kwargs):
+        '''Updates metadata values.
+
+        This function should be used when updating or adding
+        values to the metadata objects.
+
+        :param dict kwargs: key = value of attributes to add/update in the object.
+        :returns: itself for chainability
+        :rtype: :class:`Project`
+
+        ..note::
+            Do Not use this method to update PIs, CO-PIs, team members or collaborators.
+            For that please use :func:`add_collaborator` or :func:`remove_collaborator` respectively.
+        '''
+        logger.debug('updating project metadata: {"id": "%s", "updates": %s}', self.uuid, kwargs)
+        for key, value in six.iteritems(kwargs):
+            if key in ['pi', 'coPis', 'teamMembers', 'collaborators']:
+                logger.warn('trying to update team members using "update"')
+                continue
+            camel_key = to_camel_case(key)
+            self.value[camel_key] = value
+
     @property
     def title(self):
         return self.value.get('title')
@@ -97,13 +121,13 @@ class Project(BaseMetadataResource):
 
     @property
     def co_pis(self):
-        return self.value.get('co_pis', [])
+        return self.value.get('coPis', [])
 
     @co_pis.setter
     def co_pis(self, value):
         # TODO is this assertion valuable?
         # assert self.pi not in value
-        self.value['co_pis'] = value
+        self.value['coPis'] = value
 
     @property
     def abstract(self):
