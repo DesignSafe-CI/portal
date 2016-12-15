@@ -148,11 +148,20 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
 
         # save Project (metadata)
         p = Project.from_uuid(ag, project_id)
-        p.title = post_data.get('title')
-        new_pi = post_data.get('pi', None)
+        title = post_data.get('title')
+        award_number = post_data.get('awardNumber', '')
+        project_type = post_data.get('projectType', 'other')
+        associated_projects = post_data.get('associatedProjects', {})
+        description = post_data.get('description', '')
+        new_pi = post_data.get('pi')
         if p.pi != new_pi:
             p.pi = new_pi
             p.add_collaborator(new_pi)
+        p.update(title=title,
+                 award_number=award_number,
+                 project_type=project_type,
+                 associated_projects=associated_projects,
+                 description=description)
         p.save()
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
