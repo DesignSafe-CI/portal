@@ -1,7 +1,7 @@
 <div class="modal-header">
     <h3 class="modal-title">
         {{ data.project.value.title }}<br>
-        <small>Add Collaborator</small>
+        <small>Manage Team Members</small>
     </h3>
 </div>
 <div class="modal-body">
@@ -18,7 +18,46 @@
     </div>
     <div ng-if="! (data.busy || data.error)">
         <form>
-            <p>Remove current collaborator(s):</p>
+            <p>Remove current Co-Pis:</p>
+            <div class="form-group" ng-repeat="cur in form.curCoPis">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="cur.remove" ng-disabled="! canManage(cur.user.username)">
+                        <ds-user username="cur.user.username" format="name-email"></ds-user>
+                    </label>
+                </div>
+            </div>
+
+            <div class="well well-sm">
+                <p>Add new Co-PI:</p>
+                <div class="form-group" ng-repeat="add in form.addCoPis">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" id="id_form_user" ng-model="add.user"
+                                   placeholder="Lookup user by name or email address"
+                                   autocomplete="off" uib-typeahead="user for user in searchUsers($viewValue)"
+                                   typeahead-loading="searching"
+                                   typeahead-no-results="noResults"
+                                   typeahead-input-formatter="formatSelection()"
+                                   typeahead-template-url="local/share_user_search_result.html"
+                            >
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="text-muted" ng-show="searching"><i class="fa fa-spinner fa-spin"></i> Searching for users...</span>
+                            <div ng-show="noResults">
+                                <i class="fa fa-remove"></i> No users found.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-info btn-sm" ng-click="addAnotherCoPi()">
+                    <i class="fa fa-plus"></i> Add another
+                </button>
+            </div>
+        </form>
+
+        <form>
+            <p>Remove current team members(s):</p>
             <div class="form-group" ng-repeat="cur in form.curUsers">
                 <div class="checkbox">
                     <label>
