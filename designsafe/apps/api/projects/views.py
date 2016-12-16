@@ -65,10 +65,20 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
                      extra={'user' : request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'metadata_create',
-                            'info': {'postData': post_data} })
+                            'info': {'postData': post_data}})
         p = Project(ag)
-        p.title = post_data.get('title')
-        p.pi = post_data.get('pi', None)
+        title = post_data.get('title')
+        award_number = post_data.get('awardNumber', '')
+        project_type = post_data.get('projectType', 'other')
+        associated_projects = post_data.get('associatedProjects', {})
+        description = post_data.get('description', '')
+        new_pi = post_data.get('pi')
+        p.update(title=title,
+                 award_number=award_number,
+                 project_type=project_type,
+                 associated_projects=associated_projects,
+                 description=description)
+        p.pi = new_pi
         p.save()
 
         # create Project Directory on Managed system
@@ -170,8 +180,9 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
 
     def get(self, request, project_id):
         ag = request.user.agave_oauth.client
-        project = Project(agave_client=ag, uuid=project_id)
-        return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
+        project = Project.from_uuid(agave_client=ag, uuid=project_id)
+        return JsonResponse(project.team_members())
+        #return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
 
     def post(self, request, project_id):
         if request.is_ajax():
@@ -182,7 +193,14 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
-        project.add_collaborator(post_data.get('username'))
+        username = post_data.get('username')
+        member_type = post_data.get('memberType', 'teamMember')
+        project.add_collaborator(username)
+        members_list = project.value.get(member_type, [])
+        members_list.append(username)
+        _kwargs = {member_type: members_list}
+        project.update(**_kwargs)
+        project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ])
         return JsonResponse({'status': 'ok'})
 
@@ -196,7 +214,7 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.remove_collaborator(post_data.get('username'))
-        tasks.check_project_files_meta_pems(project.uuid)
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid])
         return JsonResponse({'status': 'ok'})
 
 
