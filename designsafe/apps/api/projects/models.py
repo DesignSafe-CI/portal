@@ -49,6 +49,22 @@ class Project(BaseMetadataResource):
         records = agave_client.meta.listMetadata(q=json.dumps(query), privileged=False)
         return [cls(agave_client=agave_client, **r) for r in records]
 
+    def team_members(self):
+        permissions = BaseMetadataPermissionResource.list_permissions(
+            self.uuid, self._agave)
+        logger.debug('self.value: %s', self.value)
+        pi = self.pi
+
+        co_pis_list = getattr(self, 'co_pis', [])
+        co_pis = []
+        if co_pis_list:
+            co_pis = [x.username for x in permissions if x.username in co_pis_list]
+
+        team_members_list = [x.username for x in permissions if x.username not in co_pis + [pi]]
+        return {'pi': pi,
+                'coPis': co_pis,
+                'teamMembers': team_members_list}
+
     @property
     def collaborators(self):
         permissions = BaseMetadataPermissionResource.list_permissions(
@@ -92,14 +108,11 @@ class Project(BaseMetadataResource):
         :rtype: :class:`Project`
 
         ..note::
-            Do Not use this method to update PIs, CO-PIs, team members or collaborators.
-            For that please use :func:`add_collaborator` or :func:`remove_collaborator` respectively.
+            When updating PIs, CO-PIs, team members or collaborators.
+            Remember to use :func:`add_collaborator` or :func:`remove_collaborator` respectively.
         '''
         logger.debug('updating project metadata: {"id": "%s", "updates": %s}', self.uuid, kwargs)
         for key, value in six.iteritems(kwargs):
-            if key in ['pi', 'coPis', 'teamMembers', 'collaborators']:
-                logger.warn('trying to update team members using "update"')
-                continue
             camel_key = to_camel_case(key)
             self.value[camel_key] = value
 
