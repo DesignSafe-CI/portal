@@ -39,7 +39,7 @@ class SearchView(BaseApiView):
         out = {}
         for r in res:
             d = r.to_dict()
-            pprint(r.meta.__dict__)
+            pprint(r.meta.doc_type)
             d["doc_type"] = r.meta.doc_type
             hits.append(d)
         out['total_hits'] = res.hits.total

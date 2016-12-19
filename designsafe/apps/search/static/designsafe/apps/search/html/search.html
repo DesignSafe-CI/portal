@@ -37,9 +37,9 @@
         </div>
         <div ng-show = 'data.search_results.hits.length'>
             <div ng-repeat = "d in data.search_results.hits">
-                <search-file-listing data=d ng-if="d.doc_type = 'objects'"></search-file-listing>
-                <search-project-listing data=d ng-if="d.doc_type = 'project'"></search-project-listing>
-                <search-experiment-listing data=d ng-if="d.doc_type = 'experiment'"></search-experiment-listing>
+                <search-file-listing data=d ng-if="d.doc_type === 'object'"></search-file-listing>
+                <search-project-listing data=d ng-if="d.doc_type === 'project'"></search-project-listing>
+                <search-experiment-listing data=d ng-if="d.doc_type === 'experiment'"></search-experiment-listing>
             </div>
         </div>
     </div>
