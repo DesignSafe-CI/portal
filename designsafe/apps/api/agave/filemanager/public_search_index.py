@@ -38,20 +38,33 @@ try:
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
+
+class CMSIndexed(DocType):
+    class Meta:
+        index = 'cms'
+
+class PublicFullIndexed(DocType):
+    class Meta:
+        index = published_index
+        doc_type = '_all'
+
 class PublicProjectIndexed(DocType):
     class Meta:
         index = published_index
         doc_type = 'project'
+
 
 class PublicExperimentIndexed(DocType):
     class Meta:
         index = published_index
         doc_type = 'experiment'
 
+
 class PublicObjectIndexed(DocType):
     class Meta:
         index = published_index
-        doc_type = 'object' 
+        doc_type = 'object'
+
 
 class PublicSearchManager(object):
     """ Wraps elastic search result object

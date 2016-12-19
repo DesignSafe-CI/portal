@@ -16,33 +16,42 @@
         </ul>
     </div>
     <div class="col-sm-9">
-        <div class="input-group input-group-lg">
-            <span class="input-group-addon"> 
-            <i class="fa fa-search"> </i>
-            </span>
+        <div> 
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon"> 
+                <i class="fa fa-search"> </i>
+                </span>
 
-            <input ng-model="data.search_text" 
-                   class="form-control" 
-                   id="main_search_input"
-                   ng-change = 'search()'
-                   ng-model-options = '{debounce: 500}'>
+                <input ng-model="data.search_text" 
+                       class="form-control" 
+                       id="main_search_input"
+                       ng-change = 'search()'
+                       ng-model-options = '{debounce: 500}'>
+            </div>
         </div>
+        <div class="well well-sm">
             Sort by: 
-           <button class="btn btn-sm btn-primary"> Relevance </button>
-           <button class="btn btn-sm"> Date: High to Low </button>
-           <button class="btn btn-sm"> Date: Low to High </button>
-
-        <h3> Files </h3>
-        <ul> 
-            <li ng-repeat = "d in data.search_results.files"> {{d.name}} </li> 
-        </ul>
-        <h3> Projects </h3>
-        <ul> 
-            <li ng-repeat = "d in data.search_results.projects"> {{d.name}} </li> 
-        </ul>
-        <h3> Experiments </h3>
-        <ul> 
-            <li ng-repeat = "d in data.search_results.experiments"> {{d.name}} </li> 
-        </ul>
+           <button class="btn btn-xs btn-primary"> Relevance </button>
+           <button class="btn btn-xs"> Date: High to Low </button>
+           <button class="btn btn-xs"> Date: Low to High </button>
+        </div>
+        <div ng-show = 'data.search_results.files.length'>
+            <h3> Files </h3>
+            <div ng-repeat = "d in data.search_results.files">
+                <search-file-listing data=d></search-file-listing>
+            </div>
+        </div>
+        <div ng-show = 'data.search_results.projects.length'>
+            <h3> Projects </h3>
+            <div ng-repeat = "d in data.search_results.projects"> 
+                <search-project-listing data=d> </search-project-listing>
+            </div>  
+        </div>
+        <div ng-show = 'data.search_results.experiments.length'>
+            <h3> Experiments </h3>
+            <div ng-repeat = "d in data.search_results.experiments">
+                <search-experiment-listing data=d></search-experiment-listing>
+            </div>
+        </div>
     </div>
 </div> 
