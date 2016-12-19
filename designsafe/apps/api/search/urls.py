@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 from designsafe.apps.api.search.views import SearchView
 
 """

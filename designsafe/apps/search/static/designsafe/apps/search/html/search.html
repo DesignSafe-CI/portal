@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-sm-3"> 
+    <div class="col-sm-3">
         <ul class="list-group">
             <li class="list-group-item"> <button class="btn btn-link" ng-click='select("files")'> Files </button>
                 <span class="badge" ng-show='data.search_results.files.length'> {{ data.search_results.files.length }}</span>
@@ -16,42 +16,31 @@
         </ul>
     </div>
     <div class="col-sm-9">
-        <div> 
+        <div>
             <div class="input-group input-group-lg">
-                <span class="input-group-addon"> 
+                <span class="input-group-addon">
                 <i class="fa fa-search"> </i>
                 </span>
 
-                <input ng-model="data.search_text" 
-                       class="form-control" 
+                <input ng-model="data.search_text"
+                       class="form-control"
                        id="main_search_input"
                        ng-change = 'search()'
                        ng-model-options = '{debounce: 500}'>
             </div>
         </div>
         <div class="well well-sm">
-            Sort by: 
+            Sort by:
            <button class="btn btn-xs btn-primary"> Relevance </button>
            <button class="btn btn-xs"> Date: High to Low </button>
            <button class="btn btn-xs"> Date: Low to High </button>
         </div>
-        <div ng-show = 'data.search_results.files.length'>
-            <h3> Files </h3>
-            <div ng-repeat = "d in data.search_results.files">
-                <search-file-listing data=d></search-file-listing>
-            </div>
-        </div>
-        <div ng-show = 'data.search_results.projects.length'>
-            <h3> Projects </h3>
-            <div ng-repeat = "d in data.search_results.projects"> 
-                <search-project-listing data=d> </search-project-listing>
-            </div>  
-        </div>
-        <div ng-show = 'data.search_results.experiments.length'>
-            <h3> Experiments </h3>
-            <div ng-repeat = "d in data.search_results.experiments">
-                <search-experiment-listing data=d></search-experiment-listing>
+        <div ng-show = 'data.search_results.hits.length'>
+            <div ng-repeat = "d in data.search_results.hits">
+                <search-file-listing data=d ng-if="d.doc_type = 'objects'"></search-file-listing>
+                <search-project-listing data=d ng-if="d.doc_type = 'project'"></search-project-listing>
+                <search-experiment-listing data=d ng-if="d.doc_type = 'experiment'"></search-experiment-listing>
             </div>
         </div>
     </div>
-</div> 
+</div>

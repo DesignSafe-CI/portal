@@ -29,12 +29,21 @@ class SearchView(BaseApiView):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
 
-        res = Search()\
+        query = Search()\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q)\
-            .execute()
+            .query("query_string", query=q)
+        res = query[offset:offset+limit].execute()
         pprint(res.hits.total)
-        out = [r.to_dict() for r in res[10:20]]
+
+        hits = []
+        out = {}
+        for r in res:
+            d = r.to_dict()
+            pprint(r.meta.__dict__)
+            d["doc_type"] = r.meta.doc_type
+            hits.append(d)
+        out['total_hits'] = res.hits.total
+        out['hits'] = hits
         # projects_query = Q('filtered',
         #                    filter=Q('bool',
         #                             must=Q({'term': {'systemId': system_id}}),
