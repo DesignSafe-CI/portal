@@ -3,7 +3,7 @@
 
   <button class="btn btn-link"> {{data.title}} </button>
   <p> {{data.description}} </p>
-  <span class=""> {{data.startDate | date : 'medium'}} - {{data.endDate}}</span>
-
+  <span class="label label-primary"> {{data.startDate | date : 'mediumDate'}} - {{data.endDate | date:'mediumDate'}}</span>
+  <span ng-if="data.doi" class="pull-right"> DOI: {{ data.doi}} </span>
   <hr>
 </div>

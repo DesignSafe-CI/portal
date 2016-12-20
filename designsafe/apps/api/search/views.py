@@ -27,23 +27,54 @@ class SearchView(BaseApiView):
         q = request.GET.get('q')
         system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
         offset = int(request.GET.get('offset', 0))
-        limit = int(request.GET.get('limit', 100))
+        limit = int(request.GET.get('limit', 10))
 
+        # web_query = Search(index="cms")\
+        #     .query("query_string", query=q)\
+        #     .execute()
+        # logger.info(web_query)
+
+        # search everything that is not a directory
         query = Search()\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q)
+            .query("query_string", query=q)\
+            .query(~Q('match', type='dir'))
         res = query[offset:offset+limit].execute()
-        pprint(res.hits.total)
+
+        files_query = Search()\
+            .query("match", systemId=system_id)\
+            .query("query_string", query=q)\
+            .query("match", type="file")\
+            .filter("term", _type="object")\
+            .execute()
+
+        exp_query = Search()\
+            .query("match", systemId=system_id)\
+            .query("query_string", query=q)\
+            .filter("term", _type="experiment")\
+            .execute()
+
+        projects_query = Search()\
+            .query("match", systemId=system_id)\
+            .query("query_string", query=q)\
+            .filter("term", _type="project")\
+            .execute()
 
         hits = []
         out = {}
         for r in res:
             d = r.to_dict()
-            pprint(r.meta.doc_type)
             d["doc_type"] = r.meta.doc_type
             hits.append(d)
+        # for wr in web_query:
+        #     d = wr.to_dict()
+        #     d["doc_type"] = 'cms'
+        #     hits.append(d)
         out['total_hits'] = res.hits.total
         out['hits'] = hits
+        out['files_total'] = files_query.hits.total
+        out['projects_total'] = projects_query.hits.total
+        out['experiments_total'] = exp_query.hits.total
         # projects_query = Q('filtered',
         #                    filter=Q('bool',
         #                             must=Q({'term': {'systemId': system_id}}),

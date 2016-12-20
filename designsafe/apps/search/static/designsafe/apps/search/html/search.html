@@ -2,17 +2,17 @@
     <div class="col-sm-3">
         <ul class="list-group">
             <li class="list-group-item"> <button class="btn btn-link" ng-click='select("files")'> Files </button>
-                <span class="badge" ng-show='data.search_results.files.length'> {{ data.search_results.files.length }}</span>
+                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.files_total }}</span>
             </li>
             <li class="list-group-item"> <button class="btn btn-link" ng-click='select("projects")'> Projects </button>
-                <span class="badge" ng-show='data.search_results.projects.length'> {{ data.search_results.projects.length }}</span>
+                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.projects_total }}</span>
             </li>
             <li class="list-group-item"> <button class="btn btn-link" ng-click='select("experiments")'> Experiments </button>
-                <span class="badge" ng-show='data.search_results.experiments.length'> {{ data.search_results.experiments.length }}</span>
+                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.experiments_total }}</span>
             </li>
-            <li class="list-group-item"> <button class="btn btn-link" ng-click='select("web")'> Web Content </button>
-                <span class="badge" ng-show='data.search_results.files.length'> {{ data.search_results.files.length }}</span>
-            </li>
+            <!-- <li class="list-group-item"> <button class="btn btn-link" ng-click='select("web")'> Web Content </button>
+                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.files.length }}</span>
+            </li> -->
         </ul>
     </div>
     <div class="col-sm-9">
@@ -37,7 +37,7 @@
         </div>
         <div ng-show = 'data.search_results.hits.length'>
             <div ng-repeat = "d in data.search_results.hits">
-                <search-file-listing data=d ng-if="d.doc_type === 'object'"></search-file-listing>
+                <search-file-listing data=d ng-if="d.type === 'file'"></search-file-listing>
                 <search-project-listing data=d ng-if="d.doc_type === 'project'"></search-project-listing>
                 <search-experiment-listing data=d ng-if="d.doc_type === 'experiment'"></search-experiment-listing>
             </div>
