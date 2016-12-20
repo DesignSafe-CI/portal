@@ -42,5 +42,23 @@
                 <search-experiment-listing data=d ng-if="d.doc_type === 'experiment'"></search-experiment-listing>
             </div>
         </div>
+        <nav ng-if="data.search_results.hits.length">
+            <ul class="pagination">
+                <li>
+                  <a href="#">
+                    <span>&laquo;</span>
+                  </a>
+                </li>
+                <li ng-repeat="i in counter(Math.ceil(data.search_results.total_hits / 10)) track by $index">
+                  <a href="#" ng-click=select_page($index)> {{ $index + 1}}</a>
+                </li>
+
+                <li>
+                  <a href="#">
+                    <span>&raquo;</span>
+                  </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
