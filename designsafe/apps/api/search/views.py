@@ -31,12 +31,14 @@ class SearchView(BaseApiView):
 
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
+            .execute()
+        #
+        # web_query = web_query[offset:offset+limit].execute()
 
-        web_query = web_query[offset:offset+limit].execute()
-
-        # search everything that is not a directory
+        # search everything that is not a directory. The django_ptr_id captures the cms
+        # stuff too. 
         query = Search()\
-            .query("match", systemId=system_id)\
+            .query(Q("match", systemId=system_id) | ~Q("exists", field="django_ptr_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))
         res = query[offset:offset+limit].execute()
@@ -61,13 +63,11 @@ class SearchView(BaseApiView):
             .execute()
 
         results = [r for r in res]
-        results.extend([r for r in web_query])
-        results.sort(key=lambda x: x.meta.score, reverse=True)
+        # results.extend([r for r in web_query])
+        # results.sort(key=lambda x: x.meta.score, reverse=True)
         out = {}
         hits = []
-        logger.info(hits)
-        for r in hits:
-            print r.meta.score
+        # logger.info(hits)
         for r in results:
             d = r.to_dict()
             d["doc_type"] = r.meta.doc_type
@@ -76,7 +76,7 @@ class SearchView(BaseApiView):
         #     d = wr.to_dict()
         #     d["doc_type"] = 'cms'
         #     hits.append(d)
-        out['total_hits'] = res.hits.total + web_query.hits.total
+        out['total_hits'] = res.hits.total
         out['hits'] = hits
         out['files_total'] = files_query.hits.total
         out['projects_total'] = projects_query.hits.total
