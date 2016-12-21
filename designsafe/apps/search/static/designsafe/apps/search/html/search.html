@@ -10,9 +10,9 @@
             <li class="list-group-item"> <button class="btn btn-link" ng-click='select("experiments")'> Experiments </button>
                 <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.experiments_total }}</span>
             </li>
-            <!-- <li class="list-group-item"> <button class="btn btn-link" ng-click='select("web")'> Web Content </button>
-                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.files.length }}</span>
-            </li> -->
+            <li class="list-group-item"> <button class="btn btn-link" ng-click='select("web")'> Web Content </button>
+                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.cms_total }}</span>
+            </li>
         </ul>
     </div>
     <div class="col-sm-9">
@@ -40,6 +40,7 @@
                 <search-file-listing data=d ng-if="d.type === 'file'"></search-file-listing>
                 <search-project-listing data=d ng-if="d.doc_type === 'project'"></search-project-listing>
                 <search-experiment-listing data=d ng-if="d.doc_type === 'experiment'"></search-experiment-listing>
+                <search-cms-listing data=d ng-if="d.doc_type === 'cms' || d.doc_type === 'modelresult'"></search-cms-listing>
             </div>
         </div>
         <nav ng-if="data.search_results.hits.length">

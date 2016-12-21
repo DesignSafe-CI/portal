@@ -1,7 +1,7 @@
 <div class="">
     <span class="label label-default"> File </span>
     <span class="label label-primary"> {{data.length | bytes }} </span>
-    <a class="btn btn-link" ng-href="{{ data.link }}"> {{data.name}} </a>
+    <h4> <a ng-href="{{ data.link }}"> {{data.name}} </a> </h4>
     <p> {{data.path}} </p>
     <span class="label label-success" ng-if='data.lastModified'> {{ data.lastModified | date:'short'}} </span>
     <hr>

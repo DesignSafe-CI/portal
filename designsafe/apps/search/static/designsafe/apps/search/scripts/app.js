@@ -16,21 +16,24 @@
       $scope.Math = window.Math;
       $scope.counter = Array;
       $scope.results_per_page = 10;
+      $scope.offset = 0;
       $scope.data.search_text = null;
       var logger = Logging.getLogger('DesignSafe.search');
 
       $scope.search = function(){
         if ($scope.data.search_text) {
-          searchFactory.search($scope.data.search_text).then(function(resp) {
+          searchFactory.search($scope.data.search_text, $scope.limit, $scope.offset).then(function(resp) {
               $scope.data.search_results = resp.data;
-
-              logger.debug($scope.data.search_results)
+              // logger.debug($scope.data.search_results)
+              console.log($scope.data.search_results)
           });
         }
       };
 
       $scope.select_page = function (page_num) {
-        console.log(page_num)
+        $scope.page_num = page_num;
+        $scope.offset = page_num * $scope.results_per_page;
+        $scope.search();
       }
   }]);
 

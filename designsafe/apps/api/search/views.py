@@ -29,40 +29,46 @@ class SearchView(BaseApiView):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
 
-        # web_query = Search(index="cms")\
-        #     .query("query_string", query=q)\
-        #     .execute()
-        # logger.info(web_query)
+        web_query = Search(index="cms")\
+            .query("query_string", query=q, default_operator="and")\
+
+        web_query = web_query[offset:offset+limit].execute()
 
         # search everything that is not a directory
         query = Search()\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q)\
+            .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))
         res = query[offset:offset+limit].execute()
 
         files_query = Search()\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q)\
+            .query("query_string", query=q, default_operator="and")\
             .query("match", type="file")\
             .filter("term", _type="object")\
             .execute()
 
         exp_query = Search()\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q)\
+            .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="experiment")\
             .execute()
 
         projects_query = Search()\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q)\
+            .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="project")\
             .execute()
 
-        hits = []
+        results = [r for r in res]
+        results.extend([r for r in web_query])
+        results.sort(key=lambda x: x.meta.score, reverse=True)
         out = {}
-        for r in res:
+        hits = []
+        logger.info(hits)
+        for r in hits:
+            print r.meta.score
+        for r in results:
             d = r.to_dict()
             d["doc_type"] = r.meta.doc_type
             hits.append(d)
@@ -70,11 +76,12 @@ class SearchView(BaseApiView):
         #     d = wr.to_dict()
         #     d["doc_type"] = 'cms'
         #     hits.append(d)
-        out['total_hits'] = res.hits.total
+        out['total_hits'] = res.hits.total + web_query.hits.total
         out['hits'] = hits
         out['files_total'] = files_query.hits.total
         out['projects_total'] = projects_query.hits.total
         out['experiments_total'] = exp_query.hits.total
+        out['cms_total'] = web_query.hits.total
         # projects_query = Q('filtered',
         #                    filter=Q('bool',
         #                             must=Q({'term': {'systemId': system_id}}),
