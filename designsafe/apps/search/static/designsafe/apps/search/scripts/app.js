@@ -18,7 +18,7 @@
       $scope.results_per_page = 10;
       $scope.offset = 0;
       $scope.data.search_text = null;
-      var logger = Logging.getLogger('DesignSafe.search');
+      $scope.data.filter = null;
 
       $scope.search = function(){
         if ($scope.data.search_text) {
@@ -28,6 +28,11 @@
               console.log($scope.data.search_results)
           });
         }
+      };
+
+      $scope.filter = function (ftype) {
+        console.log(ftype)
+        $scope.data.filter = ftype;
       };
 
       $scope.select_page = function (page_num) {
