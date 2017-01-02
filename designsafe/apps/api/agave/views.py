@@ -164,13 +164,15 @@ class FileMediaView(View):
                                          'uploadDir': upload_dir,
                                          'uploadFile': upload_file}
                                  })
+                    result['system'] = result['systemId']
+                    result_file = BaseFileResource(agave_client, **result)
                     event_data = {
                         Notification.EVENT_TYPE: 'data_depot',
                         Notification.OPERATION: 'data_depot_file_upload',
                         Notification.STATUS: Notification.SUCCESS,
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'File Upload is succesfull.',
-                        Notification.EXTRA: result
+                        Notification.EXTRA: result_file.to_dict()
                     }
                     Notification.objects.create(**event_data)
                 except HTTPError as e:
@@ -238,7 +240,7 @@ class FileMediaView(View):
                         Notification.STATUS: Notification.SUCCESS,
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'Data has been copied.',
-                        Notification.EXTRA: copied.to_json()
+                        Notification.EXTRA: copied.to_dict()
                     }
                     Notification.objects.create(**event_data)
                     return JsonResponse(copied, encoder=AgaveJSONEncoder, safe=False)
@@ -343,7 +345,7 @@ class FileMediaView(View):
                         Notification.OPERATION: 'data_depot_move',
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'Data has been moved.',
-                        Notification.EXTRA: moved.to_json()
+                        Notification.EXTRA: moved.to_dict()
                     }
                     Notification.objects.create(**event_data)
                     return JsonResponse(moved, encoder=AgaveJSONEncoder, safe=False)
@@ -391,7 +393,7 @@ class FileMediaView(View):
                         Notification.STATUS: Notification.SUCCESS,
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'File/folder has been renamed.',
-                        Notification.EXTRA: renamed.to_json()
+                        Notification.EXTRA: renamed.to_dict()
                     }
                     Notification.objects.create(**event_data)
                     return JsonResponse(renamed, encoder=AgaveJSONEncoder, safe=False)
@@ -402,7 +404,7 @@ class FileMediaView(View):
                         Notification.STATUS: Notification.ERROR,
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'There was an error renaming a file/folder.',
-                        Notification.EXTRA: renamed.to_json()
+                        Notification.EXTRA: {'message': e.response.text }
                     }
                     Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
@@ -430,7 +432,7 @@ class FileMediaView(View):
                         Notification.OPERATION: 'data_depot_trash',
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'File/folder was moved to trash.',
-                        Notification.EXTRA: renamed.to_json()
+                        Notification.EXTRA: trashed.to_dict()
                     }
                     Notification.objects.create(**event_data)
                     return JsonResponse(trashed, encoder=AgaveJSONEncoder, safe=False)

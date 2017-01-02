@@ -5,6 +5,8 @@ from designsafe.apps.api.agave.models.files import (BaseFileResource,
                                                     BaseFileMetadata)
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.agave.models.systems import roles as system_roles
+from designsafe.apps.api.agave import to_camel_case
+import six
 import json
 import logging
 
@@ -47,6 +49,22 @@ class Project(BaseMetadataResource):
         records = agave_client.meta.listMetadata(q=json.dumps(query), privileged=False)
         return [cls(agave_client=agave_client, **r) for r in records]
 
+    def team_members(self):
+        permissions = BaseMetadataPermissionResource.list_permissions(
+            self.uuid, self._agave)
+        logger.debug('self.value: %s', self.value)
+        pi = self.pi
+
+        co_pis_list = getattr(self, 'co_pis', [])
+        co_pis = []
+        if co_pis_list:
+            co_pis = [x.username for x in permissions if x.username in co_pis_list]
+
+        team_members_list = [x.username for x in permissions if x.username not in co_pis + [pi]]
+        return {'pi': pi,
+                'coPis': co_pis,
+                'teamMembers': team_members_list}
+
     @property
     def collaborators(self):
         permissions = BaseMetadataPermissionResource.list_permissions(
@@ -79,6 +97,25 @@ class Project(BaseMetadataResource):
         # Set roles on project system
         self.project_system.remove_role(username)
 
+    def update(self, **kwargs):
+        '''Updates metadata values.
+
+        This function should be used when updating or adding
+        values to the metadata objects.
+
+        :param dict kwargs: key = value of attributes to add/update in the object.
+        :returns: itself for chainability
+        :rtype: :class:`Project`
+
+        ..note::
+            When updating PIs, CO-PIs, team members or collaborators.
+            Remember to use :func:`add_collaborator` or :func:`remove_collaborator` respectively.
+        '''
+        logger.debug('updating project metadata: {"id": "%s", "updates": %s}', self.uuid, kwargs)
+        for key, value in six.iteritems(kwargs):
+            camel_key = to_camel_case(key)
+            self.value[camel_key] = value
+
     @property
     def title(self):
         return self.value.get('title')
@@ -97,13 +134,13 @@ class Project(BaseMetadataResource):
 
     @property
     def co_pis(self):
-        return self.value.get('co_pis', [])
+        return self.value.get('coPis', [])
 
     @co_pis.setter
     def co_pis(self, value):
         # TODO is this assertion valuable?
         # assert self.pi not in value
-        self.value['co_pis'] = value
+        self.value['coPis'] = value
 
     @property
     def abstract(self):
