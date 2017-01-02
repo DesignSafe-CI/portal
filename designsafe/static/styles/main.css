@@ -8,6 +8,10 @@ body.navbar-fixed {
   padding-top: 60px;
 }
 
+#sitewide_search {
+  margin-top: 0.75em;
+}
+
 .cms-toolbar-expanded .navbar-ds.navbar-fixed-top {
   top: 29px;
 }

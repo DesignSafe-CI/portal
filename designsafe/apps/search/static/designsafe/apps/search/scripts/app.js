@@ -3,15 +3,17 @@
 
   var app = angular.module('designsafe');
   app.requires.push('djng.urls', 'logging');
-  app.config(["$httpProvider", function ($httpProvider) {
+  app.config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
      $httpProvider.defaults.transformResponse.push(function(responseData){
         convertDateStringsToDates(responseData);
         return responseData;
       });
+       $locationProvider.html5Mode(true);
   }]);
 
-  angular.module('designsafe').controller('SearchCtrl', ['$scope','$rootScope','searchFactory', 'Logging', 'djangoUrl',
-    function($scope, $rootScope, searchFactory, Logging, djangoUrl) {
+  angular.module('designsafe').controller('SearchCtrl',
+    ['$scope','$rootScope', '$location', 'searchFactory', 'Logging', 'djangoUrl',
+    function($scope, $rootScope, $location, searchFactory, Logging, djangoUrl) {
       $scope.data = {};
       $scope.Math = window.Math;
       $scope.counter = Array;
@@ -19,6 +21,7 @@
       $scope.offset = 0;
       $scope.data.search_text = null;
       $scope.data.filter = null;
+      $scope.inital_q = $location.search().q
 
       $scope.search = function(){
         if ($scope.data.search_text) {
@@ -31,7 +34,6 @@
       };
 
       $scope.filter = function (ftype) {
-        console.log(ftype)
         $scope.data.filter = ftype;
       };
 
@@ -40,17 +42,12 @@
         $scope.offset = page_num * $scope.results_per_page;
         $scope.search();
       }
-  }]);
 
-  app.filter('bytes', function() {
-    return function(bytes, precision) {
-      if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
-      if (typeof precision === 'undefined') precision = 1;
-      var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
-        number = Math.floor(Math.log(bytes) / Math.log(1024));
-      return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
-    }
-  });
+      if ($scope.inital_q) {
+        $scope.data.search_text = $scope.inital_q;
+        $scope.search();
+      }
+  }]);
 
   var regexIso8601 = /^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/;
 

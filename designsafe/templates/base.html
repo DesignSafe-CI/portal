@@ -16,6 +16,7 @@
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
       {% block styles %}{% endblock %}
       {% render_block "css" %}
+      <base href="/">
   </head>
   <body ng-app="designsafe">
     {% cms_toolbar %}

@@ -36,9 +36,9 @@ class SearchView(BaseApiView):
         # web_query = web_query[offset:offset+limit].execute()
 
         # search everything that is not a directory. The django_ptr_id captures the cms
-        # stuff too. 
+        # stuff too.
         query = Search()\
-            .query(Q("match", systemId=system_id) | ~Q("exists", field="django_ptr_id"))\
+            .query(Q("match", systemId=system_id))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))
         res = query[offset:offset+limit].execute()
