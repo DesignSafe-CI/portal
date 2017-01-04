@@ -2,16 +2,16 @@
     <div class="col-sm-3">
         <ul class="list-group">
             <li class="list-group-item"> <button class="btn btn-link" ng-click='filter("files")'> Files </button>
-                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.files_total }}</span>
+                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.files_total }}</span>
             </li>
             <li class="list-group-item"> <button class="btn btn-link" ng-click='filter("projects")'> Projects </button>
-                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.projects_total }}</span>
+                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.projects_total }}</span>
             </li>
             <li class="list-group-item"> <button class="btn btn-link" ng-click='filter("experiments")'> Experiments </button>
-                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.experiments_total }}</span>
+                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.experiments_total }}</span>
             </li>
             <li class="list-group-item"> <button class="btn btn-link" ng-click='filter("web")'> Web Content </button>
-                <span class="badge" ng-show='data.search_results.hits.length'> {{ data.search_results.cms_total }}</span>
+                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.cms_total }}</span>
             </li>
         </ul>
     </div>

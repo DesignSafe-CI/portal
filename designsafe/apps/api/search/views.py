@@ -31,17 +31,17 @@ class SearchView(BaseApiView):
 
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
+            .extra(from_=offset, size=limit)\
             .execute()
-        #
-        # web_query = web_query[offset:offset+limit].execute()
 
-        # search everything that is not a directory. The django_ptr_id captures the cms
+        # search everything that is not a directory. The django_id captures the cms
         # stuff too.
         query = Search()\
-            .query(Q("match", systemId=system_id))\
+            .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
-            .query(~Q('match', type='dir'))
-        res = query[offset:offset+limit].execute()
+            .query(~Q('match', type='dir'))\
+            .extra(from_=offset, size=limit)
+        res = query.execute()
 
         files_query = Search()\
             .query("match", systemId=system_id)\
@@ -49,6 +49,14 @@ class SearchView(BaseApiView):
             .query("match", type="file")\
             .filter("term", _type="object")\
             .execute()
+
+        # pubs_query = Search(index="designsafe")\
+        #     .query("match", systemId=system_id)\
+        #     .query("term", _type="project")\
+        #     .query("nested", path="publications")
+        # logger.info(pubs_query.to_dict())
+        # pubs_query.execute()
+        # print pubs_query
 
         exp_query = Search()\
             .query("match", systemId=system_id)\

@@ -25,10 +25,14 @@
 
       $scope.search = function(){
         if ($scope.data.search_text) {
+
           searchFactory.search($scope.data.search_text, $scope.limit, $scope.offset).then(function(resp) {
               $scope.data.search_results = resp.data;
               // logger.debug($scope.data.search_results)
               console.log($scope.data.search_results)
+              $scope.page_num = 0;
+              $scope.offset = 0;
+
           });
         }
       };
