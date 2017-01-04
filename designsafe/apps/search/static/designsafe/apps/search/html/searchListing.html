@@ -1,0 +1,33 @@
+<div>
+  <div ng-if='data.doc_type === "project"'>
+    <span class="label label-warning"> Project </span>
+    <h4><a> {{data.title}} </a></h4>
+    <p> {{data.description}} </p>
+    <span class="label label-primary"> {{data.startDate | date:'short'}} </span>
+    <hr>
+  </div>
+  <div ng-if='data.doc_type === "object" || data.doc_type === "objects"'>
+      <span class="label label-default"> File </span>
+      <span class="label label-primary"> {{data.length | bytes }} </span>
+      <h4> <a ng-href="{{ data.link }}"> {{data.name}} </a> </h4>
+      <p> {{data.path}} </p>
+      <span class="label" ng-if='data.lastModified' style="background-color:#5b4d92"> {{ data.lastModified | date:'short'}} </span>
+      <hr>
+  </div>
+  <div ng-if='data.doc_type === "experiment"'>
+    <span class="label label-success"> Experiment </span>
+
+    <h4><a> {{data.title}} </a> </h4>
+    <p> {{data.description}} </p>
+    <span class="label label-primary"> {{data.startDate | date : 'mediumDate'}} - {{data.endDate | date:'mediumDate'}}</span>
+    <span ng-if="data.doi" class="pull-right"> DOI: {{ data.doi}} </span>
+    <hr>
+  </div>
+  <div ng-if='data.doc_type === "modelresult"'>
+    <span class="label label-default"> Web Content </span>
+    <p>
+      <a ng-href="{{data.url}}"> {{data.slug}} </a>
+    </p>
+    <hr>
+  </div>
+</div>

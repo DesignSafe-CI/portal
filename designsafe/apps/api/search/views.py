@@ -28,26 +28,39 @@ class SearchView(BaseApiView):
         system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
+        type_filter = request.GET.get('type_filter', None)
 
-        web_query = Search(index="cms")\
-            .query("query_string", query=q, default_operator="and")\
-            .extra(from_=offset, size=limit)\
-            .execute()
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
-        query = Search()\
+        es_query = Search()\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
             .extra(from_=offset, size=limit)
-        res = query.execute()
+        if type_filter == 'files':
+            es_query = es_query.query("match", type="file")\
+                .filter("term", _type="object")
+        elif type_filter == 'projects':
+            es_query = es_query.filter("term", _type="project")
+        elif type_filter == 'experiments':
+            es_query = es_query.filter("term", _type="experiment")
+        elif type_filter == 'web':
+            logger.info(es_query.__dict__)
+            es_query._index = 'cms'
+        res = es_query.execute()
 
+        # these get the counts of the total hits for each category...
+        web_query = Search(index="cms")\
+            .query("query_string", query=q, default_operator="and")\
+            .extra(from_=offset, size=limit)\
+            .execute()
         files_query = Search()\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .query("match", type="file")\
             .filter("term", _type="object")\
+            .extra(from_=offset, size=limit)\
             .execute()
 
         # pubs_query = Search(index="designsafe")\
@@ -62,85 +75,29 @@ class SearchView(BaseApiView):
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="experiment")\
+            .extra(from_=offset, size=limit)\
             .execute()
 
         projects_query = Search()\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="project")\
+            .extra(from_=offset, size=limit)\
             .execute()
 
         results = [r for r in res]
-        # results.extend([r for r in web_query])
-        # results.sort(key=lambda x: x.meta.score, reverse=True)
         out = {}
         hits = []
-        # logger.info(hits)
         for r in results:
             d = r.to_dict()
             d["doc_type"] = r.meta.doc_type
             hits.append(d)
-        # for wr in web_query:
-        #     d = wr.to_dict()
-        #     d["doc_type"] = 'cms'
-        #     hits.append(d)
+
         out['total_hits'] = res.hits.total
         out['hits'] = hits
         out['files_total'] = files_query.hits.total
         out['projects_total'] = projects_query.hits.total
         out['experiments_total'] = exp_query.hits.total
         out['cms_total'] = web_query.hits.total
-        # projects_query = Q('filtered',
-        #                    filter=Q('bool',
-        #                             must=Q({'term': {'systemId': system_id}}),
-        #                             must_not=Q({'term': {'path._exact': '/'}})),
-        #                    query=Q({'simple_query_string': {
-        #                             'query': q,
-        #                             'fields': ["description",
-        #                                        "endDate",
-        #                                        "equipment.component",
-        #                                        "equipment.equipmentClass",
-        #                                        "equipment.facility",
-        #                                        "fundorg"
-        #                                        "fundorgprojid",
-        #                                        "name",
-        #                                        "organization.name",
-        #                                        "pis.firstName",
-        #                                        "pis.lastName",
-        #                                        "title"]}}))
-        # logger.debug(projects_query)
-        # out = {}
-        # res = PublicProjectIndexed.search()\
-        #         .filter(projects_query)\
-        #         .source(include=['description', 'name', 'title', 'project', 'highlight', 'startDate', 'endDate', '_score'])\
-        #         .sort('startDate').execute()
-        # logger.debug(res)
-        # out["projects"] = [r.to_dict() for r in res[offset:limit]]
 
-        # files_query = Q('filtered',
-        #                 query=Q({'simple_query_string': {
-        #                          'query': q,
-        #                          'fields': ['name']}}),
-        #                 filter=Q('bool',
-        #                          must=Q({'term': {'systemId': system_id}}),
-        #                          must_not=Q({'term': {'path._exact': '/'}})))
-        # res = PublicObjectIndexed.search()\
-        #         .filter(files_query)\
-        #         .sort('_score').execute()
-        # out["files"] = [r.to_dict() for r in res[offset:limit]]
-
-        # experiments_query = Q('filtered',
-        #                    filter=Q('bool',
-        #                             must=Q({'term': {'systemId': system_id}}),
-        #                             must_not=Q({'term': {'path._exact': '/'}})),
-        #                    query=Q({'simple_query_string': {
-        #                             'query': q,
-        #                             'fields': ["description",
-        #                                        "name",
-        #                                        "title"]}}))
-        # res = PublicExperimentIndexed.search()\
-        #         .filter(experiments_query)\
-        #         .source(include=['description', 'name', 'title', 'type', 'startDate', 'endDate'])\
-        #         .sort('_score').execute()
-        # out["experiments"] = [r.to_dict() for r in res[offset:limit]]
         return JsonResponse(out, safe=False)

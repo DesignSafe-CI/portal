@@ -1,9 +1,8 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var app = angular.module('designsafe');
-  app.requires.push('djng.urls', 'logging');
-  app.config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
+  angular.module('designsafe')
+  .config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
      $httpProvider.defaults.transformResponse.push(function(responseData){
         convertDateStringsToDates(responseData);
         return responseData;
@@ -20,13 +19,14 @@
       $scope.results_per_page = 10;
       $scope.offset = 0;
       $scope.data.search_text = null;
-      $scope.data.filter = null;
+      $scope.data.type_filter = null;
+      $scope.filetype_filter = 'all';
       $scope.inital_q = $location.search().q
 
       $scope.search = function(){
         if ($scope.data.search_text) {
 
-          searchFactory.search($scope.data.search_text, $scope.limit, $scope.offset).then(function(resp) {
+          searchFactory.search($scope.data.search_text, $scope.limit, $scope.offset, $scope.data.type_filter).then(function(resp) {
               $scope.data.search_results = resp.data;
               // logger.debug($scope.data.search_results)
               console.log($scope.data.search_results)
@@ -38,7 +38,12 @@
       };
 
       $scope.filter = function (ftype) {
-        $scope.data.filter = ftype;
+        if ($scope.data.type_filter === ftype) {
+          $scope.data.type_filter = null;
+        } else {
+          $scope.data.type_filter = ftype;
+        }
+        $scope.search();
       };
 
       $scope.select_page = function (page_num) {
