@@ -3,16 +3,16 @@
         <h3> Refine By: </h3>
         <div class="list-group">
             <a class="list-group-item" ng-class='{"active":data.type_filter == "files"}' ng-click='filter("files")'> Files
-                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.files_total }}</span>
+                <span class="badge" ng-show='data.search_results.files_total'> {{ data.search_results.files_total }}</span>
             </a>
             <a class="list-group-item" ng-class='{"active":data.type_filter == "projects"}' ng-click='filter("projects")'> Projects
-                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.projects_total }}</span>
+                <span class="badge" ng-show='data.search_results.projects_total'> {{ data.search_results.projects_total }}</span>
             </a>
             <a class="list-group-item" ng-class='{"active":data.type_filter == "experiments"}' ng-click='filter("experiments")'> Experiments
-                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.experiments_total }}</span>
+                <span class="badge" ng-show='data.search_results.experiments_total'> {{ data.search_results.experiments_total }}</span>
             </a>
             <a class="list-group-item" ng-class='{"active":data.type_filter == "web"}' ng-click='filter("web")'> Web Content
-                <span class="badge" ng-show='data.search_results.total_hits'> {{ data.search_results.cms_total }}</span>
+                <span class="badge" ng-show='data.search_results.cms_total'> {{ data.search_results.cms_total }}</span>
             </a>
         </div>
     </div>
@@ -20,7 +20,8 @@
         <div>
             <div class="input-group input-group-lg">
                 <span class="input-group-addon">
-                <i class="fa fa-search"> </i>
+                <i class="fa fa-search" ng-show="!searching"> </i>
+                <i class="fa fa-spinner fa-spin" ng-show="searching"> </i>
                 </span>
 
                 <input ng-model="data.search_text"
@@ -36,10 +37,13 @@
            <button class="btn btn-xs"> Date: High to Low </button>
            <button class="btn btn-xs"> Date: Low to High </button>
            <div class="button-group pull-right">
-             <label class="btn btn-xs btn-default" ng-model='filetype_filter' btn-radio="'all'"> All  </label>
-             <label class="btn btn-xs btn-default" ng-model='filetype_filter' btn-radio="'image'"> Images  </label>
-             <label class="btn btn-xs btn-default" ng-model='filetype_filter' btn-radio="'video'"> Video  </label>
+             <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'all'"> All  </label>
+             <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'image'"> Images  </label>
+             <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'video'"> Video  </label>
           </div>
+        </div>
+        <div ng-show = 'data.search_results.total_hits == 0'>
+          <div class="alert alert-success"> Nothing found! </div>
         </div>
         <div ng-show = 'data.search_results.hits.length'>
             <div ng-repeat = "d in data.search_results.hits">

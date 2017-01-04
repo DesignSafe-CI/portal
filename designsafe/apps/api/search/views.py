@@ -29,7 +29,7 @@ class SearchView(BaseApiView):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
         type_filter = request.GET.get('type_filter', None)
-
+        logger.info(q)
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
@@ -40,7 +40,8 @@ class SearchView(BaseApiView):
             .extra(from_=offset, size=limit)
         if type_filter == 'files':
             es_query = es_query.query("match", type="file")\
-                .filter("term", _type="object")
+                .filter("term", _type="object")\
+                .query("query_string", query=q, default_operator="and", fields=['name'])
         elif type_filter == 'projects':
             es_query = es_query.filter("term", _type="project")
         elif type_filter == 'experiments':
@@ -58,6 +59,7 @@ class SearchView(BaseApiView):
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .query("match", type="file")\
+            .query("query_string", query=q, default_operator="and", fields=['name'])\
             .filter("term", _type="object")\
             .extra(from_=offset, size=limit)\
             .execute()
