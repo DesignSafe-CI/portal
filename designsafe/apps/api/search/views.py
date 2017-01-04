@@ -46,7 +46,6 @@ class SearchView(BaseApiView):
         elif type_filter == 'experiments':
             es_query = es_query.filter("term", _type="experiment")
         elif type_filter == 'web':
-            logger.info(es_query.__dict__)
             es_query._index = 'cms'
         res = es_query.execute()
 

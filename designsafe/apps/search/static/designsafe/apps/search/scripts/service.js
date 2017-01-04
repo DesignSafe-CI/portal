@@ -1,10 +1,9 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  angular.module('designsafe').factory('searchFactory', ['$http', 'djangoUrl', function($http, djangoUrl) {
-    var service = {};
+  angular.module('designsafe').service('searchService', ['$http', 'djangoUrl', function($http, djangoUrl) {
 
-    service.search = function(text, limit, offset, type_filter) {
+    this.search = function(text, limit, offset, type_filter) {
       limit = limit || 10;
       offset = offset || 0;
       console.log(type_filter)
@@ -13,8 +12,7 @@
         {params: {'q': text, 'limit': limit, 'offset': offset, 'type_filter': type_filter}}
       );
     };
-
-    return service;
+    
   }]);
 
 })(window, angular, jQuery, _);
