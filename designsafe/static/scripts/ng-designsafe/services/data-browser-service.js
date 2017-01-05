@@ -227,7 +227,9 @@
             {label: 'Shared with me',
              conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
             {label: 'My Projects',
-             conf: {system: 'projects', path: ''}}
+             conf: {system: 'projects', path: ''}},
+            {label: 'Box',
+             conf: {system: 'box', path: '/'}}
           ];
 
           $scope.currentOption = null;
