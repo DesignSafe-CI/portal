@@ -254,7 +254,7 @@
               id: 'experimental',
               label: 'Experimental'},{
               id: 'simulation',
-              label: 'simulation'},{
+              label: 'Simulation'},{
               id: 'hybrid_simulation',
               label: 'Hybrid Simulation'},{
               id: 'field_reconnaissance',
