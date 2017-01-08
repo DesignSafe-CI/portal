@@ -33,7 +33,7 @@ class SearchView(BaseApiView):
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
-        es_query = Search()\
+        es_query = Search(index="jmeiring,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
@@ -55,7 +55,8 @@ class SearchView(BaseApiView):
             .query("query_string", query=q, default_operator="and")\
             .extra(from_=offset, size=limit)\
             .execute()
-        files_query = Search()\
+
+        files_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .query("match", type="file")\
@@ -64,22 +65,27 @@ class SearchView(BaseApiView):
             .extra(from_=offset, size=limit)\
             .execute()
 
-        # pubs_query = Search(index="designsafe")\
-        #     .query("match", systemId=system_id)\
-        #     .query("term", _type="project")\
-        #     .query("nested", path="publications")
-        # logger.info(pubs_query.to_dict())
-        # pubs_query.execute()
-        # print pubs_query
+        pubs_query = Search(index="jmeiring")\
+            .query("match", systemId=system_id)\
+            .filter("term", _type="project")\
+            .query("nested", **{'path':"publications",
+                "inner_hits":{},
+                "query": Q('query_string',
+                    fields=["publications.title"],
+                    query=q,
+                    default_operator="and")
+                }
+            )\
+            .execute()
 
-        exp_query = Search()\
+        exp_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="experiment")\
             .extra(from_=offset, size=limit)\
             .execute()
 
-        projects_query = Search()\
+        projects_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="project")\
@@ -93,12 +99,21 @@ class SearchView(BaseApiView):
             d = r.to_dict()
             d["doc_type"] = r.meta.doc_type
             hits.append(d)
-
-        out['total_hits'] = res.hits.total
+        pubs = []
+        for r in pubs_query:
+            logger.info(r.meta.inner_hits)
+            for p in r.meta.inner_hits['publications']:
+                 d = p.to_dict()
+                 d["doc_type"] = "publication"
+                 d["project"] = r.to_dict()
+                 pubs.append(d)
+        hits.extend(pubs)
+        out['total_hits'] = res.hits.total + pubs_query.hits.total
         out['hits'] = hits
         out['files_total'] = files_query.hits.total
         out['projects_total'] = projects_query.hits.total
         out['experiments_total'] = exp_query.hits.total
         out['cms_total'] = web_query.hits.total
+        out['publications_total'] = pubs_query.hits.total
 
         return JsonResponse(out, safe=False)

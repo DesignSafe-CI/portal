@@ -34,6 +34,8 @@
               $scope.page_num = 0;
               $scope.offset = 0;
               $scope.searching = false;
+          }, function (err) {
+            $scope.searching = false;
           });
         }
       };
