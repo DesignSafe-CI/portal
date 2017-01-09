@@ -338,6 +338,7 @@
         "action": "preview"
       };
       return $http.put(this.mediaUrl(), body).then(function (resp) {
+        console.log(resp.data)
         return resp.data;
       });
     };

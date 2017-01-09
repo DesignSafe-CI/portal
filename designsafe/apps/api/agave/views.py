@@ -1,4 +1,4 @@
-""" Main views for agave api. api/agave/* 
+""" Main views for agave api. api/agave/*
     All these views return :class:`JsonResponse`s"""
 
 import logging
@@ -54,7 +54,7 @@ class FileListingView(View):
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
             if file_path is None:
                 file_path = request.user.username
-            
+
             if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
                 (file_path.strip('/') == '$SHARE' or
                  file_path.strip('/').split('/')[0] != request.user.username):
@@ -120,6 +120,7 @@ class FileMediaView(View):
 
                 return render(request, 'designsafe/apps/api/agave/preview.html', context)
             else:
+                logger.info(fm.download(system_id, file_path))
                 return HttpResponseRedirect(fm.download(system_id, file_path))
 
         return HttpResponseBadRequest("Unsupported operation")
@@ -372,7 +373,7 @@ class FileMediaView(View):
                     else:
                         return HttpResponseBadRequest('Preview not available for this item')
                 except HTTPError as e:
-                    logger.exception('Unable to preview file')
+                    logger.exception('Unable to preview file: {file_path}'.format(file=file))
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'rename':
@@ -504,7 +505,7 @@ class FileSearchView(View):
 
         if file_mgr_name != ElasticFileManager.NAME or not query_string:
             return HttpResponseBadRequest()
-        
+
         if system_id is None:
             system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
 
@@ -599,7 +600,7 @@ class FileMetaView(View):
             file_dict = file_obj.to_dict()
             file_dict['keywords'] = file_obj.metadata.value['keywords']
             return JsonResponse(file_dict)
-        
+
         return HttpResponseBadRequest('Unsupported file manager.')
 
     def put(self, request, file_mgr_name, system_id, file_path):
@@ -650,7 +651,7 @@ class FileMetaView(View):
                 }
                 Notification.objects.create(**event_data)
             return JsonResponse(file_dict)
-        
+
         return HttpResponseBadRequest('Unsupported file manager.')
 
 class SystemsView(View):

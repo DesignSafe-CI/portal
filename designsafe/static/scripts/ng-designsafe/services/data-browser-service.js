@@ -476,9 +476,9 @@
           };
 
           $scope.options = [
-            {label: 'My Data', 
+            {label: 'My Data',
              conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', 
+            {label: 'Shared with me',
              conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
             {label: 'My Projects',
              conf: {system: 'projects', path: ''}}
@@ -597,6 +597,7 @@
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
         controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
           $scope.file = file;
+          console.log(file)
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
@@ -658,6 +659,59 @@
       return modal.result;
     }
 
+    /**
+     *
+     * @param {FileListing} folder
+     * @return {Promise}
+     */
+    function previewImages (folder) {
+      var modal = $uibModal.open({
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
+        controller: ['$scope', '$uibModalInstance', '$sce', 'folder', function ($scope, $uibModalInstance, $sce, folder) {
+          $scope.folder = folder;
+          console.log(folder)
+          var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif']
+          $scope.busy = true;
+          $scope.images = [];
+          $scope.folder.children.forEach(function (file) {
+            var ext = file.path.split('.').pop()
+            if (img_extensions.indexOf(ext) !== -1) {
+                // $scope.images.push({href: file.listingUrl()});
+                file.preview().then(function (data) {
+                  data.href = data.href.replace('?preview=true', '');
+                  $scope.images.push(data);
+                })
+            }
+
+          })
+          console.log($scope.images)
+          // file.preview().then(
+          //   function (data) {
+          //     $scope.previewHref = $sce.trustAs('resourceUrl', data.href);
+          //     $scope.busy = false;
+          //   },
+          //   function (err) {
+          //     $scope.previewError = err.data;
+          //     $scope.busy = false;
+          //   }
+          // );
+          //
+          // $scope.tests = allowedActions([folder]);
+
+
+          $scope.close = function () {
+            $uibModalInstance.dismiss();
+          };
+
+        }],
+        size: 'lg',
+        resolve: {
+          folder: function() { return folder; }
+        }
+      });
+
+      return modal.result;
+    }
 
     /**
      *
@@ -1248,6 +1302,7 @@
       mkdir: mkdir,
       move: move,
       preview: preview,
+      previewImages: previewImages,
       rename: rename,
       rm: rm,
       search: search,

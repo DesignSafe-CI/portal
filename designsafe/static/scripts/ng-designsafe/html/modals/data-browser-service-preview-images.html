@@ -1,0 +1,10 @@
+<div class="modal-body">
+  <uib-carousel>
+    <uib-slide ng-repeat='img in images'>
+      <img ng-src='{{img.href}}'></img>
+    </uib-slide>
+  </uib-carousel>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="close()">Close</button>
+</div>

@@ -40,6 +40,10 @@
       preview: function () {
         DataBrowserService.preview($scope.browser.selected[0], $scope.browser.listing);
       },
+      previewImages: function () {
+        console.log($scope.browser.listing)
+        DataBrowserService.previewImages($scope.browser.listing);
+      },
       viewMetadata: function () {
         DataBrowserService.viewMetadata($scope.browser.selected[0], $scope.browser.listing);
       },
