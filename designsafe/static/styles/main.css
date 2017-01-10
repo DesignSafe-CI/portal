@@ -12,15 +12,23 @@ body.navbar-fixed {
   top: 29px;
 }
 
+
+
 .modal-huge .modal-dialog {
   width: 100%;
-  height:100% !important;
+  min-height:100vh;
   padding: 0;
   margin: 0;
 }
 
-.modal-huge img {
-  height: 85%;
+.modal-huge .modal-content {
+  min-height:100vh;
+
+}
+
+.img-responsive.img-preview {
+  max-height: calc(100vh - 225px);
+  margin: auto;
 }
 
 .ef-site-title a {

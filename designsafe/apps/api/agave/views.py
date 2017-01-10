@@ -50,6 +50,7 @@ class FileListingView(View):
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            logger.info(request.user.agave_oauth)
             if system_id is None:
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
             if file_path is None:
@@ -85,6 +86,7 @@ class FileListingView(View):
 class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
+        logger.info(file_path)
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
             if not request.user.is_authenticated():
@@ -120,8 +122,12 @@ class FileMediaView(View):
 
                 return render(request, 'designsafe/apps/api/agave/preview.html', context)
             else:
-                logger.info(fm.download(system_id, file_path))
-                return HttpResponseRedirect(fm.download(system_id, file_path))
+                url = 'https://agave.designsafe-ci.org/files/v2/media/{system}/{path}'.format(system=system_id, path=file_path)
+                # return HttpResponseRedirect(fm.download(system_id, file_path))
+                resp = HttpResponseRedirect(url)
+                resp['X-Authorization'] = 'Bearer {token}'.format(token=request.user.agave_oauth.access_token)
+                logger.info(resp)
+                return resp
 
         return HttpResponseBadRequest("Unsupported operation")
 

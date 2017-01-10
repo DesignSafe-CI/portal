@@ -4,7 +4,7 @@
 <div class="modal-body">
   <uib-carousel ng-if="images.length">
     <uib-slide ng-repeat='img in images'>
-      <img ng-src='{{img.href}}' style="margin:auto;"></img>
+      <img ng-src='{{img.href}}' style="margin:auto" class="img-responsive img-preview img-thumbnail	"></img>
       <span> {{img.file.name}}</span>
     </uib-slide>
   </uib-carousel>

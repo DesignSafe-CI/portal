@@ -118,6 +118,10 @@
       return 'agave://' + this.system + '/' + this.path;
     };
 
+    FileListing.prototype.agaveUrl = function () {
+      return 'https://agave.designsafe-ci.org/files/v2/media/system/' + this.system + '/' + this.path;
+    }
+
     /**
      * Make a copy of this FileResource.
      *

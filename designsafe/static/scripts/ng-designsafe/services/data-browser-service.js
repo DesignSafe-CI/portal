@@ -677,11 +677,8 @@
           $scope.folder.children.forEach(function (file) {
             var ext = file.path.split('.').pop()
             if (img_extensions.indexOf(ext) !== -1) {
+                console.log(file.agaveUrl())
                 $scope.images.push({href: file.mediaUrl(), file:file});
-                // file.preview().then(function (data) {
-                //   data.href = data.href.replace('?preview=true', '');
-                //   $scope.images.push(data);
-                // })
             }
 
           })
