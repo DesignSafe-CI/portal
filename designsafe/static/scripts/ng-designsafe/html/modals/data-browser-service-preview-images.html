@@ -1,10 +1,14 @@
+<div class="modal-header">
+    <button class="btn btn-primary" type="button" ng-click="close()">Close</button>
+</div>
 <div class="modal-body">
-  <uib-carousel>
+  <uib-carousel ng-if="images.length">
     <uib-slide ng-repeat='img in images'>
-      <img ng-src='{{img.href}}'></img>
+      <img ng-src='{{img.href}}' style="margin:auto;"></img>
+      <span> {{img.file.name}}</span>
     </uib-slide>
   </uib-carousel>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="close()">Close</button>
+  <div ng-if="!images.length">
+    <h3> No images! </h3>
+  </div>
 </div>

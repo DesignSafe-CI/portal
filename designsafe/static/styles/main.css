@@ -12,6 +12,17 @@ body.navbar-fixed {
   top: 29px;
 }
 
+.modal-huge .modal-dialog {
+  width: 100%;
+  height:100% !important;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-huge img {
+  height: 85%;
+}
+
 .ef-site-title a {
   text-decoration: none;
   color: #333;

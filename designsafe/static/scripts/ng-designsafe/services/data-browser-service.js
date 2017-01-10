@@ -666,6 +666,7 @@
      */
     function previewImages (folder) {
       var modal = $uibModal.open({
+        windowClass: 'modal-huge',
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
         controller: ['$scope', '$uibModalInstance', '$sce', 'folder', function ($scope, $uibModalInstance, $sce, folder) {
           $scope.folder = folder;
@@ -676,11 +677,11 @@
           $scope.folder.children.forEach(function (file) {
             var ext = file.path.split('.').pop()
             if (img_extensions.indexOf(ext) !== -1) {
-                // $scope.images.push({href: file.listingUrl()});
-                file.preview().then(function (data) {
-                  data.href = data.href.replace('?preview=true', '');
-                  $scope.images.push(data);
-                })
+                $scope.images.push({href: file.mediaUrl(), file:file});
+                // file.preview().then(function (data) {
+                //   data.href = data.href.replace('?preview=true', '');
+                //   $scope.images.push(data);
+                // })
             }
 
           })
