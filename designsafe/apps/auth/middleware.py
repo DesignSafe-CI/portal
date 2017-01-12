@@ -29,5 +29,7 @@ class AgaveTokenRefreshMiddleware(object):
                 logout(request)
 
     def process_response(self, request, response):
-        response['Authorization'] = 'Bearer ' + request.user.agave_oauth.access_token
+        if hasattr(request, 'user'):
+            if request.user.is_authenticated():
+                response['Authorization'] = 'Bearer ' + request.user.agave_oauth.access_token
         return response

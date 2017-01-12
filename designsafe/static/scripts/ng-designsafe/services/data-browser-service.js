@@ -670,19 +670,19 @@
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
         controller: ['$scope', '$uibModalInstance', '$sce', 'folder', function ($scope, $uibModalInstance, $sce, folder) {
           $scope.folder = folder;
-          console.log(folder)
-          var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif']
+          console.log(folder);
+          var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
           $scope.busy = true;
           $scope.images = [];
           $scope.folder.children.forEach(function (file) {
-            var ext = file.path.split('.').pop()
+            var ext = file.path.split('.').pop();
             if (img_extensions.indexOf(ext) !== -1) {
-                console.log(file.agaveUrl())
-                $scope.images.push({href: file.mediaUrl(), file:file});
+                console.log(file.agaveUrl());
+                $scope.images.push({href: file.agaveUrl(), file:file});
             }
 
-          })
-          console.log($scope.images)
+          });
+          console.log($scope.images);
           // file.preview().then(
           //   function (data) {
           //     $scope.previewHref = $sce.trustAs('resourceUrl', data.href);
