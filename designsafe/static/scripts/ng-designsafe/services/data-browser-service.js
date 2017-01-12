@@ -4,11 +4,24 @@
   var module = angular.module('designsafe');
   module.requires.push('django.context');
 
+  module.factory('nbv', function($window) { //from http://jameshill.io/articles/angular-third-party-injection-pattern/
+    if($window.nbv){
+      //Delete nbv from window so it's not globally accessible.
+      //  We can still get at it through _thirdParty however, more on why later
+      $window._thirdParty = $window._thirdParty || {};
+      $window._thirdParty.nbv = $window.nbv;
+      try { delete $window.nbv; } catch (e) {$window.nbv = undefined;
+      /*<IE8 doesn't do delete of window vars, make undefined if delete error*/}
+    }
+    var nbv = $window._thirdParty.nbv;
+    return nbv;
+  });
+
   module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
-                                        'FileListing', 'Logging', 'SystemsService',
+                                        'FileListing', 'Logging', 'SystemsService', 'nbv',
                                         function($rootScope, $http, $q, $uibModal,
                                                  $state, Django, FileListing, Logging,
-                                                 SystemsService) {
+                                                 SystemsService, nbv) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
@@ -476,9 +489,9 @@
           };
 
           $scope.options = [
-            {label: 'My Data', 
+            {label: 'My Data',
              conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', 
+            {label: 'Shared with me',
              conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
             {label: 'My Projects',
              conf: {system: 'projects', path: ''}}
@@ -611,8 +624,37 @@
               $scope.busy = false;
             },
             function (err) {
-              $scope.previewError = err.data;
-              $scope.busy = false;
+              if (file.name.split('.').pop() != 'ipynb') {
+                $scope.previewError = err.data;
+                $scope.busy = false;
+              } else {
+                  file.download().then(
+                    function(data){
+                      var postit = data.href;
+                      var oReq = new XMLHttpRequest();
+
+                      oReq.open("GET", postit, true);
+
+                      oReq.onload = function(oEvent) {
+                        var blob = new Blob([oReq.response], {type: "application/json"});
+                        var reader = new FileReader();
+
+                        reader.onload = function(e){
+                          var content = JSON.parse(e.target.result)
+                          var target = $('.nbv-preview')[0];
+                          nbv.render(content, target);
+                        }
+
+                        reader.readAsText(blob)
+                      };
+
+                      oReq.send();
+                    },
+                    function (err) {
+                      $scope.previewError = err.data;
+                      $scope.busy = false;
+                    })
+              }
             }
           );
 
@@ -654,6 +696,38 @@
           file: function() { return file; }
         }
       });
+
+      // modal.rendered.then(
+      //   function(){
+      //     if (file.name.split('.').pop() == 'ipynb'){
+      //       file.download().then(
+      //         function(data){
+      //           var postit = data.href;
+      //           var oReq = new XMLHttpRequest();
+
+      //           oReq.open("GET", postit, true);
+
+      //           oReq.onload = function(oEvent) {
+      //             var blob = new Blob([oReq.response], {type: "application/json"});
+      //             var reader = new FileReader();
+
+      //             reader.onload = function(e){
+      //               var content = JSON.parse(e.target.result)
+      //               var target = $('.nbv-preview')[0];
+      //               nbv.render(content, target);
+      //             }
+
+      //             reader.readAsText(blob)
+      //           };
+
+      //           oReq.send();
+      //         },
+      //         function (err) {
+      //           $scope.previewError = err.data;
+      //           $scope.busy = false;
+      //         }
+      //       );
+      // }})
 
       return modal.result;
     }
