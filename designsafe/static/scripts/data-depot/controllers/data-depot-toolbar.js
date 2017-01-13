@@ -2,9 +2,10 @@
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
-  app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', function ($scope, $state, $uibModal, Django, DataBrowserService) {
+  app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService', function ($scope, $state, $uibModal, Django, DataBrowserService, UserService) {
     $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();
+    $scope.UserService = UserService;
 
     DataBrowserService.subscribe($scope, function($event, eventData) {
       if (eventData.type === DataBrowserService.FileEvents.FILE_SELECTION) {
@@ -41,7 +42,6 @@
         DataBrowserService.preview($scope.browser.selected[0], $scope.browser.listing);
       },
       previewImages: function () {
-        console.log($scope.browser.listing)
         DataBrowserService.previewImages($scope.browser.listing);
       },
       viewMetadata: function () {

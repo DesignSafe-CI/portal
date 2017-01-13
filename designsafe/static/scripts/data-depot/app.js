@@ -11,7 +11,7 @@
     'logging'
   );
 
-  function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig) {
+  function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
@@ -25,7 +25,6 @@
     });
 
     $stateProvider
-
       /* Private */
       .state('myData', {
         url: '/agave/{systemId}/{filePath:any}/',
@@ -271,7 +270,10 @@
           }],
           'auth': function($q) {
               return true;
-          }
+          },
+          userAuth: ['UserService', function (UserService) {
+            return UserService.authenticate();
+          }]
         }
       })
       .state('communityData', {

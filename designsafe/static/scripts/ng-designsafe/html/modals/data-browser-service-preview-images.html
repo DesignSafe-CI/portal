@@ -8,18 +8,14 @@
     dots=true
     arrows=true
     slides-to-show=1
+    lazy-loaded=true
   >
     <div ng-repeat="img in images" class="text-center">
       <img http-src='{{img.href}}' class="img-responsive img-preview img-thumbnail	"></img>
       <span class="label label-default"> {{img.file.name}}</span>
     </div>
   </slick>
-  <!-- <uib-carousel ng-if="images.length">
-    <uib-slide ng-repeat='img in images'>
-      <img http-src='{{img.href}}' style="margin:auto" class="img-responsive img-preview img-thumbnail	"></img>
-      <span> {{img.file.name}}</span>
-    </uib-slide>
-  </uib-carousel> -->
+  
   <div ng-if="!images.length">
     <h3> No images! </h3>
   </div>

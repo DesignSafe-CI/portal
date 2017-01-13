@@ -126,6 +126,7 @@
       var tests = {};
       tests.canDownload = files.length >= 1 && hasPermission('READ', files);
       tests.canPreview = files.length === 1 && hasPermission('READ', files);
+      tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
       tests.canViewMetadata = files.length === 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
@@ -666,36 +667,20 @@
      */
     function previewImages (folder) {
       var modal = $uibModal.open({
-        windowClass: 'modal-huge',
+        windowClass: 'modal-full',
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
         controller: ['$scope', '$uibModalInstance', '$sce', 'folder', function ($scope, $uibModalInstance, $sce, folder) {
           $scope.folder = folder;
-          console.log(folder);
           var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
           $scope.busy = true;
           $scope.images = [];
           $scope.folder.children.forEach(function (file) {
             var ext = file.path.split('.').pop();
             if (img_extensions.indexOf(ext) !== -1) {
-                console.log(file.agaveUrl());
                 $scope.images.push({href: file.agaveUrl(), file:file});
             }
 
           });
-          console.log($scope.images);
-          // file.preview().then(
-          //   function (data) {
-          //     $scope.previewHref = $sce.trustAs('resourceUrl', data.href);
-          //     $scope.busy = false;
-          //   },
-          //   function (err) {
-          //     $scope.previewError = err.data;
-          //     $scope.busy = false;
-          //   }
-          // );
-          //
-          // $scope.tests = allowedActions([folder]);
-
 
           $scope.close = function () {
             $uibModalInstance.dismiss();

@@ -3,7 +3,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.views.generic.base import View
 
 logger = logging.getLogger(__name__)
@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class AuthenticatedView(View):
 
     def get(self, request):
+        logger.info(request.user.__dict__)
         if request.user.is_authenticated():
             u = request.user
             out = {
@@ -26,7 +27,7 @@ class AuthenticatedView(View):
             }
 
             return JsonResponse(out)
-        return HttpResponseNotFound()
+        return HttpResponse('Unauthorized', status=401)
 
 
 class SearchView(SecureMixin, View):
