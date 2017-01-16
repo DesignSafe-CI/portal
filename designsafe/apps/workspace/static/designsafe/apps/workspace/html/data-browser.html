@@ -13,7 +13,7 @@
     </form>
     <p ng-if="data.wants" class="alert alert-info">
         <!-- {{data.wants.requestKey}} -->
-        Select file for <em>{{data.wants.title}}</em>.
+        Select file for <em>{{ data.wants.title }}</em>.
         <a class="btn btn-link btn-xs"
            ng-if="data.wants.description"
            uib-tooltip="{{data.wants.description}}"
@@ -32,7 +32,7 @@
                 <th>Size</th>
                 </thead>
                 <tbody>
-                <tr ng-repeat="f in data.filesListing | orderBy : ['type', 'name']">
+                <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
                     <td>
                         <button ng-if="f.name !== '.' && data.wants"
                                 type="button"
@@ -40,7 +40,7 @@
                                 ng-click="chooseFile(f)">Select</button>
                         <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
                             <i class="fa fa-{{getFileIcon(f)}}"></i>
-                            <span>{{displayName(f)}}</span>
+                            <span>{{renderName(f)}}</span>
                         </a>
                     </td>
                     <td>{{f.length|bytes:0}}</td>
