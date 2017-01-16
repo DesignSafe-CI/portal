@@ -236,22 +236,26 @@
 
           $scope.options = [
             {label: 'My Data',
-             conf: {system: 'designsafe.storage.default', path: ''}},
+             conf: {system: 'designsafe.storage.default', path: ''},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'Shared with me',
-             conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
+             conf: {system: 'designsafe.storage.default', path: '$SHARE'},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'My Projects',
-             conf: {system: 'projects', path: ''}},
+             conf: {system: 'projects', path: ''},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'Box',
-             conf: {system: 'box', path: '/'}}
+             conf: {path: '/'},
+             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}}
           ];
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
             $scope.state.busy = true;
-            var conf = $scope.currentOption.conf;
-            if (conf.system != 'projects'){
+            var cOption = $scope.currentOption;
+            if (cOption.conf.system != 'projects'){
               $scope.state.listingProjects = false;
-              FileListing.get(conf)
+              FileListing.get(cOption.conf, cOption.apiParams)
                 .then(function (listing) {
                   $scope.listing = listing;
                   $scope.state.busy = false;
@@ -295,7 +299,7 @@
             }
 
             $scope.state.busy = true;
-            FileListing.get({system: system, path: path})
+            FileListing.get({system: system, path: path}, $scope.currentOption.apiParams)
               .then(function (listing) {
                 $scope.listing = listing;
                 $scope.state.busy = false;
@@ -303,7 +307,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && ( fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -326,7 +330,8 @@
         function (result) {
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
-            return f.copy({system: result.system, path: result.path}).then(function (result) {
+            var system = result.system || f.system;
+            return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
               //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
               return result;
             });
@@ -562,7 +567,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && ( fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
