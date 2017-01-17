@@ -125,7 +125,7 @@
           if ($scope.data.filesListing.children.length > 0){
             $scope.data.filePath = $scope.data.filesListing.path;
             $scope.data.dirPath = $scope.data.filePath.split('/');
-            $scope.browser.currentState.listing = $scope.data.filesListing;
+            $scope.browser.listing = $scope.data.filesListing;
           }
           $scope.data.loading = false;
         }, function(err){
