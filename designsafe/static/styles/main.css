@@ -13,7 +13,7 @@ body.navbar-fixed {
 }
 
 .slick-prev {
-  left:-10px;
+  left:0px;
 }
 .slick-next {
   right:10px;
@@ -21,6 +21,8 @@ body.navbar-fixed {
 .slick-prev, .slick-next {
   line-height: 2em;
   font-size: 2em;
+  z-index: 1500;
+
 }
 
 .slick-prev:before, .slick-next:before {

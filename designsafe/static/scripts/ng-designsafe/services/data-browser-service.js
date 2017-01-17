@@ -668,8 +668,9 @@
       var modal = $uibModal.open({
         windowClass: 'modal-full',
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'folder', function ($scope, $uibModalInstance, $sce, folder) {
+        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder, UserService) {
           $scope.folder = folder;
+          $scope.UserService = UserService;
           var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
           $scope.busy = true;
           $scope.images = [];
@@ -683,11 +684,12 @@
             if (img_extensions.indexOf(ext) !== -1) {
                 $scope.images.push({href: file.agaveUrl(), file:file});
             }
-
           });
+
           if ($scope.images.length > 10) {
             $scope.carouselSettings.dots = false;
           }
+          
           $scope.close = function () {
             $uibModalInstance.dismiss();
           };

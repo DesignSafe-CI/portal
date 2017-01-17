@@ -4,7 +4,6 @@ angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel']).con
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 }]).run(['UserService', '$http', function (UserService, $http) {
   UserService.authenticate().then(function (resp) {
-    console.log(resp);
     $http.defaults.headers.common['Authorization'] = 'Bearer ' + resp.oauth.access_token;
   });
 }]);

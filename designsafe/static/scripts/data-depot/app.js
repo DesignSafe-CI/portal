@@ -272,7 +272,11 @@
               return true;
           },
           userAuth: ['UserService', function (UserService) {
-            return UserService.authenticate();
+            return UserService.authenticate().then(function (resp) {
+              return true;
+            }, function (err) {
+              return false;
+            });
           }]
         }
       })

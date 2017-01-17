@@ -17,4 +17,7 @@
   <div ng-if="!images.length">
     <h3> No images! </h3>
   </div>
+  <div ng-if='!UserService.userAuthenticated()'>
+    <h3> Please log in to preview images </h3>
+  </div>
 </div>
