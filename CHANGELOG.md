@@ -1,5 +1,23 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.20
+
+Features:
+
+- Python Notebook preview
+
+Improvements:
+
+- Notifications architecture.
+- Email notifications when user is added to a project.
+
+
+Fixes:
+
+- Remove NEEShub Account Access from Register and Login pages.
+- Copy/move to Box.com disappeared as an option.
+
+
 ## v0.9.19
 
 Fixes:
