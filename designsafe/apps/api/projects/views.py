@@ -1,5 +1,7 @@
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
@@ -127,6 +129,12 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
         p.add_collaborator(request.user.username)
         if p.pi and p.pi != request.user.username:
             p.add_collaborator(p.pi)
+            collab_users = get_user_model().objects.filter(username=p.pi)
+            if collab_users:
+                collab_user = collab_users[0]
+                collab_user.profile.send_mail(
+                    "[Designsafe-CI] You have been added to a project!",
+                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, url=reverse('designsafe_data:data_browser') + '/projects/%s' % (p.uuid,)))
 
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
@@ -196,6 +204,13 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         username = post_data.get('username')
         member_type = post_data.get('memberType', 'teamMember')
         project.add_collaborator(username)
+        collab_users = get_user_model().objects.filter(username=username)
+        if collab_users:
+            collab_user = collab_users[0]
+            collab_user.profile.send_mail(
+                "[Designsafe-CI] You have been added to a project!",
+                "<p>You have been added to the project <em> {title} </em>.</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, url=reverse('designsafe_data:data_browser') + 'projects/%s' % (project.uuid,)))
+
         members_list = project.value.get(member_type, [])
         members_list.append(username)
         _kwargs = {member_type: members_list}
