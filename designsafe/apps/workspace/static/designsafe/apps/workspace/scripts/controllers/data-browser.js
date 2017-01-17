@@ -16,7 +16,10 @@
       filesListing: null,
       system: null,
       dirPath: [],
-      filePath: ''
+      filePath: '',
+      loadingMore: false,
+      reachedEnd: false,
+      page: 0
     };
 
     $scope.dataSourceUpdated = function dataSourceUpdated() {
@@ -60,6 +63,56 @@
 
     $scope.getFileIcon = Files.icon;
 
+    $scope.scrollToTop = function(){
+      return;
+    };
+
+    $scope.browser = DataBrowserService.state();
+    
+    $scope.scrollToBottom = function(){
+      if ($scope.data.loadingMore || $scope.data.reachedEnd){
+        return;
+      }
+      $scope.data.loadingMore = true;
+      if ($scope.data.filesListing && $scope.data.filesListing.children &&
+          $scope.data.filesListing.children.length < 95){
+        $scope.data.reachedEnd = true;
+        return;
+      }
+      $scope.data.page += 1;
+      $scope.data.loadingMore = true;
+      DataBrowserService.browsePage(
+                 {system: $scope.data.filesListing.system,
+                  path: $scope.data.filesListing.path,
+                  page: $scope.data.page})
+      .then(function(listing){
+          $scope.data.filesListing = listing;
+          $scope.data.filePath = $scope.data.filesListing.path;
+          $scope.data.dirPath = $scope.data.filePath.split('/');
+          $scope.data.loadingMore = false;
+          if (listing.children.length < 95) {
+            $scope.data.reachedEnd = true;
+          }
+          $scope.data.loading = false;
+        }, function (err){
+             $scope.data.loadingMore = false;
+             $scope.data.reachedEnd = true;
+             $scope.data.loading = false;
+        });
+    };
+
+    $scope.browseTrail = function($event, index){
+      $event.stopPropagation();
+      $event.preventDefault();
+      if ($scope.data.dirPath.length <= index+1){
+        return;
+      }
+      $scope.browseFile({type: 'dir',
+                         system: $scope.data.filesListing.system,
+                         resource: $scope.data.filesListing.resource,
+                         path: $scope.data.dirPath.slice(0, index+1).join('/')});
+    };
+
     $scope.browseFile = function(file){
       if (file.type !== 'folder' && file.type !== 'dir'){
         return;
@@ -72,6 +125,7 @@
           if ($scope.data.filesListing.children.length > 0){
             $scope.data.filePath = $scope.data.filesListing.path;
             $scope.data.dirPath = $scope.data.filePath.split('/');
+            $scope.browser.currentState.listing = $scope.data.filesListing;
           }
           $scope.data.loading = false;
         }, function(err){
