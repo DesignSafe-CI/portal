@@ -647,12 +647,12 @@
                         var reader = new FileReader();
 
                         reader.onload = function(e){
-                          var content = JSON.parse(e.target.result)
+                          var content = JSON.parse(e.target.result);
                           var target = $('.nbv-preview')[0];
                           nbv.render(content, target);
-                        }
+                        };
 
-                        reader.readAsText(blob)
+                        reader.readAsText(blob);
                       };
 
                       oReq.send();
@@ -660,7 +660,7 @@
                     function (err) {
                       $scope.previewError = err.data;
                       $scope.busy = false;
-                    })
+                    });
               }
             }
           );
@@ -1287,7 +1287,7 @@
       }
       currentState.loadingMore = true;
       if (currentState.listing && currentState.listing.children &&
-          currentState.listing.children.length < 99){
+          currentState.listing.children.length < 95){
         currentState.reachedEnd = true;
         return;
       }
@@ -1298,7 +1298,7 @@
                   page: currentState.page})
       .then(function(listing){
           currentState.loadingMore = false;
-          if (listing.children.length < 99) {
+          if (listing.children.length < 95) {
             currentState.reachedEnd = true;
           }
         }, function (err){
