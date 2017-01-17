@@ -598,7 +598,6 @@
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
         controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
           $scope.file = file;
-          console.log(file)
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
@@ -674,14 +673,21 @@
           var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
           $scope.busy = true;
           $scope.images = [];
+          $scope.carouselSettings = {
+            dots: true,
+            arrows: true
+
+          };
           $scope.folder.children.forEach(function (file) {
-            var ext = file.path.split('.').pop();
+            var ext = file.path.split('.').pop().toLowerCase();
             if (img_extensions.indexOf(ext) !== -1) {
                 $scope.images.push({href: file.agaveUrl(), file:file});
             }
 
           });
-
+          if ($scope.images.length > 10) {
+            $scope.carouselSettings.dots = false;
+          }
           $scope.close = function () {
             $uibModalInstance.dismiss();
           };
