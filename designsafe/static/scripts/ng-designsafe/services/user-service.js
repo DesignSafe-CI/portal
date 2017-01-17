@@ -49,4 +49,12 @@ angular.module('designsafe')
      return user ? true : false;
    };
 
+   /**
+    * Returns if the current user is even authenticated
+    * @returns {object} currentUser
+    */
+    this.currentUser = function () {
+      return user;
+    };
+
 }]);
