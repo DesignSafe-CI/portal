@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('WorkspaceApp').controller('ApplicationTrayCtrl',
+  angular.module('designsafe').controller('ApplicationTrayCtrl',
     ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', 'toastr', function(
       $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, toastr) {
 
@@ -115,7 +115,7 @@
                 $scope.tabs.push({
                   title: key,
                   content: list
-                })
+                });
               }
             });
 

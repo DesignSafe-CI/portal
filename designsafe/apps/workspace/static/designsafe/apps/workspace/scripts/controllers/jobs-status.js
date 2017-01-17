@@ -1,7 +1,36 @@
 (function(window, angular, $) {
   "use strict";
-  angular.module('WorkspaceApp').controller('JobsStatusCtrl',
-  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger) {
+  angular.module('designsafe').controller('JobsStatusCtrl',
+  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
+
+    NotificationService.processors.vnc = {
+      'process': function notifyProcessor(msg){
+        if('event_type' in msg && msg.event_type === 'VNC') {
+          $uibModal.open({
+            templateUrl: 'local/vncjob-details-modal.html',
+            controller: 'VNCJobDetailsModalCtrl',
+            scope: $scope,
+            resolve: {
+              msg: msg
+            }
+          });
+        }
+        else {
+          for (var i=0; i < $scope.data.jobs.length; i++){
+              if ($scope.data.jobs[i]['id'] == msg.extra.id) {
+                $scope.data.jobs[i]['status'] = msg.extra.status;
+                $scope.$apply();
+                break;
+              }
+          }
+        }
+        return msg.extra;
+      },
+      // 'renderLink': function renderLink(msg){
+      //   logger.log('rendering link: ', msg);
+      //   return msg.extra['target_path'] // this will only be present when indexing is complete
+      // }
+    };
     $controller('WorkspacePanelCtrl', {$scope: $scope});
     $scope.data = {
       hasMoreJobs: true,
@@ -63,32 +92,33 @@
      * modal dialog in the workspace letting the user know their job is ready
      * to connect to.
      */
-    $scope.$on('ds.wsBus:default', function update_job(e, msg){
-      if('event_type' in msg && msg.event_type === 'VNC') {
-        $uibModal.open({
-          templateUrl: 'local/vncjob-details-modal.html',
-          controller: 'VNCJobDetailsModalCtrl',
-          scope: $scope,
-          resolve: {
-            msg: msg
-          }
-        });
-      }
-      else {
-        for (var i=0; i < $scope.data.jobs.length; i++){
-            if ($scope.data.jobs[i]['id'] == msg.extra.job_id) {
-              $scope.data.jobs[i]['status'] = msg.extra.job_status;
-              $scope.$apply();
-              break;
-            }
-        }
-      }
-    });
+    // $scope.$on('ds.wsBus:default', function update_job(e, msg){
+    // $scope.$on('ds.wsBus:notify', function update_job(e, msg){
+    //   if('event_type' in msg && msg.event_type === 'VNC') {
+    //     $uibModal.open({
+    //       templateUrl: 'local/vncjob-details-modal.html',
+    //       controller: 'VNCJobDetailsModalCtrl',
+    //       scope: $scope,
+    //       resolve: {
+    //         msg: msg
+    //       }
+    //     });
+    //   }
+    //   else {
+    //     for (var i=0; i < $scope.data.jobs.length; i++){
+    //         if ($scope.data.jobs[i]['id'] == msg.extra.id) {
+    //           $scope.data.jobs[i]['status'] = msg.extra.status;
+    //           $scope.$apply();
+    //           break;
+    //         }
+    //     }
+    //   }
+    // });
 
 
   }]);
 
-  angular.module('WorkspaceApp').controller('JobDetailsModalCtrl',
+  angular.module('designsafe').controller('JobDetailsModalCtrl',
     [ '$scope', '$uibModalInstance','$http', 'Jobs', 'job', 'djangoUrl', 'logger', function($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
 
     $scope.job = job;
@@ -124,7 +154,7 @@
 
   }]);
 
-  angular.module('WorkspaceApp').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
+  angular.module('designsafe').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
     $scope.msg = msg;
     $scope.dismiss = function() {
       $uibModalInstance.dismiss('cancel');

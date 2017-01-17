@@ -1,13 +1,27 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('designsafe');
+  module.requires.push('django.context');
 
-  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django', 
-                                        'FileListing', 'Logging', 'SystemsService',
-                                        function($rootScope, $http, $q, $uibModal, 
-                                                 $state, Django, FileListing, Logging, 
-                                                 SystemsService) {
+  module.factory('nbv', function($window) { //from http://jameshill.io/articles/angular-third-party-injection-pattern/
+    if($window.nbv){
+      //Delete nbv from window so it's not globally accessible.
+      //  We can still get at it through _thirdParty however, more on why later
+      $window._thirdParty = $window._thirdParty || {};
+      $window._thirdParty.nbv = $window.nbv;
+      try { delete $window.nbv; } catch (e) {$window.nbv = undefined;
+      /*<IE8 doesn't do delete of window vars, make undefined if delete error*/}
+    }
+    var nbv = $window._thirdParty.nbv;
+    return nbv;
+  });
+
+  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
+                                        'FileListing', 'Logging', 'SystemsService', 'nbv',
+                                        function($rootScope, $http, $q, $uibModal,
+                                                 $state, Django, FileListing, Logging,
+                                                 SystemsService, nbv) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
@@ -91,7 +105,7 @@
         f._ui.selected = true;
       });
       currentState.selected = _.union(currentState.selected, files);
-      notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION, 
+      notify(FileEvents.FILE_SELECTION, FileEventsMsg.FILE_SELECTION,
              currentState.selected);
     }
 
@@ -209,7 +223,7 @@
 
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-copy.html',
-        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService', 
+        controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService',
                      function ($scope, $uibModalInstance, FileListing, data, ProjectService) {
 
           $scope.data = data;
@@ -221,21 +235,27 @@
           };
 
           $scope.options = [
-            {label: 'My Data', 
-             conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', 
-             conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
+            {label: 'My Data',
+             conf: {system: 'designsafe.storage.default', path: ''},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
+            {label: 'Shared with me',
+             conf: {system: 'designsafe.storage.default', path: '$SHARE'},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'My Projects',
-             conf: {system: 'projects', path: ''}}
+             conf: {system: 'projects', path: ''},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
+            {label: 'Box',
+             conf: {path: '/'},
+             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}}
           ];
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
             $scope.state.busy = true;
-            var conf = $scope.currentOption.conf;
-            if (conf.system != 'projects'){
+            var cOption = $scope.currentOption;
+            if (cOption.conf.system != 'projects'){
               $scope.state.listingProjects = false;
-              FileListing.get(conf)
+              FileListing.get(cOption.conf, cOption.apiParams)
                 .then(function (listing) {
                   $scope.listing = listing;
                   $scope.state.busy = false;
@@ -279,7 +299,7 @@
             }
 
             $scope.state.busy = true;
-            FileListing.get({system: system, path: path})
+            FileListing.get({system: system, path: path}, $scope.currentOption.apiParams)
               .then(function (listing) {
                 $scope.listing = listing;
                 $scope.state.busy = false;
@@ -287,7 +307,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && ( fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -310,8 +330,9 @@
         function (result) {
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
-            return f.copy({system: result.system, path: result.path}).then(function (result) {
-              notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
+            var system = result.system || f.system;
+            return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
+              //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
               return result;
             });
           });
@@ -436,7 +457,7 @@
           name: folderName
         }).then(function(newDir) {
           currentState.busy = false;
-          notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
+          //notify(FileEvents.FILE_ADDED, FileEventsMsg.FILE_ADDED, newDir);
         }, function(err) {
           // TODO better error handling
           logger.error(err);
@@ -475,9 +496,9 @@
           };
 
           $scope.options = [
-            {label: 'My Data', 
+            {label: 'My Data',
              conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', 
+            {label: 'Shared with me',
              conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
             {label: 'My Projects',
              conf: {system: 'projects', path: ''}}
@@ -546,7 +567,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && ( fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -573,7 +594,7 @@
           var movePromises = _.map(files, function (f) {
             return f.move({system: result.system, path: result.path}).then(function (result) {
               deselect([f]);
-              notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
+              //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, f);
               return result;
             });
           });
@@ -610,8 +631,37 @@
               $scope.busy = false;
             },
             function (err) {
-              $scope.previewError = err.data;
-              $scope.busy = false;
+              if (file.name.split('.').pop() != 'ipynb') {
+                $scope.previewError = err.data;
+                $scope.busy = false;
+              } else {
+                  file.download().then(
+                    function(data){
+                      var postit = data.href;
+                      var oReq = new XMLHttpRequest();
+
+                      oReq.open("GET", postit, true);
+
+                      oReq.onload = function(oEvent) {
+                        var blob = new Blob([oReq.response], {type: "application/json"});
+                        var reader = new FileReader();
+
+                        reader.onload = function(e){
+                          var content = JSON.parse(e.target.result);
+                          var target = $('.nbv-preview')[0];
+                          nbv.render(content, target);
+                        };
+
+                        reader.readAsText(blob);
+                      };
+
+                      oReq.send();
+                    },
+                    function (err) {
+                      $scope.previewError = err.data;
+                      $scope.busy = false;
+                    });
+              }
             }
           );
 
@@ -653,6 +703,38 @@
           file: function() { return file; }
         }
       });
+
+      // modal.rendered.then(
+      //   function(){
+      //     if (file.name.split('.').pop() == 'ipynb'){
+      //       file.download().then(
+      //         function(data){
+      //           var postit = data.href;
+      //           var oReq = new XMLHttpRequest();
+
+      //           oReq.open("GET", postit, true);
+
+      //           oReq.onload = function(oEvent) {
+      //             var blob = new Blob([oReq.response], {type: "application/json"});
+      //             var reader = new FileReader();
+
+      //             reader.onload = function(e){
+      //               var content = JSON.parse(e.target.result)
+      //               var target = $('.nbv-preview')[0];
+      //               nbv.render(content, target);
+      //             }
+
+      //             reader.readAsText(blob)
+      //           };
+
+      //           oReq.send();
+      //         },
+      //         function (err) {
+      //           $scope.previewError = err.data;
+      //           $scope.busy = false;
+      //         }
+      //       );
+      // }})
 
       return modal.result;
     }
@@ -736,7 +818,7 @@
           var deletePromises = _.map(files, function (file) {
             return file.rm().then(function (result) {
               deselect([file]);
-              notify(FileEvents.FILE_REMOVED, FileEventsMsg.FILE_REMOVED, file);
+              //notify(FileEvents.FILE_REMOVED, FileEventsMsg.FILE_REMOVED, file);
               return result;
             });
           });
@@ -922,7 +1004,7 @@
       currentState.busy = true;
       var trashPromises = _.map(files, function(file) {
         return file.trash().then(function(trashed) {
-          notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
+          //notify(FileEvents.FILE_MOVED, FileEventsMsg.FILE_MOVED, trashed);
           return trashed;
         });
       });
@@ -1084,10 +1166,10 @@
      */
     function viewMetadata (file, listing) {
       var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-metadata.html';
-      if (typeof file.metadata !== 'undefined' && 
+      if (typeof file.metadata !== 'undefined' &&
          file.metadata.project !== 'undefined'){
         template ='/static/scripts/ng-designsafe/html/modals/data-browser-service-published-metadata.html';
-      } 
+      }
       var modal = $uibModal.open({
         templateUrl: template,
         controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
@@ -1109,7 +1191,7 @@
               $scope.ui.error = err;
             });
           }
-         
+
 		  $scope.doSaveMetadata = function($event) {
 			$event.preventDefault();
 			$uibModalInstance.close($scope.data);
@@ -1126,7 +1208,7 @@
 			} else {
 			  $scope.data.form.tagsToDelete.push(tag);
 			}
-		  }; 
+		  };
 
           /**
            * Cancel and close upload dialog.
@@ -1158,7 +1240,7 @@
         }
         currentState.busy = true;
         file.updateMeta({'metadata': metaObj}).then(function(file_resp){
-          notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
+          //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
           currentState.busy = false;
         });
       });
@@ -1205,7 +1287,7 @@
       }
       currentState.loadingMore = true;
       if (currentState.listing && currentState.listing.children &&
-          currentState.listing.children.length < 100){
+          currentState.listing.children.length < 95){
         currentState.reachedEnd = true;
         return;
       }
@@ -1216,7 +1298,7 @@
                   page: currentState.page})
       .then(function(listing){
           currentState.loadingMore = false;
-          if (listing.children.length < 100) {
+          if (listing.children.length < 95) {
             currentState.reachedEnd = true;
           }
         }, function (err){

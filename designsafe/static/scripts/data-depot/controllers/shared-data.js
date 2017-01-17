@@ -1,5 +1,7 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
   app.controller('SharedDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
@@ -28,7 +30,7 @@
     $scope.onBrowse = function($event, file) {
       $event.preventDefault();
       $event.stopPropagation();
-    
+
       var systemId = file.system || file.systemId;
       var filePath;
       if (file.path == '/'){
@@ -61,7 +63,7 @@
         var min = Math.min(lastIndex, fileIndex);
         var max = Math.max(lastIndex, fileIndex);
         DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
-      } else if( typeof file._ui !== 'undefined' && 
+      } else if( typeof file._ui !== 'undefined' &&
                  file._ui.selected){
         DataBrowserService.deselect([file]);
       } else{
@@ -70,7 +72,7 @@
     };
 
     $scope.showFullPath = function(item){
-      if ($scope.browser.listing.path != '$SHARED' && 
+      if ($scope.browser.listing.path != '$SHARED' &&
           item.parentPath() != $scope.browser.listing.path &&
           item.parentPath() != '/'){
         return true;

@@ -1,14 +1,15 @@
 (function(window, angular) {
-  var dataDepotApp = angular.module('DataDepotApp', [
-                                    'ui.router', 
-                                    'djng.urls', 
-                                    'ui.bootstrap', 
-                                    'ng.designsafe', 
-                                    'django.context',
-                                    'ds.notifications',
-                                    'ds.wsBus',
-                                    'toastr',
-									'logging']);
+  var module = angular.module('designsafe');
+  module.requires.push(
+    'ui.router',
+    'djng.urls',
+    'ui.bootstrap',
+    'django.context',
+    'ds.notifications',
+    'ds.wsBus',
+    'toastr',
+    'logging'
+  );
 
   function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig) {
 
@@ -60,7 +61,7 @@
           }
         }
       })
-      .state('dataSearch',{ 
+      .state('dataSearch',{
         url: '/agave-search/?query_string&offset&limit',
         controller: 'MyDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
@@ -124,7 +125,7 @@
           }
         }
       })
-      .state('sharedDataSearch',{ 
+      .state('sharedDataSearch',{
         url: '/shared-search/?query_string&offset&limit&shared',
         controller: 'MyDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
@@ -224,7 +225,7 @@
       })
 
       /* Public */
-      .state('publicDataSearch',{ 
+      .state('publicDataSearch',{
         url: '/public-search/?query_string&offset&limit',
         controller: 'PublicationDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
@@ -298,7 +299,7 @@
     });
   }
 
-  dataDepotApp
+  module
     .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', 'toastrConfig', config])
     .run(['$rootScope', '$location', '$state', 'Django', function($rootScope, $location, $state, Django) {
       $rootScope.$state = $state;
@@ -325,10 +326,10 @@
         }
       });
     }]);
-  
-  dataDepotApp
+
+  module
     .config(['WSBusServiceProvider', function(WSBusServiceProvider){
-      
+
         WSBusServiceProvider.setUrl(
             (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
             window.location.hostname +
@@ -336,13 +337,13 @@
             '/ws/websockets?subscribe-broadcast&subscribe-user'
         );
 	}])
-	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
-	  WSBusService.init(WSBusService.url);
-    }]);
+// 	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
+// 	  WSBusService.init(WSBusService.url);
+//     }]);
 
-  dataDepotApp
-	.run(['NotificationService', 'Logging', function init(NotificationService, logger){
-	  NotificationService.init();
-}]);
+//   module
+// 	.run(['NotificationService', 'Logging', function init(NotificationService, logger){
+// 	  NotificationService.init();
+// }]);
 
 })(window, angular);

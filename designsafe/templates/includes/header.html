@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load static %}
 <header class="container site-banner">
   <div class="site-banner-left">
     <a class="logo" href="/">
@@ -17,18 +18,7 @@
             <a class="text-danger" title="API Session Not Available. Click for details." href="{% url 'designsafe_auth:agave_session_error' %}"><i class="fa fa-exclamation-triangle"></i><span class="sr-only">API Session Not Available. Click for details.</span></a>
           {% endif %}
         </span>
-        <span id="id_user_notify">
-          <a href="{% url 'designsafe_notifications:index' %}" class="btn btn-link">
-            <span class="sr-only">Notifications</span>
-            <span id="notification_badge" class="label label-as-badge
-            {% if unreadNotifications %} label-info {% else %} label-default {% endif %}" title="You have no unread notifications">
-            {% if unreadNotifications %}
-              {{unreadNotifications}}
-            {% else %}
-              &nbsp;
-            {% endif %}
-            </span>
-          </a>
+        <span ng-controller="NotificationBadgeCtrl" id="id_user_notify" ng-include="'{% static 'designsafe/apps/notifications/html/badge.html' %}'">
         </span>
         <div class="btn-group">
           <a href="{% url 'designsafe_accounts:index' %}" class="btn btn-link-alt">My account</a>

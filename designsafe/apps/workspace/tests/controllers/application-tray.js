@@ -2,7 +2,7 @@
 
 describe('ApplicationTrayCtrl', function() {
 
-  beforeEach(module('WorkspaceApp'));
+  beforeEach(module('designsafe'));
 
   describe('ApplicationTrayCtrl controller', function() {
 

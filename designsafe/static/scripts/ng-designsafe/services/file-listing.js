@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('designsafe');
 
   module.factory('FileListing', ['$http', '$q', 'Logging', function($http, $q, Logging) {
 
@@ -18,7 +18,7 @@
           return fl;
         }, this);
       }
-      if (typeof apiParams !== 'undefined' && 
+      if (typeof apiParams !== 'undefined' &&
           apiParams !== null &&
           !_.isEmpty(apiParams)){
         this.apiParams = apiParams;
@@ -57,7 +57,7 @@
       }
       if (this.id && this.id.indexOf('/') > -1){
         urlParts.push(this.id);
-      } 
+      }
       else if (this.path) {
         urlParts.push(this.path);
       }
@@ -131,7 +131,8 @@
         "action": "copy",
         "system": options.system,
         "path": options.path,
-        "name": options.name
+        "name": options.name,
+        "resource": options.resource || ""
       };
       return $http.put(this.mediaUrl(), body).then(function (resp) {
         return new FileListing(resp.data);

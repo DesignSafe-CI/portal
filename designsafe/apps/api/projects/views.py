@@ -1,5 +1,7 @@
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
@@ -66,9 +68,20 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'metadata_create',
                             'info': {'postData': post_data} })
+                            'info': {'postData': post_data}})
         p = Project(ag)
-        p.title = post_data.get('title')
-        p.pi = post_data.get('pi', None)
+        title = post_data.get('title')
+        award_number = post_data.get('awardNumber', '')
+        project_type = post_data.get('projectType', 'other')
+        associated_projects = post_data.get('associatedProjects', {})
+        description = post_data.get('description', '')
+        new_pi = post_data.get('pi')
+        p.update(title=title,
+                 award_number=award_number,
+                 project_type=project_type,
+                 associated_projects=associated_projects,
+                 description=description)
+        p.pi = new_pi
         p.save()
 
         # create Project Directory on Managed system
@@ -117,6 +130,12 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
         p.add_collaborator(request.user.username)
         if p.pi and p.pi != request.user.username:
             p.add_collaborator(p.pi)
+            collab_users = get_user_model().objects.filter(username=p.pi)
+            if collab_users:
+                collab_user = collab_users[0]
+                collab_user.profile.send_mail(
+                    "[Designsafe-CI] You have been added to a project!",
+                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, url=reverse('designsafe_data:data_browser') + '/projects/%s' % (p.uuid,)))
 
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
@@ -148,11 +167,20 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
 
         # save Project (metadata)
         p = Project.from_uuid(ag, project_id)
-        p.title = post_data.get('title')
-        new_pi = post_data.get('pi', None)
+        title = post_data.get('title')
+        award_number = post_data.get('awardNumber', '')
+        project_type = post_data.get('projectType', 'other')
+        associated_projects = post_data.get('associatedProjects', {})
+        description = post_data.get('description', '')
+        new_pi = post_data.get('pi')
         if p.pi != new_pi:
             p.pi = new_pi
             p.add_collaborator(new_pi)
+        p.update(title=title,
+                 award_number=award_number,
+                 project_type=project_type,
+                 associated_projects=associated_projects,
+                 description=description)
         p.save()
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
@@ -161,8 +189,9 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
 
     def get(self, request, project_id):
         ag = request.user.agave_oauth.client
-        project = Project(agave_client=ag, uuid=project_id)
-        return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
+        project = Project.from_uuid(agave_client=ag, uuid=project_id)
+        return JsonResponse(project.team_members())
+        #return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
 
     def post(self, request, project_id):
         if request.is_ajax():
@@ -173,7 +202,21 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
-        project.add_collaborator(post_data.get('username'))
+        username = post_data.get('username')
+        member_type = post_data.get('memberType', 'teamMember')
+        project.add_collaborator(username)
+        collab_users = get_user_model().objects.filter(username=username)
+        if collab_users:
+            collab_user = collab_users[0]
+            collab_user.profile.send_mail(
+                "[Designsafe-CI] You have been added to a project!",
+                "<p>You have been added to the project <em> {title} </em>.</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, url=reverse('designsafe_data:data_browser') + 'projects/%s' % (project.uuid,)))
+
+        members_list = project.value.get(member_type, [])
+        members_list.append(username)
+        _kwargs = {member_type: members_list}
+        project.update(**_kwargs)
+        project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ])
         return JsonResponse({'status': 'ok'})
 
@@ -187,7 +230,7 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.remove_collaborator(post_data.get('username'))
-        tasks.check_project_files_meta_pems(project.uuid)
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid])
         return JsonResponse({'status': 'ok'})
 
 

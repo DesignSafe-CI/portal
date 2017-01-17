@@ -1,15 +1,21 @@
 from django.db import models
 from designsafe.apps.signals.signals import generic_event
+from django.core.serializers.json import DjangoJSONEncoder
 import datetime
 import logging
 import json
+import six
 
 logger = logging.getLogger(__name__)
 
 class BaseNotify(models.Model):
+    """Abstract base notification class.
+
+    These are the base fields that every notification should have.
+    """
     event_type = models.CharField(max_length=50)
     datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
-    #Status should be SUCCESS, INFO, ERROR, WARNING, 
+    #Status should be SUCCESS, INFO, ERROR, WARNING,
     status = models.CharField(max_length = 255)
     operation = models.CharField(max_length = 255, default = '')
     message = models.TextField(default='')
@@ -27,22 +33,36 @@ class BaseNotify(models.Model):
     OPERATION = 'operation'
 
     def to_dict(self):
+        try:
+            extra = json.loads(self.extra)
+        except ValueError:
+            logger.debug('extra: %s, id: %s', self.extra, self.id)
+            extra = {}
         d = {
             'event_type': self.event_type,
             'datetime': self.datetime.strftime('%s'),
             'status': self.status,
             'operation': self.operation,
             'message': self.message,
-            'extra': self.extra
+            'extra': extra,
+            'pk': self.pk
         }
         return d
 
     def save(self, *args, **kwargs):
         if isinstance(self.extra, dict):
-            self.extra = json.dumps(self.extra)
+            try:
+                self.extra = json.dumps(self.extra, cls=DjangoJSONEncoder)
+            except TypeError:
+                for key in six.iterkeys(self.extra):
+                    try:
+                        json.dumps(self.extra[key])
+                    except TypeError:
+                        logger.debug('Keys with error: %s . Value: %s', key, self.extra[key])
+                        raise
 
         super(BaseNotify, self).save(*args, **kwargs)
-    
+
     @property
     def extra_content(self):
         return json.loads(self.extra)

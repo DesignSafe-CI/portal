@@ -5,7 +5,7 @@
  */
 (function(window, angular, $, _) {
   'use strict';
-  angular.module('WorkspaceApp').factory('Systems', ['$q', '$http', 'djangoUrl', function($q, $http, djangoUrl) {
+  angular.module('designsafe').factory('Systems', ['$q', '$http', 'djangoUrl', function($q, $http, djangoUrl) {
     var service = {};
 
     var systemsList = [
@@ -17,7 +17,9 @@
               rootDir: '/corral-repl/tacc/NHERI/shared'
           },
           type: 'STORAGE',
-          uuid: '5072762172135903717-242ac114-0001-006'
+          uuid: '5072762172135903717-242ac114-0001-006',
+          fileMgr: 'agave',
+          baseUrl: '/api/agave/files'
         },
         {
           id: 'nees.public',
@@ -27,7 +29,9 @@
             rootDir: '/corral-repl/tacc/NHERI/public/projects'
           },
           type: 'STORAGE',
-          uuid: '8688297665752666597-242ac119-0001-006'
+          uuid: '8688297665752666597-242ac119-0001-006',
+          fileMgr: 'public',
+          baseUrl: '/api/public/files'
         }
     ];
 

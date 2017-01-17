@@ -1,6 +1,6 @@
 (function(window, angular, $) {
   "use strict";
-  angular.module('WorkspaceApp').controller('WorkspacePanelCtrl',
+  angular.module('designsafe').controller('WorkspacePanelCtrl',
     ['$scope', function($scope) {
 
     $scope.panel = {

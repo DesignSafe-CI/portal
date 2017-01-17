@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseBadRequest
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
@@ -11,8 +12,8 @@ from designsafe.apps.api.exceptions import ApiException
 import json
 
 class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
-    
-    def get(self, request, event_type, *args, **kwargs):
+
+    def get(self, request, event_type = None, *args, **kwargs):
         if event_type is not None:
             notifs = Notification.objects.filter(event_type = event_type,
                           deleted = False,
@@ -20,6 +21,9 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         else:
             notifs = Notification.objects.filter(deleted = False,
                           user = request.user.username).order_by('-datetime')
+        for n in notifs:
+            if not n.read:
+                n.mark_read()
 
         notifs = [n.to_dict() for n in notifs]
         return self.render_to_json_response(notifs)
@@ -32,10 +36,26 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         n.read = read
         n.save()
 
-    def delete(self, request, *args, **kwargs):
-        body_json = json.loads(request.body)
-        nid = body_json['id']
-        deleted = body_json['deleted']
-        n = Notification.get(id = nid)
-        n.deleted = deleted
-        n.save()
+    def delete(self, request, pk, *args, **kwargs):
+        # body_json = json.loads(request.body)
+        # nid = body_json['id']
+        # deleted = body_json['deleted']
+        # n = Notification.objects.get(pk = pk)
+        # n.deleted = deleted
+        # n.save()
+        if pk == 'all':
+            items=Notification.objects.filter(deleted=False, user=str(request.user))
+            for i in items:
+                i.mark_deleted()
+        else:
+            x = Notification.objects.get(pk=pk)
+            x.mark_deleted()
+
+        return HttpResponse('OK')
+
+class NotificationsBadgeView(SecureMixin, JSONResponseMixin, BaseApiView):
+
+    def get(self, request, *args, **kwargs):
+        unread = Notification.objects.filter(deleted = False, read = False,
+                      user = request.user.username).count()
+        return self.render_to_json_response({'unread': unread})

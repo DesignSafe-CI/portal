@@ -20,6 +20,8 @@ urlpatterns = patterns(
     url(r'^browser-legacy/(?P<resource>[\w.-]+)/(?P<file_path>[ \S]+)/?$',
         DataBrowserTestView.as_view(template_name='data/browser.html'),
         name='data_browser'),
+    # url(r'^notification/process/$', 'process_notification', name='process_notification'),
+
 
     url(r'^browser/', DataDepotView.as_view(template_name='data/data_depot.html'),
         name='data_depot')

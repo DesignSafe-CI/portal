@@ -1,5 +1,7 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
   app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', function ($scope, $state, $uibModal, Django, DataBrowserService) {
     $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();

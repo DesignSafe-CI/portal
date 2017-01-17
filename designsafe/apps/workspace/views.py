@@ -1,10 +1,11 @@
 from agavepy.agave import AgaveException, Agave
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from designsafe.apps.licenses.models import LICENSE_TYPES
@@ -268,3 +269,17 @@ def call_api(request, service):
 
     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
                         content_type='application/json')
+
+
+def process_notification(request, pk, **kwargs):
+    n = Notification.objects.get(pk=pk)
+    extra = n.extra_content
+    logger.info('extra: {}'.format(extra))
+    archiveSystem = extra['archiveSystem']
+    archivePath = extra['archivePath']
+
+    archive_id = '%s/%s' % (archiveSystem, archivePath)
+
+    target_path = reverse('designsafe_data:data_depot') + 'agave/' + archive_id + '/'
+
+    return redirect(target_path)

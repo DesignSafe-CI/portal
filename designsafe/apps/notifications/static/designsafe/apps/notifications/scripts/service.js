@@ -1,15 +1,15 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  angular.module('NotificationList').factory('notificationFactory', ['$http', 'djangoUrl', function($http, djangoUrl) {
+  angular.module('designsafe').factory('notificationFactory', ['$http', 'djangoUrl', function($http, djangoUrl) {
     var service = {};
 
     service.list = function() {
-      return $http.get(djangoUrl.reverse('designsafe_notifications:notifications', []));
+      return $http.get(djangoUrl.reverse('designsafe_api:index', []));
     };
 
     service.delete = function(pk) {
-      return $http.post(djangoUrl.reverse('designsafe_notifications:delete_notification', []), {'pk': encodeURIComponent(pk)});
+      return $http.delete(djangoUrl.reverse('designsafe_api:delete_notification', {'pk': encodeURIComponent(pk)}));
     };
 
     return service;
