@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.db import connections, DatabaseError
 from django.utils.translation import ugettext_lazy as _
+from django.core.mail import send_mail
 import logging
 import six
 
@@ -64,7 +65,13 @@ class DesignSafeProfile(models.Model):
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
-
+    
+    def send_mail(self, subject, body=None):
+        send_mail(subject,
+                  body,
+                  settings.DEFAULT_FROM_EMAIL,
+                  [self.user.email],
+                  html_message=body)
 
 class NotificationPreferences(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,

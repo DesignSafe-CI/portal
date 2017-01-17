@@ -41,12 +41,12 @@ def generic_webhook_handler(request):
             target_uri = \
                 'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
                 'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
-
         event_data = {
             Notification.EVENT_TYPE: event_type,
-            Notification.STATUS: '',
+            Notification.STATUS: Notification.INFO,
+            Notification.OPERATION: 'vnc_session_start',
             Notification.USER: job_owner,
-            Notification.MESSAGE: '',
+            Notification.MESSAGE: 'Your VNC session is ready.',
             Notification.EXTRA: {
                 'host': host,
                 'port': port,

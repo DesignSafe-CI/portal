@@ -41,9 +41,10 @@
         $scope.$on('provides-file', function($event, args) {
           var requestKey = args.requestKey || '';
           var file = args.file || {};
+          var agavePath = 'agave://' + file.system + file.path;
           if (formKey === requestKey) {
-            $scope.data.input = file.agavePath;
-            $ngModel.$setViewValue(file.agavePath);
+            $scope.data.input = agavePath;
+            $ngModel.$setViewValue(agavePath);
             stopWant();
           }
         });

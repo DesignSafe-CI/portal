@@ -135,7 +135,8 @@
         "action": "copy",
         "system": options.system,
         "path": options.path,
-        "name": options.name
+        "name": options.name,
+        "resource": options.resource || ""
       };
       return $http.put(this.mediaUrl(), body).then(function (resp) {
         return new FileListing(resp.data);

@@ -19,6 +19,8 @@ from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
+from designsafe.apps.api.external_resources.box.filemanager.manager import FileManager as BoxFileManager
+from designsafe.apps.api.tasks import box_resource_upload
 from requests import HTTPError
 
 
@@ -214,7 +216,29 @@ class FileMediaView(View):
             action = body.get('action', '')
             if action == 'copy':
                 try:
-                    if body.get('system') != system_id:
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_copy',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'Data has been copied.',
+                    }
+                    if body.get('system') is None:
+                        external = body.get('resource')
+                        if external != 'box':
+                            return HttpResponseBadRequest("External resource nos available.")
+                        box_resource_upload.apply_async(kwargs={
+                            'username': request.user.username,
+                            'src_file_id': os.path.join(system_id, file_path.strip('/')),
+                            'dest_file_id': body.get('path')
+                        })
+                        event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This will take a few minutes.'
+                        event_data[Notification.EXTRA] = {
+                            'resource': external,
+                            'dest_file_id': body.get('path'),
+                            'src_file_id': os.path.join(system_id, file_path.strip('/'))
+                        }
+                    elif body.get('system') != system_id:
                         copied = fm.import_data(body.get('system'), body.get('path'),
                                                 system_id, file_path)
                         metrics.info('Data Depot',
@@ -228,6 +252,7 @@ class FileMediaView(View):
                                              'fromSystemId': system_id,
                                              'fromFilePath': file_path}
                                      })
+                        event_data[Notification.EXTRA] = copied.to_dict()
                     else:
                         copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
                         metrics.info('Data Depot',
@@ -241,15 +266,10 @@ class FileMediaView(View):
                                              'fromSystemId': body.get('system'),
                                              'fromFilePath': body.get('path')}
                                      })
-                    event_data = {
-                        Notification.EVENT_TYPE: 'data_depot',
-                        Notification.OPERATION: 'data_depot_copy',
-                        Notification.STATUS: Notification.SUCCESS,
-                        Notification.USER: request.user.username,
-                        Notification.MESSAGE: 'Data has been copied.',
-                        Notification.EXTRA: copied.to_dict()
-                    }
-                    Notification.objects.create(**event_data)
+                        event_data[Notification.EXTRA] = copied.to_dict()
+
+                    notification = Notification.objects.create(**event_data)
+                    notification.save()
                     return JsonResponse(copied, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
