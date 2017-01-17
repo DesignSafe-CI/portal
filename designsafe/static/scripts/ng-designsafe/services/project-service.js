@@ -307,10 +307,10 @@
               awardNumber: $scope.form.awardNumber,
               description: $scope.form.description
             };
-            if ($scope.form.projectType.id !== 'undefined'){
+            if ($scope.form.projectType && $scope.form.projectType.id !== 'undefined'){
               projectData.projectType = $scope.form.projectType.id;
             }
-            if ($scope.form.uuid) {
+            if ($scope.form.uuid && $scope.form.uuid) {
               projectData.uuid = $scope.form.uuid;
             }
             if (typeof $scope.form.associatedProjectsAdded !== 'undefined'){

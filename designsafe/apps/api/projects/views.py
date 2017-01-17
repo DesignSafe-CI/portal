@@ -68,7 +68,6 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'metadata_create',
                             'info': {'postData': post_data} })
-                            'info': {'postData': post_data}})
         p = Project(ag)
         title = post_data.get('title')
         award_number = post_data.get('awardNumber', '')
