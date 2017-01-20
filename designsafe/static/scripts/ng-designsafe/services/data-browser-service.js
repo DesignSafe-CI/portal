@@ -1227,7 +1227,7 @@
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
             var _listing = angular.copy(listing);
-            $scope.file.metadata = _listing.metadata;
+            $scope.data.file.metadata = _listing.metadata;
           }else{
             file.getMeta().then(function(file){
               $scope.ui.busy = false;
