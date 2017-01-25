@@ -49,7 +49,7 @@
                                 type="button"
                                 class="btn btn-xs btn-info"
                                 ng-click="chooseFile(f)">Select</button>
-                        <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
+                        <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
                             <i class="fa fa-{{getFileIcon(f)}}"></i>
                             <span>{{renderName(f)}}</span>
                         </a>
