@@ -1,3 +1,4 @@
+pip
 #agavepy>=0.3.11
 -e git+https://github.com/mrhanlon/agavepy.git@listMetadata/privileged#egg=agavepy
 
