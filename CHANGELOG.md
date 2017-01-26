@@ -8,6 +8,7 @@ Fixes:
 - Workspace drag and drop functionality.
 - Public data metadata rendering.
 - Public data breadcrumb links.
+- Pagination in projects files listing.
 
 
 ## v0.9.20
