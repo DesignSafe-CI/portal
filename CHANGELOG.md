@@ -1,5 +1,15 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.21
+
+Fixes:
+
+- Link to project in email notification.
+- Workspace drag and drop functionality.
+- Public data metadata rendering.
+- Public data breadcrumb links.
+
+
 ## v0.9.20
 
 Features:
