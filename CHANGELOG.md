@@ -1,5 +1,61 @@
 # DesignSafe-CI Portal Release Notes
 
+=======
+## v0.9.21
+
+Fixes:
+
+- Link to project in email notification.
+- Workspace drag and drop functionality.
+- Public data metadata rendering.
+- Public data breadcrumb links.
+
+
+## v0.9.20
+
+Features:
+
+- Python Notebook preview
+
+Improvements:
+
+- Notifications architecture.
+- Email notifications when user is added to a project.
+
+
+Fixes:
+
+- Remove NEEShub Account Access from Register and Login pages.
+- Copy/move to Box.com disappeared as an option.
+
+
+## v0.9.19
+
+Fixes:
+
+- Uploading folders to 'My Data'.
+- Allow creation of projects with long titles.
+- Correctly redirecting to new Data Depot view from job 'output' button.
+
+## v0.9.18
+
+Features:
+
+- Professional profile in account profile.
+
+Improvements:
+
+- File toolbar is more visible.
+- File toolbar icons show legends for easier use.
+- Move to trash functionality in Projects.
+- Search capability on every data depot section.
+
+Fixes:
+
+- Data Depot UI.
+- Notification toasters showing up correctly.
+- Information button correctly wired.
+
 ## v0.9.17
 
 Enhancements:
