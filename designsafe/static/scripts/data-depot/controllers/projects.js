@@ -127,6 +127,13 @@
       }
     };
 
+    $scope.scrollToTop = function(){
+      return;
+    };
+    $scope.scrollToBottom = function(){
+      DataBrowserService.scrollToBottom();
+    };
+
     $scope.onSelectData = function onSelectData($event, file) {
       $event.stopPropagation();
 
