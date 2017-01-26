@@ -139,6 +139,7 @@
       var tests = {};
       tests.canDownload = files.length >= 1 && hasPermission('READ', files);
       tests.canPreview = files.length === 1 && hasPermission('READ', files);
+      tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
       tests.canViewMetadata = files.length === 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
@@ -739,6 +740,50 @@
       return modal.result;
     }
 
+    /**
+     *
+     * @param {FileListing} folder
+     * @return {Promise}
+     */
+    function previewImages (folder) {
+      var modal = $uibModal.open({
+        windowClass: 'modal-full',
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
+        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder, UserService) {
+          $scope.folder = folder;
+          $scope.UserService = UserService;
+          var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
+          $scope.busy = true;
+          $scope.images = [];
+          $scope.carouselSettings = {
+            dots: true,
+            arrows: true
+
+          };
+          $scope.folder.children.forEach(function (file) {
+            var ext = file.path.split('.').pop().toLowerCase();
+            if (img_extensions.indexOf(ext) !== -1) {
+                $scope.images.push({href: file.agaveUrl(), file:file});
+            }
+          });
+
+          if ($scope.images.length > 10) {
+            $scope.carouselSettings.dots = false;
+          }
+          
+          $scope.close = function () {
+            $uibModalInstance.dismiss();
+          };
+
+        }],
+        size: 'lg',
+        resolve: {
+          folder: function() { return folder; }
+        }
+      });
+
+      return modal.result;
+    }
 
     /**
      *
@@ -1182,7 +1227,7 @@
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
             var _listing = angular.copy(listing);
-            $scope.file.metadata = _listing.metadata;
+            $scope.data.file.metadata = _listing.metadata;
           }else{
             file.getMeta().then(function(file){
               $scope.ui.busy = false;
@@ -1329,6 +1374,7 @@
       mkdir: mkdir,
       move: move,
       preview: preview,
+      previewImages: previewImages,
       rename: rename,
       rm: rm,
       search: search,

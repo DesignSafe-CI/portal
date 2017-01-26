@@ -9,6 +9,7 @@ from designsafe.apps.api.projects.models import Project
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
+from designsafe.apps.accounts.models import DesignSafeProfile
 import logging
 import json
 
@@ -69,6 +70,8 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
                             'operation': 'metadata_create',
                             'info': {'postData': post_data} })
         p = Project(ag)
+        p.save()
+        project_uuid = p.uuid
         title = post_data.get('title')
         award_number = post_data.get('awardNumber', '')
         project_type = post_data.get('projectType', 'other')
@@ -97,6 +100,8 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
 
         # Wrap Project Directory as private system for project
         project_system_tmpl = template_project_storage_system(p)
+        project_system_tmpl['storage']['rootDir'] = \
+            project_system_tmpl['storage']['rootDir'].format(project_uuid)
         metrics.info('projects',
                      extra={'user' : request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
@@ -132,9 +137,13 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
             collab_users = get_user_model().objects.filter(username=p.pi)
             if collab_users:
                 collab_user = collab_users[0]
-                collab_user.profile.send_mail(
-                    "[Designsafe-CI] You have been added to a project!",
-                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, url=reverse('designsafe_data:data_browser') + '/projects/%s' % (p.uuid,)))
+                try:
+                    collab_user.profile.send_mail(
+                        "[Designsafe-CI] You have been added to a project!",
+                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s' % (p.uuid,))))
+                except DesignSafeProfile.DoesNotExist as err:
+                    logger.info("Could not send email to user %s", collab_user)
 
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 

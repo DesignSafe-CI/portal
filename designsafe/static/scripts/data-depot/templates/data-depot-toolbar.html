@@ -10,6 +10,9 @@
     </div>
     <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
         <div class="btn-group">
+          <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!UserService.userAuthenticated()">
+              <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
+          </button>
             <button class="btn btn-sm btn-default" title="Download" ng-click="ops.download()" ng-disabled="!tests.canDownload">
                 <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
             </button>

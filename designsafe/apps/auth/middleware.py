@@ -27,3 +27,9 @@ class AgaveTokenRefreshMiddleware(object):
                 logger.exception('Agave Token refresh failed. Forcing logout',
                                  extra={'user': request.user.username})
                 logout(request)
+
+    def process_response(self, request, response):
+        if hasattr(request, 'user'):
+            if request.user.is_authenticated():
+                response['Authorization'] = 'Bearer ' + request.user.agave_oauth.access_token
+        return response
