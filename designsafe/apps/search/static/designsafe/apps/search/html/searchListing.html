@@ -9,7 +9,7 @@
   <div ng-if='data.doc_type === "object" || data.doc_type === "objects"'>
       <span class="label label-default"> File </span>
       <span class="label label-primary"> {{data.length | bytes }} </span>
-      <h4> <a ng-href="{{ data.link }}"> {{data.name}} </a> </h4>
+      <h4> <a ng-href="{{ data.link }}" target="_self"> {{data.name}} </a> </h4>
       <p> {{data.path}} </p>
       <span class="label" ng-if='data.lastModified' style="background-color:#5b4d92"> {{ data.lastModified | date:'short'}} </span>
       <hr>
@@ -25,8 +25,11 @@
   <div ng-if='data.doc_type === "modelresult"'>
     <span class="label label-default"> Web Content </span>
     <p>
-      <a ng-href="{{data.url}}"> {{data.slug}} </a>
+      <a ng-href="{{data.url || '/'}}" target="_self"> {{data.slug}} </a>
     </p>
+    <div ng-repeat = "hit in data.highlight.body">
+      <p ng-bind-html="hit"></p>
+    </div>
     <hr>
   </div>
 </div>

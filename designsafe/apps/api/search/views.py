@@ -48,11 +48,30 @@ class SearchView(BaseApiView):
             es_query = es_query.filter("term", _type="experiment")
         elif type_filter == 'web':
             es_query._index = 'cms'
+            es_query = es_query.highlight("body",
+                fragment_size=150,
+                pre_tags=["<strong>"],
+                post_tags=["</strong>"],
+            )
+            es_query = es_query.highlight_options(require_field_match=False)
+
+        logger.info(es_query.to_dict())
         res = es_query.execute()
+
+        # for hit in res.hits:
+        #     logger.info(hit.meta.highlight)
+            # for frag in hit.meta.highlight.body:
+            #     logger.info(frag)
 
         # these get the counts of the total hits for each category...
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
+            .highlight("body",
+                fragment_size=100,
+                pre_tags=["<strong>"],
+                post_tags=["</strong>"],
+            )\
+            .highlight_options(require_field_match=False)\
             .extra(from_=offset, size=limit)\
             .execute()
 
@@ -71,7 +90,7 @@ class SearchView(BaseApiView):
             .query("nested", **{'path':"publications",
                 "inner_hits":{},
                 "query": Q('query_string',
-                    fields=["publications.title"],
+                    fields=["publications.title", "publications.authors"],
                     query=q,
                     default_operator="and")
                 }
@@ -96,8 +115,11 @@ class SearchView(BaseApiView):
         out = {}
         hits = []
         for r in results:
+            logger.info(r.to_dict())
             d = r.to_dict()
             d["doc_type"] = r.meta.doc_type
+            if hasattr(r.meta, 'highlight'):
+                d["highlight"] = r.meta.highlight.to_dict()
             hits.append(d)
         pubs = []
         for r in pubs_query:
