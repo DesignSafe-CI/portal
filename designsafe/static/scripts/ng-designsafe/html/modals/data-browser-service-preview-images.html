@@ -1,0 +1,23 @@
+<div class="modal-header clearfix">
+  <div class="pull-left"> <h4> Image Preview </h4> </div>
+  <button class="btn btn-default pull-right" type="button" ng-click="close()">Close</button>
+</div>
+<div class="modal-body">
+  <slick
+    ng-if="images.length"
+    settings="carouselSettings"
+  >
+    <div ng-repeat="img in images track by $index" class="text-center">
+      <img http-src='{{img.href}}' class="img-responsive img-preview img-thumbnail	">
+      <span class="label label-default"> {{img.file.name}}</span>
+      <span ng-if='images.length > 10'> {{$index + 1}} / {{images.length}} </span>
+    </div>
+  </slick>
+
+  <div ng-if="!images.length">
+    <h3> No images! </h3>
+  </div>
+  <div ng-if='!UserService.userAuthenticated()'>
+    <h3> Please log in to preview images </h3>
+  </div>
+</div>

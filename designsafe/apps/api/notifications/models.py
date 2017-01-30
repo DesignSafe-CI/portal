@@ -1,5 +1,6 @@
 from django.db import models
 from designsafe.apps.signals.signals import generic_event
+from django.core.serializers.json import DjangoJSONEncoder
 import datetime
 import logging
 import json
@@ -51,7 +52,7 @@ class BaseNotify(models.Model):
     def save(self, *args, **kwargs):
         if isinstance(self.extra, dict):
             try:
-                self.extra = json.dumps(self.extra)
+                self.extra = json.dumps(self.extra, cls=DjangoJSONEncoder)
             except TypeError:
                 for key in six.iterkeys(self.extra):
                     try:

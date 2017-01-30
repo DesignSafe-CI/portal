@@ -4,13 +4,21 @@
         var processors = {};
 
         function renderLink(msg){
+          var eventType = msg.event_type.toLowerCase();
+          var url = '';
+          if (typeof processors[eventType] !== 'undefined' &&
+              typeof processors[eventType].renderLink !== 'undefined' &&
+              typeof processors[eventType].renderLink === 'function'){
+
+              return processors[eventType].renderLink(msg);
+          }
           if (msg.status != 'ERROR') {
             if (msg.event_type == 'job') {
-              var url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
-              return url
+              url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
+              return url;
             } else if (msg.event_type == 'data') {
-              var url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
-              return url
+              url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
+              return url;
             }
           }
         }
@@ -23,13 +31,14 @@
 
         function processMessage(e, msg){
           processToastr(e, msg);
-          processors['notifs'].process(msg)
+          processors.notifs.process(msg);
+          var eventType = msg.event_type.toLowerCase();
 
-          if (typeof processors[msg.event_type] !== 'undefined' &&
-              typeof processors[msg.event_type].process !== 'undefined' &&
-              typeof processors[msg.event_type].process === 'function'){
+          if (typeof processors[eventType] !== 'undefined' &&
+              typeof processors[eventType].process !== 'undefined' &&
+              typeof processors[eventType].process === 'function'){
 
-              processors[msg.event_type].process(msg);
+              processors[eventType].process(msg);
 
           } else {
             logger.warn('Process var is not a function for this event type. ', processors);
@@ -52,7 +61,7 @@
             });
 
           var toastMessage = '<p>' + msg.message + '</p>';
-          var toastOp = toastr[toastLevel] || toast.info;
+          var toastOp = toastr[toastLevel] || toastr.info;
           // if (typeof processors[msg.event_type] === 'undefined'){
           //   logger.warn('No processor for this type of event. ', msg);
           //   return;

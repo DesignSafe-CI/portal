@@ -169,4 +169,3 @@ class FilesWebhookView(SecureMixin, JSONResponseMixin, BaseApiView):
         logger.debug(notification)
 
         return HttpResponse('OK')
-

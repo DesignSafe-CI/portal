@@ -80,7 +80,7 @@ class FileMediaView(BaseApiView, SecureMixin):
                 logger.exception('Unable to preview file')
                 return HttpResponseBadRequest(e.response.text)
 
-        elif action == 'copy':
+        elif action == 'copy' or action == 'move':
             try:
                 tasks.box_resource_download.apply_async(kwargs={
                     'username': request.user.username,

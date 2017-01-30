@@ -33,7 +33,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -410,6 +409,8 @@ PIPELINE_CSS = {
             'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
             'vendor/font-awesome/css/font-awesome.css',
             'vendor/angular-toastr/dist/angular-toastr.css',
+            'vendor/slick-carousel/slick/slick.css',
+            'vendor/slick-carousel/slick/slick-theme.css'
         ),
         'output_filename': 'css/vendor.css',
     },

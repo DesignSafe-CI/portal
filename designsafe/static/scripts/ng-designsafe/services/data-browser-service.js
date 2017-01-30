@@ -4,11 +4,24 @@
   var module = angular.module('designsafe');
   module.requires.push('django.context');
 
+  module.factory('nbv', function($window) { //from http://jameshill.io/articles/angular-third-party-injection-pattern/
+    if($window.nbv){
+      //Delete nbv from window so it's not globally accessible.
+      //  We can still get at it through _thirdParty however, more on why later
+      $window._thirdParty = $window._thirdParty || {};
+      $window._thirdParty.nbv = $window.nbv;
+      try { delete $window.nbv; } catch (e) {$window.nbv = undefined;
+      /*<IE8 doesn't do delete of window vars, make undefined if delete error*/}
+    }
+    var nbv = $window._thirdParty.nbv;
+    return nbv;
+  });
+
   module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
-                                        'FileListing', 'Logging', 'SystemsService',
+                                        'FileListing', 'Logging', 'SystemsService', 'nbv',
                                         function($rootScope, $http, $q, $uibModal,
                                                  $state, Django, FileListing, Logging,
-                                                 SystemsService) {
+                                                 SystemsService, nbv) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
@@ -126,6 +139,7 @@
       var tests = {};
       tests.canDownload = files.length >= 1 && hasPermission('READ', files);
       tests.canPreview = files.length === 1 && hasPermission('READ', files);
+      tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
       tests.canViewMetadata = files.length === 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
@@ -223,20 +237,26 @@
 
           $scope.options = [
             {label: 'My Data',
-             conf: {system: 'designsafe.storage.default', path: ''}},
+             conf: {system: 'designsafe.storage.default', path: ''},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'Shared with me',
-             conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
+             conf: {system: 'designsafe.storage.default', path: '$SHARE'},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'My Projects',
-             conf: {system: 'projects', path: ''}}
+             conf: {system: 'projects', path: ''},
+             apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
+            {label: 'Box',
+             conf: {path: '/'},
+             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}}
           ];
 
           $scope.currentOption = null;
           $scope.$watch('currentOption', function () {
             $scope.state.busy = true;
-            var conf = $scope.currentOption.conf;
-            if (conf.system != 'projects'){
+            var cOption = $scope.currentOption;
+            if (cOption.conf.system != 'projects'){
               $scope.state.listingProjects = false;
-              FileListing.get(conf)
+              FileListing.get(cOption.conf, cOption.apiParams)
                 .then(function (listing) {
                   $scope.listing = listing;
                   $scope.state.busy = false;
@@ -280,7 +300,7 @@
             }
 
             $scope.state.busy = true;
-            FileListing.get({system: system, path: path})
+            FileListing.get({system: system, path: path}, $scope.currentOption.apiParams)
               .then(function (listing) {
                 $scope.listing = listing;
                 $scope.state.busy = false;
@@ -288,7 +308,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && ( fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -311,7 +331,8 @@
         function (result) {
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
-            return f.copy({system: result.system, path: result.path}).then(function (result) {
+            var system = result.system || f.system;
+            return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
               //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
               return result;
             });
@@ -476,9 +497,9 @@
           };
 
           $scope.options = [
-            {label: 'My Data', 
+            {label: 'My Data',
              conf: {system: 'designsafe.storage.default', path: ''}},
-            {label: 'Shared with me', 
+            {label: 'Shared with me',
              conf: {system: 'designsafe.storage.default', path: '$SHARE'}},
             {label: 'My Projects',
              conf: {system: 'projects', path: ''}}
@@ -547,7 +568,7 @@
           };
 
           $scope.validDestination = function (fileListing) {
-            return fileListing && fileListing.type === 'dir' && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
+            return fileListing && ( fileListing.type === 'dir' || fileListing.type === 'folder') && fileListing.permissions && (fileListing.permissions === 'ALL' || fileListing.permissions.indexOf('WRITE') > -1);
           };
 
           $scope.chooseDestination = function (fileListing) {
@@ -611,8 +632,37 @@
               $scope.busy = false;
             },
             function (err) {
-              $scope.previewError = err.data;
-              $scope.busy = false;
+              if (file.name.split('.').pop() != 'ipynb') {
+                $scope.previewError = err.data;
+                $scope.busy = false;
+              } else {
+                  file.download().then(
+                    function(data){
+                      var postit = data.href;
+                      var oReq = new XMLHttpRequest();
+
+                      oReq.open("GET", postit, true);
+
+                      oReq.onload = function(oEvent) {
+                        var blob = new Blob([oReq.response], {type: "application/json"});
+                        var reader = new FileReader();
+
+                        reader.onload = function(e){
+                          var content = JSON.parse(e.target.result);
+                          var target = $('.nbv-preview')[0];
+                          nbv.render(content, target);
+                        };
+
+                        reader.readAsText(blob);
+                      };
+
+                      oReq.send();
+                    },
+                    function (err) {
+                      $scope.previewError = err.data;
+                      $scope.busy = false;
+                    });
+              }
             }
           );
 
@@ -655,9 +705,85 @@
         }
       });
 
+      // modal.rendered.then(
+      //   function(){
+      //     if (file.name.split('.').pop() == 'ipynb'){
+      //       file.download().then(
+      //         function(data){
+      //           var postit = data.href;
+      //           var oReq = new XMLHttpRequest();
+
+      //           oReq.open("GET", postit, true);
+
+      //           oReq.onload = function(oEvent) {
+      //             var blob = new Blob([oReq.response], {type: "application/json"});
+      //             var reader = new FileReader();
+
+      //             reader.onload = function(e){
+      //               var content = JSON.parse(e.target.result)
+      //               var target = $('.nbv-preview')[0];
+      //               nbv.render(content, target);
+      //             }
+
+      //             reader.readAsText(blob)
+      //           };
+
+      //           oReq.send();
+      //         },
+      //         function (err) {
+      //           $scope.previewError = err.data;
+      //           $scope.busy = false;
+      //         }
+      //       );
+      // }})
+
       return modal.result;
     }
 
+    /**
+     *
+     * @param {FileListing} folder
+     * @return {Promise}
+     */
+    function previewImages (folder) {
+      var modal = $uibModal.open({
+        windowClass: 'modal-full',
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
+        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder, UserService) {
+          $scope.folder = folder;
+          $scope.UserService = UserService;
+          var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
+          $scope.busy = true;
+          $scope.images = [];
+          $scope.carouselSettings = {
+            dots: true,
+            arrows: true
+
+          };
+          $scope.folder.children.forEach(function (file) {
+            var ext = file.path.split('.').pop().toLowerCase();
+            if (img_extensions.indexOf(ext) !== -1) {
+                $scope.images.push({href: file.agaveUrl(), file:file});
+            }
+          });
+
+          if ($scope.images.length > 10) {
+            $scope.carouselSettings.dots = false;
+          }
+          
+          $scope.close = function () {
+            $uibModalInstance.dismiss();
+          };
+
+        }],
+        size: 'lg',
+        resolve: {
+          folder: function() { return folder; }
+        }
+      });
+
+      return modal.result;
+    }
 
     /**
      *
@@ -1101,7 +1227,7 @@
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
             var _listing = angular.copy(listing);
-            $scope.file.metadata = _listing.metadata;
+            $scope.data.file.metadata = _listing.metadata;
           }else{
             file.getMeta().then(function(file){
               $scope.ui.busy = false;
@@ -1206,7 +1332,7 @@
       }
       currentState.loadingMore = true;
       if (currentState.listing && currentState.listing.children &&
-          currentState.listing.children.length < 99){
+          currentState.listing.children.length < 95){
         currentState.reachedEnd = true;
         return;
       }
@@ -1217,7 +1343,7 @@
                   page: currentState.page})
       .then(function(listing){
           currentState.loadingMore = false;
-          if (listing.children.length < 99) {
+          if (listing.children.length < 95) {
             currentState.reachedEnd = true;
           }
         }, function (err){
@@ -1248,6 +1374,7 @@
       mkdir: mkdir,
       move: move,
       preview: preview,
+      previewImages: previewImages,
       rename: rename,
       rm: rm,
       search: search,

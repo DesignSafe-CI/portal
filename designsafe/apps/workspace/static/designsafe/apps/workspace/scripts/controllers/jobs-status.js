@@ -3,9 +3,8 @@
   angular.module('designsafe').controller('JobsStatusCtrl',
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
 
-    NotificationService.processors.job = {
+    NotificationService.processors.vnc = {
       'process': function notifyProcessor(msg){
-        logger.log('processing msg: ', msg);
         if('event_type' in msg && msg.event_type === 'VNC') {
           $uibModal.open({
             templateUrl: 'local/vncjob-details-modal.html',

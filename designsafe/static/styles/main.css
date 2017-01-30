@@ -16,6 +16,48 @@ body.navbar-fixed {
   top: 29px;
 }
 
+.slick-prev {
+  left:0px;
+}
+.slick-next {
+  right:10px;
+}
+.slick-prev, .slick-next {
+  line-height: 2em;
+  font-size: 2em;
+  z-index: 1500;
+
+}
+
+.slick-prev:before, .slick-next:before {
+    color: #d3d3d3;
+    font-size: 2em;
+}
+
+.slick-prev:before {
+  content: '<';
+}
+
+.slick-next:before {
+  content: '>';
+}
+.modal-full .modal-dialog {
+  width: 100%;
+  min-height:100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-full .modal-content {
+  min-height:100vh;
+
+}
+
+.img-responsive.img-preview {
+  max-height: calc(100vh - 225px);
+  margin: auto;
+}
+
 .ef-site-title a {
   text-decoration: none;
   color: #333;

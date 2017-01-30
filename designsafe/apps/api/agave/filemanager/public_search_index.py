@@ -204,7 +204,8 @@ class PublicObject(object):
         list_search = PublicSearchManager(PublicObject,
                                           PublicObjectIndexed.search(),
                                           page_size=limit)
-        base_path, name = os.path.split(path)
+        base_path, name = os.path.split(path.strip('/'))
+        base_path = base_path or '/'
         search = PublicObjectIndexed.search()
         query = Q('bool',
                   must=[Q({'term': {'name._exact': name}}),
@@ -284,7 +285,7 @@ class PublicObject(object):
         if self._trail:
             return self._trail
 
-        path_comps = os.path.join(self._doc.path, self._doc.name).split('/')
+        path_comps = os.path.join(self._doc.path, self._doc.name).strip('/').split('/')
         self._trail.append({'name': '/', 'system': self.system, 'path': '/'})
         for i in range(0, len(path_comps)):
             trail_item = {'name': path_comps[i] or '/',

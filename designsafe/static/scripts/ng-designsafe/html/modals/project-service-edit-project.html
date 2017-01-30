@@ -7,12 +7,12 @@
 <div class="modal-body">
     <form>
       <div class="pull-left" style="width:49%;">
-        <div class="form-group">
+        <div class="form-group required">
             <label for="id_title">Project title</label>
             <input type="text" required class="form-control" id="id_title" name="title" placeholder="Project title" ng-model="form.title" autofocus select-on-focus>
 
         </div>
-        <div class="form-group">
+        <div class="form-group required">
             <label for="id_pi">PI</label>
             <input type="text" class="form-control" id="id_pi" ng-model="form.pi"
                    placeholder="Lookup PI by name or email address"
@@ -27,22 +27,22 @@
                 <i class="fa fa-remove"></i> No results.
             </div>
             <p class="help-block">
-                This value can be updates later on.
+                This value can be updated later on.
             </p>
         </div>
       </div>
       <div class="pull-right" style="width:49%">
         <div class="form-group">
+          <label for="identifier-id">Project Identifier:</label>
+          <input type="text" class="form-control" id="identifier-id" ng-model="form.identifier" disabled/>
+        </div>
+        <div class="form-group">
           <label for="award-number-id">Award Number:</label>
           <input type="text" class="form-control" id="award-number-id" ng-model="form.awardNumber" />
         </div>
-        <div class="form-group">
-          <label for="identifier-id">Identifier:</label>
-          <input type="text" class="form-control" id="identifier-id" ng-model="form.identifier" disabled/>
-        </div>
       </div>
       <div style="clear:both;">
-        <div class="form-group">
+        <div class="form-group required">
           <label for="projecttype-id">Project Type:</label>
           <select ng-options="projectType.label for projectType in projectTypes"
                   ng-model="form.projectType"

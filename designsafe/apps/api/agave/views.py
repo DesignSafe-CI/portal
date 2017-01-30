@@ -1,4 +1,4 @@
-""" Main views for agave api. api/agave/* 
+""" Main views for agave api. api/agave/*
     All these views return :class:`JsonResponse`s"""
 
 import logging
@@ -19,6 +19,8 @@ from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
+from designsafe.apps.api.external_resources.box.filemanager.manager import FileManager as BoxFileManager
+from designsafe.apps.api.tasks import box_resource_upload
 from requests import HTTPError
 
 
@@ -50,11 +52,12 @@ class FileListingView(View):
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            logger.info(request.user.agave_oauth)
             if system_id is None:
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
             if file_path is None:
                 file_path = request.user.username
-            
+
             if system_id == AgaveFileManager.DEFAULT_SYSTEM_ID and \
                 (file_path.strip('/') == '$SHARE' or
                  file_path.strip('/').split('/')[0] != request.user.username):
@@ -85,6 +88,7 @@ class FileListingView(View):
 class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
+        logger.info(file_path)
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
             if not request.user.is_authenticated():
@@ -120,7 +124,12 @@ class FileMediaView(View):
 
                 return render(request, 'designsafe/apps/api/agave/preview.html', context)
             else:
-                return HttpResponseRedirect(fm.download(system_id, file_path))
+                url = 'https://agave.designsafe-ci.org/files/v2/media/{system}/{path}'.format(system=system_id, path=file_path)
+                # return HttpResponseRedirect(fm.download(system_id, file_path))
+                resp = HttpResponseRedirect(url)
+                resp['X-Authorization'] = 'Bearer {token}'.format(token=request.user.agave_oauth.access_token)
+                logger.info(resp)
+                return resp
 
         return HttpResponseBadRequest("Unsupported operation")
 
@@ -207,7 +216,29 @@ class FileMediaView(View):
             action = body.get('action', '')
             if action == 'copy':
                 try:
-                    if body.get('system') != system_id:
+                    event_data = {
+                        Notification.EVENT_TYPE: 'data_depot',
+                        Notification.OPERATION: 'data_depot_copy',
+                        Notification.STATUS: Notification.SUCCESS,
+                        Notification.USER: request.user.username,
+                        Notification.MESSAGE: 'Data has been copied.',
+                    }
+                    if body.get('system') is None:
+                        external = body.get('resource')
+                        if external != 'box':
+                            return HttpResponseBadRequest("External resource nos available.")
+                        box_resource_upload.apply_async(kwargs={
+                            'username': request.user.username,
+                            'src_file_id': os.path.join(system_id, file_path.strip('/')),
+                            'dest_file_id': body.get('path')
+                        })
+                        event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This will take a few minutes.'
+                        event_data[Notification.EXTRA] = {
+                            'resource': external,
+                            'dest_file_id': body.get('path'),
+                            'src_file_id': os.path.join(system_id, file_path.strip('/'))
+                        }
+                    elif body.get('system') != system_id:
                         copied = fm.import_data(body.get('system'), body.get('path'),
                                                 system_id, file_path)
                         metrics.info('Data Depot',
@@ -221,6 +252,7 @@ class FileMediaView(View):
                                              'fromSystemId': system_id,
                                              'fromFilePath': file_path}
                                      })
+                        event_data[Notification.EXTRA] = copied.to_dict()
                     else:
                         copied = fm.copy(system_id, file_path, body.get('path'), body.get('name'))
                         metrics.info('Data Depot',
@@ -234,15 +266,10 @@ class FileMediaView(View):
                                              'fromSystemId': body.get('system'),
                                              'fromFilePath': body.get('path')}
                                      })
-                    event_data = {
-                        Notification.EVENT_TYPE: 'data_depot',
-                        Notification.OPERATION: 'data_depot_copy',
-                        Notification.STATUS: Notification.SUCCESS,
-                        Notification.USER: request.user.username,
-                        Notification.MESSAGE: 'Data has been copied.',
-                        Notification.EXTRA: copied.to_dict()
-                    }
-                    Notification.objects.create(**event_data)
+                        event_data[Notification.EXTRA] = copied.to_dict()
+
+                    notification = Notification.objects.create(**event_data)
+                    notification.save()
                     return JsonResponse(copied, encoder=AgaveJSONEncoder, safe=False)
                 except HTTPError as e:
                     logger.exception(e.response.text)
@@ -372,7 +399,7 @@ class FileMediaView(View):
                     else:
                         return HttpResponseBadRequest('Preview not available for this item')
                 except HTTPError as e:
-                    logger.exception('Unable to preview file')
+                    logger.exception('Unable to preview file: {file_path}'.format(file=file))
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'rename':
@@ -504,7 +531,7 @@ class FileSearchView(View):
 
         if file_mgr_name != ElasticFileManager.NAME or not query_string:
             return HttpResponseBadRequest()
-        
+
         if system_id is None:
             system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
 
@@ -599,7 +626,7 @@ class FileMetaView(View):
             file_dict = file_obj.to_dict()
             file_dict['keywords'] = file_obj.metadata.value['keywords']
             return JsonResponse(file_dict)
-        
+
         return HttpResponseBadRequest('Unsupported file manager.')
 
     def put(self, request, file_mgr_name, system_id, file_path):
@@ -650,7 +677,7 @@ class FileMetaView(View):
                 }
                 Notification.objects.create(**event_data)
             return JsonResponse(file_dict)
-        
+
         return HttpResponseBadRequest('Unsupported file manager.')
 
 class SystemsView(View):
