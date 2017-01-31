@@ -10,6 +10,7 @@ import json
 from elasticsearch_dsl import Q, Search
 from django.http import (HttpResponseRedirect,
                          HttpResponseServerError,
+                         HttpResponseBadRequest,
                          JsonResponse)
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
@@ -28,6 +29,8 @@ class SearchView(BaseApiView):
         system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
+        if (limit > 500):
+            return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', None)
         logger.info(q)
 
@@ -46,6 +49,16 @@ class SearchView(BaseApiView):
             es_query = es_query.filter("term", _type="project")
         elif type_filter == 'experiments':
             es_query = es_query.filter("term", _type="experiment")
+        elif type_filter == "publications":
+            es_query = es_query.filter("term", _type="project")\
+                .query("nested", **{'path':"publications",
+                    "inner_hits":{},
+                    "query": Q('query_string',
+                        fields=["publications.title", "publications.authors"],
+                        query=q,
+                        default_operator="and")
+                    }
+                )
         elif type_filter == 'web':
             es_query._index = 'cms'
             es_query = es_query.highlight("body",
@@ -95,6 +108,7 @@ class SearchView(BaseApiView):
                     default_operator="and")
                 }
             )\
+            .extra(from_=offset, size=limit)\
             .execute()
 
         exp_query = Search(index="jmeiring")\
@@ -114,13 +128,14 @@ class SearchView(BaseApiView):
         results = [r for r in res]
         out = {}
         hits = []
-        for r in results:
-            logger.info(r.to_dict())
-            d = r.to_dict()
-            d["doc_type"] = r.meta.doc_type
-            if hasattr(r.meta, 'highlight'):
-                d["highlight"] = r.meta.highlight.to_dict()
-            hits.append(d)
+        if (type_filter != 'publications'):
+            for r in results:
+                logger.info(r.to_dict())
+                d = r.to_dict()
+                d["doc_type"] = r.meta.doc_type
+                if hasattr(r.meta, 'highlight'):
+                    d["highlight"] = r.meta.highlight.to_dict()
+                hits.append(d)
         pubs = []
         for r in pubs_query:
             logger.info(r.meta.inner_hits)
@@ -129,13 +144,14 @@ class SearchView(BaseApiView):
                  d["doc_type"] = "publication"
                  d["project"] = r.to_dict()
                  pubs.append(d)
-        hits.extend(pubs)
-        out['total_hits'] = res.hits.total + pubs_query.hits.total
+        if ((type_filter is None) or (type_filter == 'publications')):
+            hits.extend(pubs)
+        out['total_hits'] = res.hits.total + len(pubs)
         out['hits'] = hits
         out['files_total'] = files_query.hits.total
         out['projects_total'] = projects_query.hits.total
         out['experiments_total'] = exp_query.hits.total
         out['cms_total'] = web_query.hits.total
-        out['publications_total'] = pubs_query.hits.total
+        out['publications_total'] = len(pubs)
 
         return JsonResponse(out, safe=False)
