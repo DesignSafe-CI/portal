@@ -1,4 +1,5 @@
 <div>
+  <!-- Projects -->
   <div ng-if='data.doc_type === "project"'>
     <span class="label label-warning"> Project </span>
     <h4><a ng-href="/data/browser/public/{{data.systemId}}/{{data.projectPath}}"  target="_self"> {{data.title}} </a></h4>
@@ -6,14 +7,16 @@
     <span class="label label-primary"> {{data.startDate | date:'short'}} </span>
     <hr>
   </div>
+  <!-- Files -->
   <div ng-if='data.doc_type === "object" || data.doc_type === "objects"'>
       <span class="label label-default"> File </span>
       <span class="label label-primary"> {{data.length | bytes }} </span>
-      <h4> <a ng-href="{{ data.link }}" target="_self"> {{data.name}} </a> </h4>
+      <h4> <a ng-href="/data/browser/public/{{data.systemId}}/{{ data.path }}" target="_self"> {{data.name}} </a> </h4>
       <p> {{data.path}} </p>
       <span class="label" ng-if='data.lastModified' style="background-color:#5b4d92"> {{ data.lastModified | date:'short'}} </span>
       <hr>
   </div>
+  <!-- Experiments -->
   <div ng-if='data.doc_type === "experiment"'>
     <span class="label label-success"> Experiment </span>
     <h4><a ng-href="/data/browser/public/{{data.systemId}}/{{data.experimentPath}}"  target="_self"> {{data.title}} </a> </h4>

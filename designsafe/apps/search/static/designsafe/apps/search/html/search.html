@@ -45,7 +45,7 @@
              <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'video'"> Video  </label>
           </div>
         </div>
-        <div ng-show = 'data.search_results.total_hits == 0'>
+        <div ng-show = 'data.search_results.hits.length == 0'>
           <div class="alert alert-success"> Nothing found! </div>
         </div>
         <div ng-show = 'data.search_results.hits.length'>
