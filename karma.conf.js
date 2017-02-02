@@ -5,8 +5,8 @@ module.exports = function(config){
 
     files : [
       /* VENDOR SCRIPTS */
-      '/var/www/designsafe-ci.org/static/js/vendor.js',
-
+      '/var/www/designsafe-ci.org/static/vendor/jquery/dist/jquery.min.js',
+      '/var/www/designsafe-ci.org/static/vendor/modernizr/modernizr.js',
       '/var/www/designsafe-ci.org/static/vendor/angular/angular.min.js',
       '/var/www/designsafe-ci.org/static/vendor/angular-sanitize/angular-sanitize.min.js',
       '/var/www/designsafe-ci.org/static/vendor/angular-toastr/dist/angular-toastr.tpls.min.js',
@@ -31,6 +31,8 @@ module.exports = function(config){
       '/var/www/designsafe-ci.org/static/scripts/utils.js',
       '/var/www/designsafe-ci.org/static/scripts/navbar.js',
       '/var/www/designsafe-ci.org/static/scripts/dateinput.js',
+      '/var/www/designsafe-ci.org/static/scripts/data-depot/*.js',
+      '/var/www/designsafe-ci.org/static/scripts/data-depot/**/*.js',
       '/var/www/designsafe-ci.org/static/scripts/ng-logging/**/*.js',
       '/var/www/designsafe-ci.org/static/scripts/ng-modernizr/**/*.js',
       '/var/www/designsafe-ci.org/static/scripts/ng-designsafe/**/*.js',
@@ -53,8 +55,7 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['Chrome'],
-
+    browsers : ['Chrome_without_sandbox'],
     plugins : [
             'karma-chrome-launcher',
             'karma-firefox-launcher',
@@ -62,7 +63,13 @@ module.exports = function(config){
             'karma-jasmine-html-reporter'
             ],
 
-    reporters: ['progress', 'html']
-
+    reporters: ['progress', 'html'],
+    customLaunchers: {
+        Chrome_without_sandbox: {
+            base: 'Chrome',
+            flags: ['--no-sandbox'],
+            displayName: 'Chorme w/o sandbox'
+        }
+    }
   });
 };
