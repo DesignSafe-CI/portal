@@ -40,6 +40,12 @@ class SearchView(BaseApiView):
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
+            .highlight("body",
+                fragment_size=200,
+                pre_tags=["<strong>"],
+                post_tags=["</strong>"],
+            )\
+            .highlight_options(require_field_match=False)\
             .extra(from_=offset, size=limit)
         if type_filter == 'files':
             es_query = es_query.query("match", type="file")\
@@ -61,12 +67,7 @@ class SearchView(BaseApiView):
                 )
         elif type_filter == 'web':
             es_query._index = 'cms'
-            es_query = es_query.highlight("body",
-                fragment_size=150,
-                pre_tags=["<strong>"],
-                post_tags=["</strong>"],
-            )
-            es_query = es_query.highlight_options(require_field_match=False)
+
 
         logger.info(es_query.to_dict())
         res = es_query.execute()
@@ -80,7 +81,7 @@ class SearchView(BaseApiView):
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
             .highlight("body",
-                fragment_size=100,
+                fragment_size=200,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
@@ -133,6 +134,7 @@ class SearchView(BaseApiView):
                 logger.info(r.to_dict())
                 d = r.to_dict()
                 d["doc_type"] = r.meta.doc_type
+                logger.info(r.meta)
                 if hasattr(r.meta, 'highlight'):
                     d["highlight"] = r.meta.highlight.to_dict()
                 hits.append(d)
@@ -146,7 +148,7 @@ class SearchView(BaseApiView):
                  pubs.append(d)
         if ((type_filter is None) or (type_filter == 'publications')):
             hits.extend(pubs)
-        out['total_hits'] = res.hits.total + len(pubs)
+        out['total_hits'] = res.hits.total
         out['hits'] = hits
         out['files_total'] = files_query.hits.total
         out['projects_total'] = projects_query.hits.total

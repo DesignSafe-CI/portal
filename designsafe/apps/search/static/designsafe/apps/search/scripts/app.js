@@ -11,8 +11,8 @@
   }]);
 
   angular.module('designsafe').controller('SearchCtrl',
-    ['$scope','$rootScope', '$location', 'searchService', 'Logging', 'djangoUrl',
-    function($scope, $rootScope, $location, searchService, Logging, djangoUrl) {
+    ['$scope','$rootScope', '$location', 'searchService', 'Logging', 'djangoUrl', '$sce',
+    function($scope, $rootScope, $location, searchService, Logging, djangoUrl, $sce) {
       $scope.data = {};
       $scope.Math = window.Math;
       $scope.counter = Array;
@@ -29,6 +29,7 @@
           $scope.searching = true;
           searchService.search($scope.data.search_text, $scope.limit, $scope.offset, $scope.data.type_filter).then(function(resp) {
               $scope.data.search_results = resp.data;
+              
               // logger.debug($scope.data.search_results)
               console.log($scope.data.search_results)
               $scope.page_num = 0;
@@ -50,6 +51,7 @@
       };
 
       $scope.select_page = function (page_num) {
+        console.log(page_num)
         $scope.page_num = page_num;
         $scope.offset = page_num * $scope.results_per_page;
         $scope.search();

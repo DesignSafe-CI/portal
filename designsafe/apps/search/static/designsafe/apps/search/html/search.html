@@ -60,12 +60,12 @@
                     <i class="fa fa-chevron-left"></i>
                   </a>
                 </li>
-                <li ng-repeat="i in counter(Math.ceil(data.search_results.total_hits / 10)) track by $index">
+                <li ng-repeat="i in counter(Math.ceil(data.search_results.total_hits / results_per_page)) track by $index">
                   <a href="#" ng-click=select_page($index)> {{ $index + 1}}</a>
                 </li>
 
                 <li>
-                  <a href="#">
+                  <a href="#" ng-click="next_page()">
                     <i class="fa fa-chevron-right"></i>
                   </a>
                 </li>
