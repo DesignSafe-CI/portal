@@ -76,8 +76,7 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['Chrome'],
-
+    browsers : ['Chrome_without_sandbox'],
     plugins : [
             'karma-chrome-launcher',
             'karma-firefox-launcher',
@@ -85,7 +84,13 @@ module.exports = function(config){
             'karma-jasmine-html-reporter'
             ],
 
-    reporters: ['progress', 'html']
-
+    reporters: ['progress', 'html'],
+    customLaunchers: {
+        Chrome_without_sandbox: {
+            base: 'Chrome',
+            flags: ['--no-sandbox'],
+            displayName: 'Chorme w/o sandbox'
+        }
+    }
   });
 };
