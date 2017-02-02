@@ -364,6 +364,9 @@ class BaseFileResource(BaseAgaveResource):
                 READ permission on ``path`` on ``system``.
             - 404 If the ``path`` does not exist on ``system``.
         """
+        if offset == 0:
+            limit += 1
+
         list_result = agave_client.files.list(systemId=system,
                                               filePath=urllib.quote(path), 
                                               offset=offset,
