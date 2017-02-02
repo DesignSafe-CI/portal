@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Dropbox.com Integration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">Dropbox.com Integration</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel {% if dropbox_enabled and dropbox_connection %}panel-success{% elif dropbox_enabled %}panel-warning{% else %}panel-default{% endif %}">
+                {% if dropbox_enabled %}
+                    <div class="panel-heading">Dropbox.com Enabled</div>
+                {% else %}
+                    <div class="panel-heading">Dropbox.com NOT Enabled</div>
+                {% endif %}
+                <div class="panel-body">
+                {% if dropbox_enabled %}
+                    {% if dropbox_connection %}
+                        <p>
+                            Dropbox.com integration is enabled. DesignSafe can connect to
+                            Dropbox.com as <em>{{dropbox_connection.name.display_name}} ({{dropbox_connection.email}})</em>.
+                        </p>
+                    {% else %}
+                        <p class="text-warning">
+                            While you have previously authorized DesignSafe to connect
+                            to your Dropbox.com account, the connection test failed for some
+                            reason. You may have revoked access from your Dropbox.com Account
+                            Security page. To fix this, first disconnect Dropbox.com integration
+                            and then re-enable.
+                        </p>
+                    {% endif %}
+                    <a href="{% url 'dropbox_integration:disconnect' %}" class="btn btn-default">Disconnect Dropbox.com</a>
+                {% else %}
+                    <p>
+                        Dropbox.com integration is not enabled for your account. Click below
+                        to configure DesignSafe/Dropbox.com integration.
+                    </p>
+                    <a href="{% url 'dropbox_integration:initialize_token' %}" class="btn btn-default">Setup Dropbox.com</a>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <p class="lead">
+                <em class="label label-success">New!</em>
+                By connecting your Dropbox.com account with DesignSafe, you can access your
+                Dropbox.com files in the DesignSafe Data Depot. You can select files and
+                folders to copy to DesignSafe where you can operate on those files in the
+                Discovery Workspace. You can also send files from DesignSafe back to Dropbox.com.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

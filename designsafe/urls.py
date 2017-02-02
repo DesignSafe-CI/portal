@@ -66,6 +66,10 @@ urlpatterns = patterns(
     url(r'^account/applications/box/', include('designsafe.apps.box_integration.urls',
         namespace='box_integration')),
 
+    # dropbox
+    url(r'^account/applications/dropbox/', include('designsafe.apps.dropbox_integration.urls',
+        namespace='dropbox_integration')),
+
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
     url(r'^login/$', 'designsafe.apps.auth.views.login_options', name='login'),
