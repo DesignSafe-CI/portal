@@ -7,7 +7,10 @@
         convertDateStringsToDates(responseData);
         return responseData;
       });
-       $locationProvider.html5Mode(true);
+       $locationProvider.html5Mode({
+         enabled: true,
+         rewriteLinks: false
+       });
   }]);
 
   angular.module('designsafe').controller('SearchCtrl',
@@ -29,7 +32,7 @@
           $scope.searching = true;
           searchService.search($scope.data.search_text, $scope.limit, $scope.offset, $scope.data.type_filter).then(function(resp) {
               $scope.data.search_results = resp.data;
-              
+
               // logger.debug($scope.data.search_results)
               console.log($scope.data.search_results)
               $scope.page_num = 0;
