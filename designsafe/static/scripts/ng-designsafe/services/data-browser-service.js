@@ -749,28 +749,36 @@
       var modal = $uibModal.open({
         windowClass: 'modal-full',
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder, UserService) {
+        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder) {
           $scope.folder = folder;
-          $scope.UserService = UserService;
           var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
           $scope.busy = true;
           $scope.images = [];
+          $scope.hrefs = [];
           $scope.carouselSettings = {
             dots: true,
-            arrows: true
+            arrows: true,
+            lazyLoad: true,
+            event: {
+              beforeChange: function (ev, slick, currentSlide, nextSlide) {
+                $scope.images[nextSlide].href = $scope.hrefs[nextSlide].href;
+              }
+            }
 
           };
           $scope.folder.children.forEach(function (file) {
             var ext = file.path.split('.').pop().toLowerCase();
             if (img_extensions.indexOf(ext) !== -1) {
-                $scope.images.push({href: file.agaveUrl(), file:file});
+                $scope.hrefs.push({href: file.agaveUrl(), file:file});
+                $scope.images.push({file:file});
             }
           });
+          $scope.images[0] = $scope.hrefs[0]
 
           if ($scope.images.length > 10) {
             $scope.carouselSettings.dots = false;
           }
-          
+
           $scope.close = function () {
             $uibModalInstance.dismiss();
           };

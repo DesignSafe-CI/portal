@@ -3,6 +3,22 @@
 
   var mod = angular.module('designsafe');
 
+  mod.directive('spinnerOnLoad', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, element) {
+        element.parent().prepend("<div class='text-center spinner'><i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i></div>")
+        element.css('display', 'none');
+        element.on('load', function (ev) {
+          element.parent().find(".spinner").remove();
+          element.css('display', 'block');
+        })
+
+      }
+    }
+
+  })
+
   mod.directive('httpSrc', ['$http', function ($http) {
    return {
       restrict: 'A',
