@@ -111,7 +111,7 @@ class SearchView(BaseApiView):
             )\
             .extra(from_=offset, size=limit)\
             .execute()
-
+        logger.info(pubs_query.to_dict())
         exp_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
@@ -131,10 +131,8 @@ class SearchView(BaseApiView):
         hits = []
         if (type_filter != 'publications'):
             for r in results:
-                logger.info(r.to_dict())
                 d = r.to_dict()
                 d["doc_type"] = r.meta.doc_type
-                logger.info(r.meta)
                 if hasattr(r.meta, 'highlight'):
                     d["highlight"] = r.meta.highlight.to_dict()
                 hits.append(d)
@@ -154,6 +152,6 @@ class SearchView(BaseApiView):
         out['projects_total'] = projects_query.hits.total
         out['experiments_total'] = exp_query.hits.total
         out['cms_total'] = web_query.hits.total
-        out['publications_total'] = len(pubs)
+        out['publications_total'] = pubs_query.hits.total
 
         return JsonResponse(out, safe=False)

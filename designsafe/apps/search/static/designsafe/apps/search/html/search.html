@@ -30,7 +30,7 @@
                 <input ng-model="data.search_text"
                        class="form-control"
                        id="main_search_input"
-                       ng-change = 'search()'
+                       ng-change = 'search(true)'
                        ng-model-options = '{debounce: 500}'>
             </div>
         </div>
@@ -53,8 +53,8 @@
                 <search-listing data=d></search-listing>
             </div>
         </div>
-        <nav ng-if="data.search_results.total_hits > results_per_page">
-            <ul class="pagination">
+        <div class="row" ng-if="data.search_results.total_hits > results_per_page">
+            <!-- <ul class="pagination">
                 <li>
                   <a href="#" ng-click="select_page(page_num -1)">
                     <i class="fa fa-chevron-left"></i>
@@ -69,7 +69,26 @@
                     <i class="fa fa-chevron-right"></i>
                   </a>
                 </li>
-            </ul>
-        </nav>
+            </ul> -->
+            <div class="col-md-3">
+              <button class="btn btn-default pull-left"
+                ng-click="prev()"
+                ng-disabled="page_num === 0">
+                <i class="fa fa-chevron-left"></i> Prev
+              </button>
+            </div>
+            <div class="col-md-6">
+              <div class="text-center">
+                <span class="badge"> {{page_num + 1}} / {{ Math.ceil(data.search_results.total_hits / results_per_page) }} </span>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-default pull-right"
+                ng-click="next()"
+                ng-disabled="page_num + 1 === max_pages">
+                <i class="fa fa-chevron-right"></i> More
+              </button>
+            </div>
+        </div>
     </div>
 </div>
