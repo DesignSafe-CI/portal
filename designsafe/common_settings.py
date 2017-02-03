@@ -399,6 +399,7 @@ DEFAULT_TERMS_SLUG = 'terms'
 PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
+PIPELINE_SASS_ARGUMENTS = '-C'
 PIPELINE_CSS_COMPRESSOR = None
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
 

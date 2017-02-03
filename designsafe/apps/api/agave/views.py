@@ -122,6 +122,10 @@ class FileMediaView(View):
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     context['object_preview'] = f.download_postit(force=False, lifetime=360)
 
+                elif f.ext in BaseFileResource.SUPPORTED_MS_OFFICE:
+                    context['iframe_preview'] = 'https://view.officeapps.live.com/op/view.aspx?src={}'\
+                                                .format(f.download_postit(force=False, lifetime=360))
+
                 return render(request, 'designsafe/apps/api/agave/preview.html', context)
             else:
                 url = 'https://agave.designsafe-ci.org/files/v2/media/{system}/{path}'.format(system=system_id, path=file_path)
