@@ -28,13 +28,15 @@
                 </span>
 
                 <input ng-model="data.search_text"
+                       placeholder="Search Designsafe"
                        class="form-control"
                        id="main_search_input"
                        ng-change = 'search(true)'
                        ng-model-options = '{debounce: 500}'>
             </div>
         </div>
-        <div class="well well-sm">
+        <br>
+        <!-- <div class="well well-sm">
             Sort by:
            <button class="btn btn-xs btn-primary"> Relevance </button>
            <button class="btn btn-xs"> Date: High to Low </button>
@@ -44,7 +46,7 @@
              <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'image'"> Images  </label>
              <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'video'"> Video  </label>
           </div>
-        </div>
+        </div> -->
         <div ng-show = 'data.search_results.hits.length == 0'>
           <div class="alert alert-success"> Nothing found! </div>
         </div>
