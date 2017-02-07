@@ -51,10 +51,10 @@
             $scope.resetForm();
           });
         } else if (app.value.type === 'html'){
-          Apps.getMeta(app.id).then(function(resp) {
+          Apps.getMeta(app.value.definition.id).then(function(resp) {
             if (resp.data.length > 0){
-              $scope.data.type = app.type;
-              $scope.data.app = resp.data[0].value.html;
+              $scope.data.type = app.value.type;
+              $scope.data.app = resp.data[0].value.definition.html;
             }
           });
 
