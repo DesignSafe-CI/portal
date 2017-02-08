@@ -1,10 +1,4 @@
-angular.module('designsafe').controller(['$scope', 'UserService', function ($scope, UserService) {
-
-  
-}])
-
-
-$(window).load(function () {
+angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', function ($scope, UserService) {
   var data = [
     {date: new Date('2016-01-01T00:00:00'), count:4},
     {date: new Date('2016-01-02T00:00:00'), count:4},
@@ -21,9 +15,8 @@ $(window).load(function () {
     {date: new Date('2016-01-13T00:00:00'), count:2},
     {date: new Date('2016-01-14T00:00:00'), count:1},
   ];
-  //9 $.getJSON()
-  console.log('dashboard')
-  chart = DS_TSBarChart('#ds_jobs_chart')
+
+  chart = new DS_TSBarChart('#ds_jobs_chart')
           .height(250)
           .ySelector(function (d) { return d.count;})
           .xSelector(function (d) { return d.date;})
@@ -31,4 +24,5 @@ $(window).load(function () {
   chart.on('bar_click', function (ev) {
     console.log('in view', ev);
   });
-});
+
+}])

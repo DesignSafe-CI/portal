@@ -37,4 +37,4 @@ def index(request):
     context = {
         'profile': user_profile,
     }
-    return render(request, 'designsafe/apps/dashboard/dashboard.html', context)
+    return render(request, 'designsafe/apps/dashboard/index.html', context)
