@@ -47,8 +47,15 @@
              <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'video'"> Video  </label>
           </div>
         </div> -->
-        <div ng-show = 'data.search_results.hits.length == 0'>
-          <div class="alert alert-success"> Nothing found! </div>
+        <div ng-show = 'data.search_results.hits.length === 0 && data.type_filter'>
+          <div class="alert alert-danger">
+            <h3> <a ng-click="filter()" href=''> Nothing found! Want to try without any filters? </a> </h3>
+          </div>
+        </div>
+        <div ng-show = 'data.search_results.hits.length === 0 && !data.type_filter'>
+          <div class="alert alert-warning">
+            <h3> Sorry, nothing found! </h3>
+          </div>
         </div>
         <div ng-show = 'data.search_results.hits.length'>
             <div ng-repeat = "d in data.search_results.hits">
