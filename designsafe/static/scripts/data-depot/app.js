@@ -1,15 +1,15 @@
 (function(window, angular) {
   var module = angular.module('designsafe');
-  // module.requires.push(
-  //   'ui.router',
-  //   'djng.urls',
-  //   'ui.bootstrap',
-  //   'django.context',
-  //   'ds.notifications',
-  //   'ds.wsBus',
-  //   'toastr',
-  //   'logging'
-  // );
+  module.requires.push(
+    'ui.router',
+    'djng.urls',
+    'ui.bootstrap',
+    'django.context',
+    'ds.notifications',
+    'ds.wsBus',
+    'toastr',
+    'logging'
+  );
 
   function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 
