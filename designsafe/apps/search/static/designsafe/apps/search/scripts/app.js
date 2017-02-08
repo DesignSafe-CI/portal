@@ -41,7 +41,6 @@
               $scope.data.search_results = resp.data;
               $scope.max_pages = $scope.Math.ceil($scope.data.search_results.total_hits / $scope.results_per_page);
               // logger.debug($scope.data.search_results)
-              console.log($scope.data.search_results)
               $scope.searching = false;
               $window.scrollTo(0, 0);
           }, function (err) {
@@ -63,7 +62,6 @@
 
       $scope.next = function () {
         $scope.page_num = $scope.page_num + 1;
-        console.log($scope.page_num)
         $scope.search();
       }
 
