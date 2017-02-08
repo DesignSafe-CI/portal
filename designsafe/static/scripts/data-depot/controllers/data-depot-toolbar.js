@@ -1,8 +1,11 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
-  app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', function ($scope, $state, $uibModal, Django, DataBrowserService) {
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
+  app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService', function ($scope, $state, $uibModal, Django, DataBrowserService, UserService) {
     $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();
+    $scope.UserService = UserService;
 
     DataBrowserService.subscribe($scope, function($event, eventData) {
       if (eventData.type === DataBrowserService.FileEvents.FILE_SELECTION) {
@@ -38,6 +41,9 @@
       preview: function () {
         DataBrowserService.preview($scope.browser.selected[0], $scope.browser.listing);
       },
+      previewImages: function () {
+        DataBrowserService.previewImages($scope.browser.listing);
+      },
       viewMetadata: function () {
         DataBrowserService.viewMetadata($scope.browser.selected[0], $scope.browser.listing);
       },
@@ -66,7 +72,5 @@
                    'filePath': '$SEARCH'});
       }
     };
-
-
   }]);
 })(window, angular);

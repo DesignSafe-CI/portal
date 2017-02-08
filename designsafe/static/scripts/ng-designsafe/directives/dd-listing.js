@@ -3,7 +3,7 @@
  */
 (function(window, angular) {
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('designsafe');
 
   module.directive('ddListing', function() {
     return {
@@ -15,7 +15,9 @@
         browser: '=',
         onBrowse: '&',
         onSelect: '&',
-        onDetail: '&'
+        onDetail: '&',
+        scrollToTop: '&',
+        scrollToBottom: '&',
       }
     };
   });

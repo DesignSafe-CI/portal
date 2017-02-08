@@ -4,7 +4,7 @@
 {% block title %}Notifications{% endblock %}
 
 {% block content %}
-<div class="container" ng-app="NotificationList">
+<div class="container">
 <h1 class="headline headline-research">Notifications</h1>
   <div ng-controller="NotificationListCtrl" ng-include="'{% static 'designsafe/apps/notifications/html/notification_list.html' %}'">
   {{message}}
@@ -22,7 +22,7 @@
   <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
-  <script type="text/javascript" src="{% static 'djangular/js/django-angular.js' %}"></script>
+  <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}

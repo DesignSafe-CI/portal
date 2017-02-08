@@ -21,6 +21,7 @@ django:
     - /var/www/designsafe-ci.org/media
   ports:
     - 8000:8000
+    - 5555:5555
   dns:
     - 8.8.8.8
     - 8.8.4.4

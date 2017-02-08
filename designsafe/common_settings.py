@@ -17,7 +17,6 @@ import json
 gettext = lambda s: s
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -28,12 +27,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
 # SESSION_ENGINE = 'redis_sessions.session'
 # SESSION_REDIS_HOST = 'redis'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -96,6 +95,7 @@ INSTALLED_APPS = (
     'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
+    'designsafe.apps.search',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -330,7 +330,9 @@ LOGGING = {
                       '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
         },
         'metrics': {
-            'format': '[METRICS] %(message)s user=%(user)s op=%(operation)s info=%(info)s'
+            'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
+                      ' %(message)s user=%(user)s sessionId=%(sessionId)s op=%(operation)s'
+                      ' info=%(info)s'
         },
     },
     'handlers': {
@@ -398,6 +400,7 @@ DEFAULT_TERMS_SLUG = 'terms'
 PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
+PIPELINE_SASS_ARGUMENTS = '-C'
 PIPELINE_CSS_COMPRESSOR = None
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
 
@@ -408,6 +411,8 @@ PIPELINE_CSS = {
             'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
             'vendor/font-awesome/css/font-awesome.css',
             'vendor/angular-toastr/dist/angular-toastr.css',
+            'vendor/slick-carousel/slick/slick.css',
+            'vendor/slick-carousel/slick/slick-theme.css'
         ),
         'output_filename': 'css/vendor.css',
     },
@@ -512,8 +517,8 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'site': 'tacc.utexas.edu',
     'default': False,
     'status': 'UP',
-    'description': 'Project: {}',
-    'name': 'Project: {}',
+    'description': '{}',
+    'name': '{}',
     'globalDefault': False,
     'available': True,
     'public': False,

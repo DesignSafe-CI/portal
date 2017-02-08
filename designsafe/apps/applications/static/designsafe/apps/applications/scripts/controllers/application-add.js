@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').controller('ApplicationAddCtrl',
+  angular.module('designsafe').controller('ApplicationAddCtrl',
     ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, SimpleList, MultipleList, AppsWizard, Django) {
 
       /******* addForm form *********/
@@ -113,7 +113,7 @@
             invalidCharacters: function(value) {
               var patt = /^\d+(.\d+)+$/;
               if (!patt.test(value)){
-                return false
+                return false;
               }
               return true;
             },
@@ -610,7 +610,7 @@
                         invalidCharacters: function(value) {
                           var patt = /^[a-zA-Z0-9_]+$/;
                           if (!patt.test(value)){
-                            return false
+                            return false;
                           }
                           return true;
                         },
@@ -631,7 +631,7 @@
                           invalidCharacters: function(value) {
                             var patt = /^\d+(.\d+)+$/;
                             if (!patt.test(value)){
-                              return false
+                              return false;
                             }
                             return true;
                           },
@@ -689,7 +689,7 @@
                         "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.deploymentPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                         validate: function(form){
                           if (!$scope.model.deploymentPath){
-                            form.description = 'Missing required'
+                            form.description = 'Missing required';
                           }
                         },
                         validatePath: function(event, form){
@@ -741,7 +741,7 @@
                         "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.templatePath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                         validate: function(form){
                           if (!$scope.model.templatePath){
-                            form.description = 'Missing required'
+                            form.description = 'Missing required';
                           }
                         },
                         validatePath: function(event, form){
@@ -776,7 +776,7 @@
                         "template": '<div class="form-group has-success has-feedback"><label for="input" class="control-label">{{form.title}}</label><div class="input-group"><input type="text" class="form-control" id="input" ng-model="model.testPath" ng-change="form.validate(form)"><a href="#" class="input-group-addon" ng-click="form.validatePath($event, form)"><span ng-show="form.requesting"><i class="fa fa-circle-o-notch fa-spin"></i></span><span ng-show="!form.requesting">Check File</span></a></div> <span class="help-block">{{form.description}}</span></div>',
                         validate: function(form){
                           if (!$scope.model.testPath){
-                            form.description = 'Missing required'
+                            form.description = 'Missing required';
                           }
                         },
                         validatePath: function(event, form){
@@ -1130,7 +1130,7 @@
                                           if (typeof $scope.model.parameters !== 'undefined'){
                                             if ($scope.model.parameters.length > 0 && typeof form.key !== 'undefined'){
                                               if (!modelValue) {
-                                                  $scope.model.parameters[form.key[1]].value.required = true
+                                                  $scope.model.parameters[form.key[1]].value.required = true;
                                               }
                                             }
                                           }

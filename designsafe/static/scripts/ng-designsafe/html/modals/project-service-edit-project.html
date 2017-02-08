@@ -6,12 +6,13 @@
 </div>
 <div class="modal-body">
     <form>
-        <div class="form-group">
+      <div class="pull-left" style="width:49%;">
+        <div class="form-group required">
             <label for="id_title">Project title</label>
             <input type="text" required class="form-control" id="id_title" name="title" placeholder="Project title" ng-model="form.title" autofocus select-on-focus>
 
         </div>
-        <div class="form-group">
+        <div class="form-group required">
             <label for="id_pi">PI</label>
             <input type="text" class="form-control" id="id_pi" ng-model="form.pi"
                    placeholder="Lookup PI by name or email address"
@@ -26,15 +27,63 @@
                 <i class="fa fa-remove"></i> No results.
             </div>
             <p class="help-block">
-                If you cannot find the person you are looking for, simply leave this field
-                blank. You can edit the Project's details later.
+                This value can be updated later on.
             </p>
         </div>
+      </div>
+      <div class="pull-right" style="width:49%">
+        <div class="form-group">
+          <label for="identifier-id">Project Identifier:</label>
+          <input type="text" class="form-control" id="identifier-id" ng-model="form.identifier" disabled/>
+        </div>
+        <div class="form-group">
+          <label for="award-number-id">Award Number:</label>
+          <input type="text" class="form-control" id="award-number-id" ng-model="form.awardNumber" />
+        </div>
+      </div>
+      <div style="clear:both;">
+        <div class="form-group required">
+          <label for="projecttype-id">Project Type:</label>
+          <select ng-options="projectType.label for projectType in projectTypes"
+                  ng-model="form.projectType"
+                  class="form-control"
+                  id="projecttype-id"/>
+        </div>
+            <p class="help-block">
+                Your project is tailored based on Project Type choice.
+            </p>
+      </div>
+      <div style="clear:both;">
+        <div class="well well-sm">
+          <div ng-if="form.associatedProjects.length">
+          <p> Associated Project - Link to Project <p>
+          <div ng-repeat="associatedProject in form.associatedProjects">
+              <div>
+                <input type="checkbox" ng-model="associatedProject.delete" /><span> {{associatedProject.title}} </span> - <span> <a href="{{associatedProject.href}}">{{associatedProject.href}}</a> </span>
+              </div>
+          </div>
+          <p class="help-block">Check associated projects to delete.</p>
+          </div>
+          <p> Associated Project - Link to Project <p>
+          <div class="form-group" ng-repeat="associatedProject in form.associatedProjectsAdded">
+              <input class="form-control" value="{{associatedProject.title}}" style="width:40%; display:inline-block;" ng-model="associatedProject.title"/> - <input class="form-control" value="{{associatedProject.href}}" style="width:40%; display:inline-block;" ng-model="associatedProject.href"/>
+          </div>
+          <button class="btn btn-info btn-sm" ng-click="addAssociatedProject()">
+            <i class="fa fa-plus"></i> Add another
+          </button>
+        </div>
+      </div>
+      <div style="clear:both;">
+        <div class="form-group">
+          <label for="description-id">Description:</label>
+          <textarea class="form-control" id="description-id" ng-model="form.description" />
+        </div>
+      </div>
         <div class="text-right" ng-if="!ui.busy">
             <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
             <button class="btn btn-primary" type="submit" ng-click="save($event)">Save Project</button>
         </div>
-        <div ng-if="data.busy">
+        <div ng-if="ui.busy">
             <p class="lead">
                 <i class="fa fa-spinner fa-spin"></i>
                 Saving project...

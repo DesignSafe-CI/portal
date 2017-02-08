@@ -138,6 +138,7 @@ class BoxFile(object):
             'lastModified': self.last_modified,
             '_actions': [],
             'permissions': pems,
+            'resource': 'box'
         }
         if trail:
             obj_dict['trail'] = self.trail

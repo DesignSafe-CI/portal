@@ -1,5 +1,5 @@
 (function(window, angular) {
-  var mod = angular.module('ng.designsafe');
+  var mod = angular.module('designsafe');
 
   mod.filter('bytes', function() {
     return function(bytes, precision) {

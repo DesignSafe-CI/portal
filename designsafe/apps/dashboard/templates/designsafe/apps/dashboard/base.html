@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_angular.html" %}
 
 {% load  sekizai_tags staticfiles %}
 
@@ -16,7 +16,7 @@
       </div>
     </div>
 
-   {% block body_content %}{% endblock %} 
+   {% block body_content %}{% endblock %}
   </div>
 
 
@@ -25,14 +25,9 @@
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
+<script type="text/javascript" src="{% static 'vendor/d3/d3.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'designsafe/apps/dashboard/js/dashboard.js' %}"></script>
 <script type="text/javascript" src="{% static 'designsafe/apps/dashboard/js/DS_TSBarChart.js' %}"></script>
-<script type="text/javascript" src="{% static 'vendor/d3/d3.min.js' %}"></script>
 {% endaddtoblock %}
 
 {% endblock %}
-
-
-
-
-

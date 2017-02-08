@@ -349,7 +349,6 @@ def profile_edit(request):
         form = forms.UserProfileForm(request.POST, initial=tas_user)
         if form.is_valid():
             data = form.cleaned_data
-
             # punt on PI Eligibility for now
             data['piEligibility'] = tas_user['piEligibility']
 

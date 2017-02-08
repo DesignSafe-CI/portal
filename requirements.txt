@@ -40,6 +40,7 @@ django-redis-sessions
 django-redis-cache
 # end wsr
 celery==3.1.20
+flower==0.9.1
 html5lib==0.999
 MySQL-python==1.2.5
 Pillow==2.9.0
@@ -50,7 +51,7 @@ requests[security]==2.10.0
 requests-toolbelt==0.6.2
 requests-mock==1.0.0
 rt==1.0.8
-six==1.9.0
+six==1.10.0
 slimit==0.8.1
 virtualenv==13.0.1
 wheel==0.24.0

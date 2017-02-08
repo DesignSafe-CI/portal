@@ -1,5 +1,7 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
   app.controller('DataDepotNewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', function($scope, $state, Django, ProjectService, DataBrowserService) {
 
     $scope.test = {

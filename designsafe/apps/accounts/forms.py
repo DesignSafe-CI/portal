@@ -258,7 +258,6 @@ class UserProfileForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         self.fields['institutionId'].choices = get_institution_choices()
-
         data = self.data or self.initial
         if data is not None and 'institutionId' in data and data['institutionId']:
             self.fields['departmentId'].choices = get_department_choices(
@@ -438,6 +437,7 @@ class ProfessionalProfileForm(forms.ModelForm):
         required=False
     )
     website = forms.CharField(max_length=256, required=False, label="Personal Website")
+    orcid_id = forms.CharField(max_length=256, required=False, label="Orcid ID")
     professional_level = forms.ChoiceField(
         choices=PROFESSIONAL_LEVEL_OPTIONS,
         widget=forms.RadioSelect,

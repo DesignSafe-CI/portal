@@ -1,9 +1,9 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('WorkspaceApp').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+  angular.module('designsafe').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
 
     var MultipleList = function() {
-          this.lists = []
+          this.lists = [];
         };
 
     MultipleList.prototype.addEditLists = function(query, name, apps) {
@@ -50,7 +50,7 @@
           function(apps){
             deferred.reject();
           }
-        )
+        );
 
         return deferred.promise;
     };
@@ -88,7 +88,7 @@
           function(apps){
             deferred.reject();
           }
-        )
+        );
 
         return deferred.promise;
     };

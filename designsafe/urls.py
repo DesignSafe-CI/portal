@@ -43,6 +43,9 @@ urlpatterns = patterns(
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
     url(r'^notifications/', include('designsafe.apps.notifications.urls',
                                     namespace='designsafe_notifications')),
+    url(r'^search/', include('designsafe.apps.search.urls',
+                                    namespace='designsafe_search')),
+
 
     # auth
     url(r'^account/', include('designsafe.apps.accounts.urls',

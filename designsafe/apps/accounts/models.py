@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.db import connections, DatabaseError
 from django.utils.translation import ugettext_lazy as _
+from django.core.mail import send_mail
 import logging
 import six
 
@@ -17,7 +18,7 @@ class NEESUser(object):
     _lookup_sql = "SELECT u.username, u.email, p.givenName, p.middleName, p.surname, " \
                   "p.organization, p.countryresident, p.countryorigin, p.phone, " \
                   "a.address1, a.address2, a.addressCity, a.addressRegion, " \
-                  "a.addressPostal, a.addressCountry " \
+                  "a.addressPosstal, a.addressCountry " \
                   "FROM jos_users u JOIN jos_xprofiles p ON p.uidNumber = u.id " \
                   "LEFT JOIN jos_xprofiles_address a ON a.uidNumber = u.id " \
                   "WHERE u.email = %s"
@@ -60,10 +61,17 @@ class DesignSafeProfile(models.Model):
     gender = models.CharField(max_length=255)
     bio = models.CharField(max_length=4096, default=None, null=True, blank=True)
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
+    orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
-
+    
+    def send_mail(self, subject, body=None):
+        send_mail(subject,
+                  body,
+                  settings.DEFAULT_FROM_EMAIL,
+                  [self.user.email],
+                  html_message=body)
 
 class NotificationPreferences(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
