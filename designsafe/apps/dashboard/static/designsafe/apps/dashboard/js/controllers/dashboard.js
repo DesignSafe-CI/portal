@@ -1,5 +1,12 @@
 angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', function ($scope, UserService) {
-  var data = [
+
+  $scope.jobs_count = 12;
+  $scope.storage_count = 15123123123;
+  $scope.apps_count = 45;
+  $scope.activities_count = 42;
+  $scope.display_job_details = false;
+
+  $scope.jobs_data = [
     {date: new Date('2016-01-01T00:00:00'), count:4},
     {date: new Date('2016-01-02T00:00:00'), count:4},
     {date: new Date('2016-01-03T00:00:00'), count:3},
@@ -20,9 +27,17 @@ angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService
           .height(250)
           .ySelector(function (d) { return d.count;})
           .xSelector(function (d) { return d.date;})
-          .data(data);
-  chart.on('bar_click', function (ev) {
-    console.log('in view', ev);
+          .data($scope.jobs_data);
+  chart.on('bar_click', function (ev, toggled) {
+    console.log('in view', ev, toggled);
+    (toggled) ? $scope.display_job_details = true : $scope.display_job_details = false;
+    $scope.jobs_details = [
+      {date: new Date('2016-01-01T00:00:00'), description:"OpenSEES", status:'failed'},
+      {date: new Date('2016-01-01T00:00:00'), description:"OpenSEESMPI", status:'success'},
+      {date: new Date('2016-01-01T00:00:00'), description:"Compress", status:'success'},
+      {date: new Date('2016-01-01T00:00:00'), description:"OpenSEES", status:'success'},
+    ]
+    $scope.$apply();
   });
 
 }])

@@ -1,28 +1,56 @@
 
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h5> <i class="fa fa-cubes"> </i> Stats </h5>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="dashboard-stat blue">
+      <div class="visual">
+        <i class="fa fa-rocket"></i>
+      </div>
+      <div class="details">
+        <div class="number"> {{jobs_count}} </div>
+        <div class="desc"> Recent Jobs </div>
+      </div>
     </div>
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-sm-4 text-center">
-                <h1 class="text-primary"> 75 Gb </h1> storage used
-            </div>
-            <div class="col-sm-4 text-center">
-                <h1 class="text-primary"> 15 </h1> jobs this week
-            </div>
-            <div class="col-sm-4 text-center">
-                <h1 class="text-primary"> 42 </h1> applications
-            </div>
-        </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="dashboard-stat red">
+      <div class="visual">
+        <i class="fa fa-database"></i>
+      </div>
+      <div class="details">
+        <div class="number"> {{storage_count | bytes}} </div>
+        <div class="desc"> Data Stored </div>
+      </div>
     </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="dashboard-stat green">
+      <div class="visual">
+        <i class="fa fa-cogs"></i>
+      </div>
+      <div class="details">
+        <div class="number"> {{apps_count}} </div>
+        <div class="desc"> Applications Available </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="dashboard-stat purple">
+      <div class="visual">
+        <i class="fa fa-calendar"></i>
+      </div>
+      <div class="details">
+        <div class="number"> {{activities_count}} </div>
+        <div class="desc"> Recent Activities </div>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
     <div class="col-sm-3">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h5> Quick Links </h5>
+                <h3 class="panel-title">Quick Links</h3>
             </div>
             <ul class="list-group">
                 <li class="list-group-item">
@@ -42,9 +70,9 @@
     </div>
     <div class="col-sm-6">
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <h5> Notifications </h5>
-            </div>
+          <div class="panel-heading">
+              <h3 class="panel-title">Notifications</h3>
+          </div>
             <ul class="list-group">
                 <li class="list-group-item">
                     Notification 1
@@ -60,9 +88,9 @@
     </div>
     <div class="col-sm-3">
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <h5> Announcments </h5>
-            </div>
+          <div class="panel-heading">
+              <h3 class="panel-title">Announcements</h3>
+          </div>
             <ul class="list-group">
                 <li class="list-group-item">
                     Designsafe will be unavailable Dec 25th from 10:00pm untill 10:30pm
@@ -72,10 +100,19 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-12">
-        <div class="panel panel-default">
-            <div class="panel-heading"> <h5> <i class="fa fa-flask"> </i>  My Jobs </h5> </div>
-            <div id="ds_jobs_chart" class="ds-chart"></div>
-        </div>
+  <div class="col-sm-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">My Jobs</h3>
+      </div>
+      <div id="ds_jobs_chart" class="ds-chart"></div>
+      <ul class="list-group" ng-show="display_job_details">
+        <li class="list-group-item" ng-repeat="job in jobs_details">
+          <span class="label label-primary"> {{job.date | date}} </span>
+          <span class="label pull-right" ng-class="{success:'label-success', failed:'label-danger'}[job.status]"> {{job.status}} </span>
+          <span> {{job.description}} </span>
+        </li>
+      </ul>
     </div>
+  </div>
 </div>

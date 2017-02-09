@@ -1,15 +1,15 @@
 
 function DS_TSBarChart (element_id) {
-  
-  var margin = {right:20, left:20, top:20, bottom:20}, 
+
+  var margin = {right:20, left:20, top:20, bottom:20},
       width = $(element_id).width() - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom,
       xSelector = function (d) {return d.datetime_utc;},
       ySelector = function (d) {return d.value;},
       data,
       x, y, xAxis, yAxis,
-      axis_label, focus, 
-      svg, 
+      axis_label, focus,
+      svg,
       dispatch = d3.dispatch('bar_click');
 
   function exports () {
@@ -19,17 +19,16 @@ function DS_TSBarChart (element_id) {
 
     svg = d3.select(element_id).append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom); 
-    
+        .attr("height", height + margin.top + margin.bottom);
+
     xAxis = d3.axisBottom(x)
-              .ticks(5)
               .tickPadding(6)
               .tickSize(-height, 1, 0)
               .tickFormat(d3.timeFormat("%m/%d"));
 
     yAxis = d3.axisLeft(y)
               .tickSize(-width, 0, 0)
-              .tickFormat(d3.format(",.2s"));
+              .tickFormat(d3.format("d"));
 
     focus = svg.append("g")
         .attr("class", "focus")
@@ -41,11 +40,21 @@ function DS_TSBarChart (element_id) {
     return value === dispatch ? exports : value;
   };
 
-  function bar_click (ev, d) {
-    console.log(ev, d);
-    dispatch.call("bar_click", this, ev);
-    focus.selectAll('.bar').style('fill', 'steelblue');
-    d3.select(this).style("fill", "#BF5700");
+  function bar_click (datum, d) {
+    var is_selected = d3.select(this).classed('selected');
+    console.log(datum, d)
+    if (is_selected) {
+      focus.selectAll('.bar').style('fill', '#3598dc');
+      d3.selectAll('.selected').classed('selected', false);
+
+    } else {
+      focus.selectAll('.bar').style('fill', '#3598dc');
+      d3.select(this).style("fill", "#e7505a");
+      d3.selectAll('.selected').classed('selected', false)
+      d3.select(this).classed('selected', true);
+    }
+    dispatch.call("bar_click", this, datum, !is_selected);
+
   }
 
   function draw () {
@@ -58,9 +67,9 @@ function DS_TSBarChart (element_id) {
     focus.append("g")
       .attr("class", "y axis")
       .attr("fill", "#e3e3e3")
-      .call(yAxis); 
+      .call(yAxis);
     focus.selectAll('.bar').remove();
-     
+
     focus.selectAll(".bar")
       .data(data)
     .enter().append("rect")
