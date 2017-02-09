@@ -31,14 +31,14 @@ class BaseFileMetadata(BaseMetadataResource):
             if not meta_objs:
                 defaults = kwargs
                 defaults['name'] = 'designsafe.file'
-                defaults['value'] = {'fileUUID': file_obj.uuid,
+                defaults['value'] = {'fileUuid': file_obj.uuid,
                                      'keywords': []}
                 defaults['associationIds'] = [file_obj.uuid]
 
             project_uuid = kwargs.get('project_uuid')
             if re.search(r'^project-', file_obj.system) or project_uuid:
                 project_uuid = project_uuid or file_obj.system.replace('project-', '', 1)
-                defaults['value'].update({'projectUUID': project_uuid})
+                defaults['value'].update({'projectUuid': project_uuid})
                 defaults['associationIds'].append(project_uuid)
         else:
             defaults = kwargs
