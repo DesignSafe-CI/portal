@@ -81,6 +81,7 @@ INSTALLED_APPS = (
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
+    'designsafe.apps.dropbox_integration',
     'designsafe.apps.licenses',
 
     # signals
@@ -534,6 +535,6 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
-from box_settings import *
+from external_resource_settings import *
 from elasticsearch_settings import *
 from rt_settings import *

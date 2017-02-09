@@ -26,6 +26,14 @@ def lookup_transfer_service(src_resource, dest_resource):
         if dest_resource == 'box':
             return box_upload
 
+    if src_resource == 'dropbox':
+        if dest_resource == 'agave':
+            return box_download
+
+    if src_resource == 'agave':
+        if dest_resource == 'dropbox':
+            return box_upload
+
     if src_resource == 'public':
         if dest_resource == 'box':
             return box_upload

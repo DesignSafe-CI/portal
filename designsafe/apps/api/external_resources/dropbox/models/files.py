@@ -1,12 +1,12 @@
-from boxsdk.object.file import File
+from dropbox.files import ListFolderResult, FileMetadata, FolderMetadata
 import logging
 import os
 
 logger = logging.getLogger(__name__)
 
 
-class BoxFile(object):
-    """Represents a box file"""
+class DropboxFile(object):
+    """Represents a Dropbox file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
       '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
@@ -35,35 +35,29 @@ class BoxFile(object):
                                     SUPPORTED_TEXT_PREVIEWS +
                                     SUPPORTED_OBJECT_PREVIEW_EXTS)
 
-    def __init__(self, box_item, parent=None):
-        self._item = box_item
+    def __init__(self, dropbox_item, path=None, parent=None):
+        self._item = dropbox_item
+        self.path = path
+
         if parent:
-            self._parent = BoxFile(parent)
+            self._parent = DropboxFile(parent)
         else:
             self._parent = None
 
     @property
     def id(self):
-        return '{}/{}'.format(self._item.type, self._item.id)
+        return '{}{}'.format(self.type, self.path)
 
     @property
     def name(self):
-        return self._item.name
-
-    @property
-    def path(self):
         try:
-            path = '/'.join([e['name'] for e in self._item.path_collection['entries'][1:] if e['name']])
-            path = '/'.join([path, self.name])
+            return self._item.name
         except AttributeError:
-            if self._parent:
-                if self._parent.id == 'folder/0':  # Suppress 'All Files' name in path
-                    path = '/{}'.format(self.name)
-                else:
-                    path = '/'.join([self._parent.path, self.name])
-            else:
-                path = ''
-        return path
+            return self.trail[-1]['name']
+
+    # @property
+    # def path(self):
+    #     return self._item.path_display
 
     @property
     def size(self):
@@ -81,7 +75,10 @@ class BoxFile(object):
 
     @property
     def type(self):
-        return self._item.type
+        if type(self._item) in [FolderMetadata, ListFolderResult]:
+            return 'folder'
+        elif type(self._item) == FileMetadata:
+            return 'file'
 
     @property
     def ext(self):
@@ -89,13 +86,22 @@ class BoxFile(object):
 
     @property
     def trail(self):
-        try:
-            trail = [BoxFile(File(None, e['id'], e)).to_dict()
-                    for e in self._item.path_collection['entries']]
-            trail.append(self.to_dict(trail=False))
-            return trail
-        except AttributeError as e:
-            return []
+        path_comps = self.path.split('/')
+
+        # the first item in path_comps is '', which represents '/'
+        trail_comps = [{'name': path_comps[i] or '/',
+                        'system': None,
+                        'resource': 'dropbox',
+                        'path': '/'.join(path_comps[0:i+1]) or '/',
+                        } for i in range(0, len(path_comps))]
+
+        # trail = [DropboxFile(File(None, e['id'], e)).to_dict()
+        #         for e in self._item.path_collection['entries']]
+        # trail.append(self.to_dict(trail=False))
+
+        # return trail
+
+        return trail_comps
 
     @property
     def previewable(self):
@@ -105,25 +111,24 @@ class BoxFile(object):
     def parse_file_id(file_id):
         """
         Parses out the file_id that the Data Browser uses. For Box objects, this is in
-        the format {type}/{id}, where {type} is in ['folder', 'file'] and {id} is the
-        numeric id of the Box object.
+        the format {type}/{path}, where {type} is in ['folder', 'file'] and {path} is the
+        path of the Box object.
 
         Args:
-            file_id: The file_id in the format {type}/{id}
+            file_id: The file_id in the format {type}/{path}
 
         Returns:
-            Tuple of ({type}, {id})
+            Tuple of ({type}, {path})
 
         Raises:
             AssertionError
         """
-        parts = file_id.split('/')
+        parts = file_id.split('/', 1)
 
-        assert len(parts) == 2, 'The file path should be in the format {type}/{id}'
+        assert len(parts) == 2, 'The file path should be in the format {type}/{path}'
         assert parts[0] in ['folder', 'file'], '{type} must be one of ["folder", "file"]'
-        assert parts[1].isdigit(), '{id} should be digits only'
 
-        return parts[0], parts[1]
+        return parts[0], '/'+parts[1]
 
     def to_dict(self, trail=True, **kwargs):
         pems = kwargs.get('default_pems', [])
@@ -138,7 +143,7 @@ class BoxFile(object):
             'lastModified': self.last_modified,
             '_actions': [],
             'permissions': pems,
-            'resource': 'box'
+            'resource': 'dropbox'
         }
         if trail:
             obj_dict['trail'] = self.trail

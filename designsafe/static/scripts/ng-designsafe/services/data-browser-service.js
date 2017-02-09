@@ -247,7 +247,10 @@
              apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'Box',
              conf: {path: '/'},
-             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}}
+             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}},
+            {label: 'Dropbox',
+             conf: {path: '/'},
+             apiParams: {fileMgr: 'dropbox', baseUrl: '/api/external-resources/files'}}
           ];
 
           $scope.currentOption = null;

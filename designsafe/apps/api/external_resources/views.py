@@ -7,7 +7,7 @@ from requests import HTTPError
 from requests import HTTPError
 from requests import HTTPError
 from requests import HTTPError
-from django.http import (JsonResponse, HttpResponseBadRequest, 
+from django.http import (JsonResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
@@ -15,6 +15,8 @@ from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.external_resources.box.filemanager.manager \
     import FileManager as BoxFileManager
+from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
+    import FileManager as DropboxFileManager
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
 from designsafe.apps.api import tasks
 
@@ -24,21 +26,29 @@ class FilesListView(BaseApiView, SecureMixin):
     """Listing view"""
 
     def get(self, request, file_mgr_name, file_id=None):
-        if file_mgr_name != BoxFileManager.NAME:
+        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME]:
             return HttpResponseBadRequest('Incorrect file manager.')
 
-        fmgr = BoxFileManager(request.user)
+        if file_mgr_name == 'box':
+            fmgr = BoxFileManager(request.user)
+        elif file_mgr_name == 'dropbox':
+            fmgr = DropboxFileManager(request.user)
+
         listing = fmgr.listing(file_id)
-        return JsonResponse(listing)
+        return JsonResponse(listing, safe=False)
 
 class FileMediaView(BaseApiView, SecureMixin):
     """File Media View"""
-    
+
     def get(self, request, file_mgr_name, file_id):
-        if file_mgr_name != BoxFileManager.NAME:
+        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME]:
             return HttpResponseBadRequest("Incorrect file manager.")
 
-        fmgr = BoxFileManager(request.user)
+        if file_mgr_name == 'box':
+            fmgr = BoxFileManager(request.user)
+        elif file_mgr_name == 'dropbox':
+            fmgr = DropboxFileManager(request.user)
+
         f = fmgr.listing(file_id)
         if request.GET.get('preview', False):
             context = {
@@ -58,11 +68,15 @@ class FileMediaView(BaseApiView, SecureMixin):
         else:
             body = request.POST.copy()
 
-        fmgr = BoxFileManager(request.user)
         action = body.get('action')
 
-        if file_mgr_name != BoxFileManager.NAME or action is None:
+        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME] or action is None:
             return HttpResponseBadRequest("Bad Request.")
+
+        if file_mgr_name == 'box':
+            fmgr = BoxFileManager(request.user)
+        elif file_mgr_name == 'dropbox':
+            fmgr = DropboxFileManager(request.user)
 
         if action == 'preview':
             try:
@@ -72,7 +86,7 @@ class FileMediaView(BaseApiView, SecureMixin):
                 if box_file.previewable:
                     preview_url = reverse('designsafe_api:box_files_media',
                                           args=[file_mgr_name, file_id.strip('/')])
-                    return JsonResponse({'href': 
+                    return JsonResponse({'href':
                                            '{}?preview=true'.format(preview_url)})
                 else:
                     return HttpResponseBadRequest('Preview not available for this item.')
@@ -96,7 +110,7 @@ class FileMediaView(BaseApiView, SecureMixin):
                 download_dict = fmgr.download(file_id)
                 if not download_dict:
                     HttpResponseBadRequest('Operation not permitted')
-                
+
                 return JsonResponse(download_dict)
             except HTTPError as err:
                 logger.exception('Unable to download box file')
