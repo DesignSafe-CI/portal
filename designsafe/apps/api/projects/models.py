@@ -1,3 +1,7 @@
+import six
+import json
+import logging
+
 from designsafe.apps.api.agave.models.metadata import (BaseMetadataResource,
                                                        BaseMetadataPermissionResource)
 from designsafe.apps.api.agave.models.files import (BaseFileResource,
@@ -6,9 +10,8 @@ from designsafe.apps.api.agave.models.files import (BaseFileResource,
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.agave.models.systems import roles as system_roles
 from designsafe.apps.api.agave import to_camel_case
-import six
-import json
-import logging
+from designsafe.apps.api.agave.models.base import Model as MetadataModel
+from designsafe.apps.api.agave.models import fields
 
 logger = logging.getLogger(__name__)
 
@@ -179,3 +182,31 @@ class Project(BaseMetadataResource):
         return BaseFileResource.listing(system=self.project_system_id,
                                         path=path,
                                         agave_client=self._agave)
+
+class ExperimentalProject(MetadataModel):
+    model_name = 'designsafe.project'
+    team_member = fields.ListField('Team Members')
+    project_type = fields.CharField('Project Type', max_length=255, default='other')
+    description = fields.CharField('Description', max_length=1024, default='')
+    title = fields.CharField('Title', max_length=255, default='')
+    pi = fields.CharField('Pi', max_length=255)
+    award_number = fields.CharField('Award Number', max_length=255)
+    associated_projects = fields.ListField('Associated Project')
+    ef = fields.CharField('Experimental Facility', max_length=512)
+
+class FileModel(MetadataModel):
+    model_name = 'designsafe.file'
+    keywords = fields.ListField('Keywords')
+    project_UUID = fields.RelatedObjectField(ExperimentalProject, default=[])
+
+class Experiment(MetadataModel):
+    model_name = 'designsafe.project.experiment'
+    experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
+
+class ModelConfiguration(MetadataModel):
+    model_name = 'designsafe.project.model_config'
+    title = fields.CharField('Title', max_length=512)
+    description = fields.CharField('Description', max_length=1024, default='')
+    coverage = fields.CharField('Coverage', max_length=512)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+    project = fields.RelatedObjectField(ExperimentalProject)
