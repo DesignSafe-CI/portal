@@ -1,0 +1,85 @@
+<div class="modal-header">
+    <h3 class="modal-title">
+        {{ data.project.value.title }}<br>
+        <small>Manage Experiments</small>
+    </h3>
+</div>
+<div class="modal-body">
+    <div ng-if="data.busy">
+        <p class="lead">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading experiments data...
+        </p>
+    </div>
+    <div ng-if="! data.busy && data.error">
+        <p class="alert alert-danger lead">
+            {{ data.error }}
+        </p>
+    </div>
+    <div ng-if="! (data.busy || data.error)" class='experiments-listing'>
+        <div class='existing-experiments-listing'>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Experiment Title</th>
+                <th>Experimental Facility</th>
+                <th>Experiment Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat-start="experiment in data.experiments">
+                <td>{{experiment.title}}</td>
+                <td>{{experiment.ef}}</td>
+                <td>{{experiment.experimentType}}</td>
+              </tr>
+              <tr ng-repeat-end>
+                <td colspan="3">{{experiment.description}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <form>
+            <div class="well well-sm">
+                <p>Add Experiment(s):</p>
+                <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
+                <div class="form-group" ng-repeat="add in form.addCoPis">
+                    <div class="row">
+                        <div class="col-xs-8" style="width:100%;">
+                        <table class="table">
+                          <tbody>
+                            <tr>
+                              <td>
+                              <input type="text" class="form-control" id="id_experiment_title">
+                              </td>
+                              <td>
+                              <input type="text" class="form-control" id="id_experiment_ef">
+                              </td>
+                              <td>
+                              <input type="text" class="form-control" id="id_experiment_type">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td colspan="3">
+                                <textarea id="id_experiment_description"></textarea>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>    
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-info btn-sm" ng-click="addAnotherCoPi()">
+                    <i class="fa fa-plus"></i> Add another
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
+        <button ng-disabled="data.busy || data.error" class="btn btn-primary" type="button" ng-click="saveCollaborators($event)">
+            Save
+        </button>
+    </div>
+</div>
