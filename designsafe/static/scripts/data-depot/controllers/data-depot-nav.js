@@ -28,7 +28,7 @@
     );
 
     if (Django.context.authenticated) {
-      $scope.routerItems.splice(0, 0, 
+      $scope.routerItems.splice(0, 0,
           {
             name: 'My Data',
             collapsible: false,
@@ -53,6 +53,11 @@
             name: 'Box.com',
             collapsible: false,
             state: 'boxData'
+          },
+          {
+            name: 'Dropbox.com',
+            collapsible: false,
+            state: 'dropboxData'
           }
       );
 

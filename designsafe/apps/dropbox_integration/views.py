@@ -1,5 +1,4 @@
 from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException, CsrfException, NotApprovedException, ProviderException
-from dropbox.users import Account
 from dropbox.dropbox import Dropbox
 
 from django.conf import settings

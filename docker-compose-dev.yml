@@ -1,0 +1,76 @@
+# This compose file is useful for debugging with ipdb
+---
+redis:
+  image: redis
+
+memcached:
+  image: memcached
+
+django:
+  build: .
+  env_file: designsafe.env
+  environment:
+    - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
+  links:
+    - redis:redis
+    - memcached:memcached
+  volumes:
+    - .:/portal
+    - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+    - /var/www/designsafe-ci.org/static
+    - /var/www/designsafe-ci.org/media
+  ports:
+    - 8000:8000
+    - 5555:5555
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  command: ./bin/run-django.sh
+
+nginx:
+  image: nginx
+  volumes:
+    - ./conf/nginx.conf:/etc/nginx/nginx.conf
+    - ./conf/gzip.conf:/etc/nginx/gzip.conf
+    - ./conf/dummy.crt:/etc/ssl/dummy.crt
+    - ./conf/dummy.key:/etc/ssl/dummy.key
+    - ./conf/dhparam.pem:/etc/ssl/dhparam.pem
+  volumes_from:
+    - django
+  links:
+    - django:django
+  ports:
+    - 80:80
+    - 443:443
+
+devnginx:
+  image: nginx
+  volumes:
+    - ./conf/nginx.conf:/etc/nginx/nginx.conf
+    - ./conf/gzip.conf:/etc/nginx/gzip.conf
+    - ./conf/dummy.crt:/etc/ssl/dummy.crt
+    - ./conf/dummy.key:/etc/ssl/dummy.key
+    - ./conf/dhparam.pem:/etc/ssl/dhparam.pem
+  volumes_from:
+    - django
+  ports:
+    - 80:80
+    - 443:443
+  external_links:
+    - portal_django_run_1:django
+
+worker:
+  build: .
+  env_file: designsafe.env
+  environment:
+    - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
+  links:
+    - redis:redis
+    - memcached:memcached
+  volumes:
+    - .:/portal
+    - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  command: ./bin/run-celery-debug.sh
