@@ -202,6 +202,33 @@ class FileModel(MetadataModel):
 class Experiment(MetadataModel):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
+    description = fields.CharField('Description', max_length=1024, default='')
+    title = fields.CharField('Title', max_length=1024)
+    project = fields.RelatedObjectField(ExperimentalProject)
+
+class Event(MetadataModel):
+    model_name = 'designsafe.project.event'
+    event_type = fields.CharField('Event Type', max_length=255, default='other')
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
+
+class Analysis(MetadataModel):
+    model_name = 'designsafe.project.analysis'
+    analysis_type = fields.CharField('Analysis Type', max_length=255, default='other')
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
+
+class SensorList(MetadataModel):
+    model_name = 'designsafe.project.sensor_list'
+    sensor_list_type = fields.CharField('Sensor List Type', max_length=255, default='other')
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
 
 class ModelConfiguration(MetadataModel):
     model_name = 'designsafe.project.model_config'
@@ -210,3 +237,4 @@ class ModelConfiguration(MetadataModel):
     coverage = fields.CharField('Coverage', max_length=512)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)

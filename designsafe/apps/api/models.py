@@ -5,7 +5,8 @@ from designsafe.apps.api.agave.models.fields import (CharField, UuidField, DateT
                                                      IntField, DecimalField, ListField,
                                                      NestedObjectField, RelatedObjectField)
 from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
-                                                 Experiment, ModelConfiguration)
+                                                 Experiment, ModelConfiguration,
+                                                 Event, Analysis, SensorList)
 
 from designsafe.apps.api.agave.models.base import set_lazy_rels
 set_lazy_rels()
