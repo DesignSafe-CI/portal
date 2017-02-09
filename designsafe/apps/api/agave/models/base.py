@@ -35,6 +35,9 @@ class RelatedQuery(object):
         for meta in metas:
             yield self.rel_cls(**meta)
 
+    def add(self, uuid):
+        self.uuids.append(uuid)
+
 def register_lazy_rel(cls, field_name, related_obj_name, multiple):
     reg_key = '{}.{}'.format(cls.model_name, cls.__name__)
     LAZY_OPS.append((reg_key,
@@ -275,3 +278,12 @@ class Model(object):
         dict_obj.pop('modelManager', None)
         dict_obj.pop('modelName', None)
         return dict_obj
+
+    def save(self, agave_client):
+        body = self.to_boy_dict()
+        if self._meta.uuid is None:
+            logger.debug('Adding Metadata: %s, with: %s', self._meta.name, body)
+            agave_client.meta.addMetadata(body=body)
+        else:
+            logger.debug('Updating Metadata: %s, with: %s', self._meta.uuid, body)
+            agave_client.meta.updateMetadata(uuid = self._meta.uuid, body=body)
