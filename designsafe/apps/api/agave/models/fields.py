@@ -19,7 +19,7 @@ class BaseField(object):
 
     def __init__(self, verbose_name=None, name=None,
                  max_length=None, blank=False, null=False,
-                 related=None, default=NOT_PROVIDED, choices=None,
+                 related=None, default=None, choices=None,
                  help_text='', validators=(), error_messages=None,
                  nested=None, related_name=None):
         self.verbose_name = verbose_name
