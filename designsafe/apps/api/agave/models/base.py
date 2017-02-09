@@ -87,6 +87,11 @@ class Manager(object):
         meta = agave_client.getMetadata(uuid=uuid)
         return self.model_cls(**meta)
 
+    def list(self, agave_client, name):
+        metas = agave_client.listMetadata(q={'name': name})
+        for meta in metas:
+            yield self.model_cls(**meta)
+
 class Links(object):
     def __init__(self, values):
         for attrname, val in six.iteritems(values):
