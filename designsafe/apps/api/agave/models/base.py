@@ -31,9 +31,8 @@ class RelatedQuery(object):
             self.query = {'uuid': {'$in': self.uuids}}
         else:
             raise ValueError('Cannot create query')
-        metas = agave_client.listMetadata(q=self.query)
-        for meta in metas:
-            yield self.rel_cls(**meta)
+        metas = agave_client.meta.listMetadata(q=self.query)
+        return  [self.rel_cls(**meta) for meta in metas]
 
     def add(self, uuid):
         self.uuids.append(uuid)
@@ -87,8 +86,12 @@ class Manager(object):
         meta = agave_client.getMetadata(uuid=uuid)
         return self.model_cls(**meta)
 
-    def list(self, agave_client, name):
-        metas = agave_client.listMetadata(q={'name': name})
+    def list(self, agave_client, name, project_uuid=None):
+        if project_uuid is None:
+            metas = agave_client.meta.listMetadata(q=json.dumps({'name': name}))
+        else:
+            metas = agave_client.meta.listMetadata(q=json.dumps({'name': name,
+                                                 'associationIds': [project_uuid]}))
         for meta in metas:
             yield self.model_cls(**meta)
 
@@ -288,7 +291,12 @@ class Model(object):
         body = self.to_boy_dict()
         if self._meta.uuid is None:
             logger.debug('Adding Metadata: %s, with: %s', self._meta.name, body)
-            agave_client.meta.addMetadata(body=body)
+            ret = agave_client.meta.addMetadata(body=body)
         else:
             logger.debug('Updating Metadata: %s, with: %s', self._meta.uuid, body)
-            agave_client.meta.updateMetadata(uuid = self._meta.uuid, body=body)
+            ret = agave_client.meta.updateMetadata(uuid=self._meta.uuid, body=body)
+        return ret
+
+    @property
+    def manager(self):
+        return self._meta.model_manager
