@@ -88,6 +88,13 @@
       });
     };
 
+    $scope.manageExperiments = function($event) {
+      $event.preventDefault();
+      ProjectService.manageExperiments({uuid: projectId}).then(function (experiments) {
+        $scope.data.experiments = experiments;
+      });
+    };
+
   }]);
 
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
