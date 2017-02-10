@@ -1,10 +1,15 @@
-angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', function ($scope, UserService) {
+angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', 'notificationFactory',
+function ($scope, UserService, notificationFactory) {
 
   $scope.jobs_count = 12;
   $scope.storage_count = 15123123123;
   $scope.apps_count = 45;
   $scope.activities_count = 42;
   $scope.display_job_details = false;
+
+  notificationFactory.list().then(function (resp) {
+    console.log(resp)
+  })
 
   $scope.jobs_data = [
     {date: new Date('2016-01-01T00:00:00'), count:4},

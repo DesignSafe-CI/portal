@@ -15,10 +15,9 @@
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
-  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'Logging', 'djangoUrl', function($scope,$rootScope,notificationFactory,Logging, djangoUrl) {
+  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'djangoUrl', function($scope,$rootScope,notificationFactory, djangoUrl) {
       $scope.data = {};
       $scope.showRawMessage = false;
-      var logger = Logging.getLogger('DesignSafe.notifications');
 
       $scope.list = function(){
         notificationFactory.list().then(function(resp) {
@@ -35,7 +34,6 @@
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
               }
             }
-            logger.debug($scope.data.notifications)
             $rootScope.$emit('notifications:read', 'all')
         });
       };
