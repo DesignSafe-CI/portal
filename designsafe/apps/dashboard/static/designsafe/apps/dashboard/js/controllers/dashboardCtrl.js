@@ -1,5 +1,5 @@
-angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', 'notificationFactory',
-function ($scope, UserService, notificationFactory) {
+angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', 'NotificationService',
+function ($scope, UserService, NotificationService) {
 
   $scope.jobs_count = 12;
   $scope.storage_count = 15123123123;
@@ -7,8 +7,9 @@ function ($scope, UserService, notificationFactory) {
   $scope.activities_count = 42;
   $scope.display_job_details = false;
 
-  notificationFactory.list().then(function (resp) {
+  NotificationService.list({limit:5}).then(function (resp) {
     console.log(resp)
+    $scope.notifications = resp;
   })
 
   $scope.jobs_data = [
@@ -37,10 +38,10 @@ function ($scope, UserService, notificationFactory) {
     console.log('in view', ev, toggled);
     (toggled) ? $scope.display_job_details = true : $scope.display_job_details = false;
     $scope.jobs_details = [
-      {date: new Date('2016-01-01T00:00:00'), description:"OpenSEES", status:'failed'},
-      {date: new Date('2016-01-01T00:00:00'), description:"OpenSEESMPI", status:'success'},
-      {date: new Date('2016-01-01T00:00:00'), description:"Compress", status:'success'},
-      {date: new Date('2016-01-01T00:00:00'), description:"OpenSEES", status:'success'},
+      {date: ev.date, description:"OpenSEES", status:'failed'},
+      {date: ev.date, description:"OpenSEESMPI", status:'success'},
+      {date: ev.date, description:"Compress", status:'success'},
+      {date: ev.date, description:"OpenSEES", status:'success'},
     ]
     $scope.$apply();
   });

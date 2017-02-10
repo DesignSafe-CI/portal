@@ -19,7 +19,7 @@
       /* Private */
       .state('dashboard', {
         url: '/',
-        controller: 'DashboardCtrl',
+        controller: 'DashboardCtrl as vm',
         templateUrl: '/static/designsafe/apps/dashboard/html/dashboard.html',
         // resolve: {
         //   'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {

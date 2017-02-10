@@ -15,18 +15,19 @@
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
-  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','notificationFactory', 'djangoUrl', function($scope,$rootScope,notificationFactory, djangoUrl) {
+  angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$rootScope','NotificationService', 'djangoUrl', function($scope,$rootScope,NotificationService, djangoUrl) {
       $scope.data = {};
       $scope.showRawMessage = false;
 
       $scope.list = function(){
-        notificationFactory.list().then(function(resp) {
-            $scope.data.notifications = resp.data;
+        NotificationService.list({limit:10}).then(function(resp) {
+            $scope.data.notifications = resp;
 
             for (var i=0; i < $scope.data.notifications.length; i++){
-              $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
+              // console.log($scope.data.notifications[i])
+              // $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
               // $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
-              $scope.data.notifications[i]['datetime'] = Date($scope.data.notifications[i]['datetime']);
+              // $scope.data.notifications[i]['datetime'] = Date($scope.data.notifications[i]['datetime']);
 
               if ($scope.data.notifications[i]['event_type'] == 'job') {
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': $scope.data.notifications[i]['pk']});
@@ -40,7 +41,7 @@
       $scope.list();
 
       $scope.delete = function(pk){
-        notificationFactory.delete(pk).then(function(resp) {
+        NotificationService.delete(pk).then(function(resp) {
           $scope.list();
         });
       };

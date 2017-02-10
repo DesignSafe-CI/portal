@@ -1,6 +1,6 @@
 (function(){
     'use strict';
-    function NotificationService($rootScope, logger, toastr, djangoUrl) {
+    function NotificationService($rootScope, logger, toastr, djangoUrl, $http) {
         var processors = {};
 
         function renderLink(msg){
@@ -45,6 +45,22 @@
           }
         }
 
+        function list(opts) {
+          return $http({url: djangoUrl.reverse('designsafe_api:index'), method:'GET', params:opts}).then(function (resp) {
+
+            resp.data.forEach(function (d) {
+              d.datetime = new Date(d.datetime *1000);
+            })
+            return resp.data;
+          }, function (err) {
+            return err;
+          });
+        }
+
+        function del(pk) {
+          return $http.delete(djangoUrl.reverse('designsafe_api:delete_notification', {'pk': encodeURIComponent(pk)}));
+        }
+
         function processToastr(e, msg){
           try{
             // msg.extra = JSON.parse(msg.extra);
@@ -75,16 +91,18 @@
 
       return {
         init: init,
-        processors: processors
+        processors: processors,
+        list: list,
+        delete: del,
       };
 
     }
 
     function NotificationServiceProvider($injector){
         // var configURL = '';
-        this.$get = ['$rootScope', 'logger', 'toastr', 'djangoUrl', NotificationBusHelper];
-        function NotificationBusHelper($rootScope, logger, toastr, djangoUrl){
-            return new NotificationService($rootScope, logger, toastr, djangoUrl);
+        this.$get = ['$rootScope', 'logger', 'toastr', 'djangoUrl', '$http', NotificationBusHelper];
+        function NotificationBusHelper($rootScope, logger, toastr, djangoUrl, $http){
+            return new NotificationService($rootScope, logger, toastr, djangoUrl, $http);
         }
     }
 
