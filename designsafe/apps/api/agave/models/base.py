@@ -86,12 +86,12 @@ class Manager(object):
         meta = agave_client.getMetadata(uuid=uuid)
         return self.model_cls(**meta)
 
-    def list(self, agave_client, name, project_uuid=None):
-        if project_uuid is None:
-            metas = agave_client.meta.listMetadata(q=json.dumps({'name': name}))
+    def list(self, agave_client, association_id=None):
+        if association_id is None:
+            metas = agave_client.meta.listMetadata(q=json.dumps({'name': self.model_cls.model_name}))
         else:
-            metas = agave_client.meta.listMetadata(q=json.dumps({'name': name,
-                                                 'associationIds': [project_uuid]}))
+            metas = agave_client.meta.listMetadata(q=json.dumps({'name': self.model_cls.model_name,
+                                                 'associationIds': association_id}))
         for meta in metas:
             yield self.model_cls(**meta)
 
@@ -276,7 +276,6 @@ class Model(object):
             value = getattr(self, field.attname)
             attrname = spinal_to_camelcase(field.attname)
             if isinstance(value, RelatedQuery):
-                value()
                 dict_obj['value'][attrname] = value.uuids
             elif isinstance(value, Model):
                 dict_obj['value'][attrname] = value.to_body_dict()
