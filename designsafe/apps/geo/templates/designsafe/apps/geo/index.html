@@ -2,25 +2,36 @@
 {% load sekizai_tags %}
 {% load static %}
 
+{% block head_extra %}
+    <base href="{% url 'designsafe_geo:index' %}">
+{% endblock %}
+
+
+
+
 {% block content %}
-<div class="container">
-  <div ng-controller="SearchCtrl as vm" ng-include="'{% static 'designsafe/apps/search/html/search.html' %}'">
-  {{message}}
-  </div>
+<div class="container-fluid">
+  <div ui-view></div>
 </div>
 {% addtoblock "js" %}
+  <script type="text/javascript" src="{% static 'vendor/angular-ui-router/release/angular-ui-router.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/angular-sanitize/angular-sanitize.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
   <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
+  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
-<script type="text/javascript" src="{% static 'designsafe/apps/search/scripts/app.js' %}"></script>
-<script type="text/javascript" src="{% static 'designsafe/apps/search/scripts/service.js' %}"></script>
-<script type="text/javascript" src="{% static 'designsafe/apps/search/scripts/directive.js' %}"></script>
+<script type="text/javascript" src="{% static 'designsafe/apps/geo/scripts/build/bundle.js' %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'designsafe/apps/geo/styles/geo.css' %}" />
+
 {% endaddtoblock %}
 
 {% endblock %}

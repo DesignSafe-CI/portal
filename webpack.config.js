@@ -7,10 +7,10 @@ const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 module.exports = {
   devtool: 'source-map',
-  entry: './designsafe/static/scripts/ng-designsafe/ng-designsafe.js',
+  entry: './designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js',
   output: {
     path: __dirname,
-    filename: "./designsafe/static/build/bundle.js"
+    filename: "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/build/bundle.js"
   },
   resolve: {
     extensions: ['.js'],
