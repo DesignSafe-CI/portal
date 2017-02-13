@@ -32,5 +32,5 @@ urlpatterns = [
     url(r'^(?P<project_id>[a-z0-9\-]+)/meta/list/((?P<name>.*))?/?$', ProjectMetaListView.as_view(), name='project_meta'),
 
     url(r'^(?P<project_id>[a-z0-9\-]+)/meta/(?P<name>[a-zA-Z0-9\.\-_])/?$', ProjectMetaView.as_view(), name='project_meta'),
-    url(r'^(?P<project_id>[a-z0-9\-]+)/meta/(?P<name>[a-zA-Z0-9\.\-_])/((?P<uuid>[^ \/]))?/?$', ProjectMetaView.as_view(), name='project_meta'),
+    url(r'^meta/(?P<name>[a-zA-Z0-9\.\-_])/(?P<uuid>[^ \/])/?$', ProjectMetaView.as_view(), name='project_meta'),
 ]
