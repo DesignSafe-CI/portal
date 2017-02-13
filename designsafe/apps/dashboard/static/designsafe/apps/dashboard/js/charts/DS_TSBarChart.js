@@ -11,6 +11,11 @@ function DS_TSBarChart (element_id) {
       axis_label, focus,
       svg,
       dispatch = d3.dispatch('bar_click');
+  d3.select(window).on('resize', function () {
+    width = $(element_id).width() - margin.left - margin.right;
+    exports();
+    draw();
+  });
 
   function exports () {
     d3.select(element_id).html('');

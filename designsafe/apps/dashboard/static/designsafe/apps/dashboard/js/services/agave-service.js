@@ -5,8 +5,8 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
     var jobsBaseUrl = 'https://agave.designsafe-ci.org/jobs/v2/';
     var appsBaseUrl = 'https://agave.designsafe-ci.org/apps/v2/';
     //https://public.tenants.agaveapi.co/files/v2/listings/data.agaveapi.co/nryan
-    this.filesListing = function (path) {
-      return $http.get(filesBaseUrl + 'listings/' +  path).then(function (resp) {
+    this.filesListing = function (path, q) {
+      return $http.get(filesBaseUrl + 'listings/' +  path, {params: q}).then(function (resp) {
         return resp.data.result;
       }, function (err) {
         return $q.reject(err);

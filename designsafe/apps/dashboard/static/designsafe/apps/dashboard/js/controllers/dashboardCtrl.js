@@ -12,7 +12,7 @@ function ($scope, UserService, NotificationService, AgaveService) {
     $scope.notifications = resp;
   })
 
-  AgaveService.filesListing('jmeiring').then(function (resp) {
+  AgaveService.filesListing('jmeiring', {filter:'length', limit:1}).then(function (resp) {
     console.log(resp);
   })
 
