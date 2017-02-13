@@ -9,7 +9,8 @@
     DataBrowserService.apiParams.searchState = undefined;
 
     $scope.data = {
-      navItems: []
+      navItems: [],
+      projects: []
     };
 
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
@@ -50,9 +51,11 @@
   }]);
 
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'Django', 'ProjectService', function ($scope, $state, Django, ProjectService) {
-
+    $scope.ui = {};
+    $scope.ui.busy = true;
+    $scope.data.projects = [];
     ProjectService.list().then(function(projects) {
-
+      $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
 
