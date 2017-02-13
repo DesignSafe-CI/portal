@@ -98,7 +98,7 @@ class BaseFileMetadata(BaseMetadataResource):
         return meta_pems_users
 
     def match_pems_to_project(self, project_uuid = None):
-        project_uuid = project_uuid or self.value.get('projectUUID')
+        project_uuid = project_uuid or self.value.get('projectUUID', self.value.get('projectUuid'))
         logger.debug('matchins pems to project: %s', project_uuid)
         if not project_uuid:
             return self
