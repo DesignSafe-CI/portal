@@ -1,4 +1,4 @@
-<div class="table-responsive" ng-if="data.projects">
+<div class="table-responsive">
   <div class="ds-table-display-wrapper">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
@@ -8,7 +8,8 @@
         </thead>
 
         <tbody>
-        <tr ng-repeat="project in data.projects">
+        <tr ng-repeat="project in data.projects"
+            ng-if="data.projects">
             <td ng-click="onBrowse($event, project)">
                 <i class="fa fa-briefcase"></i>
                 <a ng-href="{{ project.href }}">
@@ -25,6 +26,15 @@
             </td>
         </tr>
         </tbody>
+        <caption>
+          <div ng-if="ui.busy"
+               style="padding:10px; font-size:large; with:100%;"
+               class="bg-info">
+            <span>
+              <i class="fa fa-spinner fa-spin"></i> Loading...
+           </span>
+          </div>     
+        </caption>
     </table>
 </div>
 <div ng-if="! data.projects" class="jumbotron">
