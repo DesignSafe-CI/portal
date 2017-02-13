@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
                          Http404)
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.dropbox_integration.models import DropboxUserToken
@@ -68,6 +69,7 @@ def initialize_token(request):
 
 
 @login_required
+@csrf_exempt
 def oauth2_callback(request):
     try:
         auth_code = request.GET.get('code')

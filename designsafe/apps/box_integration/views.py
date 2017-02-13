@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
                          Http404)
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.box_integration.models import BoxUserToken
@@ -26,6 +27,7 @@ class BoxAPIView(View):
         super(BoxAPIView, self).__init__(**kwargs)
 
     @method_decorator(login_required)
+    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         box_user_token = request.user.box_user_token
         oauth = OAuth2(
