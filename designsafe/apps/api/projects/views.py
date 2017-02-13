@@ -9,6 +9,7 @@ from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave.models.metadata import BaseMetadataPermissionResource
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
@@ -338,18 +339,22 @@ class ProjectMetaListView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
 class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
-    def get(self, request, project_id, name, uuid):
+    def get(self, request, name, project_id=None, uuid=None):
         """
 
         :return:
         :rtype: JsonResponse
         """
+        ag = request.user.agave_oauth.client
         try:
             model = self._lookup_model(name)
-            resp = model._meta.model_manager.get(ag, uuid)
+            if project_id is not None:
+                resp = model._meta.model_manager.list(ag, project_id)
+            elif uuid is None:
+                resp = model._meta.model_manager.get(ag, uuid)
         except ValueError:
             return HttpResponseBadRequest('Entity not valid.')
-        return JsonResponse(resp.to_boy_dict(), safe=False)
+        return JsonResponse(resp.to_body_dict(), safe=False)
 
     def post(self, request, project_id, name):
         """
@@ -366,8 +371,55 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
         try:
             model_cls = self._lookup_model(name)
-            model = model_cls(**post_data)
+            model = model_cls(value=post_data)
+            file_uuids = []
+            if 'filePaths' in post_data:
+                file_paths = post_data.get('filePaths', [])
+                project_system = ''.join(['project-', project_id])
+                user_ag = request.user.agave_oauth.client
+                for file_path in file_paths:
+                    file_obj = BaseFileResource.listing(user_ag, 
+                                                        project_system,
+                                                        file_path)
+
+                    file_uuids.append(file_obj.uuid)
+                for file_uuid in file_uuids:
+                    model.files.add(file_uuid)
             model.project.add(project_id)
+            saved = model.save(ag)
+            resp = model_cls(**saved)
+            #TODO: This should happen in a celery task and implemented in a manager
+            #Get project's metadata permissions
+            pems = BaseMetadataPermissionResource.list_permissions(project_id, ag)
+            #Loop permissions and set them in whatever metadata object we're saving
+            for pem in pems:
+                _pem = BaseMetadataPermissionResource(resp._meta.uuid, ag)
+                _pem.username = pems['username']
+                _pem.read = pems['permission']['read']
+                _pem.write = pems['permission']['write']
+                _pem.read = pems['permission']['execute']
+                _pem.save()
+
+        except ValueError:
+            return HttpResponseBadRequest('Entity not valid.')
+
+        return JsonResponse(resp.to_body_dict(), safe=False)
+
+    def put(self, request, name, uuid):
+        """
+
+        :param request:
+        :return:
+        """
+        ag = get_service_account_client()
+
+        if request.is_ajax():
+            post_data = json.loads(request.body)
+        else:
+            post_data = request.POST.copy()
+        try:
+            model_cls = self._lookup_model(name)
+            model = model_cls(uuid=uuid, value=post_data)
             saved = model.save()
             resp = model_cls(**saved)
         except ValueError:
