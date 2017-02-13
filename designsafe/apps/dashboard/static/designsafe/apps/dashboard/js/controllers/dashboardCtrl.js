@@ -1,5 +1,5 @@
-angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', 'NotificationService',
-function ($scope, UserService, NotificationService) {
+angular.module('designsafe').controller('DashboardCtrl', ['$scope', 'UserService', 'NotificationService', 'AgaveService',
+function ($scope, UserService, NotificationService, AgaveService) {
 
   $scope.jobs_count = 12;
   $scope.storage_count = 15123123123;
@@ -10,6 +10,19 @@ function ($scope, UserService, NotificationService) {
   NotificationService.list({limit:5}).then(function (resp) {
     console.log(resp)
     $scope.notifications = resp;
+  })
+
+  AgaveService.filesListing('jmeiring').then(function (resp) {
+    console.log(resp);
+  })
+
+  AgaveService.jobsListing({filter:'id'}).then(function (resp) {
+    $scope.jobs = resp;
+  })
+
+  AgaveService.appsListing({filter:'id', limit:99999}).then(function (resp) {
+    console.log(resp)
+    $scope.apps = resp;
   })
 
   $scope.jobs_data = [

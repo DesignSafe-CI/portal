@@ -21,6 +21,11 @@
         url: '/',
         controller: 'DashboardCtrl as vm',
         templateUrl: '/static/designsafe/apps/dashboard/html/dashboard.html',
+        resolve: {
+          auth: ['UserService', function (UserService) {
+            return UserService.authenticate();
+          }]
+        }
         // resolve: {
         //   'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
         //     var options = {
