@@ -26,8 +26,8 @@ class BoxAPIView(View):
         self.box_api = None
         super(BoxAPIView, self).__init__(**kwargs)
 
-    @method_decorator(login_required)
     @method_decorator(csrf_exempt)
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         box_user_token = request.user.box_user_token
         oauth = OAuth2(

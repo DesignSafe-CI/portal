@@ -68,8 +68,8 @@ def initialize_token(request):
     return HttpResponseRedirect(auth_url)
 
 
-@login_required
 @csrf_exempt
+@login_required
 def oauth2_callback(request):
     try:
         auth_code = request.GET.get('code')
