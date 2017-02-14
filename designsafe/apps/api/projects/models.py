@@ -185,7 +185,7 @@ class Project(BaseMetadataResource):
 
 class ExperimentalProject(MetadataModel):
     model_name = 'designsafe.project'
-    team_member = fields.ListField('Team Members')
+    team_members = fields.ListField('Team Members')
     project_type = fields.CharField('Project Type', max_length=255, default='other')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
@@ -193,6 +193,18 @@ class ExperimentalProject(MetadataModel):
     award_number = fields.CharField('Award Number', max_length=255)
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
+
+    def to_body_dict(self):
+        body_dict = super(ExperimentalProject, self).to_body_dict()
+        body_dict['_related'] = {}
+        for attrname, field in six.iteritems(self._meta._related_fields):
+            body_dict['_related'][attrname] = field.rel_cls.model_name
+
+        for attrname in self._meta._reverse_fields:
+            field = getattr(self, attrname)
+            body_dict['_related'][attrname] = field.related_obj_name
+
+        return body_dict
 
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
