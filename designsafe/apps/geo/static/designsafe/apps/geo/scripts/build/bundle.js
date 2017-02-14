@@ -82,14 +82,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope"];
-  function MapSidebarCtrl($scope) {
+  MapSidebarCtrl.$inject = ["$scope", "$window"];
+  function MapSidebarCtrl($scope, $window) {
     'ngInject';
 
     var _this = this;
 
     _classCallCheck(this, MapSidebarCtrl);
 
+    this.$scope = $scope;
+    this.LGeo = $window.LGeo;
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
@@ -100,22 +102,51 @@ var MapSidebarCtrl = function () {
     }).addTo(this.map);
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);
+
     var drawControl = new L.Control.Draw({
+      position: 'topright',
+      draw: {
+        circle: false
+      },
       edit: {
         featureGroup: this.drawnItems,
         remove: true
       }
     });
+
+    this.drawnItems.on('click', function (e) {
+      _this.current_layer = e.layer;
+      _this.$scope.$apply();
+    });
+
     this.map.addControl(drawControl);
     this.map.on('draw:created', function (e) {
-      _this.drawnItems.addLayer(e.layer);
+      var object = e.layer;
+      object.options.color = '#ff0000';
+      object.options.fillOpacity = 0.8;
+      _this.drawnItems.addLayer(object);
+      _this.current_layer = object;
+      _this.$scope.$apply();
     });
   }
 
   _createClass(MapSidebarCtrl, [{
+    key: 'update_color',
+    value: function update_color() {
+      this.current_layer.setStyle({ fillColor: this.current_layer.options.color });
+    }
+  }, {
     key: 'save_project',
     value: function save_project() {
-      console.log(this.drawnItems.toGeoJSON());
+      console.log(this.drawnItems);
+      var blob = new Blob([JSON.stringify(this.drawnItems.toGeoJSON())], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+
+      var a = document.createElement('a');
+      a.download = "backup.json";
+      a.href = url;
+      a.textContent = "Download backup.json";
+      a.click();
     }
   }]);
 

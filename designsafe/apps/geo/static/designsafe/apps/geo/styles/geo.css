@@ -11,6 +11,8 @@
   background: #364251;
   color: #d0d0d0;
   border-right: 1px solid #d3d3d3;
+  flex-direction: column;
+  display: flex;
 }
 
 #geo_map {
@@ -26,8 +28,18 @@
   border-right: 0px;
   border-top: 0px;
   margin-top: 1px;
+  cursor: pointer;
 }
 
 #geo_sidebar .list-group-item.save {
   background-color: #379ba0;
+}
+
+#geo_sidebar .current-layer-details {
+  bottom: 0;
+  flex-grow: 1;
+  vertical-align: bottom;
+  display: flex;
+  flex-direction: column-reverse;
+
 }

@@ -23,13 +23,19 @@
         <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
         &nbsp
       </li>
-      <a ng-click="vm.save_project()">
-      <li class="list-group-item save">
+      <li class="list-group-item save" ng-click="vm.save_project()">
         <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
         <i class="fa fa-save">  </i> Save
       </li>
-      </a>
     </ul>
+
+    <div class="current-layer-details" ng-show="vm.current_layer">
+      {{ vm.current_layer.options }}
+      <input type="color"
+             ng-model="vm.current_layer.options.color"
+             ng-change=vm.update_color()>
+      </input>
+    </div>
   </div>
 
   <div id="geo_map">

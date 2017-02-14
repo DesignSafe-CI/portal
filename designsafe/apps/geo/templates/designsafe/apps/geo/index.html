@@ -22,11 +22,14 @@
   <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
   <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
   <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/togeojson@0.14.2"></script>
+  <script src="https://unpkg.com/leaflet-filelayer@0.6.0"></script>
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
 <script type="text/javascript" src="{% static 'designsafe/apps/geo/scripts/build/bundle.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js"></script>
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'></script>
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
