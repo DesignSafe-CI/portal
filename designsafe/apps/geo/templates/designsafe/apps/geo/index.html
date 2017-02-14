@@ -10,7 +10,7 @@
 
 
 {% block content %}
-<div class="container-fluid">
+<div>
   <div ui-view></div>
 </div>
 {% addtoblock "js" %}
@@ -26,12 +26,13 @@
 
 {% addtoblock 'js' %}
 <script type="text/javascript" src="{% static 'designsafe/apps/geo/scripts/build/bundle.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js"></script>
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
     <link rel="stylesheet" href="{% static 'designsafe/apps/geo/styles/geo.css' %}" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.css" />
 {% endaddtoblock %}
 
 {% endblock %}

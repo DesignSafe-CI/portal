@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -77,19 +77,55 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var MapSidebarCtrl = function MapSidebarCtrl() {
-  'ngInject';
+var MapSidebarCtrl = function () {
+  MapSidebarCtrl.$inject = ["$scope"];
+  function MapSidebarCtrl($scope) {
+    'ngInject';
 
-  _classCallCheck(this, MapSidebarCtrl);
-};
+    var _this = this;
+
+    _classCallCheck(this, MapSidebarCtrl);
+
+    angular.element('header').hide();
+    angular.element('nav').hide();
+    angular.element('footer').hide();
+    this.map = L.map('geo_map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(this.map);
+    this.drawnItems = new L.FeatureGroup();
+    this.map.addLayer(this.drawnItems);
+    var drawControl = new L.Control.Draw({
+      edit: {
+        featureGroup: this.drawnItems,
+        remove: true
+      }
+    });
+    this.map.addControl(drawControl);
+    this.map.on('draw:created', function (e) {
+      _this.drawnItems.addLayer(e.layer);
+    });
+  }
+
+  _createClass(MapSidebarCtrl, [{
+    key: 'save_project',
+    value: function save_project() {
+      console.log(this.drawnItems.toGeoJSON());
+    }
+  }]);
+
+  return MapSidebarCtrl;
+}();
 
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 1 */,
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -112,14 +148,12 @@ mod.requires.push('ui.router');
 function config($stateProvider) {
   'ngInject';
 
-  console.log('config');
   $stateProvider.state('geo', {
     url: '',
     templateUrl: '/static/designsafe/apps/geo/html/map.html',
-    contoller: 'MapSidebarCtrl',
+    controller: 'MapSidebarCtrl as vm',
     resolve: {
       auth: function auth() {
-        console.log('asdasdasd');
         return true;
       }
     }

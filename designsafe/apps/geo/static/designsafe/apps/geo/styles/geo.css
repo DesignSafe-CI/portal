@@ -1,7 +1,33 @@
+
+#map_container {
+  display: flex;
+  min-height: 100vh;
+}
+
 #geo_sidebar {
   width: 20%;
+  float: left;
+  flex: 0 0 230px;
+  background: #364251;
+  color: #d0d0d0;
+  border-right: 1px solid #d3d3d3;
 }
 
 #geo_map {
   width: 80%;
+  flex: 1;
+  background: grey;
+}
+
+#geo_sidebar .list-group-item {
+  background-color: #364251;
+  border-bottom: 1px solid #707070;
+  border-left: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  margin-top: 1px;
+}
+
+#geo_sidebar .list-group-item.save {
+  background-color: #379ba0;
 }

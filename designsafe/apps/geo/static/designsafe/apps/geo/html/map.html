@@ -1,7 +1,38 @@
-<div id="geo_sidebar">
-  <h2> sidebar </h2>
-</div>
+<div id="map_container">
+  <div id="geo_sidebar">
+    <ul class="list-group">
+      <li class="list-group-item" style="background:#eaeaea;margin-top:0px">
+        <img src="/static/images/ds-logo-horiz.png" width="230"></img>
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-folder-open"> </i>  Open a project
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-object-ungroup"> </i>  Draw shapes
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-cloud-upload"> </i> Import from Designsafe
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-file"> </i>  Import locally
+      </li>
+      <li class="list-group-item">
+        <i class="fa fa-image fa"> </i>  Add an image
+      </li>
+      <li class="list-group-item">
+        <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
+        &nbsp
+      </li>
+      <a ng-click="vm.save_project()">
+      <li class="list-group-item save">
+        <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
+        <i class="fa fa-save">  </i> Save
+      </li>
+      </a>
+    </ul>
+  </div>
 
-<div id="geo_map">
-  <h1> map </h1>
+  <div id="geo_map">
+    <h1> map </h1>
+  </div>
 </div>

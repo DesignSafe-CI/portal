@@ -5,14 +5,12 @@ mod.requires.push('ui.router')
 
 function config($stateProvider) {
   'ngInject';
-  console.log('config')
   $stateProvider.state('geo', {
     url: '',
     templateUrl: '/static/designsafe/apps/geo/html/map.html',
-    contoller: 'MapSidebarCtrl',
+    controller: 'MapSidebarCtrl as vm',
     resolve: {
       auth: function () {
-        console.log('asdasdasd')
         return true;
       }
     }
