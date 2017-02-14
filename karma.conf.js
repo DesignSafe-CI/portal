@@ -5,7 +5,6 @@ module.exports = function(config){
 
     files : [
       /* VENDOR SCRIPTS */
-      '/var/www/designsafe-ci.org/static/js/vendor.js',
       '/var/www/designsafe-ci.org/static/vendor/underscore/underscore.js',
       '/var/www/designsafe-ci.org/static/vendor/modernizr/modernizr.js',
       '/var/www/designsafe-ci.org/static/vendor/jquery/dist/jquery.min.js',
