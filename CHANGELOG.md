@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.22
+
+Fixes:
+
+- Workspace Jupyter app is showing correct `Launch` button.
+- Pagination is not skiping files.
+- `Loading ..` legend in data depot.
+- Karma config for correct test running.
+- Creating come directory only if the user was created TODAY.
+- Using `retry()` for `job_watch` and user home directory creation.
+
 ## v0.9.21
 
 Fixes:
