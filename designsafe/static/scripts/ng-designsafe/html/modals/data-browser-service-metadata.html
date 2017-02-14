@@ -2,10 +2,88 @@
     <h3 class="modal-title">Label</h3>
 </div>
 <div class="modal-body">
+    <div ng-if="data.file">
+        <h3>File(s) to be labeled
+        </h3>
+        <ul>
+         <li>
+           {{data.file.name}}
+         </li>
+        </ul>
+    </div>
+    <div class="project-labels">
+      <h3>Project Lables</h3>
+      <h4>Create new label</h4>
+      <form>
+        <label for="id-label-type">Label Type</label>
+        <input class="form-control" name="label-type" id="id-label-type"
+               style="width:20%; display:inline-block;">
+        <label for="id-label-title">Label Title</label>
+        <input class="form-control" name="label-title" id="id-label-title"
+               style="width:50%; display:inline-block;">
+        <button class="btn btn-sm btn-info"
+                ng-click="addLabel()"><span class="sr-only">Add</span><i class="fa fa-plus"></i>
+        </button>
+      </form>
+      <h4>Label Inventory</h4>
+      <div class="project-label-inventory" style="overflow:auto;">
+        <div class="col-xs-3">
+            <div style="width:100%">
+            <span class="label label-danger">Event 1</span> <span class="label-title">25N Shake</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-danger">Event 2</span> <span class="label-title">35N Shake</span>
+            </div>
+            <span class="label label-danger">Event 3</span> <span class="label-title">100N Shake</span>
+            <div style="width:100%">
+            <span class="label label-danger">Event 4</span> <span class="label-title">35N Shake</span>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div style="width:100%">
+            <span class="label label-info">Analysis</span> <span class="label-title">Finite</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-info">Analysis</span> <span class="label-title">Qualitative</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-info">Analysis</span> <span class="label-title">Quantitative</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-info">Analysis</span> <span class="label-title">Dynamic</span>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div style="width:100%">
+            <span class="label label-info">Model Configuration</span> <span class="label-title">Wood Bridge</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-info">Model Configuration</span> <span class="label-title">Concrete Bridge</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-info">Model Configuration</span> <span class="label-title">Bamboo Bridge</span>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div style="width:100%">
+            <span class="label label-default">Sensor List</span> <span class="label-title">18</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-default">Sensor List</span> <span class="label-title">25</span>
+            </div>
+            <div style="width:100%">
+            <span class="label label-default">Sensor List</span> <span class="label-title">25</span>
+            </div>
+        </div>
+      </div>
+      <h4>Project Label Descriptions</h4>
+    </div>
+    <div class="custom-labels">
+      <h3>Custom Labels</h3>
     <form>
         <div class="form-group">
-            <label for="id-new-folder-name">Tags: </label>
-            <input type="text" class="form-control" id="id-metadata-tags" name="metadata-tags" placeholder="tag1, tag2, tag three" ng-model="data.form.metadataTags" autofocus select-on-focus>
+            <label for="id-new-folder-name">Labels: </label>
+            <input type="text" class="form-control" id="id-metadata-tags" name="metadata-tags" placeholder="label1, label2, label three" ng-model="data.form.metadataTags" autofocus select-on-focus>
         </div>
 
         <div ng-if="!data.file.keywords.length && !ui.busy">
@@ -45,4 +123,5 @@
             <button class="btn btn-primary" type="submit" ng-click="doSaveMetadata($event)">Save Metadata</button>
         </div>
     </form>
+    </div>
 </div>
