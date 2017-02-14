@@ -18,6 +18,17 @@
       return val;
     };
 
+    self.getRelatedAttrName = function(name){
+      var attrname = '';
+      for (var relName in self._related){
+          if (self._related[relName] === name){
+            attrname = relName;
+            break;
+          }
+      }
+      return attrname;
+    };
+
     return self;
   }
 
@@ -33,6 +44,17 @@
     var projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     var collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
     var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
+    var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
+
+    /**
+     * 
+     * Get list of entities related to a project
+     */
+    service.listEntities = function(options){
+      return entitiesResource.get({params: options}).then(function(resp){
+        return resp.data;
+      });
+    };
 
     /**
      * Get a list of Projects for the current user
@@ -128,50 +150,10 @@
             busy: true
           };
           $scope.form = {
-            curUsers: [],
-            addUsers: [{}],
-            curCoPis: [],
-            addCoPis: [{}]
+            curExperiments: [],
+            addExperiments: [{}]
           };
-          var loads = [
-            projectResource.get({params: angular.copy(options)}),
-            collabResource.get({params: angular.copy(options)})
-          ];
-          $q.all(loads).then(function (results) {
-            $scope.data.busy = false;
-            $scope.data.project = results[0].data;
-
-            $scope.form.curUsers = _.map(results[1].data.teamMembers, function (collab) {
-              return {
-                user: {username: collab},
-                remove: false
-              };
-            });
-            $scope.form.curCoPis = _.map(results[1].data.coPis, function (collab) {
-              return {
-                user: {username: collab},
-                remove: false
-              };
-            });
-          }, function (error) {
-            $scope.data.busy = false;
-            $scope.data.error = error.data.message || error.data;
-          });
-
-          $scope.canManage = function (user) {
-            var noManage = $scope.data.project.value.pi === user ||
-              Django.user === user ||
-              user === 'ds_admin';
-            return ! noManage;
-          };
-
-          $scope.formatSelection = function() {
-            if (this.add.user) {
-              return this.add.user.first_name +
-                ' ' + this.add.user.last_name +
-                ' (' + this.add.user.username + ')';
-            }
-          };
+          $scope.formcurExperiments = options.experiments;
 
           $scope.addAnother = function () {
             $scope.form.addUsers.push({});
