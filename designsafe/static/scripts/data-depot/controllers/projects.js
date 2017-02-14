@@ -72,8 +72,24 @@
 
     $scope.data = {};
 
+    var setEntity = function(resp){
+      if (!resp.length){
+        return;
+      }
+      var attribute = $scope.data.project.getRelatedAttrName(resp[0].name);
+      $scope.data.project[attribute] = resp;
+    };
+
     ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
+      var _related = project._related;
+      for (var attrname in _related){
+        var name = _related[attrname];
+        ProjectService.listEntities({uuid: projectId, name: name})
+          .then(
+            setEntity
+          );
+      }
     });
 
     $scope.editProject = function($event) {
@@ -93,7 +109,8 @@
 
     $scope.manageExperiments = function($event) {
       $event.preventDefault();
-      ProjectService.manageExperiments({uuid: projectId}).then(function (experiments) {
+      var experiments = $scope.data.project[$scope.data.project.getRelatedAttrName('designsafe.project.experiment')];
+      ProjectService.manageExperiments({'experiments': experiments}).then(function (experiments) {
         $scope.data.experiments = experiments;
       });
     };
