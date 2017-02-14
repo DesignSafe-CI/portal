@@ -21,7 +21,7 @@ class RelatedQuery(object):
 
     def __call__(self, agave_client):
         if self.uuid:
-            self.query['associationIds'] = [self.uuid]
+            self.query['associationIds'] = self.uuid
         elif self.uuids is not None:
             if isinstance(self.uuids, basestring):
                 self.uuids = [self.uuids]
@@ -83,7 +83,7 @@ class Manager(object):
         setattr(self.model_cls._meta, 'agave_client', agave_client)
 
     def get(self, agave_client, uuid):
-        meta = agave_client.getMetadata(uuid=uuid)
+        meta = agave_client.meta.getMetadata(uuid=uuid)
         return self.model_cls(**meta)
 
     def list(self, agave_client, association_id=None):
