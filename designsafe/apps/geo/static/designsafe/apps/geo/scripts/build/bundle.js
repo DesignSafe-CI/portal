@@ -139,6 +139,9 @@ var MapSidebarCtrl = function () {
     key: 'save_project',
     value: function save_project() {
       console.log(this.drawnItems);
+      this.drawnItems.eachLayer(function (l) {
+        console.log(l.options);
+      });
       var blob = new Blob([JSON.stringify(this.drawnItems.toGeoJSON())], { type: "application/json" });
       var url = URL.createObjectURL(blob);
 

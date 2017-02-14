@@ -46,6 +46,9 @@ export default class MapSidebarCtrl {
   }
   save_project () {
     console.log(this.drawnItems);
+    this.drawnItems.eachLayer(function (l) {
+      console.log(l.options);
+    })
     let blob = new Blob([JSON.stringify(this.drawnItems.toGeoJSON())], {type: "application/json"});
     let url  = URL.createObjectURL(blob);
 
