@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def check_or_create_agave_home_dir(username):
-    logger.info("Checking home directory for user=%s on default storage systemId=%s" % (
-        username, settings.AGAVE_STORAGE_SYSTEM))
     try:
         # TODO should use DS Files API for this
         user = get_user_model().objects.get(username=username)
         if datetime.datetime.now().date() == user.date_joined.date():
+            logger.info("Checking home directory for user=%s on default storage systemId=%s" % (
+                        username, settings.AGAVE_STORAGE_SYSTEM))
             ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                        token=settings.AGAVE_SUPER_TOKEN)
             body = {'action': 'mkdir', 'path': username}
