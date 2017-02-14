@@ -12,7 +12,7 @@ import json
 logger = logging.getLogger(__name__)
 
 
-@shared_task
+@shared_task(default_retry_delay=1*30, max_retries=3)
 def check_or_create_agave_home_dir(username):
     logger.info("Checking home directory for user=%s on default storage systemId=%s" % (
         username, settings.AGAVE_STORAGE_SYSTEM))
