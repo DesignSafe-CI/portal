@@ -165,6 +165,37 @@ var MapSidebarCtrl = function () {
       };
     }
   }, {
+    key: 'load_image',
+    value: function load_image(ev) {
+      var _this3 = this;
+
+      //Get the photo from the input form
+      var input = document.getElementById('Files');
+      var files = input.files;
+      for (var i = 0; i < files.length; i++) {
+        var file = files[0];
+        var reader = new FileReader(); // use HTML5 file reader to get the file
+
+        reader.onloadend = function () {
+          // get EXIF data
+          var exif = EXIF.readFromBinaryFile(new BinaryFile(_this3.result));
+
+          var lat = exif.GPSLatitude;
+          var lon = exif.GPSLongitude;
+
+          //Convert coordinates to WGS84 decimal
+          var latRef = exif.GPSLatitudeRef || "N";
+          var lonRef = exif.GPSLongitudeRef || "W";
+          lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
+          lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
+
+          //Send the coordinates to your map
+          Map.AddMarker(lat, lon);
+        };
+        reader.readAsBinaryString(file);
+      }
+    }
+  }, {
     key: 'update_color',
     value: function update_color() {
       this.current_layer.setStyle({ color: this.current_layer.options.color });
