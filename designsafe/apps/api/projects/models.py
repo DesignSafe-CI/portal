@@ -216,6 +216,7 @@ class Experiment(MetadataModel):
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=1024)
+    experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
     project = fields.RelatedObjectField(ExperimentalProject)
 
 class Event(MetadataModel):
