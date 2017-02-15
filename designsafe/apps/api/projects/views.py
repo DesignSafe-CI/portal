@@ -345,6 +345,16 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         except ValueError:
             return HttpResponseBadRequest('Entity not valid.')
 
+    def delete(self, request, uuid):
+        """
+
+        :return:
+        :rtype: JsonResponse
+        """
+        ag = get_service_account_client()
+        ag.meta.deleteMetadata(uuid=uuid)
+        return JsonResponse({'message':'OK'}, safe=False)
+
     def post(self, request, project_id, name):
         """
 
@@ -357,13 +367,15 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
-
+        entity = post_data.get('entity')
         try:
             model_cls = self._lookup_model(name)
-            model = model_cls(value=post_data)
+            logger.debug('entity: %s', entity)
+            model = model_cls(value=entity)
+            logger.debug('model uuid: %s', model.uuid)
             file_uuids = []
-            if 'filePaths' in post_data:
-                file_paths = post_data.get('filePaths', [])
+            if 'filePaths' in entity:
+                file_paths = experiment.get('filePaths', [])
                 project_system = ''.join(['project-', project_id])
                 user_ag = request.user.agave_oauth.client
                 for file_path in file_paths:
@@ -375,6 +387,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
                 for file_uuid in file_uuids:
                     model.files.add(file_uuid)
             model.project.add(project_id)
+            model.associate(project_id)
             saved = model.save(ag)
             resp = model_cls(**saved)
             #TODO: This should happen in a celery task and implemented in a manager
@@ -382,11 +395,10 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             pems = BaseMetadataPermissionResource.list_permissions(project_id, ag)
             #Loop permissions and set them in whatever metadata object we're saving
             for pem in pems:
-                _pem = BaseMetadataPermissionResource(resp._meta.uuid, ag)
-                _pem.username = pems['username']
-                _pem.read = pems['permission']['read']
-                _pem.write = pems['permission']['write']
-                _pem.read = pems['permission']['execute']
+                _pem = BaseMetadataPermissionResource(resp.uuid, ag)
+                _pem.username = pem.username
+                _pem.read = pem.read
+                _pem.write = pem.write
                 _pem.save()
 
         except ValueError:
