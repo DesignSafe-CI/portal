@@ -82,8 +82,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window"];
-  function MapSidebarCtrl($scope, $window) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout"];
+  function MapSidebarCtrl($scope, $window, $timeout) {
     'ngInject';
 
     var _this = this;
@@ -92,10 +92,14 @@ var MapSidebarCtrl = function () {
 
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
+    this.$timeout = $timeout;
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
     this.map = L.map('geo_map').setView([51.505, -0.09], 13);
+
+    //method binding for callback, sigh...
+    this.local_file_selected = this.local_file_selected.bind(this);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -115,14 +119,20 @@ var MapSidebarCtrl = function () {
     });
 
     this.drawnItems.on('click', function (e) {
-      _this.current_layer = e.layer;
+      if (_this.current_layer == e.layer) {
+        _this.current_layer = null;
+      } else {
+        _this.current_layer = e.layer;
+      };
       _this.$scope.$apply();
     });
 
     this.map.addControl(drawControl);
+
     this.map.on('draw:created', function (e) {
       var object = e.layer;
       object.options.color = '#ff0000';
+      object.options.fillColor = '#ff0000';
       object.options.fillOpacity = 0.8;
       _this.drawnItems.addLayer(object);
       _this.current_layer = object;
@@ -131,9 +141,44 @@ var MapSidebarCtrl = function () {
   }
 
   _createClass(MapSidebarCtrl, [{
+    key: 'open_file_dialog',
+    value: function open_file_dialog() {
+      this.$timeout(function () {
+        angular.element('#local_file').trigger('click');
+      });
+    }
+  }, {
+    key: 'local_file_selected',
+    value: function local_file_selected(ev) {
+      var _this2 = this;
+
+      var file = ev.target.files[0];
+      var reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = function (e) {
+        var json = JSON.parse(e.target.result);
+        L.geoJSON(json).getLayers().forEach(function (l) {
+          ;
+          _this2.drawnItems.addLayer(l);
+        });
+        _this2.map.fitBounds(_this2.drawnItems.getBounds());
+      };
+    }
+  }, {
     key: 'update_color',
     value: function update_color() {
-      this.current_layer.setStyle({ fillColor: this.current_layer.options.color });
+      this.current_layer.setStyle({ color: this.current_layer.options.color });
+    }
+  }, {
+    key: 'update_fill',
+    value: function update_fill() {
+      this.current_layer.setStyle({ fillColor: this.current_layer.options.fillColor });
+      this.current_layer.setStyle({ color: this.current_layer.options.fillColor });
+    }
+  }, {
+    key: 'update_opacity',
+    value: function update_opacity() {
+      this.current_layer.setStyle({ fillOpacity: this.current_layer.options.fillOpacity });
     }
   }, {
     key: 'save_project',
@@ -170,14 +215,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(0);
+var _directives = __webpack_require__(2);
 
-var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
+var _controllers = __webpack_require__(4);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _services = __webpack_require__(5);
 
 var mod = angular.module('designsafe');
-mod.requires.push('ui.router');
+mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
 function config($stateProvider) {
   'ngInject';
@@ -195,7 +240,91 @@ function config($stateProvider) {
 }
 
 mod.config(config);
+
+exports.default = mod;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _customOnChange = __webpack_require__(3);
+
+var _customOnChange2 = _interopRequireDefault(_customOnChange);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.directives', []);
+
+mod.directive('customOnChange', _customOnChange2.default);
+
+exports.default = mod;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = customOnChange;
+function customOnChange() {
+  return {
+    restrict: 'A',
+    link: function link(scope, element, attrs) {
+      var onChangeHandler = scope.$eval(attrs.customOnChange);
+      element.bind('change', onChangeHandler);
+    }
+  };
+}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mapSidebar = __webpack_require__(0);
+
+var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.controllers', []);
+
 mod.controller('MapSidebarCtrl', _mapSidebar2.default);
+
+exports.default = mod;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+// import customOnChange from './custom-on-change';
+
+var mod = angular.module('ds.geo.services', []);
+
+// mod.directive('customOnChange', customOnChange);
 
 exports.default = mod;
 

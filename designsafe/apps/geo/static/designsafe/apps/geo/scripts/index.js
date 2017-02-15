@@ -1,7 +1,9 @@
-import MapSidebarCtrl from './controllers/map-sidebar';
+import {mod as geo_directives} from './directives';
+import {mod as geo_controllers} from './controllers';
+import {mod as geo_services} from './services';
 
-let mod = angular.module('designsafe')
-mod.requires.push('ui.router')
+let mod = angular.module('designsafe');
+mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
 function config($stateProvider) {
   'ngInject';
@@ -14,12 +16,11 @@ function config($stateProvider) {
         return true;
       }
     }
-  })
+  });
 
 }
 
 mod.config(config);
-mod.controller('MapSidebarCtrl', MapSidebarCtrl);
 
 
 

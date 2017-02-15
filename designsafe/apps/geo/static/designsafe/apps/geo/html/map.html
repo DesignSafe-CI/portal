@@ -5,15 +5,19 @@
         <img src="/static/images/ds-logo-horiz.png" width="230"></img>
       </li>
       <li class="list-group-item">
-        <i class="fa fa-folder-open"> </i>  Open a project
+        <i class="fa fa-plus"> </i>  Create a new project
       </li>
       <li class="list-group-item">
-        <i class="fa fa-object-ungroup"> </i>  Draw shapes
+        <i class="fa fa-folder-open"> </i>  Open a project
       </li>
+      <!-- <li class="list-group-item">
+        <i class="fa fa-object-ungroup"> </i>  Draw shapes
+      </li> -->
       <li class="list-group-item">
         <i class="fa fa-cloud-upload"> </i> Import from Designsafe
       </li>
-      <li class="list-group-item">
+      <li class="list-group-item" ng-click="vm.open_file_dialog()">
+        <input name"local_file" id="local_file" type="file" ng-hide="true"  custom-on-change="vm.local_file_selected">
         <i class="fa fa-file"> </i>  Import locally
       </li>
       <li class="list-group-item">
@@ -30,13 +34,47 @@
     </ul>
 
     <div class="current-layer-details" ng-show="vm.current_layer">
-      {{ vm.current_layer.options }}
-      <input type="color"
-             ng-model="vm.current_layer.options.color"
-             ng-change=vm.update_color()>
-      </input>
+      <table class="table table-condensed table-bordered">
+        <tr>
+          <td> Fill </td>
+          <td>
+            <input type="color"
+                    class="form-control"
+                   ng-model="vm.current_layer.options.fillColor"
+                   ng-change=vm.update_fill()>
+            </input>
+          </td>
+        </tr>
+        <tr>
+          <td> Stroke </td>
+          <td>
+            <input type="color"
+                    class="form-control"
+                   ng-model="vm.current_layer.options.color"
+                   ng-change=vm.update_color()>
+            </input>
+          </td>
+        </tr>
+        <tr>
+          <td> Opacity </td>
+          <td>
+            <input type="number" min=0 max=1.0 step=0.01
+                    class="form-control"
+                   ng-model="vm.current_layer.options.fillOpacity"
+                   ng-change=vm.update_opacity()>
+            </input>
+          </td>
+        </tr>
+        <tr>
+          <td> Description </td>
+          <td>
+            <input type="text" class="form-control" ng-model="vm.current_layer.options.description">
+          </td>
+        </tr>
+      </table>
     </div>
-  </div>
+
+  </div> <!-- End of sidebar -->
 
   <div id="geo_map"></div>
 </div>

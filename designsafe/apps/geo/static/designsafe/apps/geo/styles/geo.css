@@ -41,5 +41,10 @@
   vertical-align: bottom;
   display: flex;
   flex-direction: column-reverse;
+}
 
+.current-layer-details table {
+  background: #f0f0f0;
+  color: #6b6a6a;
+  margin-bottom: 0px;
 }
