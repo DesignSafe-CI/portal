@@ -103,6 +103,10 @@ class Links(object):
 class Options(object):
     """Options class to store model's _meta data
     """
+    _model = None
+    _schema_fields = ['uuid', 'schema_id', 'internal_username',
+                      'association_ids', 'last_updated', 'created',
+                      'owner', 'name', '_links']
 
     def __init__(self, model_name):
         self._nested_fields = {}
@@ -110,17 +114,8 @@ class Options(object):
         self._reverse_fields = []
         self._fields_map = {}
         self._fields = []
-        self._model = None
         self.name = model_name
         self.model_name = model_name
-        self.uuid = None
-        self.schema_id = None
-        self.internal_username = None
-        self.association_ids = []
-        self.last_updated = None
-        self.created = None
-        self.owner = None
-        self._links = None
         self.model_manager = None
 
     def add_field(self, field):
@@ -136,12 +131,7 @@ class Options(object):
         cls._meta = self
         self._model = cls
 
-    def _set_values(self, values):
-        links = values.pop('_links')
-        self._links = Links(links)
-        for attrname, val in six.iteritems(values):
-            attrname = camelcase_to_spinal(attrname)
-            setattr(self, attrname, val)
+
 
 class BaseModel(type):
     """
@@ -206,6 +196,15 @@ class Model(object):
     __metaclass__ = BaseModel
 
     def __init__(self, **kwargs):
+        self.uuid = None
+        self.schema_id = None
+        self.internal_username = None
+        self.association_ids = []
+        self.last_updated = None
+        self.created = None
+        self.owner = None
+        self.__links = None
+        self.name = None
         #logger.debug('kwargs: %s', json.dumps(kwargs, indent=4))
         cls = self.__class__
         opts = self._meta
@@ -215,7 +214,11 @@ class Model(object):
             obj_value = kwargs
         else:
             obj_value = kwargs.pop('value', {})
-            opts._set_values(kwargs)
+            links = kwargs.pop('_links', {})
+            self._links = Links(links)
+            for attrname, val in six.iteritems(kwargs):
+                attrname = camelcase_to_spinal(attrname)
+                setattr(self, attrname, val)
 
         for attrname, field in six.iteritems(opts._fields_map):
             _setattr(self, attrname, self._get_init_value(field, obj_value, attrname))
@@ -236,7 +239,10 @@ class Model(object):
 
         for attrname in opts._reverse_fields:
             field = getattr(self, attrname)
-            field.uuid = self._meta.uuid
+            field.uuid = self.uuid
+        
+        if self.name is None:
+            self.name = self._meta.model_name
 
         super(Model, self).__init__()
 
@@ -263,12 +269,13 @@ class Model(object):
     
     def to_body_dict(self):
         dict_obj = {}
-        for attrname, value in six.iteritems(self._meta.__dict__):
-            if not attrname.startswith('_'):
+        for attrname in self._meta._schema_fields:
+            value = getattr(self, attrname, None)
+            if not inspect.isclass(value):
                 dict_obj[spinal_to_camelcase(attrname)] = value
 
         dict_obj['_links'] = {}
-        for attrname, value in six.iteritems(self._meta._links.__dict__):
+        for attrname, value in six.iteritems(self._links.__dict__):
             dict_obj['_links'][spinal_to_camelcase(attrname)] = value
 
         dict_obj['value'] = {}
@@ -287,14 +294,24 @@ class Model(object):
         return dict_obj
 
     def save(self, agave_client):
-        body = self.to_boy_dict()
-        if self._meta.uuid is None:
-            logger.debug('Adding Metadata: %s, with: %s', self._meta.name, body)
+        body = self.to_body_dict()
+        if self.uuid is None:
+            logger.debug('Adding Metadata: %s, with: %s', self.name, body)
             ret = agave_client.meta.addMetadata(body=body)
         else:
-            logger.debug('Updating Metadata: %s, with: %s', self._meta.uuid, body)
-            ret = agave_client.meta.updateMetadata(uuid=self._meta.uuid, body=body)
+            logger.debug('Updating Metadata: %s, with: %s', self.uuid, body)
+            ret = agave_client.meta.updateMetadata(uuid=self.uuid, body=body)
         return ret
+
+    def associate(self, value):
+        _aids = self.association_ids[:]
+        if isinstance(value, basestring):
+            _aids.append(value)
+        else:
+            _aids += value
+
+        self.association_ids = list(set(_aids))
+        return self.association_ids
 
     @property
     def manager(self):
