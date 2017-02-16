@@ -45,7 +45,7 @@
         DataBrowserService.previewImages($scope.browser.listing);
       },
       viewMetadata: function () {
-        DataBrowserService.viewMetadata($scope.browser.selected[0], $scope.browser.listing);
+        DataBrowserService.viewMetadata($scope.browser.selected, $scope.browser.listing);
       },
       share: function () {
         DataBrowserService.share($scope.browser.selected[0]);
