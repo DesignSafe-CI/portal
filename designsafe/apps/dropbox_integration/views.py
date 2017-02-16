@@ -7,12 +7,12 @@ from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         Http404, HttpResponseForbidden)
+                         Http404)
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.dropbox_integration.models import DropboxUserToken
-# from designsafe.apps.dropbox_integration.tasks import copy_box_item
+
 import logging
 import json
 
@@ -34,11 +34,6 @@ def index(request):
             logger.warning('Dropbox oauth token for user=%s failed to authenticate' %
                            request.user.username)
             context['dropbox_connection'] = False
-        # except ApiError:
-        #     # session layer exception
-        #     logger.warning('Dropbox API error when testing oauth token for user=%s' %
-        #                    request.user.username)
-        #     context['dropbox_connection'] = False
 
     except DropboxUserToken.DoesNotExist:
         logger.debug('DropboxUserToken does not exist for user=%s' % request.user.username)
@@ -46,29 +41,24 @@ def index(request):
     return render(request, 'designsafe/apps/dropbox_integration/index.html', context)
 
 
+# @login_required
+def get_dropbox_auth_flow(request):
+    redirect_uri = reverse('dropbox_integration:oauth2_callback')
+    return DropboxOAuth2Flow(
+        consumer_key = settings.DROPBOX_APP_KEY,
+        consumer_secret = settings.DROPBOX_APP_SECRET,
+        redirect_uri = request.build_absolute_uri(redirect_uri),
+        session = request.session['dropbox'],
+        csrf_token_session_key = 'state'
+    )
+
 @csrf_exempt
 @login_required
-def get_dropbox_auth_flow(request):
-    try:
-        redirect_uri = reverse('dropbox_integration:oauth2_callback')
-
-        if 'dropbox' not in request.session:
-            request.session['dropbox']={}
-
-        return DropboxOAuth2Flow(
-            consumer_key = settings.DROPBOX_APP_KEY,
-            consumer_secret = settings.DROPBOX_APP_SECRET,
-            redirect_uri = request.build_absolute_uri(redirect_uri),
-            session = request.session['dropbox'],
-            csrf_token_session_key = 'state'
-        )
-    except CsrfException as exc:
-        logger.debug(exc, exc_info=True)
-        raise
-
-@login_required
 def initialize_token(request):
+    request.session['dropbox']={}
+    logger.info('request.session["dropbox"]: {}'.format(request.session['dropbox']))
     auth_url = get_dropbox_auth_flow(request).start()
+    logger.info('request.session["dropbox"]: {}'.format(request.session['dropbox']))
     return HttpResponseRedirect(auth_url)
 
 
@@ -76,25 +66,7 @@ def initialize_token(request):
 @login_required
 def oauth2_callback(request):
     try:
-        auth_code = request.GET.get('code')
-        #state = request.GET.get('state')
-        # if 'dropbox' in request.session:
-        #     dropbox = request.session['dropbox']
-        # else:
-        #     return HttpResponseBadRequest('Unexpected request')
-
-        # if not (state == dropbox['state']):
-        #     return HttpResponseBadRequest('Request expired')
-
-        flow = get_dropbox_auth_flow(request)
-        flow.session[flow.csrf_token_session_key] = request.GET.get('state')
-        oauth = flow.finish(request.GET)
-
-        # access_token, account_id, user_id, url_state = \
-            # get_dropbox_auth_flow(request).finish(request.GET)
-
-        # save the token
-        # dropbox_user = client.user(user_id=u'me').get()
+        oauth = get_dropbox_auth_flow(request).finish(request.GET)
         token = DropboxUserToken(
             user=request.user,
             access_token=oauth.access_token,
@@ -103,60 +75,15 @@ def oauth2_callback(request):
         )
         token.save()
 
-    except BadRequestException as e:
-        #http_status(400)
-        return HttpResponseBadRequest('Bad Request.')
     except BadStateException as e:
         # Start the auth flow again.
         HttpResponseRedirect(reverse('dropbox_integration:initialize_token'))
-    except CsrfException as e:
-        logger.error('Error', exc_info=True)
-        return HttpResponseForbidden('Forbidden.')
-        #http_status(403)
-    except NotApprovedException as e:
-        #flash('Not approved?  Why not?')
-        return redirect_to("/home")
-    except ProviderException as e:
-        logger.log("Auth error: %s" % (e,))
-        return HttpResponseForbidden('Forbidden.')
-        #http_status(403)
+    except Exception as e:
+        logger.exception('Unable to complete Dropbox integration setup: %s' % e)
+        messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
+                                'up the Dropbox.com application. Please try again.')
 
     return HttpResponseRedirect(reverse('dropbox_integration:index'))
-
-
-    # auth_code = request.GET.get('code')
-    # state = request.GET.get('state')
-    # if 'dropbox' in request.session:
-    #     dropbox = request.session['dropbox']
-    # else:
-    #     return HttpResponseBadRequest('Unexpected request')
-
-    # if not (state == dropbox['state']):
-    #     return HttpResponseBadRequest('Request expired')
-
-    # try:
-    #     oauth = OAuth2(
-    #         client_id=settings.BOX_APP_CLIENT_ID,
-    #         client_secret=settings.BOX_APP_CLIENT_SECRET
-    #     )
-    #     access_token, refresh_token = oauth.authenticate(auth_code)
-    #     client = Client(oauth)
-
-    #     # save the token
-    #     dropbox_user = client.user(user_id=u'me').get()
-    #     token = DropboxUserToken(
-    #         user=request.user,
-    #         access_token=access_token,
-    #         refresh_token=refresh_token,
-    #         box_user_id=box_user.id,
-    #     )
-    #     token.save()
-    # except ApiError as e:
-    #     logger.exception('Unable to complete Box integration setup: %s' % e)
-    #     messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
-    #                             'up the Box.com application. Please try again.')
-
-    # return HttpResponseRedirect(reverse('box_integration:index'))
 
 
 @login_required
