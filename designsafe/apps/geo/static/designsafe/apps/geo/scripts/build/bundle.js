@@ -96,7 +96,7 @@ var MapSidebarCtrl = function () {
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
-    this.map = L.map('geo_map').setView([51.505, -0.09], 13);
+    this.map = L.map('geo_map').setView([51.505, -0.09], 6);
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -148,6 +148,13 @@ var MapSidebarCtrl = function () {
       });
     }
   }, {
+    key: 'open_image_dialog',
+    value: function open_image_dialog() {
+      this.$timeout(function () {
+        angular.element('#local_image').trigger('click');
+      });
+    }
+  }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
       var _this2 = this;
@@ -169,16 +176,15 @@ var MapSidebarCtrl = function () {
     value: function load_image(ev) {
       var _this3 = this;
 
-      //Get the photo from the input form
-      var input = document.getElementById('Files');
-      var files = input.files;
+      var files = ev.target.files;
       for (var i = 0; i < files.length; i++) {
         var file = files[0];
         var reader = new FileReader(); // use HTML5 file reader to get the file
 
+        reader.readAsArrayBuffer(file);
         reader.onloadend = function () {
           // get EXIF data
-          var exif = EXIF.readFromBinaryFile(new BinaryFile(_this3.result));
+          var exif = EXIF.readFromBinaryFile(_this3.result);
 
           var lat = exif.GPSLatitude;
           var lon = exif.GPSLongitude;
@@ -192,7 +198,6 @@ var MapSidebarCtrl = function () {
           //Send the coordinates to your map
           Map.AddMarker(lat, lon);
         };
-        reader.readAsBinaryString(file);
       }
     }
   }, {

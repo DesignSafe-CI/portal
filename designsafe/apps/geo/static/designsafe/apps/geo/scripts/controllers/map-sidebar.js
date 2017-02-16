@@ -8,7 +8,7 @@ export default class MapSidebarCtrl {
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
-    this.map = L.map('geo_map').setView([51.505, -0.09], 13);
+    this.map = L.map('geo_map').setView([51.505, -0.09], 6);
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -60,6 +60,12 @@ export default class MapSidebarCtrl {
     });
   }
 
+  open_image_dialog () {
+    this.$timeout(()=> {
+      angular.element('#local_image').trigger('click');
+    });
+  }
+
   local_file_selected (ev) {
     let file = ev.target.files[0];
     let reader = new FileReader();
@@ -74,30 +80,28 @@ export default class MapSidebarCtrl {
   }
 
   load_image (ev) {
-        //Get the photo from the input form
-    var input = document.getElementById('Files');
-    var files = input.files;
-    for (var i = 0; i < files.length; i++) {
-      var file = files[0];
-      var reader = new FileReader; // use HTML5 file reader to get the file
+    var files = ev.target.files;
+    for (let i = 0; i < files.length; i++) {
+      let file = files[0];
+      let reader = new FileReader; // use HTML5 file reader to get the file
 
-      reader.onloadend =  ()=> {
+      reader.readAsArrayBuffer(file);
+      reader.onloadend = () => {
           // get EXIF data
-          var exif = EXIF.readFromBinaryFile(new BinaryFile(this.result));
+          let exif = EXIF.readFromBinaryFile(this.result);
 
-          var lat = exif.GPSLatitude;
-          var lon = exif.GPSLongitude;
+          let lat = exif.GPSLatitude;
+          let lon = exif.GPSLongitude;
 
           //Convert coordinates to WGS84 decimal
-          var latRef = exif.GPSLatitudeRef || "N";
-          var lonRef = exif.GPSLongitudeRef || "W";
+          let latRef = exif.GPSLatitudeRef || "N";
+          let lonRef = exif.GPSLongitudeRef || "W";
           lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
           lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
 
          //Send the coordinates to your map
           Map.AddMarker(lat,lon);
       };
-      reader.readAsBinaryString(file);
     }
   }
 

@@ -20,8 +20,9 @@
         <input name"local_file" id="local_file" type="file" ng-hide="true"  custom-on-change="vm.local_file_selected">
         <i class="fa fa-file"> </i>  Import locally
       </li>
-      <li class="list-group-item">
-        <i class="fa fa-image fa"> </i>  Add an image
+      <li class="list-group-item" ng-click="vm.open_image_dialog()">
+        <input name"local_image" id="local_image" type="file" ng-hide="true"  custom-on-change="vm.load_image">
+        <i class="fa fa-file"> </i>  Add an image
       </li>
       <li class="list-group-item">
         <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
