@@ -68,7 +68,7 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, $q) {
 
     $scope.data = {};
 
@@ -82,15 +82,28 @@
 
     ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
+      DataBrowserService.state().project = project;
+      DataBrowserService.state().loadingEntities = true;
       var _related = project._related;
+      var tasks = [];
       for (var attrname in _related){
         var name = _related[attrname];
-        ProjectService.listEntities({uuid: projectId, name: name})
-          .then(
-            setEntity
-          );
+        if (name != 'designsafe.file'){
+          tasks.push(ProjectService.listEntities(
+            {uuid: projectId, name: name})
+            .then(
+              setEntity
+            ));
+        }
       }
+      $q.all(tasks).then(
+        function(resp){
+            DataBrowserService.state().loadingEntities = false;
+        }, function(err){
+            DataBrowserService.state().loadingEntities = false;
+        });
     });
+
 
     $scope.editProject = function($event) {
       $event.preventDefault();
@@ -110,7 +123,8 @@
     $scope.manageExperiments = function($event) {
       $event.preventDefault();
       var experiments = $scope.data.project[$scope.data.project.getRelatedAttrName('designsafe.project.experiment')];
-      ProjectService.manageExperiments({'experiments': experiments}).then(function (experiments) {
+      ProjectService.manageExperiments({'experiments': experiments,
+                                        'project': $scope.data.project}).then(function (experiments) {
         $scope.data.experiments = experiments;
       });
     };
@@ -125,6 +139,42 @@
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
+    var setFileEntities = function(){
+      var entities = [].concat($scope.browser.project.experiment_set,
+                               $scope.browser.project.event_set,
+                               $scope.browser.project.analysis_set,
+                               $scope.browser.project.sensorlist_set,
+                               $scope.browser.project.modelconfig_set);
+      var entitiesFiles = [];
+      var sp = 'files/v2/media/system/project-' + $scope.browser.project.uuid;
+      _.each($scope.browser.listing.children, function(child){
+        if (typeof child._entities === 'undefined'){
+          child._entities = [];
+          var path = child.path;
+          _.each(entities, function(entity){
+            if (typeof entity !== 'undefined' &&
+                typeof entity._links !== 'undefined' &&
+                typeof entity._links.associationIds !== 'undefined'){
+              _.each(entity._links.associationIds, function(asc){
+                if (asc.title === 'file'){
+                  var s = asc.href.split(sp)[1];
+                  if (path == s){
+                    var _name = entity.name.split('.');
+                    var _name = _name[_name.length-1];
+                    var camelCased = _name.replace(/_([a-z])/g,
+                            function (g) { return g[1].toUpperCase(); });
+                    camelCased = camelCased.charAt(0).toUpperCase() + camelCased.slice(1);
+                    entity._displayName = camelCased;
+                    child._entities.push(entity);
+                  }
+                }
+              });
+            }
+          });
+        }
+      });
+    };
+
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
       .then(function () {
         $scope.browser = DataBrowserService.state();
@@ -140,6 +190,16 @@
             projectTitle: projectTitle
           });
         });
+        if (typeof $scope.browser.loadingEntities !== 'undefined' &&
+            !$scope.browser.loadingEntities){
+          setFileEntities();
+        } else {
+          $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
+            if (!newVal){
+              setFileEntities();
+            }
+          });
+        }
       });
 
     $scope.onBrowseData = function onBrowseData($event, file) {
