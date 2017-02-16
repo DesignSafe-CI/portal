@@ -8,6 +8,8 @@ from designsafe.apps.api.external_resources.box.models.files import BoxFile
 from designsafe.apps.box_integration.models import BoxUserToken
 from boxsdk.exception import BoxException, BoxOAuthException
 from django.core.urlresolvers import reverse
+from django.http import (JsonResponse, HttpResponseBadRequest)
+from requests import HTTPError
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -176,14 +178,30 @@ class FileManager(object):
                            extra={'file_id': file_id,
                                   'kwargs': kwargs})
 
-    def preview(self, file_id, **kwargs):
+    def get_preview_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
             embed_url = self.box_api.file(file_id).get(fields=['expiring_embed_link'])
             return {'href': embed_url._response_object['expiring_embed_link']['url']}
         return None
 
-    def download(self, file_id, **kwargs):
+    def preview(self, file_id, file_mgr_name, **kwargs):
+        # try:
+        box_file_type, box_file_id = self.parse_file_id(file_id)
+        box_op = getattr(self.box_api, box_file_type)
+        box_file = BoxFile(box_op(box_file_id).get())
+        if box_file.previewable:
+            preview_url = reverse('designsafe_api:box_files_media',
+                                  args=[file_mgr_name, file_id.strip('/')])
+            return JsonResponse({'href':
+                                   '{}?preview=true'.format(preview_url)})
+        else:
+            return HttpResponseBadRequest('Preview not available for this item.')
+        # except HTTPError as e:
+                # logger.exception('Unable to preview file')
+                # return HttpResponseBadRequest(e.response.text)
+
+    def get_download_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
             download_url = self.box_api.file(file_id).get_shared_link_download_url()

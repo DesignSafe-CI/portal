@@ -1,5 +1,6 @@
 """ Dropbox filemanager"""
 import os
+import re
 import sys
 import logging
 from designsafe.apps.api.exceptions import ApiException
@@ -11,6 +12,7 @@ from dropbox.files import ListFolderResult, FileMetadata
 from dropbox.dropbox import Dropbox
 from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException, CsrfException, NotApprovedException, ProviderException
 from django.core.urlresolvers import reverse
+from django.http import (JsonResponse, HttpResponseBadRequest)
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -105,9 +107,9 @@ class FileManager(object):
                       'to continue using Dropbox data.' % reverse('dropbox_integration:index')
             raise ApiException(status=403, message=message)
         except ApiError as e:
-            import ipdb; ipdb.set_trace()
             if e.error.get_path().is_not_folder():
-                list_data = self.dropbox_api.files_get_metadata(path)
+                dropbox_item = self.dropbox_api.files_get_metadata(path)
+                list_data = DropboxFile(dropbox_item, path)
                 return list_data
 
             message = 'Unable to communicate with Dropbox: %s' % e.message
@@ -145,18 +147,37 @@ class FileManager(object):
                            extra={'file_id': file_id,
                                   'kwargs': kwargs})
 
-    def preview(self, file_id, **kwargs):
-        file_type, file_id = self.parse_file_id(file_id)
+    def get_preview_url(self, file_id, **kwargs):
+        file_type, path = self.parse_file_id(file_id)
         if file_type == 'file':
-            embed_url = self.dropbox_api.file(file_id).get(fields=['expiring_embed_link'])
-            return {'href': embed_url._response_object['expiring_embed_link']['url']}
+            # embed_url = self.dropbox_api.files_get_temporary_link(path)
+            shared_link = self.dropbox_api.sharing_create_shared_link(path).url
+            embed_url = re.sub('dl=0$','raw=1', shared_link)
+
+            return {'href': embed_url}
         return None
 
-    def download(self, file_id, **kwargs):
-        file_type, file_id = self.parse_file_id(file_id)
+    def preview(self, file_id, file_mgr_name, **kwargs):
+        try:
+            file_type, path = self.parse_file_id(file_id)
+            dropbox_item = self.dropbox_api.files_get_metadata(path)
+            dropbox_file = DropboxFile(dropbox_item, path)
+            if dropbox_file.previewable:
+                preview_url = reverse('designsafe_api:box_files_media',
+                                      args=[file_mgr_name, file_id.strip('/')])
+                return JsonResponse({'href':
+                                       '{}?preview=true'.format(preview_url)})
+            else:
+                return HttpResponseBadRequest('Preview not available for this item.')
+        except HTTPError as e:
+                logger.exception('Unable to preview file')
+                return HttpResponseBadRequest(e.response.text)
+
+    def get_download_url(self, file_id, **kwargs):
+        file_type, path = self.parse_file_id(file_id)
         if file_type == 'file':
-            download_url = self.dropbox_api.file(file_id).get_shared_link_download_url()
-            return {'href': download_url}
+            download_url = self.dropbox_api.files_get_temporary_link(path)
+            return {'href': download_url.link}
         return None
 
     #def import_file(self, file_id, from_resource, import_file_id, **kwargs):
