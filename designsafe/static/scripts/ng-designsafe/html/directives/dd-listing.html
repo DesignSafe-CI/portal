@@ -22,6 +22,15 @@
                 <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
                     {{ item.name }}
                 </a>
+            <div style="width:100%;">
+            <span ng-if="browser.loadingEntities">
+            Loading <i class="fa fa-spinner fa-spin"></i>
+            </span>
+            <span class="label selected"
+              ng-repeat-start="entity in item._entities"
+              ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analisys'}">{{ entity._displayName }}</span> 
+            <span ng-repeat-end class="tag-title">{{entity.value.title}}</span>
+            </div>
             </td>
             <td>{{ item.length|bytes }}</td>
             <td>{{ item.lastModified|date:"short" }}</td>
