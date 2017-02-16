@@ -8,8 +8,8 @@
   width: 20%;
   float: left;
   flex: 0 0 230px;
-  background: #364251;
-  color: #d0d0d0;
+  background: #373737;
+  color: #ababab;
   border-right: 1px solid #d3d3d3;
   flex-direction: column;
   display: flex;
@@ -22,7 +22,7 @@
 }
 
 #geo_sidebar .list-group-item {
-  background-color: #364251;
+  background-color: #373737;
   border-bottom: 1px solid #707070;
   border-left: 0px;
   border-right: 0px;
@@ -32,7 +32,7 @@
 }
 
 #geo_sidebar .list-group-item.save {
-  background-color: #379ba0;
+  background-color: #257b5f;
 }
 
 #geo_sidebar .current-layer-details {

@@ -2,13 +2,15 @@
   <div id="geo_sidebar">
     <ul class="list-group">
       <li class="list-group-item" style="background:#eaeaea;margin-top:0px">
-        <img src="/static/images/ds-logo-horiz.png" width="230"></img>
+        <a href="/">
+          <img src="/static/images/ds-logo-horiz.png" width="230"></img>
+        </a>
       </li>
       <li class="list-group-item">
-        <i class="fa fa-plus"> </i>  Create a new project
+        <i class="fa fa-plus"> </i>  Create a new map
       </li>
       <li class="list-group-item">
-        <i class="fa fa-folder-open"> </i>  Open a project
+        <i class="fa fa-folder-open"> </i>  Open a map
       </li>
       <!-- <li class="list-group-item">
         <i class="fa fa-object-ungroup"> </i>  Draw shapes
@@ -25,7 +27,6 @@
         <i class="fa fa-file"> </i>  Add an image
       </li>
       <li class="list-group-item">
-        <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
         &nbsp
       </li>
       <li class="list-group-item save" ng-click="vm.save_project()">
@@ -42,7 +43,7 @@
             <input type="color"
                     class="form-control"
                    ng-model="vm.current_layer.options.fillColor"
-                   ng-change=vm.update_fill()>
+                   ng-change=vm.update_layer_style('fillColor')>
             </input>
           </td>
         </tr>
@@ -52,7 +53,7 @@
             <input type="color"
                     class="form-control"
                    ng-model="vm.current_layer.options.color"
-                   ng-change=vm.update_color()>
+                   ng-change=vm.update_layer_style('color')>
             </input>
           </td>
         </tr>
@@ -62,7 +63,7 @@
             <input type="number" min=0 max=1.0 step=0.01
                     class="form-control"
                    ng-model="vm.current_layer.options.fillOpacity"
-                   ng-change=vm.update_opacity()>
+                   ng-change=vm.update_layer_style('fillOpacity')>
             </input>
           </td>
         </tr>

@@ -96,14 +96,36 @@ var MapSidebarCtrl = function () {
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
-    this.map = L.map('geo_map').setView([51.505, -0.09], 6);
 
+    // L.control.layers({
+    //     "Street": map.tileLayer,
+    //     "Satellite": L.mapbox.tileLayer("my satellite imagery map id")
+    // }, null).addTo(this.map);
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
+    });
+
+    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy;',
+      maxZoom: 18
+    });
+
+    var basemaps = {
+      'Street': streets,
+      'Satellite': satellite
+    };
+
+    this.map = L.map('geo_map', { layers: [streets, satellite] }).setView([51.505, -0.09], 6);
+
+    L.control.layers(basemaps).addTo(this.map);
+    // L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+    //     maxZoom: 20,
+    //     subdomains:['mt0','mt1','mt2','mt3']
+    // });
+
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);
 
@@ -138,7 +160,7 @@ var MapSidebarCtrl = function () {
       _this.current_layer = object;
       _this.$scope.$apply();
     });
-  }
+  } // end constructor
 
   _createClass(MapSidebarCtrl, [{
     key: 'open_file_dialog',
@@ -186,6 +208,7 @@ var MapSidebarCtrl = function () {
 
           var lat = exif.GPSLatitude;
           var lon = exif.GPSLongitude;
+          console.log(exif);
 
           //Convert coordinates to WGS84 decimal
           var latRef = exif.GPSLatitudeRef || "N";
@@ -199,20 +222,9 @@ var MapSidebarCtrl = function () {
       }
     }
   }, {
-    key: 'update_color',
-    value: function update_color() {
-      this.current_layer.setStyle({ color: this.current_layer.options.color });
-    }
-  }, {
-    key: 'update_fill',
-    value: function update_fill() {
-      this.current_layer.setStyle({ fillColor: this.current_layer.options.fillColor });
-      this.current_layer.setStyle({ color: this.current_layer.options.fillColor });
-    }
-  }, {
-    key: 'update_opacity',
-    value: function update_opacity() {
-      this.current_layer.setStyle({ fillOpacity: this.current_layer.options.fillOpacity });
+    key: 'update_layer_style',
+    value: function update_layer_style(prop) {
+      this.current_layer.setStyle({ prop: this.current_layer.options[prop] });
     }
   }, {
     key: 'save_project',

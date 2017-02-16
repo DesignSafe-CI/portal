@@ -8,26 +8,49 @@ export default class MapSidebarCtrl {
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
-    this.map = L.map('geo_map').setView([51.505, -0.09], 6);
 
+    // L.control.layers({
+    //     "Street": map.tileLayer,
+    //     "Satellite": L.mapbox.tileLayer("my satellite imagery map id")
+    // }, null).addTo(this.map);
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
+    });
+
+    let satellite = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy;',
+      maxZoom: 18,
+    });
+
+    let basemaps = {
+      'Street': streets,
+      'Satellite': satellite
+    };
+
+    this.map = L.map('geo_map', {layers: [streets, satellite]}).setView([51.505, -0.09], 6);
+
+    L.control.layers(basemaps).addTo(this.map);
+    // L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+    //     maxZoom: 20,
+    //     subdomains:['mt0','mt1','mt2','mt3']
+    // });
+
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);
 
     let drawControl = new L.Control.Draw({
-     position: 'topright',
-     draw: {
-      circle: false,
-     },
-     edit: {
+      position: 'topright',
+      draw: {
+        circle: false,
+      },
+      edit: {
        featureGroup: this.drawnItems,
        remove: true
-     }
+      }
     });
 
     this.drawnItems.on('click', (e) => {
@@ -52,7 +75,7 @@ export default class MapSidebarCtrl {
     });
 
 
-  }
+  } // end constructor
 
   open_file_dialog () {
     this.$timeout(()=> {
@@ -92,6 +115,7 @@ export default class MapSidebarCtrl {
 
           let lat = exif.GPSLatitude;
           let lon = exif.GPSLongitude;
+          console.log(exif)
 
           //Convert coordinates to WGS84 decimal
           let latRef = exif.GPSLatitudeRef || "N";
@@ -105,18 +129,10 @@ export default class MapSidebarCtrl {
     }
   }
 
-  update_color () {
-    this.current_layer.setStyle({color: this.current_layer.options.color});
+  update_layer_style (prop) {
+    this.current_layer.setStyle({prop: this.current_layer.options[prop]});
   }
 
-  update_fill () {
-    this.current_layer.setStyle({fillColor: this.current_layer.options.fillColor});
-    this.current_layer.setStyle({color: this.current_layer.options.fillColor});
-  }
-
-  update_opacity () {
-    this.current_layer.setStyle({fillOpacity: this.current_layer.options.fillOpacity});
-  }
 
   save_project () {
     console.log(this.drawnItems);
