@@ -129,6 +129,23 @@
       });
     };
 
+    $scope.dateString = function(s){
+      var d = Date(s);
+      return d;
+    };
+
+    $scope.showListing = function(){
+      DataBrowserService.state().showMainListing = true;
+      DataBrowserService.state().showPreviewListing = false;
+      DataBrowserService.showListing();
+    };
+
+    $scope.showPreview = function(){
+      DataBrowserService.state().showMainListing = false;
+      DataBrowserService.state().showPreviewListing = true;
+      DataBrowserService.showPreview();
+    };
+
   }]);
 
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {

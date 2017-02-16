@@ -36,7 +36,9 @@
       selected: [],
       loadingMore: false,
       reachedEnd: false,
-      page: 0
+      page: 0,
+      showMainListing: true,
+      showPreviewListing: false
     };
 
     var apiParams = {
@@ -151,6 +153,16 @@
       tests.canDelete = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path === trashPath;
 
       return tests;
+    }
+
+    function showListing(){
+      currentState.showMainListing = true;
+      currentState.showPreviewListing = false;
+    }
+
+    function showPreview(){
+      DataBrowserService.state().showMainListing = false;
+      DataBrowserService.state().showPreviewListing = true;
     }
 
 
@@ -1242,7 +1254,8 @@
 						 form: {metadataTags: '',
                                 tagsToDelete: []},
                          files: files,
-                         error:''};
+                         error:'',
+                         fileUuids: []};
 
           $scope.ui = {error: false};
           if (typeof listing !== 'undefined' &&
@@ -1254,6 +1267,7 @@
             $scope.ui.busy = true;
             file.getMeta().then(function(file){
               $scope.ui.busy = false;
+              $scope.data.fileUuids = [file.uuid()];
             }, function(err){
               $scope.ui.busy = false;
               $scope.ui.error = err;
@@ -1290,7 +1304,7 @@
               for (var i = 0; i < entities.length; i++){
                 var _files = entities[i].value.files || [];
                 for (var j = 0; j < _files.length; j++){
-                  if (_.difference($scope.data.fileUuids, _files).length === 0){
+                  if (_.difference(_files, $scope.data.fileUuids).length === 0){
                     $scope.data.fileProjectTag = entities[i];
                     break;
                   }
@@ -1553,7 +1567,9 @@
       /* events */
       subscribe: subscribe,
       notify: notify,
-      apiParams: apiParams
+      apiParams: apiParams,
+      showListing: showListing,
+      showPreview: showPreview
     };
 
   }]);

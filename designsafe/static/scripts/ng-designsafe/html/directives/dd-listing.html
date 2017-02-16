@@ -2,7 +2,8 @@
   <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()()"
         data-scroll-top="scrollToTop()()"
-        data-bottom-height="0">
+        data-bottom-height="0"
+        ng-if="browser.showMainListing">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
         <th>Name</th>
@@ -73,4 +74,38 @@
         </caption>
     </table>
   </div>
+
+  <div class="ds-table-display-wrapper" ds-infinite-scroll
+        data-scroll-bottom="scrollToBottom()()"
+        data-scroll-top="scrollToTop()()"
+        data-bottom-height="0"
+        ng-repeat="experiment in browser.project.experiment_set"
+         ng-if="browser.showPreviewListing">
+    <div style="border:1px solid black; background:white;">
+      <div style="width:50%">
+      <h3>{{experiment.value.title}}</h3>
+      <p>{{experiment.value.descrpition}}</p>
+      </div>
+      <div style="width:49%; vertical-align:top;">
+        <div style="border:1px solid black;">
+          {{experiment.value.experimentalFacility}}
+        </div>
+        <div style="border:1px solid black;">
+          {{experiment.value.experimentType}}
+        </div>
+      </div>
+    </div>
+    <table class="table table-bordered table-striped" style="background-color: #fff;">
+        <thead>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Last modified</th>
+        <th>Details</th>
+        </thead>
+
+        <tbody>
+        </tbody>
+    </table>
+    </div>
+
 </div>

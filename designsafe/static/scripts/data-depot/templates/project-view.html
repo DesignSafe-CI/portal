@@ -1,18 +1,34 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail">
         <h2>{{ data.project.value.title }}</h2>
+        <div style="width:50%; display:inline-block;">
         <table class="table">
             <tbody>
+            <tr>
+              <th>ID</th>
+              <td>{{data.project.vlue.id}}</td>
+            </tr>
             <tr>
                 <th>PI</th>
                 <td><ds-user username="data.project.value.pi" format="name-username">{{ data.project.value.pi }}</ds-user></td>
             </tr>
+            <tr>
+              <th>Created</th>
+              <td>{{data.project.created}}</td>
+            </tr>
             </tbody>
         </table>
+        </div>
+        <div style="width:49%; display:inline-block; vertical-align:top;">
         <div class="btn-group" role="group" aria-label="Project Actions">
             <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
             <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
             <button class="btn btn-sm btn-default" ng-click="manageExperiments($event)">Manage Experiments</button>
+        </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="Listing views">
+          <button class="btn btn-sm btn-default" ng-click="showListing()">Working Directory</button>
+          <button class="btn btn-sm btn-default" ng-click="showPreview()">Publication Preview</button>
         </div>
     </div>
 
