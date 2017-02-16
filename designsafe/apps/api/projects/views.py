@@ -375,7 +375,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             logger.debug('model uuid: %s', model.uuid)
             file_uuids = []
             if 'filePaths' in entity:
-                file_paths = experiment.get('filePaths', [])
+                file_paths = entity.get('filePaths', [])
                 project_system = ''.join(['project-', project_id])
                 user_ag = request.user.agave_oauth.client
                 for file_path in file_paths:
@@ -386,6 +386,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
                     file_uuids.append(file_obj.uuid)
                 for file_uuid in file_uuids:
                     model.files.add(file_uuid)
+                model.associate(file_uuids)
             model.project.add(project_id)
             model.associate(project_id)
             saved = model.save(ag)
@@ -406,7 +407,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
         return JsonResponse(resp.to_body_dict(), safe=False)
 
-    def put(self, request, name, uuid):
+    def put(self, request, uuid):
         """
 
         :param request:
@@ -419,9 +420,10 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         else:
             post_data = request.POST.copy()
         try:
-            model_cls = self._lookup_model(name)
-            model = model_cls(uuid=uuid, value=post_data)
-            saved = model.save()
+            entity = post_data.get('entity')
+            model_cls = self._lookup_model(entity['name'])
+            model = model_cls(**entity)
+            saved = model.save(ag)
             resp = model_cls(**saved)
         except ValueError:
             return HttpResponseBadRequest('Entity not valid.')
