@@ -174,17 +174,15 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_image',
     value: function load_image(ev) {
-      var _this3 = this;
-
       var files = ev.target.files;
       for (var i = 0; i < files.length; i++) {
         var file = files[0];
         var reader = new FileReader(); // use HTML5 file reader to get the file
 
         reader.readAsArrayBuffer(file);
-        reader.onloadend = function () {
+        reader.onloadend = function (e) {
           // get EXIF data
-          var exif = EXIF.readFromBinaryFile(_this3.result);
+          var exif = EXIF.readFromBinaryFile(e.target.result);
 
           var lat = exif.GPSLatitude;
           var lon = exif.GPSLongitude;

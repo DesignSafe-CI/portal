@@ -86,9 +86,9 @@ export default class MapSidebarCtrl {
       let reader = new FileReader; // use HTML5 file reader to get the file
 
       reader.readAsArrayBuffer(file);
-      reader.onloadend = () => {
+      reader.onloadend = (e) => {
           // get EXIF data
-          let exif = EXIF.readFromBinaryFile(this.result);
+          let exif = EXIF.readFromBinaryFile(e.target.result);
 
           let lat = exif.GPSLatitude;
           let lon = exif.GPSLongitude;
