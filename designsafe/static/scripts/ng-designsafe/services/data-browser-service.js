@@ -140,7 +140,7 @@
       tests.canDownload = files.length >= 1 && hasPermission('READ', files);
       tests.canPreview = files.length === 1 && hasPermission('READ', files);
       tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
-      tests.canViewMetadata = files.length === 1 && hasPermission('READ', files);
+      tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
       tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData');
@@ -1224,9 +1224,14 @@
      * @param {FileListing} file The file to view metadata for
      * @return {HttpPromise}
      */
-    function viewMetadata (file, listing) {
+    function viewMetadata (files, listing) {
       var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-metadata.html';
-      if (typeof file.metadata !== 'undefined' &&
+      var file = null;
+      if (typeof files !== 'undefined'){
+        file = files[0];
+      }
+      if (typeof file !== 'undefined' &&
+         typeof file.metadata !== 'undefined' &&
          file.metadata.project !== 'undefined'){
         template ='/static/scripts/ng-designsafe/html/modals/data-browser-service-published-metadata.html';
       }
@@ -1235,21 +1240,63 @@
         controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
           $scope.data = {file: file,
 						 form: {metadataTags: '',
-                                tagsToDelete: []}};
-          $scope.ui = {};
-          $scope.ui.busy = true;
+                                tagsToDelete: []},
+                         files: files,
+                         error:''};
+
+          $scope.ui = {error: false};
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
             var _listing = angular.copy(listing);
             $scope.data.file.metadata = _listing.metadata;
-          }else{
+          }else if (files.length == 1){
+            $scope.ui.busy = true;
             file.getMeta().then(function(file){
               $scope.ui.busy = false;
             }, function(err){
               $scope.ui.busy = false;
               $scope.ui.error = err;
             });
+          } else if (files.length > 0){
+            $scope.ui.busy = true;
+            var tasks = _.map(files, function(f){
+              if (f.uuid().length === 0){
+                return f.getMeta();
+              }
+            });
+            $q.all(tasks).then(
+                function(resp){
+                  $scope.ui.busy = false;
+                  $scope.data.fileUuids = [];
+                  $scope.data.fileUuids = _.map(files, function(f){ return f.uuid(); });
+                },
+                function(err){
+                  $scope.error = err;
+                });
+          }
+
+          if (typeof files !== 'undefined'){
+          }
+          if (typeof currentState.project !== 'undefined'){
+            $scope.data.modelConfigs = currentState.project.modelconfiguration_set || [];
+            $scope.data.sensors = currentState.project.sensorlist_set || [];
+            $scope.data.events = currentState.project.event_set || [];
+            $scope.data.analysis = currentState.project.analysis_set || [];
+            var entities = $scope.data.modelConfigs.concat($scope.data.sensors);
+            entities = entities.concat($scope.data.events);
+            entities = entities.concat($scope.data.analysis);
+            if(typeof files !== 'undefined'){
+              for (var i = 0; i < entities.length; i++){
+                var _files = entities[i].value.files || [];
+                for (var j = 0; j < _files.length; j++){
+                  if (_.difference($scope.data.fileUuids, _files).length === 0){
+                    $scope.data.fileProjectTag = entities[i];
+                    break;
+                  }
+                }
+              }
+            }
           }
 
 		  $scope.doSaveMetadata = function($event) {
@@ -1275,6 +1322,79 @@
            */
           $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
+          };
+          
+          $scope.ui.addingTag = false;
+          $scope.ui.tagTypes = [
+              {label: 'Model Config',
+               name: 'designsafe.project.model_config'},
+              {label: 'Sensor',
+               name: 'designsafe.project.sensor_list'},
+              {label: 'Event',
+               name: 'designsafe.project.event'},
+              {label: 'Analysis',
+               name: 'designsafe.project.analysis'}
+              ];
+          $scope.data.form.projectTagToAdd = {};
+
+          $scope.isProjectTagSel = function(entity){
+            if (typeof $scope.data.newFileProjectTag !== 'undefined' &&
+                typeof $scope.data.newFileProjectTag.uuid !== 'undefined' &&
+                $scope.data.newFileProjectTag.uuid === entity.uuid){
+              return true;
+            } else if (typeof $scope.data.fileProjectTag !== 'undefined' &&
+                typeof $scope.data.fileProjectTag.uuid !== 'undefined' &&
+                $scope.data.fileProjectTag.uuid === entity.uuid){
+              return true;
+            }
+            return false;
+          };
+
+          $scope.selectProjectTag = function(entity){
+            if (typeof $scope.data.fileUuids === 'undefined'){
+              return;
+            }
+            $scope.data.newFileProjectTag = entity;
+          };
+          
+          $scope.addProjectTag = function(){
+            var newTag = $scope.data.form.projectTagToAdd;
+            var nameComps = newTag.tagType.split('.');
+            var name = nameComps[nameComps.length-1];
+            var entity = {};
+            entity.name = newTag.tagType;
+            if (name === 'event'){
+              entity.eventType = newTag.tagAttribute;
+            } else if (name === 'analysis'){
+              entity.analysisType = newTag.tagAttribute;
+            } else if (name === 'sensor_list'){
+              entity.sensorListType = newTag.tagAttibute;
+            } else if (name === 'model_config'){
+              entity.coverage = newTag.tagAttribute;
+            }
+            $scope.ui.addingTag = true;
+            entity.title = newTag.tagTitle;
+            entity.description = newTag.tagDescription;
+            if (typeof $scope.data.files !== 'undefined'){
+              entity.filePaths = _.map($scope.data.files,
+                                     function(file){
+                                      return file.path;
+                                     });
+            }
+            $http.post('/api/projects/' + currentState.project.uuid +
+                       '/meta/' + newTag.tagType,
+                       {
+                         entity: entity
+                       }).then(
+                       function(resp){
+                         $scope.ui.error = false;
+                         $scope.ui.addingTag = false;
+                       },
+                       function(err){
+                         $scope.ui.error = true;
+                         $scope.error = err;
+                       }
+                       );
           };
         }],
         size: 'lg',
@@ -1303,6 +1423,37 @@
           //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
           currentState.busy = false;
         });
+        if (typeof data.newFileProjectTag !== 'undefined'){
+          if (typeof data.fileProjectTag !== 'undefined'){
+          data.fileProjectTag.value.files = _.difference(data.fileProjectTag.value.files, data.fileUuids);
+          data.fileProjectTag.associationIds = _.difference(data.fileProjectTag.associationIds, data.fileUuids);
+          $http.put('/api/projects/meta/' + data.fileProjectTag.uuid,
+                    {
+                      entity: data.fileProjectTag
+                    }).then(
+                    function(resp){
+                      data.fileProjectTag = resp.data;
+                    },
+                    function(err){
+                      logger.debug(err);
+                    }
+                    );
+            }
+          data.newFileProjectTag.value.files = data.newFileProjectTag.value.files.concat(data.fileUuids);
+          data.newFileProjectTag.value.files = _.uniq(data.newFileProjectTag.value.files);
+          data.newFileProjectTag.associationIds = data.newFileProjectTag.associationIds.concat(data.fileUuids);
+          data.newFileProjectTag.associationIds = _.uniq(data.newFileProjectTag.associationIds);
+          $http.put('/api/projects/meta/' + data.newFileProjectTag.uuid,
+                    {
+                      entity: data.newFileProjectTag
+                    }).then(
+                    function(resp){
+                      data.newFileProjectTag = resp.data;
+                    },
+                    function(err){
+                      logger.debug(err);
+                    });
+        }
       });
     }
 
