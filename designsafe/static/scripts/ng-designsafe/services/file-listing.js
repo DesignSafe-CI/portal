@@ -25,6 +25,19 @@
       }
     }
 
+    FileListing.prototype.uuid = function(){
+      try{
+        var parser = document.createElement('a');
+        parser.href = decodeURIComponent(this._links.metadata.href);
+        var q = parser.search.substring(3);
+        var uuid = JSON.parse(decodeURIComponent(q)).associationIds;
+        return uuid;
+      }
+      catch(e){
+        return '';
+      }
+    };
+
     FileListing.prototype.parentPath = function(){
       var pathComps = this.path.split('/');
       return pathComps.slice(0, pathComps.length - 1).join('/');
