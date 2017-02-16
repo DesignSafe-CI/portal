@@ -7,13 +7,12 @@ from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         Http404)
+                         Http404, HttpResponseForbidden)
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.shortcuts import render
 from designsafe.apps.dropbox_integration.models import DropboxUserToken
 # from designsafe.apps.dropbox_integration.tasks import copy_box_item
-
 import logging
 import json
 
@@ -47,20 +46,25 @@ def index(request):
     return render(request, 'designsafe/apps/dropbox_integration/index.html', context)
 
 
+@csrf_exempt
 @login_required
 def get_dropbox_auth_flow(request):
-    redirect_uri = reverse('dropbox_integration:oauth2_callback')
+    try:
+        redirect_uri = reverse('dropbox_integration:oauth2_callback')
 
-    if 'dropbox' not in request.session:
-        request.session['dropbox']={}
+        if 'dropbox' not in request.session:
+            request.session['dropbox']={}
 
-    return DropboxOAuth2Flow(
-        consumer_key = settings.DROPBOX_APP_KEY,
-        consumer_secret = settings.DROPBOX_APP_SECRET,
-        redirect_uri = request.build_absolute_uri(redirect_uri),
-        session = request.session['dropbox'],
-        csrf_token_session_key = 'state'
-    )
+        return DropboxOAuth2Flow(
+            consumer_key = settings.DROPBOX_APP_KEY,
+            consumer_secret = settings.DROPBOX_APP_SECRET,
+            redirect_uri = request.build_absolute_uri(redirect_uri),
+            session = request.session['dropbox'],
+            csrf_token_session_key = 'state'
+        )
+    except CsrfException as exc:
+        logger.debug(exc, exc_info=True)
+        raise
 
 @login_required
 def initialize_token(request):
@@ -73,7 +77,7 @@ def initialize_token(request):
 def oauth2_callback(request):
     try:
         auth_code = request.GET.get('code')
-        state = request.GET.get('state')
+        #state = request.GET.get('state')
         # if 'dropbox' in request.session:
         #     dropbox = request.session['dropbox']
         # else:
@@ -82,7 +86,9 @@ def oauth2_callback(request):
         # if not (state == dropbox['state']):
         #     return HttpResponseBadRequest('Request expired')
 
-        oauth = get_dropbox_auth_flow(request).finish(request.GET)
+        flow = get_dropbox_auth_flow(request)
+        flow.session[flow.csrf_token_session_key] = request.GET.get('state')
+        oauth = flow.finish(request.GET)
 
         # access_token, account_id, user_id, url_state = \
             # get_dropbox_auth_flow(request).finish(request.GET)
@@ -98,18 +104,22 @@ def oauth2_callback(request):
         token.save()
 
     except BadRequestException as e:
-        http_status(400)
+        #http_status(400)
+        return HttpResponseBadRequest('Bad Request.')
     except BadStateException as e:
         # Start the auth flow again.
         HttpResponseRedirect(reverse('dropbox_integration:initialize_token'))
     except CsrfException as e:
-        http_status(403)
+        logger.error('Error', exc_info=True)
+        return HttpResponseForbidden('Forbidden.')
+        #http_status(403)
     except NotApprovedException as e:
-        flash('Not approved?  Why not?')
+        #flash('Not approved?  Why not?')
         return redirect_to("/home")
     except ProviderException as e:
         logger.log("Auth error: %s" % (e,))
-        http_status(403)
+        return HttpResponseForbidden('Forbidden.')
+        #http_status(403)
 
     return HttpResponseRedirect(reverse('dropbox_integration:index'))
 
