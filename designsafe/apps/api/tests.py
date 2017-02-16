@@ -65,6 +65,6 @@ class InitFileModel(ProjectDataModelsTestCase):
         #             json.dumps(self.file_meta, indent=4))
         file_meta = FileModel(**self.file_meta)
         #logger.debug('dict: %s', file_meta._meta._reverse_fields)
-        file_meta.modelconfiguration_set()
+        #file_meta.modelconfiguration_set()
         #logger.debug('file meta dict: %s',
         #             json.dumps(file_meta.to_body_dict(), indent=4))
