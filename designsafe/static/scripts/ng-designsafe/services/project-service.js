@@ -45,6 +45,7 @@
     var collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
     var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
     var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
+    var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
     /**
      * 
@@ -147,28 +148,78 @@
         templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-manage-experiments.html',
         controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
           $scope.data = {
-            busy: true
+            busy: false,
+            experiments: options.experiments,
+            project: options.project
           };
+          $scope.ui = {
+              experiments: {}
+              };
           $scope.form = {
             curExperiments: [],
-            addExperiments: [{}]
+            addExperiments: [{}],
+            deleteExperiments: []
           };
           $scope.formcurExperiments = options.experiments;
 
-          $scope.addAnother = function () {
-            $scope.form.addUsers.push({});
-          };
-
-          $scope.addAnotherCoPi = function () {
-            $scope.form.addCoPis.push({});
-          };
-
-          $scope.searchUsers = function (q) {
-            return UserService.search({q: q});
+          $scope.addExperiment = function () {
+            $scope.form.addExperiments.push({});
           };
 
           $scope.cancel = function () {
             $uibModalInstance.dismiss();
+          };
+
+          $scope.delNewExperiment = function(index){
+            $scope.form.addExperiments.splice(index, 1);
+          };
+
+          $scope.toggleDeleteExperiment = function(uuid){
+            if (uuid in $scope.ui.experiments &&
+                $scope.ui.experiments[uuid].deleted){
+              var index = $scope.form.deleteExperiments.indexOf(uuid);
+              $scope.form.deleteExperiments.slice(index, 1);
+              $scope.ui.experiments[uuid].deleted = false;
+            } else {
+              $scope.form.deleteExperiments.push(uuid);
+              $scope.ui.experiments[uuid] = {};
+              $scope.ui.experiments[uuid].deleted = true;
+            }
+          };
+
+          $scope.saveExperiments = function($event){
+            $event.preventDefault();
+            $scope.data.busy = true;
+            var addActions = _.map($scope.form.addExperiments, function(exp){
+              if (exp.title && exp.experimentalFacility && exp.experimentType && exp.description){
+                return entitiesResource.post({
+                  data: {
+                    uuid: $scope.data.project.uuid,
+                    name: 'designsafe.project.experiment',
+                    entity: exp
+                  }
+                });
+              }
+            });
+
+            var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
+              return entityResource.delete({
+                data: {
+                  uuid: uuid,
+                }
+              });
+            });
+
+            var tasks = addActions.concat(removeActions);
+
+            $q.all(tasks).then(
+              function (results) {
+                $uibModalInstance.close(results);
+              },
+              function (error) {
+                $uibModalInstance.reject(error.data);
+              }
+            );
           };
 
           $scope.saveCollaborators = function ($event) {
@@ -213,7 +264,8 @@
               }
             );
           };
-        }]
+        }],
+        size:'lg'
       });
 
       return modal.result;
