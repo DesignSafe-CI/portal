@@ -383,3 +383,79 @@
 .modal-dialog.modal-md {
     width:800px;
 }
+
+tr.experiment-deleted {
+    text-decoration: line-through;
+}
+
+span.label.tag-light-blue {
+    border: 2px solid #5BC0DE;
+    color: black;
+}
+
+span.label.tag-light-blue.selected {
+    border: 2px solid #5BC0DE;
+    background: #5BC0DE;
+    color: white;
+}
+
+span.label.tag-blue {
+    border: 2px solid #0567CC;
+    color: black;
+}
+
+span.label.tag-blue.selected {
+    border: 2px solid #0567CC;
+    background:#0567CC;
+    color: white;
+}
+
+span.label.tag-green {
+    border: 2px solid #2EA89A;
+    color: black;
+}
+
+span.label.tag-green.selected {
+    border: 2px solid #2EA89A;
+    background:#2EA89A;
+    color: white;
+}
+
+span.label.tag-red {
+    border: 2px solid #D04348;
+    color: black;
+}
+
+span.label.tag-red.selected {
+    border: 2px solid #D04348;
+    background:#D04348;
+    color: white;
+}
+
+.data-model-tree ul, .data-model-tree ul li {
+    list-style:none;
+}
+
+.data-model-tree ul li {
+    margin-top:15px;
+}
+
+.data-model-tree li::before, .data-model-tree li::after {
+  content:'';
+  left:-20px;
+  position:absolute;
+  right:auto
+}
+.data-model-tree li::before {
+  border-left:1px solid #999;
+  bottom:50px;
+  height:100%;
+  top:0;
+  width:1px
+}
+.data-model-tree li::after {
+  border-top:1px solid #999;
+  height:20px;
+  top:25px;
+  width:25px
+}
