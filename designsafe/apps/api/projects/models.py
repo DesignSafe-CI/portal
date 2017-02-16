@@ -224,6 +224,7 @@ class Event(MetadataModel):
     event_type = fields.CharField('Event Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
+    files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
 
@@ -232,6 +233,7 @@ class Analysis(MetadataModel):
     analysis_type = fields.CharField('Analysis Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
+    files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
 
@@ -240,6 +242,8 @@ class SensorList(MetadataModel):
     sensor_list_type = fields.CharField('Sensor List Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
+    events = fields.RelatedObjectField(Event)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
 
@@ -248,6 +252,7 @@ class ModelConfiguration(MetadataModel):
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     coverage = fields.CharField('Coverage', max_length=512)
+    events = fields.RelatedObjectField(Event)
     files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
