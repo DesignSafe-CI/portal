@@ -96,6 +96,9 @@ INSTALLED_APPS = (
     'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
     'designsafe.apps.search',
+
+    #haystack integration
+    'haystack'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -191,13 +194,25 @@ else:
         }
     }
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'localhost:9200/',
-        'INDEX_NAME': 'cms',
+
+# Haystack cms indexing settings
+if not (os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'):
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
+            'INDEX_NAME': 'cms',
+        }
     }
-}
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'elasticsearch:9200/',
+            'INDEX_NAME': 'cms',
+        }
+    }
+
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True

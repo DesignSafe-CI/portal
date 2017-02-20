@@ -38,12 +38,12 @@ class SearchView(BaseApiView):
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
-        es_query = Search(index="jmeiring,cms_jmeiring")\
+        es_query = Search(index="jmeiring,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
             .highlight("body",
-                fragment_size=200,
+                fragment_size=150,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
@@ -68,8 +68,10 @@ class SearchView(BaseApiView):
                     }
                 )
         elif type_filter == 'web':
-            es_query._index = 'cms_jmeiring'
-            es_query = es_query.query("_source", include=['body'])
+            es_query._index = 'cms'
+            es_query = es_query.query(~Q('match', body='\n'))\
+                            .filter("exists", field="body")
+            # es_query = es_query.query("_source", include=['body'])
 
         # logger.info(es_query.to_dict())
         res = es_query.execute()
@@ -83,14 +85,15 @@ class SearchView(BaseApiView):
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
             .highlight("body",
-                fragment_size=200,
+                fragment_size=150,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
             .highlight_options(require_field_match=False)\
             .extra(from_=offset, size=limit)\
             .execute()
-
+        logger.info(web_query.to_dict())
+        # web_query = web_query.execute()
         files_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
@@ -113,7 +116,7 @@ class SearchView(BaseApiView):
             )\
             .extra(from_=offset, size=limit)\
             .execute()
-        logger.info(pubs_query.to_dict())
+
         exp_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
@@ -137,9 +140,6 @@ class SearchView(BaseApiView):
                 d["doc_type"] = r.meta.doc_type
                 if hasattr(r.meta, 'highlight'):
                     highlight = r.meta.highlight.to_dict()
-                    for h in highlight["body"]:
-                        h = strip_tags(h)
-                    logger.info(highlight)
                     d["highlight"] = highlight
                 hits.append(d)
 

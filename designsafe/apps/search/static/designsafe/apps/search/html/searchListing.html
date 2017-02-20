@@ -32,8 +32,7 @@
       <h4><a ng-href="{{data.url || '/'}}" target="_self"> {{data.slug}} </a></h4>
     </p>
     <div ng-repeat = "hit in data.highlight.body">
-      <p ng-bind-html = "hit | trusted"> </p>
-      {{hit | removeHTMLTags}}
+      <p ng-bind-html = "hit"> </p>
     </div>
     <!-- <div ng-bind-html="data.body"></div> -->
     <hr>
