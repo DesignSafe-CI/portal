@@ -76,12 +76,8 @@ class SearchView(BaseApiView):
         # logger.info(es_query.to_dict())
         res = es_query.execute()
 
-        # for hit in res.hits:
-        #     logger.info(hit.meta.highlight)
-            # for frag in hit.meta.highlight.body:
-            #     logger.info(frag)
-
-        # these get the counts of the total hits for each category...
+        # these get the counts of the total hits for each category. This is
+        # for the sidebar with the different categories to refine by
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
             .highlight("body",
