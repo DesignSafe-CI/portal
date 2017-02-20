@@ -481,16 +481,7 @@ WS4REDIS_CONNECTION = {
 }
 WS4REDIS_EXPIRE = 0
 
-###
-# Celery settings
-#
-BROKER_URL = 'redis://redis:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERYD_LOG_FORMAT ='[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: [%(task_name)s(%(task_id)s)]%(message)s'
-CELERYD_TASK_TIME_LIMIT = 60 * 15 #60 seconds multiplied by 15 = 15min
-
+from celery_settings import *
 ###
 # Analytics
 #
