@@ -12,6 +12,8 @@ from django.http import (HttpResponseRedirect,
                          HttpResponseServerError,
                          HttpResponseBadRequest,
                          JsonResponse)
+from django.utils.html import strip_tags
+
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.agave.filemanager.public_search_index import (
@@ -36,7 +38,7 @@ class SearchView(BaseApiView):
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
-        es_query = Search(index="jmeiring,cms")\
+        es_query = Search(index="jmeiring,cms_jmeiring")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
@@ -66,10 +68,10 @@ class SearchView(BaseApiView):
                     }
                 )
         elif type_filter == 'web':
-            es_query._index = 'cms'
+            es_query._index = 'cms_jmeiring'
+            es_query = es_query.query("_source", include=['body'])
 
-
-        logger.info(es_query.to_dict())
+        # logger.info(es_query.to_dict())
         res = es_query.execute()
 
         # for hit in res.hits:
@@ -134,11 +136,15 @@ class SearchView(BaseApiView):
                 d = r.to_dict()
                 d["doc_type"] = r.meta.doc_type
                 if hasattr(r.meta, 'highlight'):
-                    d["highlight"] = r.meta.highlight.to_dict()
+                    highlight = r.meta.highlight.to_dict()
+                    for h in highlight["body"]:
+                        h = strip_tags(h)
+                    logger.info(highlight)
+                    d["highlight"] = highlight
                 hits.append(d)
+
         pubs = []
         for r in pubs_query:
-            logger.info(r.meta.inner_hits)
             for p in r.meta.inner_hits['publications']:
                  d = p.to_dict()
                  d["doc_type"] = "publication"

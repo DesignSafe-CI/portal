@@ -191,6 +191,17 @@ else:
         }
     }
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'localhost:9200/',
+        'INDEX_NAME': 'cms',
+    }
+}
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
+ALDRYN_SEARCH_REGISTER_APPHOOK = True
+
 from nees_settings import NEES_USER_DATABASE
 if NEES_USER_DATABASE['NAME']:
     DATABASES['nees_users'] = NEES_USER_DATABASE
