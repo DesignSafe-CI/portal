@@ -35,6 +35,7 @@ django:
     - DATABASE_PORT=3306
     - DATABASE_USER=DS_DEV
     - DATABASE_PASSWORD=DS_DEV
+    - DS_LOCAL_DEV=True
   links:
     - redis:redis
     - memcached:memcached
