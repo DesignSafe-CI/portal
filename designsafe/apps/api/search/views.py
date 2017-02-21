@@ -88,7 +88,6 @@ class SearchView(BaseApiView):
             .highlight_options(require_field_match=False)\
             .extra(from_=offset, size=limit)\
             .execute()
-        logger.info(web_query.to_dict())
         # web_query = web_query.execute()
         files_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\

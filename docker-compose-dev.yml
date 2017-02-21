@@ -21,6 +21,7 @@ mysql:
     MYSQL_DATABASE: DS_DEV
     MYSQL_USER: DS_DEV
     MYSQL_PASSWORD: DS_DEV
+
 memcached:
   image: memcached
 
