@@ -197,7 +197,7 @@
       })
       .state('boxData', {
         url: '/box/{filePath:any}',
-        controller: 'ExternalDataCtrl',
+        controller: 'BoxDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/box-data-listing.html',
         params: {
           filePath: ''
@@ -206,6 +206,33 @@
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
             var filePath = $stateParams.filePath || '/';
             DataBrowserService.apiParams.fileMgr = 'box';
+            DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
+            DataBrowserService.apiParams.searchState = undefined;
+            return DataBrowserService.browse({path: filePath});
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
+      })
+      .state('dropboxData', {
+        url: '/dropbox/{filePath:any}',
+        controller: 'DropboxDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/dropbox-data-listing.html',
+        params: {
+          filePath: ''
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var filePath = $stateParams.filePath || '/';
+            DataBrowserService.apiParams.fileMgr = 'dropbox';
             DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
             DataBrowserService.apiParams.searchState = undefined;
             return DataBrowserService.browse({path: filePath});

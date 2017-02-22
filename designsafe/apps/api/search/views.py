@@ -12,6 +12,8 @@ from django.http import (HttpResponseRedirect,
                          HttpResponseServerError,
                          HttpResponseBadRequest,
                          JsonResponse)
+from django.utils.html import strip_tags
+
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.agave.filemanager.public_search_index import (
@@ -41,7 +43,7 @@ class SearchView(BaseApiView):
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
             .highlight("body",
-                fragment_size=200,
+                fragment_size=150,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
@@ -67,28 +69,26 @@ class SearchView(BaseApiView):
                 )
         elif type_filter == 'web':
             es_query._index = 'cms'
+            es_query = es_query.query(~Q('match', body='\n'))\
+                            .filter("exists", field="body")
+            # es_query = es_query.query("_source", include=['body'])
 
-
-        logger.info(es_query.to_dict())
+        # logger.info(es_query.to_dict())
         res = es_query.execute()
 
-        # for hit in res.hits:
-        #     logger.info(hit.meta.highlight)
-            # for frag in hit.meta.highlight.body:
-            #     logger.info(frag)
-
-        # these get the counts of the total hits for each category...
+        # these get the counts of the total hits for each category. This is
+        # for the sidebar with the different categories to refine by
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
             .highlight("body",
-                fragment_size=200,
+                fragment_size=150,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
             .highlight_options(require_field_match=False)\
             .extra(from_=offset, size=limit)\
             .execute()
-
+        # web_query = web_query.execute()
         files_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
@@ -111,7 +111,7 @@ class SearchView(BaseApiView):
             )\
             .extra(from_=offset, size=limit)\
             .execute()
-        logger.info(pubs_query.to_dict())
+
         exp_query = Search(index="jmeiring")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
@@ -134,11 +134,12 @@ class SearchView(BaseApiView):
                 d = r.to_dict()
                 d["doc_type"] = r.meta.doc_type
                 if hasattr(r.meta, 'highlight'):
-                    d["highlight"] = r.meta.highlight.to_dict()
+                    highlight = r.meta.highlight.to_dict()
+                    d["highlight"] = highlight
                 hits.append(d)
+
         pubs = []
         for r in pubs_query:
-            logger.info(r.meta.inner_hits)
             for p in r.meta.inner_hits['publications']:
                  d = p.to_dict()
                  d["doc_type"] = "publication"
