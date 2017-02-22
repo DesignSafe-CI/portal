@@ -1,4 +1,4 @@
-"""Main views for box. api/external-resources/*"""
+"""Main views for box/dropbox. api/external-resources/*"""
 
 import logging
 import json
@@ -97,7 +97,9 @@ class FileMediaView(BaseApiView, SecureMixin):
 
         elif action == 'copy' or action == 'move':
             try:
-                tasks.box_resource_download.apply_async(kwargs={
+                fmgr.copy(request.user.username, file_id, os.path.join(body['system'], body['path'].strip('/'))) #for testing
+                tasks.external_resource_download.apply_async(kwargs={
+                    'file_mgr_name': file_mgr_name,
                     'username': request.user.username,
                     'src_file_id': file_id,
                     'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))})

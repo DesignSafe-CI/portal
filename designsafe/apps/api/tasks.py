@@ -30,9 +30,9 @@ def reindex_agave(self, username, file_id, full_indexing = True,
         else:
             file_path = '/'
 
-    agave_fm.indexer.index(system_id, file_path, file_user, 
-                           full_indexing = full_indexing, 
-                           pems_indexing = pems_indexing, 
+    agave_fm.indexer.index(system_id, file_path, file_user,
+                           full_indexing = full_indexing,
+                           pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
 
@@ -526,7 +526,7 @@ def box_resource_upload(self, username, src_file_id, dest_file_id):
         else:
             logger.error('Unable to upload %s: file does not exist!',
                          src_real_path)
-        
+
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
                          operation='box_upload_end',
@@ -551,7 +551,7 @@ def box_resource_upload(self, username, src_file_id, dest_file_id):
         raise
 
 @shared_task(bind=True)
-def box_resource_download(self, username, src_file_id, dest_file_id):
+def external_resource_download(self, file_mgr_name, username, src_file_id, dest_file_id):
     """
     :param self:
     :param username:
@@ -559,93 +559,106 @@ def box_resource_download(self, username, src_file_id, dest_file_id):
     :param dest_file_id:
     :return:
     """
+    logger.debug('Downloading %s://%s for user %s to %s',
+                 file_mgr_name, src_file_id, username, dest_file_id)
 
-    logger.debug('Downloading box://%s for user %s to %s',
-                 src_file_id, username, dest_file_id)
+    from designsafe.apps.api.external_resources.box.filemanager.manager \
+            import FileManager as BoxFileManager
+    from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
+            import FileManager as DropboxFileManager
 
-    try:
-        n = Notification(event_type='data',
-                         status=Notification.INFO,
-                         operation='box_download_start',
-                         message='Starting download file %s from box.' % (src_file_id,),
-                         user=username,
-                         extra={})
-        n.save()
-        logger.debug('username: {}, src_file_id: {}, dest_file_id: {}'.format(username, src_file_id, dest_file_id))
-        user = get_user_model().objects.get(username=username)
+    user = get_user_model().objects.get(username=username)
 
-        from designsafe.apps.api.external_resources.box.filemanager.manager import \
-             FileManager as BoxFileManager
-        from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
-        # Initialize agave filemanager
-        agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
-        # Split destination file path
-        dest_file_path_comps = dest_file_id.strip('/').split('/')
-        # If it is an agave file id then the first component is a system id
-        agave_system_id = dest_file_path_comps[0]
-        # Start construction the actual real path into the NSF mount
-        if dest_file_path_comps[1:]:
-            dest_real_path = os.path.join(*dest_file_path_comps[1:])
-        else:
-            dest_real_path = '/'
-        # Get what the system id maps to
-        base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
-        # Add actual path
-        if re.search(r'^project-', agave_system_id):
-            project_dir = agave_system_id.replace('project-', '', 1)
-            dest_real_path = os.path.join(base_mounted_path, project_dir, dest_real_path.strip('/'))
-        else:
-            dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
-        logger.debug('dest_real_path: {}'.format(dest_real_path))
+    if file_mgr_name == 'box':
+        fmgr = BoxFileManager(user)
+    elif file_mgr_name == 'dropbox':
+        fmgr = DropboxFileManager(user)
 
-        box_fm = BoxFileManager(user)
-        box_file_type, box_file_id = box_fm.parse_file_id(file_id=src_file_id)
+    fmgr.copy(username, src_file_id, dest_file_id)
 
-        levels = 0
-        downloaded_file_path = None
-        if box_file_type == 'file':
-            downloaded_file_path = box_fm.download_file(box_file_id, dest_real_path)
-            levels = 1
-        elif box_file_type == 'folder':
-            downloaded_file_path = box_fm.download_folder(box_file_id, dest_real_path)
+    # try:
+    #     n = Notification(event_type='data',
+    #                      status=Notification.INFO,
+    #                      operation='box_download_start',
+    #                      message='Starting download file %s from box.' % (src_file_id,),
+    #                      user=username,
+    #                      extra={})
+    #     n.save()
+    #     logger.debug('username: {}, src_file_id: {}, dest_file_id: {}'.format(username, src_file_id, dest_file_id))
+    #     user = get_user_model().objects.get(username=username)
 
-        #if downloaded_file_path is not None:
-        #    downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
-        #    system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
+    #     from designsafe.apps.api.external_resources.box.filemanager.manager import \
+    #          FileManager as BoxFileManager
+    #     from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+    #     # Initialize agave filemanager
+    #     agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
+    #     # Split destination file path
+    #     dest_file_path_comps = dest_file_id.strip('/').split('/')
+    #     # If it is an agave file id then the first component is a system id
+    #     agave_system_id = dest_file_path_comps[0]
+    #     # Start construction the actual real path into the NSF mount
+    #     if dest_file_path_comps[1:]:
+    #         dest_real_path = os.path.join(*dest_file_path_comps[1:])
+    #     else:
+    #         dest_real_path = '/'
+    #     # Get what the system id maps to
+    #     base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
+    #     # Add actual path
+    #     if re.search(r'^project-', agave_system_id):
+    #         project_dir = agave_system_id.replace('project-', '', 1)
+    #         dest_real_path = os.path.join(base_mounted_path, project_dir, dest_real_path.strip('/'))
+    #     else:
+    #         dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
+    #     logger.debug('dest_real_path: {}'.format(dest_real_path))
 
-        n = Notification(event_type='data',
-                         status=Notification.SUCCESS,
-                         operation='box_download_end',
-                         message='File %s has been copied from box successfully!' % (src_file_id, ),
-                         user=username,
-                         extra={})
-        n.save()
-        if re.search(r'^project-', agave_system_id):
-            project_dir = agave_system_id.replace('project-', '', 1)
-            project_dir = os.path.join(base_mounted_path.strip('/'), project_dir)
-            agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
-        else:
-            agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+    #     box_fm = BoxFileManager(user)
+    #     box_file_type, box_file_id = box_fm.parse_file_id(file_id=src_file_id)
 
-        reindex_agave.apply_async(kwargs={
-                                  'username': user.username,
-                                  'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
-                                  })
-    except:
-        logger.exception('Unexpected task failure: box_download', extra={
-            'username': username,
-            'box_file_id': src_file_id,
-            'dest_file_id': dest_file_id
-        })
-        n = Notification(event_type='data',
-                         status=Notification.ERROR,
-                         operation='box_download_error',
-                         message='We were unable to get the specified file from box. '
-                                 'Please try again...',
-                         user=username,
-                         extra={})
-        n.save()
-        raise
+    #     levels = 0
+    #     downloaded_file_path = None
+    #     if box_file_type == 'file':
+    #         downloaded_file_path = box_fm.download_file(box_file_id, dest_real_path)
+    #         levels = 1
+    #     elif box_file_type == 'folder':
+    #         downloaded_file_path = box_fm.download_folder(box_file_id, dest_real_path)
+
+    #     #if downloaded_file_path is not None:
+    #     #    downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
+    #     #    system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
+
+    #     n = Notification(event_type='data',
+    #                      status=Notification.SUCCESS,
+    #                      operation='box_download_end',
+    #                      message='File %s has been copied from box successfully!' % (src_file_id, ),
+    #                      user=username,
+    #                      extra={})
+    #     n.save()
+    #     if re.search(r'^project-', agave_system_id):
+    #         project_dir = agave_system_id.replace('project-', '', 1)
+    #         project_dir = os.path.join(base_mounted_path.strip('/'), project_dir)
+    #         agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
+    #     else:
+    #         agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+
+    #     reindex_agave.apply_async(kwargs={
+    #                               'username': user.username,
+    #                               'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
+    #                               })
+    # except:
+    #     logger.exception('Unexpected task failure: box_download', extra={
+    #         'username': username,
+    #         'box_file_id': src_file_id,
+    #         'dest_file_id': dest_file_id
+    #     })
+    #     n = Notification(event_type='data',
+    #                      status=Notification.ERROR,
+    #                      operation='box_download_error',
+    #                      message='We were unable to get the specified file from box. '
+    #                              'Please try again...',
+    #                      user=username,
+    #                      extra={})
+    #     n.save()
+    #     raise
 
 @shared_task(bind=True)
 def check_project_files_meta_pems(self, project_uuid):

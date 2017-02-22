@@ -1,12 +1,15 @@
 """ Box filemanager"""
 import os
+import re
 import sys
 import logging
+from designsafe.apps.api.tasks import reindex_agave
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
-#from designsafe.apps.api.tasks import box_upload
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.box_integration.models import BoxUserToken
 from boxsdk.exception import BoxException, BoxOAuthException
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import (JsonResponse, HttpResponseBadRequest)
 from requests import HTTPError
@@ -155,23 +158,107 @@ class FileManager(object):
     def is_search(self, *args, **kwargs):
         return False
 
-    def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
-        # can only transfer out of box
-        from designsafe.apps.api.data import lookup_transfer_service
-        service = lookup_transfer_service(self.NAME, dest_resource)
-        if service:
-            args = (self._user.username,
-                    self.NAME, file_id,
-                    dest_resource, dest_file_id)
-            service.apply_async(args=args)
-            return {'message': 'The requested transfer has been scheduled'}
-        else:
-            message = 'The requested transfer from %s to %s ' \
-                      'is not supported' % (self.NAME, dest_resource)
-            extra = {'file_id': file_id,
-                     'dest_resource': dest_resource,
-                     'dest_file_id': dest_file_id}
-            raise ApiException(message, status=400, extra=extra)
+    # def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
+    def copy(self, username, src_file_id, dest_file_id, **kwargs):
+        # # can only transfer out of box
+        # from designsafe.apps.api.data import lookup_transfer_service
+        # service = lookup_transfer_service(self.NAME, dest_resource)
+        # if service:
+        #     args = (self._user.username,
+        #             self.NAME, file_id,
+        #             dest_resource, dest_file_id)
+        #     service.apply_async(args=args)
+        #     return {'message': 'The requested transfer has been scheduled'}
+        # else:
+        #     message = 'The requested transfer from %s to %s ' \
+        #               'is not supported' % (self.NAME, dest_resource)
+        #     extra = {'file_id': file_id,
+        #              'dest_resource': dest_resource,
+        #              'dest_file_id': dest_file_id}
+        #     raise ApiException(message, status=400, extra=extra)
+        try:
+            n = Notification(event_type='data',
+                             status=Notification.INFO,
+                             operation='box_download_start',
+                             message='Starting download file %s from box.' % (src_file_id,),
+                             user=username,
+                             extra={})
+            n.save()
+            logger.debug('username: {}, src_file_id: {}, dest_file_id: {}'.format(username, src_file_id, dest_file_id))
+            user = get_user_model().objects.get(username=username)
+
+            # from designsafe.apps.api.external_resources.box.filemanager.manager import \
+            #      FileManager as BoxFileManager
+            from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+            # Initialize agave filemanager
+            agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
+            # Split destination file path
+            dest_file_path_comps = dest_file_id.strip('/').split('/')
+            # If it is an agave file id then the first component is a system id
+            agave_system_id = dest_file_path_comps[0]
+            # Start construction the actual real path into the NSF mount
+            if dest_file_path_comps[1:]:
+                dest_real_path = os.path.join(*dest_file_path_comps[1:])
+            else:
+                dest_real_path = '/'
+            # Get what the system id maps to
+            base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
+            # Add actual path
+            if re.search(r'^project-', agave_system_id):
+                project_dir = agave_system_id.replace('project-', '', 1)
+                dest_real_path = os.path.join(base_mounted_path, project_dir, dest_real_path.strip('/'))
+            else:
+                dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
+            logger.debug('dest_real_path: {}'.format(dest_real_path))
+
+            # box_fm = BoxFileManager(user)
+            box_file_type, box_file_id = self.parse_file_id(file_id=src_file_id)
+
+            levels = 0
+            downloaded_file_path = None
+            if box_file_type == 'file':
+                downloaded_file_path = self.download_file(box_file_id, dest_real_path)
+                levels = 1
+            elif box_file_type == 'folder':
+                downloaded_file_path = self.download_folder(box_file_id, dest_real_path)
+
+            #if downloaded_file_path is not None:
+            #    downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
+            #    system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
+
+            n = Notification(event_type='data',
+                             status=Notification.SUCCESS,
+                             operation='box_download_end',
+                             message='File %s has been copied from box successfully!' % (src_file_id, ),
+                             user=username,
+                             extra={})
+            n.save()
+            if re.search(r'^project-', agave_system_id):
+                project_dir = agave_system_id.replace('project-', '', 1)
+                project_dir = os.path.join(base_mounted_path.strip('/'), project_dir)
+                agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
+            else:
+                agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+
+            reindex_agave.apply_async(kwargs={
+                                      'username': user.username,
+                                      'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
+                                      })
+        except:
+            logger.exception('Unexpected task failure: box_download', extra={
+                'username': username,
+                'box_file_id': src_file_id,
+                'dest_file_id': dest_file_id
+            })
+            n = Notification(event_type='data',
+                             status=Notification.ERROR,
+                             operation='box_download_error',
+                             message='We were unable to get the specified file from box. '
+                                     'Please try again...',
+                             user=username,
+                             extra={})
+            n.save()
+            raise
 
     def move(self, file_id, **kwargs):
         raise ApiException('Moving Box files is not supported.', status=400,
