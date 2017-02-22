@@ -96,6 +96,9 @@ INSTALLED_APPS = (
     'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
     'designsafe.apps.search',
+
+    #haystack integration
+    'haystack'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -191,6 +194,29 @@ else:
         }
     }
 
+
+# Haystack cms indexing settings
+if not (os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true'):
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
+            'INDEX_NAME': 'cms',
+        }
+    }
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'elasticsearch:9200/',
+            'INDEX_NAME': 'cms',
+        }
+    }
+
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
+ALDRYN_SEARCH_REGISTER_APPHOOK = True
+
 from nees_settings import NEES_USER_DATABASE
 if NEES_USER_DATABASE['NAME']:
     DATABASES['nees_users'] = NEES_USER_DATABASE
@@ -198,17 +224,11 @@ if NEES_USER_DATABASE['NAME']:
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 LANGUAGES = [
     ('en-us', 'English'),
 ]
@@ -216,40 +236,32 @@ LANGUAGES = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
 STATIC_URL = '/static/'
-
 STATIC_ROOT = '/var/www/designsafe-ci.org/static/'
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'designsafe', 'static'),
 )
-
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
 )
-
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
 
-CMS_PERMISSION = True
 
+CMS_PERMISSION = True
 CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
 )
-
 CMSPLUGIN_CASCADE_PLUGINS = (
     'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
 )
-
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'TextPlugin',
     'StylePlugin',
@@ -498,9 +510,7 @@ AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
 AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
-
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
-
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
