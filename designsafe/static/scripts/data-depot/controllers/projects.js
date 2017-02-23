@@ -137,24 +137,26 @@
     };
 
     $scope.showListing = function(){
-      DataBrowserService.state().showMainListing = true;
-      DataBrowserService.state().showPreviewListing = false;
+      //DataBrowserService.state().showMainListing = true;
+      //DataBrowserService.state().showPreviewListing = false;
       DataBrowserService.showListing();
     };
 
     $scope.showPreview = function(){
-      DataBrowserService.state().showMainListing = false;
-      DataBrowserService.state().showPreviewListing = true;
+      //DataBrowserService.state().showMainListing = false;
+      //DataBrowserService.state().showPreviewListing = true;
       DataBrowserService.showPreview();
     };
 
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
     $scope.browser = DataBrowserService.state();
+    $scope.browser.listings = {};
+    $scope.browser.ui = {};
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
@@ -194,6 +196,66 @@
           });
         }
       });
+
+    var setFilesDetails = function(filePaths){
+      filePaths = _.uniq(filePaths);
+      var p = $q(function(resolve, reject){
+        var results = [];
+        var index = 0;
+        var size = 5;
+        var fileCalls = _.map(filePaths, function(filePath){
+          return FileListing.get({system: 'project-' + projectId, 
+                                  path: filePath},
+                                  DataBrowserService.apiParams)
+            .then(function(resp){
+              var allEntities = $scope.browser.project.getAllRelatedObjects(); 
+              var entities = _.filter(allEntities, function(entity){
+                return _.contains(entity._filePaths, resp.path);
+              });
+              _.each(entities, function(entity){
+                $scope.browser.listings[entity.uuid].push(resp);
+              });
+              return resp;
+            });
+        });
+
+        function step(){
+          var calls = fileCalls.slice(index, index += size);
+          if(calls.length){
+            $q.all(calls).then(function(res){
+              results.concat(res);
+              step();
+              return res;
+            }).catch(reject);
+          } else { 
+            resolve(results);
+          }
+        }
+        step();
+      });
+      $scope.browser.ui.listingPreview = true;
+      p.then(function(results){
+        $scope.browser.ui.listingPreview = false;
+      }, function(err){
+        $scope.browser.ui.listingPreview = false;
+        $scope.browser.ui.error = err;
+      });
+    };
+
+    $scope.$watch('browser.showPreviewListing', function(newVal, oldVal){
+      if (newVal){
+        $scope.browser.ui.loadingListings = true;
+        $scope.browser.listings = {};
+        var entities = $scope.browser.project.getAllRelatedObjects();
+        var allFilePaths = [];
+        _.each(entities, function(entity){
+          $scope.browser.listings[entity.uuid] = [];
+          allFilePaths = allFilePaths.concat(entity._filePaths);
+        });
+        $scope.data.rootPaths = allFilePaths;
+        setFilesDetails(allFilePaths);
+      }
+    });
 
     $scope.onBrowseData = function onBrowseData($event, file) {
 
