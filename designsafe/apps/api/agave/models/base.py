@@ -273,6 +273,7 @@ class Model(object):
             value = getattr(self, attrname, None)
             if not inspect.isclass(value):
                 dict_obj[spinal_to_camelcase(attrname)] = value
+        dict_obj['associationIds'] = list(set(self.association_ids))
 
         dict_obj['_links'] = {}
         for attrname, value in six.iteritems(self._links.__dict__):
@@ -283,7 +284,7 @@ class Model(object):
             value = getattr(self, field.attname)
             attrname = spinal_to_camelcase(field.attname)
             if isinstance(value, RelatedQuery):
-                dict_obj['value'][attrname] = value.uuids
+                dict_obj['value'][attrname] = list(set(value.uuids))
             elif isinstance(value, Model):
                 dict_obj['value'][attrname] = value.to_body_dict()
             else:
