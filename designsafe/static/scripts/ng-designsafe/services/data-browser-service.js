@@ -40,7 +40,8 @@
       reachedEnd: false,
       page: 0,
       showMainListing: true,
-      showPreviewListing: false
+      showPreviewListing: false,
+      ui: {}
     };
 
     var apiParams = {
@@ -1130,7 +1131,8 @@
             uploading: false,
             retry: false,
             directoryUpload: directoryUpload,
-            directoryUploadSupported: Modernizr.fileinputdirectory
+            directoryUploadSupported: Modernizr.fileinputdirectory,
+            ui: {tagFiles: false}
           };
 
           $scope.$watch('data.selectedFiles', function(newValue) {
@@ -1145,6 +1147,24 @@
             // reset file control since we want to allow multiple selection events
             $('#id-choose-files').val(null);
           });
+            
+          $scope.tagFiles = function(){
+            $uibModalInstance.close();
+            var files = _.filter(currentState.listing.children, function(child){
+              if(_.find($scope.data.uploads, function(upload){
+                return upload.file.name === child.name;
+              })){
+                  return true;
+              }else{
+                  return false;
+              }
+            });
+            if (files.length){
+              viewMetadata(files);
+            } else {
+              viewMetadata();
+            }
+          };
 
           $scope.upload = function() {
             $scope.state.uploading = true;
@@ -1175,6 +1195,10 @@
               currentState.busy = true;
               currentState.listing.fetch().then(function () {
                 currentState.busy = false;
+                if(currentState.project){
+                  currentState.ui.tagFiles = true;
+                  $scope.state.ui.tagFiles = true;
+                }
               });
 
               var errors = _.filter(results, function (result) {
@@ -1186,7 +1210,9 @@
                 $scope.state.retry = true;
               } else {
                 // it's all good; close the modal
-                $uibModalInstance.close();
+                if (!currentState.project){
+                  $uibModalInstance.close();
+                }
               }
             });
           };
