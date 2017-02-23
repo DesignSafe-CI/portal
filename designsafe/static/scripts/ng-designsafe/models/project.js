@@ -65,6 +65,7 @@
           self[attr].push(entity);
         }
       }
+      self._allRelatedObjects = undefined;
     };
 
     /***
@@ -129,11 +130,14 @@
      */
     Project.prototype.getAllRelatedObjects = function(){
       var self = this;
-      var ret = [];
-      _.each(self._related, function(name, attr){
-        ret = ret.concat(self[attr]);
-      });
-      return ret;
+      if (typeof self._allRelatedObjects === 'undefined'){
+        var ret = [];
+        _.each(self._related, function(name, attr){
+          ret = ret.concat(self[attr]);
+        });
+        self._allRelatedObjects = _.compact(ret);
+      }
+      return self._allRelatedObjects;
     };
 
     return Project;
