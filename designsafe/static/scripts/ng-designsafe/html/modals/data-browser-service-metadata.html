@@ -113,18 +113,20 @@
       <h4>Create new tag</h4>
       <form>
         <div style="display:inline-block; width:20%">
-          <label for="id-tag-type" style="display:block">Tag Type</label>
+          <label for="id-tag-type" style="display:block">Type</label>
           <select class="form-control" name="tag-type" id="id-tag-type"
                   ng-options="item.name as item.label for item in ui.tagTypes"
                   ng-model="data.form.projectTagToAdd.tagType"/>
         </div>
+        <!--
         <div style="display:inline-block; width:20%">
           <label for="id-tag-attribute" style="display:block">Tag Attribute</label>
           <input class="form-control" name="tag-attribute" id="id-tag-attribute"
                  ng-model="data.form.projectTagToAdd.tagAttribute">
         </div>
+        -->
         <div style="display:inline-block; width:45%;">
-          <label for="id-tag-title" style="display:block">Tag Title</label>
+          <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
                  ng-model="data.form.projectTagToAdd.tagTitle">
