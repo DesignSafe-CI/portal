@@ -29,7 +29,7 @@
             </span>
             <span class="label selected"
               ng-repeat-start="entity in item._entities"
-              ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analisys'}">{{ entity._displayName }}</span> 
+              ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analysis'}">{{ entity._displayName }}</span> 
             <span ng-repeat-end class="tag-title">{{entity.value.title}}</span>
             </div>
             </td>
@@ -78,13 +78,13 @@
   <div class="ds-table-display-wrapper"
         ng-repeat="experiment in browser.project.experiment_set"
          ng-if="browser.showPreviewListing"
-         style="height:200px;">
+         style="height:400px; background:#fff;">
     <div style="border:1px solid black; background:white;">
-      <div style="width:50%">
+      <div style="width:50%; display:inline-block;">
       <h3>{{experiment.value.title}}</h3>
       <p>{{experiment.value.descrpition}}</p>
       </div>
-      <div style="width:49%; vertical-align:top;">
+      <div style="width:49%; vertical-align:top; display:inline-block;">
         <div style="border:1px solid black;">
           {{experiment.value.experimentalFacility}}
         </div>
@@ -93,22 +93,146 @@
         </div>
       </div>
     </div>
-    <table ng-repeat="event in browser.project.getRelated('event_set', experiment.uuid)" 
-          class="table table-bordered table-striped" style="background-color: #fff;">
+    <div ng-repeat="event in browser.project.getRelated('event_set', experiment.uuid)">
+    <div style="padding:3px;">
+      <span class="ds-text-red" style="display:inline-block; border:1px solid black;">Event Data </span>
+      <span style="color:light-gray">Link to: </span>
+      <a class="ds-text-blue" href="#details-{{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid}}"
+      data-toggle="collapse" data-target="#files-{{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid}}">
+      Model Configuration
+      </a>
+      <a class="ds-text-green" href="#details-{{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].uuid}}"
+         data-toggle="collapse" data-target="#files-{{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].uuid}}">
+      Sensor List
+      </a>
+    </div>
+    <div style="position:absolute; left:-100px; margin-top:-20px;">
+      <div>
+      <a class="ds-text-red" href="#">{{event.value.title}}</a>
+      </div>
+      <div>
+      <a class="ds-text-blue" href="#details-{{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid}}">
+        {{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].value.title}}
+      </a>
+      </div>
+      <div>
+      <a class="ds-text-green" href="#details-{{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].uuid}}">
+        {{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].value.title}}
+      </a>
+      </div>
+    </div>
+    <table  class="table table-bordered table-striped"
+            style="background-color: #fff;">
         <thead>
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
         </thead>
         <tbody>
-          <tr ng-repeat="filePath in event._filePaths">
-            <td>{{filePath}}</td>
-            <td></td>
-            <td></td>
-            <td></td>
+          <tr ng-repeat="file in browser.listings[event.uuid]">
+            <td><i class="fa {{file.icon()}}"></i>
+                <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                {{file.name}}
+                </a>
+            </td>
+            <td>{{file.length}}</td>
+            <td>{{file.lastModified|date:"short"}}</td>
           </tr>
         </tbody>
     </table>
+    </div>
+    </div>
+
+    <div class="project-preview-entities-details"
+         ng-if="browser.showPreviewListing">
+
+      <div ng-repeat="modelConfig in browser.project.modelconfiguration_set">
+        <div class="dropdown" id="details-{{modelConfig.uuid}}">
+          <a href="" class="collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}">
+            Model Config {{modelConfig.value.title}}
+          </a>
+          <div id="files-{{modelConfig.uuid}}" class="collapse">
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+                <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in browser.listings[modelConfig.uuid]">
+                    <td><i class="fa {{file.icon()}}"></i>
+                        <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                        {{file.name}}
+                        </a>
+                    </td>
+                    <td>{{file.length}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div ng-repeat="sensorList in browser.project.sensorlist_set">
+        <div class="dropdown" id="details-{{sensorList.uuid}}">
+          <a href="" class="collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}">
+            Sensor List {{sensorList.value.title}}
+          </a>
+          <div id="files-{{sensorList.uuid}}" class="collapse">
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+                <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in browser.listings[sensorList.uuid]">
+                    <td><i class="fa {{file.icon()}}"></i>
+                        <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                        {{file.name}}
+                        </a>
+                    </td>
+                    <td>{{file.length}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div ng-repeat="analysis in browser.project.analysis_set">
+        <div class="dropdown" id="details-{{analysis.uuid}}">
+          <a href="" class="collapsed ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}">
+            Analysis {{analysis.value.title}}
+          </a>
+          <div id="files-{{analysis.uuid}}" class="collapse">
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+                <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in browser.listings[analysis.uuid]">
+                    <td><i class="fa {{file.icon()}}"></i>
+                        <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                        {{file.name}}
+                        </a>
+                    </td>
+                    <td>{{file.length}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
 
 </div>
