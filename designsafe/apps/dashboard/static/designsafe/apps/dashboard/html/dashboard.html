@@ -1,7 +1,7 @@
 
 
 <div class="row">
-  <div class="col-sm-3">
+  <div class="col-sm-4">
     <div class="dashboard-stat blue">
       <div class="visual">
         <i class="fa fa-rocket"></i>
@@ -12,7 +12,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-3">
+  <!-- <div class="col-sm-3">
     <div class="dashboard-stat red">
       <div class="visual">
         <i class="fa fa-database"></i>
@@ -22,8 +22,8 @@
         <div class="desc"> Data Stored </div>
       </div>
     </div>
-  </div>
-  <div class="col-sm-3">
+  </div> -->
+  <div class="col-sm-4">
     <div class="dashboard-stat green">
       <div class="visual">
         <i class="fa fa-cogs"></i>
@@ -34,67 +34,54 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-3">
+  <div class="col-sm-4">
     <div class="dashboard-stat purple">
       <div class="visual">
         <i class="fa fa-calendar"></i>
       </div>
       <div class="details">
-        <div class="number"> {{activities_count}} </div>
-        <div class="desc"> Recent Activities </div>
+        <div class="number"> {{storage_count | bytes}} </div>
+        <div class="desc"> Total storage in Designsafe </div>
       </div>
     </div>
   </div>
 </div>
+
 <div class="row">
-    <div class="col-sm-3">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Quick Links</h3>
-            </div>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    <a href=""> Account Profile </a>
-                </li>
-                <li class="list-group-item">
-                    <a href=""> Data Depot </a>
-                </li>
-                <li class="list-group-item">
-                    <a href=""> Workspace </a>
-                </li>
-                <li class="list-group-item">
-                    <a href=""> Learning Center </a>
-                </li>
-            </ul>
-        </div>
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Quick Links</h3>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href=""> Account Profile </a>
+        </li>
+        <li class="list-group-item">
+          <a href=""> Data Depot </a>
+        </li>
+        <li class="list-group-item">
+          <a href=""> Workspace </a>
+        </li>
+        <li class="list-group-item">
+          <a href=""> Learning Center </a>
+        </li>
+      </ul>
     </div>
-    <div class="col-sm-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-              <h3 class="panel-title">Notifications</h3>
-          </div>
-            <ul class="list-group">
-                <li class="list-group-item" ng-repeat="note in notifications">
-                  <span class="label label-primary"> {{note.datetime | date}} </span> {{note.message}}
-                </li>
-            </ul>
-        </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Recent Apps</h3>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="app in jobs">
+          {{app.appId}}
+        </li>
+      </ul>
     </div>
-    <div class="col-sm-3">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-              <h3 class="panel-title">Announcements</h3>
-          </div>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    Designsafe will be unavailable Dec 25th from 10:00pm untill 10:30pm
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
-<div class="row">
-  <div class="col-sm-12">
+
+  </div>
+  <div class="col-sm-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">My Jobs</h3>
@@ -109,4 +96,36 @@
       </ul>
     </div>
   </div>
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Notifications</h3>
+    </div>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="note in notifications">
+          <span class="label label-primary"> {{note.datetime | date}} </span> {{note.message}}
+        </li>
+      </ul>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+        <h3 class="panel-title pull-left">My Tickets</h3>
+        <a class="button btn-xs btn-primary pull-right" href="#"> Create New </a>
+      </div>
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="ticket in my_tickets">
+            <a ng-href="/help/tickets/{{ ticket.id }}"> {{ticket.id}} </a> {{ticket.Subject}}
+          </li>
+        </ul>
+
+        <div ng-show="loading_tickets" class="text-center">
+          <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+
 </div>

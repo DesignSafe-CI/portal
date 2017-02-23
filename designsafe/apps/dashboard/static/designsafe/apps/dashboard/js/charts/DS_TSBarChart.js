@@ -89,6 +89,7 @@ function DS_TSBarChart (element_id) {
   exports.data = function (_data) {
     if (!(arguments.length)) return data;
     data = _data;
+    console.log(data)
     draw();
     return this;
   };
