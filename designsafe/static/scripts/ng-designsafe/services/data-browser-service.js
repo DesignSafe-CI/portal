@@ -17,11 +17,13 @@
     return nbv;
   });
 
-  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
+  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', 
+                                        '$uibModal', '$state', 'Django',
                                         'FileListing', 'Logging', 'SystemsService', 'nbv',
+                                        'ProjectEntitiesService', 
                                         function($rootScope, $http, $q, $uibModal,
                                                  $state, Django, FileListing, Logging,
-                                                 SystemsService, nbv) {
+                                                 SystemsService, nbv, ProjectEntitiesService) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
@@ -161,8 +163,8 @@
     }
 
     function showPreview(){
-      DataBrowserService.state().showMainListing = false;
-      DataBrowserService.state().showPreviewListing = true;
+      currentState.showMainListing = false;
+      currentState.showPreviewListing = true;
     }
 
 
@@ -1249,13 +1251,18 @@
       }
       var modal = $uibModal.open({
         templateUrl: template,
-        controller: ['$uibModalInstance', '$scope', 'file', function ($uibModalInstance, $scope, file) {
+        controller: ['$uibModalInstance', '$scope', 'file', 'ProjectEntitiesService',
+                     function ($uibModalInstance, $scope, file, ProjectEntitiesService) {
           $scope.data = {file: file,
 						 form: {metadataTags: '',
                                 tagsToDelete: []},
                          files: files,
                          error:'',
-                         fileUuids: []};
+                         fileUuids: [],
+                         project: currentState.project,
+                         fileProjectTags: [],
+                         newFileProjectTags: [],
+                         projectTagsToUnrelate: []};
 
           $scope.ui = {error: false};
           if (typeof listing !== 'undefined' &&
@@ -1289,29 +1296,15 @@
                   $scope.error = err;
                 });
           }
-
-          if (typeof files !== 'undefined'){
-          }
-          if (typeof currentState.project !== 'undefined'){
-            $scope.data.modelConfigs = currentState.project.modelconfiguration_set || [];
-            $scope.data.sensors = currentState.project.sensorlist_set || [];
-            $scope.data.events = currentState.project.event_set || [];
-            $scope.data.analysis = currentState.project.analysis_set || [];
-            var entities = $scope.data.modelConfigs.concat($scope.data.sensors);
-            entities = entities.concat($scope.data.events);
-            entities = entities.concat($scope.data.analysis);
-            if(typeof files !== 'undefined'){
-              for (var i = 0; i < entities.length; i++){
-                var _files = entities[i].value.files || [];
-                for (var j = 0; j < _files.length; j++){
-                  if (_.difference(_files, $scope.data.fileUuids).length === 0){
-                    $scope.data.fileProjectTag = entities[i];
-                    break;
-                  }
-                }
-              }
+          _.each($scope.data.files, function(file){
+            if ($scope.data.fileProjectTags.length === 0){
+              $scope.data.fileProjectTags = file._entities;
             }
-          }
+            var diff = _.difference($scope.data.fileProjectTags, file._entities);
+            if (diff.length > 0){
+              $scope.data.fileProjectTags = [];
+            }
+          });
 
 		  $scope.doSaveMetadata = function($event) {
 			$event.preventDefault();
@@ -1352,23 +1345,79 @@
           $scope.data.form.projectTagToAdd = {};
 
           $scope.isProjectTagSel = function(entity){
-            if (typeof $scope.data.newFileProjectTag !== 'undefined' &&
-                typeof $scope.data.newFileProjectTag.uuid !== 'undefined' &&
-                $scope.data.newFileProjectTag.uuid === entity.uuid){
+            if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
               return true;
-            } else if (typeof $scope.data.fileProjectTag !== 'undefined' &&
-                typeof $scope.data.fileProjectTag.uuid !== 'undefined' &&
-                $scope.data.fileProjectTag.uuid === entity.uuid){
+            } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
+              return false;
+            } else if ( _.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
               return true;
             }
             return false;
           };
 
-          $scope.selectProjectTag = function(entity){
-            if (typeof $scope.data.fileUuids === 'undefined'){
-              return;
+          $scope.toggleProjectTag = function(entity){
+            if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
+              $scope.data.newFileProjectTags = _.reject($scope.data.newFileProjectTags,
+                                                        function(e){
+                                                          if (e.uuid === entity.uuid){
+                                                            return true;
+                                                          } else {
+                                                            return false;
+                                                          }
+                                                        });
+            } else if (_.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
+                if(_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
+                  $scope.data.projectTagsToUnrelate = _.reject(
+                        $scope.data.projectTagsToUnrelate, function(e){
+                          if(e.uuid === entity.uuid){ return true; }
+                          else { return false; }
+                        });
+                } else {
+                  $scope.data.projectTagsToUnrelate.push(entity);
+                }
+            } else {
+              $scope.data.newFileProjectTags.push(entity);
             }
-            $scope.data.newFileProjectTag = entity;
+          };
+
+          $scope.saveRelations = function(){
+            var tasks = [];
+            _.each($scope.data.projectTagsToUnrelate, function(entity){
+              entity.associationIds = _.difference(entity.associationIds, $scope.data.fileUuids);
+              entity.value.files = _.difference(entity.value.files, $scope.data.fileUuids);
+              tasks.push(ProjectEntitiesService.update({data: {
+                                                            uuid: entity.uuid,
+                                                            entity: entity}
+                                                      }).then(function(e){
+                                                      var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                                                      ent.update(e);
+                                                      return e;
+                                                      }));
+
+            });
+           _.each($scope.data.newFileProjectTags, function(entity){
+              entity.associationIds = entity.associationIds.concat($scope.data.fileUuids);
+              entity.value.files = entity.value.files.concat($scope.data.fileUuids);
+              tasks.push(ProjectEntitiesService.update({data:{
+                                                          uuid: entity.uuid,
+                                                          entity: entity}
+                                                      }).then(function(e){
+                                                      var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                                                      ent.update(e);
+                                                      return e;
+                                                      }));
+           });
+           $scope.ui.busy = true;
+           $q.all(tasks).then(
+             function(e){
+               $scope.ui.busy = false;
+               $scope.data.newFileProjectTags = [];
+               $scope.data.projectTagsToUnrelate = [];
+             }, function(er){
+               $scope.ui.busy = false;
+               $scope.ui.error = er;
+             }
+           );
           };
           
           $scope.addProjectTag = function(){
@@ -1395,20 +1444,21 @@
                                       return file.path;
                                      });
             }
-            $http.post('/api/projects/' + currentState.project.uuid +
-                       '/meta/' + newTag.tagType,
-                       {
-                         entity: entity
-                       }).then(
-                       function(resp){
-                         $scope.ui.error = false;
-                         $scope.ui.addingTag = false;
-                       },
-                       function(err){
-                         $scope.ui.error = true;
-                         $scope.error = err;
-                       }
-                       );
+            ProjectEntitiesService.create({data: {
+                uuid: currentState.project.uuid,
+                name: newTag.tagType,
+                entity: entity
+            }})
+            .then(
+               function(resp){
+                 $scope.ui.error = false;
+                 $scope.ui.addingTag = false;
+               },
+               function(err){
+                 $scope.ui.error = true;
+                 $scope.error = err;
+               }
+           );
           };
         }],
         size: 'lg',
@@ -1437,37 +1487,6 @@
           //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
           currentState.busy = false;
         });
-        if (typeof data.newFileProjectTag !== 'undefined'){
-          if (typeof data.fileProjectTag !== 'undefined'){
-          data.fileProjectTag.value.files = _.difference(data.fileProjectTag.value.files, data.fileUuids);
-          data.fileProjectTag.associationIds = _.difference(data.fileProjectTag.associationIds, data.fileUuids);
-          $http.put('/api/projects/meta/' + data.fileProjectTag.uuid,
-                    {
-                      entity: data.fileProjectTag
-                    }).then(
-                    function(resp){
-                      data.fileProjectTag = resp.data;
-                    },
-                    function(err){
-                      logger.debug(err);
-                    }
-                    );
-            }
-          data.newFileProjectTag.value.files = data.newFileProjectTag.value.files.concat(data.fileUuids);
-          data.newFileProjectTag.value.files = _.uniq(data.newFileProjectTag.value.files);
-          data.newFileProjectTag.associationIds = data.newFileProjectTag.associationIds.concat(data.fileUuids);
-          data.newFileProjectTag.associationIds = _.uniq(data.newFileProjectTag.associationIds);
-          $http.put('/api/projects/meta/' + data.newFileProjectTag.uuid,
-                    {
-                      entity: data.newFileProjectTag
-                    }).then(
-                    function(resp){
-                      data.newFileProjectTag = resp.data;
-                    },
-                    function(err){
-                      logger.debug(err);
-                    });
-        }
       });
     }
 
