@@ -183,6 +183,14 @@ class Project(BaseMetadataResource):
                                         path=path,
                                         agave_client=self._agave)
 
+class RelatedEntity(MetadataModel):
+    def to_body_dict(self):
+        body_dict = super(RelatedEntity, self).to_body_dict()
+        body_dict['_relatedFields'] = []
+        for attrname, field in six.iteritems(self._meta._related_fields):
+            body_dict['_relatedFields'].append(attrname)
+        return body_dict 
+
 class ExperimentalProject(MetadataModel):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
@@ -211,7 +219,7 @@ class FileModel(MetadataModel):
     keywords = fields.ListField('Keywords')
     project_UUID = fields.RelatedObjectField(ExperimentalProject, default=[])
 
-class Experiment(MetadataModel):
+class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
     description = fields.CharField('Description', max_length=1024, default='')
@@ -219,40 +227,42 @@ class Experiment(MetadataModel):
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
     project = fields.RelatedObjectField(ExperimentalProject)
 
-class Event(MetadataModel):
+class Event(RelatedEntity):
     model_name = 'designsafe.project.event'
     event_type = fields.CharField('Event Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
 
-class Analysis(MetadataModel):
+class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
     analysis_type = fields.CharField('Analysis Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
-
-class SensorList(MetadataModel):
-    model_name = 'designsafe.project.sensor_list'
-    sensor_list_type = fields.CharField('Sensor List Type', max_length=255, default='other')
-    title = fields.CharField('Title', max_length=1024)
-    description = fields.CharField('Description', max_length=1024, default='')
     events = fields.RelatedObjectField(Event)
     files = fields.RelatedObjectField(FileModel, multiple=True)
-    project = fields.RelatedObjectField(ExperimentalProject)
-    experiments = fields.RelatedObjectField(Experiment)
 
-class ModelConfiguration(MetadataModel):
+class ModelConfiguration(RelatedEntity):
     model_name = 'designsafe.project.model_config'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     coverage = fields.CharField('Coverage', max_length=512)
-    events = fields.RelatedObjectField(Event)
-    files = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
+    events = fields.RelatedObjectField(Event)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class SensorList(RelatedEntity):
+    model_name = 'designsafe.project.sensor_list'
+    sensor_list_type = fields.CharField('Sensor List Type', max_length=255, default='other')
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
+    events = fields.RelatedObjectField(Event)
+    model_configs = fields.RelatedObjectField(ModelConfiguration)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
