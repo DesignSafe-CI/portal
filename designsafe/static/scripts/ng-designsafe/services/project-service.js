@@ -1,41 +1,10 @@
 (function(window, angular, _, undefined) {
   "use strict";
 
-  function Project(data) {
-
-    var self = _.extend({}, data);
-
-    self.getValue = function(key) {
-      var val;
-      var composite = key.split('.');
-      if (composite.length === 0) {
-        val = self[key];
-      } else {
-        val = _.reduce(composite, function(mem, val) {
-          return mem[val];
-        }, self);
-      }
-      return val;
-    };
-
-    self.getRelatedAttrName = function(name){
-      var attrname = '';
-      for (var relName in self._related){
-          if (self._related[relName] === name){
-            attrname = relName;
-            break;
-          }
-      }
-      return attrname;
-    };
-
-    return self;
-  }
-
   var mod = angular.module('designsafe');
   mod.requires.push('django.context', 'httpi');
 
-  mod.factory('ProjectService', ['httpi', '$interpolate', '$q', '$uibModal', 'Logging', function(httpi, $interpolate, $q, $uibModal, Logging) {
+  mod.factory('ProjectService', ['httpi', '$interpolate', '$q', '$uibModal', 'Logging', 'ProjectModel', 'ProjectEntitiesService', function(httpi, $interpolate, $q, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
 
     var logger = Logging.getLogger('DataDepot.ProjectService');
 
@@ -44,18 +13,8 @@
     var projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     var collabResource = httpi.resource('/api/projects/:uuid/collaborators/').setKeepTrailingSlash(true);
     var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
-    var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
-    var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
-
-    /**
-     * 
-     * Get list of entities related to a project
-     */
-    service.listEntities = function(options){
-      return entitiesResource.get({params: options}).then(function(resp){
-        return resp.data;
-      });
-    };
+   //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
+   //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
 
     /**
      * Get a list of Projects for the current user
@@ -63,7 +22,7 @@
      */
     service.list = function() {
       return projectResource.get().then(function(resp) {
-        return _.map(resp.data.projects, function(p) { return new Project(p); });
+        return _.map(resp.data.projects, function(p) { return new ProjectModel(p); });
       });
     };
 
@@ -75,7 +34,7 @@
      */
     service.get = function(options) {
       return projectResource.get({params: options}).then(function(resp) {
-        return new Project(resp.data);
+        return new ProjectModel(resp.data);
       });
     };
 
@@ -90,7 +49,7 @@
      */
     service.save = function(options) {
       return projectResource.post({data: options}).then(function (resp) {
-        return new Project(resp.data);
+        return new ProjectModel(resp.data);
       });
     };
 
@@ -158,9 +117,10 @@
           $scope.form = {
             curExperiments: [],
             addExperiments: [{}],
-            deleteExperiments: []
+            deleteExperiments: [],
+            entitiesToAdd:[]
           };
-          $scope.formcurExperiments = options.experiments;
+          $scope.form.curExperiments = $scope.data.project.experiment_set;
 
           $scope.addExperiment = function () {
             $scope.form.addExperiments.push({});
@@ -192,7 +152,7 @@
             $scope.data.busy = true;
             var addActions = _.map($scope.form.addExperiments, function(exp){
               if (exp.title && exp.experimentalFacility && exp.experimentType && exp.description){
-                return entitiesResource.post({
+                return ProjectEntitiesService.create({
                   data: {
                     uuid: $scope.data.project.uuid,
                     name: 'designsafe.project.experiment',
@@ -203,7 +163,7 @@
             });
 
             var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
-              return entityResource.delete({
+              return ProjectEntitiesService.delete({
                 data: {
                   uuid: uuid,
                 }
@@ -222,47 +182,43 @@
             );
           };
 
-          $scope.saveCollaborators = function ($event) {
-            $event.preventDefault();
-            $scope.data.busy = true;
-
-            var removeActions = _.map($scope.form.curUsers, function (cur) {
-              if (cur.remove) {
-                return collabResource.delete({data: {
-                  uuid: $scope.data.project.uuid,
-                  username: cur.user.username
-                }});
-              }
+          $scope.delRelEntity = function(entity, rels){
+            var _entity = angular.copy(entity);
+            _.each(rels, function(rel, relName){
+              _entity.associationIds = _.without(_entity.associationIds, rel);
+              _entity.value[relName] = _.without(_entity.value[relName], rel);
             });
-
-            var addActions = _.map($scope.form.addUsers, function (add) {
-              if (add.user && add.user.username) {
-                return collabResource.post({data: {
-                  uuid: $scope.data.project.uuid,
-                  username: add.user.username
-                }});
-              }
+            ProjectEntitiesService.update({data: {uuid: entity.uuid, entity: _entity}})
+            .then(function(res){
+              options.project.getRelatedByUuid(res.uuid).update(res);
+            },
+            function(err){
+              $uibModalInstance.reject(err.data);
             });
+          };
 
-            addActions.concat(_.map($scope.form.addCoPis, function (add) {
-              if (add.user && add.user.username) {
-                return collabResource.post({data: {
-                  uuid: $scope.data.project.uuid,
-                  username: add.user.username,
-                  memberType: 'coPis'
-                }});
+          $scope.saveRelEntity = function(entity, rels){
+            var _entity = angular.copy(entity);
+            _.each(rels, function(rel, relName){
+              _entity.associationIds.push(rel);
+              _entity.value[relName].push(rel);
+            });
+            ProjectEntitiesService.update({data: {uuid: entity.uuid, entity: _entity}})
+            .then(function(res){
+              var attrName = '';
+              for (var name in options.project._related){
+                if (options.project._related[name] === res.name){
+                  attrName = name;
+                  break;
+                }
               }
-            }));
-
-            var tasks = removeActions.concat(addActions);
-            $q.all(tasks).then(
-              function (results) {
-                $uibModalInstance.close(results);
-              },
-              function (error) {
-                $uibModalInstance.reject(error.data);
-              }
-            );
+              var entity =  _.find(options.project[attrName], 
+                                    function(entity){ if (entity.uuid === res.uuid){ return entity; }});
+              entity.update(res);
+            },
+            function(err){
+              $uibModalInstance.reject(err.data);
+            });
           };
         }],
         size:'lg'
