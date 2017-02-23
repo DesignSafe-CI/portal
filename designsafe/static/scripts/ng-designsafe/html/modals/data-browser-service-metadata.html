@@ -21,10 +21,10 @@
      <h4>Tag Inventory</h4>
       <div class="project-label-inventory" style="overflow:auto;">
         <div class="col-xs-3">
-            <div ng-repeat="modelConfig in data.modelConfigs"
+            <div ng-repeat="modelConfig in data.project.modelconfiguration_set"
                  style="width:100%; padding-bottom:5px;">
               <button class="btn" style="background:none;"
-                      ng-click="selectProjectTag(modelConfig)">
+                      ng-click="toggleProjectTag(modelConfig)">
               <span ng-class="{'selected': isProjectTagSel(modelConfig)}"
                     class="label tag-blue">Model Config</span>
               <span class="tab-title">{{modelConfig.value.title}}</span>
@@ -32,10 +32,10 @@
             </div>
         </div>
         <div class="col-xs-3">
-            <div ng-repeat="sensor in data.sensors"
+            <div ng-repeat="sensor in data.project.sensorlist_set"
                  style="width:100%; padding-bottom:5px;">
               <button class="btn" style="background:none;"
-                      ng-click="selectProjectTag(sensor)">
+                      ng-click="toggleProjectTag(sensor)">
               <span ng-class="{'selected': isProjectTagSel(sensor)}"
                     class="label tag-green">Sensor</span>
               <span class="tab-title">{{sensor.value.title}}</span>
@@ -43,10 +43,10 @@
             </div>
         </div>
         <div class="col-xs-3">
-            <div ng-repeat="event in data.events"
+            <div ng-repeat="event in data.project.event_set"
                  style="width:100%; padding-bottom:5px;">
               <button class="btn" style="background:none;"
-                      ng-click="selectProjectTag(event)">
+                      ng-click="toggleProjectTag(event)">
               <span ng-class="{'selected': isProjectTagSel(event)}" 
                     class="label tag-red">Events</span>
               <span class="tab-title">{{event.value.title}}</span>
@@ -54,16 +54,24 @@
             </div>
         </div>
         <div class="col-xs-3">
-            <div ng-repeat="analysis in data.analysis"
+            <div ng-repeat="analysis in data.project.analysis_set"
                  style="width:100%; padding-bottom:5px;">
               <button class="btn" style="background:none;"
-                      ng-click="selectProjectTag(analysis)">
+                      ng-click="toggleProjectTag(analysis)">
               <span ng-class="{'selected': isProjectTagSel(analysis)}" 
                     class="label tag-light-blue">Analysis</span>
               <span class="tab-title">{{analysis.value.title}}</span>
               </button>
             </div>
         </div>
+      </div>
+      <div>
+        <button class="pull-right btn btn-sm btn-info"
+                ng-disabled = "data.newFileProjectTags.length == 0 &&
+                               data.projectTagsToUnrelate.length == 0"
+                ng-click="saveRelations()">
+                <i class="fa fa-check"></i>Save Relations
+        </button>
       </div>
       <div class="list-custom-tags" ng-if="data.file && data.files.length == 1">
       <h4>Custom tags</h4>
