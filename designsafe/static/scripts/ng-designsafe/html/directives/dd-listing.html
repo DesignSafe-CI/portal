@@ -75,12 +75,10 @@
     </table>
   </div>
 
-  <div class="ds-table-display-wrapper" ds-infinite-scroll
-        data-scroll-bottom="scrollToBottom()()"
-        data-scroll-top="scrollToTop()()"
-        data-bottom-height="0"
+  <div class="ds-table-display-wrapper"
         ng-repeat="experiment in browser.project.experiment_set"
-         ng-if="browser.showPreviewListing">
+         ng-if="browser.showPreviewListing"
+         style="height:200px;">
     <div style="border:1px solid black; background:white;">
       <div style="width:50%">
       <h3>{{experiment.value.title}}</h3>
@@ -95,15 +93,20 @@
         </div>
       </div>
     </div>
-    <table class="table table-bordered table-striped" style="background-color: #fff;">
+    <table ng-repeat="event in browser.project.getRelated('event_set', experiment.uuid)" 
+          class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
-        <th>Details</th>
         </thead>
-
         <tbody>
+          <tr ng-repeat="filePath in event._filePaths">
+            <td>{{filePath}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         </tbody>
     </table>
     </div>
