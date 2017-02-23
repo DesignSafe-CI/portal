@@ -388,6 +388,22 @@ tr.experiment-deleted {
     text-decoration: line-through;
 }
 
+.ds-text-light-blue {
+    color: #5BC0DE;
+}
+
+.ds-text-blue {
+    color: #0567CC;
+}
+
+.ds-text-green {
+    color: #2EA89A;
+}
+
+.ds-text-red { 
+    color: #D04348;
+}
+
 span.label.tag-light-blue {
     border: 2px solid #5BC0DE;
     color: black;
