@@ -459,3 +459,7 @@ span.label.tag-red.selected {
   top:25px;
   width:25px
 }
+
+.btn-xsm {
+  padding:1px 1.5px;
+}
