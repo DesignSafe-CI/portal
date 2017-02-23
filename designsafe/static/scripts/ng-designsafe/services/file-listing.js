@@ -23,7 +23,30 @@
           !_.isEmpty(apiParams)){
         this.apiParams = apiParams;
       }
+      if (typeof this._entities === 'undefined'){
+        this._entities = [];
+      }
     }
+
+    FileListing.prototype.setEntities = function(projectId, entities){
+      var self = this;
+      var path = self.path;
+      _.each(entities, function(entity){
+        if (typeof entity !== 'undefined' &&
+            typeof entity._links !== 'undefined' &&
+            typeof entity._links.associationIds !== 'undefined'){
+          _.each(entity._links.associationIds, function(asc){
+            if (asc.title === 'file'){
+              var comps = asc.href.split('project-' + projectId, 2);
+              if ( comps.length === 2 &&
+                   path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '')){
+                self._entities.push(entity);
+              }
+            }
+          });
+        }
+      });
+    };
 
     FileListing.prototype.uuid = function(){
       try{
