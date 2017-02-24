@@ -13,15 +13,17 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
     $scope.notifications = resp;
   })
 
-  AgaveService.jobsListing({sfilter:'id,appId,created'}).then(function (resp) {
+  AgaveService.jobsListing({filter:'id,appId,created', 'created.gt':'2017-01-01'}).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = AgaveService.jobsByDate(resp);
     console.log($scope.jobs);
     $scope.chart.data($scope.chart_data);
+    var tmp = _.groupBy($scope.jobs, function (d) {return d.appId});
+    $scope.recent_apps = Object.keys(tmp);
+
   })
 
   AgaveService.appsListing({filter:'id', limit:99999}).then(function (resp) {
-    // console.log(resp)
     $scope.apps = resp;
   })
 
@@ -35,11 +37,10 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
 
   $scope.chart = new DS_TSBarChart('#ds_jobs_chart')
           .height(250)
-          .ySelector(function (d) { return d.values.length;})
-          .xSelector(function (d) { return d.key;});
+          .ySelector(function (d) { return d.count;})
+          .xSelector(function (d) { return d.date;});
 
   $scope.chart.on('bar_click', function (ev, toggled) {
-    console.log('in view', ev, toggled);
     (toggled) ? $scope.display_job_details = true : $scope.display_job_details = false;
     $scope.jobs_details = ev.values;
     $scope.$apply();

@@ -32,7 +32,8 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       });
     };
 
-    this.jobsByDate = function (jobs) {
+    this.jobsByDate = function (jobs, start_date) {
+      start_date = start_date || new Date(new Date(new Date() - (7 * 24 * 60 * 60 * 1000)).setHours(0, 0, 0));
       var nested = d3.nest()
         .key(function (d) {
           var ct = d.created;
@@ -47,17 +48,31 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       nested = nested.sort(function (a, b) { return a.key - b.key});
 
       // make a continous array for the chart?
-      var out = [];
+      var dates = [];
       if (nested.length) {
-        out[0] = nested[0].key;
-        var ct = nested[0].key;
+        dates[0] = start_date;
+        var ct = dates[0];
         while (ct < nested[nested.length - 1].key) {
           ct = new Date(ct.getTime() + (24 * 60 * 60* 1000))
-          out.push(ct)
+          dates.push(ct)
         }
       }
-      console.log(out)
-      return nested;
+
+      var out = [];
+      for (var i=0; i<dates.length; i++){
+        var obj = {
+          date: dates[i],
+          count: 0
+        }
+        console.log(dates[i])
+        var test = _.find(nested, function (d) {return d.key.getTime() === dates[i].getTime()});
+        if (test) {
+          obj.count = test.values.length;
+        }
+        out.push(obj)
+      }
+      console.log(nested)
+      return out;
     };
 
   }]
