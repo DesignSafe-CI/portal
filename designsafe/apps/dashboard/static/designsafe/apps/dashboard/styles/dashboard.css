@@ -5,12 +5,22 @@
 
 .ds-chart .bar {
   fill: #3598dc;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .ds-chart .axis .tick line{
   stroke: #d3d3d3;
 }
+
+.ds-chart .axis text {
+  font-size: 1.5em;
+  fill: #858585;
+}
+
+.ds-chart .y.axis path {
+  fill: none;
+}
+
 .dashboard-stat {
     display: block;
     margin-bottom: 25px;

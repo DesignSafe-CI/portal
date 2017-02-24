@@ -43,7 +43,20 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       nested.forEach(function (d) {
         d.key = new Date(d.key);
       })
+
       nested = nested.sort(function (a, b) { return a.key - b.key});
+
+      // make a continous array for the chart?
+      var out = [];
+      if (nested.length) {
+        out[0] = nested[0].key;
+        var ct = nested[0].key;
+        while (ct < nested[nested.length - 1].key) {
+          ct = new Date(ct.getTime() + (24 * 60 * 60* 1000))
+          out.push(ct)
+        }
+      }
+      console.log(out)
       return nested;
     };
 

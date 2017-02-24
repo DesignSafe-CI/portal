@@ -55,16 +55,16 @@
       </div>
       <ul class="list-group">
         <li class="list-group-item">
-          <a href=""> Account Profile </a>
+          <a href="/account"> Account Profile </a>
         </li>
         <li class="list-group-item">
-          <a href=""> Data Depot </a>
+          <a href="/data"> Data Depot </a>
         </li>
         <li class="list-group-item">
-          <a href=""> Workspace </a>
+          <a href="/rw/discovery-workspace"> Workspace </a>
         </li>
         <li class="list-group-item">
-          <a href=""> Learning Center </a>
+          <a href="/learning-center/overview"> Training </a>
         </li>
       </ul>
     </div>
@@ -75,7 +75,7 @@
       </div>
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="app in jobs">
-          {{app.appId}}
+          <a href="/rw/workspace/#/{{app.appId}}"> {{app.appId}} </a>
         </li>
       </ul>
     </div>
@@ -89,9 +89,17 @@
       <div id="ds_jobs_chart" class="ds-chart"></div>
       <ul class="list-group" ng-show="display_job_details">
         <li class="list-group-item" ng-repeat="job in jobs_details">
-          <span class="label label-primary"> {{job.date | date}} </span>
-          <span class="label pull-right" ng-class="{success:'label-success', failed:'label-danger'}[job.status]"> {{job.status}} </span>
-          <span> {{job.description}} </span>
+          <div class="row">
+            <div class="col-md-3">
+              <span class="label label-default"> {{job.created | date}} </span>
+            </div>
+            <div class="col-md-6 text-center">
+              {{job.appId}}
+            </div>
+            <div class="col-md-3">
+              <span class="label label-info"> {{job.status}} </span>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -103,7 +111,14 @@
     </div>
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="note in notifications">
-          <span class="label label-primary"> {{note.datetime | date}} </span> {{note.message}}
+          <div class="row">
+            <div class="col-md-4">
+              <span class="label label-default"> {{note.datetime | date}} </span>
+            </div>
+            <div class="col-md-8">
+              {{note.message}}
+            </div>
+          </div>
         </li>
       </ul>
     </div>

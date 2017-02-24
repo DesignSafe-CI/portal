@@ -33,7 +33,13 @@ function DS_TSBarChart (element_id) {
 
     yAxis = d3.axisLeft(y)
               .tickSize(-width, 0, 0)
-              .tickFormat(d3.format("d"));
+              .tickFormat(function(e){
+                if(Math.floor(e) != e) {
+                    return;
+                } else {
+                  return e;
+                }
+              });
 
     focus = svg.append("g")
         .attr("class", "focus")
@@ -65,6 +71,7 @@ function DS_TSBarChart (element_id) {
   function draw () {
     x.domain(data.map(xSelector));
     y.domain([0, d3.max(data, ySelector)]);
+    xAxis.ticks(9)
     focus.append("g")
       .attr("transform", "translate(0," + height + ")")
       .attr("class", "x axis")
