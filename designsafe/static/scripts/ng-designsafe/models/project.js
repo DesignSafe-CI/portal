@@ -62,6 +62,9 @@
       var self = this;
       for (var attr in self._related){
         if (self._related[attr] === entity.name){
+          if ( typeof self[attr] === 'undefined'){
+            self[attr] = [];
+          }
           self[attr].push(entity);
         }
       }
