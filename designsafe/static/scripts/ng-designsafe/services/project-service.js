@@ -185,6 +185,22 @@
             $scope.form.addExperiments.splice(index, 1);
           };
 
+          $scope.getEF = function(str){
+              var efs = $scope.ui.efs[$scope.data.project.value.projectType];
+              var ef = _.find(efs, function(ef){
+                return ef.name === str;
+              });
+              return ef;
+          };
+
+          $scope.getET = function(type, str){
+              var ets = $scope.ui.experimentTypes[type];
+              var et = _.find(ets, function(et){
+                return et.name === str;
+              });
+              return et;
+          };
+
           $scope.toggleDeleteExperiment = function(uuid){
             if (uuid in $scope.ui.experiments &&
                 $scope.ui.experiments[uuid].deleted){
@@ -209,6 +225,8 @@
                     name: 'designsafe.project.experiment',
                     entity: exp
                   }
+                }).then(function(res){
+                  $scope.data.project.addEntity(res);
                 });
               }
             });
@@ -225,10 +243,13 @@
 
             $q.all(tasks).then(
               function (results) {
-                $uibModalInstance.close(results);
+                $scope.data.busy = false;
+                $scope.form.addExperiments = [{}];
+                //$uibModalInstance.close(results);
               },
               function (error) {
-                $uibModalInstance.reject(error.data);
+                $scope.data.error = error;
+                //$uibModalInstance.reject(error.data);
               }
             );
           };

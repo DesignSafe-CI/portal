@@ -1361,17 +1361,53 @@
                   $scope.error = err;
                 });
           }
-          _.each($scope.data.files, function(file){
-            if ($scope.data.fileProjectTags.length === 0){
-              $scope.data.fileProjectTags = file._entities;
+          var _setFileEntities = function(){
+            var entities = currentState.project.getAllRelatedObjects();
+            _.each($scope.data.files, function(child){
+              child.setEntities(currentState.project.uuid, entities);
+            });
+          };
+          var _setEntities = function(){
+            _.each($scope.data.files, function(file){
+              if ($scope.data.fileProjectTags.length === 0){
+                $scope.data.fileProjectTags = file._entities;
+              }
+              var diff = _.difference($scope.data.fileProjectTags, file._entities);
+              if (diff.length > 0){
+                $scope.data.fileProjectTags = [];
+              }
+            });
+          };
+          _setEntities();
+
+          $scope.isFileTagged = function(file, entity){
+            if (entity.name === 'designsafe.project.event'){
+              return _.contains(entity.value.load || [], file.uuid());
+            }else if(entity.name === 'designsafe.project.model_config'){
+              return _.contains(entity.value.modelDrawing || [], file.uuid());
+            }else if(entity.anem === 'designsafe.project.sensor_list'){
+              return _.contains(entity.value.sensorDrawing || [], file.uuid());
+            }else if(entity.name === 'designsafe.project.analysis'){
+              return _.contains(entity.value.script || [], file.uuid());
             }
-            var diff = _.difference($scope.data.fileProjectTags, file._entities);
-            if (diff.length > 0){
-              $scope.data.fileProjectTags = [];
+            return false;
+          };
+
+          $scope.getFileSubTag = function(file, entity){
+            if (entity.name === 'designsafe.project.event'){
+              return 'Load';
+            }else if(entity.name === 'designsafe.project.model_config'){
+              return 'Model Drawing';
+            }else if(entity.anem === 'designsafe.project.sensor_list'){
+              return 'Sensor Drawing';
+            }else if(entity.name === 'designsafe.project.analysis'){
+              return 'Script';
             }
-          });
+            return '-';
+          };
 
           $scope.saveFileTags = function(){
+            var sttasks = [];
             for (var euuid in $scope.data.fileSubTags){
               var sts = $scope.data.fileSubTags[euuid] || [];
               var entity = currentState.project.getRelatedByUuid(euuid);
@@ -1381,13 +1417,22 @@
                 }
                 if (typeof entity[sts[fuuid]] === 'undefined' ||
                     !_.isArray(entity[sts[fuuid]])){
-                  entity[sts[fuuid]] = [];
+                  entity.value[sts[fuuid]] = [];
                 }
-                entity[sts[fuuid]].push(fuuid);
-                ProjectEntitiesService.update({data: {uuid: entity.uuid, entity:entity}});
+                entity.value[sts[fuuid]].push(fuuid);
+                sttasks.push(ProjectEntitiesService.update(
+                        {data: {uuid: entity.uuid, entity:entity}}));
+                }
               }
-            }
-          };
+            $scope.ui.busy = true;
+            $q.all(sttasks).then(function(resps){
+              $scope.data.fileSubTags = [];
+              _setFileEntities();
+              _setEntities();
+              $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+              $scope.ui.busy = false;
+            });
+            };
 
           $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
 
@@ -1495,9 +1540,12 @@
            $scope.ui.busy = true;
            $q.all(tasks).then(
              function(e){
-               $scope.ui.busy = false;
                $scope.data.newFileProjectTags = [];
                $scope.data.projectTagsToUnrelate = [];
+               _setFileEntities();
+               _setEntities();
+               $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+               $scope.ui.busy = false;
              }, function(er){
                $scope.ui.busy = false;
                $scope.ui.error = er;
@@ -1542,6 +1590,9 @@
                function(resp){
                  $scope.data.form.projectTagToAdd = {optional:{}};
                  currentState.project.addEntity(resp);
+                 _setFileEntities();
+                 _setEntities();
+                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
                  $scope.ui.error = false;
                  $scope.ui.addingTag = false;
                },
