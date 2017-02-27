@@ -103,10 +103,12 @@
                   </td>
                   <td>
                     <select class="control-form"
+                            ng-if="!isFileTagged(file, entity)"
                             ng-options="opt.name as opt.label for opt in ui.labels[entity.name]"
                             ng-model="data.fileSubTags[entity.uuid][file.uuid()]">
                             <option value="none" selected="selected"></option>
                     </select>
+                    <span ng-if="isFileTagged(file, entity)">{{getFileSubTag(file, entity)}}</span>
                   </td>
                 </tr>
               </tbody>
