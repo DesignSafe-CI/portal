@@ -180,7 +180,7 @@
             !$scope.browser.loadingEntities){
           var entities = $scope.browser.project.getAllRelatedObjects();
           _.each($scope.browser.listing.children, function(child){
-            child.setEntities($scope.brwoser.project.uuid, entities);
+            child.setEntities(DataBrowserService.state().project.uuid, entities);
           });
         } else {
           $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
