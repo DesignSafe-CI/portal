@@ -13,7 +13,7 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
     $scope.notifications = resp;
   })
 
-  AgaveService.jobsListing({filter:'id,appId,created', 'created.gt':'2017-01-01'}).then(function (resp) {
+  AgaveService.jobsListing({'created.gt':'2017-01-01'}).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = AgaveService.jobsByDate(resp);
     console.log($scope.jobs);
@@ -42,7 +42,7 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
 
   $scope.chart.on('bar_click', function (ev, toggled) {
     (toggled) ? $scope.display_job_details = true : $scope.display_job_details = false;
-    $scope.jobs_details = ev.values;
+    $scope.jobs_details = ev.jobs;
     $scope.$apply();
   });
 

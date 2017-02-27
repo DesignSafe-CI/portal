@@ -6,6 +6,7 @@
 .ds-chart .bar {
   fill: #3598dc;
   cursor: pointer;
+  opacity: 0.75;
 }
 
 .ds-chart .axis .tick line{

@@ -33,7 +33,10 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
     };
 
     this.jobsByDate = function (jobs, start_date) {
-      start_date = start_date || new Date(new Date(new Date() - (7 * 24 * 60 * 60 * 1000)).setHours(0, 0, 0));
+      var start_date = start_date || new Date(new Date() - (7 * 24 * 60 * 60 * 1000))
+      var today = new Date();
+      start_date.setMilliseconds(0);
+      start_date.setHours(0,0,0);
       var nested = d3.nest()
         .key(function (d) {
           var ct = d.created;
@@ -52,7 +55,7 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       if (nested.length) {
         dates[0] = start_date;
         var ct = dates[0];
-        while (ct < nested[nested.length - 1].key) {
+        while (ct < today) {
           ct = new Date(ct.getTime() + (24 * 60 * 60* 1000))
           dates.push(ct)
         }
@@ -62,16 +65,17 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       for (var i=0; i<dates.length; i++){
         var obj = {
           date: dates[i],
-          count: 0
+          count: 0,
+          jobs: []
         }
-        console.log(dates[i])
         var test = _.find(nested, function (d) {return d.key.getTime() === dates[i].getTime()});
         if (test) {
           obj.count = test.values.length;
+          obj.jobs = test.values;
         }
         out.push(obj)
       }
-      console.log(nested)
+      console.log(out)
       return out;
     };
 

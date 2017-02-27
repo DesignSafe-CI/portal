@@ -37,7 +37,7 @@
   <div class="col-sm-4">
     <div class="dashboard-stat purple">
       <div class="visual">
-        <i class="fa fa-calendar"></i>
+        <i class="fa fa-database"></i>
       </div>
       <div class="details">
         <div class="number"> {{storage_count | bytes}} </div>
@@ -86,18 +86,21 @@
       <div class="panel-heading">
         <h3 class="panel-title">My Jobs</h3>
       </div>
+      <div ng-show="!jobs.length">
+        <h3> No recent jobs! </h3>
+      </div>
       <div id="ds_jobs_chart" class="ds-chart"></div>
       <ul class="list-group" ng-show="display_job_details">
         <li class="list-group-item" ng-repeat="job in jobs_details">
           <div class="row">
             <div class="col-md-3">
-              <span class="label label-default"> {{job.created | date}} </span>
+              <span class="label label-default"> {{job.appId}} </span>
             </div>
             <div class="col-md-6 text-center">
-              {{job.appId}}
+              <a ng-href="{{ job._links.archiveData.href }}"> Link to output </a>
             </div>
-            <div class="col-md-3">
-              <span class="label label-info"> {{job.status}} </span>
+            <div class="col-md-3 text-right">
+              <span class="label label-info"> {{ job.status }} </span>
             </div>
           </div>
         </li>
@@ -110,6 +113,9 @@
       <h3 class="panel-title">Notifications</h3>
     </div>
       <ul class="list-group">
+        <li class="list-group-item" ng-show="!notifications.length">
+          No new notifications!
+        </li>
         <li class="list-group-item" ng-repeat="note in notifications">
           <div class="row">
             <div class="col-md-4">
@@ -135,7 +141,7 @@
         </ul>
 
         <div ng-show="loading_tickets" class="text-center">
-          <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+          <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
         </div>
     </div>
   </div>

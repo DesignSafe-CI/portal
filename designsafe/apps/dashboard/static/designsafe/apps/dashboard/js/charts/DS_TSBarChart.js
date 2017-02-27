@@ -1,7 +1,7 @@
 
 function DS_TSBarChart (element_id) {
 
-  var margin = {right:20, left:20, top:20, bottom:20},
+  var margin = {right:20, left:20, top:20, bottom:25},
       width = $(element_id).width() - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom,
       xSelector = function (d) {return d.datetime_utc;},
@@ -11,6 +11,7 @@ function DS_TSBarChart (element_id) {
       axis_label, focus,
       svg,
       dispatch = d3.dispatch('bar_click');
+
   d3.select(window).on('resize', function () {
     width = $(element_id).width() - margin.left - margin.right;
     exports();
@@ -28,10 +29,11 @@ function DS_TSBarChart (element_id) {
 
     xAxis = d3.axisBottom(x)
               .tickPadding(6)
-              .tickSize(-height, 1, 0)
+              // .tickSize(-height, 1, 0)
               .tickFormat(d3.timeFormat("%m/%d"));
 
     yAxis = d3.axisLeft(y)
+              .ticks(3)
               .tickSize(-width, 0, 0)
               .tickFormat(function(e){
                 if(Math.floor(e) != e) {
@@ -60,7 +62,7 @@ function DS_TSBarChart (element_id) {
 
     } else {
       focus.selectAll('.bar').style('fill', '#3598dc');
-      d3.select(this).style("fill", "#e7505a");
+      d3.select(this).style("fill", "#32c5d2");
       d3.selectAll('.selected').classed('selected', false)
       d3.select(this).classed('selected', true);
     }
