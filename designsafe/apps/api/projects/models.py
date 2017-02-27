@@ -227,15 +227,6 @@ class Experiment(RelatedEntity):
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
     project = fields.RelatedObjectField(ExperimentalProject)
 
-class Event(RelatedEntity):
-    model_name = 'designsafe.project.event'
-    event_type = fields.CharField('Event Type', max_length=255, default='other')
-    title = fields.CharField('Title', max_length=1024)
-    description = fields.CharField('Description', max_length=1024, default='')
-    load = fields.RelatedObjectField(FileModel, multiple=True)
-    project = fields.RelatedObjectField(ExperimentalProject)
-    experiments = fields.RelatedObjectField(Experiment)
-    files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
@@ -247,7 +238,7 @@ class Analysis(RelatedEntity):
     script = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
-    events = fields.RelatedObjectField(Event)
+    #events = fields.RelatedObjectField(Event)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class ModelConfiguration(RelatedEntity):
@@ -261,7 +252,7 @@ class ModelConfiguration(RelatedEntity):
     model_drawing = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
-    events = fields.RelatedObjectField(Event)
+    #events = fields.RelatedObjectField(Event)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class SensorList(RelatedEntity):
@@ -272,6 +263,18 @@ class SensorList(RelatedEntity):
     sensor_drawing = fields.RelatedObjectField(FileModel, multiple=True)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
-    events = fields.RelatedObjectField(Event)
+    #events = fields.RelatedObjectField(Event)
     model_configs = fields.RelatedObjectField(ModelConfiguration)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class Event(RelatedEntity):
+    model_name = 'designsafe.project.event'
+    event_type = fields.CharField('Event Type', max_length=255, default='other')
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    load = fields.RelatedObjectField(FileModel, multiple=True)
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
+    model_configs = fields.RelatedObjectField(ModelConfiguration)
+    sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
