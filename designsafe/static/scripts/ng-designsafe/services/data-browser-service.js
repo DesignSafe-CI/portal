@@ -1371,6 +1371,24 @@
             }
           });
 
+          $scope.saveFileTags = function(){
+            for (var euuid in $scope.data.fileSubTags){
+              var sts = $scope.data.fileSubTags[euuid] || [];
+              var entity = currentState.project.getRelatedByUuid(euuid);
+              for (var fuuid in sts){
+                if (sts[fuuid] == 'none'){
+                  continue;
+                }
+                if (typeof entity[sts[fuuid]] === 'undefined' ||
+                    !_.isArray(entity[sts[fuuid]])){
+                  entity[sts[fuuid]] = [];
+                }
+                entity[sts[fuuid]].push(fuuid);
+                ProjectEntitiesService.update({data: {uuid: entity.uuid, entity:entity}});
+              }
+            }
+          };
+
           $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
 
 		  $scope.doSaveMetadata = function($event) {
@@ -1514,6 +1532,7 @@
                                       return file.path;
                                      });
             }
+            $scope.ui.addingTag = true;
             ProjectEntitiesService.create({data: {
                 uuid: currentState.project.uuid,
                 name: newTag.tagType,
@@ -1521,6 +1540,8 @@
             }})
             .then(
                function(resp){
+                 $scope.data.form.projectTagToAdd = {optional:{}};
+                 currentState.project.addEntity(resp);
                  $scope.ui.error = false;
                  $scope.ui.addingTag = false;
                },
