@@ -31,8 +31,8 @@
               <tr ng-repeat-start="experiment in data.experiments"
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
                 <td>{{experiment.value.title}}</td>
-                <td>{{experiment.value.experimentalFacility}}</td>
-                <td>{{experiment.value.experimentType}}</td>
+                <td>{{getEF(experiment.value.experimentalFacility).label}}</td>
+                <td>{{getET(getEF(experiment.value.experimentalFacility).name, experiment.value.experimentType).label}}</td>
                 <td><button class="btn btn-sm btn-danger"
                             ng-click="toggleDeleteExperiment(experiment.uuid)">
                     <i class="fa" ng-class="{'fa-mail-reply': ui.experiments[experiment.uuid].deleted, 'fa-remove': !ui.experiments[experiment.uuid].deleted}"></i>
@@ -103,21 +103,25 @@
                     </div>
                 </div>
                 <button class="btn btn-info btn-sm" ng-click="addExperiment()">
-                    <i class="fa fa-plus"></i> Add another
+                    <i class="fa fa-plus"></i> Add Another Experiment
                 </button>
             </div>
         </form>
+        <button ng-disabled="data.busy || data.error" class="btn btn-primary"
+                type="button" ng-click="saveExperiments($event)">
+            Save
+        </button>
     </div>
     <div class="data-model-tree">
       <ul class="experiments-ul">
         <li ng-repeat="experiment in data.project.experiment_set | orderBy: experiment.value.title">
           <span class="ul-title">{{experiment.value.title}}</span>
           <ul class="events-ul">
-            <li ng-repeat="event in data.project.getRelated('event_set', experiment.uuid)">
+            <li ng-repeat="event in data.project.getRelated('modelconfiguration_set', experiment.uuid)">
               <span class="label tag-red">Event</span>
               <span class="tag-title">{{event.value.title}}</span>
               <button class="btn btn-xsm btn-danger"
-                      g-if="data.project.getRelated('event_set', experiment.uuid).length > 0"
+                      ng-if="data.project.getRelated('event_set', experiment.uuid).length > 0"
                       ng-click="delRelEntity(event,{experiments: experiment.uuid})">
                 <i class="fa fa-minus"></i>
                 <span class="sr-only">Delete</span>
@@ -194,9 +198,11 @@
 <div class="modal-footer">
     <div class="text-right">
         <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
+        <!--
         <button ng-disabled="data.busy || data.error" class="btn btn-primary"
                 type="button" ng-click="saveExperiments($event)">
             Save
         </button>
+        -->
     </div>
 </div>
