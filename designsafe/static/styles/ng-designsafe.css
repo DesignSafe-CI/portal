@@ -448,34 +448,73 @@ span.label.tag-red.selected {
     color: white;
 }
 
-.data-model-tree ul, .data-model-tree ul li {
-    list-style:none;
+.data-model-tree ul, li {
+    list-style: none; margin: 0; padding: 0; 
 }
 
-.data-model-tree ul li {
-    margin-top:15px;
+.data-model-tree ul { 
+    padding-left: 1em; 
 }
 
-.data-model-tree li::before, .data-model-tree li::after {
-  content:'';
-  left:-20px;
-  position:absolute;
-  right:auto
+.data-model-tree li { 
+    padding-left: 1em;
+    border: 1px solid black;
+    border-width: 0 0 1px 1px; 
 }
-.data-model-tree li::before {
-  border-left:1px solid #999;
-  bottom:50px;
-  height:100%;
-  top:0;
-  width:1px
+
+.data-model-tree li.tree-container { 
+    border-bottom: 0px; 
 }
-.data-model-tree li::after {
-  border-top:1px solid #999;
-  height:20px;
-  top:25px;
-  width:25px
+
+.data-model-tree li.empty { 
+    font-style: italic;
+    color: silver;
+    border-color: silver;
+}
+
+.data-model-tree li div.tree-el { 
+    margin: 0;
+    background: white;
+    position: relative;
+    top: 1em; 
+    padding:5px 2px;
+}
+
+.data-model-tree li ul { 
+    border-top: 1px solid black; 
+    margin-left: -1em;     
+    padding-left: 2em; 
+}
+.data-model-tree ul li ul {
+    border-left: 1px solid black;
+    margin-left: -15px;
+}
+
+.data-model-tree ul.event-ul {
+    border-left: 1px solid white;
+}
+
+.data-model-tree.data-model-preview-tree ul.model-config-ul li:last-child ul.sensor-list-ul {
+    border-left: 1px solid white;
 }
 
 .btn-xsm {
   padding:1px 1.5px;
+}
+
+.preview-wrapper {
+    overflow:visible;
+}
+
+.folder-tick {
+	display: inline-block;
+    /* border: 1px solid lightgrey; */
+    height: 3em;
+    width: 10em;
+    text-align: center;
+    /* vertical-align: bottom; */
+    border-bottom: 30px solid lightgrey;
+    border-right: 30px solid white;
+    border-left: 30px solid white;
+    padding-top: 10px;
 }

@@ -64,6 +64,7 @@
     var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
    //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
    //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
+   
 
     /**
      * Get a list of Projects for the current user
