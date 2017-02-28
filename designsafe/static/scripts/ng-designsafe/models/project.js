@@ -155,7 +155,7 @@
       var ret = _.filter(entities, function(entity){
           return _.find(files, function(file){
             return _.find(entity._filePaths, function(filePath){
-              var re = new RegExp('^'+filePath);
+              var re = new RegExp('^'+filePath+'(\/|$)');
               //if (re.test(file.path) && file.path.replace(re, '').length > 0){
               if (re.test(file.path)){
                 return true;
