@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="table-responsive" ng-class="{'preview-wrapper': browser.showPreviewListing}">
   <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()()"
         data-scroll-top="scrollToTop()()"
@@ -23,6 +23,11 @@
                 <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
                     {{ item.name }}
                 </a>
+
+                <span class="tag-item"
+                      ng-repeat="entityTag in item._entityTags">
+                  {{entityTag}}
+                </span>
             <div style="width:100%;">
             <span ng-if="browser.loadingEntities">
             Loading <i class="fa fa-spinner fa-spin"></i>
@@ -75,10 +80,11 @@
     </table>
   </div>
 
-  <div class="ds-table-display-wrapper"
+<div>
+  <div
         ng-repeat="experiment in browser.project.experiment_set"
          ng-if="browser.showPreviewListing"
-         style="height:400px; background:#fff;">
+         style="background:#fff;">
     <div style="border:1px solid black; background:white;">
       <div style="width:50%; display:inline-block;">
       <h3>{{experiment.value.title}}</h3>
@@ -86,41 +92,42 @@
       </div>
       <div style="width:49%; vertical-align:top; display:inline-block;">
         <div style="border:1px solid black;">
-          {{experiment.value.experimentalFacility}}
+          {{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
         </div>
         <div style="border:1px solid black;">
-          {{experiment.value.experimentType}}
+          {{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}
         </div>
       </div>
     </div>
     <div ng-repeat="event in browser.project.getRelated('event_set', experiment.uuid)">
     <div style="padding:3px;">
-      <span class="ds-text-red" style="display:inline-block; border:1px solid black;">Event Data </span>
+      <span class="ds-text-red folder-tick">Event Data </span>
       <span style="color:light-gray">Link to: </span>
-      <a class="ds-text-blue" href="#details-{{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid}}"
-      data-toggle="collapse" data-target="#files-{{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid}}">
+      <a class="ds-text-blue" href="#details-{{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).uuid}}"
+      data-toggle="collapse" data-target="#files-{{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).uuid}}">
       Model Configuration
       </a>
-      <a class="ds-text-green" href="#details-{{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].uuid}}"
-         data-toggle="collapse" data-target="#files-{{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].uuid}}">
+      <a class="ds-text-green" href="#details-{{browser.project.getRelatedByUuid(event.value.sensorLists[0]).uuid}}"
+         data-toggle="collapse" data-target="#files-{{browser.project.getRelatedByUuid(event.value.sensorLists[0]).uuid}}">
       Sensor List
       </a>
     </div>
-    <div style="position:absolute; left:-100px; margin-top:-20px;">
-      <div>
-      <a class="ds-text-red" href="#">{{event.value.title}}</a>
+    <div style="position:absolute; left:-100px; margin-top:-20px; width:110px;">
+      <div style="border-bottom:1px solid lightgrey;">
+      <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">{{event.value.title}}</a>
       </div>
       <div>
-      <a class="ds-text-blue" href="#details-{{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid}}">
-        {{browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].value.title}}
+      <a class="ds-text-blue" href="" ng-click="openPreviewTree()($event, event.value.modelConfigs[0])">
+        {{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).value.title}}
       </a>
       </div>
       <div>
-      <a class="ds-text-green" href="#details-{{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].uuid}}">
-        {{browser.project.getRelated('sensorlist_set', [browser.project.getRelated('modelconfiguration_set', [$parent.experiment.uuid, event.uuid])[0].uuid, experiment.uuid, event.uuid])[0].value.title}}
+      <a class="ds-text-green" href="" ng-click="openPreviewTree()($event, event.value.sensorLists[0])">
+        {{browser.project.getRelatedByUuid(event.value.sensorLists[0]).value.title}}
       </a>
       </div>
     </div>
+    <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px;">
     <table  class="table table-bordered table-striped"
             style="background-color: #fff;">
         <thead>
@@ -135,22 +142,25 @@
                 {{file.name}}
                 </a>
             </td>
-            <td>{{file.length}}</td>
+            <td>{{file.length|bytes}}</td>
             <td>{{file.lastModified|date:"short"}}</td>
           </tr>
         </tbody>
     </table>
     </div>
     </div>
+    </div>
 
+</div>
     <div class="project-preview-entities-details"
          ng-if="browser.showPreviewListing">
 
       <div ng-repeat="modelConfig in browser.project.modelconfiguration_set">
         <div class="dropdown" id="details-{{modelConfig.uuid}}">
-          <a href="" class="collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}">
+          <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
+                  style="width:100%;">
             Model Config {{modelConfig.value.title}}
-          </a>
+          </button>
           <div id="files-{{modelConfig.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
                     style="background-color: #fff;">
@@ -177,9 +187,10 @@
 
       <div ng-repeat="sensorList in browser.project.sensorlist_set">
         <div class="dropdown" id="details-{{sensorList.uuid}}">
-          <a href="" class="collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}">
+          <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
+                  style="width:100%;">
             Sensor List {{sensorList.value.title}}
-          </a>
+          </button>
           <div id="files-{{sensorList.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
                     style="background-color: #fff;">
@@ -206,9 +217,10 @@
 
       <div ng-repeat="analysis in browser.project.analysis_set">
         <div class="dropdown" id="details-{{analysis.uuid}}">
-          <a href="" class="collapsed ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}">
+          <button class="btn btn-default btn-sm collapsed ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                  style="width:100%;">
             Analysis {{analysis.value.title}}
-          </a>
+          </button>
           <div id="files-{{analysis.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
                     style="background-color: #fff;">
