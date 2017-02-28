@@ -1270,6 +1270,26 @@
       });
     }
 
+    /**
+     * Open Preview Tree
+     */
+    function openPreviewTree(entityUuid){
+      var template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-tree.html';
+      var modal = $uibModal.open({
+        templateUrl: template,
+        controller:['$uibModalInstance', '$scope',
+                    function($uibModalInstance, $scope){
+          $scope.data = {};
+          $scope.data.entityUuid = entityUuid;
+          $scope.data.project = currentState.project;
+
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+          };
+                    }
+        ]
+      });
+    }
 
     /**
      * TODO
@@ -1730,7 +1750,8 @@
       notify: notify,
       apiParams: apiParams,
       showListing: showListing,
-      showPreview: showPreview
+      showPreview: showPreview,
+      openPreviewTree: openPreviewTree
     };
 
   }]);
