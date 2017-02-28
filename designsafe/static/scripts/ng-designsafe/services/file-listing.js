@@ -26,6 +26,9 @@
       if (typeof this._entities === 'undefined'){
         this._entities = [];
       }
+      if (typeof this._entityTags === 'undefined'){
+        this._entityTags = [];
+      }
     }
 
     FileListing.prototype.setEntities = function(projectId, entities){
@@ -46,6 +49,31 @@
           });
         }
       });
+      if(self._entities.length){
+        var myAsoc = _.find(self._entities[0]._links.associationIds,
+          function(asc){
+          if (asc.title === 'file'){
+            var comps = asc.href.split('project-' + projectId, 2);
+            return self.path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
+          }
+        });
+        var myUuid = myAsoc.rel;
+        _.each(self._entities, function(entity){
+          if( _.contains(entity.value.modelDrawing || [], myUuid)){
+            self._entityTags.push('Model Drawing');
+          }
+          else if (_.contains(entity.value.load || [], myUuid)){
+            self._entityTags.push('Load');
+          }
+          else if (_.contains(entity.value.sensorDrawing || [], myUuid)) {
+            self._entityTags.push('Sensor Drawing');
+          }
+          else if(_.contains(entity.value.script || [], myUuid)) {
+            self._entityTags.push('Script');
+          }
+        });
+        self._entityTags = _.uniq(self._entityTags);
+      }
     };
 
     FileListing.prototype.uuid = function(){
