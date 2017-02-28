@@ -114,10 +114,16 @@
     </div>
     <div class="data-model-tree">
       <ul class="experiments-ul">
-        <li ng-repeat="experiment in data.project.experiment_set | orderBy: experiment.value.title">
+        <li class="tree-container"
+            ng-repeat="experiment in data.project.experiment_set | orderBy: experiment.value.title"
+            style="border:none;">
+          <div class="tree-el">  
           <span class="ul-title">{{experiment.value.title}}</span>
+          </div>
           <ul class="model-config-ul">
-            <li ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid)">
+            <li class="tree-container"
+                ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid)">
+              <div class="tree-el">
               <span class="label tag-blue">Model Config</span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
               <button class="btn btn-xsm btn-danger"
@@ -126,8 +132,11 @@
                 <i class="fa fa-minus"></i>
                 <span class="sr-only">Delete</span>
               </button>
+              </div>
               <ul class="sensor-list-ul">
-                <li ng-repeat="sensorList in data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid])">
+                <li class="tree-container"
+                    ng-repeat="sensorList in data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid])">
+                  <div class="tree-el">  
                   <span class="label tag-green">Sensor</span>
                   <span class="tag-title">{{sensorList.value.title}}</span>
                   <button class="btn btn-xsm btn-danger"
@@ -137,9 +146,12 @@
                     <i class="fa fa-minus"></i>
                     <span class="sr-only">Delete</span>
                   </button>
+                  </div>
                   <ul>
-                    <li ng-repeat="event in data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid])">
-                      <span class="label tag-red">Event</span>
+                    <li 
+                        ng-repeat="event in data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid])">
+                      <div class="tree-el">
+                      <span class="label tag-red tree-el">Event</span>
                       <span class="tag-title">{{event.value.title}}</span>
                       <button class="btn btn-xsm btn-danger"
                               ng-if="data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid, event.uuid]).length === 0"
@@ -149,12 +161,15 @@
                         <i class="fa fa-minus"></i>
                         <span class="sr-only">Delete</span>
                       </button>
+                      </div>
                     </li>
                     <!--
                     <li ng-if="data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]).length => 0">
                     -->
                     <li>
-                      <select ng-options="entity as entity.value.title for entity in data.project.event_set"
+                      <div class="tree-el">
+                      <select
+                              ng-options="entity as entity.value.title for entity in data.project.event_set"
                               ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent">
                       </select>
                       <button class="btn btn-sm btn-info"
@@ -165,6 +180,7 @@
                                                    sensorLists: sensorList.uuid})">
                         <i class="fa fa-plus"></i><span class="sr-only">Add Event</span>
                       </button>
+                      </div>
                     </li>
                   </ul>
                 </li>
@@ -172,7 +188,9 @@
                 <li ng-if="data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid]).length === 0">
                 -->
                 <li>
-                  <select ng-options="entity as entity.value.title for entity in data.project.sensorlist_set"
+                  <div class="tree-el">
+                  <select
+                          ng-options="entity as entity.value.title for entity in data.project.sensorlist_set"
                           ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList">
                   </select>
                   <button class="btn btn-sm btn-info"
@@ -182,11 +200,14 @@
                                                modelConfigs: modelConfig.uuid})">
                     <i class="fa fa-plus"></i><span class="sr-only">Add Sensor</span>
                   </button>
+                  </div>
                 </li>
               </ul>
             </li>
             <li>
-              <select ng-options="entity as entity.value.title for entity in data.project.modelconfiguration_set"
+              <div class="tree-el">
+              <select 
+                      ng-options="entity as entity.value.title for entity in data.project.modelconfiguration_set"
                       ng-model="form.updateExperiments[experiment.uuid].relModelConfig">
               </select>
               <button class="btn btn-sm btn-info"
@@ -195,6 +216,7 @@
                                            experiments:experiment.uuid})">
                 <i class="fa fa-plus"></i><span class="sr-only">Add Model Config</span>
               </button>
+              </div>
             </li>
           </ul>
         </li>
