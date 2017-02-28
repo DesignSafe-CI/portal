@@ -97,7 +97,6 @@ class FileMediaView(BaseApiView, SecureMixin):
 
         elif action == 'copy' or action == 'move':
             try:
-                fmgr.copy(request.user.username, file_id, os.path.join(body['system'], body['path'].strip('/'))) #for testing
                 tasks.external_resource_download.apply_async(kwargs={
                     'file_mgr_name': file_mgr_name,
                     'username': request.user.username,

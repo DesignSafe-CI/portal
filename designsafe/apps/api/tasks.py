@@ -474,7 +474,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
         n.save()
 
 @shared_task(bind=True)
-def box_resource_upload(self, username, src_file_id, dest_file_id):
+def external_resource_upload(self, username, dest_resource, src_file_id, dest_file_id):
     """
     :param self:
     :param username:
@@ -482,7 +482,7 @@ def box_resource_upload(self, username, src_file_id, dest_file_id):
     :param dest_file_id:
     :return:
     """
-    logger.debug('Initializing box_resource_upload. username: %s, src_file_id: %s, dest_file_id: %s ', username, src_file_id, dest_file_id)
+    logger.debug('Initializing external_resource_upload. username: %s, src_file_id: %s, dest_resource: %s, dest_file_id: %s ', username, src_file_id, dest_resource, dest_file_id)
     try:
         n = Notification(event_type='data',
                          status=Notification.INFO,
