@@ -10,7 +10,7 @@ from designsafe.apps.api.tasks import reindex_agave
 #from designsafe.apps.api.tasks import dropbox_upload
 from designsafe.apps.dropbox_integration.models import DropboxUserToken
 from dropbox.exceptions import ApiError, AuthError
-from dropbox.files import ListFolderResult, FileMetadata, FolderMetadata
+from dropbox.files import ListFolderResult, FileMetadata, FolderMetadata, UploadSessionCursor, CommitInfo
 from dropbox.dropbox import Dropbox
 from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException, CsrfException, NotApprovedException, ProviderException
 
@@ -293,7 +293,7 @@ class FileManager(object):
 
     def download_folder(self, path, download_path):
         """
-        Recursively the folder for dropbox_folder_id, and all of its contents, to the given
+        Recursively download the folder for path, and all of its contents, to the given
         download_path.
 
         :param path:
@@ -335,3 +335,124 @@ class FileManager(object):
                 break
 
         return directory_path
+
+    def upload(self, username, src_file_id, dest_file_id):
+        try:
+            n = Notification(event_type='data',
+                             status=Notification.INFO,
+                             operation='dropbox_upload_start',
+                             message='Starting uploading file %s to dropbox.' % (src_file_id,),
+                             user=username,
+                             extra={})
+            n.save()
+            user = get_user_model().objects.get(username=username)
+
+            from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+            # Initialize agave filemanager
+            agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
+            # Split src ination file path
+            src_file_path_comps = src_file_id.strip('/').split('/')
+            # If it is an agave file id then the first component is a system id
+            agave_system_id = src_file_path_comps[0]
+            # Start construction the actual real path into the NSF mount
+            if src_file_path_comps[1:]:
+                src_real_path = os.path.join(*src_file_path_comps[1:])
+            else:
+                src_real_path = '/'
+            # Get what the system id maps to
+            base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
+            # Add actual path
+            if re.search(r'^project-', agave_system_id):
+                project_dir = agave_system_id.replace('project-', '', 1)
+                src_real_path = os.path.join(base_mounted_path, project_dir, src_real_path.strip('/'))
+            else:
+                src_real_path = os.path.join(base_mounted_path, src_real_path.strip('/'))
+            logger.debug('src_real_path: {}'.format(src_real_path))
+
+            file_type, path = self.parse_file_id(dest_file_id)
+            if os.path.isfile(src_real_path):
+                self.upload_file(path, src_real_path)
+            elif os.path.isdir(src_real_path):
+                self.upload_directory(path, src_real_path)
+            else:
+                logger.error('Unable to upload %s: file does not exist!',
+                             src_real_path)
+
+            n = Notification(event_type='data',
+                             status=Notification.SUCCESS,
+                             operation='dropbox_upload_end',
+                             message='File %s has been copied to box successfully!' % (src_file_id, ),
+                             user=username,
+                             extra={})
+            n.save()
+        except Exception as err:
+            logger.exception('Unexpected task failure: dropbox_upload', extra={
+                'username': username,
+                'src_file_id': src_file_id,
+                'dst_file_id': dest_file_id
+            })
+            n = Notification(event_type='data',
+                             status=Notification.ERROR,
+                             operation='dropbox_upload_error',
+                             message='We were unable to get the specified file from dropbox. '
+                                     'Please try again...',
+                             user=username,
+                             extra={})
+            n.save()
+            raise
+
+    def upload_file(self, dropbox_path, file_real_path):
+        file_path, file_name = os.path.split(file_real_path)
+        with open(file_real_path, 'rb') as file_handle:
+            f = file_handle.read()
+            file_size = os.path.getsize(file_path)
+
+            CHUNK_SIZE = 4 * 1024 * 1024 # 4MB
+
+            if file_size <= CHUNK_SIZE:
+                self.dropbox_api.files_upload(f, '%s/%s' % (dropbox_path, file_name))
+            else:
+
+                upload_session_start_result = self.dropbox_api.files_upload_session_start(f.read(CHUNK_SIZE))
+                cursor = dropbox.files.UploadSessionCursor(session_id=upload_session_start_result.session_id,
+                                                           offset=f.tell())
+                commit = dropbox.files.CommitInfo(path=file_path)
+
+                while f.tell() < file_size:
+                    if ((file_size - f.tell()) <= CHUNK_SIZE):
+                        print self.dropbox_api.files_upload_session_finish(f.read(CHUNK_SIZE), cursor, commit)
+                    else:
+                        self.dropbox_api.files_upload_session_append(f.read(CHUNK_SIZE), cursor.session_id, cursor.offset)
+                        cursor.offset = f.tell()
+            logger.info('Successfully uploaded %s to dropbox:folder/%s',
+                        file_real_path, file_path)
+
+
+    def upload_directory(self, dropbox_parent_folder, dir_real_path):
+        """
+        Recursively uploads the directory and all of its contents (subdirectories and files)
+        to the dropbox folder specified by dropbox_parent_folder.
+
+        :param dropbox_parent_folder: The dropbox folder to upload the directory to.
+        :param dir_real_path: The real path on the filesystem of the directory to upload.
+        :return:
+        """
+
+        dirparentpath, dirname = os.path.split(dir_real_path)
+        # dropbox_parent_folder = self.dropbox_api.folder(dropbox_parent_folder)
+        logger.info('Create directory %s in dropbox folder/%s', dirname, dropbox_parent_folder)
+        # box_folder = box_parent_folder.create_subfolder(dirname)
+
+        for dirpath, subdirnames, filenames in os.walk(dir_real_path):
+            # upload all the files
+            for filename in filenames:
+                filepath = os.path.join(dirpath, filename)
+                self.upload_file('%s/%s' % (dropbox_parent_folder, dirname), filepath)
+
+            # upload all the subdirectories
+            for subdirname in subdirnames:
+                subdirpath = os.path.join(dirpath, subdirname)
+                self.upload_directory('%s/%s' % (dropbox_parent_folder, dirname), subdirpath)
+
+            # prevent further walk, because recursion
+            subdirnames[:] = []

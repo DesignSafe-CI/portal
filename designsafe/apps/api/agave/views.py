@@ -19,7 +19,6 @@ from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
-from designsafe.apps.api.external_resources.box.filemanager.manager import FileManager as BoxFileManager
 from designsafe.apps.api.tasks import external_resource_upload
 from requests import HTTPError
 
