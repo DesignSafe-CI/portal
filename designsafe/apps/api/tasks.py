@@ -1,17 +1,19 @@
-from celery import shared_task
-from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from designsafe.apps.api.notifications.models import Notification, Broadcast
-from designsafe.apps.api.agave import get_service_account_client
 import shutil
 import logging
 import re
 import os
 import sys
+import subprocess
+from datetime import datetime
+from celery import shared_task
+from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
+from django.conf import settings
+
+from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
-
 
 @shared_task(bind=True)
 def reindex_agave(self, username, file_id, full_indexing = True,
@@ -30,9 +32,9 @@ def reindex_agave(self, username, file_id, full_indexing = True,
         else:
             file_path = '/'
 
-    agave_fm.indexer.index(system_id, file_path, file_user, 
-                           full_indexing = full_indexing, 
-                           pems_indexing = pems_indexing, 
+    agave_fm.indexer.index(system_id, file_path, file_user,
+                           full_indexing = full_indexing,
+                           pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
 
@@ -526,7 +528,7 @@ def box_resource_upload(self, username, src_file_id, dest_file_id):
         else:
             logger.error('Unable to upload %s: file does not exist!',
                          src_real_path)
-        
+
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
                          operation='box_upload_end',

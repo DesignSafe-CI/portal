@@ -6,14 +6,30 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.views.generic.base import View
 
+from elasticsearch_dsl import Q, Search
+
 logger = logging.getLogger(__name__)
+
+
+class UsageView(SecureMixin, View):
+
+    def get(self, request):
+        current_user = request.user
+        q = Search(index="designsafe")\
+                .query('bool', must=[Q("match", **{"path._path": current_user.username})])\
+                .extra(size=0)
+        q.aggs.metric('total_storage_bytes', 'sum', field="length")
+        result = q.execute()
+        agg = result.to_dict()["aggregations"]
+        out = {"total_storage_bytes": agg["total_storage_bytes"]["value"]}
+        return JsonResponse(out)
 
 class AuthenticatedView(View):
 
     def get(self, request):
-        logger.info(request.user.__dict__)
         if request.user.is_authenticated():
             u = request.user
+
             out = {
                 "first_name": u.first_name,
                 "username": u.username,

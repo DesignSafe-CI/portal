@@ -377,6 +377,10 @@ class BaseFileResource(BaseAgaveResource):
                 READ permission on ``path`` on ``system``.
             - 404 If the ``path`` does not exist on ``system``.
         """
+        lower = 1
+        if offset > 0:
+            lower = 0
+
         list_result = agave_client.files.list(systemId=system,
                                               filePath=urllib.quote(path), 
                                               offset=offset,
@@ -388,7 +392,7 @@ class BaseFileResource(BaseAgaveResource):
 
             # put rest of listing as ``children``
             listing._children = [cls(agave_client=agave_client, **f)
-                                 for f in list_result[1:]]
+                                 for f in list_result[lower:]]
         return listing
 
     def download(self):

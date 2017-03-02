@@ -44,7 +44,7 @@ angular.module('designsafe')
    /**
     * Returns if the current user is even authenticated
     * @returns {boolean}
-    */
+   */
    this.userAuthenticated = function () {
      return user ? true : false;
    };
@@ -52,9 +52,15 @@ angular.module('designsafe')
    /**
     * Returns if the current user is even authenticated
     * @returns {object} currentUser
-    */
-    this.currentUser = function () {
-      return user;
-    };
+   */
+   this.currentUser = function () {
+     return user;
+   };
+
+   this.usage = function () {
+     return $http.get('/api/users/usage/').then(function (resp) {
+       return resp.data;
+     });
+   };
 
 }]);

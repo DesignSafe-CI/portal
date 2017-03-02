@@ -102,4 +102,3 @@ def copy_box_item(self, username, box_item_type, box_item_id, target_system_id,
                 offset += limit
             else:
                 break
-
