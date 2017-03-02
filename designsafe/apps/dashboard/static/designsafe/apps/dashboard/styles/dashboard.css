@@ -3,6 +3,12 @@
   background: #fff;
 }
 
+.dashboard.panel-heading {
+  color: #1d9ba6;
+  padding: 15px;
+  background-color: #fff;
+}
+
 .ds-chart .bar {
   fill: #3598dc;
   cursor: pointer;
@@ -46,11 +52,15 @@
     background-color: #e7505a;
 }
 .dashboard-stat.green {
-    background-color: #32c5d2;
+    background-color: #2daa70;
 }
 .dashboard-stat.purple {
     background-color: #8E44AD;
 }
+.dashboard-stat.cyan {
+    background-color: #32c5d2;
+}
+
 .dashboard-stat .details .number {
     color: #FFFFFF;
 }

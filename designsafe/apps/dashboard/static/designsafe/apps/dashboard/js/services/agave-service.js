@@ -4,7 +4,7 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
     var filesBaseUrl = 'https://agave.designsafe-ci.org/files/v2/';
     var jobsBaseUrl = 'https://agave.designsafe-ci.org/jobs/v2/';
     var appsBaseUrl = 'https://agave.designsafe-ci.org/apps/v2/';
-    //https://public.tenants.agaveapi.co/files/v2/listings/data.agaveapi.co/nryan
+
     this.filesListing = function (path, q) {
       return $http.get(filesBaseUrl + 'listings/' +  path, {params: q}).then(function (resp) {
         return resp.data.result;
@@ -32,11 +32,7 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       });
     };
 
-    this.jobsByDate = function (jobs, start_date) {
-      var start_date = start_date || new Date(new Date() - (7 * 24 * 60 * 60 * 1000))
-      var today = new Date();
-      start_date.setMilliseconds(0);
-      start_date.setHours(0,0,0);
+    this.jobsByDate = function (jobs) {
       var nested = d3.nest()
         .key(function (d) {
           var ct = d.created;
@@ -47,36 +43,11 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       nested.forEach(function (d) {
         d.key = new Date(d.key);
       })
-
+      console.log(nested)
       nested = nested.sort(function (a, b) { return a.key - b.key});
+      // var out = nested.map(function (d) { return {date:d.key, count:d.values.length}; });
 
-      // make a continous array for the chart?
-      var dates = [];
-      if (nested.length) {
-        dates[0] = start_date;
-        var ct = dates[0];
-        while (ct < today) {
-          ct = new Date(ct.getTime() + (24 * 60 * 60* 1000))
-          dates.push(ct)
-        }
-      }
-
-      var out = [];
-      for (var i=0; i<dates.length; i++){
-        var obj = {
-          date: dates[i],
-          count: 0,
-          jobs: []
-        }
-        var test = _.find(nested, function (d) {return d.key.getTime() === dates[i].getTime()});
-        if (test) {
-          obj.count = test.values.length;
-          obj.jobs = test.values;
-        }
-        out.push(obj)
-      }
-      console.log(out)
-      return out;
+      return nested;
     };
 
   }]

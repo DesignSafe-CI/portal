@@ -24,7 +24,7 @@
     </div>
   </div> -->
   <div class="col-sm-4">
-    <div class="dashboard-stat green">
+    <div class="dashboard-stat cyan">
       <div class="visual">
         <i class="fa fa-cogs"></i>
       </div>
@@ -35,12 +35,12 @@
     </div>
   </div>
   <div class="col-sm-4">
-    <div class="dashboard-stat purple">
+    <div class="dashboard-stat green">
       <div class="visual">
         <i class="fa fa-database"></i>
       </div>
       <div class="details">
-        <div class="number"> {{storage_count | bytes}} </div>
+        <div class="number"> {{usage.total_storage_bytes | bytes}} </div>
         <div class="desc"> Total storage in Designsafe </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
 <div class="row">
   <div class="col-sm-3">
     <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading dashboard">
         <h3 class="panel-title">Quick Links</h3>
       </div>
       <ul class="list-group">
@@ -70,7 +70,7 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading dashboard">
         <h3 class="panel-title">Recent Apps</h3>
       </div>
       <ul class="list-group">
@@ -83,7 +83,7 @@
   </div>
   <div class="col-sm-6">
     <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading dashboard">
         <h3 class="panel-title">My Jobs</h3>
       </div>
       <div ng-show="!jobs.length">
@@ -109,7 +109,7 @@
   </div>
   <div class="col-sm-3">
     <div class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading dashboard">
       <h3 class="panel-title">Notifications</h3>
     </div>
       <ul class="list-group">
@@ -130,7 +130,7 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading clearfix">
+      <div class="panel-heading clearfix dashboard">
         <h3 class="panel-title pull-left">My Tickets</h3>
         <a class="button btn-xs btn-primary pull-right" href="#"> Create New </a>
       </div>

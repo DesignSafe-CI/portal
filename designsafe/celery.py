@@ -21,14 +21,14 @@ app = Celery('designsafe')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-app.conf.update(
-    CELERYBEAT_SCHEDULE = {
-        'update_user_storages': {
-            'task': 'designsafe.apps.api.tasks.update_user_storages',
-            'schedule': crontab(hour=0, minute=0),
-        }
-    }
-)
+# app.conf.update(
+#     CELERYBEAT_SCHEDULE = {
+#         'update_user_storages': {
+#             'task': 'designsafe.apps.api.tasks.update_user_storages',
+#             'schedule': crontab(hour=0, minute=0),
+#         }
+#     }
+# )
 
 @app.task(bind=True)
 def debug_task(self):

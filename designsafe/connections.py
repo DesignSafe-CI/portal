@@ -2,6 +2,7 @@ from elasticsearch_dsl.connections import connections
 from django.conf import settings
 
 es_settings = getattr(settings, 'ELASTIC_SEARCH')
+published_index = es_settings['published_index']
 cluster = es_settings['cluster']
 hosts = cluster['hosts']
 connections.configure(
