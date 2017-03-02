@@ -666,39 +666,3 @@ def check_project_meta_pems(self, metadata_uuid):
     service = get_service_account_client()
     bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
     bfm.match_pems_to_project()
-
-
-@shared_task(bind=True)
-def update_user_storage(self, username):
-    from designsafe.apps.api.users.models import DesignsafeUser
-    try:
-        pth = os.path.join('/corral-repl/tacc/NHERI/shared', username)
-        du = subprocess.Popen(['du', '-b', pth], stdout=subprocess.PIPE)
-        usage = subprocess.check_output(['tail', '-1'], stdin=du.stdout).split()[0]
-        usage = int(usage)
-    except:
-        return
-    # logger.info(usage)
-    s = DesignsafeUser.search()
-    results = s.query('match', username=username).execute()
-    if len(results):
-        user_prof = results[0]
-        user_prof.total_storage_bytes = usage
-        user_prof.last_updated = datetime.utcnow()
-        user_prof.save()
-    else:
-        user_prof = DesignsafeUser(username=username,
-            total_storage_bytes=usage,
-            last_updated = datetime.utcnow()
-        )
-        logger.info(user_prof)
-        user_prof.save()
-
-
-@shared_task(bind=True)
-def update_user_storages(self):
-    from django.contrib.auth.models import User
-    update_user_storage.delay('jmeiring')
-    # users = User.objects.all()
-    # for u in users:
-    #     update_user_storage.delay(u.username)

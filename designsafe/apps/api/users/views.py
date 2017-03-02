@@ -6,13 +6,20 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.views.generic.base import View
 from designsafe.apps.api.users.models import DesignsafeUser
+from designsafe.connections import connection
 
 logger = logging.getLogger(__name__)
+
+
+class UsageView(SecureMixin, View):
+
+    def get(self, request):
+
+
 
 class AuthenticatedView(View):
 
     def get(self, request):
-        logger.info(request.user.__dict__)
         if request.user.is_authenticated():
             u = request.user
 
@@ -27,13 +34,6 @@ class AuthenticatedView(View):
                     "scope": u.agave_oauth.scope,
                 }
             }
-
-            # Now get storage info from elasticsearch...
-            s = DesignsafeUser.search()
-            res = s.query("match", username=u.username).execute()
-            if len(res):
-                user_profile = res[0]
-                out["total_storage_bytes"] = user_profile.total_storage_bytes
 
             return JsonResponse(out)
         return HttpResponse('Unauthorized', status=401)
