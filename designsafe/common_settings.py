@@ -381,6 +381,7 @@ LOGGING = {
         'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
+            'propagate': True
         },
         'opbeat': {
             'handlers': ['console'],
@@ -495,7 +496,6 @@ WS4REDIS_CONNECTION = {
 }
 WS4REDIS_EXPIRE = 0
 
-from celery_settings import *
 ###
 # Analytics
 #
@@ -539,6 +539,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
+from celery_settings import *
 from external_resource_settings import *
 from elasticsearch_settings import *
 from rt_settings import *

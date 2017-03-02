@@ -1,17 +1,19 @@
-from celery import shared_task
-from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from designsafe.apps.api.notifications.models import Notification, Broadcast
-from designsafe.apps.api.agave import get_service_account_client
 import shutil
 import logging
 import re
 import os
 import sys
+import subprocess
+from datetime import datetime
+from celery import shared_task
+from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
+from django.conf import settings
+
+from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
-
 
 @shared_task(bind=True)
 def reindex_agave(self, username, file_id, full_indexing = True,
@@ -30,9 +32,9 @@ def reindex_agave(self, username, file_id, full_indexing = True,
         else:
             file_path = '/'
 
-    agave_fm.indexer.index(system_id, file_path, file_user, 
-                           full_indexing = full_indexing, 
-                           pems_indexing = pems_indexing, 
+    agave_fm.indexer.index(system_id, file_path, file_user,
+                           full_indexing = full_indexing,
+                           pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
 
@@ -526,7 +528,7 @@ def box_resource_upload(self, username, src_file_id, dest_file_id):
         else:
             logger.error('Unable to upload %s: file does not exist!',
                          src_real_path)
-        
+
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
                          operation='box_upload_end',
@@ -664,3 +666,39 @@ def check_project_meta_pems(self, metadata_uuid):
     service = get_service_account_client()
     bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
     bfm.match_pems_to_project()
+
+
+@shared_task(bind=True)
+def update_user_storage(self, username):
+    from designsafe.apps.api.users.models import DesignsafeUser
+    try:
+        pth = os.path.join('/corral-repl/tacc/NHERI/shared', username)
+        du = subprocess.Popen(['du', '-b', pth], stdout=subprocess.PIPE)
+        usage = subprocess.check_output(['tail', '-1'], stdin=du.stdout).split()[0]
+        usage = int(usage)
+    except:
+        return
+    # logger.info(usage)
+    s = DesignsafeUser.search()
+    results = s.query('match', username=username).execute()
+    if len(results):
+        user_prof = results[0]
+        user_prof.total_storage_bytes = usage
+        user_prof.last_updated = datetime.utcnow()
+        user_prof.save()
+    else:
+        user_prof = DesignsafeUser(username=username,
+            total_storage_bytes=usage,
+            last_updated = datetime.utcnow()
+        )
+        logger.info(user_prof)
+        user_prof.save()
+
+
+@shared_task(bind=True)
+def update_user_storages(self):
+    from django.contrib.auth.models import User
+    update_user_storage.delay('jmeiring')
+    # users = User.objects.all()
+    # for u in users:
+    #     update_user_storage.delay(u.username)

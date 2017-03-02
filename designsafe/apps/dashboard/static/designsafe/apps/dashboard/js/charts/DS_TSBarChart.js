@@ -62,7 +62,7 @@ function DS_TSBarChart (element_id) {
 
     } else {
       focus.selectAll('.bar').style('fill', '#3598dc');
-      d3.select(this).style("fill", "#32c5d2");
+      d3.select(this).style("fill", "#dd911e");
       d3.selectAll('.selected').classed('selected', false)
       d3.select(this).classed('selected', true);
     }

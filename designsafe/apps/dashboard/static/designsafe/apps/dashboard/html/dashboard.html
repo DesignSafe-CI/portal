@@ -97,7 +97,7 @@
               <span class="label label-default"> {{job.appId}} </span>
             </div>
             <div class="col-md-6 text-center">
-              <a ng-href="{{ job._links.archiveData.href }}"> Link to output </a>
+              <a ng-href="{{ job._links.archiveData.href | agave2ds }}"> Link to output </a>
             </div>
             <div class="col-md-3 text-right">
               <span class="label label-info"> {{ job.status }} </span>
