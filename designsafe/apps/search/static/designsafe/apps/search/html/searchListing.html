@@ -26,14 +26,15 @@
     <hr>
   </div>
   <!--  Web Content -->
-  <div ng-if='data.doc_type === "modelresult"'>
+  <div ng-if='data.doc_type === "modelresult" && data.highlight'>
     <span class="label label-default"> Web Content </span>
     <p>
       <h4><a ng-href="{{data.url || '/'}}" target="_self"> {{data.slug}} </a></h4>
     </p>
     <div ng-repeat = "hit in data.highlight.body">
-      <p ng-bind-html="hit"></p>
+      <p ng-bind-html = "hit"> </p>
     </div>
+    <!-- <div ng-bind-html="data.body"></div> -->
     <hr>
   </div>
   <!-- Publications -->

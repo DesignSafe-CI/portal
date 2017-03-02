@@ -142,11 +142,11 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
                     collab_user.profile.send_mail(
                         "[Designsafe-CI] You have been added to a project!",
                         "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s' % (p.uuid,))))
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,))))
                 except DesignSafeProfile.DoesNotExist as err:
                     logger.info("Could not send email to user %s", collab_user)
                     body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s' % (p.uuid,)))
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,)))
                     send_mail(
                         "[Designsafe-CI] You have been added to a project!",
                         body,
@@ -230,11 +230,11 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
                 collab_user.profile.send_mail(
                     "[Designsafe-CI] You have been added to a project!",
                     "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, 
-                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s' % (project.uuid,))))
+                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
             except DesignSafeProfile.DoesNotExist as err:
                 logger.info("Could not send email to user %s", collab_user)
                 body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, 
-                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s' % (project.uuid,)))
+                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
                 send_mail(
                     "[Designsafe-CI] You have been added to a project!",
                     body,

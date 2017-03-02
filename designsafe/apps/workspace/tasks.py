@@ -170,14 +170,15 @@ def watch_job_status(self, username, job_id, current_status=None):
 
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
-            watch_job_status.apply_async(args=[username, job_id],
-                                         kwargs={'current_status': job_status},
-                                         countdown=10)
+            #watch_job_status.apply_async(args=[username, job_id],
+            #                             kwargs={'current_status': job_status},
+            #                             countdown=10)
+            self.retry()
         else:
             # queue another watch task
-            watch_job_status.apply_async(args=[username, job_id],
-                                         kwargs={'current_status': job_status},
-                                         countdown=10)
+            #watch_job_status.apply_async(args=[username, job_id],
+            #                             kwargs={'current_status': job_status},
+            #                             countdown=10)
 
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
@@ -189,6 +190,7 @@ def watch_job_status(self, username, job_id, current_status=None):
             n.save()
             #generic_event.send_robust(None, event_type='job', event_data=event_data,
             #                          event_users=[username])
+            self.retry(countdown=10)
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 

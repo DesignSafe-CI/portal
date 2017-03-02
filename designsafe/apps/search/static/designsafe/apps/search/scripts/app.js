@@ -39,6 +39,7 @@
 
           searchService.search($scope.data.search_text, $scope.limit, $scope.offset, $scope.data.type_filter).then(function(resp) {
               $scope.data.search_results = resp.data;
+              console.log($scope.data.search_results);
               $scope.max_pages = $scope.Math.ceil($scope.data.search_results.total_hits / $scope.results_per_page);
               // logger.debug($scope.data.search_results)
               $scope.searching = false;
