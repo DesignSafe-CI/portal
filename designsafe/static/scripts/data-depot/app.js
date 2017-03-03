@@ -197,7 +197,7 @@
       })
       .state('boxData', {
         url: '/box/{filePath:any}',
-        controller: 'BoxDataCtrl',
+        controller: 'ExternalDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/box-data-listing.html',
         params: {
           filePath: ''

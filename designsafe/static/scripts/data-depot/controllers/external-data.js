@@ -2,7 +2,7 @@
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
-  app.controller('BoxDataCtrl', ['$scope', '$state', 'Django',
+  app.controller('ExternalDataCtrl', ['$scope', '$state', 'Django',
                                       'DataBrowserService',
                   function ($scope, $state, Django, DataBrowserService) {
   $scope.browser = DataBrowserService.state();

@@ -51,9 +51,15 @@ class FileManager(object):
                 file_type, path = DropboxFile.parse_file_id(path)
             except AssertionError:
                 # file path is hierarchical; need to find the DropboxObject here
-                dropbox_item = DropboxFile(self.dropbox_api.files_list_folder(path))
-                file_type = dropbox_item.type
-                return file_type, path
+                path = '/' + path
+                try:
+                    dropbox_item = DropboxFile(self.dropbox_api.files_list_folder( path))
+                    return dropbox_item.type, path
+                except ApiError as e:
+                    if e.error.get_path().is_not_found():
+                        raise ApiException(
+                            'The Dropbox path "{0}" does not exist.'.format(path),
+                            status=404)
         else:
             file_type, path = u'folder', u''
 
