@@ -83,6 +83,7 @@ INSTALLED_APPS = (
     'designsafe.apps.box_integration',
     'designsafe.apps.dropbox_integration',
     'designsafe.apps.licenses',
+    'designsafe.apps.dashboard',
 
     # signals
     'designsafe.apps.signals',
@@ -380,6 +381,7 @@ LOGGING = {
         'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
+            'propagate': True
         },
         'opbeat': {
             'handlers': ['console'],
@@ -447,6 +449,7 @@ PIPELINE_JS = {
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
+            'vender/d3/d3.min.js'
         ),
         'output_filename': 'js/vendor.js',
     },
@@ -493,7 +496,6 @@ WS4REDIS_CONNECTION = {
 }
 WS4REDIS_EXPIRE = 0
 
-from celery_settings import *
 ###
 # Analytics
 #
@@ -537,6 +539,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
+from celery_settings import *
 from external_resource_settings import *
 from elasticsearch_settings import *
 from rt_settings import *

@@ -1,3 +1,4 @@
+import logging
 from django.http.response import HttpResponseBadRequest
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
@@ -11,9 +12,13 @@ from designsafe.apps.api.exceptions import ApiException
 
 import json
 
+logger = logging.getLogger(__name__)
+
+
 class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
 
     def get(self, request, event_type = None, *args, **kwargs):
+        limit = request.GET.get('limit', None)
         if event_type is not None:
             notifs = Notification.objects.filter(event_type = event_type,
                           deleted = False,
@@ -21,6 +26,8 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         else:
             notifs = Notification.objects.filter(deleted = False,
                           user = request.user.username).order_by('-datetime')
+        if limit:
+            notifs = notifs[0:limit]
         for n in notifs:
             if not n.read:
                 n.mark_read()

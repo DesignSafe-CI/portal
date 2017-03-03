@@ -1,0 +1,104 @@
+
+#dashboard {
+  background: #fff;
+}
+
+.dashboard.panel-heading {
+  color: #1d9ba6;
+  padding: 15px;
+  background-color: #fff;
+}
+
+.ds-chart .bar {
+  fill: #3598dc;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.ds-chart .axis .tick line{
+  stroke: #d3d3d3;
+}
+
+.ds-chart .axis text {
+  font-size: 1.5em;
+  fill: #858585;
+}
+
+.ds-chart .y.axis path {
+  fill: none;
+}
+
+.dashboard-stat {
+    display: block;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+.dashboard-stat .visual {
+    width: 80px;
+    height: 80px;
+    display: block;
+    float: left;
+    padding-top: 10px;
+    padding-left: 15px;
+    margin-bottom: 15px;
+    font-size: 35px;
+    line-height: 35px;
+}
+
+.dashboard-stat.blue {
+    background-color: #3598dc;
+}
+.dashboard-stat.red {
+    background-color: #e7505a;
+}
+.dashboard-stat.green {
+    background-color: #2daa70;
+}
+.dashboard-stat.purple {
+    background-color: #8E44AD;
+}
+.dashboard-stat.cyan {
+    background-color: #32c5d2;
+}
+
+.dashboard-stat .details .number {
+    color: #FFFFFF;
+}
+.dashboard-stat .details .number {
+    padding-top: 25px;
+    text-align: right;
+    font-size: 34px;
+    line-height: 36px;
+    letter-spacing: -1px;
+    margin-bottom: 0px;
+    font-weight: 300;
+}
+
+.dashboard-stat .visual > i {
+    color: #FFFFFF;
+    opacity: 0.2;
+    filter: alpha(opacity=10);
+}
+.dashboard-stat .visual > i {
+    margin-left: -35px;
+    font-size: 110px;
+    line-height: 110px;
+}
+
+.dashboard-stat .details {
+    position: absolute;
+    right: 15px;
+    padding-right: 15px;
+}
+
+.dashboard-stat .details .desc {
+    color: #FFFFFF;
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+.dashboard-stat .details .desc {
+    text-align: right;
+    font-size: 16px;
+    letter-spacing: 0px;
+    font-weight: 300;
+}
