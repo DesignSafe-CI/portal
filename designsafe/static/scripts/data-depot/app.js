@@ -224,7 +224,7 @@
       })
       .state('dropboxData', {
         url: '/dropbox/{filePath:any}',
-        controller: 'DropboxDataCtrl',
+        controller: 'ExternalDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/dropbox-data-listing.html',
         params: {
           filePath: ''
