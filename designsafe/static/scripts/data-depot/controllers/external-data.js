@@ -17,12 +17,12 @@
     });
   }
 
-  // $scope.data = {
-  //   customRoot: {
-  //     name: 'Box',
-  //     href: $state.href($state.current.name, {filePath: 'box/'})
-  //   }
-  // };
+  $scope.data = {
+    customRoot: {
+      name:  $state.current.params.name,
+      href: $state.href($state.current.name, {filePath: $state.current.params.customRootFilePath})
+    }
+  };
 
    $scope.resolveBreadcrumbHref = function(trailItem) {
       return $state.href($state.current.name, {filePath: trailItem.path});
