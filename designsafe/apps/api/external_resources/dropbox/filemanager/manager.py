@@ -105,8 +105,8 @@ class FileManager(object):
                     if has_more:
                         folder = self.dropbox_api.files_list_folder_continue(cursor)
                         entries = folder.entries
-                        has_more = items.has_more
-                        cursor = items.cursor
+                        has_more = folder.has_more
+                        cursor = folder.cursor
                     else:
                         break
                 # children = [DropboxFile(item, item.path_display, parent=dropbox_item).to_dict(default_pems=default_pems)
