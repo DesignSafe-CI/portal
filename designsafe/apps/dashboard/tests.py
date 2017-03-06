@@ -19,39 +19,40 @@ class DashboardTests(TestCase):
         user = get_user_model().objects.get(pk=2)
         user.set_password('user/password')
         user.save()
-
         f1 = IndexedFile(
             length=1,
             path="ds_user/test",
         )
-        f1.save()
+        f1.save(refresh=True)
         f2 = IndexedFile(
             length=1,
             path="ds_user/test",
         )
-        f2.save()
+        f2.save(refresh=True)
+        print "SetUp"
 
         # disconnect user_logged_in signal
         signals.user_logged_in.disconnect(on_user_logged_in)
 
     def tearDown(self):
         s = IndexedFile.search()
-        res = s.query('bool', must=[Q("match", **{"path._path": "ds_user"})]).extra(size=10000).execute()
-        for r in res:
-            print r
-            r.delete()
+        res = s.query('bool', must=[Q("match", **{"path._path": "ds_user"})]).extra(size=10000)
+        res.execute()
+        for doc in res:
+            doc.delete(refresh=True, ignore=404)
 
-    def test_index(self):
+    def test_dashboard_index(self):
         url = reverse('designsafe_dashboard:index')
         self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
 
-    def test_agg_storage(self):
-        url = reverse('designsafe_api:user_usage')
+    def test_dashboard_agg_storage(self):
 
+        url = reverse('designsafe_api:user_usage')
         self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.content)
         self.assertEqual(data["total_storage_bytes"], 2)
+        pass
