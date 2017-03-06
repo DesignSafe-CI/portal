@@ -158,24 +158,7 @@ class FileManager(object):
     def is_search(self, *args, **kwargs):
         return False
 
-    # def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
     def copy(self, username, src_file_id, dest_file_id, **kwargs):
-        # # can only transfer out of box
-        # from designsafe.apps.api.data import lookup_transfer_service
-        # service = lookup_transfer_service(self.NAME, dest_resource)
-        # if service:
-        #     args = (self._user.username,
-        #             self.NAME, file_id,
-        #             dest_resource, dest_file_id)
-        #     service.apply_async(args=args)
-        #     return {'message': 'The requested transfer has been scheduled'}
-        # else:
-        #     message = 'The requested transfer from %s to %s ' \
-        #               'is not supported' % (self.NAME, dest_resource)
-        #     extra = {'file_id': file_id,
-        #              'dest_resource': dest_resource,
-        #              'dest_file_id': dest_file_id}
-        #     raise ApiException(message, status=400, extra=extra)
         try:
             n = Notification(event_type='data',
                              status=Notification.INFO,
@@ -187,8 +170,6 @@ class FileManager(object):
             logger.debug('username: {}, src_file_id: {}, dest_file_id: {}'.format(username, src_file_id, dest_file_id))
             user = get_user_model().objects.get(username=username)
 
-            # from designsafe.apps.api.external_resources.box.filemanager.manager import \
-            #      FileManager as BoxFileManager
             from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
             # Initialize agave filemanager
             agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
@@ -221,10 +202,6 @@ class FileManager(object):
                 levels = 1
             elif box_file_type == 'folder':
                 downloaded_file_path = self.download_folder(box_file_id, dest_real_path)
-
-            #if downloaded_file_path is not None:
-            #    downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
-            #    system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
 
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,

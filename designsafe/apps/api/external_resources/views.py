@@ -81,16 +81,6 @@ class FileMediaView(BaseApiView, SecureMixin):
         if action == 'preview':
             try:
                 return fmgr.preview(file_id,file_mgr_name=file_mgr_name)
-        #         # box_file_type, box_file_id = fmgr.parse_file_id(file_id)
-        #         # box_op = getattr(fmgr.box_api, box_file_type)
-        #         # box_file = BoxFile(box_op(box_file_id).get())
-        #         # if box_file.previewable:
-        #         #     preview_url = reverse('designsafe_api:box_files_media',
-        #         #                           args=[file_mgr_name, file_id.strip('/')])
-        #         #     return JsonResponse({'href':
-        #         #                            '{}?preview=true'.format(preview_url)})
-        #         # else:
-        # #     return HttpResponseBadRequest('Preview not available for this item.')
             except HTTPError as e:
                 logger.exception('Unable to preview file')
                 return HttpResponseBadRequest(e.response.text)

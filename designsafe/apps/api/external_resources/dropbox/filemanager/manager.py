@@ -65,13 +65,13 @@ class FileManager(object):
 
         return file_type, path
 
-    def listing(self, path='', **kwargs):
+    def listing(self, file_id='', **kwargs):
         """
         Lists contents of a folder or details of a file.
 
         Args:
-            file_id: The type/id of the Dropbox Object. This should be formatted {type}/{id}
-            where {type} is one of ['folder', 'file'] and {id} is the numeric Dropbox ID for
+            file_id: The type/path of the Dropbox Object. This should be formatted {type}/{path}
+            where {type} is one of ['folder', 'file'] and {path} is the numeric Dropbox path for
             the object.
 
         Returns:
@@ -83,14 +83,8 @@ class FileManager(object):
         default_pems = 'ALL'
 
         try:
-            file_type, path = self.parse_file_id(path)
+            file_type, path = self.parse_file_id(file_id)
             dropbox_item = self.dropbox_api.files_list_folder(path)
-
-            # if path == '':
-                # file_type = 'folder'
-            # else:
-                # item_metadata = self.dropbox_api.files_alpha_get_metadata(path)
-                # children = None
 
             children = []
 
@@ -109,8 +103,6 @@ class FileManager(object):
                         cursor = folder.cursor
                     else:
                         break
-                # children = [DropboxFile(item, item.path_display, parent=dropbox_item).to_dict(default_pems=default_pems)
-                            # for item in dropbox_item.entries]
             else:
                 children = None
 
@@ -191,10 +183,6 @@ class FileManager(object):
                 levels = 1
             elif file_type == 'folder':
                 downloaded_file_path = self.download_folder(path, dest_real_path)
-
-            #if downloaded_file_path is not None:
-            #    downloaded_file_id = agave_fm.from_file_real_path(downloaded_file_path)
-            #    system_id, file_user, file_path = agave_fm.parse_file_id(downloaded_file_id)
 
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,
