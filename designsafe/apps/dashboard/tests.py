@@ -29,7 +29,6 @@ class DashboardTests(TestCase):
             path="ds_user/test",
         )
         f2.save(refresh=True)
-        print "SetUp"
 
         # disconnect user_logged_in signal
         signals.user_logged_in.disconnect(on_user_logged_in)
@@ -55,4 +54,3 @@ class DashboardTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.content)
         self.assertEqual(data["total_storage_bytes"], 2)
-        pass
