@@ -19,8 +19,7 @@ from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
-from designsafe.apps.api.external_resources.box.filemanager.manager import FileManager as BoxFileManager
-from designsafe.apps.api.tasks import box_resource_upload
+from designsafe.apps.api.tasks import external_resource_upload
 from requests import HTTPError
 
 
@@ -121,6 +120,10 @@ class FileMediaView(View):
                     context['text_preview'] = encoded
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
                     context['object_preview'] = f.download_postit(force=False, lifetime=360)
+
+                elif f.ext in BaseFileResource.SUPPORTED_MS_OFFICE:
+                    context['iframe_preview'] = 'https://view.officeapps.live.com/op/view.aspx?src={}'\
+                                                .format(f.download_postit(force=False, lifetime=360))
 
                 return render(request, 'designsafe/apps/api/agave/preview.html', context)
             else:
@@ -225,10 +228,11 @@ class FileMediaView(View):
                     }
                     if body.get('system') is None:
                         external = body.get('resource')
-                        if external != 'box':
+                        if external not in ['box', 'dropbox']:
                             return HttpResponseBadRequest("External resource nos available.")
-                        box_resource_upload.apply_async(kwargs={
+                        external_resource_upload.apply_async(kwargs={
                             'username': request.user.username,
+                            'dest_resource': external,
                             'src_file_id': os.path.join(system_id, file_path.strip('/')),
                             'dest_file_id': body.get('path')
                         })

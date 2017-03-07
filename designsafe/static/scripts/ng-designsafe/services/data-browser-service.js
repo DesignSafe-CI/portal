@@ -143,7 +143,7 @@
       tests.canViewMetadata = files.length === 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-      tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files));
+      tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData');
       tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
 
       var trashPath = _trashPath();
@@ -251,7 +251,10 @@
              apiParams: {fileMgr: 'agave', baseUrl: '/api/agave/files'}},
             {label: 'Box',
              conf: {path: '/'},
-             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}}
+             apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}},
+            {label: 'Dropbox',
+             conf: {path: '/'},
+             apiParams: {fileMgr: 'dropbox', baseUrl: '/api/external-resources/files'}}
           ];
 
           $scope.currentOption = null;
@@ -753,28 +756,36 @@
       var modal = $uibModal.open({
         windowClass: 'modal-full',
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder, UserService) {
+        controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder) {
           $scope.folder = folder;
-          $scope.UserService = UserService;
           var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
           $scope.busy = true;
           $scope.images = [];
+          $scope.hrefs = [];
           $scope.carouselSettings = {
             dots: true,
-            arrows: true
+            arrows: true,
+            lazyLoad: true,
+            event: {
+              beforeChange: function (ev, slick, currentSlide, nextSlide) {
+                $scope.images[nextSlide].href = $scope.hrefs[nextSlide].href;
+              }
+            }
 
           };
           $scope.folder.children.forEach(function (file) {
             var ext = file.path.split('.').pop().toLowerCase();
             if (img_extensions.indexOf(ext) !== -1) {
-                $scope.images.push({href: file.agaveUrl(), file:file});
+                $scope.hrefs.push({href: file.agaveUrl(), file:file});
+                $scope.images.push({file:file});
             }
           });
+          $scope.images[0] = $scope.hrefs[0]
 
           if ($scope.images.length > 10) {
             $scope.carouselSettings.dots = false;
           }
-          
+
           $scope.close = function () {
             $uibModalInstance.dismiss();
           };

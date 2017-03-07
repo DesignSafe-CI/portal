@@ -57,6 +57,17 @@ class SourcesApi(object):
             "_extra": {
                 "icon": "fa-square"
             },
+        },
+        {
+            "id": "dropbox",
+            "resource": "dropbox",
+            "defaultPath": None,
+            "name": "Dropbox.com",
+            "_visible": True,
+            "_indexed": False,
+            "_extra": {
+                "icon": "fa-square"
+            },
         }
     ]
 

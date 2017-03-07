@@ -23,7 +23,7 @@ class BoxFile(object):
     ]
 
     SUPPORTED_OBJECT_PREVIEW_EXTS = [
-      '.pdf', 
+      '.pdf',
       '.aac', '.aifc', '.aiff', '.amr', '.au', '.flac', '.m4a', '.mp3', '.ogg', '.ra', '.wav', '.wma',
 
       # VIDEO
@@ -31,8 +31,8 @@ class BoxFile(object):
       '.ogg', '.mts', '.qt', '.wmv',
     ]
 
-    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS + 
-                                    SUPPORTED_TEXT_PREVIEWS + 
+    SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
+                                    SUPPORTED_TEXT_PREVIEWS +
                                     SUPPORTED_OBJECT_PREVIEW_EXTS)
 
     def __init__(self, box_item, parent=None):

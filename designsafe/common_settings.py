@@ -17,7 +17,6 @@ import json
 gettext = lambda s: s
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -82,7 +81,9 @@ INSTALLED_APPS = (
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
+    'designsafe.apps.dropbox_integration',
     'designsafe.apps.licenses',
+    'designsafe.apps.dashboard',
 
     # signals
     'designsafe.apps.signals',
@@ -95,6 +96,10 @@ INSTALLED_APPS = (
     'designsafe.apps.workspace',
     'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
+    'designsafe.apps.search',
+
+    #haystack integration
+    'haystack'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -190,6 +195,29 @@ else:
         }
     }
 
+
+# Haystack cms indexing settings
+if not (os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true'):
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
+            'INDEX_NAME': 'cms',
+        }
+    }
+else:
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'elasticsearch:9200/',
+            'INDEX_NAME': 'cms',
+        }
+    }
+
+HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
+ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
+ALDRYN_SEARCH_REGISTER_APPHOOK = True
+
 from nees_settings import NEES_USER_DATABASE
 if NEES_USER_DATABASE['NAME']:
     DATABASES['nees_users'] = NEES_USER_DATABASE
@@ -197,17 +225,11 @@ if NEES_USER_DATABASE['NAME']:
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 LANGUAGES = [
     ('en-us', 'English'),
 ]
@@ -215,40 +237,32 @@ LANGUAGES = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-
 STATIC_URL = '/static/'
-
 STATIC_ROOT = '/var/www/designsafe-ci.org/static/'
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'designsafe', 'static'),
 )
-
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
 )
-
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
 
-CMS_PERMISSION = True
 
+CMS_PERMISSION = True
 CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
 )
-
 CMSPLUGIN_CASCADE_PLUGINS = (
     'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
 )
-
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'TextPlugin',
     'StylePlugin',
@@ -367,6 +381,7 @@ LOGGING = {
         'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
+            'propagate': True
         },
         'opbeat': {
             'handlers': ['console'],
@@ -399,6 +414,7 @@ DEFAULT_TERMS_SLUG = 'terms'
 PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
+PIPELINE_SASS_ARGUMENTS = '-C'
 PIPELINE_CSS_COMPRESSOR = None
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
 
@@ -433,6 +449,7 @@ PIPELINE_JS = {
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
+            'vender/d3/d3.min.js'
         ),
         'output_filename': 'js/vendor.js',
     },
@@ -479,17 +496,6 @@ WS4REDIS_CONNECTION = {
 }
 WS4REDIS_EXPIRE = 0
 
-###
-# Celery settings
-#
-BROKER_URL = 'redis://redis:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERYD_LOG_FORMAT ='[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s %(name)s.%(funcName)s:%(lineno)s: [%(task_name)s(%(task_id)s)]%(message)s'
-CELERYD_TASK_TIME_LIMIT = 60 * 15 #60 seconds multiplied by 15 = 15min
-
-###
 # Analytics
 #
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
@@ -505,9 +511,7 @@ AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')
 AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
-
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
-
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
@@ -534,6 +538,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
-from box_settings import *
+from celery_settings import *
+from external_resource_settings import *
 from elasticsearch_settings import *
 from rt_settings import *

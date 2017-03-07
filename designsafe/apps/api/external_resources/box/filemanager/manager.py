@@ -1,13 +1,18 @@
 """ Box filemanager"""
 import os
+import re
 import sys
 import logging
+from designsafe.apps.api.tasks import reindex_agave
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
-#from designsafe.apps.api.tasks import box_upload
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.box_integration.models import BoxUserToken
 from boxsdk.exception import BoxException, BoxOAuthException
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.http import (JsonResponse, HttpResponseBadRequest)
+from requests import HTTPError
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -153,37 +158,114 @@ class FileManager(object):
     def is_search(self, *args, **kwargs):
         return False
 
-    def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
-        # can only transfer out of box
-        from designsafe.apps.api.data import lookup_transfer_service
-        service = lookup_transfer_service(self.NAME, dest_resource)
-        if service:
-            args = (self._user.username,
-                    self.NAME, file_id,
-                    dest_resource, dest_file_id)
-            service.apply_async(args=args)
-            return {'message': 'The requested transfer has been scheduled'}
-        else:
-            message = 'The requested transfer from %s to %s ' \
-                      'is not supported' % (self.NAME, dest_resource)
-            extra = {'file_id': file_id,
-                     'dest_resource': dest_resource,
-                     'dest_file_id': dest_file_id}
-            raise ApiException(message, status=400, extra=extra)
+    def copy(self, username, src_file_id, dest_file_id, **kwargs):
+        try:
+            n = Notification(event_type='data',
+                             status=Notification.INFO,
+                             operation='box_download_start',
+                             message='Starting download file %s from box.' % (src_file_id,),
+                             user=username,
+                             extra={})
+            n.save()
+            logger.debug('username: {}, src_file_id: {}, dest_file_id: {}'.format(username, src_file_id, dest_file_id))
+            user = get_user_model().objects.get(username=username)
+
+            from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+            # Initialize agave filemanager
+            agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
+            # Split destination file path
+            dest_file_path_comps = dest_file_id.strip('/').split('/')
+            # If it is an agave file id then the first component is a system id
+            agave_system_id = dest_file_path_comps[0]
+            # Start construction the actual real path into the NSF mount
+            if dest_file_path_comps[1:]:
+                dest_real_path = os.path.join(*dest_file_path_comps[1:])
+            else:
+                dest_real_path = '/'
+            # Get what the system id maps to
+            base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
+            # Add actual path
+            if re.search(r'^project-', agave_system_id):
+                project_dir = agave_system_id.replace('project-', '', 1)
+                dest_real_path = os.path.join(base_mounted_path, project_dir, dest_real_path.strip('/'))
+            else:
+                dest_real_path = os.path.join(base_mounted_path, dest_real_path.strip('/'))
+            logger.debug('dest_real_path: {}'.format(dest_real_path))
+
+            # box_fm = BoxFileManager(user)
+            box_file_type, box_file_id = self.parse_file_id(file_id=src_file_id)
+
+            levels = 0
+            downloaded_file_path = None
+            if box_file_type == 'file':
+                downloaded_file_path = self.download_file(box_file_id, dest_real_path)
+                levels = 1
+            elif box_file_type == 'folder':
+                downloaded_file_path = self.download_folder(box_file_id, dest_real_path)
+
+            n = Notification(event_type='data',
+                             status=Notification.SUCCESS,
+                             operation='box_download_end',
+                             message='File %s has been copied from box successfully!' % (src_file_id, ),
+                             user=username,
+                             extra={})
+            n.save()
+            if re.search(r'^project-', agave_system_id):
+                project_dir = agave_system_id.replace('project-', '', 1)
+                project_dir = os.path.join(base_mounted_path.strip('/'), project_dir)
+                agave_file_path = downloaded_file_path.replace(project_dir, '', 1).strip('/')
+            else:
+                agave_file_path = downloaded_file_path.replace(base_mounted_path, '', 1).strip('/')
+
+            reindex_agave.apply_async(kwargs={
+                                      'username': user.username,
+                                      'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
+                                      })
+        except:
+            logger.exception('Unexpected task failure: box_download', extra={
+                'username': username,
+                'box_file_id': src_file_id,
+                'dest_file_id': dest_file_id
+            })
+            n = Notification(event_type='data',
+                             status=Notification.ERROR,
+                             operation='box_download_error',
+                             message='We were unable to get the specified file from box. '
+                                     'Please try again...',
+                             user=username,
+                             extra={})
+            n.save()
+            raise
 
     def move(self, file_id, **kwargs):
         raise ApiException('Moving Box files is not supported.', status=400,
                            extra={'file_id': file_id,
                                   'kwargs': kwargs})
 
-    def preview(self, file_id, **kwargs):
+    def get_preview_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
             embed_url = self.box_api.file(file_id).get(fields=['expiring_embed_link'])
             return {'href': embed_url._response_object['expiring_embed_link']['url']}
         return None
 
-    def download(self, file_id, **kwargs):
+    def preview(self, file_id, file_mgr_name, **kwargs):
+        # try:
+        box_file_type, box_file_id = self.parse_file_id(file_id)
+        box_op = getattr(self.box_api, box_file_type)
+        box_file = BoxFile(box_op(box_file_id).get())
+        if box_file.previewable:
+            preview_url = reverse('designsafe_api:box_files_media',
+                                  args=[file_mgr_name, file_id.strip('/')])
+            return JsonResponse({'href':
+                                   '{}?preview=true'.format(preview_url)})
+        else:
+            return HttpResponseBadRequest('Preview not available for this item.')
+        # except HTTPError as e:
+                # logger.exception('Unable to preview file')
+                # return HttpResponseBadRequest(e.response.text)
+
+    def get_download_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
             download_url = self.box_api.file(file_id).get_shared_link_download_url()
@@ -198,7 +280,6 @@ class FileManager(object):
     #                           countdown=10)
 
     #    return {'message': 'Your file(s) have been scheduled for upload to box.'}
-
 
     def download_file(self, box_file_id, download_directory_path):
         """
@@ -219,7 +300,6 @@ class FileManager(object):
             box_file.download_to(download_file)
 
         return file_download_path
-
 
     def download_folder(self, box_folder_id, download_path):
         """
@@ -260,3 +340,109 @@ class FileManager(object):
                 break
 
         return directory_path
+
+    def upload(self, username, src_file_id, dest_file_id):
+        try:
+            n = Notification(event_type='data',
+                             status=Notification.INFO,
+                             operation='box_upload_start',
+                             message='Starting uploading file %s to box.' % (src_file_id,),
+                             user=username,
+                             extra={})
+            n.save()
+            user = get_user_model().objects.get(username=username)
+
+            from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
+            # Initialize agave filemanager
+            agave_fm = AgaveFileManager(agave_client=user.agave_oauth.client)
+            # Split src ination file path
+            src_file_path_comps = src_file_id.strip('/').split('/')
+            # If it is an agave file id then the first component is a system id
+            agave_system_id = src_file_path_comps[0]
+            # Start construction the actual real path into the NSF mount
+            if src_file_path_comps[1:]:
+                src_real_path = os.path.join(*src_file_path_comps[1:])
+            else:
+                src_real_path = '/'
+            # Get what the system id maps to
+            base_mounted_path = agave_fm.base_mounted_path(agave_system_id)
+            # Add actual path
+            if re.search(r'^project-', agave_system_id):
+                project_dir = agave_system_id.replace('project-', '', 1)
+                src_real_path = os.path.join(base_mounted_path, project_dir, src_real_path.strip('/'))
+            else:
+                src_real_path = os.path.join(base_mounted_path, src_real_path.strip('/'))
+            logger.debug('src_real_path: {}'.format(src_real_path))
+
+            box_file_type, box_file_id = self.parse_file_id(file_id=dest_file_id.strip('/'))
+            if os.path.isfile(src_real_path):
+                self.upload_file(box_file_id, src_real_path)
+            elif os.path.isdir(src_real_path):
+                self.upload_directory(box_file_id, src_real_path)
+            else:
+                logger.error('Unable to upload %s: file does not exist!',
+                             src_real_path)
+
+            n = Notification(event_type='data',
+                             status=Notification.SUCCESS,
+                             operation='box_upload_end',
+                             message='File %s has been copied to box successfully!' % (src_file_id, ),
+                             user=username,
+                             extra={})
+            n.save()
+        except Exception as err:
+            logger.exception('Unexpected task failure: box_upload', extra={
+                'username': username,
+                'src_file_id': src_file_id,
+                'dst_file_id': dest_file_id
+            })
+            n = Notification(event_type='data',
+                             status=Notification.ERROR,
+                             operation='box_upload_error',
+                             message='We were unable to get the specified file from box. '
+                                     'Please try again...',
+                             user=username,
+                             extra={})
+            n.save()
+            raise
+
+    def upload_file(self, box_folder_id, file_real_path):
+        file_path, file_name = os.path.split(file_real_path)
+        with open(file_real_path, 'rb') as file_handle:
+            box_folder = self.box_api.folder(box_folder_id)
+            uploaded_file = box_folder.upload_stream(file_handle, file_name)
+            logger.info('Successfully uploaded %s to box:folder/%s as box:file/%s',
+                        file_real_path, box_folder_id, uploaded_file.object_id)
+
+
+    def upload_directory(self, box_parent_folder_id, dir_real_path):
+        """
+        Recursively uploads the directory and all of its contents (subdirectories and files)
+        to the box folder specified by box_parent_folder_id.
+
+        :param box_parent_folder_id: The box folder to upload the directory to.
+        :param dir_real_path: The real path on the filesystem of the directory to upload.
+        :return: The new box folder.
+        """
+
+        dirparentpath, dirname = os.path.split(dir_real_path)
+        box_parent_folder = self.box_api.folder(box_parent_folder_id)
+        logger.info('Create directory %s in box folder/%s', dirname, box_parent_folder_id)
+        box_folder = box_parent_folder.create_subfolder(dirname)
+
+        for dirpath, subdirnames, filenames in os.walk(dir_real_path):
+            # upload all the files
+            for filename in filenames:
+                filepath = os.path.join(dirpath, filename)
+                self.upload_file(box_folder.object_id, filepath)
+
+            # upload all the subdirectories
+            for subdirname in subdirnames:
+                subdirpath = os.path.join(dirpath, subdirname)
+                self.upload_directory(box_folder.object_id, subdirpath)
+
+            # prevent further walk, because recursion
+            subdirnames[:] = []
+
+        return box_folder
+

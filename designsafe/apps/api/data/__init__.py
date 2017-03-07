@@ -3,6 +3,7 @@ from designsafe.apps.api.data.agave.filemanager import (
 from designsafe.apps.api.data.agave.public_filemanager import (
     FileManager as PublicFileManager)
 from designsafe.apps.api.data.box.filemanager import FileManager as BoxFileManager
+# from designsafe.apps.api.data.dropbox.filemanager import FileManager as DropboxFileManager
 from designsafe.apps.api.tasks import box_download, box_upload, copy_public_to_mydata
 
 
@@ -11,6 +12,8 @@ def lookup_file_manager(resource):
         return PublicFileManager
     elif resource == 'box':
         return BoxFileManager
+    # elif resource == 'dropbox':
+        # return DropboxFileManager
     elif resource == 'agave':
         return AgaveFileManager
     else:
@@ -25,6 +28,14 @@ def lookup_transfer_service(src_resource, dest_resource):
     if src_resource == 'agave':
         if dest_resource == 'box':
             return box_upload
+
+    # if src_resource == 'dropbox':
+    #     if dest_resource == 'agave':
+    #         return dropbox_download
+
+    # if src_resource == 'agave':
+    #     if dest_resource == 'dropbox':
+    #         return dropbox_upload
 
     if src_resource == 'public':
         if dest_resource == 'box':

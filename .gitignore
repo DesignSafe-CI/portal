@@ -10,6 +10,10 @@ designsafe.env
 # don't commit certs
 certs/
 
+# data directories
+data/mysql/*dump*
+data/elasticsearch/*dump*
+
 # no node modules
 node_modules/
 
