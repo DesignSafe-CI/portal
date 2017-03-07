@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.23
+
+Improvements:
+
+- Site-wide search.
+- Image previewer.
+- Dropbox capabilities.
+
+Fixes:
+
+- Configuring celery to make sure tasks do not run very long.
+- Upating public data index mappings (elasticsearch).
+
 ## v0.9.22
 
 Fixes:
