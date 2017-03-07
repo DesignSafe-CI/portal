@@ -1,4 +1,4 @@
-"""Main views for box. api/external-resources/*"""
+"""Main views for box/dropbox. api/external-resources/*"""
 
 import logging
 import json
@@ -54,13 +54,13 @@ class FileMediaView(BaseApiView, SecureMixin):
             context = {
                 'file': f
             }
-            preview_url = fmgr.preview(file_id)
+            preview_url = fmgr.get_preview_url(file_id)
             if preview_url is not None:
                 context['preview_url'] = preview_url['href']
             return render(request, 'designsafe/apps/api/box/preview.html',
                           context)
         else:
-            return HttpResponseRedirect(fmgr.download(file_id))
+            return HttpResponseRedirect(fmgr.get_download_url(file_id))
 
     def put(self, request, file_mgr_name, file_id):
         if request.is_ajax():
@@ -80,23 +80,15 @@ class FileMediaView(BaseApiView, SecureMixin):
 
         if action == 'preview':
             try:
-                box_file_type, box_file_id = fmgr.parse_file_id(file_id)
-                box_op = getattr(fmgr.box_api, box_file_type)
-                box_file = BoxFile(box_op(box_file_id).get())
-                if box_file.previewable:
-                    preview_url = reverse('designsafe_api:box_files_media',
-                                          args=[file_mgr_name, file_id.strip('/')])
-                    return JsonResponse({'href':
-                                           '{}?preview=true'.format(preview_url)})
-                else:
-                    return HttpResponseBadRequest('Preview not available for this item.')
+                return fmgr.preview(file_id,file_mgr_name=file_mgr_name)
             except HTTPError as e:
                 logger.exception('Unable to preview file')
                 return HttpResponseBadRequest(e.response.text)
 
         elif action == 'copy' or action == 'move':
             try:
-                tasks.box_resource_download.apply_async(kwargs={
+                tasks.external_resource_download.apply_async(kwargs={
+                    'file_mgr_name': file_mgr_name,
                     'username': request.user.username,
                     'src_file_id': file_id,
                     'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))})
@@ -107,7 +99,7 @@ class FileMediaView(BaseApiView, SecureMixin):
 
         elif action == 'download':
             try:
-                download_dict = fmgr.download(file_id)
+                download_dict = fmgr.get_download_url(file_id)
                 if not download_dict:
                     HttpResponseBadRequest('Operation not permitted')
 
