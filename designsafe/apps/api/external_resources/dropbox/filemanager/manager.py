@@ -46,12 +46,14 @@ class FileManager(object):
             })
 
     def parse_file_id(self, path):
-        if path != '/':
+        if path == '/' or path == '':
+            file_type, path = u'folder', u''
+        else:
             try:
                 file_type, path = DropboxFile.parse_file_id(path)
             except AssertionError:
                 # file path is hierarchical; need to find the DropboxObject here
-                if path: #use empty string for root
+                if path[:1] != '/':
                     path = '/' + path
                 try:
                     dropbox_item = DropboxFile(self.dropbox_api.files_list_folder( path))
@@ -61,8 +63,6 @@ class FileManager(object):
                         raise ApiException(
                             'The Dropbox path "{0}" does not exist.'.format(path),
                             status=404)
-        else:
-            file_type, path = u'folder', u''
 
         return file_type, path
 
@@ -405,8 +405,7 @@ class FileManager(object):
             CHUNK_SIZE = 4 * 1024 * 1024 # 4MB
 
             if file_size <= CHUNK_SIZE:
-                logger.debug('Uploading %s to dropbox:folder/%s',
-                        file_real_path, file_path)
+                logger.debug('dropbox_path: %s, file_name: %s', dropbox_path, file_name),
                 self.dropbox_api.files_upload(f, '%s/%s' % (dropbox_path, file_name))
             else:
 
