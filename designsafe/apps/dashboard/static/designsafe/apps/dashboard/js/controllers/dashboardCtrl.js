@@ -10,7 +10,6 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
   $scope.first_jobs_date = new Date($scope.today.getTime() - (14 * 24 * 60 * 60 * 1000 ))
 
   NotificationService.list({limit:5}).then(function (resp) {
-    // console.log(resp)
     $scope.notifications = resp;
   })
 
@@ -21,7 +20,6 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
   AgaveService.jobsListing({'created.gt':'2017-01-01'}).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = AgaveService.jobsByDate(resp);
-    console.log($scope.jobs);
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId});
     $scope.recent_apps = Object.keys(tmp);
@@ -32,7 +30,6 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
   })
 
   TicketsService.get().then(function (resp) {
-    // console.log(resp)
     $scope.my_tickets = resp;
     $scope.loading_tickets = false;
   }, function (err) {

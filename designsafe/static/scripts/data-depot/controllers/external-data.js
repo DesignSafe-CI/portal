@@ -6,7 +6,6 @@
                                       'DataBrowserService',
                   function ($scope, $state, Django, DataBrowserService) {
   $scope.browser = DataBrowserService.state();
-  console.log('$state.current', $state.current)
 
   if (! $scope.browser.error){
     $scope.browser.listing.href = $state.href($state.current.name, {

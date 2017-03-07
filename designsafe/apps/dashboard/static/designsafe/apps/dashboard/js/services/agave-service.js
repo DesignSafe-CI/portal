@@ -43,7 +43,6 @@ angular.module('designsafe').service('AgaveService', ['$http', '$q',
       nested.forEach(function (d) {
         d.key = new Date(d.key);
       })
-      console.log(nested)
       nested = nested.sort(function (a, b) { return a.key - b.key});
       // var out = nested.map(function (d) { return {date:d.key, count:d.values.length}; });
 

@@ -24,7 +24,6 @@
             $scope.data.notifications = resp;
 
             for (var i=0; i < $scope.data.notifications.length; i++){
-              // console.log($scope.data.notifications[i])
               // $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
               // $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
               // $scope.data.notifications[i]['datetime'] = Date($scope.data.notifications[i]['datetime']);

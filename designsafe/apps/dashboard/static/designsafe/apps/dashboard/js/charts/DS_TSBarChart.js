@@ -93,7 +93,7 @@ function DS_TSBarChart (element_id) {
     //     // .attr("fill", function(d) { return z(d.key); })
     //     .attr("x", function (d) { return x(xSelector(d)) - (width / x.ticks().length / 2) + 2.5 ;})
     //   .selectAll("rect")
-    //   .data(function(d) { console.log(d); return d.values; })
+    //   .data(function(d) { return d.values; })
     //   .enter().append("rect")
     //     .attr("class", "bar")
     //
