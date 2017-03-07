@@ -51,7 +51,8 @@ class FileManager(object):
                 file_type, path = DropboxFile.parse_file_id(path)
             except AssertionError:
                 # file path is hierarchical; need to find the DropboxObject here
-                path = '/' + path
+                if path: #use empty string for root
+                    path = '/' + path
                 try:
                     dropbox_item = DropboxFile(self.dropbox_api.files_list_folder( path))
                     return dropbox_item.type, path
@@ -211,7 +212,7 @@ class FileManager(object):
             n = Notification(event_type='data',
                              status=Notification.ERROR,
                              operation='box_download_error',
-                             message='We were unable to get the specified file from box. '
+                             message='We were unable to get the specified file from dropbox. '
                                      'Please try again...',
                              user=username,
                              extra={})
@@ -302,7 +303,7 @@ class FileManager(object):
         # convert utf-8 chars
         safe_dirname = dropbox_folder_metadata.name.encode(sys.getfilesystemencoding(), 'ignore')
         directory_path = os.path.join(download_path, safe_dirname)
-        logger.debug('Creating directory %s <= box://folder/%s', directory_path, path)
+        logger.debug('Creating directory %s <= dropbox://folder/%s', directory_path, path)
         try:
             os.mkdir(directory_path, 0o0755)
         except OSError as e:
@@ -375,7 +376,7 @@ class FileManager(object):
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,
                              operation='dropbox_upload_end',
-                             message='File %s has been copied to box successfully!' % (src_file_id, ),
+                             message='File %s has been copied to dropbox successfully!' % (src_file_id, ),
                              user=username,
                              extra={})
             n.save()
@@ -404,6 +405,8 @@ class FileManager(object):
             CHUNK_SIZE = 4 * 1024 * 1024 # 4MB
 
             if file_size <= CHUNK_SIZE:
+                logger.debug('Uploading %s to dropbox:folder/%s',
+                        file_real_path, file_path)
                 self.dropbox_api.files_upload(f, '%s/%s' % (dropbox_path, file_name))
             else:
 
