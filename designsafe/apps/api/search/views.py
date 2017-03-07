@@ -4,22 +4,14 @@
    and for authenticated users any private data that they can
    access.
 """
-from pprint import pprint
 import logging
-import json
 from elasticsearch_dsl import Q, Search
-from django.http import (HttpResponseRedirect,
-                         HttpResponseServerError,
-                         HttpResponseBadRequest,
+from django.http import (HttpResponseBadRequest,
                          JsonResponse)
-from django.utils.html import strip_tags
 
 from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.agave.filemanager.public_search_index import (
-    PublicElasticFileManager, PublicObjectIndexed, connections,
-    PublicFullIndexed, CMSIndexed,
-    PublicProjectIndexed, PublicExperimentIndexed)
+    PublicElasticFileManager)
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +26,10 @@ class SearchView(BaseApiView):
         if (limit > 500):
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', None)
-        logger.info(q)
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
-        es_query = Search(index="jmeiring,cms")\
+        es_query = Search(index="nees,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and")\
             .query(~Q('match', type='dir'))\
@@ -77,6 +68,7 @@ class SearchView(BaseApiView):
         res = es_query.execute()
 
         # these get the counts of the total hits for each category. This is
+
         # for the sidebar with the different categories to refine by
         web_query = Search(index="cms")\
             .query("query_string", query=q, default_operator="and")\
@@ -89,7 +81,7 @@ class SearchView(BaseApiView):
             .extra(from_=offset, size=limit)\
             .execute()
         # web_query = web_query.execute()
-        files_query = Search(index="jmeiring")\
+        files_query = Search(index="nees")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .query("match", type="file")\
@@ -98,7 +90,7 @@ class SearchView(BaseApiView):
             .extra(from_=offset, size=limit)\
             .execute()
 
-        pubs_query = Search(index="jmeiring")\
+        pubs_query = Search(index="nees")\
             .query("match", systemId=system_id)\
             .filter("term", _type="project")\
             .query("nested", **{'path':"publications",
@@ -112,14 +104,14 @@ class SearchView(BaseApiView):
             .extra(from_=offset, size=limit)\
             .execute()
 
-        exp_query = Search(index="jmeiring")\
+        exp_query = Search(index="nees")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="experiment")\
             .extra(from_=offset, size=limit)\
             .execute()
 
-        projects_query = Search(index="jmeiring")\
+        projects_query = Search(index="nees")\
             .query("match", systemId=system_id)\
             .query("query_string", query=q, default_operator="and")\
             .filter("term", _type="project")\
