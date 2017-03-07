@@ -21,14 +21,16 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
   AgaveService.jobsListing({'created.gt':'2017-01-01'}).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = AgaveService.jobsByDate(resp);
-    console.log($scope.jobs);
+    // console.log($scope.jobs);
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId});
+    // console.log(tmp)
     $scope.recent_apps = Object.keys(tmp);
   })
 
-  AgaveService.appsListing({filter:'id', limit:99999}).then(function (resp) {
-    $scope.apps = resp;
+  AgaveService.appsListing({limit:99999}).then(function (resp) {
+    var tmp = _.groupBy(resp, function (d) {return d.label});
+    $scope.apps = Object.keys(tmp);
   })
 
   TicketsService.get().then(function (resp) {
