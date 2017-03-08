@@ -197,11 +197,11 @@ else:
 
 
 # Haystack cms indexing settings
-if not (os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true'):
+if os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true':
     HAYSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
+            'URL': 'elasticsearch:9200/',
             'INDEX_NAME': 'cms',
         }
     }
@@ -209,7 +209,7 @@ else:
     HAYSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'elasticsearch:9200/',
+            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
             'INDEX_NAME': 'cms',
         }
     }
@@ -540,6 +540,11 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
+
+# RECAPTCHA SETTINGS FOR LESS SPAMMO
+DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
+DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+
 
 from celery_settings import *
 from external_resource_settings import *
