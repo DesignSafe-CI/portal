@@ -515,6 +515,8 @@ AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
 
+AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
+
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'id': 'project-{}',
     'site': 'tacc.utexas.edu',
