@@ -28,7 +28,7 @@ def template_project_storage_system(project):
     return system_template
 
 
-class ProjectCollectionView(BaseApiView, SecureMixin):
+class ProjectCollectionView(SecureMixin, BaseApiView):
 
     def get(self, request):
         """
@@ -158,7 +158,7 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 
-class ProjectInstanceView(BaseApiView, SecureMixin):
+class ProjectInstanceView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id):
         """
@@ -203,7 +203,7 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 
-class ProjectCollaboratorsView(BaseApiView, SecureMixin):
+class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id):
         ag = request.user.agave_oauth.client
@@ -265,7 +265,7 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         return JsonResponse({'status': 'ok'})
 
 
-class ProjectDataView(BaseApiView, SecureMixin):
+class ProjectDataView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id, file_path=''):
         """
