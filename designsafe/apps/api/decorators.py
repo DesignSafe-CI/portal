@@ -53,8 +53,10 @@ def agave_jwt_login(func):
 
         auth = _get_auth_headers(request)
         auth_comps = auth.split()
+        logger.debug('auth: %s', auth)
         if len(auth_comps) != 2:
-            raise ValueError("JWT Header format is not correct.")
+            logger.debug('JWT format is not correct. Falling back')
+            return func(request, *args, **kwargs)
 
         jwt_value = auth_comps[1]
         payload = _decode_jwt(jwt_value)
