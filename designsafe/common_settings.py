@@ -539,6 +539,11 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
+# RECAPTCHA SETTINGS FOR LESS SPAMMO
+DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
+DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+
+
 from celery_settings import *
 from external_resource_settings import *
 from elasticsearch_settings import *
