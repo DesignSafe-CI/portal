@@ -48,12 +48,14 @@ def agave_jwt_login(func):
     #pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request, *args, **kwargs):
+        logger.debug('HEADERS: %s', request.META)
+        logger.debug('POST: %s', request.POST.dict())
+        logger.debug('GET: %s', request.GET.dict())
         if request.user.is_authenticated():
             return func(request, *args, **kwargs)
 
         auth = _get_auth_headers(request)
         auth_comps = auth.split()
-        logger.debug('auth: %s', auth)
         if len(auth_comps) != 2:
             logger.debug('JWT format is not correct. Falling back')
             return func(request, *args, **kwargs)
