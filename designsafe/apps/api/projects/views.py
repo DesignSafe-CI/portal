@@ -28,7 +28,7 @@ def template_project_storage_system(project):
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
-class ProjectCollectionView(SecureMixin, BaseApiView):
+class ProjectListingView(SecureMixin, BaseApiView):
     def get(self, request, username):
         """Returns a list of Project for a specific user.
 
