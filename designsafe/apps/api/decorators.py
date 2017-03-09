@@ -27,11 +27,8 @@ def _decode_jwt(jwt):
     """
     #pubkey = settings.AGAVE_JWT_PUBKEY
     pubkey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\nM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe\n0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\nRS4HrKGJTzxaCcU7OQIDAQAB'
-    logger.debug('pubkey: %s', pubkey)
     key_der = b64decode(pubkey)
     key = load_der_public_key(key_der, backend=default_backend())
-    
-    logger.debug('jwt: %s', jwt)
     return pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
     #return pyjwt.decode(jwt, key, verify=False)
 

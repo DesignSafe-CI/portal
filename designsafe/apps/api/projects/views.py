@@ -41,7 +41,6 @@ class ProjectListingView(SecureMixin, BaseApiView):
 
         user = get_user_model().objects.get(username=username)
         ag = user.agave_oauth.client
-        logger.debug('profile: %s', ag.profiles.get())
         projects = Project.list_projects(agave_client=ag)
         return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
 
