@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import JsonResponse
+from django.http.response import HttpResponseForbidden
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from designsafe.apps.api import tasks
@@ -27,6 +28,21 @@ def template_project_storage_system(project):
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
+class ProjectCollectionView(SecureMixin, BaseApiView):
+    def get(self, request, username):
+        """Returns a list of Project for a specific user.
+
+        If the requesting user is a super user then we can 'impersonate'
+        another user. Else this is an unauthorized request.
+
+        """
+        if not request.user.is_superuser():
+            return HttpResponseForbidden()
+
+        user = get_user_model().objects.get(username=username)
+        ag = request.user.agave_oauth.client
+        projects = Project.list_projects(agave_client=ag)
+        return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
 
