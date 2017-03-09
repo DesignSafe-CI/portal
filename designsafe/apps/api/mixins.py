@@ -21,8 +21,13 @@ class JSONResponseMixin(object):
 
 
 class SecureMixin(object):
-    """
-    View mixin to use login_required
+    """View mixin to ensure the user has access to a secured view
+
+    This Mixin first checks if the request is done using a JWT. If this is not the case
+    then it will continue and check if the request is using a regular django session cookie.
+    Either way the request will be correctly authenticated. This way we can easily
+    use the same API endpoints and put them behind WSO2.
+
     TODO: When moving into Django 1.9 @method_decorator(login_required)
     should be a class wrapper @method_decorator(login_required, name='dispatch')
     as per: https://docs.djangoproject.com/en/1.9/topics/class-based-views/intro/#decorating-the-class
