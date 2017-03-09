@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.24
+
+Fixes:
+
+- All forms can be submitted.
+- Project creation without a PI.
+
 ## v0.9.23
 
 Improvements:
