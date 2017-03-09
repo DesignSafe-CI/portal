@@ -18,7 +18,7 @@
 <div class="container">
     <h1>Submit a new ticket</h1>
     <p><i>Fields marked with <label class="required"></label> are required.</i></p>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" action="">
         {% csrf_token %}
         {% bootstrap_form form %}
 
