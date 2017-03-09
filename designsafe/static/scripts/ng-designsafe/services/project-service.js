@@ -303,10 +303,12 @@
             $scope.ui.busy = true;
             var projectData = {
               title: $scope.form.title,
-              pi: $scope.form.pi.username,
               awardNumber: $scope.form.awardNumber,
               description: $scope.form.description
             };
+            if ($scope.form.pi && $scope.form.pi.username){
+              projectData.pi = $scope.form.pi.username;
+            }
             if ($scope.form.projectType && $scope.form.projectType.id !== 'undefined'){
               projectData.projectType = $scope.form.projectType.id;
             }
