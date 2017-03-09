@@ -26,6 +26,7 @@
 
 .ds-chart .y.axis path {
   fill: none;
+  stroke: #d3d3d3;
 }
 
 .dashboard-stat {
