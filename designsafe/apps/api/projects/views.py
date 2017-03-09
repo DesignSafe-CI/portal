@@ -36,11 +36,12 @@ class ProjectListingView(SecureMixin, BaseApiView):
         another user. Else this is an unauthorized request.
 
         """
-        if not request.user.is_superuser():
+        if not request.user.is_superuser:
             return HttpResponseForbidden()
 
         user = get_user_model().objects.get(username=username)
-        ag = request.user.agave_oauth.client
+        ag = user.agave_oauth.client
+        logger.debug('profile: %s', ag.profiles.get())
         projects = Project.list_projects(agave_client=ag)
         return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
 
