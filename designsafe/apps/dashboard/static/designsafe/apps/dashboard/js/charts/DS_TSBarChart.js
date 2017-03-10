@@ -34,11 +34,11 @@ function DS_TSBarChart (element_id) {
     xAxis = d3.axisBottom(x)
               .tickPadding(0)
               // .tickSize(-height, 1, 0)
-              .ticks(13)
+              // .ticks(14)
               .tickFormat(d3.timeFormat("%m/%d"));
 
     yAxis = d3.axisLeft(y)
-              .ticks(3)
+              // .ticks(3)
               .tickSize(-width, 0, 0)
               .tickFormat(function(e){
                 if(Math.floor(e) != e) {
@@ -149,10 +149,11 @@ function DS_TSBarChart (element_id) {
 
   exports.start_date = function (d) {
     if (!arguments.length) return start_date;
+    //this just gives a little padding for the first bar, so that
+    //it doesn't go outside the chart
     start_date = new Date(new Date(d.getTime() - (24 * 60 * 60 *1000)).setHours(0,0,0,0));
     x.domain([start_date, end_date])
     num_days = (end_date.getTime() - start_date.getTime()) / (24 * 60 * 60 *1000);
-    console.log(num_days)
     return exports;
   }
 

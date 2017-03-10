@@ -28,9 +28,10 @@ function ($scope, UserService, NotificationService, AgaveService, TicketsService
     $scope.usage = resp;
   });
 
-  AgaveService.jobsListing({'created.gt':'2017-01-01'}).then(function (resp) {
+  AgaveService.jobsListing({'created.gt':moment($scope.first_jobs_date).format('Y-M-D')}).then(function (resp) {
     $scope.jobs = resp;
     $scope.chart_data = AgaveService.jobsByDate(resp);
+  
     // console.log($scope.jobs);
     $scope.chart.data($scope.chart_data);
     var tmp = _.groupBy($scope.jobs, function (d) {return d.appId});
