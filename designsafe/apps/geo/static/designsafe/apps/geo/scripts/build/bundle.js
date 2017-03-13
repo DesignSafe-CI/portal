@@ -63,11 +63,75 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mapSidebar = __webpack_require__(3);
+
+var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.controllers', []);
+
+mod.controller('MapSidebarCtrl', _mapSidebar2.default);
+
+exports.default = mod;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _customOnChange = __webpack_require__(4);
+
+var _customOnChange2 = _interopRequireDefault(_customOnChange);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.directives', []);
+
+mod.directive('customOnChange', _customOnChange2.default);
+
+exports.default = mod;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+// import customOnChange from './custom-on-change';
+
+var mod = angular.module('ds.geo.services', []);
+
+// mod.directive('customOnChange', customOnChange);
+
+exports.default = mod;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -121,10 +185,7 @@ var MapSidebarCtrl = function () {
     this.map = L.map('geo_map', { layers: [streets, satellite] }).setView([51.505, -0.09], 6);
 
     L.control.layers(basemaps).addTo(this.map);
-    // L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
-    //     maxZoom: 20,
-    //     subdomains:['mt0','mt1','mt2','mt3']
-    // });
+    this.map.zoomControl.setPosition('bottomleft');
 
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);
@@ -250,70 +311,7 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-config.$inject = ["$stateProvider"];
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _directives = __webpack_require__(2);
-
-var _controllers = __webpack_require__(4);
-
-var _services = __webpack_require__(5);
-
-var mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
-
-function config($stateProvider) {
-  'ngInject';
-
-  $stateProvider.state('geo', {
-    url: '',
-    templateUrl: '/static/designsafe/apps/geo/html/map.html',
-    controller: 'MapSidebarCtrl as vm',
-    resolve: {
-      auth: function auth() {
-        return true;
-      }
-    }
-  });
-}
-
-mod.config(config);
-
-exports.default = mod;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _customOnChange = __webpack_require__(3);
-
-var _customOnChange2 = _interopRequireDefault(_customOnChange);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.directives', []);
-
-mod.directive('customOnChange', _customOnChange2.default);
-
-exports.default = mod;
-
-/***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -334,43 +332,42 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _mapSidebar = __webpack_require__(0);
-
-var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.controllers', []);
-
-mod.controller('MapSidebarCtrl', _mapSidebar2.default);
-
-exports.default = mod;
-
-/***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+config.$inject = ["$stateProvider"];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-// import customOnChange from './custom-on-change';
 
-var mod = angular.module('ds.geo.services', []);
+var _directives = __webpack_require__(1);
 
-// mod.directive('customOnChange', customOnChange);
+var _controllers = __webpack_require__(0);
+
+var _services = __webpack_require__(2);
+
+var mod = angular.module('designsafe');
+mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
+
+function config($stateProvider) {
+  'ngInject';
+
+  $stateProvider.state('geo', {
+    url: '',
+    templateUrl: '/static/designsafe/apps/geo/html/map.html',
+    controller: 'MapSidebarCtrl as vm',
+    resolve: {
+      auth: function auth() {
+        return true;
+      }
+    }
+  });
+}
+
+mod.config(config);
 
 exports.default = mod;
 

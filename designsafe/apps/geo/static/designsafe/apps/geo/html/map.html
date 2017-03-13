@@ -1,37 +1,10 @@
-<div id="map_container">
+<div id="container">
   <div id="geo_sidebar">
     <ul class="list-group">
       <li class="list-group-item" style="background:#eaeaea;margin-top:0px">
         <a href="/">
           <img src="/static/images/ds-logo-horiz.png" width="230"></img>
         </a>
-      </li>
-      <li class="list-group-item">
-        <i class="fa fa-plus"> </i>  Create a new map
-      </li>
-      <li class="list-group-item">
-        <i class="fa fa-folder-open"> </i>  Open a map
-      </li>
-      <!-- <li class="list-group-item">
-        <i class="fa fa-object-ungroup"> </i>  Draw shapes
-      </li> -->
-      <li class="list-group-item">
-        <i class="fa fa-cloud-upload"> </i> Import from Designsafe
-      </li>
-      <li class="list-group-item" ng-click="vm.open_file_dialog()">
-        <input name"local_file" id="local_file" type="file" ng-hide="true"  custom-on-change="vm.local_file_selected">
-        <i class="fa fa-file"> </i>  Import locally
-      </li>
-      <li class="list-group-item" ng-click="vm.open_image_dialog()">
-        <input name"local_image" id="local_image" type="file" ng-hide="true"  custom-on-change="vm.load_image">
-        <i class="fa fa-file"> </i>  Add an image
-      </li>
-      <li class="list-group-item">
-        &nbsp
-      </li>
-      <li class="list-group-item save" ng-click="vm.save_project()">
-        <!-- <i class="fa fa-object-ungroup"> </i>  Draw shapes -->
-        <i class="fa fa-save">  </i> Save
       </li>
     </ul>
 
@@ -78,5 +51,35 @@
 
   </div> <!-- End of sidebar -->
 
-  <div id="geo_map"></div>
+  <div id="right_panel">
+    <div id="top_toolbar">
+      <div class="btn-toolbar">
+        <div class="btn-group">
+          <div class="btn-group" role="group">
+            <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Save
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Save to Data Depot</a></li>
+              <li><a href="#">Save locally</a></li>
+            </ul>
+          </div>
+          <button class="btn btn-default btn-sm"> Data </button>
+          <button class="btn btn-default btn-sm"> Layers </button>
+          <div class="btn-group" role="group">
+            <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Dropdown
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Dropdown link</a></li>
+              <li><a href="#">Dropdown link</a></li>
+            </ul>
+          </div>
+          <button class="btn btn-info btn-sm pull-right"> Save </button>
+        </div>
+      </div>
+    </div>
+    <div id="geo_map"> </div>
 </div>

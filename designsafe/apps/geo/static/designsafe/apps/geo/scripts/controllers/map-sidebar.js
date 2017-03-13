@@ -34,10 +34,7 @@ export default class MapSidebarCtrl {
     this.map = L.map('geo_map', {layers: [streets, satellite]}).setView([51.505, -0.09], 6);
 
     L.control.layers(basemaps).addTo(this.map);
-    // L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
-    //     maxZoom: 20,
-    //     subdomains:['mt0','mt1','mt2','mt3']
-    // });
+    this.map.zoomControl.setPosition('bottomleft');
 
     this.drawnItems = new L.FeatureGroup();
     this.map.addLayer(this.drawnItems);

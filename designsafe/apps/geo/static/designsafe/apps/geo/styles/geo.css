@@ -1,5 +1,5 @@
 
-#map_container {
+#container {
   display: flex;
   min-height: 100vh;
 }
@@ -15,11 +15,7 @@
   display: flex;
 }
 
-#geo_map {
-  width: 80%;
-  flex: 1;
-  background: grey;
-}
+
 
 #geo_sidebar .list-group-item {
   background-color: #373737;
@@ -31,20 +27,35 @@
   cursor: pointer;
 }
 
-#geo_sidebar .list-group-item.save {
-  background-color: #257b5f;
-}
-
 #geo_sidebar .current-layer-details {
-  bottom: 0;
   flex-grow: 1;
   vertical-align: bottom;
   display: flex;
-  flex-direction: column-reverse;
+  /*flex-direction: column-reverse;*/
+}
+
+#right_panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: #fff;
+}
+
+#top_toolbar {
+  height: 2em;
+  border-bottom: 1px solid #d2d2d2;
+  background-color: #d2d2d2;
 }
 
 .current-layer-details table {
   background: #f0f0f0;
   color: #6b6a6a;
   margin-bottom: 0px;
+}
+
+#geo_map {
+  width: 100%;
+  flex: 1;
+  background: grey;
 }
