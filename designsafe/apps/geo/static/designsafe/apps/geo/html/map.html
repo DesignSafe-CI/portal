@@ -1,13 +1,27 @@
 <div id="container">
   <div id="geo_sidebar">
     <ul class="list-group">
-      <li class="list-group-item" style="background:#eaeaea;margin-top:0px">
+      <li class="list-group-item menu" style="background:#eaeaea;margin-top:0px">
         <a href="/">
-          <img src="/static/images/ds-logo-horiz.png" width="230"></img>
+          <img src="/static/images/ds-logo-horiz.png" width="180"></img>
         </a>
       </li>
     </ul>
 
+    <li class="list-group-item menu clearfix">
+      {{vm.map_title}}
+      <button class="btn btn-xs btn-primary pull-right"> Save </button>
+    </li>
+    <li class="list-group-item menu clearfix" ng-click="vm.create_layer()">
+
+      <i class="fa fa-plus"> </i> New Layer Group
+    </li>
+    <li class="list-group-item menu clearfix"
+        ng-class="{'active': lg == vm.active_layer_group}"
+        ng-repeat="lg in vm.layers_groups"
+        ng-click="vm.select_active_layer_group(lg)">
+        <i class="fa fa-database"></i> <input type="checkbox" class="pull-right">
+    </li>
     <div class="current-layer-details" ng-show="vm.current_layer">
       <table class="table table-condensed table-bordered">
         <tr>
@@ -43,7 +57,7 @@
         <tr>
           <td> Description </td>
           <td>
-            <input type="text" class="form-control" ng-model="vm.current_layer.options.description">
+            <textarea  class="form-control" ng-model="vm.current_layer.options.description"></textarea>
           </td>
         </tr>
       </table>

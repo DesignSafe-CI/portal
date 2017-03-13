@@ -1,3 +1,6 @@
+import LayerGroup from '../models/layer_group.js';
+console.log(LayerGroup)
+
 export default class MapSidebarCtrl {
 
   constructor ($scope, $window, $timeout) {
@@ -9,10 +12,6 @@ export default class MapSidebarCtrl {
     angular.element('nav').hide();
     angular.element('footer').hide();
 
-    // L.control.layers({
-    //     "Street": map.tileLayer,
-    //     "Satellite": L.mapbox.tileLayer("my satellite imagery map id")
-    // }, null).addTo(this.map);
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
 
@@ -32,25 +31,28 @@ export default class MapSidebarCtrl {
     };
 
     this.map = L.map('geo_map', {layers: [streets, satellite]}).setView([51.505, -0.09], 6);
-
+    this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    this.drawnItems = new L.FeatureGroup();
-    this.map.addLayer(this.drawnItems);
+    // this.drawnItems = new L.FeatureGroup();
+    // this.map.addLayer(this.drawnItems);
 
+    this.layer_groups = [new LayerGroup('New Layer', [new L.FeatureGroup()])];
+    this.map.addLayer(this.layer_groups[0].feature_group[0]);
+    this.active_layer_group = this.layer_groups[0];
     let drawControl = new L.Control.Draw({
       position: 'topright',
       draw: {
         circle: false,
       },
       edit: {
-       featureGroup: this.drawnItems,
+       featureGroup: this.active_layer_group.feature_group,
        remove: true
       }
     });
 
-    this.drawnItems.on('click', (e) => {
+    this.active_layer_group.on('click', (e) => {
       if (this.current_layer == e.layer) {
         this.current_layer = null;
       } else {
@@ -59,7 +61,7 @@ export default class MapSidebarCtrl {
       this.$scope.$apply();
     });
 
-    this.map.addControl(drawControl);
+    // this.map.addControl(drawControl);
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
@@ -73,6 +75,17 @@ export default class MapSidebarCtrl {
 
 
   } // end constructor
+
+  create_layer () {
+    console.log("create_layer");
+    this.layers_groups.push(new L.LayerGroup());
+
+  }
+
+  select_active_layer_group(lg) {
+    this.active_layer_group = lg;
+    lg.active = true;
+  }
 
   open_file_dialog () {
     this.$timeout(()=> {

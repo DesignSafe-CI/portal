@@ -6,10 +6,11 @@
 
 #geo_sidebar {
   width: 20%;
+  font-size: 0.85em;
   float: left;
   flex: 0 0 230px;
-  background: #373737;
-  color: #ababab;
+  background: #404040;
+  color: #fff;
   border-right: 1px solid #d3d3d3;
   flex-direction: column;
   display: flex;
@@ -17,15 +18,22 @@
 
 
 
-#geo_sidebar .list-group-item {
-  background-color: #373737;
+#geo_sidebar .list-group-item.menu{
+  background-color: #404040;
   border-bottom: 1px solid #707070;
-  border-left: 0px;
+  border-left: 5px;
   border-right: 0px;
   border-top: 0px;
   margin-top: 1px;
   cursor: pointer;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
+
+#geo_sidebar .list-group-item.menu.active {
+  border-left: 5px solid cyan;
+}
+
 
 #geo_sidebar .current-layer-details {
   flex-grow: 1;

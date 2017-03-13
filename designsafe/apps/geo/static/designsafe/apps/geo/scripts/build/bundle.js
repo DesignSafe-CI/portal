@@ -143,7 +143,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _layer_group = __webpack_require__(6);
+
+var _layer_group2 = _interopRequireDefault(_layer_group);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+console.log(_layer_group2.default);
 
 var MapSidebarCtrl = function () {
   MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout"];
@@ -161,10 +169,6 @@ var MapSidebarCtrl = function () {
     angular.element('nav').hide();
     angular.element('footer').hide();
 
-    // L.control.layers({
-    //     "Street": map.tileLayer,
-    //     "Satellite": L.mapbox.tileLayer("my satellite imagery map id")
-    // }, null).addTo(this.map);
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
 
@@ -183,25 +187,28 @@ var MapSidebarCtrl = function () {
     };
 
     this.map = L.map('geo_map', { layers: [streets, satellite] }).setView([51.505, -0.09], 6);
-
+    this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    this.drawnItems = new L.FeatureGroup();
-    this.map.addLayer(this.drawnItems);
+    // this.drawnItems = new L.FeatureGroup();
+    // this.map.addLayer(this.drawnItems);
 
+    this.layer_groups = [new _layer_group2.default('New Layer', [new L.FeatureGroup()])];
+    this.map.addLayer(this.layer_groups[0].feature_group[0]);
+    this.active_layer_group = this.layer_groups[0];
     var drawControl = new L.Control.Draw({
       position: 'topright',
       draw: {
         circle: false
       },
       edit: {
-        featureGroup: this.drawnItems,
+        featureGroup: this.active_layer_group.feature_group,
         remove: true
       }
     });
 
-    this.drawnItems.on('click', function (e) {
+    this.active_layer_group.on('click', function (e) {
       if (_this.current_layer == e.layer) {
         _this.current_layer = null;
       } else {
@@ -210,7 +217,7 @@ var MapSidebarCtrl = function () {
       _this.$scope.$apply();
     });
 
-    this.map.addControl(drawControl);
+    // this.map.addControl(drawControl);
 
     this.map.on('draw:created', function (e) {
       var object = e.layer;
@@ -224,6 +231,18 @@ var MapSidebarCtrl = function () {
   } // end constructor
 
   _createClass(MapSidebarCtrl, [{
+    key: 'create_layer',
+    value: function create_layer() {
+      console.log("create_layer");
+      this.layers_groups.push(new L.LayerGroup());
+    }
+  }, {
+    key: 'select_active_layer_group',
+    value: function select_active_layer_group(lg) {
+      this.active_layer_group = lg;
+      lg.active = true;
+    }
+  }, {
     key: 'open_file_dialog',
     value: function open_file_dialog() {
       this.$timeout(function () {
@@ -370,6 +389,42 @@ function config($stateProvider) {
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LayerGroup = function () {
+  function LayerGroup(label, fg) {
+    _classCallCheck(this, LayerGroup);
+
+    this.label = label;
+    this.feature_group = fg;
+    console.log(this.feature_group);
+  }
+
+  _createClass(LayerGroup, [{
+    key: "add_feature",
+    value: function add_feature(f) {
+      this.feature_group.push(f);
+    }
+  }]);
+
+  return LayerGroup;
+}();
+
+exports.default = LayerGroup;
 
 /***/ })
 /******/ ]);
