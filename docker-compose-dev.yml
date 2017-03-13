@@ -70,7 +70,6 @@ nginx:
     - 80:80
     - 443:443
 
-
 worker:
   build: .
   env_file: designsafe.env

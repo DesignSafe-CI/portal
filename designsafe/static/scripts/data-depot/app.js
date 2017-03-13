@@ -197,10 +197,12 @@
       })
       .state('boxData', {
         url: '/box/{filePath:any}',
-        controller: 'BoxDataCtrl',
+        controller: 'ExternalDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/box-data-listing.html',
         params: {
-          filePath: ''
+          filePath: '',
+          name: 'Box',
+          customRootFilePath: 'box/'
         },
         resolve: {
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
@@ -224,10 +226,12 @@
       })
       .state('dropboxData', {
         url: '/dropbox/{filePath:any}',
-        controller: 'DropboxDataCtrl',
+        controller: 'ExternalDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/dropbox-data-listing.html',
         params: {
-          filePath: ''
+          filePath: '',
+          name: 'Dropbox',
+          customRootFilePath: 'dropbox/'
         },
         resolve: {
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {

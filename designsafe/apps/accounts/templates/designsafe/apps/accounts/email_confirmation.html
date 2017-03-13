@@ -13,7 +13,7 @@
       and the username and password you registered with to activate your account.
     </p>
 
-    <form method="post">
+    <form method="post" action="">
       {% csrf_token %}
       {% bootstrap_form form %}
 
