@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -143,7 +143,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _layer_group = __webpack_require__(6);
+var _layer_group = __webpack_require__(5);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
@@ -168,6 +168,8 @@ var MapSidebarCtrl = function () {
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
+    this.primary_color = '#ff0000';
+    this.secondary_color = '#ff0000';
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -194,8 +196,8 @@ var MapSidebarCtrl = function () {
     // this.drawnItems = new L.FeatureGroup();
     // this.map.addLayer(this.drawnItems);
 
-    this.layer_groups = [new _layer_group2.default('New Layer', [new L.FeatureGroup()])];
-    this.map.addLayer(this.layer_groups[0].feature_group[0]);
+    this.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
+    this.map.addLayer(this.layer_groups[0].feature_group);
     this.active_layer_group = this.layer_groups[0];
     var drawControl = new L.Control.Draw({
       position: 'topright',
@@ -208,24 +210,22 @@ var MapSidebarCtrl = function () {
       }
     });
 
-    this.active_layer_group.on('click', function (e) {
-      if (_this.current_layer == e.layer) {
-        _this.current_layer = null;
-      } else {
-        _this.current_layer = e.layer;
-      };
-      _this.$scope.$apply();
+    this.active_layer_group.feature_group.on('click', function (e) {
+      // console.log(e, e.layer)
     });
 
-    // this.map.addControl(drawControl);
+    this.map.addControl(drawControl);
 
     this.map.on('draw:created', function (e) {
       var object = e.layer;
-      object.options.color = '#ff0000';
-      object.options.fillColor = '#ff0000';
+      object.on('click', function (e) {
+        console.log(e);
+      });
+      object.options.color = _this.secondary_color;
+      object.options.fillColor = _this.primary_color;
       object.options.fillOpacity = 0.8;
-      _this.drawnItems.addLayer(object);
-      _this.current_layer = object;
+      _this.active_layer_group.feature_group.addLayer(object);
+      // this.current_layer = object;
       _this.$scope.$apply();
     });
   } // end constructor
@@ -234,28 +234,27 @@ var MapSidebarCtrl = function () {
     key: 'create_layer',
     value: function create_layer() {
       console.log("create_layer");
-      this.layers_groups.push(new L.LayerGroup());
+      var lg = new _layer_group2.default("New Group", new L.LayerGroup());
+      this.layer_groups.push(lg);
+      this.active_layer_group = this.layer_groups[this.layer_groups.length - 1];
+      this.map.addLayer(lg.feature_group);
+    }
+  }, {
+    key: 'show_hide_layer_group',
+    value: function show_hide_layer_group(lg) {
+      console.log(lg);
+      lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
     }
   }, {
     key: 'select_active_layer_group',
     value: function select_active_layer_group(lg) {
       this.active_layer_group = lg;
       lg.active = true;
+      lg.show = true;
     }
   }, {
     key: 'open_file_dialog',
-    value: function open_file_dialog() {
-      this.$timeout(function () {
-        angular.element('#local_file').trigger('click');
-      });
-    }
-  }, {
-    key: 'open_image_dialog',
-    value: function open_image_dialog() {
-      this.$timeout(function () {
-        angular.element('#local_image').trigger('click');
-      });
-    }
+    value: function open_file_dialog() {}
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
@@ -357,6 +356,30 @@ function customOnChange() {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LayerGroup = function LayerGroup(label, fg) {
+  _classCallCheck(this, LayerGroup);
+
+  this.label = label;
+  this.feature_group = fg;
+  this.show = true;
+  console.log(this.feature_group);
+};
+
+exports.default = LayerGroup;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 config.$inject = ["$stateProvider"];
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -389,42 +412,6 @@ function config($stateProvider) {
 mod.config(config);
 
 exports.default = mod;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var LayerGroup = function () {
-  function LayerGroup(label, fg) {
-    _classCallCheck(this, LayerGroup);
-
-    this.label = label;
-    this.feature_group = fg;
-    console.log(this.feature_group);
-  }
-
-  _createClass(LayerGroup, [{
-    key: "add_feature",
-    value: function add_feature(f) {
-      this.feature_group.push(f);
-    }
-  }]);
-
-  return LayerGroup;
-}();
-
-exports.default = LayerGroup;
 
 /***/ })
 /******/ ]);

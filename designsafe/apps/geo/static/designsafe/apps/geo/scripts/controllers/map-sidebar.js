@@ -11,6 +11,8 @@ export default class MapSidebarCtrl {
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
+    this.primary_color = '#ff0000';
+    this.secondary_color = '#ff0000';
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -38,8 +40,8 @@ export default class MapSidebarCtrl {
     // this.drawnItems = new L.FeatureGroup();
     // this.map.addLayer(this.drawnItems);
 
-    this.layer_groups = [new LayerGroup('New Layer', [new L.FeatureGroup()])];
-    this.map.addLayer(this.layer_groups[0].feature_group[0]);
+    this.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+    this.map.addLayer(this.layer_groups[0].feature_group);
     this.active_layer_group = this.layer_groups[0];
     let drawControl = new L.Control.Draw({
       position: 'topright',
@@ -52,24 +54,22 @@ export default class MapSidebarCtrl {
       }
     });
 
-    this.active_layer_group.on('click', (e) => {
-      if (this.current_layer == e.layer) {
-        this.current_layer = null;
-      } else {
-        this.current_layer = e.layer;
-      };
-      this.$scope.$apply();
+    this.active_layer_group.feature_group.on('click', (e) => {
+      // console.log(e, e.layer)
     });
 
-    // this.map.addControl(drawControl);
+    this.map.addControl(drawControl);
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
-      object.options.color = '#ff0000';
-      object.options.fillColor = '#ff0000';
+      object.on('click', e => {
+        console.log(e)
+      })
+      object.options.color = this.secondary_color;
+      object.options.fillColor = this.primary_color;
       object.options.fillOpacity = 0.8;
-      this.drawnItems.addLayer(object);
-      this.current_layer = object;
+      this.active_layer_group.feature_group.addLayer(object);
+      // this.current_layer = object;
       this.$scope.$apply();
     });
 
@@ -78,25 +78,25 @@ export default class MapSidebarCtrl {
 
   create_layer () {
     console.log("create_layer");
-    this.layers_groups.push(new L.LayerGroup());
+    let lg = new LayerGroup("New Group", new L.LayerGroup());
+    this.layer_groups.push(lg);
+    this.active_layer_group = this.layer_groups[this.layer_groups.length -1];
+    this.map.addLayer(lg.feature_group);
+  }
 
+  show_hide_layer_group (lg) {
+    console.log(lg);
+    lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
   }
 
   select_active_layer_group(lg) {
     this.active_layer_group = lg;
     lg.active = true;
+    lg.show = true;
   }
 
   open_file_dialog () {
-    this.$timeout(()=> {
-      angular.element('#local_file').trigger('click');
-    });
-  }
 
-  open_image_dialog () {
-    this.$timeout(()=> {
-      angular.element('#local_image').trigger('click');
-    });
   }
 
   local_file_selected (ev) {
