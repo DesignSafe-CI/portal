@@ -10,9 +10,7 @@
 
     <li class="list-group-item menu clearfix">
       <div> {{vm.map_title}} </div>
-      <div>
-        <button class="btn btn-xs btn-primary pull-right"> Save </button>
-      </div>
+      
     </li>
     <li class="list-group-item menu clearfix" ng-click="vm.create_layer()">
       <div>
@@ -49,7 +47,7 @@
           ng-repeat="feature in lg.feature_group.getLayers()">
           <div> <i class="fa fa-file-o"></i> </div>
           <div class="pull-right">
-            <i class="fa fa-map" ng-click="vm.zoom_to(feature)"> </i> 
+            <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature)"> </i>
           </div>
       </li>
     </div>
