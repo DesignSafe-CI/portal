@@ -4,6 +4,7 @@ export default class LayerGroup {
     this.label = label;
     this.feature_group = fg;
     this.show = true;
+    this.show_contents = true;
   }
 
   num_features () {

@@ -19,36 +19,41 @@
         <i class="fa fa-plus"> </i> New Layer Group
       </div>
     </li>
-    <li class="list-group-item menu clearfix"
-        ng-class="{'active': lg == vm.active_layer_group}"
-        ng-repeat="lg in vm.layer_groups"
-        ng-mouseover="lg.show_edit_icon=true"
-        ng-mouseleave="lg.show_edit_icon=false">
-      <div>
-        <i class="fa fa-database"></i>
-      </div>
-      <div ng-click="vm.select_active_layer_group(lg)">
-        <span class="pull-left" ng-hide="lg.show_edit_label"> {{lg.label}} </span>
-        <div ng-show="lg.show_edit_label">
-          <input type="text" ng-model="lg.label">
-          <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
+    <div ng-repeat="lg in vm.layer_groups">
+      <li class="list-group-item menu clearfix"
+          ng-class="{'active': lg == vm.active_layer_group}"
+          ng-mouseover="lg.show_edit_icon=true"
+          ng-mouseleave="lg.show_edit_icon=false">
+        <div> <i class="fa fa-chevron-right" ng-click="lg.show_contents= !lg.show_contents"></i> </div>
+        <!-- <div>
+          <i class="fa fa-database"></i>
+        </div> -->
+        <div ng-click="vm.select_active_layer_group(lg)">
+          <span class="pull-left" ng-hide="lg.show_edit_label"> {{lg.label}} </span>
+          <div ng-show="lg.show_edit_label">
+            <input type="text" ng-model="lg.label">
+            <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
+          </div>
+          <span class="lg-count" ng-show="lg.num_features() > 0"> {{lg.num_features()}} features </span>
         </div>
-        <span class="lg-count" ng-show="lg.num_features() > 0"> {{lg.num_features()}} features </span>
-      </div>
-      <div class="">
-      </div>
-      <div class="pull-right">
-        <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
-        <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
-        <i class="fa fa-navicon"></i>
-      </div>
-      <div class="list-group-item menu clearfix"
-          ng-repeat="layer in lg.feature_group.getLayers()">
-        <div>
-          <i class="fa fa-file-o"> </i>
+        <div class="">
         </div>
-      </div>
-    </li>
+        <div class="pull-right">
+          <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
+          <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
+          <i class="fa fa-navicon"></i>
+        </div>
+      </li>
+      <li class="list-group-item menu clearfix"
+          ng-show="lg.show_contents"
+          ng-repeat="feature in lg.feature_group.getLayers()">
+          <div> <i class="fa fa-file-o"></i> </div>
+          <div class="pull-right">
+            <i class="fa fa-map" ng-click="vm.zoom_to(feature)"> </i> 
+          </div>
+      </li>
+    </div>
+
 
 
 

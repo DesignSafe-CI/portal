@@ -261,11 +261,22 @@ var MapSidebarCtrl = function () {
       this.active_layer_group = lg;
       lg.active = true;
       lg.show = true;
-      debugger;
     }
   }, {
     key: 'open_file_dialog',
     value: function open_file_dialog() {}
+  }, {
+    key: 'zoom_to',
+    value: function zoom_to(feature) {
+      console.log(feature);
+      if (feature instanceof L.Marker) {
+        var latLngs = [feature.getLatLng()];
+        var markerBounds = L.latLngBounds(latLngs);
+        this.map.fitBounds(markerBounds);
+      } else {
+        this.map.fitBounds(feature.getBounds());
+      };
+    }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
@@ -382,6 +393,7 @@ var LayerGroup = function () {
     this.label = label;
     this.feature_group = fg;
     this.show = true;
+    this.show_contents = true;
   }
 
   _createClass(LayerGroup, [{
