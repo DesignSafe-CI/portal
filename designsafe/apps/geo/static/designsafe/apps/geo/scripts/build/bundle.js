@@ -151,8 +151,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-console.log(_layer_group2.default);
-
 var MapSidebarCtrl = function () {
   MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout"];
   function MapSidebarCtrl($scope, $window, $timeout) {
@@ -199,58 +197,71 @@ var MapSidebarCtrl = function () {
     this.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
     this.map.addLayer(this.layer_groups[0].feature_group);
     this.active_layer_group = this.layer_groups[0];
-    var drawControl = new L.Control.Draw({
-      position: 'topright',
-      draw: {
-        circle: false
-      },
-      edit: {
-        featureGroup: this.active_layer_group.feature_group,
-        remove: true
-      }
-    });
 
+    // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', function (e) {
-      // console.log(e, e.layer)
+      _this.current_layer ? _this.current_layer = null : _this.current_layer = e.layer;
+      _this.$scope.$apply();
     });
 
-    this.map.addControl(drawControl);
+    this.add_draw_controls(this.active_layer_group.feature_group);
 
     this.map.on('draw:created', function (e) {
       var object = e.layer;
-      object.on('click', function (e) {
-        console.log(e);
-      });
       object.options.color = _this.secondary_color;
       object.options.fillColor = _this.primary_color;
       object.options.fillOpacity = 0.8;
       _this.active_layer_group.feature_group.addLayer(object);
       // this.current_layer = object;
       _this.$scope.$apply();
+      console.log(_this.active_layer_group);
+    });
+
+    this.map.on('mousemove', function (e) {
+      _this.current_mouse_coordinates = e.latlng;
+      _this.$scope.$apply();
     });
   } // end constructor
 
   _createClass(MapSidebarCtrl, [{
+    key: 'add_draw_controls',
+    value: function add_draw_controls(fg) {
+      var dc = new L.Control.Draw({
+        position: 'topright',
+        draw: {
+          circle: false
+        },
+        edit: {
+          featureGroup: fg,
+          remove: true
+        }
+      });
+      this.map.addControl(dc);
+      this.drawControl = dc;
+    }
+  }, {
     key: 'create_layer',
     value: function create_layer() {
-      console.log("create_layer");
-      var lg = new _layer_group2.default("New Group", new L.LayerGroup());
+      var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
       this.layer_groups.push(lg);
       this.active_layer_group = this.layer_groups[this.layer_groups.length - 1];
       this.map.addLayer(lg.feature_group);
+      this.select_active_layer_group(this.active_layer_group);
     }
   }, {
     key: 'show_hide_layer_group',
     value: function show_hide_layer_group(lg) {
-      console.log(lg);
       lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
     }
   }, {
     key: 'select_active_layer_group',
     value: function select_active_layer_group(lg) {
+      this.map.removeControl(this.drawControl);
+      this.add_draw_controls(lg.feature_group);
       this.active_layer_group = lg;
       lg.active = true;
       lg.show = true;
+      debugger;
     }
   }, {
     key: 'open_file_dialog',
@@ -360,16 +371,28 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var LayerGroup = function LayerGroup(label, fg) {
-  _classCallCheck(this, LayerGroup);
+var LayerGroup = function () {
+  function LayerGroup(label, fg) {
+    _classCallCheck(this, LayerGroup);
 
-  this.label = label;
-  this.feature_group = fg;
-  this.show = true;
-  console.log(this.feature_group);
-};
+    this.label = label;
+    this.feature_group = fg;
+    this.show = true;
+  }
+
+  _createClass(LayerGroup, [{
+    key: "num_features",
+    value: function num_features() {
+      return this.feature_group.getLayers().length;
+    }
+  }]);
+
+  return LayerGroup;
+}();
 
 exports.default = LayerGroup;
 

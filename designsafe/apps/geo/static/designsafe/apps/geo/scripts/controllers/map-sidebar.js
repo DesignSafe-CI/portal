@@ -1,5 +1,4 @@
 import LayerGroup from '../models/layer_group.js';
-console.log(LayerGroup)
 
 export default class MapSidebarCtrl {
 
@@ -43,56 +42,69 @@ export default class MapSidebarCtrl {
     this.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
     this.map.addLayer(this.layer_groups[0].feature_group);
     this.active_layer_group = this.layer_groups[0];
-    let drawControl = new L.Control.Draw({
-      position: 'topright',
-      draw: {
-        circle: false,
-      },
-      edit: {
-       featureGroup: this.active_layer_group.feature_group,
-       remove: true
-      }
-    });
 
+    // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', (e) => {
-      // console.log(e, e.layer)
+      this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
+      this.$scope.$apply();
     });
 
-    this.map.addControl(drawControl);
+    this.add_draw_controls(this.active_layer_group.feature_group);
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
-      object.on('click', e => {
-        console.log(e)
-      })
       object.options.color = this.secondary_color;
       object.options.fillColor = this.primary_color;
       object.options.fillOpacity = 0.8;
       this.active_layer_group.feature_group.addLayer(object);
       // this.current_layer = object;
       this.$scope.$apply();
+      console.log(this.active_layer_group)
+    });
+
+    this.map.on('mousemove', (e) => {
+      this.current_mouse_coordinates = e.latlng;
+      this.$scope.$apply();
     });
 
 
   } // end constructor
 
+  add_draw_controls (fg) {
+    let dc = new L.Control.Draw({
+      position: 'topright',
+      draw: {
+        circle: false,
+      },
+      edit: {
+       featureGroup: fg,
+       remove: true
+      }
+    });
+    this.map.addControl(dc);
+    this.drawControl = dc;
+  }
+
+
   create_layer () {
-    console.log("create_layer");
-    let lg = new LayerGroup("New Group", new L.LayerGroup());
+    let lg = new LayerGroup("New Group", new L.FeatureGroup());
     this.layer_groups.push(lg);
     this.active_layer_group = this.layer_groups[this.layer_groups.length -1];
     this.map.addLayer(lg.feature_group);
+    this.select_active_layer_group(this.active_layer_group);
   }
 
   show_hide_layer_group (lg) {
-    console.log(lg);
     lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
   }
 
   select_active_layer_group(lg) {
+    this.map.removeControl(this.drawControl);
+    this.add_draw_controls(lg.feature_group);
     this.active_layer_group = lg;
     lg.active = true;
     lg.show = true;
+    debugger;
   }
 
   open_file_dialog () {

@@ -4,8 +4,10 @@ export default class LayerGroup {
     this.label = label;
     this.feature_group = fg;
     this.show = true;
-    console.log(this.feature_group)
   }
 
+  num_features () {
+    return this.feature_group.getLayers().length;
+  }
 
 }

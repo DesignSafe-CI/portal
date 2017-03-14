@@ -1,4 +1,4 @@
-<div id="container">
+<div id="geo_container">
   <div id="geo_sidebar">
     <ul class="list-group">
       <li class="list-group-item menu" style="background:#eaeaea;margin-top:0px">
@@ -9,64 +9,105 @@
     </ul>
 
     <li class="list-group-item menu clearfix">
-      {{vm.map_title}}
-      <button class="btn btn-xs btn-primary pull-right"> Save </button>
+      <div> {{vm.map_title}} </div>
+      <div>
+        <button class="btn btn-xs btn-primary pull-right"> Save </button>
+      </div>
     </li>
     <li class="list-group-item menu clearfix" ng-click="vm.create_layer()">
-
-      <i class="fa fa-plus"> </i> New Layer Group
+      <div>
+        <i class="fa fa-plus"> </i> New Layer Group
+      </div>
     </li>
     <li class="list-group-item menu clearfix"
         ng-class="{'active': lg == vm.active_layer_group}"
         ng-repeat="lg in vm.layer_groups"
-        >
+        ng-mouseover="lg.show_edit_icon=true"
+        ng-mouseleave="lg.show_edit_icon=false">
+      <div>
         <i class="fa fa-database"></i>
-        <span ng-click="vm.select_active_layer_group(lg)"> {{lg.label}} </span>
-        <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)" class="pull-right">
+      </div>
+      <div ng-click="vm.select_active_layer_group(lg)">
+        <span class="pull-left" ng-hide="lg.show_edit_label"> {{lg.label}} </span>
+        <div ng-show="lg.show_edit_label">
+          <input type="text" ng-model="lg.label">
+          <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
+        </div>
+        <span class="lg-count" ng-show="lg.num_features() > 0"> {{lg.num_features()}} features </span>
+      </div>
+      <div class="">
+      </div>
+      <div class="pull-right">
+        <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
+        <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
+        <i class="fa fa-navicon"></i>
+      </div>
+      <div class="list-group-item menu clearfix"
+          ng-repeat="layer in lg.feature_group.getLayers()">
+        <div>
+          <i class="fa fa-file-o"> </i>
+        </div>
+      </div>
     </li>
 
-    <div class="current-layer-details" ng-show="vm.current_layer">
-      <table class="table table-condensed table-bordered">
-        <tr>
-          <td> Fill </td>
-          <td>
-            <input type="color"
-                    class="form-control"
-                   ng-model="vm.current_layer.options.fillColor"
-                   ng-change=vm.update_layer_style('fillColor')>
-            </input>
-          </td>
-        </tr>
-        <tr>
-          <td> Stroke </td>
-          <td>
-            <input type="color"
-                    class="form-control"
-                   ng-model="vm.current_layer.options.color"
-                   ng-change=vm.update_layer_style('color')>
-            </input>
-          </td>
-        </tr>
-        <tr>
-          <td> Opacity </td>
-          <td>
-            <input type="number" min=0 max=1.0 step=0.01
-                    class="form-control"
-                   ng-model="vm.current_layer.options.fillOpacity"
-                   ng-change=vm.update_layer_style('fillOpacity')>
-            </input>
-          </td>
-        </tr>
-        <tr>
-          <td> Description </td>
-          <td>
-            <textarea  class="form-control" ng-model="vm.current_layer.options.description"></textarea>
-          </td>
-        </tr>
-      </table>
-    </div>
+
+
+
 
   </div> <!-- End of sidebar -->
+  <div id="current_layer_details" ng-show="vm.current_layer">
+    <div class="pull-right">
+      <i class="fa fa-trash pull-right"> </i>
+      <i class="fa fa-close pull-left" ng-click="vm.current_layer=null"></i>
+    </div>
+    <li class="list-group-item menu clearfix">
+      <div class="left"> Fill: </div>
+      <div class="right">
+        <input type="color"
+               class="form-control"
+               ng-model="vm.current_layer.options.fillColor"
+               ng-change=vm.update_layer_style('fillColor')>
+      </div>
+
+    </li>
+    <li class="list-group-item menu clearfix">
+      <div class="left"> Lat: </div>
+      <div class="right"> {{vm.current_layer.getLatLng().lat}} </div>
+    </li>
+    <li class="list-group-item menu clearfix">
+      <div class="left"> Lon: </div>
+      <div class="right"> {{vm.current_layer.getLatLng().lon}} </div>
+    </li>
+    <!-- <table class="table table-condensed table-bordered">
+
+      <tr>
+        <td> Stroke </td>
+        <td>
+          <input type="color"
+                  class="form-control"
+                 ng-model="vm.current_layer.options.color"
+                 ng-change=vm.update_layer_style('color')>
+          </input>
+        </td>
+      </tr>
+      <tr>
+        <td> Opacity </td>
+        <td>
+          <input type="number" min=0 max=1.0 step=0.01
+                  class="form-control"
+                 ng-model="vm.current_layer.options.fillOpacity"
+                 ng-change=vm.update_layer_style('fillOpacity')>
+          </input>
+        </td>
+      </tr>
+      <tr>
+        <td> Description </td>
+        <td>
+          <textarea  class="form-control" ng-model="vm.current_layer.options.description"></textarea>
+        </td>
+      </tr>
+    </table> -->
+  </div>
 
   <div id="right_panel">
     <div id="top_toolbar">
@@ -83,7 +124,6 @@
             </ul>
           </div>
           <button class="btn btn-default btn-sm"> Data </button>
-          <button class="btn btn-default btn-sm"> Layers </button>
           <div class="btn-group" role="group">
             <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Colors
@@ -94,10 +134,12 @@
               <li> secondary <input type="color" ng-model="vm.secondary_color" class="pull-right"></li>
             </ul>
           </div>
-
-
+        </div>
+        <div id="mouse_coordinates" class="pull-right">
+          <span> Lat: {{vm.current_mouse_coordinates.lat | number:3}} Lon: {{vm.current_mouse_coordinates.lng| number:3 }} </span>
         </div>
       </div>
+
     </div>
     <div id="geo_map"> </div>
 </div>
