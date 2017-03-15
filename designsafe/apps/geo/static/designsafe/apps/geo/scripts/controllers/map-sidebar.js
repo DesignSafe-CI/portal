@@ -86,12 +86,17 @@ export default class MapSidebarCtrl {
   }
 
 
-  create_layer () {
+  create_layer_group () {
     let lg = new LayerGroup("New Group", new L.FeatureGroup());
     this.layer_groups.push(lg);
     this.active_layer_group = this.layer_groups[this.layer_groups.length -1];
     this.map.addLayer(lg.feature_group);
     this.select_active_layer_group(this.active_layer_group);
+  }
+
+  delete_layer_group (lg, i) {
+    this.map.removeLayer(lg.feature_group);
+    this.layer_groups.splice(i, 1);
   }
 
   delete_feature (f) {
@@ -116,6 +121,16 @@ export default class MapSidebarCtrl {
     this.$timeout(() => {
       $('#file_picker').click();
     }, 0);
+  }
+
+  get_feature_type (f) {
+    if (f instanceof L.Marker) {
+      return 'Point';
+    } else if (f instanceof L.Polygon) {
+      return 'Polygon';
+    } else {
+      return 'Path';
+    }
   }
 
   zoom_to(feature) {
@@ -146,6 +161,7 @@ export default class MapSidebarCtrl {
             lg.feature_group.addLayer(l);
           });
           this.layer_groups.push(lg);
+          this.map.addLayer(lg.feature_group);
         });
       }
       else {
@@ -155,6 +171,7 @@ export default class MapSidebarCtrl {
           this.layer_groups[0].feature_group.addLayer(l);
         });
         this.layer_groups.push(lg);
+        this.map.addLayer(lg.feature_group);
       }
       let bounds = [];
       this.layer_groups.forEach((lg) =>  {

@@ -5,7 +5,7 @@ import {mod as geo_services} from './services';
 let mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
-function config($stateProvider) {
+function config($stateProvider, $uibTooltipProvider) {
   'ngInject';
   $stateProvider.state('geo', {
     url: '',
@@ -17,6 +17,9 @@ function config($stateProvider) {
       }
     }
   });
+
+  //config popups etc
+  $uibTooltipProvider.options({popupDelay:1000});
 
 }
 

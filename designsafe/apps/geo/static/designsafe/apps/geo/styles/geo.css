@@ -18,9 +18,19 @@
   display: flex;
 }
 
+
+
+.list-group-item.clearfix.subgroup {
+  margin-left: 10px;
+}
+
 .strong {
   font-family: 'Open Sans Bold',sans-serif;
-  font-weight: 400;
+  font-weight: 700;
+}
+
+.map-title {
+  font-size: 1.35em;
 }
 
 #geo_sidebar .list-group-item {
@@ -55,7 +65,13 @@
   border-left: 5px solid cyan;
   background-color: #646464;
 }
+#geo_sidebar .list-group-item.menu.lg-tools {
+  background-color: #29948a;
+}
 
+#geo_sidebar .list-group-item.menu.action {
+  background-color: #4575b0;
+}
 
 #geo_sidebar .lg-count {
   font-size: 0.9em;

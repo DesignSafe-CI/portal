@@ -9,12 +9,18 @@
       </li>
     </ul>
 
-    <li class="list-group-item menu clearfix">
-      <div> {{vm.map_title}} </div>
-
+    <li class="list-group-item menu clearfix"
+        ng-mouseover="vm.title_hover=true"
+        ng-mouseleave="vm.title_hover=false">
+      <span class="strong map-title" ng-show="!vm.edit_title"> {{vm.map_title}} </span>
+      <div ng-show="vm.edit_title">
+        <input type="text" ng-model="vm.map_title">
+        <i class="fa fa-check" ng-click="vm.edit_title=false"></i>
+      </div>
+      <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=true" ng-show="vm.title_hover"></i>
     </li>
-    <li class="list-group-item menu clearfix" ng-click="vm.create_layer()">
-      <div>
+    <li class="list-group-item menu clearfix action" ng-click="vm.create_layer_group()">
+      <div tooltip="Create a new Layer Group">
         <i class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
       </div>
     </li>
@@ -38,20 +44,26 @@
           </div>
           <span class="lg-count" ng-show="lg.num_features() > 0"> {{lg.num_features()}} features </span>
         </div>
-        <div class="">
-        </div>
         <div class="pull-right">
           <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
           <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
-          <i class="fa fa-navicon"></i>
+          <i class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
         </div>
       </li>
-      <li class="list-group-item menu clearfix"
+      <li class="list-group-item menu lg-tools clearfix" ng-show="lg.show_tools">
+        <div>
+          <span> Tools: </span>
+          <i class="fa fa-trash" ng-click="vm.delete_layer_group(lg, $index)" tooltip="Delete this layer group" > </i>
+          <i class="fa fa-crosshairs" ng-click="vm.zoom_to(lg.feature_group)" tooltip="Zoom to group"></i>
+        </div>
+      </li>
+      <li class="list-group-item menu clearfix subgroup"
           ng-show="lg.show_contents"
           ng-repeat="feature in lg.feature_group.getLayers()"
           ng-mouseover="feature.hover=true"
           ng-mouseleave="feature.hover=false">
           <div> <i class="fa fa-file-o"></i> </div>
+          <div> {{vm.get_feature_type(feature)}} </div>
           <div class="pull-right">
             <div class="pull-left">
               <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature)"></i>

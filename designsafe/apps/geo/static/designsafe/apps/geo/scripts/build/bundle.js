@@ -242,13 +242,19 @@ var MapSidebarCtrl = function () {
       this.drawControl = dc;
     }
   }, {
-    key: 'create_layer',
-    value: function create_layer() {
+    key: 'create_layer_group',
+    value: function create_layer_group() {
       var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
       this.layer_groups.push(lg);
       this.active_layer_group = this.layer_groups[this.layer_groups.length - 1];
       this.map.addLayer(lg.feature_group);
       this.select_active_layer_group(this.active_layer_group);
+    }
+  }, {
+    key: 'delete_layer_group',
+    value: function delete_layer_group(lg, i) {
+      this.map.removeLayer(lg.feature_group);
+      this.layer_groups.splice(i, 1);
     }
   }, {
     key: 'delete_feature',
@@ -277,6 +283,17 @@ var MapSidebarCtrl = function () {
       this.$timeout(function () {
         $('#file_picker').click();
       }, 0);
+    }
+  }, {
+    key: 'get_feature_type',
+    value: function get_feature_type(f) {
+      if (f instanceof L.Marker) {
+        return 'Point';
+      } else if (f instanceof L.Polygon) {
+        return 'Polygon';
+      } else {
+        return 'Path';
+      }
     }
   }, {
     key: 'zoom_to',
@@ -310,6 +327,7 @@ var MapSidebarCtrl = function () {
               lg.feature_group.addLayer(l);
             });
             _this2.layer_groups.push(lg);
+            _this2.map.addLayer(lg.feature_group);
           });
         } else {
           var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
@@ -318,6 +336,7 @@ var MapSidebarCtrl = function () {
             _this2.layer_groups[0].feature_group.addLayer(l);
           });
           _this2.layer_groups.push(lg);
+          _this2.map.addLayer(lg.feature_group);
         }
         var bounds = [];
         _this2.layer_groups.forEach(function (lg) {
@@ -460,7 +479,7 @@ exports.default = LayerGroup;
 "use strict";
 
 
-config.$inject = ["$stateProvider"];
+config.$inject = ["$stateProvider", "$uibTooltipProvider"];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -474,7 +493,7 @@ var _services = __webpack_require__(2);
 var mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
-function config($stateProvider) {
+function config($stateProvider, $uibTooltipProvider) {
   'ngInject';
 
   $stateProvider.state('geo', {
@@ -487,6 +506,9 @@ function config($stateProvider) {
       }
     }
   });
+
+  //config popups etc
+  $uibTooltipProvider.options({ popupDelay: 1000 });
 }
 
 mod.config(config);
