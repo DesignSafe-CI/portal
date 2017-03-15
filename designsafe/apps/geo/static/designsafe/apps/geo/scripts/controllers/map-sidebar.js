@@ -57,7 +57,6 @@ export default class MapSidebarCtrl {
       object.options.fillColor = this.primary_color;
       object.options.fillOpacity = 0.8;
       this.active_layer_group.feature_group.addLayer(object);
-      // this.current_layer = object;
       this.$scope.$apply();
       console.log(this.active_layer_group)
     });
@@ -217,11 +216,13 @@ export default class MapSidebarCtrl {
     let out = {
       "type": "FeatureCollection",
       "features": [],
-      "ds_map": true
+      "ds_map": true,
+      "name": this.map_title
     };
     this.layer_groups.forEach( (lg) => {
       let json = lg.feature_group.toGeoJSON();
       //add in any options
+      json.label = lg.label;
 
       out.features.push(json);
     });
@@ -229,9 +230,9 @@ export default class MapSidebarCtrl {
     let url  = URL.createObjectURL(blob);
 
     let a = document.createElement('a');
-    a.download    = "backup.json";
+    a.download    = this.map_title + ".json";
     a.href        = url;
-    a.textContent = "Download backup.json";
+    a.textContent = "Download";
     a.click();
   }
 

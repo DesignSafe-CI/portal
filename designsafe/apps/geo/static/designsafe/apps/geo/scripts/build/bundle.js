@@ -214,7 +214,6 @@ var MapSidebarCtrl = function () {
       object.options.fillColor = _this.primary_color;
       object.options.fillOpacity = 0.8;
       _this.active_layer_group.feature_group.addLayer(object);
-      // this.current_layer = object;
       _this.$scope.$apply();
       console.log(_this.active_layer_group);
     });
@@ -384,11 +383,13 @@ var MapSidebarCtrl = function () {
       var out = {
         "type": "FeatureCollection",
         "features": [],
-        "ds_map": true
+        "ds_map": true,
+        "name": this.map_title
       };
       this.layer_groups.forEach(function (lg) {
         var json = lg.feature_group.toGeoJSON();
         //add in any options
+        json.label = lg.label;
 
         out.features.push(json);
       });
@@ -396,9 +397,9 @@ var MapSidebarCtrl = function () {
       var url = URL.createObjectURL(blob);
 
       var a = document.createElement('a');
-      a.download = "backup.json";
+      a.download = this.map_title + ".json";
       a.href = url;
-      a.textContent = "Download backup.json";
+      a.textContent = "Download";
       a.click();
     }
   }]);
