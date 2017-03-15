@@ -36,8 +36,8 @@ export default class MapSidebarCtrl {
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    // this.drawnItems = new L.FeatureGroup();
-    // this.map.addLayer(this.drawnItems);
+    // trick to fix the tiles that sometimes don't load for some reason...
+    $timeout( () => {this.map.invalidateSize();}, 10);
 
     this.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
     this.map.addLayer(this.layer_groups[0].feature_group);
@@ -94,6 +94,11 @@ export default class MapSidebarCtrl {
     this.select_active_layer_group(this.active_layer_group);
   }
 
+  delete_feature (f) {
+    this.map.removeLayer(f);
+    this.active_layer_group.feature_group.removeLayer(f);
+  }
+
   show_hide_layer_group (lg) {
     lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
   }
@@ -107,11 +112,13 @@ export default class MapSidebarCtrl {
   }
 
   open_file_dialog () {
-
+    console.log("open_file_dialog");
+    this.$timeout(() => {
+      $('#file_picker').click();
+    }, 0);
   }
 
   zoom_to(feature) {
-    console.log(feature);
     if (feature instanceof L.Marker) {
        let latLngs = [ feature.getLatLng() ];
        let markerBounds = L.latLngBounds(latLngs);
@@ -121,16 +128,39 @@ export default class MapSidebarCtrl {
     };
   }
 
+
   local_file_selected (ev) {
     let file = ev.target.files[0];
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = (e) => {
       let json = JSON.parse(e.target.result);
-      L.geoJSON(json).getLayers().forEach( (l) => {;
-        this.drawnItems.addLayer(l);
+
+      // we add in a field into the json blob when saved. If it is such,
+      // handle potential multiple layers.
+      if (json.ds_map) {
+        // each feature in the collection represents a layer
+        json.features.forEach( (f) => {
+          let lg = new LayerGroup("New Group", new L.FeatureGroup());
+          L.geoJSON(f).getLayers().forEach( (l) => {
+            lg.feature_group.addLayer(l);
+          });
+          this.layer_groups.push(lg);
+        });
+      }
+      else {
+        let lg = new LayerGroup("New Group", new L.FeatureGroup());
+        L.geoJSON(json).getLayers().forEach( (l) => {
+          console.log(l);
+          this.layer_groups[0].feature_group.addLayer(l);
+        });
+        this.layer_groups.push(lg);
+      }
+      let bounds = [];
+      this.layer_groups.forEach((lg) =>  {
+        bounds.push(lg.feature_group.getBounds());
       });
-      this.map.fitBounds(this.drawnItems.getBounds());
+      this.map.fitBounds(bounds);
     };
   }
 
@@ -167,11 +197,18 @@ export default class MapSidebarCtrl {
 
 
   save_project () {
-    console.log(this.drawnItems);
-    this.drawnItems.eachLayer(function (l) {
-      console.log(l.options);
+    let out = {
+      "type": "FeatureCollection",
+      "features": [],
+      "ds_map": true
+    };
+    this.layer_groups.forEach( (lg) => {
+      let json = lg.feature_group.toGeoJSON();
+      //add in any options
+
+      out.features.push(json);
     });
-    let blob = new Blob([JSON.stringify(this.drawnItems.toGeoJSON())], {type: "application/json"});
+    let blob = new Blob([JSON.stringify(out)], {type: "application/json"});
     let url  = URL.createObjectURL(blob);
 
     let a = document.createElement('a');

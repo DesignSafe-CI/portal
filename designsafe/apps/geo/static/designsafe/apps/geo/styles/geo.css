@@ -3,20 +3,25 @@
   display: flex;
   min-height: 100vh;
   color: #fff;
+  font-family: 'Open Sans', sans-serif;
 }
 
 #geo_sidebar, #current_layer_details{
   width: 20%;
-  font-size: 0.85em;
+  font-size: 11px;
+  letter-spacing: 0px;
   float: left;
   flex: 0 0 230px;
   background: #404040;
-  border-right: 1px solid #d3d3d3;
+  border-right: 1px solid #6e6e6e;
   flex-direction: column;
   display: flex;
 }
 
-
+.strong {
+  font-family: 'Open Sans Bold',sans-serif;
+  font-weight: 400;
+}
 
 #geo_sidebar .list-group-item {
 
@@ -54,7 +59,11 @@
 
 #geo_sidebar .lg-count {
   font-size: 0.9em;
-  color: #c9c9c9;
+  color: #fff;
+  margin-left: 5px;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: #524e90;
 }
 
 #right_panel {
@@ -95,7 +104,14 @@
 }
 
 #mouse_coordinates {
-  font-family: monospace;
-  font-size: 0.9em;
-  color: #505050
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #505050;
+    margin-top: 0px;
+    background-color: #f2f5dc;
+    padding: 5px;
+}
+
+.dropdown-menu {
+  background-color: #646464;
 }

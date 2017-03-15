@@ -1,5 +1,6 @@
 <div id="geo_container">
   <div id="geo_sidebar">
+    <input style="display:none" type="file" id="file_picker" custom-on-change handler="vm.local_file_selected(ev)">
     <ul class="list-group">
       <li class="list-group-item menu" style="background:#eaeaea;margin-top:0px">
         <a href="/">
@@ -10,11 +11,11 @@
 
     <li class="list-group-item menu clearfix">
       <div> {{vm.map_title}} </div>
-      
+
     </li>
     <li class="list-group-item menu clearfix" ng-click="vm.create_layer()">
       <div>
-        <i class="fa fa-plus"> </i> New Layer Group
+        <i class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
       </div>
     </li>
     <div ng-repeat="lg in vm.layer_groups">
@@ -22,7 +23,10 @@
           ng-class="{'active': lg == vm.active_layer_group}"
           ng-mouseover="lg.show_edit_icon=true"
           ng-mouseleave="lg.show_edit_icon=false">
-        <div> <i class="fa fa-chevron-right" ng-click="lg.show_contents= !lg.show_contents"></i> </div>
+        <div> <i class="fa"
+                 ng-class="{'fa-chevron-right': !lg.show_contents, 'fa-chevron-down': lg.show_contents}"
+                 ng-click="lg.show_contents= !lg.show_contents"></i>
+        </div>
         <!-- <div>
           <i class="fa fa-database"></i>
         </div> -->
@@ -44,10 +48,17 @@
       </li>
       <li class="list-group-item menu clearfix"
           ng-show="lg.show_contents"
-          ng-repeat="feature in lg.feature_group.getLayers()">
+          ng-repeat="feature in lg.feature_group.getLayers()"
+          ng-mouseover="feature.hover=true"
+          ng-mouseleave="feature.hover=false">
           <div> <i class="fa fa-file-o"></i> </div>
           <div class="pull-right">
-            <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature)"> </i>
+            <div class="pull-left">
+              <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature)"></i>
+            </div>
+            <div class="pull-right">
+              <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature)"> </i>
+            </div>
           </div>
       </li>
     </div>
@@ -116,17 +127,29 @@
     <div id="top_toolbar">
       <div class="btn-toolbar">
         <div class="btn-group">
+
           <div class="btn-group" role="group">
             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Save
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-              <li><a href="#">Save to Data Depot</a></li>
-              <li><a href="#">Save locally</a></li>
+              <li>Save to Data Depot</li>
+              <li ng-click="vm.save_project()">Save locally </li>
             </ul>
           </div>
-          <button class="btn btn-default btn-sm"> Data </button>
+
+          <div class="btn-group" role="group">
+            <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Data
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li ng-click="vm.open_file_dialog()"> Import file locally</li>
+              <li> Import from Data Depot </li>
+            </ul>
+          </div>
+
           <div class="btn-group" role="group">
             <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Colors
@@ -138,6 +161,7 @@
             </ul>
           </div>
         </div>
+
         <div id="mouse_coordinates" class="pull-right">
           <span> Lat: {{vm.current_mouse_coordinates.lat | number:3}} Lon: {{vm.current_mouse_coordinates.lng| number:3 }} </span>
         </div>

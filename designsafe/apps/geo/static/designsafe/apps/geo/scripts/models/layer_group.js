@@ -10,5 +10,4 @@ export default class LayerGroup {
   num_features () {
     return this.feature_group.getLayers().length;
   }
-
 }

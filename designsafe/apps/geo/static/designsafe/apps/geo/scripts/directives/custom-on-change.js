@@ -1,9 +1,15 @@
 export default function customOnChange() {
   return {
     restrict: 'A',
+    scope: {
+      handler: '&'
+    },
     link: function (scope, element, attrs) {
-      var onChangeHandler = scope.$eval(attrs.customOnChange);
-      element.bind('change', onChangeHandler);
+      element.on('change', function (ev) {
+        scope.$apply(function(){
+          scope.handler({ev:ev});
+        });
+      });
     }
   };
 }

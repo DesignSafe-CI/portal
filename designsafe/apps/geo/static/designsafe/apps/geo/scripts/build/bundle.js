@@ -191,8 +191,10 @@ var MapSidebarCtrl = function () {
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    // this.drawnItems = new L.FeatureGroup();
-    // this.map.addLayer(this.drawnItems);
+    // trick to fix the tiles that sometimes don't load for some reason...
+    $timeout(function () {
+      _this.map.invalidateSize();
+    }, 10);
 
     this.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
     this.map.addLayer(this.layer_groups[0].feature_group);
@@ -249,6 +251,12 @@ var MapSidebarCtrl = function () {
       this.select_active_layer_group(this.active_layer_group);
     }
   }, {
+    key: 'delete_feature',
+    value: function delete_feature(f) {
+      this.map.removeLayer(f);
+      this.active_layer_group.feature_group.removeLayer(f);
+    }
+  }, {
     key: 'show_hide_layer_group',
     value: function show_hide_layer_group(lg) {
       lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
@@ -264,11 +272,15 @@ var MapSidebarCtrl = function () {
     }
   }, {
     key: 'open_file_dialog',
-    value: function open_file_dialog() {}
+    value: function open_file_dialog() {
+      console.log("open_file_dialog");
+      this.$timeout(function () {
+        $('#file_picker').click();
+      }, 0);
+    }
   }, {
     key: 'zoom_to',
     value: function zoom_to(feature) {
-      console.log(feature);
       if (feature instanceof L.Marker) {
         var latLngs = [feature.getLatLng()];
         var markerBounds = L.latLngBounds(latLngs);
@@ -287,11 +299,31 @@ var MapSidebarCtrl = function () {
       reader.readAsText(file);
       reader.onload = function (e) {
         var json = JSON.parse(e.target.result);
-        L.geoJSON(json).getLayers().forEach(function (l) {
-          ;
-          _this2.drawnItems.addLayer(l);
+
+        // we add in a field into the json blob when saved. If it is such,
+        // handle potential multiple layers.
+        if (json.ds_map) {
+          // each feature in the collection represents a layer
+          json.features.forEach(function (f) {
+            var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+            L.geoJSON(f).getLayers().forEach(function (l) {
+              lg.feature_group.addLayer(l);
+            });
+            _this2.layer_groups.push(lg);
+          });
+        } else {
+          var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+          L.geoJSON(json).getLayers().forEach(function (l) {
+            console.log(l);
+            _this2.layer_groups[0].feature_group.addLayer(l);
+          });
+          _this2.layer_groups.push(lg);
+        }
+        var bounds = [];
+        _this2.layer_groups.forEach(function (lg) {
+          bounds.push(lg.feature_group.getBounds());
         });
-        _this2.map.fitBounds(_this2.drawnItems.getBounds());
+        _this2.map.fitBounds(bounds);
       };
     }
   }, {
@@ -330,11 +362,18 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_project',
     value: function save_project() {
-      console.log(this.drawnItems);
-      this.drawnItems.eachLayer(function (l) {
-        console.log(l.options);
+      var out = {
+        "type": "FeatureCollection",
+        "features": [],
+        "ds_map": true
+      };
+      this.layer_groups.forEach(function (lg) {
+        var json = lg.feature_group.toGeoJSON();
+        //add in any options
+
+        out.features.push(json);
       });
-      var blob = new Blob([JSON.stringify(this.drawnItems.toGeoJSON())], { type: "application/json" });
+      var blob = new Blob([JSON.stringify(out)], { type: "application/json" });
       var url = URL.createObjectURL(blob);
 
       var a = document.createElement('a');
@@ -364,9 +403,15 @@ exports.default = customOnChange;
 function customOnChange() {
   return {
     restrict: 'A',
+    scope: {
+      handler: '&'
+    },
     link: function link(scope, element, attrs) {
-      var onChangeHandler = scope.$eval(attrs.customOnChange);
-      element.bind('change', onChangeHandler);
+      element.on('change', function (ev) {
+        scope.$apply(function () {
+          scope.handler({ ev: ev });
+        });
+      });
     }
   };
 }
