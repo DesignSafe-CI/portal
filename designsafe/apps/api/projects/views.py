@@ -12,6 +12,7 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
+from requests.exceptions import HTTPError
 import logging
 import json
 
@@ -53,6 +54,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :return: A list of Projects to which the current user has access
         :rtype: JsonResponse
         """
+        #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
         projects = Project.list_projects(agave_client=ag)
         data = {'projects': projects}
