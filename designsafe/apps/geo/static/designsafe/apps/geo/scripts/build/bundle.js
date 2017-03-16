@@ -359,7 +359,6 @@ var MapSidebarCtrl = function () {
             l.getLayers().forEach(function (d) {
               lg.feature_group.addLayer(d);
             });
-
             _this2.layer_groups.push(lg);
             _this2.map.addLayer(lg.feature_group);
           })();
@@ -368,43 +367,39 @@ var MapSidebarCtrl = function () {
           // let parser = new this.$window.DOMParser();
           // let parsed = parser.parseFromString(e.target.result, 'text/xml');
           var l = omnivore.gpx.parse(e.target.result);
-          // debugger
           lg.feature_group.addLayer(l);
 
           _this2.layer_groups.push(lg);
           _this2.map.addLayer(lg.feature_group);
         } else {
-          (function () {
-            var json = JSON.parse(e.target.result);
+          var json = JSON.parse(e.target.result);
 
-            // we add in a field into the json blob when saved. If it is such,
-            // handle potential multiple layers.
-            if (json.ds_map) {
-              // each feature in the collection represents a layer
-              json.features.forEach(function (f) {
-                var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-                L.geoJSON(f).getLayers().forEach(function (l) {
-                  lg.feature_group.addLayer(l);
-                });
-                _this2.layer_groups.push(lg);
-                _this2.map.addLayer(lg.feature_group);
+          // we add in a field into the json blob when saved. If it is such,
+          // handle potential multiple layers.
+          if (json.ds_map) {
+            // each feature in the collection represents a layer
+            json.features.forEach(function (f) {
+              var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+              L.geoJSON(f).getLayers().forEach(function (l) {
+                lg.feature_group.addLayer(l);
               });
-            } else {
-              var _lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-              L.geoJSON(json).getLayers().forEach(function (l) {
-                console.log(l);
-                _this2.layer_groups[0].feature_group.addLayer(l);
-              });
-              _this2.layer_groups.push(_lg);
-              _this2.map.addLayer(_lg.feature_group);
-            }
-            var bounds = [];
-            _this2.layer_groups.forEach(function (lg) {
-              bounds.push(lg.feature_group.getBounds());
+              _this2.layer_groups.push(lg);
+              _this2.map.addLayer(lg.feature_group);
             });
-            _this2.map.fitBounds(bounds);
-          })();
+          } else {
+            var _lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+            L.geoJSON(json).getLayers().forEach(function (l) {
+              _this2.layer_groups[0].feature_group.addLayer(l);
+            });
+            _this2.layer_groups.push(_lg);
+            _this2.map.addLayer(_lg.feature_group);
+          }
         };
+        var bounds = [];
+        _this2.layer_groups.forEach(function (lg) {
+          bounds.push(lg.feature_group.getBounds());
+        });
+        _this2.map.fitBounds(bounds);
       };
     }
   }, {

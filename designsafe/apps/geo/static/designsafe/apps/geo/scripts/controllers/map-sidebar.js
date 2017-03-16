@@ -163,7 +163,6 @@ export default class MapSidebarCtrl {
         l.getLayers().forEach((d) => {
           lg.feature_group.addLayer(d);
         });
-
         this.layer_groups.push(lg);
         this.map.addLayer(lg.feature_group);
       } else if (ext === 'gpx') {
@@ -171,7 +170,6 @@ export default class MapSidebarCtrl {
         // let parser = new this.$window.DOMParser();
         // let parsed = parser.parseFromString(e.target.result, 'text/xml');
         let l = omnivore.gpx.parse(e.target.result);
-        // debugger
         lg.feature_group.addLayer(l);
 
         this.layer_groups.push(lg);
@@ -195,18 +193,18 @@ export default class MapSidebarCtrl {
         else {
           let lg = new LayerGroup("New Group", new L.FeatureGroup());
           L.geoJSON(json).getLayers().forEach( (l) => {
-            console.log(l);
             this.layer_groups[0].feature_group.addLayer(l);
           });
           this.layer_groups.push(lg);
           this.map.addLayer(lg.feature_group);
         }
-        let bounds = [];
-        this.layer_groups.forEach((lg) =>  {
-          bounds.push(lg.feature_group.getBounds());
-        });
-        this.map.fitBounds(bounds);
+
       };
+      let bounds = [];
+      this.layer_groups.forEach((lg) =>  {
+        bounds.push(lg.feature_group.getBounds());
+      });
+      this.map.fitBounds(bounds);
     };
   }
 
