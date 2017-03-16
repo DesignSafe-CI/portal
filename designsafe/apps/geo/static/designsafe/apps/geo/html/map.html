@@ -28,7 +28,9 @@
       <li class="list-group-item menu clearfix"
           ng-class="{'active': lg == vm.active_layer_group}"
           ng-mouseover="lg.show_edit_icon=true"
-          ng-mouseleave="lg.show_edit_icon=false">
+          ng-mouseleave="lg.show_edit_icon=false"
+          ng-drop="true"
+          ng-drop-success="vm.drop_feature_success($data, $event)">
         <div> <i class="fa"
                  ng-class="{'fa-chevron-right': !lg.show_contents, 'fa-chevron-down': lg.show_contents}"
                  ng-click="lg.show_contents= !lg.show_contents"></i>
@@ -61,7 +63,10 @@
           ng-show="lg.show_contents"
           ng-repeat="feature in lg.feature_group.getLayers()"
           ng-mouseover="feature.hover=true"
-          ng-mouseleave="feature.hover=false">
+          ng-mouseleave="feature.hover=false"
+          ng-drag="true"
+          ng-drag-data="{feature:feature, index:$index, layer_group:lg}">
+
           <div> <i class="fa fa-file-o"></i> </div>
           <div> {{vm.get_feature_type(feature)}} </div>
           <div class="pull-right">

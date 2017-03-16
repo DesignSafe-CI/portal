@@ -3,7 +3,7 @@ import {mod as geo_controllers} from './controllers';
 import {mod as geo_services} from './services';
 
 let mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
+mod.requires.push('ui.router', 'ngDraggable', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
 function config($stateProvider, $uibTooltipProvider) {
   'ngInject';

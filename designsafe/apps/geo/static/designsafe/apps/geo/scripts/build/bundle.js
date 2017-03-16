@@ -337,6 +337,11 @@ var MapSidebarCtrl = function () {
       };
     }
   }, {
+    key: 'drop_feature_success',
+    value: function drop_feature_success(data, ev) {
+      console.log(data, ev);
+    }
+  }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
       var _this2 = this;
@@ -552,7 +557,7 @@ var _controllers = __webpack_require__(0);
 var _services = __webpack_require__(2);
 
 var mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
+mod.requires.push('ui.router', 'ngDraggable', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
 function config($stateProvider, $uibTooltipProvider) {
   'ngInject';

@@ -144,6 +144,9 @@ export default class MapSidebarCtrl {
     };
   }
 
+  drop_feature_success (data, ev) {
+    console.log(data, ev);
+  }
 
   local_file_selected (ev) {
     let file = ev.target.files[0];
