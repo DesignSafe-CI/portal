@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -77,7 +77,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(3);
+var _mapSidebar = __webpack_require__(4);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
@@ -100,7 +100,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(4);
+var _customOnChange = __webpack_require__(5);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -141,19 +141,42 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var DBModal = function DBModal($scope) {
+  _classCallCheck(this, DBModal);
+
+  this.$scope = $scope;
+};
+
+exports.default = DBModal;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _layer_group = __webpack_require__(5);
+var _layer_group = __webpack_require__(6);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _dbModal = __webpack_require__(7);
+var _dbModal = __webpack_require__(3);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _utils = __webpack_require__(8);
+var _geoUtils = __webpack_require__(9);
 
-var _utils2 = _interopRequireDefault(_utils);
+var GeoUtils = _interopRequireWildcard(_geoUtils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -171,6 +194,7 @@ var MapSidebarCtrl = function () {
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
+    this.$window = $window;
     this.$uibModal = $uibModal;
     angular.element('header').hide();
     angular.element('nav').hide();
@@ -318,45 +342,69 @@ var MapSidebarCtrl = function () {
       var _this2 = this;
 
       var file = ev.target.files[0];
-      console.log(file);
-      var ext = _utils2.default.get_file_extension(file.name);
-      console.log(ext);
+      console.log(GeoUtils);
 
+      var ext = GeoUtils.get_file_extension(file.name);
+      console.log(ext);
       var reader = new FileReader();
       reader.readAsText(file);
       reader.onload = function (e) {
         if (ext === 'kml') {
-          var l = omnivore.kml(e.target.result);
-          console.log(l);
-        }
-        var json = JSON.parse(e.target.result);
-
-        // we add in a field into the json blob when saved. If it is such,
-        // handle potential multiple layers.
-        if (json.ds_map) {
-          // each feature in the collection represents a layer
-          json.features.forEach(function (f) {
+          (function () {
             var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-            L.geoJSON(f).getLayers().forEach(function (l) {
-              lg.feature_group.addLayer(l);
+            // let parser = new this.$window.DOMParser();
+            // let parsed = parser.parseFromString(e.target.result, 'text/xml');
+            var l = omnivore.kml.parse(e.target.result);
+            // debugger
+            l.getLayers().forEach(function (d) {
+              lg.feature_group.addLayer(d);
             });
+
             _this2.layer_groups.push(lg);
             _this2.map.addLayer(lg.feature_group);
-          });
-        } else {
+          })();
+        } else if (ext === 'gpx') {
           var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-          L.geoJSON(json).getLayers().forEach(function (l) {
-            console.log(l);
-            _this2.layer_groups[0].feature_group.addLayer(l);
-          });
+          // let parser = new this.$window.DOMParser();
+          // let parsed = parser.parseFromString(e.target.result, 'text/xml');
+          var l = omnivore.gpx.parse(e.target.result);
+          // debugger
+          lg.feature_group.addLayer(l);
+
           _this2.layer_groups.push(lg);
           _this2.map.addLayer(lg.feature_group);
-        }
-        var bounds = [];
-        _this2.layer_groups.forEach(function (lg) {
-          bounds.push(lg.feature_group.getBounds());
-        });
-        _this2.map.fitBounds(bounds);
+        } else {
+          (function () {
+            var json = JSON.parse(e.target.result);
+
+            // we add in a field into the json blob when saved. If it is such,
+            // handle potential multiple layers.
+            if (json.ds_map) {
+              // each feature in the collection represents a layer
+              json.features.forEach(function (f) {
+                var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+                L.geoJSON(f).getLayers().forEach(function (l) {
+                  lg.feature_group.addLayer(l);
+                });
+                _this2.layer_groups.push(lg);
+                _this2.map.addLayer(lg.feature_group);
+              });
+            } else {
+              var _lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+              L.geoJSON(json).getLayers().forEach(function (l) {
+                console.log(l);
+                _this2.layer_groups[0].feature_group.addLayer(l);
+              });
+              _this2.layer_groups.push(_lg);
+              _this2.map.addLayer(_lg.feature_group);
+            }
+            var bounds = [];
+            _this2.layer_groups.forEach(function (lg) {
+              bounds.push(lg.feature_group.getBounds());
+            });
+            _this2.map.fitBounds(bounds);
+          })();
+        };
       };
     }
   }, {
@@ -426,7 +474,7 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -453,7 +501,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -490,7 +538,8 @@ var LayerGroup = function () {
 exports.default = LayerGroup;
 
 /***/ }),
-/* 6 */
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -533,7 +582,7 @@ mod.config(config);
 exports.default = mod;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -542,48 +591,10 @@ exports.default = mod;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DBModal = function DBModal($scope) {
-  _classCallCheck(this, DBModal);
-
-  this.$scope = $scope;
-};
-
-exports.default = DBModal;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var GeoUtils = function () {
-  function GeoUtils() {
-    _classCallCheck(this, GeoUtils);
-  }
-
-  _createClass(GeoUtils, [{
-    key: 'get_file_extension',
-    value: function get_file_extension(fname) {
-      return fname.split('.').pop();
-    }
-  }]);
-
-  return GeoUtils;
-}();
-
-exports.default = GeoUtils;
+exports.get_file_extension = get_file_extension;
+function get_file_extension(fname) {
+  return fname.split('.').pop();
+}
 
 /***/ })
 /******/ ]);

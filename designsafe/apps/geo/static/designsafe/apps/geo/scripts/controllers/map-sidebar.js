@@ -1,6 +1,6 @@
-import LayerGroup from '../models/layer_group.js';
+import LayerGroup from '../models/layer_group';
 import DBModal from './db-modal';
-import GeoUtils from '../utils/utils.js';
+import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
@@ -9,6 +9,7 @@ export default class MapSidebarCtrl {
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
+    this.$window = $window;
     this.$uibModal = $uibModal;
     angular.element('header').hide();
     angular.element('nav').hide();
@@ -146,46 +147,66 @@ export default class MapSidebarCtrl {
 
   local_file_selected (ev) {
     let file = ev.target.files[0];
-    console.log(file);
+    console.log(GeoUtils);
+
     let ext = GeoUtils.get_file_extension(file.name);
     console.log(ext);
-
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = (e) => {
       if (ext === 'kml') {
-        let l = omnivore.kml(e.target.result);
-        console.log(l);
-      }
-      let json = JSON.parse(e.target.result);
+        let lg = new LayerGroup("New Group", new L.FeatureGroup());
+        // let parser = new this.$window.DOMParser();
+        // let parsed = parser.parseFromString(e.target.result, 'text/xml');
+        let l = omnivore.kml.parse(e.target.result);
+        // debugger
+        l.getLayers().forEach((d) => {
+          lg.feature_group.addLayer(d);
+        });
 
-      // we add in a field into the json blob when saved. If it is such,
-      // handle potential multiple layers.
-      if (json.ds_map) {
-        // each feature in the collection represents a layer
-        json.features.forEach( (f) => {
+        this.layer_groups.push(lg);
+        this.map.addLayer(lg.feature_group);
+      } else if (ext === 'gpx') {
+        let lg = new LayerGroup("New Group", new L.FeatureGroup());
+        // let parser = new this.$window.DOMParser();
+        // let parsed = parser.parseFromString(e.target.result, 'text/xml');
+        let l = omnivore.gpx.parse(e.target.result);
+        // debugger
+        lg.feature_group.addLayer(l);
+
+        this.layer_groups.push(lg);
+        this.map.addLayer(lg.feature_group);
+      } else {
+        let json = JSON.parse(e.target.result);
+
+        // we add in a field into the json blob when saved. If it is such,
+        // handle potential multiple layers.
+        if (json.ds_map) {
+          // each feature in the collection represents a layer
+          json.features.forEach( (f) => {
+            let lg = new LayerGroup("New Group", new L.FeatureGroup());
+            L.geoJSON(f).getLayers().forEach( (l) => {
+              lg.feature_group.addLayer(l);
+            });
+            this.layer_groups.push(lg);
+            this.map.addLayer(lg.feature_group);
+          });
+        }
+        else {
           let lg = new LayerGroup("New Group", new L.FeatureGroup());
-          L.geoJSON(f).getLayers().forEach( (l) => {
-            lg.feature_group.addLayer(l);
+          L.geoJSON(json).getLayers().forEach( (l) => {
+            console.log(l);
+            this.layer_groups[0].feature_group.addLayer(l);
           });
           this.layer_groups.push(lg);
           this.map.addLayer(lg.feature_group);
+        }
+        let bounds = [];
+        this.layer_groups.forEach((lg) =>  {
+          bounds.push(lg.feature_group.getBounds());
         });
-      }
-      else {
-        let lg = new LayerGroup("New Group", new L.FeatureGroup());
-        L.geoJSON(json).getLayers().forEach( (l) => {
-          console.log(l);
-          this.layer_groups[0].feature_group.addLayer(l);
-        });
-        this.layer_groups.push(lg);
-        this.map.addLayer(lg.feature_group);
-      }
-      let bounds = [];
-      this.layer_groups.forEach((lg) =>  {
-        bounds.push(lg.feature_group.getBounds());
-      });
-      this.map.fitBounds(bounds);
+        this.map.fitBounds(bounds);
+      };
     };
   }
 
