@@ -147,13 +147,21 @@ var _layer_group = __webpack_require__(5);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
+var _dbModal = __webpack_require__(7);
+
+var _dbModal2 = _interopRequireDefault(_dbModal);
+
+var _utils = __webpack_require__(8);
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout"];
-  function MapSidebarCtrl($scope, $window, $timeout) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$uibModal"];
+  function MapSidebarCtrl($scope, $window, $timeout, $uibModal) {
     'ngInject';
 
     var _this = this;
@@ -163,6 +171,7 @@ var MapSidebarCtrl = function () {
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
+    this.$uibModal = $uibModal;
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
@@ -215,7 +224,6 @@ var MapSidebarCtrl = function () {
       object.options.fillOpacity = 0.8;
       _this.active_layer_group.feature_group.addLayer(object);
       _this.$scope.$apply();
-      console.log(_this.active_layer_group);
     });
 
     this.map.on('mousemove', function (e) {
@@ -278,7 +286,6 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'open_file_dialog',
     value: function open_file_dialog() {
-      console.log("open_file_dialog");
       this.$timeout(function () {
         $('#file_picker').click();
       }, 0);
@@ -311,9 +318,17 @@ var MapSidebarCtrl = function () {
       var _this2 = this;
 
       var file = ev.target.files[0];
+      console.log(file);
+      var ext = _utils2.default.get_file_extension(file.name);
+      console.log(ext);
+
       var reader = new FileReader();
       reader.readAsText(file);
       reader.onload = function (e) {
+        if (ext === 'kml') {
+          var l = omnivore.kml(e.target.result);
+          console.log(l);
+        }
         var json = JSON.parse(e.target.result);
 
         // we add in a field into the json blob when saved. If it is such,
@@ -347,6 +362,8 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_image',
     value: function load_image(ev) {
+      var _this3 = this;
+
       var files = ev.target.files;
       for (var i = 0; i < files.length; i++) {
         var file = files[0];
@@ -359,7 +376,6 @@ var MapSidebarCtrl = function () {
 
           var lat = exif.GPSLatitude;
           var lon = exif.GPSLongitude;
-          console.log(exif);
 
           //Convert coordinates to WGS84 decimal
           var latRef = exif.GPSLatitudeRef || "N";
@@ -368,7 +384,7 @@ var MapSidebarCtrl = function () {
           lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
 
           //Send the coordinates to your map
-          Map.AddMarker(lat, lon);
+          _this3.active_layer_group.AddMarker(lat, lon);
         };
       }
     }
@@ -515,6 +531,59 @@ function config($stateProvider, $uibTooltipProvider) {
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var DBModal = function DBModal($scope) {
+  _classCallCheck(this, DBModal);
+
+  this.$scope = $scope;
+};
+
+exports.default = DBModal;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GeoUtils = function () {
+  function GeoUtils() {
+    _classCallCheck(this, GeoUtils);
+  }
+
+  _createClass(GeoUtils, [{
+    key: 'get_file_extension',
+    value: function get_file_extension(fname) {
+      return fname.split('.').pop();
+    }
+  }]);
+
+  return GeoUtils;
+}();
+
+exports.default = GeoUtils;
 
 /***/ })
 /******/ ]);

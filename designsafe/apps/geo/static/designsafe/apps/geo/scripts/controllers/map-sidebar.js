@@ -1,12 +1,15 @@
 import LayerGroup from '../models/layer_group.js';
+import DBModal from './db-modal';
+import GeoUtils from '../utils/utils.js';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout) {
+  constructor ($scope, $window, $timeout, $uibModal) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
+    this.$uibModal = $uibModal;
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
@@ -58,7 +61,6 @@ export default class MapSidebarCtrl {
       object.options.fillOpacity = 0.8;
       this.active_layer_group.feature_group.addLayer(object);
       this.$scope.$apply();
-      console.log(this.active_layer_group)
     });
 
     this.map.on('mousemove', (e) => {
@@ -116,7 +118,6 @@ export default class MapSidebarCtrl {
   }
 
   open_file_dialog () {
-    console.log("open_file_dialog");
     this.$timeout(() => {
       $('#file_picker').click();
     }, 0);
@@ -145,9 +146,17 @@ export default class MapSidebarCtrl {
 
   local_file_selected (ev) {
     let file = ev.target.files[0];
+    console.log(file);
+    let ext = GeoUtils.get_file_extension(file.name);
+    console.log(ext);
+
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = (e) => {
+      if (ext === 'kml') {
+        let l = omnivore.kml(e.target.result);
+        console.log(l);
+      }
       let json = JSON.parse(e.target.result);
 
       // we add in a field into the json blob when saved. If it is such,
@@ -193,7 +202,6 @@ export default class MapSidebarCtrl {
 
           let lat = exif.GPSLatitude;
           let lon = exif.GPSLongitude;
-          console.log(exif)
 
           //Convert coordinates to WGS84 decimal
           let latRef = exif.GPSLatitudeRef || "N";
@@ -202,7 +210,7 @@ export default class MapSidebarCtrl {
           lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
 
          //Send the coordinates to your map
-          Map.AddMarker(lat,lon);
+          this.active_layer_group.AddMarker(lat,lon);
       };
     }
   }
