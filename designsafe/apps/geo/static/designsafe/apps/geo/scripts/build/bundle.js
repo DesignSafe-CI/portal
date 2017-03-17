@@ -343,12 +343,8 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'on_drop',
     value: function on_drop(ev, data, lg) {
-      console.log("on_drop", ev, data, lg);
       var src_lg = this.layer_groups[data.pidx];
-
       var feature = src_lg.feature_group.getLayers()[data.idx];
-      console.log(feature);
-      // this.map.addLayer(lg.feature_group);
       src_lg.feature_group.removeLayer(feature);
       lg.feature_group.addLayer(feature);
     }
