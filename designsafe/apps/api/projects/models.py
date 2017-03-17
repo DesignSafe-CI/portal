@@ -183,6 +183,7 @@ class Project(BaseMetadataResource):
                                         path=path,
                                         agave_client=self._agave)
 
+
 class RelatedEntity(MetadataModel):
     def to_body_dict(self):
         body_dict = super(RelatedEntity, self).to_body_dict()
@@ -219,6 +220,11 @@ class FileModel(MetadataModel):
     keywords = fields.ListField('Keywords')
     project_UUID = fields.RelatedObjectField(ExperimentalProject, default=[])
 
+class DataTag(MetadataModel):
+    _is_nested = True
+    file = fields.RelatedObjectField(FileModel, default=[])
+    desc = fields.CharField('Description', max_length=512, default='')
+
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
@@ -226,7 +232,6 @@ class Experiment(RelatedEntity):
     title = fields.CharField('Title', max_length=1024)
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
     project = fields.RelatedObjectField(ExperimentalProject)
-
 
 class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
@@ -241,15 +246,50 @@ class Analysis(RelatedEntity):
     #events = fields.RelatedObjectField(Event)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
+class ModelConfigTagCentrifuge(MetadataModel):
+    _is_nested = True
+    triaxial_test = fields.NestedObjectField(DataTag)
+    soil_strenght = fields.NestedObjectField(DataTag)
+    hinged_plate_container = fields.NestedObjectField(DataTag)
+    rigid_container = fields.NestedObjectField(DataTag)
+    flexible_shear_baem_container = fields.NestedObjectField(DataTag)
+    structural_model = fields.NestedObjectField(DataTag)
+    gravel = fields.NestedObjectField(DataTag)
+    sand = fields.NestedObjectField(DataTag)
+    silt = fields.NestedObjectField(DataTag)
+    clay = fields.NestedObjectField(DataTag)
+    pit = fields.NestedObjectField(DataTag)
+
+class ModelConfigTagGeneral(MetadataModel):
+    _is_nested = True
+    triaxial_test = fields.NestedObjectField(DataTag)
+
+class ModelConfigTagShakeTable(MetadataModel):
+    _is_nested = True
+class ModelConfigTagWave(MetadataModel):
+    _is_nested = True
+class ModelConfigTagWind(MetadataModel):
+    _is_nested = True
+    
+class ModelConfigTag(MetadataModel):
+    _is_nested = True
+    centrifuge = fields.NestedObjectField(ModelConfigTagCentrifuge)
+    general = fields.NestedObjectField(ModelConfigTagGeneral)
+    shake_table = fields.NestedObjectField(ModelConfigTagShakeTable)
+    wave = fields.NestedObjectField(ModelConfigTagWave)
+    wind = fields.NestedObjectField(ModelConfigTagWind)
+
 class ModelConfiguration(RelatedEntity):
     model_name = 'designsafe.project.model_config'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
-    coverage = fields.CharField('Coverage', max_length=512)
     spatial = fields.CharField('Spatial', max_length=1024)
     lat = fields.CharField('Lat', max_length=1024)
     lon = fields.CharField('Lon', max_length=1024)
     model_drawing = fields.RelatedObjectField(FileModel, multiple=True)
+    image = fields.NestedObjectField(DataTag)
+    video = fields.NestedObjectField(DataTag)
+    tags = fields.NestedObjectField(ModelConfigTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
     #events = fields.RelatedObjectField(Event)
@@ -266,6 +306,25 @@ class SensorList(RelatedEntity):
     #events = fields.RelatedObjectField(Event)
     model_configs = fields.RelatedObjectField(ModelConfiguration)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class EventTagCentrifuge(MetadataModel):
+    _is_nested=True
+class EventTagGeneral(MetadataModel):
+    _is_nested=True
+class EventTagShakeTable(MetadataModel):
+    _is_nested=True
+class EventTagWave(MetadataModel):
+    _is_nested=True
+class EventTagWind(MetadataModel):
+    _is_nested=True
+
+class EventTag(MetadataModel):
+    _is_nested = True
+    centrifuge = fields.NestedObjectField(EventTagCentrifuge)
+    general = fields.NestedObjectField(EventTagGeneral)
+    shake_table = fields.NestedObjectField(EventTagShakeTable)
+    wave = fields.NestedObjectField(EventTagWave)
+    wind = fields.NestedObjectField(EventTagWind)
 
 class Event(RelatedEntity):
     model_name = 'designsafe.project.event'
