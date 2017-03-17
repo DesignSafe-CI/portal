@@ -168,6 +168,10 @@ var _layer_group = __webpack_require__(6);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
+var _mapProject = __webpack_require__(11);
+
+var _mapProject2 = _interopRequireDefault(_mapProject);
+
 var _dbModal = __webpack_require__(3);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
@@ -243,7 +247,6 @@ var MapSidebarCtrl = function () {
 
     this.map.on('draw:created', function (e) {
       var object = e.layer;
-      console.log(object);
       object.options.color = _this.secondary_color;
       object.options.fillColor = _this.primary_color;
       object.options.fillOpacity = 0.8;
@@ -609,6 +612,29 @@ exports.get_file_extension = get_file_extension;
 function get_file_extension(fname) {
   return fname.split('.').pop();
 }
+
+/***/ }),
+/* 10 */,
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MapProject = function MapProject(name) {
+  _classCallCheck(this, MapProject);
+
+  this.name = name;
+  this.layer_groups = [];
+};
+
+exports.default = MapProject;
 
 /***/ })
 /******/ ]);

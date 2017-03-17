@@ -1,4 +1,5 @@
 import LayerGroup from '../models/layer_group';
+import MapProject from '../models/map-project';
 import DBModal from './db-modal';
 import * as GeoUtils from '../utils/geo-utils';
 
@@ -57,7 +58,6 @@ export default class MapSidebarCtrl {
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
-      console.log(object)
       object.options.color = this.secondary_color;
       object.options.fillColor = this.primary_color;
       object.options.fillOpacity = 0.8;
