@@ -131,3 +131,8 @@
 .dropdown-menu {
   background-color: #646464;
 }
+/* for drag and drop effects */
+
+.on-drag-hover {
+  border: 2px solid red;
+}

@@ -57,6 +57,7 @@ export default class MapSidebarCtrl {
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
+      console.log(object)
       object.options.color = this.secondary_color;
       object.options.fillColor = this.primary_color;
       object.options.fillOpacity = 0.8;
@@ -144,8 +145,20 @@ export default class MapSidebarCtrl {
     };
   }
 
-  drop_feature_success (data, ev) {
-    console.log(data, ev);
+  on_drop (ev, data, lg) {
+    console.log("on_drop", ev,  data, lg);
+    let src_lg = this.layer_groups[data.pidx];
+
+    let feature = src_lg.feature_group.getLayers()[data.idx];
+    console.log(feature)
+    lg.feature_group.addLayer(feature);
+    this.map.addLayer(lg.feature_group);
+    src_lg.feature_group.removeLayer(feature);
+  }
+
+  drop_feature_success (ev, data, lg) {
+    console.log("drag_feature_success", ev, data, lg)
+    // lg.feature_group.getLayers().splicer(idx, 1);
   }
 
   local_file_selected (ev) {

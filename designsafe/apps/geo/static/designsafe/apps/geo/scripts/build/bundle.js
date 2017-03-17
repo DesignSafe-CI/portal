@@ -243,6 +243,7 @@ var MapSidebarCtrl = function () {
 
     this.map.on('draw:created', function (e) {
       var object = e.layer;
+      console.log(object);
       object.options.color = _this.secondary_color;
       object.options.fillColor = _this.primary_color;
       object.options.fillOpacity = 0.8;
@@ -337,9 +338,22 @@ var MapSidebarCtrl = function () {
       };
     }
   }, {
+    key: 'on_drop',
+    value: function on_drop(ev, data, lg) {
+      console.log("on_drop", ev, data, lg);
+      var src_lg = this.layer_groups[data.pidx];
+
+      var feature = src_lg.feature_group.getLayers()[data.idx];
+      console.log(feature);
+      lg.feature_group.addLayer(feature);
+      this.map.addLayer(lg.feature_group);
+      src_lg.feature_group.removeLayer(feature);
+    }
+  }, {
     key: 'drop_feature_success',
-    value: function drop_feature_success(data, ev) {
-      console.log(data, ev);
+    value: function drop_feature_success(ev, data, lg) {
+      console.log("drag_feature_success", ev, data, lg);
+      // lg.feature_group.getLayers().splicer(idx, 1);
     }
   }, {
     key: 'local_file_selected',
@@ -557,7 +571,7 @@ var _controllers = __webpack_require__(0);
 var _services = __webpack_require__(2);
 
 var mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ngDraggable', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
+mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
 function config($stateProvider, $uibTooltipProvider) {
   'ngInject';
