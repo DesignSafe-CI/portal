@@ -36,7 +36,7 @@ export default class MapSidebarCtrl {
       'Satellite': satellite
     };
 
-    this.map = L.map('geo_map', {layers: [streets, satellite]}).setView([51.505, -0.09], 6);
+    this.map = L.map('geo_map', {layers: [streets, satellite]}).setView([0, 0], 3);
     this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
@@ -151,9 +151,10 @@ export default class MapSidebarCtrl {
 
     let feature = src_lg.feature_group.getLayers()[data.idx];
     console.log(feature)
-    lg.feature_group.addLayer(feature);
-    this.map.addLayer(lg.feature_group);
+    // this.map.addLayer(lg.feature_group);
     src_lg.feature_group.removeLayer(feature);
+    lg.feature_group.addLayer(feature);
+
   }
 
   drop_feature_success (ev, data, lg) {
