@@ -21,7 +21,7 @@ class BaseField(object):
                  max_length=None, blank=False, null=False,
                  related=None, default=None, choices=None,
                  help_text='', validators=(), error_messages=None,
-                 nested=None, related_name=None):
+                 nested_cls=None, related_name=None):
         self.verbose_name = verbose_name
         self.name = name
         self.max_length = max_length
@@ -33,7 +33,7 @@ class BaseField(object):
         self.help_text = help_text
         self.validators = validators
         self.error_messages = error_messages
-        self.nested = nested
+        self.nested_cls = nested_cls
         self.attname = None
         self.related_name = related_name
         
@@ -123,8 +123,8 @@ class ListField(BaseField):
 
 class NestedObjectField(BaseField):
     """ Nested Object Field """
-    def __init__(self, nested, *args, **kwargs):
-        kwargs['nested'] = nested
+    def __init__(self, nested_cls, *args, **kwargs):
+        kwargs['nested_cls'] = nested_cls
         kwargs['default'] = kwargs.get('default', {})
         super(NestedObjectField, self).__init__(*args, **kwargs)
 
