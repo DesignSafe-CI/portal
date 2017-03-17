@@ -17,25 +17,46 @@ class RelatedQuery(object):
         self.related_obj_name = related_obj_name
         self.rel_cls = rel_cls
         query = {'name': related_obj_name, 'associationIds': []}
-        self.query = query
+        self._query = query
 
     def __call__(self, agave_client):
-        if self.uuid:
-            self.query['associationIds'] = self.uuid
-        elif self.uuids is not None:
-            if isinstance(self.uuids, basestring):
-                self.uuids = [self.uuids]
-            elif len(self.uuids) == 0:
-                return []
-
-            self.query = {'uuid': {'$in': self.uuids}}
-        else:
-            raise ValueError('Cannot create query')
         metas = agave_client.meta.listMetadata(q=self.query)
         return  [self.rel_cls(**meta) for meta in metas]
 
     def add(self, uuid):
         self.uuids.append(uuid)
+
+    @property
+    def query(self):
+        """JSON query to submit to agave metadata endpoint.
+
+        This class represents both a forward-lookup field and a reverse-lookup field.
+        There are two class attributes ``uuid`` and ``uuids`` (notice the 's').
+        IF ``self.uuid`` has a valid value then it means this is a reverse-lookup field
+        and we need to retrieve all the objects related to this object's specific UUID
+        AND with a specific object name: ``{"name": "some.name", "associationIds": "UUID"}``.
+        IF ``self.uuids`` has a valid value (it could be a string or an array of strings) means
+        this is a forward-lookup field and we need to retrieve every object for every UUID
+        in the ``self.uuids`` attribute: ``{"uuid": {"$in": ["UUID1", "UUID2"]}}``.
+
+        ..todo:: This class should be separated in two classes, one for reverse-lookup fields
+        and another one for forward-lookup fields. The reason why it was first implemented like this
+        is because the implementation of a reverse-lookup field was not completely clear.
+        This TODO is mainly for readability.
+        """
+        if self.uuid:
+            self._query['association_ids'] = self.uuid
+        elif self.uuids is not None:
+            if isinstance(self.uuids, basestring):
+                self.uuid = [self.uuids]
+            elif len(self.uuids) == 0:
+                return []
+
+            self._query = {'uuid': {'$in': self.uuids}}
+        else:
+            raise ValueError('Cannot create query')
+
+        return self._query
 
 def register_lazy_rel(cls, field_name, related_obj_name, multiple):
     reg_key = '{}.{}'.format(cls.model_name, cls.__name__)
@@ -119,7 +140,7 @@ class Options(object):
         self.model_manager = None
 
     def add_field(self, field):
-        if field.nested:
+        if field.nested_cls:
             self._nested_fields[field.attname] = field
         elif field.related:
             self._related_fields[field.attname] = field
@@ -155,9 +176,12 @@ class BaseModel(type):
         new_class = super_new(cls, name, bases, new_attrs)
         model_name = attrs.get('model_name')
         new_class.add_to_class('_meta', Options(model_name))
-        setattr(new_class, 'model_name', model_name)
-        setattr(new_class, '_is_nested', attrs.pop('_is_nested', False))
+        if attrs.get('_is_nested', False):
+            setattr(new_class, 'model_name', None)
+        else:
+            setattr(new_class, 'model_name', model_name)
 
+        setattr(new_class, '_is_nested', attrs.pop('_is_nested', False))
         for obj_name, obj in attrs.items():
             new_class.add_to_class(obj_name, obj)
 
@@ -196,15 +220,18 @@ class Model(object):
     __metaclass__ = BaseModel
 
     def __init__(self, **kwargs):
-        self.uuid = None
-        self.schema_id = None
-        self.internal_username = None
-        self.association_ids = []
-        self.last_updated = None
-        self.created = None
-        self.owner = None
-        self.__links = None
+        if not self._is_nested:
+            self.schema_id = None
+            self.internal_username = None
+            self.last_updated = None
+            self.created = None
+            self.owner = None
+            self.__links = None
+
+        self._uuid = None
+        self._association_ids = []
         self.name = None
+        self.parent = None
         #logger.debug('kwargs: %s', json.dumps(kwargs, indent=4))
         cls = self.__class__
         opts = self._meta
@@ -225,8 +252,9 @@ class Model(object):
 
         for attrname, field in six.iteritems(opts._nested_fields):
             val = self._get_init_value(field, obj_value, attrname)
-            _setattr(self, attrname,
-                     field.nested(**val))
+            nested_obj = field.nested_cls(**val)
+            nested_obj.parent = self
+            _setattr(self, attrname, nested_obj)
 
         for attrname, field in six.iteritems(opts._related_fields):
             value = self._get_init_value(field, obj_value, attrname)
@@ -250,6 +278,34 @@ class Model(object):
         attrname = spinal_to_camelcase(name)
         return values.get(attrname, field.get_default())
 
+    @property
+    def uuid(self):
+        if not self._uuid and self.parent:
+            return self.parent.uuid
+
+        return self._uuid
+
+    @uuid.setter
+    def uuid(self, val):
+        if not self._uuid and self.parent:
+            self.parent.uuid = val
+        else:
+            self._uuid = val
+
+    @property
+    def association_ids(self):
+        if not self._association_ids and self.parent:
+            return self.parent.association_ids
+
+        return self._association_ids
+
+    @association_ids.setter
+    def association_ids(self, val):
+        if not self._association_ids and self.parent:
+            self.parent.association_ids = val
+        else:
+            self._association_ids = val
+
     def to_dict(self):
         dict_obj = {}
         for attrname, value in six.iteritems(self._meta.__dict__):
@@ -269,33 +325,44 @@ class Model(object):
     
     def to_body_dict(self):
         dict_obj = {}
-        for attrname in self._meta._schema_fields:
-            value = getattr(self, attrname, None)
-            if not inspect.isclass(value):
-                dict_obj[spinal_to_camelcase(attrname)] = value
-        dict_obj['associationIds'] = list(set(self.association_ids))
 
-        dict_obj['_links'] = {}
-        for attrname, value in six.iteritems(self._links.__dict__):
-            dict_obj['_links'][spinal_to_camelcase(attrname)] = value
+        if not self._is_nested:
+            for attrname in self._meta._schema_fields:
+                value = getattr(self, attrname, None)
+                if not inspect.isclass(value):
+                    dict_obj[spinal_to_camelcase(attrname)] = value
+            dict_obj['associationIds'] = list(set(self.association_ids))
 
-        dict_obj['value'] = {}
+            dict_obj['_links'] = {}
+            for attrname, value in six.iteritems(self._links.__dict__):
+                dict_obj['_links'][spinal_to_camelcase(attrname)] = value
+
+        #dict_obj['value'] = {}
+        value_dict = {}
         for field in self._meta._fields:
             value = getattr(self, field.attname)
             attrname = spinal_to_camelcase(field.attname)
             if isinstance(value, RelatedQuery):
-                dict_obj['value'][attrname] = list(set(value.uuids))
+                value_dict[attrname] = list(set(value.uuids))
             elif isinstance(value, Model):
-                dict_obj['value'][attrname] = value.to_body_dict()
+                value_dict[attrname] = value.to_body_dict()
             else:
-                dict_obj['value'][attrname] = value
+                value_dict[attrname] = value
+        if not self._is_nested:
+            dict_obj['value'] = value_dict
+        else:
+            dict_obj = value_dict
 
         dict_obj.pop('modelManager', None)
         dict_obj.pop('modelName', None)
         return dict_obj
 
     def save(self, agave_client):
+        if self.parent:
+            self.parent.save(agave_client)
+
         body = self.to_body_dict()
+        body.pop('_relatedFields', None)
         if self.uuid is None:
             logger.debug('Adding Metadata: %s, with: %s', self.name, body)
             ret = agave_client.meta.addMetadata(body=body)
