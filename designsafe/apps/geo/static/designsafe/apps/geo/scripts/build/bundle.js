@@ -143,13 +143,13 @@ Object.defineProperty(exports, "__esModule", {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var DBModal = function DBModal($scope) {
-  _classCallCheck(this, DBModal);
+var DBModalCtrl = function DBModalCtrl($scope) {
+  _classCallCheck(this, DBModalCtrl);
 
   this.$scope = $scope;
 };
 
-exports.default = DBModal;
+exports.default = DBModalCtrl;
 
 /***/ }),
 /* 4 */
@@ -310,6 +310,15 @@ var MapSidebarCtrl = function () {
       this.active_layer_group = lg;
       lg.active = true;
       lg.show = true;
+    }
+  }, {
+    key: 'open_db_modal',
+    value: function open_db_modal() {
+      this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+        controller: _dbModal2.default,
+        controllerAs: 'vm'
+      });
     }
   }, {
     key: 'open_file_dialog',

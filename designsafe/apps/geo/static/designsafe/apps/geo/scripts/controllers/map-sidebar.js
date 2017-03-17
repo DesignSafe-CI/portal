@@ -1,6 +1,6 @@
 import LayerGroup from '../models/layer_group';
 import MapProject from '../models/map-project';
-import DBModal from './db-modal';
+import DBModalCtrl from './db-modal';
 import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
@@ -117,6 +117,14 @@ export default class MapSidebarCtrl {
     this.active_layer_group = lg;
     lg.active = true;
     lg.show = true;
+  }
+
+  open_db_modal () {
+    this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+      controller: DBModalCtrl,
+      controllerAs: 'vm'
+    });
   }
 
   open_file_dialog () {
