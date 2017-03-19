@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -141,13 +141,35 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var DBModalCtrl = function DBModalCtrl($scope) {
-  _classCallCheck(this, DBModalCtrl);
+var DBModalCtrl = function () {
+  DBModalCtrl.$inject = ["$scope", "$uibModalInstance"];
+  function DBModalCtrl($scope, $uibModalInstance) {
+    'ngInject';
 
-  this.$scope = $scope;
-};
+    _classCallCheck(this, DBModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+  }
+
+  _createClass(DBModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close();
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return DBModalCtrl;
+}();
 
 exports.default = DBModalCtrl;
 
@@ -168,7 +190,7 @@ var _layer_group = __webpack_require__(6);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(11);
+var _mapProject = __webpack_require__(7);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
@@ -176,7 +198,7 @@ var _dbModal = __webpack_require__(3);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _geoUtils = __webpack_require__(9);
+var _geoUtils = __webpack_require__(8);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
@@ -560,8 +582,44 @@ var LayerGroup = function () {
 exports.default = LayerGroup;
 
 /***/ }),
-/* 7 */,
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MapProject = function MapProject(name) {
+  _classCallCheck(this, MapProject);
+
+  this.name = name;
+  this.layer_groups = [];
+};
+
+exports.default = MapProject;
+
+/***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.get_file_extension = get_file_extension;
+function get_file_extension(fname) {
+  return fname.split('.').pop();
+}
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -602,44 +660,6 @@ function config($stateProvider, $uibTooltipProvider) {
 mod.config(config);
 
 exports.default = mod;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.get_file_extension = get_file_extension;
-function get_file_extension(fname) {
-  return fname.split('.').pop();
-}
-
-/***/ }),
-/* 10 */,
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var MapProject = function MapProject(name) {
-  _classCallCheck(this, MapProject);
-
-  this.name = name;
-  this.layer_groups = [];
-};
-
-exports.default = MapProject;
 
 /***/ })
 /******/ ]);

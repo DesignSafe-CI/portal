@@ -6,6 +6,25 @@
   font-family: 'Open Sans', sans-serif;
 }
 
+#navbar {
+  background-color: #313131;
+  flex: 0 0 40;
+  flex-direction: column;
+  border-right: 1px solid #6e6e6e;
+  color: #d2d2d2;
+  padding-top: 55px;
+}
+
+#navbar .nav-icon {
+  margin-left:  5px;
+  padding: 5px 10px 10px 10px;
+}
+#navbar .nav-icon.active{
+  margin-left:  0px;
+  border-left: 5px solid red;
+  background-color: #404040;
+}
+
 #geo_sidebar, #current_layer_details{
   width: 20%;
   font-size: 11px;
