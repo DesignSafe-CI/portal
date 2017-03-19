@@ -12,7 +12,7 @@
   flex-direction: column;
   border-right: 1px solid #6e6e6e;
   color: #d2d2d2;
-  padding-top: 55px;
+  padding-top: 10px;
 }
 
 #navbar .nav-icon {
@@ -21,11 +21,14 @@
 }
 #navbar .nav-icon.active{
   margin-left:  0px;
-  border-left: 5px solid red;
+  border-left: 5px solid #805ca2;
   background-color: #404040;
 }
 
+
+
 #geo_sidebar, #current_layer_details{
+  /*padding-top: 10px;*/
   width: 20%;
   font-size: 11px;
   letter-spacing: 0px;
@@ -52,9 +55,7 @@
   font-size: 1.35em;
 }
 
-#geo_sidebar .list-group-item {
 
-}
 
 #geo_sidebar .list-group-item > div {
   float: left;
@@ -90,6 +91,14 @@
 
 #geo_sidebar .list-group-item.menu.action {
   background-color: #4575b0;
+}
+
+#geo_sidebar .list-group-item.menu.title{
+  background-color: #404040;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left:10px;
+  padding-right:10px;
 }
 
 #geo_sidebar .lg-count {

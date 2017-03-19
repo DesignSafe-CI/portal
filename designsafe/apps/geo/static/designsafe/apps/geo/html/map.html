@@ -1,20 +1,21 @@
 <div id="geo_container">
   <div id="navbar">
-    <div class="nav-icon active"> <i class="fa fa-map-o fa-lg"></i> </div>
+    <div class="nav-icon"> <i class="fa fa-home fa-lg"></i> </div>
+    <div class="nav-icon active"> <i class="fa fa-map fa-lg"></i> </div>
     <div class="nav-icon"> <i class="fa fa-database fa-lg"></i> </div>
     <div class="nav-icon"> <i class="fa fa-gears fa-lg"></i> </div>
   </div>
   <div id="geo_sidebar">
     <input style="display:none" type="file" id="file_picker" custom-on-change handler="vm.local_file_selected(ev)">
-    <ul class="list-group">
+    <!-- <ul class="list-group">
       <li class="list-group-item menu" style="background:#eaeaea;margin-top:0px">
         <a href="/">
           <img src="/static/images/ds-logo-horiz.png" width="180"></img>
         </a>
       </li>
-    </ul>
+    </ul> -->
 
-    <li class="list-group-item menu clearfix"
+    <li class="list-group-item menu clearfix title"
         ng-mouseover="vm.title_hover=true"
         ng-mouseleave="vm.title_hover=false">
       <span class="strong map-title" ng-show="!vm.edit_title"> {{vm.map_title}} </span>
@@ -22,7 +23,7 @@
         <input type="text" ng-model="vm.map_title">
         <i class="fa fa-check" ng-click="vm.edit_title=false"></i>
       </div>
-      <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=true" ng-show="vm.title_hover"></i>
+      <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=true"></i>
     </li>
     <li class="list-group-item menu clearfix action" ng-click="vm.create_layer_group()">
       <div tooltip="Create a new Layer Group">
