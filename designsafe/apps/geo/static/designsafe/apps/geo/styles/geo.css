@@ -82,7 +82,7 @@
 }
 
 #geo_sidebar .list-group-item.menu.active {
-  border-left: 5px solid cyan;
+  border-left: 5px solid #de5b0f;
   background-color: #444444;
 }
 #geo_sidebar .list-group-item.menu.lg-tools {
