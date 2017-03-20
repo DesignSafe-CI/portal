@@ -109,7 +109,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mod = angular.module('ds.geo.directives', []);
 
 mod.directive('customOnChange', _customOnChange2.default);
-
 exports.default = mod;
 
 /***/ }),

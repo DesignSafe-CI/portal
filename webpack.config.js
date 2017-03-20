@@ -45,6 +45,7 @@ module.exports = {
     d3: 'd3',
     moment: 'moment',
     _: '_',
+    L: 'L',
     window: 'window',
   }
 };
