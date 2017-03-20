@@ -121,9 +121,16 @@ exports.default = mod;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-// import customOnChange from './custom-on-change';
 
-var mod = angular.module('ds.geo.services', []);
+var _geoStateService = __webpack_require__(11);
+
+var _geoStateService2 = _interopRequireDefault(_geoStateService);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.services', []); // import customOnChange from './custom-on-change';
+
+mod.service('GeoStateService', _geoStateService2.default);
 
 // mod.directive('customOnChange', customOnChange);
 
@@ -659,6 +666,30 @@ function config($stateProvider, $uibTooltipProvider) {
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 10 */,
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GeoStateService = function GeoStateService($scope, $state) {
+  _classCallCheck(this, GeoStateService);
+
+  this.$scope = $scope;
+  this.$state = $state;
+  this.last_db_path = null;
+};
+
+exports.default = GeoStateService;
 
 /***/ })
 /******/ ]);

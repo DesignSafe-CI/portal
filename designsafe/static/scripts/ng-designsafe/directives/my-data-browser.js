@@ -1,6 +1,9 @@
 angular.module('designsafe').directive('myDataBrowser', function () {
   return {
     restrict: 'E',
+    scope: {
+      file_only: '@file_only',
+    },
     link: function ($scope, element, attrs) {
       console.log(element);
     },
@@ -9,6 +12,7 @@ angular.module('designsafe').directive('myDataBrowser', function () {
       $scope.loading = true;
       $scope.data = {
         busyListingPage: true,
+        wants: false
       };
 
       DataBrowserService.browse({system: 'designsafe.storage.default', path: 'jmeiring'}).then(function (resp) {

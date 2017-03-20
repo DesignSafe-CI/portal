@@ -1,4 +1,3 @@
-<h3> My Data Browser </h3>
 <div class="files-listing">
   <div class="table-responsive ds-table-display-wrapper"
        ds-infinite-scroll
@@ -21,7 +20,10 @@
         <th>Size</th>
         </thead>
         <tbody>
-        <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
+        <tr
+          ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']"
+          ng-click = "f.selected = !f.selected"
+          ng-class="{'success': f.selected}">
           <td>
           <button ng-if="f.name !== '.' && data.wants"
                   type="button"
