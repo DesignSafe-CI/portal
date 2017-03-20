@@ -19,7 +19,7 @@
 
 
     service.getIcon = function(type, ext) {
-      if (type === 'folder') {
+      if ((type === 'folder') || (type === 'dir')) {
         return 'fa-folder';
       }
 
@@ -312,7 +312,7 @@
      *
      * Search in the ES index using a query string.
      * An array with the string name of each extra field to search
-     * can be passed. 
+     * can be passed.
      *
      * @param {string} q
      * @param {array} fields
@@ -324,7 +324,7 @@
       var url = djangoUrl.reverse('designsafe_api:search', params);
       url += '&q=' + q;
       if (fields && fields.length >= 1){
-        url += '&fields=' + fields;    
+        url += '&fields=' + fields;
       }
       if (page){
         var offset = page * 100;
