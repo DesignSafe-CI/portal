@@ -4,6 +4,7 @@
 import logging
 import json
 import os
+import subprocess
 import re
 import chardet
 from django.core.urlresolvers import reverse
@@ -308,6 +309,8 @@ class FileMediaView(View):
                     dir_name = re.sub('[^a-zA-Z\_\- ]', '_', dir_name)
                     dir_name = re.sub('\_+', '_', dir_name)
                     new_dir = fm.mkdir(system_id, file_path, dir_name)
+
+                    subprocess.call(['setfacl', '-m', 'd:u:tg458981:rwX,u:' + request.user.username + ':rwX', '/corral-repl/tacc/NHERI/shared' + file_path + '/' + dir_name])
                     metrics.info('Data Depot',
                                  extra = {
                                      'user': request.user.username,
