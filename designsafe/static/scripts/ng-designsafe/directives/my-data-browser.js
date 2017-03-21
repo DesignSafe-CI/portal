@@ -18,7 +18,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
         loading: true
       };
 
-      DataBrowserService.browse({system: 'designsafe.storage.default', path: 'jmeiring'}).then(function (resp) {
+      DataBrowserService.browse({system: 'designsafe.storage.default'}).then(function (resp) {
         $scope.data.busyListingPage = false;
         $scope.data.filesListing = resp;
         $scope.data.loading = false;
@@ -26,8 +26,27 @@ function (DataBrowserService, UserService, FileListing, DataService) {
         $scope.data.loading = false;
       });
 
-
+      $scope.selectRow = function (file) {
+        if (file.type !== 'folder' && file.type !== 'dir' && $scope.filepicker) {
+          $scope.data.filesListing.children.forEach(function (d) {
+            d.selected = false;
+          })
+          file.selected = true;
+        }
+      };
       $scope.getFileIcon = DataService.getIcon;
+
+      $scope.browseTrail = function($event, index){
+        $event.stopPropagation();
+        $event.preventDefault();
+        if ($scope.data.dirPath.length <= index+1){
+          return;
+        }
+        $scope.browseFile({type: 'dir',
+                           system: $scope.data.filesListing.system,
+                           resource: $scope.data.filesListing.resource,
+                           path: $scope.data.dirPath.slice(0, index+1).join('/')});
+      };
 
       $scope.browseFile = function(file){
         if (file.type !== 'folder' && file.type !== 'dir'){

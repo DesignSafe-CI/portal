@@ -30,11 +30,11 @@ django:
   env_file: designsafe.env
   environment:
     - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
-    - DATABASE_HOST=mysql
-    - DATABASE_NAME=DS_DEV
-    - DATABASE_PORT=3306
-    - DATABASE_USER=DS_DEV
-    - DATABASE_PASSWORD=DS_DEV
+    # - DATABASE_HOST=mysql
+    # - DATABASE_NAME=DS_DEV
+    # - DATABASE_PORT=3306
+    # - DATABASE_USER=DS_DEV
+    # - DATABASE_PASSWORD=DS_DEV
     - DS_LOCAL_DEV=True
   links:
     - redis:redis

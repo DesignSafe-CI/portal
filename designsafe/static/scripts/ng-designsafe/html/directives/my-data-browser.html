@@ -22,7 +22,7 @@
         <tbody>
         <tr
           ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']"
-          ng-click = "f.selected = !f.selected"
+          ng-click = "selectRow(f)"
           ng-class="{'success': f.selected}">
           <td>
           <button ng-if="f.name !== '.' && data.wants"
