@@ -13,7 +13,7 @@
     </form>
     <p ng-if="data.wants" class="alert alert-info">
         <!-- {{data.wants.requestKey}} -->
-        Select file for <em>{{data.wants.title}}</em>.
+        Select file for <em>{{ data.wants.title }}</em>.
         <a class="btn btn-link btn-xs"
            ng-if="data.wants.description"
            uib-tooltip="{{data.wants.description}}"
@@ -21,32 +21,50 @@
            tooltip-append-to-body="true"><i class="fa fa-info-circle"></i> More info</a>
     </p>
     <div class="files-listing">
-        <div class="table-responsive">
+        <div class="table-responsive ds-table-display-wrapper"
+             ds-infinite-scroll
+             data-scroll-bottom="scrollToBottom()"
+             data-scroll-top="scrollToTop()"
+             data-bottom-height="0">
             <table class="table table-striped">
                 <caption style="white-space:nowrap">
                     <label>Browsing:</label><br>
-                    <span class="text text-info">{{data.filePath}}</span>
+                    <span 
+                      ng-repeat-start="dirElem in data.dirPath track by $index"
+                      class="text text-info">
+                        <a href="#"
+                           ng-click="browseTrail($event, $index)">{{dirElem}}</a>
+                     </span>
+                      <span ng-repeat-end
+                            ng-if="!$last">/</span>
                 </caption>
                 <thead>
                 <th>File name</th>
                 <th>Size</th>
                 </thead>
                 <tbody>
-                <tr ng-repeat="f in data.filesListing | orderBy : ['type', 'name']">
+                <tr ng-repeat="f in data.filesListing.children | orderBy : ['type', 'name']">
                     <td>
                         <button ng-if="f.name !== '.' && data.wants"
                                 type="button"
                                 class="btn btn-xs btn-info"
                                 ng-click="chooseFile(f)">Select</button>
-                        <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="{{f.agavePath}}">
+                        <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
                             <i class="fa fa-{{getFileIcon(f)}}"></i>
-                            <span>{{displayName(f)}}</span>
+                            <span>{{renderName(f)}}</span>
                         </a>
                     </td>
                     <td>{{f.length|bytes:0}}</td>
                 </tr>
                 <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
                 <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
+                <tr ng-if="data.busyListingPage">
+                  <td>
+                        <span class="bg-info text-info">
+                           <i class="fa fa-spinner fa-spin"></i> Loading...
+                        </span>
+                  </td>
+                </tr>
                 </tbody>
             </table>
         </div>

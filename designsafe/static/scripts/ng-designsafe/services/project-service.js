@@ -21,7 +21,8 @@
     return self;
   }
 
-  var mod = angular.module('ng.designsafe');
+  var mod = angular.module('designsafe');
+  mod.requires.push('django.context', 'httpi');
 
   mod.factory('ProjectService', ['httpi', '$interpolate', '$q', '$uibModal', 'Logging', function(httpi, $interpolate, $q, $uibModal, Logging) {
 
@@ -128,7 +129,9 @@
           };
           $scope.form = {
             curUsers: [],
-            addUsers: [{}]
+            addUsers: [{}],
+            curCoPis: [],
+            addCoPis: [{}]
           };
           var loads = [
             projectResource.get({params: angular.copy(options)}),
@@ -138,7 +141,13 @@
             $scope.data.busy = false;
             $scope.data.project = results[0].data;
 
-            $scope.form.curUsers = _.map(results[1].data, function (collab) {
+            $scope.form.curUsers = _.map(results[1].data.teamMembers, function (collab) {
+              return {
+                user: {username: collab},
+                remove: false
+              };
+            });
+            $scope.form.curCoPis = _.map(results[1].data.coPis, function (collab) {
               return {
                 user: {username: collab},
                 remove: false
@@ -166,6 +175,10 @@
 
           $scope.addAnother = function () {
             $scope.form.addUsers.push({});
+          };
+
+          $scope.addAnotherCoPi = function () {
+            $scope.form.addCoPis.push({});
           };
 
           $scope.searchUsers = function (q) {
@@ -198,6 +211,16 @@
               }
             });
 
+            addActions.concat(_.map($scope.form.addCoPis, function (add) {
+              if (add.user && add.user.username) {
+                return collabResource.post({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: add.user.username,
+                  memberType: 'coPis'
+                }});
+              }
+            }));
+
             var tasks = removeActions.concat(addActions);
             $q.all(tasks).then(
               function (results) {
@@ -221,19 +244,40 @@
      */
     service.editProject = function(project) {
       var modal = $uibModal.open({
+        size: 'md',
         templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-edit-project.html',
         controller: ['$scope', '$uibModalInstance', 'UserService', 'project', function ($scope, $uibModalInstance, UserService, project) {
           $scope.ui = {busy: false,
                        error: null};
-          $scope.form = {};
+          $scope.form = {associatedProjectsAdded : [{}]};
+          $scope.projectTypes = [{
+              id: 'experimental',
+              label: 'Experimental'},{
+              id: 'simulation',
+              label: 'Simulation'},{
+              id: 'hybrid_simulation',
+              label: 'Hybrid Simulation'},{
+              id: 'field_reconnaissance',
+              label: 'Field Reconnaissance'}, {
+              id: 'other',
+              label: 'Other'}];
+
           if (project) {
             $scope.form.uuid = project.uuid;
             $scope.form.title = project.value.title;
+            $scope.form.awardNumber = project.value.awardNumber || '';
+            $scope.form.indentifier = project.value.identifier || '';
+            $scope.form.description = project.value.description || '';
+            if (typeof project.value.projectType !== 'undefined'){
+               $scope.form.projectType = _.find($scope.projectTypes, function(projectType){ return projectType.id === project.value.projectType; }); 
+            }
+            if (typeof project.value.associatedProjects !== 'undefined'){
+               $scope.form.associatedProjects = _.filter(project.value.associatedProjects, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
+            }
             UserService.get(project.value.pi).then(function (user) {
               $scope.form.pi = user;
             });
           }
-
 
           $scope.searchUsers = function(q) {
             return UserService.search({q: q});
@@ -247,6 +291,10 @@
             }
           };
 
+          $scope.addAssociatedProject = function(){
+              $scope.form.associatedProjectsAdded.push({});
+          };
+
           $scope.cancel = function () {
             $uibModalInstance.dismiss();
           };
@@ -255,10 +303,23 @@
             $scope.ui.busy = true;
             var projectData = {
               title: $scope.form.title,
-              pi: $scope.form.pi.username
+              awardNumber: $scope.form.awardNumber,
+              description: $scope.form.description
             };
+            if ($scope.form.pi && $scope.form.pi.username){
+              projectData.pi = $scope.form.pi.username;
+            }
+            if ($scope.form.projectType.id !== 'undefined'){
+              projectData.projectType = $scope.form.projectType.id;
+            }
             if ($scope.form.uuid) {
               projectData.uuid = $scope.form.uuid;
+            }
+            if (typeof $scope.form.associatedProjectsAdded !== 'undefined'){
+               $scope.form.associatedProjectsAdded = _.filter($scope.form.associatedProjectsAdded, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
+               projectData.associatedProjects = $scope.form.associatedProjects || [];
+               projectData.associatedProjects = _.filter(projectData.associatedProjects, function(associatedProject){ return !associatedProject.delete; });
+               projectData.associatedProjects = projectData.associatedProjects.concat($scope.form.associatedProjectsAdded);
             }
             service.save(projectData).then(function (project) {
               $uibModalInstance.close(project);

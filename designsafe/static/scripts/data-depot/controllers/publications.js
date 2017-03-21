@@ -1,14 +1,16 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
-  app.controller('PublicationDataCtrl', ['$scope', '$state', 'Django', 
-                                         'DataBrowserService', 
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
+  app.controller('PublicationDataCtrl', ['$scope', '$state', 'Django',
+                                         'DataBrowserService',
                  function ($scope, $state, Django, DataBrowserService) {
 
   $scope.browser = DataBrowserService.state();
   $scope.state = {
         loadingMore : false,
         reachedEnd : false,
-        page : 0 
+        page : 0
       };
 
   if (! $scope.browser.error){
@@ -24,7 +26,7 @@
   $scope.data = {
     customRoot: {
       name: 'Published',
-      href: $state.href('publicData', {systemId: $scope.browser.listing.system, 
+      href: $state.href('publicData', {systemId: $scope.browser.listing.system,
                                           filePath: 'public/'})
     }
   };
@@ -32,7 +34,7 @@
     $scope.resolveBreadcrumbHref = function(trailItem) {
       return $state.href('publicData', {systemId: $scope.browser.listing.system, filePath: trailItem.path});
     };
-    
+
     $scope.scrollToTop = function(){
       return;
     };
@@ -43,7 +45,7 @@
     $scope.onBrowse = function($event, file) {
       $event.preventDefault();
       $event.stopPropagation();
-    
+
       var systemId = file.system || file.systemId;
       var filePath;
       if (file.path == '/'){
@@ -85,7 +87,7 @@
     };
 
     $scope.showFullPath = function(item){
-      if ($scope.browser.listing.path != '$PUBLIC' && 
+      if ($scope.browser.listing.path != '$PUBLIC' &&
           item.parentPath() != $scope.browser.listing.path &&
           item.parentPath() != '/'){
         return true;
@@ -109,11 +111,11 @@
       var experiment_re = /^experiment/;
       if (file.path[0] === '/' && pathComps.length === 2) {
         return file.metadata.project.title;
-      } 
-      else if (file.path[0] !== '/' && 
+      }
+      else if (file.path[0] !== '/' &&
                pathComps.length === 2 &&
                experiment_re.test(file.name.toLowerCase())){
-        return file.metadata.experiments[0].title; 
+        return file.metadata.experiments[0].title;
       }
       return file.name;
     };

@@ -84,6 +84,7 @@ class PublicSearchView(BaseApiView):
         file_mgr = PublicElasticFileManager()
         listing = file_mgr.search(system_id, query_string,
                                   offset=offset, limit=limit)
+        # logger.info(listing)
         return JsonResponse(listing)
 
 class PublicPemsView(BaseApiView):

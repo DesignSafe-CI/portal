@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
 
-  var mod = angular.module('ng.designsafe');
+  var mod = angular.module('designsafe');
 
 
   mod.filter('dsFileUrl', [function() {

@@ -10,6 +10,7 @@ test -e /tmp/.X99-lock
 xvfb=$!
 
 export DISPLAY=:99.0
+export CHROME_BIN=/usr/bin/chromium-browser
 
 /portal/node_modules/.bin/karma start /portal/karma.conf.js --single-run
 

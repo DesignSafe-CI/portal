@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').controller('ApplicationEditCtrl',
+  angular.module('designsafe').controller('ApplicationEditCtrl',
     ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, SimpleList, MultipleList, AppsWizard, Django) {
 
       /****** customForm *********/

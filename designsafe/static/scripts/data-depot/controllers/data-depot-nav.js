@@ -1,5 +1,7 @@
 (function(window, angular) {
-  var app = angular.module('DataDepotApp');
+  var app = angular.module('designsafe');
+  app.requires.push('django.context');
+
   app.controller('DataDepotNavCtrl', ['$scope', '$rootScope', '$state', 'Django', function($scope, $rootScope, $state, Django) {
 
     $scope.routerItems = [];
@@ -26,7 +28,7 @@
     );
 
     if (Django.context.authenticated) {
-      $scope.routerItems.splice(0, 0, 
+      $scope.routerItems.splice(0, 0,
           {
             name: 'My Data',
             collapsible: false,
@@ -51,6 +53,11 @@
             name: 'Box.com',
             collapsible: false,
             state: 'boxData'
+          },
+          {
+            name: 'Dropbox.com',
+            collapsible: false,
+            state: 'dropboxData'
           }
       );
 

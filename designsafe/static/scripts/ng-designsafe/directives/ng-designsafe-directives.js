@@ -1,7 +1,50 @@
 (function(angular, $){
   "use strict";
 
-  var mod = angular.module('ng.designsafe');
+  var mod = angular.module('designsafe');
+
+  mod.directive('spinnerOnLoad', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, element) {
+        element.parent().prepend("<div class='text-center spinner'><i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i></div>")
+        element.css('display', 'none');
+        element.on('load', function (ev) {
+          element.parent().find(".spinner").remove();
+          element.css('display', 'block');
+        })
+
+      }
+    }
+
+  })
+
+  mod.directive('httpSrc', ['$http', function ($http) {
+   return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var conf = {
+            responseType: 'arraybuffer',
+        };
+
+        $http.get(attrs.httpSrc, conf)
+          .success(function(data) {
+            var arr = new Uint8Array(data);
+
+            var raw = '';
+            var i, j, subArray, chunk = 5000;
+            for (i = 0, j = arr.length; i < j; i += chunk) {
+                subArray = arr.subarray(i, i + chunk);
+                raw += String.fromCharCode.apply(null, subArray);
+            }
+
+            var b64 = btoa(raw);
+
+            attrs.$set('src', "data:image/jpeg;base64," + b64);
+          });
+      }
+    };
+  }]);
 
   mod.directive('accessfiles', function() {
     return {
@@ -187,7 +230,30 @@
           }
         });
       }
-    }
+    };
   }]);
+
+  mod.directive('dsFixTop', function ($window) {
+    var $win = angular.element($window); // wrap window object as jQuery object
+
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var topClass = attrs.dsFixTop; // get CSS class from directive's attribute value
+
+        var navbar = $('.navbar-ds');
+		var offsetTop = 0;
+        $win.on('scroll', function (e) {
+            offsetTop = $('.site-banner').height() + (navbar.height() / 2);
+           if ($win.scrollTop() >= offsetTop) {
+            element.addClass(topClass);
+			element.css({top: navbar.position().top + navbar.height()});
+          } else {
+            element.removeClass(topClass);
+          }
+        });
+      }
+    };
+  });
 
 })(angular, jQuery);

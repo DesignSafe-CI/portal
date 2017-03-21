@@ -1,4 +1,4 @@
-{% extends "base_angular.html" %}
+{% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags pipeline %}
 {% block title %}Applications{% endblock %}
 {% block content %}
@@ -9,7 +9,7 @@
     </h1>
 </div>
 
-<div class="container" role="main" ng-app="ApplicationsApp" id="applications">
+<div class="container" role="main" id="applications">
   <div ui-view="">
   </div>
 </div>
@@ -34,9 +34,6 @@
 <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
-<script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
-<script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
-<script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-xeditable/dist/js/xeditable.js' %}"></script>
 <script type-"text/javascript" src="{% static 'vendor/codemirror/lib/codemirror.js' %}"></script>

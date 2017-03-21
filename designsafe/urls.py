@@ -43,6 +43,9 @@ urlpatterns = patterns(
     url(r'^user_activity/', include('designsafe.apps.user_activity.urls')),
     url(r'^notifications/', include('designsafe.apps.notifications.urls',
                                     namespace='designsafe_notifications')),
+    url(r'^search/', include('designsafe.apps.search.urls',
+                                    namespace='designsafe_search')),
+
 
     # auth
     url(r'^account/', include('designsafe.apps.accounts.urls',
@@ -69,6 +72,10 @@ urlpatterns = patterns(
     # box
     url(r'^account/applications/box/', include('designsafe.apps.box_integration.urls',
         namespace='box_integration')),
+
+    # dropbox
+    url(r'^account/applications/dropbox/', include('designsafe.apps.dropbox_integration.urls',
+        namespace='dropbox_integration')),
 
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),

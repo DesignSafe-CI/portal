@@ -48,16 +48,13 @@ class BaseFileMetadata(BaseMetadataResource):
     def search(cls, agave_client, q):
         if isinstance(q, dict):
             q = json.dumps(q)
-        logger.debug('meta q: %s', q)
         result = agave_client.meta.listMetadata(q=q)
-        logger.debug('meta result: %d', len(result))
         return [cls(agave_client=agave_client, file_obj=None, **r) for r in result]
 
     def update(self, metadata):
         keywords = metadata.get('keywords', '')
         keywords = [kw.strip() for kw in keywords]
         keywords = list(set(keywords))
-        logger.debug('keywords: {}'.format(keywords))
         self.value['keywords'] = keywords
         self.save()
         return self
@@ -126,6 +123,18 @@ class BaseFileMetadata(BaseMetadataResource):
 
 class BaseFileResource(BaseAgaveResource):
     """Represents an Agave Files API Resource"""
+   
+    SUPPORTED_MS_WORD = [
+        '.doc', '.dot', '.docx', '.docm', '.dotx', '.dotm', '.docb',
+    ] 
+    SUPPORTED_MS_EXCEL = [
+        '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xltx', '.xltm',
+    ]
+    SUPPORTED_MS_POWERPOINT = [
+        '.ppt', '.pot', '.pps', '.pptx', '.pptm', '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
+    ]
+
+    SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
         '.png', '.gif', '.jpg', '.jpeg',
@@ -146,7 +155,8 @@ class BaseFileResource(BaseAgaveResource):
 
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                     SUPPORTED_TEXT_PREVIEW_EXTS +
-                                    SUPPORTED_OBJECT_PREVIEW_EXTS)
+                                    SUPPORTED_OBJECT_PREVIEW_EXTS + 
+                                    SUPPORTED_MS_OFFICE)
 
     def __init__(self, agave_client, system, path, **kwargs):
         super(BaseFileResource, self).__init__(agave_client, system=system, path=path,
@@ -316,11 +326,21 @@ class BaseFileResource(BaseAgaveResource):
         :rtype: :class:`BaseFileResource`
         """
         path_comps = path.split('/')
-        if path.startswith('/'):
-            path_comps[0] = '/'
-        ensured_path = path_comps[0]
-        ensure_result = cls.listing(agave_client, system, ensured_path)
-        for pc in path_comps[1:]:
+        ensured_path = path_comps[0] or '/'
+
+        path_index_start = 1
+        try:
+            ensure_result = cls.listing(agave_client, system, ensured_path)
+        except HTTPError as err:
+            if err.response.status_code == 400 or err.response.status_code == 403\
+                 and len(path_comps) >= 2:
+                ensured_path = path_comps[1]
+                path_index_start = 2
+                ensure_result = cls.listing(agave_client, system, ensured_path)
+            else:
+                raise
+
+        for pc in path_comps[path_index_start:]:
             checked = ensure_result.mkdir(pc)
             ensured_path = os.path.join(ensured_path, pc)
             ensure_result = checked
@@ -357,6 +377,10 @@ class BaseFileResource(BaseAgaveResource):
                 READ permission on ``path`` on ``system``.
             - 404 If the ``path`` does not exist on ``system``.
         """
+        lower = 1
+        if offset > 0:
+            lower = 0
+
         list_result = agave_client.files.list(systemId=system,
                                               filePath=urllib.quote(path), 
                                               offset=offset,
@@ -368,7 +392,7 @@ class BaseFileResource(BaseAgaveResource):
 
             # put rest of listing as ``children``
             listing._children = [cls(agave_client=agave_client, **f)
-                                 for f in list_result[1:]]
+                                 for f in list_result[lower:]]
         return listing
 
     def download(self):

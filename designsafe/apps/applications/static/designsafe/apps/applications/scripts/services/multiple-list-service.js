@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+  angular.module('designsafe').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
 
     var MultipleList = function() {
           this.lists = []

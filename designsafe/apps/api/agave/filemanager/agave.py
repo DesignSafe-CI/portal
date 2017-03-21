@@ -86,7 +86,9 @@ class AgaveFileManager(BaseFileManager):
         return resp
 
     def download(self, system, path):
-        return BaseFileResource.listing(self._ag, system, path).download_postit()
+        file_obj = BaseFileResource.listing(self._ag, system, path)
+        postit = file_obj.download_postit()
+        return postit
 
     # def import_url(self):
     #     pass
@@ -94,7 +96,7 @@ class AgaveFileManager(BaseFileManager):
     # def index(self):
     #     pass
 
-    def listing(self, system, file_path, offset, limit):
+    def listing(self, system, file_path, offset=0, limit=100):
         return BaseFileResource.listing(self._ag, system, file_path, offset, limit)
 
     def list_permissions(self, system, file_path):

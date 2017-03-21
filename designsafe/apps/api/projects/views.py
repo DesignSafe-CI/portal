@@ -1,5 +1,9 @@
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http import JsonResponse
+from django.http.response import HttpResponseForbidden
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
@@ -7,23 +11,40 @@ from designsafe.apps.api.projects.models import Project
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
+from designsafe.apps.accounts.models import DesignSafeProfile
 import logging
 import json
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger('metrics')
 
 
 def template_project_storage_system(project):
     system_template = settings.PROJECT_STORAGE_SYSTEM_TEMPLATE.copy()
     system_template['id'] = system_template['id'].format(project.uuid)
-    system_template['name'] = system_template['name'].format(project.title)
+    system_template['name'] = system_template['name'].format(project.uuid)
     system_template['description'] = system_template['description'].format(project.title)
     system_template['storage']['rootDir'] = \
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
+class ProjectListingView(SecureMixin, BaseApiView):
+    def get(self, request, username):
+        """Returns a list of Project for a specific user.
 
-class ProjectCollectionView(BaseApiView, SecureMixin):
+        If the requesting user is a super user then we can 'impersonate'
+        another user. Else this is an unauthorized request.
+
+        """
+        if not request.user.is_superuser:
+            return HttpResponseForbidden()
+
+        user = get_user_model().objects.get(username=username)
+        ag = user.agave_oauth.client
+        projects = Project.list_projects(agave_client=ag)
+        return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
+
+class ProjectCollectionView(SecureMixin, BaseApiView):
 
     def get(self, request):
         """
@@ -60,28 +81,100 @@ class ProjectCollectionView(BaseApiView, SecureMixin):
             post_data = request.POST.copy()
 
         # create Project (metadata)
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'metadata_create',
+                            'info': {'postData': post_data}})
         p = Project(ag)
-        p.title = post_data.get('title')
-        p.pi = post_data.get('pi', None)
+        p.save()
+        project_uuid = p.uuid
+        title = post_data.get('title')
+        award_number = post_data.get('awardNumber', '')
+        project_type = post_data.get('projectType', 'other')
+        associated_projects = post_data.get('associatedProjects', {})
+        description = post_data.get('description', '')
+        new_pi = post_data.get('pi')
+        p.update(title=title,
+                 award_number=award_number,
+                 project_type=project_type,
+                 associated_projects=associated_projects,
+                 description=description)
+        p.pi = new_pi
         p.save()
 
         # create Project Directory on Managed system
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'base_directory_create',
+                            'info': {
+                                'systemId': Project.STORAGE_SYSTEM_ID,
+                                'uuid': p.uuid
+                            }})
         project_storage_root = BaseFileResource(ag, Project.STORAGE_SYSTEM_ID, '/')
         project_storage_root.mkdir(p.uuid)
 
         # Wrap Project Directory as private system for project
         project_system_tmpl = template_project_storage_system(p)
+        project_system_tmpl['storage']['rootDir'] = \
+            project_system_tmpl['storage']['rootDir'].format(project_uuid)
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'private_system_create',
+                            'info': {
+                                'id': project_system_tmpl.get('id'),
+                                'site': project_system_tmpl.get('site'),
+                                'default': project_system_tmpl.get('default'),
+                                'status': project_system_tmpl.get('status'),
+                                'description': project_system_tmpl.get('description'),
+                                'name': project_system_tmpl.get('name'),
+                                'globalDefault': project_system_tmpl.get('globalDefault'),
+                                'available': project_system_tmpl.get('available'),
+                                'public': project_system_tmpl.get('public'),
+                                'type': project_system_tmpl.get('type'),
+                                'storage': {
+                                    'homeDir': project_system_tmpl.get('storage', {}).get('homeDir'),
+                                    'rootDir': project_system_tmpl.get('storage', {}).get('rootDir')
+                                }
+                             }})
         ag.systems.add(body=project_system_tmpl)
 
         # grant initial permissions for creating user and PI, if exists
+        project_system_tmpl = template_project_storage_system(p)
+        metrics.info('projects',
+                     extra={'user' : request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'initial_pems_create',
+                            'info': {'collab': request.user.username, 'pi': p.pi} })
         p.add_collaborator(request.user.username)
         if p.pi and p.pi != request.user.username:
             p.add_collaborator(p.pi)
+            collab_users = get_user_model().objects.filter(username=p.pi)
+            if collab_users:
+                collab_user = collab_users[0]
+                try:
+                    collab_user.profile.send_mail(
+                        "[Designsafe-CI] You have been added to a project!",
+                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,))))
+                except DesignSafeProfile.DoesNotExist as err:
+                    logger.info("Could not send email to user %s", collab_user)
+                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,)))
+                    send_mail(
+                        "[Designsafe-CI] You have been added to a project!",
+                        body,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [collab_user.email],
+                        html_message=body)
+                    #logger.exception(err)
 
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 
-class ProjectInstanceView(BaseApiView, SecureMixin):
+class ProjectInstanceView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id):
         """
@@ -108,21 +201,31 @@ class ProjectInstanceView(BaseApiView, SecureMixin):
 
         # save Project (metadata)
         p = Project.from_uuid(ag, project_id)
-        p.title = post_data.get('title')
-        new_pi = post_data.get('pi', None)
+        title = post_data.get('title')
+        award_number = post_data.get('awardNumber', '')
+        project_type = post_data.get('projectType', 'other')
+        associated_projects = post_data.get('associatedProjects', {})
+        description = post_data.get('description', '')
+        new_pi = post_data.get('pi')
         if p.pi != new_pi:
             p.pi = new_pi
             p.add_collaborator(new_pi)
+        p.update(title=title,
+                 award_number=award_number,
+                 project_type=project_type,
+                 associated_projects=associated_projects,
+                 description=description)
         p.save()
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 
-class ProjectCollaboratorsView(BaseApiView, SecureMixin):
+class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id):
         ag = request.user.agave_oauth.client
-        project = Project(agave_client=ag, uuid=project_id)
-        return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
+        project = Project.from_uuid(agave_client=ag, uuid=project_id)
+        return JsonResponse(project.team_members())
+        #return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
 
     def post(self, request, project_id):
         if request.is_ajax():
@@ -133,7 +236,34 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
-        project.add_collaborator(post_data.get('username'))
+        username = post_data.get('username')
+        member_type = post_data.get('memberType', 'teamMember')
+        project.add_collaborator(username)
+        collab_users = get_user_model().objects.filter(username=username)
+        if collab_users:
+            collab_user = collab_users[0]
+            try:
+                collab_user.profile.send_mail(
+                    "[Designsafe-CI] You have been added to a project!",
+                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, 
+                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
+            except DesignSafeProfile.DoesNotExist as err:
+                logger.info("Could not send email to user %s", collab_user)
+                body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, 
+                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
+                send_mail(
+                    "[Designsafe-CI] You have been added to a project!",
+                    body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [collab_user.email],
+                    html_message=body)
+                #logger.exception(err)
+
+        members_list = project.value.get(member_type, [])
+        members_list.append(username)
+        _kwargs = {member_type: members_list}
+        project.update(**_kwargs)
+        project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ])
         return JsonResponse({'status': 'ok'})
 
@@ -147,11 +277,11 @@ class ProjectCollaboratorsView(BaseApiView, SecureMixin):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.remove_collaborator(post_data.get('username'))
-        tasks.check_project_files_meta_pems(project.uuid)
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid])
         return JsonResponse({'status': 'ok'})
 
 
-class ProjectDataView(BaseApiView, SecureMixin):
+class ProjectDataView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id, file_path=''):
         """

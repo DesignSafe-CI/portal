@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
@@ -23,12 +23,17 @@ def index(request):
 def mytickets(request):
     rt = rtUtil.DjangoRt()
     show_resolved = 'show_resolved' in request.GET
+    fmt = request.GET.get('fmt', 'html')
+
     tickets = rt.getUserTickets(request.user.email, show_resolved=show_resolved)
     context = {
         'tickets': tickets,
         'show_resolved': show_resolved
     }
-    return render(request, 'djangoRT/ticketList.html', context)
+    if fmt == 'json':
+        return JsonResponse(tickets, safe=False)
+    else:
+        return render(request, 'djangoRT/ticketList.html', context)
 
 @login_required
 def ticketdetail(request, ticketId):

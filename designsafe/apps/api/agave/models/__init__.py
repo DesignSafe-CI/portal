@@ -1,4 +1,5 @@
 from .. import to_camel_case
+from datetime import datetime
 
 
 class BaseAgaveResource(object):
@@ -14,7 +15,11 @@ class BaseAgaveResource(object):
         self._wrapped = kwargs
 
     def to_dict(self):
-        return self._wrapped
+        ret = self._wrapped
+        if 'lastModified' in ret and isinstance(ret['lastModified'], datetime):
+            ret['lastModified'] = ret['lastModified'].isoformat()
+        
+        return ret
 
     def __getattr__(self, name):
         # return name from _wrapped; _wrapped expects camelCased keys

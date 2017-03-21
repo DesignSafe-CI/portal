@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').controller('ApplicationSystemsRoleCtrl',
+  angular.module('designsafe').controller('ApplicationSystemsRoleCtrl',
     ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, Django) {
 
         $scope.getSystemRoles = function(){

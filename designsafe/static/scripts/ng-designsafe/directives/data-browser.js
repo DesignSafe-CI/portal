@@ -1,7 +1,8 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
+  var module = angular.module('designsafe');
+  module.requires.push('ngSanitize', 'ng.modernizr');
 
   module.directive('dsDataBrowser', ['Logging', function(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.dsDataBrowser');
@@ -18,7 +19,17 @@
         onPathChanged: '&onPathChanged',
         onResourceChanged: '&onResourceChanged'
       },
-      controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', function($scope, $element, $q, $uibModal, DataService, UserService) {
+      controller: ['$scope', '$element', '$q', '$uibModal', 'DataService', 'UserService', 'NotificationService', function($scope, $element, $q, $uibModal, DataService, UserService, NotificationService) {
+        NotificationService.processors.data = {
+          'process': function notifyProcessor(msg){
+            logger.log('processing msg: ', msg);
+            return msg.extra;
+          },
+          // 'renderLink': function renderLink(msg){
+          //   logger.log('rendering linlk: ', msg);
+          //   return msg.extra;
+          // }
+        };
         var self = this;
         $scope.searchQuery = {query: ''};
 
@@ -480,11 +491,11 @@
               $scope.data =  {
                 title: 'Metadata.',
                 metadata: file.meta,
-                file: file, 
+                file: file,
                 loading: false
               };
               listing = listing || {};
-              if(listing.source == 'public' || file.source == 'public'){ 
+              if(listing.source == 'public' || file.source == 'public'){
                 if( typeof listing.metadata === 'undefined'){
                   $scope.loading = true;
                   DataService.listPath({resource: file.source, file_id: file.id}).then(
@@ -1272,7 +1283,7 @@
 
         scope.clearSearch = function(){
           scope.searchQuery.val = "";
-          dbCtrl.browseFile({resource: scope.data.listing.source, 
+          dbCtrl.browseFile({resource: scope.data.listing.source,
                             file_path: scope.data.listing.system});
         };
       }

@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('ApplicationsApp').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
+  angular.module('designsafe').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
 
     var SimpleList = function(){
       this.selected = null,

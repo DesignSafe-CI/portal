@@ -28,7 +28,7 @@
         </p>
       </div>
 
-      {% include 'designsafe/apps/accounts/nees_migration_block.html' %}
+      <!-- {% include 'designsafe/apps/accounts/nees_migration_block.html' %} -->
     </div>
     <div class="col-md-7 col-md-pull-5">
 
@@ -40,7 +40,7 @@
         information.
       </p>
 
-      <form method="post">
+      <form method="post" action="">
         {% csrf_token %}
         {% bootstrap_form account_form %}
         <button class="btn btn-primary" type="submit">Register Account</button>

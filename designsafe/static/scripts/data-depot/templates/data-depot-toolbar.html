@@ -1,15 +1,18 @@
-<div class="clearfix btn-toolbar-ds">
+<div class="clearfix btn-toolbar-ds dd-toolbar" ds-fix-top="dd-toolbar-fixed-top">
     <div class="btn-toolbar btn-toolbar-left"
          role="toolbar"
          aria-label="Data Browser Search"
-         style="with:300px; float:left; margin-left:15px;"
+         style="with:160px; float:left; margin-left:15px;"
          ng-if="apiParams.searchState">
-        <form id="dd-search-form" name="dd-search-form" ng-submit="ops.search()" style="width:300px; float:left; display:inline-block;">
-          <input ng-model="search.queryString" name="queryString" type="search" id="dd-search" placeholder="Search..."/>
+        <form id="dd-search-form" name="dd-search-form" ng-submit="ops.search()" style="width:150px; float:left; display:inline-block;">
+          <input ng-model="search.queryString" name="queryString" type="search" id="dd-search" placeholder="Search data..."/>
         </form>
     </div>
     <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
         <div class="btn-group">
+          <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!UserService.userAuthenticated()">
+              <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
+          </button>
             <button class="btn btn-sm btn-default" title="Download" ng-click="ops.download()" ng-disabled="!tests.canDownload">
                 <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
             </button>
@@ -40,7 +43,7 @@
             <button class="btn btn-sm btn-default" title="Move to trash" ng-click="ops.trash()" ng-disabled="!tests.canTrash" ng-if="!tests.canDelete">
                 <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
             </button>
-             <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="ops.rm()" ng-disabled="!tests.canDelete" ng-if="test.canDelete">
+             <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="ops.rm()" ng-disabled="!tests.canDelete" ng-if="tests.canDelete">
                 <i class="fa fa-trash"></i><span style="display:block;">Delete selected files</span>
             </button>
         </div>

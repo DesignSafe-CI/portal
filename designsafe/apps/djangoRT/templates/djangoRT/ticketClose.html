@@ -23,7 +23,7 @@
       Are you sure you want to close this ticket? Please provide a comment.
     </div>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" action="">
       {% csrf_token %}
 
       {% bootstrap_form form %}

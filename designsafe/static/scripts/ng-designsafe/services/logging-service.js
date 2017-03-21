@@ -46,7 +46,7 @@
 
         if (args.length > 0 && typeof args[0] === 'string') {
           message = '[%s] %s: ' + args[0];
-          args = args.slice(1)
+          args = args.slice(1);
         } else {
           message = '[%s] %s';
         }
@@ -104,10 +104,10 @@
         getLogger: function(name) {
           return new Logger(name);
         }
-      }
-    }
+      };
+    };
   }
 
-  angular.module('ng.designsafe').provider('Logging', LoggingServiceProvider);
+  angular.module('designsafe').provider('Logging', LoggingServiceProvider);
 
 })(window, angular);

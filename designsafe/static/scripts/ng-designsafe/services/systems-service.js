@@ -1,12 +1,13 @@
 (function(window, angular, $, _) {
   "use strict";
 
-  var module = angular.module('ng.designsafe');
-  
+  var module = angular.module('designsafe');
+  module.requires.push('django.context');
+
   function SystemsService($rootScope, $http, $q, $uibModal, $state, Django, FileListing, Logging){
     var logger = Logging.getLogger('ngDesignsafe.SystemsService');
     var _baseUrl = '/api/agave/systems/';
-    
+
     var service = {
       currentState: currentState,
       state: state,
@@ -39,7 +40,7 @@
             return resp.data;
         });
     }
-    
+
     return service;
   }
 

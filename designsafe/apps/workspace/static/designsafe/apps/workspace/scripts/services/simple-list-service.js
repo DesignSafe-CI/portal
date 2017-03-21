@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('WorkspaceApp').factory('SimpleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
 
     var SimpleList = function(){
       this.selected = null,
@@ -69,7 +69,7 @@
         function(apps){
           deferred.reject();
         }
-      )
+      );
       return deferred.promise;
     };
 

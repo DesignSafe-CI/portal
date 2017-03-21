@@ -11,13 +11,15 @@ operation: Can be any of these:
 
 """
 from django.conf.urls import patterns, url, include
-from designsafe.apps.api.projects.views import (ProjectCollectionView,
+from designsafe.apps.api.projects.views import (ProjectListingView,
+                                                ProjectCollectionView,
                                                 ProjectDataView,
                                                 ProjectCollaboratorsView,
                                                 ProjectInstanceView)
 
 urlpatterns = [
     url(r'^$', ProjectCollectionView.as_view(), name='index'),
+    url(r'^listing/(?P<username>[a-zA-Z0-9\-_\.]+)/?$', ProjectListingView.as_view(), name='listing'),
     url(r'^(?P<project_id>[a-z0-9\-]+)/$', ProjectInstanceView.as_view(), name='project'),
     url(r'^(?P<project_id>[a-z0-9\-]+)/collaborators/$',
         ProjectCollaboratorsView.as_view(), name='project_collaborators'),

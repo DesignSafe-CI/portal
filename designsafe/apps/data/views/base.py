@@ -72,7 +72,7 @@ class BaseView(View):
         if filesystem == 'default' and self.force_homedir:
             self.file_path = request.user.username + '/' + self.file_path
             self.file_path = self.file_path.strip('/')
-        
+
         self.set_agave_props(request, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
@@ -153,6 +153,8 @@ class DataBrowserTestView(BasePublicTemplate):
     def get_context_data(self, **kwargs):
         context = super(DataBrowserTestView, self).get_context_data(**kwargs)
 
+        context['unreadNotifications'] = get_number_unread_notifications(self.request)
+
         resource = kwargs.pop('resource', None)
         if resource is None:
             if self.request.user.is_authenticated():
@@ -174,7 +176,7 @@ class DataBrowserTestView(BasePublicTemplate):
                 d.update(kwargs)
                 d.update(self.request.GET.dict())
                 listing = fm.search(**d)
-                   
+
         except ApiException as e:
             fm = None
             action_url = e.extra.get('action_url', None)
