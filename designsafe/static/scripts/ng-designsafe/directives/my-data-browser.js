@@ -4,6 +4,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
     restrict: 'E',
     scope: {
       filepicker: '@filepicker',
+      selected: '=selected',
     },
     templateUrl: '/static/scripts/ng-designsafe/html/directives/my-data-browser.html',
     controller: function ($scope) {
