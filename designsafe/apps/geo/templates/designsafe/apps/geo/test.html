@@ -12,7 +12,12 @@
 
 {% block content %}
 <div>
-    <div ui-view></div>
+  <div class="row">
+    <div class="col-md-6">
+      <my-data-browser filepicker="true"></my-data-browser>
+   </div>
+ </div>
+  {# <div ui-view></div>#}
 </div>
 {% addtoblock "js" %}
   <script type="text/javascript" src="{% static 'vendor/angular-ui-router/release/angular-ui-router.min.js' %}"></script>

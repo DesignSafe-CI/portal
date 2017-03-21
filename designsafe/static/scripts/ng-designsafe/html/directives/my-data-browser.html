@@ -31,20 +31,13 @@
                   ng-click="chooseFile(f)">Select</button>
             <a ng-click="browseFile(f)" class="btn btn-xs btn-link" ds-data-draggable data-ds-data="agave://{{f.system}}/{{f.path}}">
               <i class="fa {{getFileIcon(f.type, f.name.split('.').pop())}}"></i>
-              <span>{{renderName(f)}}</span>
+              <span> {{ renderName(f) }} </span>
             </a>
           </td>
           <td>{{f.length|bytes:0}}</td>
           </tr>
           <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
           <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
-          <tr ng-if="data.busyListingPage">
-          <td>
-            <span class="bg-info text-info">
-              <i class="fa fa-spinner fa-spin"></i> Loading...
-            </span>
-          </td>
-        </tr>
       </tbody>
     </table>
   </div>

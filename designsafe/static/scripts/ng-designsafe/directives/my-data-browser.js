@@ -1,27 +1,54 @@
-angular.module('designsafe').directive('myDataBrowser', function () {
+angular.module('designsafe').directive('myDataBrowser',  ['DataBrowserService', 'UserService', 'FileListing', 'DataService',
+function (DataBrowserService, UserService, FileListing, DataService) {
   return {
     restrict: 'E',
     scope: {
-      file_only: '@file_only',
+      filepicker: '@filepicker',
+    },
+    templateUrl: '/static/scripts/ng-designsafe/html/directives/my-data-browser.html',
+    controller: function ($scope) {
+      console.log($scope.filepicker);
     },
     link: function ($scope, element, attrs) {
-      console.log(element);
-    },
-    controller: ['$scope', 'DataBrowserService', 'UserService', 'FileListing', 'DataService',
-    function ($scope, DataBrowserService, UserService, FileListing, DataService) {
-      $scope.loading = true;
+      console.log($scope.filepicker);
       $scope.data = {
         busyListingPage: true,
-        wants: false
+        wants: false,
+        loading: true
       };
 
       DataBrowserService.browse({system: 'designsafe.storage.default', path: 'jmeiring'}).then(function (resp) {
         $scope.data.busyListingPage = false;
         $scope.data.filesListing = resp;
+        $scope.data.loading = false;
+      }, function (err) {
+        $scope.data.loading = false;
       });
 
 
       $scope.getFileIcon = DataService.getIcon;
+
+      $scope.browseFile = function(file){
+        if (file.type !== 'folder' && file.type !== 'dir'){
+          return;
+        }
+        $scope.data.filesListing = null;
+        $scope.data.loading = true;
+        DataBrowserService.browse(file)
+          .then(function(listing) {
+            $scope.data.filesListing = listing;
+            if ($scope.data.filesListing.children.length > 0){
+              $scope.data.filePath = $scope.data.filesListing.path;
+              $scope.data.dirPath = $scope.data.filePath.split('/');
+              $scope.browser.listing = $scope.data.filesListing;
+            }
+            $scope.data.loading = false;
+          }, function(err){
+            logger.log(err);
+            $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+            $scope.data.loading = false;
+          });
+      };
 
       $scope.displayName = function displayName(file) {
         if (file.systemId === 'nees.public') {
@@ -58,7 +85,6 @@ angular.module('designsafe').directive('myDataBrowser', function () {
         return file.name;
       };
 
-    }],
-    templateUrl: '/static/scripts/ng-designsafe/html/directives/my-data-browser.html'
+    },
   };
-});
+}]);
