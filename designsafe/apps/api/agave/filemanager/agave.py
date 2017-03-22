@@ -106,7 +106,6 @@ class AgaveFileManager(BaseFileManager):
     def mkdir(self, system, file_path, dir_name):
         f = BaseFileResource(self._ag, system, file_path)
         resp = f.mkdir(dir_name)
-        subprocess.call(['setfacl', '-m', 'd:u:tg458981:rwX,u:' + file_path.split('/')[1] + ':rwX', '/corral-repl/tacc/NHERI/shared' + file_path + '/' + dir_name])
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, file_path)})
         return resp
