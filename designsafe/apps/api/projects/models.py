@@ -248,17 +248,17 @@ class Analysis(RelatedEntity):
 
 class ModelConfigTagCentrifuge(MetadataModel):
     _is_nested = True
-    triaxial_test = fields.NestedObjectField(DataTag)
-    soil_strenght = fields.NestedObjectField(DataTag)
-    hinged_plate_container = fields.NestedObjectField(DataTag)
-    rigid_container = fields.NestedObjectField(DataTag)
-    flexible_shear_baem_container = fields.NestedObjectField(DataTag)
-    structural_model = fields.NestedObjectField(DataTag)
-    gravel = fields.NestedObjectField(DataTag)
-    sand = fields.NestedObjectField(DataTag)
-    silt = fields.NestedObjectField(DataTag)
-    clay = fields.NestedObjectField(DataTag)
-    pit = fields.NestedObjectField(DataTag)
+    triaxial_test = fields.ListField('Triaxal Test', list_cls=DataTag)
+    soil_strenght = fields.ListField('Soil Strength', list_cls=DataTag)
+    hinged_plate_container = fields.ListField('Hinged Plate Container', list_cls=DataTag)
+    rigid_container = fields.ListField('Rigid Container', list_cls=DataTag)
+    flexible_shear_beam_container = fields.ListField('Flexible Shear Beam Container', list_cls=DataTag)
+    structural_model = fields.ListField('Structural Model', list_cls=DataTag)
+    gravel = fields.ListField('Gravel', list_cls=DataTag)
+    sand = fields.ListField('Sand', list_cls=DataTag)
+    silt = fields.ListField('Silt', list_cls=DataTag)
+    clay = fields.ListField('Clay', list_cls=DataTag)
+    pit = fields.ListField('pit', list_cls=DataTag)
 
 class ModelConfigTagGeneral(MetadataModel):
     _is_nested = True
@@ -289,7 +289,7 @@ class ModelConfiguration(RelatedEntity):
     model_drawing = fields.RelatedObjectField(FileModel, multiple=True)
     image = fields.NestedObjectField(DataTag)
     video = fields.NestedObjectField(DataTag)
-    tags = fields.ListField('Tags', list_cls=ModelConfigTag)
+    tags = fields.NestedObjectField(ModelConfigTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
     #events = fields.RelatedObjectField(Event)

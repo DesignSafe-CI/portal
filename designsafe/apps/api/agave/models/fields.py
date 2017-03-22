@@ -115,9 +115,10 @@ class DecimalField(BaseField):
 
 class ListField(BaseField):
     """ List Field """
-    def __init__(self, list_cls=None, *args, **kwargs):
+    def __init__(self, verbose_name, list_cls=None, *args, **kwargs):
         kwargs['default'] = kwargs.get('default', [])
         kwargs['list_cls'] = list_cls
+        kwargs['verbose_name'] = verbose_name
         super(ListField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
@@ -145,4 +146,4 @@ class RelatedObjectField(BaseField):
         """ Register the field with the model class it belongs to. """
         super(RelatedObjectField, self).contribute_to_class(cls, name)
         related_name = self.related_name or '%s_set' % cls.__name__.lower()
-        register_lazy_rel(self.related, related_name, cls.model_name, self.multiple)
+        register_lazy_rel(self.related, related_name, cls.model_name, self.multiple, cls)

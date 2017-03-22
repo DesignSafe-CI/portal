@@ -20,7 +20,7 @@ class RelatedQuery(object):
         self._query = query
 
     def __call__(self, agave_client):
-        metas = agave_client.meta.listMetadata(q=self.query)
+        metas = agave_client.meta.listMetadata(q=json.dumps(self.query))
         return  [self.rel_cls(**meta) for meta in metas]
 
     def add(self, uuid):
@@ -45,7 +45,7 @@ class RelatedQuery(object):
         This TODO is mainly for readability.
         """
         if self.uuid:
-            self._query['association_ids'] = self.uuid
+            self._query['associationIds'] = self.uuid
         elif self.uuids is not None:
             if isinstance(self.uuids, basestring):
                 self.uuid = [self.uuids]
@@ -58,17 +58,17 @@ class RelatedQuery(object):
 
         return self._query
 
-def register_lazy_rel(cls, field_name, related_obj_name, multiple):
+def register_lazy_rel(cls, field_name, related_obj_name, multiple, rel_cls):
     reg_key = '{}.{}'.format(cls.model_name, cls.__name__)
     LAZY_OPS.append((reg_key,
                       field_name,
-                      RelatedQuery(related_obj_name=related_obj_name))
+                      RelatedQuery(related_obj_name=related_obj_name, rel_cls=rel_cls))
                     )
 
 def set_lazy_rels():
     for lazy_args in LAZY_OPS:
         cls = REGISTRY[lazy_args[0]]
-        lazy_args[2].rel_cls = cls
+        #lazy_args[2].rel_cls = cls
         cls._meta._reverse_fields.append(lazy_args[1])
         setattr(cls, lazy_args[1], lazy_args[2])
 
@@ -275,7 +275,8 @@ class Model(object):
         super(Model, self).__init__()
     
     def __getattribute__(self, name):
-        _cls = self._meta._fields_map.get(name, None)
+        opts = object.__getattribute__(self, '_meta')
+        _cls = opts._fields_map.get(name, None)
         if _cls is not None and hasattr(_cls, 'to_python'):
             return _cls.to_python(object.__getattribute__(self, name))
         
