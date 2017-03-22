@@ -3,35 +3,46 @@ function (DataBrowserService, UserService, FileListing, DataService) {
   return {
     restrict: 'E',
     scope: {
-      filepicker: '@filepicker',
-      selected: '=selected',
+      picker: '@picker',
+      selected: '=selected'
     },
     templateUrl: '/static/scripts/ng-designsafe/html/directives/my-data-browser.html',
-    controller: function ($scope) {
-      console.log($scope.filepicker);
-    },
     link: function ($scope, element, attrs) {
-      console.log($scope.filepicker);
+      console.log($scope.picker);
+      $scope.picker = $scope.picker || 'all';
       $scope.data = {
         busyListingPage: true,
         wants: false,
-        loading: true
+        loading: true,
+        systemsList: [],
+        system: 'designsafe.storage.default',
+        dirPath: [],
+        filePath: '',
       };
+      $scope.selected = null;
 
-      DataBrowserService.browse({system: 'designsafe.storage.default'}).then(function (resp) {
-        $scope.data.busyListingPage = false;
+      DataBrowserService.browse({system: $scope.data.system}).then(function (resp) {
         $scope.data.filesListing = resp;
         $scope.data.loading = false;
+        $scope.data.filePath = $scope.data.filesListing.path;
+        $scope.data.dirPath = $scope.data.filePath.split('/');
       }, function (err) {
         $scope.data.loading = false;
       });
 
-      $scope.selectRow = function (file) {
-        if (file.type !== 'folder' && file.type !== 'dir' && $scope.filepicker) {
-          $scope.data.filesListing.children.forEach(function (d) {
-            d.selected = false;
-          })
+      $scope.selectRow = function (file, idx) {
+        $scope.data.filesListing.children.forEach(function (d) {
+          d.selected = false;
+        });
+        if ($scope.picker === 'file' && file.type !== 'folder' && file.type !== 'dir') {
+            file.selected = true;
+            $scope.selected = file;
+        } else if ($scope.picker === 'folder' && (file.type !== 'folder' || file.type !== 'dir')) {
           file.selected = true;
+          $scope.selected = file;
+        } else if ($scope.picker === 'all') {
+          file.selected = true;
+          $scope.selected = file;
         }
       };
       $scope.getFileIcon = DataService.getIcon;
@@ -60,7 +71,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
             if ($scope.data.filesListing.children.length > 0){
               $scope.data.filePath = $scope.data.filesListing.path;
               $scope.data.dirPath = $scope.data.filePath.split('/');
-              $scope.browser.listing = $scope.data.filesListing;
+              // $scope.browser.listing = $scope.data.filesListing;
             }
             $scope.data.loading = false;
           }, function(err){

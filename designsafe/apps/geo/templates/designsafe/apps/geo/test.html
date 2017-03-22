@@ -11,14 +11,18 @@
 
 
 {% block content %}
-<div>
+<div ng-controller="testCtrl">
   <div class="row">
     <div class="col-md-6">
-      <my-data-browser filepicker="true"></my-data-browser>
+      <my-data-browser selected="selected"></my-data-browser>
    </div>
  </div>
   {# <div ui-view></div>#}
 </div>
+
+
+
+
 {% addtoblock "js" %}
   <script type="text/javascript" src="{% static 'vendor/angular-ui-router/release/angular-ui-router.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap-tpls.js' %}"></script>
@@ -38,7 +42,14 @@
 <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'></script>
 
 <script type="text/javascript" src="{% static 'designsafe/apps/geo/scripts/build/bundle.js' %}"></script>
+<script>
 
+angular.module('designsafe').controller('testCtrl', ['$scope', function ($scope) {
+  $scope.$watch('selected', function (oldVal, newVal) {
+    console.log(oldVal, newVal)
+  })
+}])
+</script>
 
 {% endaddtoblock %}
 

@@ -5,13 +5,15 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $uibModal) {
+  constructor ($scope, $window, $timeout, $uibModal, DataService, $http) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
     this.$window = $window;
     this.$uibModal = $uibModal;
+    this.DataService = DataService;
+    this.$http = $http;
     angular.element('header').hide();
     angular.element('nav').hide();
     angular.element('footer').hide();
@@ -20,6 +22,7 @@ export default class MapSidebarCtrl {
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
+    this.open_db_modal = this.open_db_modal.bind(this);
 
     let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -120,11 +123,11 @@ export default class MapSidebarCtrl {
   }
 
   open_db_modal () {
-    this.$uibModal.open({
+    let modal = this.$uibModal.open({
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
-      controller: DBModalCtrl,
-      controllerAs: 'vm'
+      controller: "DBModalCtrl as vm",
     });
+    modal.result.then( (f) => {this.load_from_data_depot(f);});
   }
 
   open_file_dialog () {
@@ -158,12 +161,23 @@ export default class MapSidebarCtrl {
     let feature = src_lg.feature_group.getLayers()[data.idx];
     src_lg.feature_group.removeLayer(feature);
     lg.feature_group.addLayer(feature);
-
   }
 
   drop_feature_success (ev, data, lg) {
     console.log("drag_feature_success", ev, data, lg)
     // lg.feature_group.getLayers().splicer(idx, 1);
+  }
+
+  load_from_data_depot(f) {
+    this.$http.get(f.agaveUrl()).then((resp) => {
+      console.log(f, resp.data)
+      let lg = new LayerGroup("New Group", new L.FeatureGroup());
+      L.geoJSON(resp.data).getLayers().forEach( (l) => {
+        lg.feature_group.addLayer(l);
+      });
+      this.layer_groups.push(lg);
+      this.map.addLayer(lg.feature_group);
+    });
   }
 
   local_file_selected (ev) {

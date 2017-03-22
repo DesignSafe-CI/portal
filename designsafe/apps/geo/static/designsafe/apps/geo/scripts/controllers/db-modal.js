@@ -4,10 +4,11 @@ export default class DBModalCtrl {
     'ngInject';
     this.$scope = $scope;
     this.$uibModalInstance = $uibModalInstance;
+    this.selected = null;
   }
 
   ok () {
-    this.$uibModalInstance.close();
+    this.$uibModalInstance.close(this.selected);
   };
 
   cancel () {
