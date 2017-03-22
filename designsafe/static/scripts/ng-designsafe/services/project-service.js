@@ -159,7 +159,8 @@
           $scope.data = {
             busy: false,
             experiments: options.experiments,
-            project: options.project
+            project: options.project,
+            form: {}
           };
           $scope.ui = {
               experiments: {},
@@ -206,7 +207,7 @@
             if (uuid in $scope.ui.experiments &&
                 $scope.ui.experiments[uuid].deleted){
               var index = $scope.form.deleteExperiments.indexOf(uuid);
-              $scope.form.deleteExperiments.slice(index, 1);
+              $scope.form.deleteExperiments.splice(index, 1);
               $scope.ui.experiments[uuid].deleted = false;
             } else {
               $scope.form.deleteExperiments.push(uuid);
@@ -215,7 +216,7 @@
             }
           };
 
-          $scope.saveExperiments = function($event){
+          $scope.saveExperiment = function($event){
             $event.preventDefault();
             $scope.data.busy = true;
             var addActions = _.map($scope.form.addExperiments, function(exp){
@@ -232,17 +233,9 @@
               }
             });
 
-            var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
-              return ProjectEntitiesService.delete({
-                data: {
-                  uuid: uuid,
-                }
-              });
-            });
+            //var tasks = addActions.concat(removeActions);
 
-            var tasks = addActions.concat(removeActions);
-
-            $q.all(tasks).then(
+            $q.all(addActions).then(
               function (results) {
                 $scope.data.busy = false;
                 $scope.form.addExperiments = [{}];
@@ -253,6 +246,32 @@
                 //$uibModalInstance.reject(error.data);
               }
             );
+          };
+
+          $scope.removeExperiments = function($event){
+            $event.preventDefault();
+            $scope.data.busy = true;
+
+            var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
+              return ProjectEntitiesService.delete({
+                data: {
+                  uuid: uuid,
+                }
+              });
+            });
+
+            $q.all(removeActions).then(
+              function (results) {
+                $scope.data.busy = false;
+                $scope.form.addExperiments = [{}];
+                //$uibModalInstance.close(results);
+              },
+              function (error) {
+                $scope.data.error = error;
+                //$uibModalInstance.reject(error.data);
+              }
+            );
+
           };
 
           $scope.delRelEntity = function(entity, rels){
@@ -293,6 +312,83 @@
               $uibModalInstance.reject(err.data);
             });
           };
+
+          $scope.ui.addingTag = false;
+          $scope.ui.tagTypes = [
+              {label: 'Model Config',
+               name: 'designsafe.project.model_config'},
+              {label: 'Sensor',
+               name: 'designsafe.project.sensor_list'},
+              {label: 'Event',
+               name: 'designsafe.project.event'},
+              {label: 'Analysis',
+               name: 'designsafe.project.analysis'}
+              ];
+          $scope.ui.analysisData = [
+            {name: 'graph', label: 'Graph'},
+            {name: 'visualization', label: 'Visualization'},
+            {name: 'table', label: 'Table'},
+            {name: 'other', label: 'Other'}
+          ];
+          $scope.ui.analysisApplication = [
+            {name: 'matlab', label: 'Matlab'},
+            {name: 'r', label: 'R'},
+            {name: 'jupyter', label: 'Jupyter'},
+            {name: 'other', label: 'Other'}
+          ];
+
+          $scope.data.form.projectTagToAdd = {optional:{}};
+
+          $scope.addProjectTag = function(){
+            var newTag = $scope.data.form.projectTagToAdd;
+            var nameComps = newTag.tagType.split('.');
+            var name = nameComps[nameComps.length-1];
+            var entity = {};
+            entity.name = newTag.tagType;
+            if (name === 'event'){
+              entity.eventType = newTag.tagAttribute;
+            } else if (name === 'analysis'){
+              entity.analysisType = newTag.tagAttribute;
+            } else if (name === 'sensor_list'){
+              entity.sensorListType = newTag.tagAttibute;
+            } else if (name === 'model_config'){
+              entity.coverage = newTag.tagAttribute;
+            }
+            for (var attr in $scope.data.form.projectTagToAdd.optional){
+              entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
+            }
+            $scope.ui.addingTag = true;
+            entity.title = newTag.tagTitle;
+            entity.description = newTag.tagDescription;
+            if (typeof $scope.data.files !== 'undefined'){
+              entity.filePaths = _.map($scope.data.files,
+                                     function(file){
+                                      return file.path;
+                                     });
+            }
+            $scope.ui.addingTag = true;
+            ProjectEntitiesService.create({data: {
+                uuid: currentState.project.uuid,
+                name: newTag.tagType,
+                entity: entity
+            }})
+            .then(
+               function(resp){
+                 $scope.data.form.projectTagToAdd = {optional:{}};
+                 currentState.project.addEntity(resp);
+                 _setFileEntities();
+                 _setEntities();
+                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+                 $scope.ui.error = false;
+                 $scope.ui.addingTag = false;
+               },
+               function(err){
+                 $scope.ui.error = true;
+                 $scope.error = err;
+               }
+           );
+          };
+
         }],
         size:'lg'
       });

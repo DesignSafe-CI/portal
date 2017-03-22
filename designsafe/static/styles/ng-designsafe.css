@@ -518,3 +518,11 @@ span.label.tag-red.selected {
     border-left: 30px solid white;
     padding-top: 10px;
 }
+
+.existing-experiments-listing {
+    margin-bottom:10px;
+}
+
+.add-extra-category {
+    margin-top:20px;
+}
