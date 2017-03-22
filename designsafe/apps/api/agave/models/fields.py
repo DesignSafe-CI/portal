@@ -21,7 +21,7 @@ class BaseField(object):
                  max_length=None, blank=False, null=False,
                  related=None, default=None, choices=None,
                  help_text='', validators=(), error_messages=None,
-                 nested_cls=None, related_name=None):
+                 nested_cls=None, related_name=None, list_cls=None):
         self.verbose_name = verbose_name
         self.name = name
         self.max_length = max_length
@@ -36,6 +36,7 @@ class BaseField(object):
         self.nested_cls = nested_cls
         self.attname = None
         self.related_name = related_name
+        self.list_cls = list_cls
         
         if not isinstance(self.choices, collections.Iterator):
             self.choices = []
@@ -114,11 +115,15 @@ class DecimalField(BaseField):
 
 class ListField(BaseField):
     """ List Field """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, list_cls=None, *args, **kwargs):
         kwargs['default'] = kwargs.get('default', [])
+        kwargs['list_cls'] = list_cls
         super(ListField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
+        if self.list_cls is not None:
+            return [self.list_cls(**val) for val in value]
+
         return list(value)
 
 class NestedObjectField(BaseField):

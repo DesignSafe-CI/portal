@@ -273,6 +273,13 @@ class Model(object):
             self.name = self._meta.model_name
 
         super(Model, self).__init__()
+    
+    def __getattribute__(self, name):
+        _cls = self._meta._fields_map.get(name, None)
+        if _cls is not None and hasattr(_cls, 'to_python'):
+            return _cls.to_python(object.__getattribute__(self, name))
+        
+        return object.__getattribute__(self, name)
 
     def _get_init_value(self, field, values, name):
         attrname = spinal_to_camelcase(name)

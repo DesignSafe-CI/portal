@@ -289,7 +289,7 @@ class ModelConfiguration(RelatedEntity):
     model_drawing = fields.RelatedObjectField(FileModel, multiple=True)
     image = fields.NestedObjectField(DataTag)
     video = fields.NestedObjectField(DataTag)
-    tags = fields.NestedObjectField(ModelConfigTag)
+    tags = fields.ListField('Tags', list_cls=ModelConfigTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
     #events = fields.RelatedObjectField(Event)
