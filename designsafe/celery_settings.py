@@ -28,5 +28,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERYD_LOG_FORMAT = '[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s '\
-                     '%(name)s.%(funcName)s:%(lineno)s: [%(task_name)s(%(task_id)s)]%(message)s'
+                     '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
 #CELERY_ANOTATIONS = {'designsafe.apps.api.tasks.reindex_agave': {'time_limit': 60 * 15}}
