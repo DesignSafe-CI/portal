@@ -47,6 +47,9 @@
       viewMetadata: function () {
         DataBrowserService.viewMetadata($scope.browser.selected, $scope.browser.listing);
       },
+      viewCategories: function() {
+        DataBrowserService.viewCategories($scope.browser.selected, $scope.browser.listing);
+      },
       share: function () {
         DataBrowserService.share($scope.browser.selected[0]);
       },
