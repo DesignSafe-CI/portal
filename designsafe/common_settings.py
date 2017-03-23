@@ -492,7 +492,9 @@ if os.environ.get('OPBEAT_ORGANIZATION_ID'):
 WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 WEBSOCKET_URL = '/ws/'
 WS4REDIS_CONNECTION = {
-    'host': 'redis',
+    'host': os.environ.get('WS_BACKEND_HOST'),
+    'port': os.environ.get('WS_BACKEND_PORT'),
+    'db': os.environ.get('WS_BACKEND_DB'),
 }
 WS4REDIS_EXPIRE = 0
 
