@@ -33,7 +33,7 @@
     display: block;
     margin-bottom: 25px;
     overflow: hidden;
-    padding: 10px;
+    /*padding: 10px;*/
 }
 .dashboard-stat .visual {
     width: 80px;
@@ -48,13 +48,13 @@
 }
 
 .dashboard-stat.blue {
-    background-color: #3598dc;
+    background-color: #2f89c7;
 }
 .dashboard-stat.red {
-    background-color: #e7505a;
+    background-color: #cd4750;
 }
 .dashboard-stat.green {
-    background-color: #2daa70;
+    background-color: #2daaa4;
 }
 .dashboard-stat.purple {
     background-color: #8E44AD;
@@ -67,7 +67,7 @@
     color: #FFFFFF;
 }
 .dashboard-stat .details .number {
-    padding-top: 25px;
+    padding-top: 15px;
     text-align: right;
     font-size: 50px;
     line-height: 45px;
