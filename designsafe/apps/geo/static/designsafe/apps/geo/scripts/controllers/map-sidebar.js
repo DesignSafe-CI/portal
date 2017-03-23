@@ -5,7 +5,7 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $uibModal, DataService, $http) {
+  constructor ($scope, $window, $timeout, $uibModal, DataService, $http, GeoDataService) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
@@ -14,9 +14,8 @@ export default class MapSidebarCtrl {
     this.$uibModal = $uibModal;
     this.DataService = DataService;
     this.$http = $http;
-    angular.element('header').hide();
-    angular.element('nav').hide();
-    angular.element('footer').hide();
+    this.GeoDataService = GeoDataService;
+
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
 
@@ -169,27 +168,39 @@ export default class MapSidebarCtrl {
   }
 
   load_from_data_depot(f) {
-    this.$http.get(f.agaveUrl()).then((resp) => {
-      console.log(f, resp.data)
-      let lg = new LayerGroup("New Group", new L.FeatureGroup());
-      L.geoJSON(resp.data).getLayers().forEach( (l) => {
-        lg.feature_group.addLayer(l);
-      });
+    this.loading = true;
+    this.GeoDataService.load_from_data_depot(f).then( (lg) => {
       this.layer_groups.push(lg);
       this.map.addLayer(lg.feature_group);
+      this.loading = false;
     });
   }
 
   local_file_selected (ev) {
     let file = ev.target.files[0];
-    console.log(GeoUtils);
+    console.log(ev);
 
     let ext = GeoUtils.get_file_extension(file.name);
     console.log(ext);
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = (e) => {
-      if (ext === 'kml') {
+      if (ext === 'kmz') {
+        let zipper = new JSZip();
+        zipper.loadAsync(file).then( (zip) => {
+          return zip.file('doc.kml').async('text');
+
+        }).then( (txt) => {
+          let lg = new LayerGroup("New Group", new L.FeatureGroup());
+          let l = omnivore.kml.parse(txt);
+          l.getLayers().forEach((d) => {
+            lg.feature_group.addLayer(d);
+          });
+          this.layer_groups.push(lg);
+          console.log(lg);
+          this.map.addLayer(lg.feature_group);
+        });
+      } else if (ext === 'kml') {
         let lg = new LayerGroup("New Group", new L.FeatureGroup());
         // let parser = new this.$window.DOMParser();
         // let parsed = parser.parseFromString(e.target.result, 'text/xml');

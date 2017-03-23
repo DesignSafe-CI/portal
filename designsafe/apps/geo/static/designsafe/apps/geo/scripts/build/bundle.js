@@ -63,85 +63,11 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _mapSidebar = __webpack_require__(4);
-
-var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
-
-var _dbModal = __webpack_require__(3);
-
-var _dbModal2 = _interopRequireDefault(_dbModal);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.controllers', []);
-
-mod.controller('MapSidebarCtrl', _mapSidebar2.default);
-mod.controller('DBModalCtrl', _dbModal2.default);
-exports.default = mod;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _customOnChange = __webpack_require__(5);
-
-var _customOnChange2 = _interopRequireDefault(_customOnChange);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.directives', []);
-
-mod.directive('customOnChange', _customOnChange2.default);
-exports.default = mod;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _geoStateService = __webpack_require__(8);
-
-var _geoStateService2 = _interopRequireDefault(_geoStateService);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.services', []); // import customOnChange from './custom-on-change';
-
-mod.service('GeoStateService', _geoStateService2.default);
-
-// mod.directive('customOnChange', customOnChange);
-
-exports.default = mod;
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -185,7 +111,7 @@ var DBModalCtrl = function () {
 exports.default = DBModalCtrl;
 
 /***/ }),
-/* 4 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -197,19 +123,173 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _layer_group = __webpack_require__(6);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _layer_group2 = _interopRequireDefault(_layer_group);
+var LayerGroup = function () {
+  function LayerGroup(label, fg) {
+    _classCallCheck(this, LayerGroup);
 
-var _mapProject = __webpack_require__(7);
+    this.label = label;
+    this.feature_group = fg;
+    this.show = true;
+    this.show_contents = true;
+  }
 
-var _mapProject2 = _interopRequireDefault(_mapProject);
+  _createClass(LayerGroup, [{
+    key: "num_features",
+    value: function num_features() {
+      return this.feature_group.getLayers().length;
+    }
+  }]);
 
-var _dbModal = __webpack_require__(3);
+  return LayerGroup;
+}();
+
+exports.default = LayerGroup;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MapProject = function MapProject(name) {
+  _classCallCheck(this, MapProject);
+
+  this.name = name;
+  this.layer_groups = [];
+  this.description = null;
+};
+
+exports.default = MapProject;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.get_file_extension = get_file_extension;
+function get_file_extension(fname) {
+  return fname.split('.').pop();
+}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mapSidebar = __webpack_require__(7);
+
+var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
+
+var _dbModal = __webpack_require__(0);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _geoUtils = __webpack_require__(9);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.controllers', []);
+
+mod.controller('MapSidebarCtrl', _mapSidebar2.default);
+mod.controller('DBModalCtrl', _dbModal2.default);
+exports.default = mod;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _customOnChange = __webpack_require__(8);
+
+var _customOnChange2 = _interopRequireDefault(_customOnChange);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.directives', []);
+
+mod.directive('customOnChange', _customOnChange2.default);
+exports.default = mod;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _geoStateService = __webpack_require__(10);
+
+var _geoStateService2 = _interopRequireDefault(_geoStateService);
+
+var _geoDataService = __webpack_require__(9);
+
+var _geoDataService2 = _interopRequireDefault(_geoDataService);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import customOnChange from './custom-on-change';
+var mod = angular.module('ds.geo.services', []);
+mod.service('GeoStateService', _geoStateService2.default);
+mod.service('GeoDataService', _geoDataService2.default);
+
+// mod.directive('customOnChange', customOnChange);
+
+exports.default = mod;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _layer_group = __webpack_require__(1);
+
+var _layer_group2 = _interopRequireDefault(_layer_group);
+
+var _mapProject = __webpack_require__(2);
+
+var _mapProject2 = _interopRequireDefault(_mapProject);
+
+var _dbModal = __webpack_require__(0);
+
+var _dbModal2 = _interopRequireDefault(_dbModal);
+
+var _geoUtils = __webpack_require__(3);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
@@ -220,8 +300,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$uibModal", "DataService", "$http"];
-  function MapSidebarCtrl($scope, $window, $timeout, $uibModal, DataService, $http) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$uibModal", "DataService", "$http", "GeoDataService"];
+  function MapSidebarCtrl($scope, $window, $timeout, $uibModal, DataService, $http, GeoDataService) {
     'ngInject';
 
     var _this = this;
@@ -235,9 +315,8 @@ var MapSidebarCtrl = function () {
     this.$uibModal = $uibModal;
     this.DataService = DataService;
     this.$http = $http;
-    angular.element('header').hide();
-    angular.element('nav').hide();
-    angular.element('footer').hide();
+    this.GeoDataService = GeoDataService;
+
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
 
@@ -408,14 +487,11 @@ var MapSidebarCtrl = function () {
     value: function load_from_data_depot(f) {
       var _this3 = this;
 
-      this.$http.get(f.agaveUrl()).then(function (resp) {
-        console.log(f, resp.data);
-        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-        L.geoJSON(resp.data).getLayers().forEach(function (l) {
-          lg.feature_group.addLayer(l);
-        });
+      this.loading = true;
+      this.GeoDataService.load_from_data_depot(f).then(function (lg) {
         _this3.layer_groups.push(lg);
         _this3.map.addLayer(lg.feature_group);
+        _this3.loading = false;
       });
     }
   }, {
@@ -424,14 +500,28 @@ var MapSidebarCtrl = function () {
       var _this4 = this;
 
       var file = ev.target.files[0];
-      console.log(GeoUtils);
+      console.log(ev);
 
       var ext = GeoUtils.get_file_extension(file.name);
       console.log(ext);
       var reader = new FileReader();
       reader.readAsText(file);
       reader.onload = function (e) {
-        if (ext === 'kml') {
+        if (ext === 'kmz') {
+          var zipper = new JSZip();
+          zipper.loadAsync(file).then(function (zip) {
+            return zip.file('doc.kml').async('text');
+          }).then(function (txt) {
+            var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+            var l = omnivore.kml.parse(txt);
+            l.getLayers().forEach(function (d) {
+              lg.feature_group.addLayer(d);
+            });
+            _this4.layer_groups.push(lg);
+            console.log(lg);
+            _this4.map.addLayer(lg.feature_group);
+          });
+        } else if (ext === 'kml') {
           (function () {
             var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
             // let parser = new this.$window.DOMParser();
@@ -551,7 +641,7 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -578,7 +668,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -590,54 +680,196 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _geoUtils = __webpack_require__(3);
+
+var GeoUtils = _interopRequireWildcard(_geoUtils);
+
+var _layer_group = __webpack_require__(1);
+
+var _layer_group2 = _interopRequireDefault(_layer_group);
+
+var _mapProject = __webpack_require__(2);
+
+var _mapProject2 = _interopRequireDefault(_mapProject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var LayerGroup = function () {
-  function LayerGroup(label, fg) {
-    _classCallCheck(this, LayerGroup);
+var GeoDataService = function () {
+  GeoDataService.$inject = ["$http", "$q"];
+  function GeoDataService($http, $q) {
+    'ngInject';
 
-    this.label = label;
-    this.feature_group = fg;
-    this.show = true;
-    this.show_contents = true;
+    _classCallCheck(this, GeoDataService);
+
+    this.$http = $http;
+    this.$q = $q;
   }
 
-  _createClass(LayerGroup, [{
-    key: "num_features",
-    value: function num_features() {
-      return this.feature_group.getLayers().length;
+  _createClass(GeoDataService, [{
+    key: '_from_kml',
+    value: function _from_kml(text_blob) {
+      return this.$q(function (res, rej) {
+        console.log(text_blob);
+        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        var l = omnivore.kml.parse(text_blob);
+        l.getLayers().forEach(function (d) {
+          lg.feature_group.addLayer(d);
+        });
+        res(lg);
+      });
+    }
+  }, {
+    key: '_from_kmz',
+    value: function _from_kmz(blob) {
+      var _this = this;
+
+      return this.$q(function (res, rej) {
+        var zipper = new JSZip();
+        zipper.loadAsync(blob).then(function (zip) {
+
+          //loop over all the files in the archive
+          for (var key in zip.files) {
+            var ext = key.split('.').pop();
+            if (ext === 'kml') {
+              return zip.files[key].async('text');
+            }
+          }
+        }).then(function (txt) {
+          var lg = _this._from_kml(txt);
+          res(lg);
+        });
+      });
+    }
+  }, {
+    key: '_from_json',
+    value: function _from_json(json_blob) {
+      return this.$q(function (res, rej) {
+        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        L.geoJSON(json_blob).getLayers().forEach(function (l) {
+          lg.feature_group.addLayer(l);
+        });
+        res(lg);
+      });
+    }
+  }, {
+    key: '_from_gpx',
+    value: function _from_gpx(blob) {
+      return this.$q(function (res, rej) {
+        console.log(text_blob);
+        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        var l = omnivore.gpx.parse(text_blob);
+        l.getLayers().forEach(function (d) {
+          lg.feature_group.addLayer(d);
+        });
+        res(lg);
+      });
+    }
+  }, {
+    key: '_load_dsmap',
+    value: function _load_dsmap(json_blob) {}
+  }, {
+    key: 'load_from_local_file',
+    value: function load_from_local_file(file) {
+      var _this2 = this;
+
+      var ext = GeoUtils.get_file_extension(file.name);
+      var reader = new FileReader();
+      onload = this.$q(function (res, rej) {});
+
+      reader.onload = function (e) {
+        var p = null;
+        switch (ext) {
+          case 'kml':
+            p = _this2._from_kml(e.target.result).then(function (lg) {
+              return lg;
+            });
+            break;
+          case 'json':
+            p = _this2._from_json(e.target.result).then(function (lg) {
+              return lg;
+            });
+            break;
+          case 'geojson':
+            p = _this2._from_json(e.target.result).then(function (lg) {
+              return lg;
+            });
+            break;
+          case 'kmz':
+            p = _this2._from_kmz(file).then(function (lg) {
+              return lg;
+            });
+            break;
+          default:
+            p = _this2._from_json(reps.data).then(function (lg) {
+              return lg;
+            });
+        }
+        return p;
+      };
+    }
+
+    //
+    // @param f: a file from DataService
+    // returns a promise with the LayerGroup
+
+  }, {
+    key: 'load_from_data_depot',
+    value: function load_from_data_depot(f) {
+      var _this3 = this;
+
+      console.log(f);
+      var ext = GeoUtils.get_file_extension(f.name);
+      console.log(ext);
+      var responseType = 'text';
+      if (ext === 'kmz') {
+        responseType = 'arraybuffer';
+      }
+      console.log(responseType);
+      return this.$http.get(f.agaveUrl(), { 'responseType': responseType }).then(function (resp) {
+        console.log(resp);
+        var p = null;
+        switch (ext) {
+          case 'kml':
+            p = _this3._from_kml(resp.data).then(function (lg) {
+              return lg;
+            });
+            break;
+          case 'json':
+            p = _this3._from_json(resp.data).then(function (lg) {
+              return lg;
+            });
+            break;
+          case 'geojson':
+            p = _this3._from_json(resp.data).then(function (lg) {
+              return lg;
+            });
+            break;
+          case 'kmz':
+            p = _this3._from_kmz(resp.data).then(function (lg) {
+              return lg;
+            });
+            break;
+          default:
+            p = _this3._from_json(reps.data).then(function (lg) {
+              return lg;
+            });
+        }
+        return p;
+      });
     }
   }]);
 
-  return LayerGroup;
+  return GeoDataService;
 }();
 
-exports.default = LayerGroup;
+exports.default = GeoDataService;
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var MapProject = function MapProject(name) {
-  _classCallCheck(this, MapProject);
-
-  this.name = name;
-  this.layer_groups = [];
-};
-
-exports.default = MapProject;
-
-/***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -660,22 +892,7 @@ var GeoStateService = function GeoStateService($scope, $state) {
 exports.default = GeoStateService;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.get_file_extension = get_file_extension;
-function get_file_extension(fname) {
-  return fname.split('.').pop();
-}
-
-/***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -686,11 +903,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _directives = __webpack_require__(1);
+var _directives = __webpack_require__(5);
 
-var _controllers = __webpack_require__(0);
+var _controllers = __webpack_require__(4);
 
-var _services = __webpack_require__(2);
+var _services = __webpack_require__(6);
 
 var mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');

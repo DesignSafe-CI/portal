@@ -21,7 +21,7 @@
 }
 #navbar .nav-icon.active{
   margin-left:  0px;
-  border-left: 5px solid #805ca2;
+  border-left: 5px solid #bd4cd9;
   background-color: #404040;
 }
 
@@ -82,7 +82,7 @@
 }
 
 #geo_sidebar .list-group-item.menu.active {
-  border-left: 5px solid #de5b0f;
+  border-left: 3px solid #de5b0f;
   background-color: #444444;
 }
 #geo_sidebar .list-group-item.menu.lg-tools {
