@@ -1,8 +1,7 @@
-<div class="modal-header">
-    <h3 class="modal-title">
-        {{ data.project.value.title }}<br>
-        <small>Manage Experiments</small>
-    </h3>
+<div class="modal-header" style="border:none; text-align:center;">
+    <h4 class="modal-title" style="borer:nonel">
+        Manage Experiments
+    </h4>
 </div>
 <div class="modal-body">
     <div ng-if="data.busy">
@@ -121,7 +120,10 @@
         </button>
         -->
     </div>
-    <div class="data-model-tree">
+    <div class="data-model-tree" style="border-top:1px solid lightgray;">
+     <div style="text-alignt:center;">
+     <h4> Relate Categories to Experiments or Analysis </h4>
+     </div>
       <ul class="experiments-ul">
         <li class="tree-container"
             ng-repeat="experiment in data.project.experiment_set | orderBy: experiment.value.title"
