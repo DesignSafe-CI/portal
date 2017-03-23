@@ -332,6 +332,7 @@ class Model(object):
         return dict_obj
     
     def to_body_dict(self):
+        from designsafe.apps.api.agave.models.fields import ListField
         dict_obj = {}
 
         if not self._is_nested:
@@ -354,6 +355,8 @@ class Model(object):
                 value_dict[attrname] = list(set(value.uuids))
             elif isinstance(value, Model):
                 value_dict[attrname] = value.to_body_dict()
+            elif isinstance(field, ListField):
+                value_dict[attrname] = [o.to_body_dict() for o in value]
             else:
                 value_dict[attrname] = value
         if not self._is_nested:
