@@ -117,7 +117,7 @@ class BaseFileMetadata(BaseMetadataResource):
             super(BaseFileMetadata, self).save()
             #self.match_pems_to_project()
             if self.value.get('projectUUID'):
-                tasks.check_project_meta_pems.apply_async(args=[self.uuid])
+                tasks.check_project_meta_pems.apply_async(args=[self.uuid], queue='api')
         else:
             super(BaseFileMetadata, self).save()
 

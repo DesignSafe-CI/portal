@@ -235,7 +235,8 @@ class FileMediaView(View):
                             'dest_resource': external,
                             'src_file_id': os.path.join(system_id, file_path.strip('/')),
                             'dest_file_id': body.get('path')
-                        })
+                        },
+                        queue='files')
                         event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This will take a few minutes.'
                         event_data[Notification.EXTRA] = {
                             'resource': external,

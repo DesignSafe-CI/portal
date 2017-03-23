@@ -15,10 +15,11 @@ from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
 
-@shared_task(bind=True)
-def reindex_agave(self, username, file_id, full_indexing = True,
-                  levels = 0, pems_indexing = True, index_full_path = True):
+@shared_task(bind=True, max_retries=None)
+def reindex_agave(self, username, file_id, full_indexing=True,
+                  levels=1, pems_indexing=True, index_full_path=True):
     user = get_user_model().objects.get(username=username)
+    levels=1
 
     from designsafe.apps.api.data import AgaveFileManager
     agave_fm = AgaveFileManager(user)

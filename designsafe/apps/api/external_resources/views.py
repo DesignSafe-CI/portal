@@ -91,7 +91,8 @@ class FileMediaView(SecureMixin, BaseApiView):
                     'file_mgr_name': file_mgr_name,
                     'username': request.user.username,
                     'src_file_id': file_id,
-                    'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))})
+                    'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))},
+                    queue='files')
                 return JsonResponse({'status': 200, 'message': 'OK'})
             except HTTPError as e:
                 logger.exception('Unable to copy file')

@@ -44,7 +44,7 @@ def submit_job(request, username, job_post):
         logger.debug('Job Submission Response: {}'.format(response))
 
         # watch job status
-        watch_job_status.apply_async(args=[username, response['id']], countdown=10)
+        watch_job_status.apply_async(args=[username, response['id']], countdown=10, queue='api')
         return response
 
     except ConnectionError as e:
@@ -320,12 +320,12 @@ def watch_job_status(self, username, job_id, current_status=None):
             # DO NOT notify, but still queue another watch task
             watch_job_status.apply_async(args=[username, job_id],
                                          kwargs={'current_status': job_status},
-                                         countdown=10)
+                                         countdown=10, queue='api')
         else:
             # queue another watch task
             watch_job_status.apply_async(args=[username, job_id],
                                          kwargs={'current_status': job_status},
-                                         countdown=10)
+                                         countdown=10, queue='api')
 
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))

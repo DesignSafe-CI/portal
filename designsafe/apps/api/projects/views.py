@@ -266,7 +266,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         _kwargs = {member_type: members_list}
         project.update(**_kwargs)
         project.save()
-        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ])
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         return JsonResponse({'status': 'ok'})
 
     def delete(self, request, project_id):
@@ -279,7 +279,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.remove_collaborator(post_data.get('username'))
-        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid])
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
         return JsonResponse({'status': 'ok'})
 
 
