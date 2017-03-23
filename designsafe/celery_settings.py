@@ -2,6 +2,7 @@
 # Celery settings
 """
 import os
+from kombu import Exchange, Queue
 #BROKER_URL = 'redis://redis:6379/0'
 BROKER_URL_PROTOCOL = os.environ.get('BROKER_URL_PROTOCOL', 'amqp://')
 BROKER_URL_USERNAME = os.environ.get('BROKER_URL_USERNAME', 'username')
@@ -30,3 +31,18 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 CELERYD_LOG_FORMAT = '[DJANGO] $(processName)s %(levelname)s %(asctime)s %(module)s '\
                      '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
 #CELERY_ANOTATIONS = {'designsafe.apps.api.tasks.reindex_agave': {'time_limit': 60 * 15}}
+
+
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+CELERY_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default'),
+    #Use to queue indexing tasks
+    Queue('indexing', Exchange('io'), routing_key='io.indexing'),
+    #Use to queue tasks which handle files
+    Queue('files', Exchange('io'), routing_key='io.files'),
+    #Use to queue tasks which mainly call external APIs
+    Queue('api', Exchange('api'), routing_key='api.agave'),
+    )
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE = 'default'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
