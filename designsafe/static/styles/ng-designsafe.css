@@ -526,3 +526,18 @@ span.label.tag-red.selected {
 .add-extra-category {
     margin-top:20px;
 }
+
+.simple-table tbody tr td,
+.simple-table tbody tr th{
+    padding:0px 5px;
+}
+
+.simple-table tbody tr td:first-child, 
+.simple-table tbody tr th:first-child {
+    padding-left:0px;
+}
+
+.simple-table tbody tr td:last-child, 
+.simple-table tbody tr th:last-child {
+    padding-right:0px;
+}

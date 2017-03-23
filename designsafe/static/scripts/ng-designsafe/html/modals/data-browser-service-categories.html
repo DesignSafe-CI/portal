@@ -12,18 +12,16 @@
 
       <div ng-repeat="entity in ui.parentEntities" class="col-xs-12"
            style="padding-bottom:10px; border-bottom:1px solid lightgray;">
-        <div class="manage-sub-tags" style="overflow: auto; vertical-align:top;">
-          <div class="mange-sub-tags-files" style="width:50%; display:inline-block;">
-            <table class="table table-condensed">
-              <thead>
+        <div class="manage-sub-tags" style="overflow: auto; vertical-align:top; margin-bottom:10px;">
+          <div class="mange-sub-tags-files">
+            <table class="simple-table">
+              <tbody>
                 <tr>
                   <th></th>
                   <th></th>
                   <th>Choose a description (optional)</th>
                   <th>Custom Description (optional)</th>
                 </tr>
-              </thead>
-              <tbody>
                 <tr ng-repeat="file in data.files">
                   <td>
                     <i class="fa {{ file.icon() }}"
