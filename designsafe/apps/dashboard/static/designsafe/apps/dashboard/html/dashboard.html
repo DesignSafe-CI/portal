@@ -1,6 +1,6 @@
 
 
-<!-- <div class="row">
+<div class="row">
   <div class="col-sm-4">
     <div class="dashboard-stat blue">
       <div class="visual">
@@ -12,19 +12,8 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-3">
-    <div class="dashboard-stat red">
-      <div class="visual">
-        <i class="fa fa-database"></i>
-      </div>
-      <div class="details">
-        <div class="number"> {{storage_count | bytes}} </div>
-        <div class="desc"> Data Stored </div>
-      </div>
-    </div>
-  </div>
   <div class="col-sm-4">
-    <div class="dashboard-stat purple">
+    <div class="dashboard-stat green">
       <div class="visual">
         <i class="fa fa-cogs"></i>
       </div>
@@ -35,17 +24,17 @@
     </div>
   </div>
   <div class="col-sm-4">
-    <div class="dashboard-stat cyan">
+    <div class="dashboard-stat red">
       <div class="visual">
         <i class="fa fa-database"></i>
       </div>
       <div class="details">
         <div class="number"> {{usage.total_storage_bytes | bytes}} </div>
-        <div class="desc"> Total storage in Designsafe </div>
+        <div class="desc"> Data Stored </div>
       </div>
     </div>
   </div>
-</div> -->
+</div>
 
 <div class="row">
   <div class="col-sm-3">
@@ -58,7 +47,7 @@
           <a href="/account"> Account Profile </a>
         </li>
         <li class="list-group-item">
-          <a href="/data"> Data Depot </a> <b> {{storage_count | bytes}} used </b>
+          <a href="/data"> Data Depot </a>
         </li>
         <li class="list-group-item">
           <a href="/rw/discovery-workspace"> Workspace </a>
