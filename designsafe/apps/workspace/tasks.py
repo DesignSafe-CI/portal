@@ -70,7 +70,7 @@ def submit_job(request, username, job_post):
         logger.warning(err_resp)
         raise JobSubmitError(**err_resp)
 
-@shared_task(bind=True)
+@shared_task(bind=True, max_retries=None)
 def watch_job_status(self, username, job_id, current_status=None):
     try:
         user = get_user_model().objects.get(username=username)
@@ -166,7 +166,7 @@ def watch_job_status(self, username, job_id, current_status=None):
                 #                          event_users=[job['owner']])
             except Exception as e:
                 logger.exception('Error indexing job output; scheduling retry')
-                raise self.retry(exc=e, countdown=60, max_retries=3)
+                raise self.retry(exc=e, countdown=60)
 
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
