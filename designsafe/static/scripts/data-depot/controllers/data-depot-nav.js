@@ -14,12 +14,12 @@
           name: 'Published',
           collapsible: false,
           state: 'publicData'
-        }/*,
+        },
         {
           name: 'Community Data',
           collapsible: false,
           state: 'communityData'
-        },
+        }/*,
         {
           name: 'Training Materials',
           collapsible: false,

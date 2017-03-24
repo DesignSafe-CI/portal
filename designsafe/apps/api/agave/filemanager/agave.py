@@ -26,6 +26,8 @@ class AgaveFileManager(BaseFileManager):
     SYSTEM_ID_PATHS = [
         {'regex': r'^designsafe.storage.default$',
          'path': '/corral-repl/tacc/NHERI/shared'},
+        {'regex': r'^designsafe.storage.community$',
+         'path': '/corral-repl/tacc/NHERI/community'},
         {'regex': r'^project\-',
          'path': '/corral-repl/tacc/NHERI/projects'}
     ]
