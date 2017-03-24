@@ -27,23 +27,29 @@
 
 
 
-#geo_sidebar, #current_layer_details{
+#geo_sidebar, #current_layer_details, #map_project_details {
   /*padding-top: 10px;*/
   width: 20%;
   font-size: 11px;
   letter-spacing: 0px;
   float: left;
   flex: 0 0 230px;
+  height: 100vh;
   background: #313131;
   border-right: 1px solid #6e6e6e;
   flex-direction: column;
-  display: flex;
-  /*overflow-y: scroll;*/
+  overflow-y: scroll;
 }
 
+#map_project_details {
+  padding: 5px;
+}
 
-
-
+#map_project_details input,
+#map_project_details textarea {
+  color: #fff;
+  background-color: #545454;
+}
 
 
 .strong {
@@ -62,8 +68,8 @@
 }
 
 #geo_sidebar .list-group-item input[type=text] {
-  color: #000;
-  background-color: #c4c4c4;
+  color: #FFF;
+  background-color: #545454;
   width: 70%;
 }
 

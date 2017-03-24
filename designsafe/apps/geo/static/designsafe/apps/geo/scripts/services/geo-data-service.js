@@ -54,9 +54,9 @@ export default class GeoDataService {
 
   _from_gpx (blob) {
     return this.$q( (res, rej) => {
-      console.log(text_blob)
+      // console.log(text_blob)
       let lg = new LayerGroup("New Group", new L.FeatureGroup());
-      let l = omnivore.gpx.parse(text_blob);
+      let l = omnivore.gpx.parse(blob);
       l.getLayers().forEach((d) => {
         lg.feature_group.addLayer(d);
       });
@@ -64,71 +64,91 @@ export default class GeoDataService {
     });
   }
 
+  _from_image (file) {
+    return this.$q( (res, rej) => {
+      let lg = new LayerGroup("New Group", new L.FeatureGroup());
+      let exif = EXIF.readFromBinaryFile(file);
+
+      let lat = exif.GPSLatitude;
+      let lon = exif.GPSLongitude;
+
+      //Convert coordinates to WGS84 decimal
+      let latRef = exif.GPSLatitudeRef || "N";
+      let lonRef = exif.GPSLongitudeRef || "W";
+      lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
+      lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
+      lg.feature_group.addLayer(d);
+    });
+  }
+
+
   _load_dsmap (json_blob) {
 
   }
 
 
   load_from_local_file (file) {
-
-    let ext = GeoUtils.get_file_extension(file.name);
-    let reader = new FileReader();
-    onload = this.$q( (res, rej) => {
-
+    return this.$q( (res, rej) => {
+      let ext = GeoUtils.get_file_extension(file.name);
+      let reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = (e) => {
+        let p = null;
+        switch (ext) {
+          case 'kml':
+            p =  this._from_kml(e.target.result);
+            break;
+          case 'json':
+            p = this._from_json(e.target.result);
+            break;
+          case 'geojson':
+            p = this._from_json(e.target.result);
+            break;
+          case 'kmz':
+            p = this._from_kmz(file);
+            break;
+          case 'gpx':
+            p = this._from_gpx(e.target.result);
+            break;
+          case 'jpeg':
+            p = this._from_image(file);
+          default:
+            p = this._from_json(reps.data);
+        }
+        return res(p);
+      };
     });
-
-    reader.onload = (e) => {
-      let p = null;
-      switch (ext) {
-        case 'kml':
-          p =  this._from_kml(e.target.result).then( (lg) => {return lg;});
-          break;
-        case 'json':
-          p = this._from_json(e.target.result).then( (lg) => {return lg;});
-          break;
-        case 'geojson':
-          p = this._from_json(e.target.result).then( (lg) => {return lg;});
-          break;
-        case 'kmz':
-          p = this._from_kmz(file).then( (lg) => {return lg;});
-          break;
-        default:
-          p = this._from_json(reps.data).then( (lg) => {return lg;});
-      }
-      return p;
-    };
   }
 
   //
   // @param f: a file from DataService
   // returns a promise with the LayerGroup
   load_from_data_depot(f) {
-    console.log(f);
     let ext = GeoUtils.get_file_extension(f.name);
-    console.log(ext)
     let responseType = 'text';
     if (ext === 'kmz') {
       responseType = 'arraybuffer';
     }
-    console.log(responseType)
     return this.$http.get(f.agaveUrl(), {'responseType': responseType}).then((resp) => {
-      console.log(resp)
       let p = null;
       switch (ext) {
         case 'kml':
-          p =  this._from_kml(resp.data).then( (lg) => {return lg;});
+          p =  this._from_kml(resp.data);
           break;
         case 'json':
-          p = this._from_json(resp.data).then( (lg) => {return lg;});
+          p = this._from_json(resp.data);
           break;
         case 'geojson':
-          p = this._from_json(resp.data).then( (lg) => {return lg;});
+          p = this._from_json(resp.data);
           break;
         case 'kmz':
-          p = this._from_kmz(resp.data).then( (lg) => {return lg;});
+          p = this._from_kmz(resp.data);
+          break;
+        case 'gpx':
+          p = this._from_gpx(resp.data);
           break;
         default:
-          p = this._from_json(reps.data).then( (lg) => {return lg;});
+          p = this._from_json(resp.data);
       }
       return p;
     });

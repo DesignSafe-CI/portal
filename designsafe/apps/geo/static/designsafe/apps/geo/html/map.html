@@ -19,12 +19,9 @@
     <li class="list-group-item menu clearfix title"
         ng-mouseover="vm.title_hover=true"
         ng-mouseleave="vm.title_hover=false">
-      <span class="strong map-title" ng-show="!vm.edit_title"> {{vm.map_title}} </span>
-      <div ng-show="vm.edit_title">
-        <input type="text" ng-model="vm.map_title">
-        <i class="fa fa-check" ng-click="vm.edit_title=false"></i>
-      </div>
-      <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=true"></i>
+      <span class="strong map-title"> {{vm.map_title}} </span>
+
+      <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=!vm.edit_title"></i>
     </li>
 
     <li class="list-group-item menu clearfix action" ng-click="vm.create_layer_group()">
@@ -149,6 +146,19 @@
         </td>
       </tr>
     </table> -->
+  </div>
+
+
+  <div id="map_project_details" ng-show="vm.edit_title">
+
+    <div class="form-group">
+      <label> Title </label>
+      <input type="text" ng-model="vm.map_title" class="form-control">
+    </div>
+    <div class="form-group">
+      <label> Description </label>
+      <textarea ng-model="vm.map_description" class="form-control" rows="5"></textarea>
+    </div>
   </div>
 
   <div id="right_panel">

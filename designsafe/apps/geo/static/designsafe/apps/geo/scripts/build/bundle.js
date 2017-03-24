@@ -500,108 +500,16 @@ var MapSidebarCtrl = function () {
       var _this4 = this;
 
       var file = ev.target.files[0];
-      console.log(ev);
-
-      var ext = GeoUtils.get_file_extension(file.name);
-      console.log(ext);
-      var reader = new FileReader();
-      reader.readAsText(file);
-      reader.onload = function (e) {
-        if (ext === 'kmz') {
-          var zipper = new JSZip();
-          zipper.loadAsync(file).then(function (zip) {
-            return zip.file('doc.kml').async('text');
-          }).then(function (txt) {
-            var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-            var l = omnivore.kml.parse(txt);
-            l.getLayers().forEach(function (d) {
-              lg.feature_group.addLayer(d);
-            });
-            _this4.layer_groups.push(lg);
-            console.log(lg);
-            _this4.map.addLayer(lg.feature_group);
-          });
-        } else if (ext === 'kml') {
-          (function () {
-            var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-            // let parser = new this.$window.DOMParser();
-            // let parsed = parser.parseFromString(e.target.result, 'text/xml');
-            var l = omnivore.kml.parse(e.target.result);
-            // debugger
-            l.getLayers().forEach(function (d) {
-              lg.feature_group.addLayer(d);
-            });
-            _this4.layer_groups.push(lg);
-            _this4.map.addLayer(lg.feature_group);
-          })();
-        } else if (ext === 'gpx') {
-          var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-          // let parser = new this.$window.DOMParser();
-          // let parsed = parser.parseFromString(e.target.result, 'text/xml');
-          var l = omnivore.gpx.parse(e.target.result);
-          lg.feature_group.addLayer(l);
-
-          _this4.layer_groups.push(lg);
-          _this4.map.addLayer(lg.feature_group);
-        } else {
-          var json = JSON.parse(e.target.result);
-
-          // we add in a field into the json blob when saved. If it is such,
-          // handle potential multiple layers.
-          if (json.ds_map) {
-            // each feature in the collection represents a layer
-            json.features.forEach(function (f) {
-              var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-              L.geoJSON(f).getLayers().forEach(function (l) {
-                lg.feature_group.addLayer(l);
-              });
-              _this4.layer_groups.push(lg);
-              _this4.map.addLayer(lg.feature_group);
-            });
-          } else {
-            var _lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-            L.geoJSON(json).getLayers().forEach(function (l) {
-              _this4.layer_groups[0].feature_group.addLayer(l);
-            });
-            _this4.layer_groups.push(_lg);
-            _this4.map.addLayer(_lg.feature_group);
-          }
-        };
+      var lf = this.GeoDataService.load_from_local_file(file).then(function (lg) {
+        console.log(lg);
+        _this4.layer_groups.push(lg);
+        _this4.map.addLayer(lg.feature_group);
         var bounds = [];
         _this4.layer_groups.forEach(function (lg) {
           bounds.push(lg.feature_group.getBounds());
         });
         _this4.map.fitBounds(bounds);
-      };
-    }
-  }, {
-    key: 'load_image',
-    value: function load_image(ev) {
-      var _this5 = this;
-
-      var files = ev.target.files;
-      for (var i = 0; i < files.length; i++) {
-        var file = files[0];
-        var reader = new FileReader(); // use HTML5 file reader to get the file
-
-        reader.readAsArrayBuffer(file);
-        reader.onloadend = function (e) {
-          // get EXIF data
-          var exif = EXIF.readFromBinaryFile(e.target.result);
-
-          var lat = exif.GPSLatitude;
-          var lon = exif.GPSLongitude;
-
-          //Convert coordinates to WGS84 decimal
-          var latRef = exif.GPSLatitudeRef || "N";
-          var lonRef = exif.GPSLongitudeRef || "W";
-          lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
-          lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
-
-          //Send the coordinates to your map
-          _this5.active_layer_group.AddMarker(lat, lon);
-        };
-      }
+      });
     }
   }, {
     key: 'update_layer_style',
@@ -759,13 +667,31 @@ var GeoDataService = function () {
     key: '_from_gpx',
     value: function _from_gpx(blob) {
       return this.$q(function (res, rej) {
-        console.log(text_blob);
+        // console.log(text_blob)
         var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-        var l = omnivore.gpx.parse(text_blob);
+        var l = omnivore.gpx.parse(blob);
         l.getLayers().forEach(function (d) {
           lg.feature_group.addLayer(d);
         });
         res(lg);
+      });
+    }
+  }, {
+    key: '_from_image',
+    value: function _from_image(file) {
+      return this.$q(function (res, rej) {
+        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        var exif = EXIF.readFromBinaryFile(file);
+
+        var lat = exif.GPSLatitude;
+        var lon = exif.GPSLongitude;
+
+        //Convert coordinates to WGS84 decimal
+        var latRef = exif.GPSLatitudeRef || "N";
+        var lonRef = exif.GPSLongitudeRef || "W";
+        lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
+        lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
+        lg.feature_group.addLayer(d);
       });
     }
   }, {
@@ -776,40 +702,36 @@ var GeoDataService = function () {
     value: function load_from_local_file(file) {
       var _this2 = this;
 
-      var ext = GeoUtils.get_file_extension(file.name);
-      var reader = new FileReader();
-      onload = this.$q(function (res, rej) {});
-
-      reader.onload = function (e) {
-        var p = null;
-        switch (ext) {
-          case 'kml':
-            p = _this2._from_kml(e.target.result).then(function (lg) {
-              return lg;
-            });
-            break;
-          case 'json':
-            p = _this2._from_json(e.target.result).then(function (lg) {
-              return lg;
-            });
-            break;
-          case 'geojson':
-            p = _this2._from_json(e.target.result).then(function (lg) {
-              return lg;
-            });
-            break;
-          case 'kmz':
-            p = _this2._from_kmz(file).then(function (lg) {
-              return lg;
-            });
-            break;
-          default:
-            p = _this2._from_json(reps.data).then(function (lg) {
-              return lg;
-            });
-        }
-        return p;
-      };
+      return this.$q(function (res, rej) {
+        var ext = GeoUtils.get_file_extension(file.name);
+        var reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = function (e) {
+          var p = null;
+          switch (ext) {
+            case 'kml':
+              p = _this2._from_kml(e.target.result);
+              break;
+            case 'json':
+              p = _this2._from_json(e.target.result);
+              break;
+            case 'geojson':
+              p = _this2._from_json(e.target.result);
+              break;
+            case 'kmz':
+              p = _this2._from_kmz(file);
+              break;
+            case 'gpx':
+              p = _this2._from_gpx(e.target.result);
+              break;
+            case 'jpeg':
+              p = _this2._from_image(file);
+            default:
+              p = _this2._from_json(reps.data);
+          }
+          return res(p);
+        };
+      });
     }
 
     //
@@ -821,42 +743,31 @@ var GeoDataService = function () {
     value: function load_from_data_depot(f) {
       var _this3 = this;
 
-      console.log(f);
       var ext = GeoUtils.get_file_extension(f.name);
-      console.log(ext);
       var responseType = 'text';
       if (ext === 'kmz') {
         responseType = 'arraybuffer';
       }
-      console.log(responseType);
       return this.$http.get(f.agaveUrl(), { 'responseType': responseType }).then(function (resp) {
-        console.log(resp);
         var p = null;
         switch (ext) {
           case 'kml':
-            p = _this3._from_kml(resp.data).then(function (lg) {
-              return lg;
-            });
+            p = _this3._from_kml(resp.data);
             break;
           case 'json':
-            p = _this3._from_json(resp.data).then(function (lg) {
-              return lg;
-            });
+            p = _this3._from_json(resp.data);
             break;
           case 'geojson':
-            p = _this3._from_json(resp.data).then(function (lg) {
-              return lg;
-            });
+            p = _this3._from_json(resp.data);
             break;
           case 'kmz':
-            p = _this3._from_kmz(resp.data).then(function (lg) {
-              return lg;
-            });
+            p = _this3._from_kmz(resp.data);
+            break;
+          case 'gpx':
+            p = _this3._from_gpx(resp.data);
             break;
           default:
-            p = _this3._from_json(reps.data).then(function (lg) {
-              return lg;
-            });
+            p = _this3._from_json(resp.data);
         }
         return p;
       });

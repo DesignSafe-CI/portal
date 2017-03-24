@@ -178,107 +178,19 @@ export default class MapSidebarCtrl {
 
   local_file_selected (ev) {
     let file = ev.target.files[0];
-    console.log(ev);
-
-    let ext = GeoUtils.get_file_extension(file.name);
-    console.log(ext);
-    let reader = new FileReader();
-    reader.readAsText(file);
-    reader.onload = (e) => {
-      if (ext === 'kmz') {
-        let zipper = new JSZip();
-        zipper.loadAsync(file).then( (zip) => {
-          return zip.file('doc.kml').async('text');
-
-        }).then( (txt) => {
-          let lg = new LayerGroup("New Group", new L.FeatureGroup());
-          let l = omnivore.kml.parse(txt);
-          l.getLayers().forEach((d) => {
-            lg.feature_group.addLayer(d);
-          });
-          this.layer_groups.push(lg);
-          console.log(lg);
-          this.map.addLayer(lg.feature_group);
-        });
-      } else if (ext === 'kml') {
-        let lg = new LayerGroup("New Group", new L.FeatureGroup());
-        // let parser = new this.$window.DOMParser();
-        // let parsed = parser.parseFromString(e.target.result, 'text/xml');
-        let l = omnivore.kml.parse(e.target.result);
-        // debugger
-        l.getLayers().forEach((d) => {
-          lg.feature_group.addLayer(d);
-        });
-        this.layer_groups.push(lg);
-        this.map.addLayer(lg.feature_group);
-      } else if (ext === 'gpx') {
-        let lg = new LayerGroup("New Group", new L.FeatureGroup());
-        // let parser = new this.$window.DOMParser();
-        // let parsed = parser.parseFromString(e.target.result, 'text/xml');
-        let l = omnivore.gpx.parse(e.target.result);
-        lg.feature_group.addLayer(l);
-
-        this.layer_groups.push(lg);
-        this.map.addLayer(lg.feature_group);
-      } else {
-        let json = JSON.parse(e.target.result);
-
-        // we add in a field into the json blob when saved. If it is such,
-        // handle potential multiple layers.
-        if (json.ds_map) {
-          // each feature in the collection represents a layer
-          json.features.forEach( (f) => {
-            let lg = new LayerGroup("New Group", new L.FeatureGroup());
-            L.geoJSON(f).getLayers().forEach( (l) => {
-              lg.feature_group.addLayer(l);
-            });
-            this.layer_groups.push(lg);
-            this.map.addLayer(lg.feature_group);
-          });
-        }
-        else {
-          let lg = new LayerGroup("New Group", new L.FeatureGroup());
-          L.geoJSON(json).getLayers().forEach( (l) => {
-            this.layer_groups[0].feature_group.addLayer(l);
-          });
-          this.layer_groups.push(lg);
-          this.map.addLayer(lg.feature_group);
-        }
-
-      };
+    let lf = this.GeoDataService.load_from_local_file(file).then( (lg) => {
+      console.log(lg);
+      this.layer_groups.push(lg);
+      this.map.addLayer(lg.feature_group);
       let bounds = [];
       this.layer_groups.forEach((lg) =>  {
         bounds.push(lg.feature_group.getBounds());
       });
       this.map.fitBounds(bounds);
-    };
+    });
+
   }
 
-  load_image (ev) {
-    var files = ev.target.files;
-    for (let i = 0; i < files.length; i++) {
-      let file = files[0];
-      let reader = new FileReader; // use HTML5 file reader to get the file
-
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = (e) => {
-          // get EXIF data
-          let exif = EXIF.readFromBinaryFile(e.target.result);
-
-          let lat = exif.GPSLatitude;
-          let lon = exif.GPSLongitude;
-
-          //Convert coordinates to WGS84 decimal
-          let latRef = exif.GPSLatitudeRef || "N";
-          let lonRef = exif.GPSLongitudeRef || "W";
-          lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
-          lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
-
-         //Send the coordinates to your map
-          this.active_layer_group.AddMarker(lat,lon);
-      };
-    }
-  }
 
   update_layer_style (prop) {
     this.current_layer.setStyle({prop: this.current_layer.options[prop]});
