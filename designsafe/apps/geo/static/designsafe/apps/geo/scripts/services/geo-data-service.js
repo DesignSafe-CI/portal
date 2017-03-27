@@ -9,8 +9,23 @@ export default class GeoDataService {
     'ngInject';
     this.$http = $http;
     this.$q = $q;
+    this.image_icon = L.divIcon({
+      iconSize: [40, 40],
+      html: "<div style='background-color:red'></div>",
+      className: 'leaflet-marker-photo'
+    });
+
   }
 
+  _arrayBufferToBase64( buffer ) {
+    let binary = '';
+    let bytes = new Uint8Array( buffer );
+    let len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return btoa( binary );
+}
   _from_kml(text_blob) {
     return this.$q( (res, rej) => {
       let lg = new LayerGroup("New Group", new L.FeatureGroup());
@@ -68,6 +83,7 @@ export default class GeoDataService {
       let lg = new LayerGroup("New Group", new L.FeatureGroup());
       let exif = EXIF.readFromBinaryFile(file);
       console.log(exif)
+      let encoded = 'data:image/jpg;base64,' + this._arrayBufferToBase64(file);
       let lat = exif.GPSLatitude;
       let lon = exif.GPSLongitude;
 
@@ -76,7 +92,23 @@ export default class GeoDataService {
       let lonRef = exif.GPSLongitudeRef || "W";
       lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
       lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
-      lg.feature_group.addLayer(d);
+      let icon = L.divIcon({
+        iconSize: [40, 40],
+        html: "<div class='image' style='background:url(" + encoded + ");background-size: 100% 100%'></div>",
+        className: 'leaflet-marker-photo'
+      });
+
+      let marker = L.marker([lat, lon], {icon: icon})
+            .bindPopup("<div class='image' style='background:url(" + encoded + ");background-size: contain;background-repeat:no-repeat'>",
+                {
+  			          className: 'leaflet-popup-photo',
+  			          minWidth: 400
+                });
+
+      marker.image_data = encoded;
+      console.log(marker)
+      lg.feature_group.addLayer(marker);
+      res(lg);
     });
   }
 
@@ -90,8 +122,12 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       let ext = GeoUtils.get_file_extension(file.name);
       let reader = new FileReader();
-      // reader.readAsText(file);
-      reader.readAsArrayBuffer(file);
+      //
+      if ((ext === 'kmz') || (ext === 'jpeg') || (ext === 'jpg')){
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsText(file);
+      }
       reader.onload = (e) => {
         let p = null;
         switch (ext) {
@@ -105,13 +141,12 @@ export default class GeoDataService {
             p = this._from_json(e.target.result);
             break;
           case 'kmz':
-            p = this._from_kmz(file);
+            p = this._from_kmz(e.target.result);
             break;
           case 'gpx':
             p = this._from_gpx(e.target.result);
             break;
           case 'jpeg':
-            console.log(e.target)
             p = this._from_image(e.target.result);
             break;
           case 'jpg':
@@ -131,7 +166,7 @@ export default class GeoDataService {
   load_from_data_depot(f) {
     let ext = GeoUtils.get_file_extension(f.name);
     let responseType = 'text';
-    if ((ext === 'kmz') || (ext === 'jpeg') || (ext === 'jpeg')) {
+    if ((ext === 'kmz') || (ext === 'jpg') || (ext === 'jpeg')) {
       responseType = 'arraybuffer';
     }
     return this.$http.get(f.agaveUrl(), {'responseType': responseType}).then((resp) => {

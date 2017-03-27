@@ -615,9 +615,25 @@ var GeoDataService = function () {
 
     this.$http = $http;
     this.$q = $q;
+    this.image_icon = L.divIcon({
+      iconSize: [40, 40],
+      html: "<div style='background-color:red'></div>",
+      className: 'leaflet-marker-photo'
+    });
   }
 
   _createClass(GeoDataService, [{
+    key: '_arrayBufferToBase64',
+    value: function _arrayBufferToBase64(buffer) {
+      var binary = '';
+      var bytes = new Uint8Array(buffer);
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+  }, {
     key: '_from_kml',
     value: function _from_kml(text_blob) {
       return this.$q(function (res, rej) {
@@ -678,10 +694,13 @@ var GeoDataService = function () {
   }, {
     key: '_from_image',
     value: function _from_image(file) {
+      var _this2 = this;
+
       return this.$q(function (res, rej) {
         var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
         var exif = EXIF.readFromBinaryFile(file);
         console.log(exif);
+        var encoded = 'data:image/jpg;base64,' + _this2._arrayBufferToBase64(file);
         var lat = exif.GPSLatitude;
         var lon = exif.GPSLongitude;
 
@@ -690,7 +709,21 @@ var GeoDataService = function () {
         var lonRef = exif.GPSLongitudeRef || "W";
         lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
         lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
-        lg.feature_group.addLayer(d);
+        var icon = L.divIcon({
+          iconSize: [40, 40],
+          html: "<div class='image' style='background:url(" + encoded + ");background-size: 100% 100%'></div>",
+          className: 'leaflet-marker-photo'
+        });
+
+        var marker = L.marker([lat, lon], { icon: icon }).bindPopup("<div class='image' style='background:url(" + encoded + ");background-size: contain;background-repeat:no-repeat'>", {
+          className: 'leaflet-popup-photo',
+          minWidth: 400
+        });
+
+        marker.image_data = encoded;
+        console.log(marker);
+        lg.feature_group.addLayer(marker);
+        res(lg);
       });
     }
   }, {
@@ -699,40 +732,43 @@ var GeoDataService = function () {
   }, {
     key: 'load_from_local_file',
     value: function load_from_local_file(file) {
-      var _this2 = this;
+      var _this3 = this;
 
       return this.$q(function (res, rej) {
         var ext = GeoUtils.get_file_extension(file.name);
         var reader = new FileReader();
-        // reader.readAsText(file);
-        reader.readAsArrayBuffer(file);
+        //
+        if (ext === 'kmz' || ext === 'jpeg' || ext === 'jpg') {
+          reader.readAsArrayBuffer(file);
+        } else {
+          reader.readAsText(file);
+        }
         reader.onload = function (e) {
           var p = null;
           switch (ext) {
             case 'kml':
-              p = _this2._from_kml(e.target.result);
+              p = _this3._from_kml(e.target.result);
               break;
             case 'json':
-              p = _this2._from_json(e.target.result);
+              p = _this3._from_json(e.target.result);
               break;
             case 'geojson':
-              p = _this2._from_json(e.target.result);
+              p = _this3._from_json(e.target.result);
               break;
             case 'kmz':
-              p = _this2._from_kmz(file);
+              p = _this3._from_kmz(e.target.result);
               break;
             case 'gpx':
-              p = _this2._from_gpx(e.target.result);
+              p = _this3._from_gpx(e.target.result);
               break;
             case 'jpeg':
-              console.log(e.target);
-              p = _this2._from_image(e.target.result);
+              p = _this3._from_image(e.target.result);
               break;
             case 'jpg':
-              p = _this2._from_image(e.target.result);
+              p = _this3._from_image(e.target.result);
               break;
             default:
-              p = _this2._from_json(e.target.result);
+              p = _this3._from_json(e.target.result);
           }
           return res(p);
         };
@@ -746,39 +782,39 @@ var GeoDataService = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this3 = this;
+      var _this4 = this;
 
       var ext = GeoUtils.get_file_extension(f.name);
       var responseType = 'text';
-      if (ext === 'kmz' || ext === 'jpeg' || ext === 'jpeg') {
+      if (ext === 'kmz' || ext === 'jpg' || ext === 'jpeg') {
         responseType = 'arraybuffer';
       }
       return this.$http.get(f.agaveUrl(), { 'responseType': responseType }).then(function (resp) {
         var p = null;
         switch (ext) {
           case 'kml':
-            p = _this3._from_kml(resp.data);
+            p = _this4._from_kml(resp.data);
             break;
           case 'json':
-            p = _this3._from_json(resp.data);
+            p = _this4._from_json(resp.data);
             break;
           case 'geojson':
-            p = _this3._from_json(resp.data);
+            p = _this4._from_json(resp.data);
             break;
           case 'kmz':
-            p = _this3._from_kmz(resp.data);
+            p = _this4._from_kmz(resp.data);
             break;
           case 'gpx':
-            p = _this3._from_gpx(resp.data);
+            p = _this4._from_gpx(resp.data);
             break;
           case 'jpeg':
-            p = _this3._from_image(resp.data);
+            p = _this4._from_image(resp.data);
             break;
           case 'jpg':
-            p = _this3._from_image(resp.data);
+            p = _this4._from_image(resp.data);
             break;
           default:
-            p = _this3._from_json(resp.data);
+            p = _this4._from_json(resp.data);
         }
         return p;
       });
