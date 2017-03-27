@@ -115,6 +115,8 @@
     ProjectEntity.prototype.update = function(data){
       var self = this;
       angular.extend(self, data);
+      self._filePaths = undefined;
+      self.getRelFilePaths();
     };
 
     /**
@@ -160,6 +162,17 @@
         }
       }
       return self._filePaths;
+    };
+
+    ProjectEntity.prototype.isRelatedToFile = function(file){
+      var filePaths = self.getRelFilePaths();
+      var rel = _.find(filePaths, function(filePath){
+        return file.path === filePath;
+      });
+      if (typeof rel !== 'undefined'){
+        return true;
+      }
+      return false;
     };
 
     return ProjectEntity;
