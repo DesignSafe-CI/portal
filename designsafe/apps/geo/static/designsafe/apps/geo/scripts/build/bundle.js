@@ -721,7 +721,6 @@ var GeoDataService = function () {
         });
 
         marker.image_data = encoded;
-        console.log(marker);
         lg.feature_group.addLayer(marker);
         res(lg);
       });

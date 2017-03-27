@@ -106,7 +106,6 @@ export default class GeoDataService {
                 });
 
       marker.image_data = encoded;
-      console.log(marker)
       lg.feature_group.addLayer(marker);
       res(lg);
     });
