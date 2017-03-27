@@ -13,7 +13,6 @@ export default class GeoDataService {
 
   _from_kml(text_blob) {
     return this.$q( (res, rej) => {
-      console.log(text_blob)
       let lg = new LayerGroup("New Group", new L.FeatureGroup());
       let l = omnivore.kml.parse(text_blob);
       l.getLayers().forEach((d) => {
@@ -68,7 +67,7 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       let lg = new LayerGroup("New Group", new L.FeatureGroup());
       let exif = EXIF.readFromBinaryFile(file);
-
+      console.log(exif)
       let lat = exif.GPSLatitude;
       let lon = exif.GPSLongitude;
 
@@ -91,7 +90,8 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       let ext = GeoUtils.get_file_extension(file.name);
       let reader = new FileReader();
-      reader.readAsText(file);
+      // reader.readAsText(file);
+      reader.readAsArrayBuffer(file);
       reader.onload = (e) => {
         let p = null;
         switch (ext) {
@@ -111,9 +111,14 @@ export default class GeoDataService {
             p = this._from_gpx(e.target.result);
             break;
           case 'jpeg':
-            p = this._from_image(file);
+            console.log(e.target)
+            p = this._from_image(e.target.result);
+            break;
+          case 'jpg':
+            p = this._from_image(e.target.result);
+            break;
           default:
-            p = this._from_json(reps.data);
+            p = this._from_json(e.target.result);
         }
         return res(p);
       };
@@ -126,7 +131,7 @@ export default class GeoDataService {
   load_from_data_depot(f) {
     let ext = GeoUtils.get_file_extension(f.name);
     let responseType = 'text';
-    if (ext === 'kmz') {
+    if ((ext === 'kmz') || (ext === 'jpeg') || (ext === 'jpeg')) {
       responseType = 'arraybuffer';
     }
     return this.$http.get(f.agaveUrl(), {'responseType': responseType}).then((resp) => {
@@ -146,6 +151,12 @@ export default class GeoDataService {
           break;
         case 'gpx':
           p = this._from_gpx(resp.data);
+          break;
+        case 'jpeg':
+          p = this._from_image(resp.data);
+          break;
+        case 'jpg':
+          p = this._from_image(resp.data);
           break;
         default:
           p = this._from_json(resp.data);

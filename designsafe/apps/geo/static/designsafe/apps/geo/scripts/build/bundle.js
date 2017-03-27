@@ -621,7 +621,6 @@ var GeoDataService = function () {
     key: '_from_kml',
     value: function _from_kml(text_blob) {
       return this.$q(function (res, rej) {
-        console.log(text_blob);
         var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
         var l = omnivore.kml.parse(text_blob);
         l.getLayers().forEach(function (d) {
@@ -682,7 +681,7 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
         var exif = EXIF.readFromBinaryFile(file);
-
+        console.log(exif);
         var lat = exif.GPSLatitude;
         var lon = exif.GPSLongitude;
 
@@ -705,7 +704,8 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         var ext = GeoUtils.get_file_extension(file.name);
         var reader = new FileReader();
-        reader.readAsText(file);
+        // reader.readAsText(file);
+        reader.readAsArrayBuffer(file);
         reader.onload = function (e) {
           var p = null;
           switch (ext) {
@@ -725,9 +725,14 @@ var GeoDataService = function () {
               p = _this2._from_gpx(e.target.result);
               break;
             case 'jpeg':
-              p = _this2._from_image(file);
+              console.log(e.target);
+              p = _this2._from_image(e.target.result);
+              break;
+            case 'jpg':
+              p = _this2._from_image(e.target.result);
+              break;
             default:
-              p = _this2._from_json(reps.data);
+              p = _this2._from_json(e.target.result);
           }
           return res(p);
         };
@@ -745,7 +750,7 @@ var GeoDataService = function () {
 
       var ext = GeoUtils.get_file_extension(f.name);
       var responseType = 'text';
-      if (ext === 'kmz') {
+      if (ext === 'kmz' || ext === 'jpeg' || ext === 'jpeg') {
         responseType = 'arraybuffer';
       }
       return this.$http.get(f.agaveUrl(), { 'responseType': responseType }).then(function (resp) {
@@ -765,6 +770,12 @@ var GeoDataService = function () {
             break;
           case 'gpx':
             p = _this3._from_gpx(resp.data);
+            break;
+          case 'jpeg':
+            p = _this3._from_image(resp.data);
+            break;
+          case 'jpg':
+            p = _this3._from_image(resp.data);
             break;
           default:
             p = _this3._from_json(resp.data);
