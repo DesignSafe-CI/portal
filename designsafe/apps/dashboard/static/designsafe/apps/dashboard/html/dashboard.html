@@ -79,7 +79,7 @@
       <div class="panel-heading dashboard">
         <h3 class="panel-title">My Jobs</h3>
       </div>
-      <div ng-show="!jobs.length">
+      <div ng-show="!jobs.length" class="panel-body">
         <h3 ng-show="!loading_jobs">
           No recent jobs! You can submit jobs in the
           <a href="/rw/workspace"> Workspace </a>
@@ -88,7 +88,7 @@
           <i class="fa fa-spinner fa-pulse fa-2x fa-fw" ></i>
         </div>
       </div>
-      <div id="ds_jobs_chart" class="ds-chart"></div>
+      <div id="ds_jobs_chart" class="ds-chart" ng-show="jobs.length"></div>
       <ul class="list-group" ng-show="display_job_details">
         <li class="list-group-item" ng-repeat="job in jobs_details">
           <div class="row">
