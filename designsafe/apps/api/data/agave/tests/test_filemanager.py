@@ -713,5 +713,5 @@ class FileManagerShareTestCase(FileManagerBaseTestCase):
             self.user.username, path,
             agave_client=fm.agave_client)
         mock_share_task.assert_called_with(
-            args=(self.user.username, file_id, permissions, True))
+            args=(self.user.username, file_id, permissions, True), queue='indexing')
 

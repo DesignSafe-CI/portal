@@ -3,6 +3,9 @@
 redis:
   image: redis
 
+rabbitmq:
+  image: rabbitmq
+
 elasticsearch:
   image: elasticsearch:2.3.2
   volumes:
@@ -36,11 +39,21 @@ django:
     - DATABASE_USER=DS_DEV
     - DATABASE_PASSWORD=DS_DEV
     - DS_LOCAL_DEV=True
+    - WS_BACKEND_HOST=redis
+    - WS_BACKEND_DB=0
+    - WS_BACKEND_PORT=6379
+    - BROKER_URL_HOST=rabbitmq
+    - BROKER_URL_PORT=5672
+    - BROKER_URL_VHOST=
+    - BROKER_URL_USERNAME=guest
+    - BROKER_URL_PWD=guest
   links:
     - redis:redis
     - memcached:memcached
     - elasticsearch:elasticsearch
     - mysql:mysql
+    - rabbitmq:rabbitmq
+    - worker:worker
   volumes:
     - .:/portal
     - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
@@ -81,11 +94,17 @@ worker:
     - DATABASE_USER=DS_DEV
     - DATABASE_PASSWORD=DS_DEV
     - DS_LOCAL_DEV=True
+    - BROKER_URL_HOST=rabbitmq
+    - BROKER_URL_PORT=5672
+    - BROKER_URL_VHOST=
+    - BROKER_URL_USERNAME=guest
+    - BROKER_URL_PWD=guest
   links:
     - redis:redis
     - memcached:memcached
     - elasticsearch:elasticsearch
     - mysql:mysql
+    - rabbitmq:rabbitmq
   volumes:
     - .:/portal
     - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI

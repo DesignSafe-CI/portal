@@ -202,7 +202,8 @@ class FileManager(object):
             reindex_agave.apply_async(kwargs={
                                       'username': user.username,
                                       'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
-                                      })
+                                      },
+                                      queue='indexing')
         except:
             logger.exception('Unexpected task failure: dropbox_download', extra={
                 'username': username,

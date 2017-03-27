@@ -295,7 +295,8 @@ class FileManager(AbstractFileManager, AgaveObject):
                 listing = self._agave_listing(system, file_path, **kwargs)
                 reindex_agave.apply_async(kwargs = {'username': self.username,
                                                     'file_id': file_id,
-                                                    'levels': 1})
+                                                    'levels': 1},
+                                                    queue='indexing')
             except IndexError:
                 listing = es_listing
         return listing
@@ -724,7 +725,8 @@ class FileManager(AbstractFileManager, AgaveObject):
         #esf = Object.from_file_path(system, self.username, file_path)
         #esf.share(self.username, permissions)
         share_agave.apply_async(args=(self.username, file_id, permissions,
-                                      recursive))
+                                      recursive),
+                                      queue='indexing')
         return f.to_dict()
 
     def transfer(self, file_id, dest_resource, dest_file_id):
@@ -735,7 +737,8 @@ class FileManager(AbstractFileManager, AgaveObject):
                                       self.resource,
                                       file_id,
                                       dest_resource,
-                                      dest_file_id))
+                                      dest_file_id),
+                                      queue='indexing')
             return {'message': 'The requested transfer has been scheduled'}
         else:
             message = 'The requested transfer from %s to %s ' \
@@ -803,7 +806,8 @@ class FileManager(AbstractFileManager, AgaveObject):
                                               'file_id': file_id,
                                               'full_indexing': False,
                                               'pems_indexing': True,
-                                              'index_full_path': True})
+                                              'index_full_path': True},
+                                      queue='indexing')
         return u_file.to_dict()
 
     def from_file_real_path(self, file_real_path):

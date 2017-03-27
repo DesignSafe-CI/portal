@@ -128,7 +128,7 @@ class BoxFilesJsonView(BoxAPIView):
 
             task_args = (request.user.username, item.type, item.object_id, target_system,
                          target_dir)
-            task = copy_box_item.apply_async(args=task_args, countdown=10)
+            task = copy_box_item.apply_async(args=task_args, countdown=10, queue='files')
 
             logger.debug('Scheduled Box Copy', extra={
                 'username': request.user.username,

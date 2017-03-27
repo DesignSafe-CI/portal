@@ -273,7 +273,7 @@ class FileManager(AgaveObject):
         service = lookup_transfer_service(self.resource, dest_resource)
         if service:
             args = (self.username, self.resource, file_id, dest_resource, dest_file_id)
-            service.apply_async(args=args)
+            service.apply_async(args=args, queue='files')
             return {'message': 'The requested transfer has been scheduled'}
         else:
             message = 'The requested transfer from %s to %s ' \

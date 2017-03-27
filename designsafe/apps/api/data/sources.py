@@ -48,6 +48,17 @@ class SourcesApi(object):
             },
         },
         {
+            "id": "community",
+            "resource": "agave",
+            "defaultPath": None,
+            "name": "Community data",
+            "_visible": True,
+            "_indexed": True,
+            "_extra": {
+                "icon": "fa-globe"
+            },
+        },
+        {
             "id": "box",
             "resource": "box",
             "defaultPath": None,

@@ -97,7 +97,7 @@ def copy_box_item(self, username, box_item_type, box_item_id, target_system_id,
             for it in item_collection:
                 args = (username, it.type, it.object_id, target_system_id,
                         f.full_path)
-                copy_box_item.apply_async(args=args, countdown=offset*2)
+                copy_box_item.apply_async(args=args, countdown=offset*2, queue='files')
             if len(item_collection) == limit:
                 offset += limit
             else:

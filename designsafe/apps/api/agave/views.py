@@ -235,7 +235,8 @@ class FileMediaView(View):
                             'dest_resource': external,
                             'src_file_id': os.path.join(system_id, file_path.strip('/')),
                             'dest_file_id': body.get('path')
-                        })
+                        },
+                        queue='files')
                         event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This will take a few minutes.'
                         event_data[Notification.EXTRA] = {
                             'resource': external,
@@ -308,6 +309,7 @@ class FileMediaView(View):
                     dir_name = re.sub('[^a-zA-Z\_\- ]', '_', dir_name)
                     dir_name = re.sub('\_+', '_', dir_name)
                     new_dir = fm.mkdir(system_id, file_path, dir_name)
+                    subprocess.call(['setfacl', '-m', 'd:u:tg458981:rwX,u:' + request.user.username + ':rwX', '/corral-repl/tacc/NHERI/shared' + file_path + '/' + dir_name])
                     metrics.info('Data Depot',
                                  extra = {
                                      'user': request.user.username,

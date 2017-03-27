@@ -26,6 +26,8 @@ class AgaveFileManager(BaseFileManager):
     SYSTEM_ID_PATHS = [
         {'regex': r'^designsafe.storage.default$',
          'path': '/corral-repl/tacc/NHERI/shared'},
+        {'regex': r'^designsafe.storage.community$',
+         'path': '/corral-repl/tacc/NHERI/community'},
         {'regex': r'^project\-',
          'path': '/corral-repl/tacc/NHERI/projects'}
     ]
@@ -51,7 +53,8 @@ class AgaveFileManager(BaseFileManager):
         res = f.import_data(from_system, from_file_path)
         file_name = from_file_path.split('/')[-1]
         reindex_agave.apply_async(kwargs={'username': 'ds_admin',
-                                          'file_id': '{}/{}'.format(system, os.path.join(file_path, file_name))})
+                                          'file_id': '{}/{}'.format(system, os.path.join(file_path, file_name))},
+                                  queue='indexing')
         return res
 
     def copy(self, system, file_path, dest_path=None, dest_name=None):
@@ -73,7 +76,8 @@ class AgaveFileManager(BaseFileManager):
 
         # schedule celery task to index new copy
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}/{}'.format(system, dest_path.strip('/'), dest_name)})
+                                            'file_id': '{}/{}/{}'.format(system, dest_path.strip('/'), dest_name)},
+                                  queue='indexing')
 
         return copied_file
 
@@ -82,7 +86,8 @@ class AgaveFileManager(BaseFileManager):
         parent_path = '/'.join(path.strip('/').split('/')[:-1])
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1})
+                                            'levels': 1}, 
+                                            queue='indexing')
         return resp
 
     def download(self, system, path):
@@ -107,7 +112,8 @@ class AgaveFileManager(BaseFileManager):
         f = BaseFileResource(self._ag, system, file_path)
         resp = f.mkdir(dir_name)
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, file_path)})
+                                            'file_id': '{}/{}'.format(system, file_path)},
+                                            queue='indexing')
         return resp
 
     def move(self, system, file_path, dest_path, dest_name=None):
@@ -117,10 +123,12 @@ class AgaveFileManager(BaseFileManager):
         parent_path = parent_path.strip('/') or '/'
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1})
+                                            'levels': 1},
+                                            queue='indexing')
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, os.path.join(dest_path, resp.name)),
-                                            'levels': 1})
+                                            'levels': 1},
+                                            queue='indexing')
         return resp
 
     def rename(self, system, file_path, rename_to):
@@ -129,7 +137,8 @@ class AgaveFileManager(BaseFileManager):
         parent_path = '/'.join(file_path.strip('/').split('/')[:-1])
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1})
+                                            'levels': 1},
+                                            queue='indexing')
         return resp
 
     def share(self, system, file_path, username, permission):
@@ -140,7 +149,8 @@ class AgaveFileManager(BaseFileManager):
         pem.permission_bit = permission
         resp = pem.save()
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
-                                            'file_id': '{}/{}'.format(system, file_path)})
+                                            'file_id': '{}/{}'.format(system, file_path)},
+                                            queue='indexing')
         return resp
 
     def trash(self, system, file_path, trash_path):
@@ -169,10 +179,12 @@ class AgaveFileManager(BaseFileManager):
         parent_path = parent_path.strip('/') or '/'
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, trash_path),
-                                            'levels': 1})
+                                            'levels': 1},
+                                            queue='indexing')
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, parent_path),
-                                            'levels': 1})
+                                            'levels': 1},
+                                            queue='indexing')
         return resp
 
     def upload(self, system, file_path, upload_file):
@@ -180,5 +192,6 @@ class AgaveFileManager(BaseFileManager):
         resp = f.upload(upload_file)
         reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
                                             'file_id': '{}/{}'.format(system, file_path),
-                                            'levels': 1})
+                                            'levels': 1},
+                                            queue='indexing')
         return resp

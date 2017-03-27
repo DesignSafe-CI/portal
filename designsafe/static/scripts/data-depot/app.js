@@ -312,8 +312,40 @@
         }
       })
       .state('communityData', {
-        url: '/community/',
-        template: '<pre>local/communityData.html</pre>'
+        // url: '/community/',
+        // template: '<pre>local/communityData.html</pre>'
+        url: '/agave/{systemId}/',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.community',
+          filePath: '/'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var options = {
+              system: ($stateParams.systemId || 'designsafe.storage.community'),
+              path: ($stateParams.filePath || '/')
+            };
+            // if (options.path === '/') {
+              // options.path = Django.user;
+            // }
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'dataSearch';
+            return DataBrowserService.browse(options);
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
       })
       .state('trainingMaterials', {
         url: '/training/',

@@ -167,7 +167,7 @@ class FileManager(AbstractFileManager):
             args = (self._user.username,
                     self.resource, file_id,
                     dest_resource, dest_file_id)
-            service.apply_async(args=args)
+            service.apply_async(args=args, queue='files')
             return {'message': 'The requested transfer has been scheduled'}
         else:
             message = 'The requested transfer from %s to %s ' \
@@ -201,7 +201,8 @@ class FileManager(AbstractFileManager):
                                      file_id,
                                      from_resource,
                                      import_file_id),
-                               countdown=10)
+                               countdown=10,
+                               queue='files')
 
         return {'message': 'Your file(s) have been scheduled for upload to box.'}
 
