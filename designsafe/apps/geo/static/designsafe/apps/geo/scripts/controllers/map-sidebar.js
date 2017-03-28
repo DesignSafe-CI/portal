@@ -38,17 +38,18 @@ export default class MapSidebarCtrl {
       'Satellite': satellite
     };
 
+    this.project = new MapProject('New Map');
+    console.log(this.project)
     this.map = L.map('geo_map', {layers: [streets, satellite], measureControl:true}).setView([0, 0], 3);
-    this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout( () => {this.map.invalidateSize();}, 10);
 
-    this.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
-    this.map.addLayer(this.layer_groups[0].feature_group);
-    this.active_layer_group = this.layer_groups[0];
+    this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+    this.map.addLayer(this.project.layer_groups[0].feature_group);
+    this.active_layer_group = this.project.layer_groups[0];
 
     // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', (e) => {
@@ -93,15 +94,15 @@ export default class MapSidebarCtrl {
 
   create_layer_group () {
     let lg = new LayerGroup("New Group", new L.FeatureGroup());
-    this.layer_groups.push(lg);
-    this.active_layer_group = this.layer_groups[this.layer_groups.length -1];
+    this.project.layer_groups.push(lg);
+    this.active_layer_group = this.project.layer_groups[this.project.layer_groups.length -1];
     this.map.addLayer(lg.feature_group);
     this.select_active_layer_group(this.active_layer_group);
   }
 
   delete_layer_group (lg, i) {
     this.map.removeLayer(lg.feature_group);
-    this.layer_groups.splice(i, 1);
+    this.project.layer_groups.splice(i, 1);
   }
 
   delete_feature (f) {
@@ -156,7 +157,7 @@ export default class MapSidebarCtrl {
   }
 
   on_drop (ev, data, lg) {
-    let src_lg = this.layer_groups[data.pidx];
+    let src_lg = this.project.layer_groups[data.pidx];
     let feature = src_lg.feature_group.getLayers()[data.idx];
     src_lg.feature_group.removeLayer(feature);
     lg.feature_group.addLayer(feature);
@@ -169,9 +170,11 @@ export default class MapSidebarCtrl {
 
   load_from_data_depot(f) {
     this.loading = true;
-    this.GeoDataService.load_from_data_depot(f).then( (lg) => {
-      this.layer_groups.push(lg);
-      this.map.addLayer(lg.feature_group);
+    this.GeoDataService.load_from_data_depot(f).then( (features) => {
+      features.forEach( (f) => {
+        this.active_layer_group.feature_group.addLayer(f);
+      });
+      this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
       this.loading = false;
     });
   }
@@ -195,27 +198,16 @@ export default class MapSidebarCtrl {
 
 
   save_project () {
-    let out = {
-      "type": "FeatureCollection",
-      "features": [],
-      "ds_map": true,
-      "name": this.map_title
-    };
-    this.layer_groups.forEach( (lg) => {
-      let json = lg.feature_group.toGeoJSON();
-      //add in any options
-      json.label = lg.label;
-
-      out.features.push(json);
-    });
-    let blob = new Blob([JSON.stringify(out)], {type: "application/json"});
-    let url  = URL.createObjectURL(blob);
-
-    let a = document.createElement('a');
-    a.download    = this.map_title + ".json";
-    a.href        = url;
-    a.textContent = "Download";
-    a.click();
+    let gjson = this.project.to_json();
+    console.log(gjson)
+    // let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
+    // let url  = URL.createObjectURL(blob);
+    //
+    // let a = document.createElement('a');
+    // a.download    = this.map_title + ".json";
+    // a.href        = url;
+    // a.textContent = "Download";
+    // a.click();
   }
 
 }

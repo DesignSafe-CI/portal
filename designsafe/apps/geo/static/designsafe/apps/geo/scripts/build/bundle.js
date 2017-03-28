@@ -158,15 +158,48 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var MapProject = function MapProject(name) {
-  _classCallCheck(this, MapProject);
+var MapProject = function () {
+  function MapProject(name) {
+    _classCallCheck(this, MapProject);
 
-  this.name = name;
-  this.layer_groups = [];
-  this.description = null;
-};
+    this.name = name;
+    this.layer_groups = [];
+    this.description = null;
+  }
+
+  _createClass(MapProject, [{
+    key: "to_json",
+    value: function to_json() {
+      var out = {
+        "type": "FeatureCollection",
+        "features": [],
+        "ds_map": true,
+        "name": this.name
+      };
+      this.layer_groups.forEach(function (lg) {
+        var tmp = {
+          "type": "FeatureCollection",
+          "features": [],
+          "label": lg.label
+        };
+        lg.feature_group.getLayers().forEach(function (feature) {
+          var json = feature.toGeoJSON();
+          //add in any options
+          json.label = lg.label;
+          tmp.features.push(json);
+        });
+        out.features.push(tmp);
+      });
+      return out;
+    }
+  }]);
+
+  return MapProject;
+}();
 
 exports.default = MapProject;
 
@@ -338,8 +371,9 @@ var MapSidebarCtrl = function () {
       'Satellite': satellite
     };
 
+    this.project = new _mapProject2.default('New Map');
+    console.log(this.project);
     this.map = L.map('geo_map', { layers: [streets, satellite], measureControl: true }).setView([0, 0], 3);
-    this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
@@ -348,9 +382,9 @@ var MapSidebarCtrl = function () {
       _this.map.invalidateSize();
     }, 10);
 
-    this.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
-    this.map.addLayer(this.layer_groups[0].feature_group);
-    this.active_layer_group = this.layer_groups[0];
+    this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
+    this.map.addLayer(this.project.layer_groups[0].feature_group);
+    this.active_layer_group = this.project.layer_groups[0];
 
     // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', function (e) {
@@ -395,8 +429,8 @@ var MapSidebarCtrl = function () {
     key: 'create_layer_group',
     value: function create_layer_group() {
       var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
-      this.layer_groups.push(lg);
-      this.active_layer_group = this.layer_groups[this.layer_groups.length - 1];
+      this.project.layer_groups.push(lg);
+      this.active_layer_group = this.project.layer_groups[this.project.layer_groups.length - 1];
       this.map.addLayer(lg.feature_group);
       this.select_active_layer_group(this.active_layer_group);
     }
@@ -404,7 +438,7 @@ var MapSidebarCtrl = function () {
     key: 'delete_layer_group',
     value: function delete_layer_group(lg, i) {
       this.map.removeLayer(lg.feature_group);
-      this.layer_groups.splice(i, 1);
+      this.project.layer_groups.splice(i, 1);
     }
   }, {
     key: 'delete_feature',
@@ -471,7 +505,7 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'on_drop',
     value: function on_drop(ev, data, lg) {
-      var src_lg = this.layer_groups[data.pidx];
+      var src_lg = this.project.layer_groups[data.pidx];
       var feature = src_lg.feature_group.getLayers()[data.idx];
       src_lg.feature_group.removeLayer(feature);
       lg.feature_group.addLayer(feature);
@@ -488,9 +522,11 @@ var MapSidebarCtrl = function () {
       var _this3 = this;
 
       this.loading = true;
-      this.GeoDataService.load_from_data_depot(f).then(function (lg) {
-        _this3.layer_groups.push(lg);
-        _this3.map.addLayer(lg.feature_group);
+      this.GeoDataService.load_from_data_depot(f).then(function (features) {
+        features.forEach(function (f) {
+          _this3.active_layer_group.feature_group.addLayer(f);
+        });
+        _this3.map.fitBounds(_this3.active_layer_group.feature_group.getBounds());
         _this3.loading = false;
       });
     }
@@ -516,27 +552,16 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_project',
     value: function save_project() {
-      var out = {
-        "type": "FeatureCollection",
-        "features": [],
-        "ds_map": true,
-        "name": this.map_title
-      };
-      this.layer_groups.forEach(function (lg) {
-        var json = lg.feature_group.toGeoJSON();
-        //add in any options
-        json.label = lg.label;
-
-        out.features.push(json);
-      });
-      var blob = new Blob([JSON.stringify(out)], { type: "application/json" });
-      var url = URL.createObjectURL(blob);
-
-      var a = document.createElement('a');
-      a.download = this.map_title + ".json";
-      a.href = url;
-      a.textContent = "Download";
-      a.click();
+      var gjson = this.project.to_json();
+      console.log(gjson);
+      // let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
+      // let url  = URL.createObjectURL(blob);
+      //
+      // let a = document.createElement('a');
+      // a.download    = this.map_title + ".json";
+      // a.href        = url;
+      // a.textContent = "Download";
+      // a.click();
     }
   }]);
 
@@ -637,6 +662,7 @@ var GeoDataService = function () {
         var features = [];
         var l = omnivore.kml.parse(text_blob);
         l.getLayers().forEach(function (d) {
+          d.feature.properties = {};
           features.push(d);
         });
         res(features);
@@ -666,10 +692,11 @@ var GeoDataService = function () {
     }
   }, {
     key: '_from_json',
-    value: function _from_json(json_blob) {
+    value: function _from_json(blob) {
       return this.$q(function (res, rej) {
         var features = [];
-        L.geoJSON(json_blob).getLayers().forEach(function (l) {
+        blob = JSON.parse(blob);
+        L.geoJSON(blob).getLayers().forEach(function (l) {
           features.push(l);
         });
         res(features);

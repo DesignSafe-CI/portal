@@ -20,7 +20,7 @@
     <li class="list-group-item menu clearfix title"
         ng-mouseover="vm.title_hover=true"
         ng-mouseleave="vm.title_hover=false">
-      <span class="strong map-title"> {{vm.map_title}} </span>
+      <span class="strong map-title"> {{vm.project.name}} </span>
 
       <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=!vm.edit_title"></i>
     </li>
@@ -31,7 +31,7 @@
       </div>
     </li>
 
-    <div ng-repeat="lg in vm.layer_groups track by $index" ui-on-Drop="vm.on_drop($event, $data, lg)">
+    <div ng-repeat="lg in vm.project.layer_groups track by $index" ui-on-Drop="vm.on_drop($event, $data, lg)">
       <li class="list-group-item menu clearfix"
           ng-class="{'active': lg == vm.active_layer_group}"
           ng-mouseover="lg.show_edit_icon=true"
@@ -116,7 +116,7 @@
     </li>
     <li class="list-group-item menu clearfix">
       <div class="left"> Lon: </div>
-      <div class="right"> {{vm.current_layer.getLatLng().lon}} </div>
+      <div class="right"> {{vm.current_layer.getLatLng().lng}} </div>
     </li>
     <!-- <table class="table table-condensed table-bordered">
 
@@ -154,11 +154,11 @@
 
     <div class="form-group">
       <label> Title </label>
-      <input type="text" ng-model="vm.map_title" class="form-control">
+      <input type="text" ng-model="vm.project.name" class="form-control">
     </div>
     <div class="form-group">
       <label> Description </label>
-      <textarea ng-model="vm.map_description" class="form-control" rows="5"></textarea>
+      <textarea ng-model="vm.project.description" class="form-control" rows="5"></textarea>
     </div>
   </div>
 

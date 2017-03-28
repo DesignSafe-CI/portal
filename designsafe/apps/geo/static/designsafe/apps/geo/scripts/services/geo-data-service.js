@@ -31,6 +31,7 @@ export default class GeoDataService {
       let features = [];
       let l = omnivore.kml.parse(text_blob);
       l.getLayers().forEach((d) => {
+        d.feature.properties = {};
         features.push(d);
       });
       res(features);
@@ -56,10 +57,11 @@ export default class GeoDataService {
     });
   }
 
-  _from_json (json_blob) {
+  _from_json (blob) {
     return this.$q( (res, rej) => {
       let features = [];
-      L.geoJSON(json_blob).getLayers().forEach( (l) => {
+      blob = JSON.parse(blob);
+      L.geoJSON(blob).getLayers().forEach( (l) => {
         features.push(l);
       });
       res(features);
