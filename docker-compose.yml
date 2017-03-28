@@ -3,6 +3,9 @@
 redis:
   image: redis
 
+rabbitmq:
+  image: rabbitmq
+
 memcached:
   image: memcached
 
