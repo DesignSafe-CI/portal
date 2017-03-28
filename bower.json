@@ -38,7 +38,8 @@
     "angular-slick-carousel": "^3.1.7",
     "exif-js": "^2.1.1",
     "d3": "^4.4.0",
-    "angular-native-dragdrop": "^1.2.2"
+    "angular-native-dragdrop": "^1.2.2",
+    "leaflet-measure": "^2.1.7"
   },
   "resolutions": {
     "angular": "~1.4.8",

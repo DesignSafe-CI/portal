@@ -338,7 +338,7 @@ var MapSidebarCtrl = function () {
       'Satellite': satellite
     };
 
-    this.map = L.map('geo_map', { layers: [streets, satellite] }).setView([0, 0], 3);
+    this.map = L.map('geo_map', { layers: [streets, satellite], measureControl: true }).setView([0, 0], 3);
     this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
@@ -500,15 +500,12 @@ var MapSidebarCtrl = function () {
       var _this4 = this;
 
       var file = ev.target.files[0];
-      var lf = this.GeoDataService.load_from_local_file(file).then(function (lg) {
-        console.log(lg);
-        _this4.layer_groups.push(lg);
-        _this4.map.addLayer(lg.feature_group);
-        var bounds = [];
-        _this4.layer_groups.forEach(function (lg) {
-          bounds.push(lg.feature_group.getBounds());
+      var lf = this.GeoDataService.load_from_local_file(file).then(function (features) {
+        features.forEach(function (f) {
+          _this4.active_layer_group.feature_group.addLayer(f);
         });
-        _this4.map.fitBounds(bounds);
+
+        _this4.map.fitBounds(_this4.active_layer_group.feature_group.getBounds());
       });
     }
   }, {
@@ -637,12 +634,12 @@ var GeoDataService = function () {
     key: '_from_kml',
     value: function _from_kml(text_blob) {
       return this.$q(function (res, rej) {
-        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        var features = [];
         var l = omnivore.kml.parse(text_blob);
         l.getLayers().forEach(function (d) {
-          lg.feature_group.addLayer(d);
+          features.push(d);
         });
-        res(lg);
+        res(features);
       });
     }
   }, {
@@ -662,8 +659,8 @@ var GeoDataService = function () {
             }
           }
         }).then(function (txt) {
-          var lg = _this._from_kml(txt);
-          res(lg);
+          var features = _this._from_kml(txt);
+          res(features);
         });
       });
     }
@@ -671,11 +668,11 @@ var GeoDataService = function () {
     key: '_from_json',
     value: function _from_json(json_blob) {
       return this.$q(function (res, rej) {
-        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        var features = [];
         L.geoJSON(json_blob).getLayers().forEach(function (l) {
-          lg.feature_group.addLayer(l);
+          features.push(l);
         });
-        res(lg);
+        res(features);
       });
     }
   }, {
@@ -683,12 +680,12 @@ var GeoDataService = function () {
     value: function _from_gpx(blob) {
       return this.$q(function (res, rej) {
         // console.log(text_blob)
-        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
+        var features = [];
         var l = omnivore.gpx.parse(blob);
         l.getLayers().forEach(function (d) {
-          lg.feature_group.addLayer(d);
+          features.push(d);
         });
-        res(lg);
+        res(features);
       });
     }
   }, {
@@ -697,7 +694,6 @@ var GeoDataService = function () {
       var _this2 = this;
 
       return this.$q(function (res, rej) {
-        var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
         var exif = EXIF.readFromBinaryFile(file);
         console.log(exif);
         var encoded = 'data:image/jpg;base64,' + _this2._arrayBufferToBase64(file);
@@ -715,14 +711,19 @@ var GeoDataService = function () {
           className: 'leaflet-marker-photo'
         });
 
-        var marker = L.marker([lat, lon], { icon: icon }).bindPopup("<div class='image' style='background:url(" + encoded + ");background-size: contain;background-repeat:no-repeat'>", {
+        var marker = L.marker([lat, lon], { icon: icon })
+        // .bindPopup("<div class='image' style='background:url(" + encoded + ")'>",
+        //     {
+        //       className: 'leaflet-popup-photo',
+        //       minWidth: 200
+        //     });
+        .bindPopup("<img src=" + encoded + ">", {
           className: 'leaflet-popup-photo',
-          minWidth: 400
+          maxWidth: "auto"
         });
 
-        marker.image_data = encoded;
-        lg.feature_group.addLayer(marker);
-        res(lg);
+        marker.image_src = encoded;
+        res([marker]);
       });
     }
   }, {
@@ -881,6 +882,10 @@ function config($stateProvider, $uibTooltipProvider) {
         return true;
       }
     }
+  }).state('geo.help', {
+    url: '/help',
+    templateUrl: '/static/designsafe/apps/geo/html/help.html',
+    controller: 'HelpCtrl as vm'
   });
 
   //config popups etc

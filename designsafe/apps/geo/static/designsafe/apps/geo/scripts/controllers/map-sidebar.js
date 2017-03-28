@@ -38,7 +38,7 @@ export default class MapSidebarCtrl {
       'Satellite': satellite
     };
 
-    this.map = L.map('geo_map', {layers: [streets, satellite]}).setView([0, 0], 3);
+    this.map = L.map('geo_map', {layers: [streets, satellite], measureControl:true}).setView([0, 0], 3);
     this.map_title = 'New Map';
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
@@ -178,15 +178,12 @@ export default class MapSidebarCtrl {
 
   local_file_selected (ev) {
     let file = ev.target.files[0];
-    let lf = this.GeoDataService.load_from_local_file(file).then( (lg) => {
-      console.log(lg);
-      this.layer_groups.push(lg);
-      this.map.addLayer(lg.feature_group);
-      let bounds = [];
-      this.layer_groups.forEach((lg) =>  {
-        bounds.push(lg.feature_group.getBounds());
+    let lf = this.GeoDataService.load_from_local_file(file).then( (features) => {
+      features.forEach( (f) => {
+        this.active_layer_group.feature_group.addLayer(f);
       });
-      this.map.fitBounds(bounds);
+
+      this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
     });
 
   }

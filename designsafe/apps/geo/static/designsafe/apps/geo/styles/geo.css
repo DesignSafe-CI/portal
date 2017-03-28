@@ -196,10 +196,11 @@
     background-repeat: no-repeat;
 }
 
-.leaflet-popup-photo .image {
-  min-width: 400px;
-  height: 400px;
-  background-size: contain;
-  background-position: center center;
-  background-repeat: no-repeat;
+
+.leaflet-popup-photo img {
+  width: 400px;
+}
+
+.leaflet-control-measure {
+  color: #000;
 }

@@ -28,12 +28,12 @@ export default class GeoDataService {
 }
   _from_kml(text_blob) {
     return this.$q( (res, rej) => {
-      let lg = new LayerGroup("New Group", new L.FeatureGroup());
+      let features = [];
       let l = omnivore.kml.parse(text_blob);
       l.getLayers().forEach((d) => {
-        lg.feature_group.addLayer(d);
+        features.push(d);
       });
-      res(lg);
+      res(features);
     });
   }
 
@@ -50,37 +50,36 @@ export default class GeoDataService {
           }
         }
       }).then( (txt) => {
-        let lg = this._from_kml(txt);
-        res(lg);
+        let features = this._from_kml(txt);
+        res(features);
       });
     });
   }
 
   _from_json (json_blob) {
     return this.$q( (res, rej) => {
-      let lg = new LayerGroup("New Group", new L.FeatureGroup());
+      let features = [];
       L.geoJSON(json_blob).getLayers().forEach( (l) => {
-        lg.feature_group.addLayer(l);
+        features.push(l);
       });
-      res(lg);
+      res(features);
     });
   }
 
   _from_gpx (blob) {
     return this.$q( (res, rej) => {
       // console.log(text_blob)
-      let lg = new LayerGroup("New Group", new L.FeatureGroup());
+      let features = [];
       let l = omnivore.gpx.parse(blob);
       l.getLayers().forEach((d) => {
-        lg.feature_group.addLayer(d);
+        features.push(d);
       });
-      res(lg);
+      res(features);
     });
   }
 
   _from_image (file) {
     return this.$q( (res, rej) => {
-      let lg = new LayerGroup("New Group", new L.FeatureGroup());
       let exif = EXIF.readFromBinaryFile(file);
       console.log(exif)
       let encoded = 'data:image/jpg;base64,' + this._arrayBufferToBase64(file);
@@ -99,15 +98,20 @@ export default class GeoDataService {
       });
 
       let marker = L.marker([lat, lon], {icon: icon})
-            .bindPopup("<div class='image' style='background:url(" + encoded + ");background-size: contain;background-repeat:no-repeat'>",
+            // .bindPopup("<div class='image' style='background:url(" + encoded + ")'>",
+            //     {
+  			    //       className: 'leaflet-popup-photo',
+  			    //       minWidth: 200
+            //     });
+            .bindPopup("<img src=" + encoded + ">",
                 {
   			          className: 'leaflet-popup-photo',
-  			          minWidth: 400
+  			          maxWidth: "auto",
+                  // maxHeight: 400
                 });
 
-      marker.image_data = encoded;
-      lg.feature_group.addLayer(marker);
-      res(lg);
+      marker.image_src = encoded;
+      res([marker]);
     });
   }
 

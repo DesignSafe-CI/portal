@@ -16,6 +16,10 @@ function config($stateProvider, $uibTooltipProvider) {
         return true;
       }
     }
+  }).state('geo.help', {
+    url: '/help',
+    templateUrl: '/static/designsafe/apps/geo/html/help.html',
+    controller: 'HelpCtrl as vm'
   });
 
   //config popups etc
