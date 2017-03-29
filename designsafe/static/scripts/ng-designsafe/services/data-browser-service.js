@@ -1400,30 +1400,23 @@
           $scope.getTagList = function(entity){
           };
 
-          $scope.isFileTagged = function(file, entity){
-            if (entity.name === 'designsafe.project.event'){
-              return _.contains(entity.value.load || [], file.uuid());
-            }else if(entity.name === 'designsafe.project.model_config'){
-              return _.contains(entity.value.modelDrawing || [], file.uuid());
-            }else if(entity.anem === 'designsafe.project.sensor_list'){
-              return _.contains(entity.value.sensorDrawing || [], file.uuid());
-            }else if(entity.name === 'designsafe.project.analysis'){
-              return _.contains(entity.value.script || [], file.uuid());
-            }
-            return false;
-          };
-
           $scope.getFileSubTag = function(file, entity){
-            if (entity.name === 'designsafe.project.event'){
-              return 'Load';
-            }else if(entity.name === 'designsafe.project.model_config'){
-              return 'Model Drawing';
-            }else if(entity.anem === 'designsafe.project.sensor_list'){
-              return 'Sensor Drawing';
-            }else if(entity.name === 'designsafe.project.analysis'){
-              return 'Script';
-            }
-            return '-';
+              var tags = entity.value.tags;
+              var tag;
+              var equal = function(val){
+                  return val === file.uuid();
+              };
+              var predicate = function(item){
+                  return _.findIndex(item.file, equal) > -1;
+              };
+              for (var t in tags){
+                  for(var st in tags[t]){
+                      if (_.find(tags[t][st], predicate)){
+                          tag = st;
+                      }
+                  }
+              }
+              return tag;
           };
 
           $scope.saveFileTags = function(){
@@ -1784,16 +1777,18 @@
           _setEntities();
 
           $scope.isFileTagged = function(file, entity){
-            if (entity.name === 'designsafe.project.event'){
-              return _.contains(entity.value.load || [], file.uuid());
-            }else if(entity.name === 'designsafe.project.model_config'){
-              return _.contains(entity.value.modelDrawing || [], file.uuid());
-            }else if(entity.anem === 'designsafe.project.sensor_list'){
-              return _.contains(entity.value.sensorDrawing || [], file.uuid());
-            }else if(entity.name === 'designsafe.project.analysis'){
-              return _.contains(entity.value.script || [], file.uuid());
-            }
-            return false;
+              var tags = entity.value.tags;
+              var tag;
+              var predicate = function(v){ return v === file.uuid();};
+              for (var t in tags){
+                  for(var st in tags[t]){
+                      if (_.findIndex(tags[t][st].file, predicate) > -1){
+                          tag = st;
+                          break;
+                      }
+                  }
+              }
+              return tag;
           };
 
           $scope.getFileSubTag = function(file, entity){

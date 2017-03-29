@@ -225,6 +225,12 @@ class DataTag(MetadataModel):
     file = fields.RelatedObjectField(FileModel, default=[])
     desc = fields.CharField('Description', max_length=512, default='')
 
+    def __eq__(self, other):
+        return self.file == other.file and self.desc == other.desc
+
+    def __hash__(self):
+        return hash(('file', self.file, 'desc', self.desc))
+
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')

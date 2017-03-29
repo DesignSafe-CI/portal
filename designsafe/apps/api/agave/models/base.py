@@ -356,7 +356,7 @@ class Model(object):
             elif isinstance(value, Model):
                 value_dict[attrname] = value.to_body_dict()
             elif isinstance(field, ListField):
-                value_dict[attrname] = [o.to_body_dict() for n, o in enumerate(value) if o not in value[n+1:]]
+                value_dict[attrname] = [o.to_body_dict() for o in set(value)]
             else:
                 value_dict[attrname] = value
         if not self._is_nested:

@@ -35,16 +35,17 @@
                   </td>
                   <td>
                     <select class="control-form"
-                            ng-if="!isFileTagged(file, entity)"
+                            ng-if="!getFileSubTag(file, entity)"
                             data-options="opt.name as opt.label for opt in ui.labels[entity.name]"
                             ng-options="tag.label group by tag.tagType
                                         for tag in entity.tagsAsOptions"
                             ng-model="data.fileSubTags[entity.uuid][file.uuid()]">
                     </select>
-                    <span ng-if="isFileTagged(file, entity)">{{getFileSubTag(file, entity)}}</span>
+                    <span ng-if="getFileSubTag(file, entity)">{{getFileSubTag(file, entity)}}</span>
                   </td>
                   <td>
                       <input type="text" class="control-form" 
+                             ng-if="!getFileSubTag(file, entity)"
                              ng-model="data.fileSubTagsDesc[entity.uuid][file.uuid()]"/>
                   </td>
                 </tr>
