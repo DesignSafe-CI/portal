@@ -21,7 +21,7 @@
       ]
     };
 
-    var experimentTypes = {
+    var equipmentTypes = {
       'atlss': [{name: 'hybrid_simulation', label: 'Hybrid Simulation'}],
       'cgm-ucdavis': [{name: '9-m_radius_dynamic_geotechnical_centrifuge', label: '9m Radius Dynamic Geotechnical Centrifuge'},
                       {name: '1-m_radius_dynamic_geotechnical_centrifuge', label: '1m Radius Dynamic Geotechnical Centrifuge'}],
@@ -55,6 +55,17 @@
                         {name: 'dwb', label: 'Directional Wave Basin (DWB)'},
                         {name: 'mobs', label: 'Mobile Shaker'}, 
                         {name: 'pla', label: 'pressure_loading_actuator'}]
+    };
+
+    var experimentTypes = {
+      'atlss': [{name: 'hybrid_simulation', label:'Hybrid Simulation'}],
+      'cgm-ucdavis':[{name: 'centrifuge', label:'Centrifuge'}],
+      'eqss-utaustin':[{name: 'mobile_shaker', label:'Mobile Shaker'}],
+      'pfsml-florida': [{name:'wind', label:'Wind'}],
+      'wwhr-florida': [{name: 'wind', label:'Wind'}],
+      'lhpost-sandiego': [{name: 'shake', label: 'Shake'}],
+      'ohhwrl-oregon': [{name: 'wave', label:'Wave'}],
+      'other': [{name: 'other', label:'Other'}]
     };
 
     var service = {};
@@ -165,7 +176,8 @@
           $scope.ui = {
               experiments: {},
               efs: efs,
-              experimentTypes: experimentTypes
+              experimentTypes: experimentTypes,
+              equipmentTypes: equipmentTypes
               };
           $scope.form = {
             curExperiments: [],
@@ -201,6 +213,18 @@
                 return et.name === str;
               });
               return et;
+          };
+
+          $scope.getTagList = function(entity){
+            var tags = angular.copy(entyt.tags);
+            var res = [];
+            _.forEach(entity.value.tags, function(val, tagsType){
+                var r = _.map(Object.keys(val), function(v){
+                    return {tagType: tagsType, name: v, label: v};
+                });
+                res = res.concat(r);
+            });
+            return res;
           };
 
           $scope.toggleDeleteExperiment = function(uuid){
@@ -413,15 +437,19 @@
             curUsers: [],
             addUsers: [{}],
             curCoPis: [],
-            addCoPis: [{}]
+            addCoPis: [{}],
+            authors:{}
           };
           var loads = [
-            projectResource.get({params: angular.copy(options)}),
-            collabResource.get({params: angular.copy(options)})
+            //projectResource.get({params: angular.copy(options)}),
+            service.get(angular.copy(options)),
+            collabResource.get({params: angular.copy(options)}),
+            ProjectEntitiesService.listEntities({uuid: options.uuid, name: 'designsafe.project.experiment'})
           ];
           $q.all(loads).then(function (results) {
             $scope.data.busy = false;
-            $scope.data.project = results[0].data;
+            $scope.data.project = results[0];
+            $scope.data.experiments = results[2];
 
             $scope.form.curUsers = _.map(results[1].data.teamMembers, function (collab) {
               return {

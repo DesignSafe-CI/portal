@@ -11,6 +11,15 @@
       angular.extend(self, data);
       self.getDisplayName();
       self.getRelFilePaths();
+        var tags = angular.copy(self.tags);
+        var res = [];
+        _.forEach(self.value.tags, function(val, tagsType){
+            var r = _.map(Object.keys(val), function(v){
+                return {tagType: tagsType, name: v, label: v};
+            });
+            res = res.concat(r);
+        });
+      self.tagsAsOptions = res;
       if (self.name === 'designsafe.project.experiment'){
         self._ui = {
           efs: {
@@ -165,6 +174,7 @@
     };
 
     ProjectEntity.prototype.isRelatedToFile = function(file){
+      var self = this;
       var filePaths = self.getRelFilePaths();
       var rel = _.find(filePaths, function(filePath){
         return file.path === filePath;

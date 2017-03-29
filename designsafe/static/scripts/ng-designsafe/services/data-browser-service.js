@@ -1318,7 +1318,8 @@
                          fileProjectTags: [],
                          newFileProjectTags: [],
                          projectTagsToUnrelate: [],
-                         fileSubTags: {}};
+                         fileSubTags: {},
+                         fileSubTagsDesc: {}};
 
           $scope.ui = {error: false};
           $scope.ui.analysisData = [
@@ -1396,6 +1397,9 @@
           };
           _setEntities();
 
+          $scope.getTagList = function(entity){
+          };
+
           $scope.isFileTagged = function(file, entity){
             if (entity.name === 'designsafe.project.event'){
               return _.contains(entity.value.load || [], file.uuid());
@@ -1431,11 +1435,12 @@
                 if (sts[fuuid] == 'none'){
                   continue;
                 }
-                if (typeof entity[sts[fuuid]] === 'undefined' ||
-                    !_.isArray(entity[sts[fuuid]])){
-                  entity.value[sts[fuuid]] = [];
+                if (typeof entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] !== 'undefined' && _.isArray(entity.value.tags[sts[fuuid].tagType][sts[fuuid].name])){
+                entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push({file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]});
+                } else {
+                entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]}];
                 }
-                entity.value[sts[fuuid]].push(fuuid);
+
                 sttasks.push(ProjectEntitiesService.update(
                         {data: {uuid: entity.uuid, entity:entity}}));
                 }
@@ -1497,11 +1502,32 @@
               return false;
             } else if ( _.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
               return true;
+            } else if ( _.findWhere($scope.ui.parentEntities, {uuid: entity.uuid})){
+              return true;
             }
             return false;
           };
 
+          $scope.isProjectTagDirectlyRelated = function(entity){
+            for(var fi = 0; fi < files.length; fi++){
+              if (entity.isRelatedToFile(files[fi])){
+                  return true;
+              }
+            }
+            return false;
+          };
+
+          $scope.isEntityLocked = function(entity){
+            return $scope.isProjectTagSel(entity) && !$scope.isProjectTagDirectlyRelated(entity) &&
+                   _.findWhere($scope.ui.parentEntities, {uuid: entity.uuid});
+          };
+
           $scope.toggleProjectTag = function(entity){
+            if (_.findWhere($scope.ui.parentEntities, {uuid: entity.uuid}) &&
+                $scope.isProjectTagSel(entity) && 
+                !$scope.isProjectTagDirectlyRelated(entity)){
+              return;
+            }
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
               $scope.data.newFileProjectTags = _.reject($scope.data.newFileProjectTags,
                                                         function(e){
