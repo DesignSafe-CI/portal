@@ -231,6 +231,7 @@ class Experiment(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=1024)
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
+    authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(ExperimentalProject)
 
 class Analysis(RelatedEntity):
