@@ -22,7 +22,8 @@
               <tr>
                 <th>Experiment Title</th>
                 <th>Experimental Facility</th>
-                <th>Experiment Equipment</th>
+                <th>Experiment Type</th>
+                <th>Equipment Type</th>
                 <th style="width:15px;"></th>
               </tr>
             </thead>
@@ -31,6 +32,7 @@
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
                 <td>{{experiment.value.title}}</td>
                 <td>{{getEF(experiment.value.experimentalFacility).label}}</td>
+                <td>{{experiment.value.experimentType}}</td>
                 <td>{{getET(getEF(experiment.value.experimentalFacility).name, experiment.value.experimentType).label}}</td>
                 <td><button class="btn btn-sm btn-danger"
                             ng-click="toggleDeleteExperiment(experiment.uuid)"
@@ -40,7 +42,7 @@
               </tr>
               <tr ng-repeat-end style="border-bottom:2px solid black;"
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
-                <td colspan="3">{{experiment.value.description}}</td>
+                <td colspan="5">{{experiment.value.description}}</td>
               </tr>
             </tbody>
           </table>
@@ -64,6 +66,7 @@
                             <td>Experiment Title</td>
                             <td>Experiment Facility</td>
                             <td>Experiment Type</td>
+                            <td>Equipment Type</td>
                             </tr>
                           </thead>
                           <tbody>
@@ -80,15 +83,22 @@
                           </select>
                               </td>
                               <td>
-                          <select ng-options="et.name as et.label for et in ui.experimentTypes[exp.experimentalFacility]"
+                          <select ng-options="type.name as type.label for type in ui.experimentTypes[exp.experimentalFacility]"
+                                  class="form-control"
+                                  ng-model="exp.experimentType"
+                                  id="id-experiment-type">
+                          </select>
+                              </td>
+                              <td>
+                          <select ng-options="et.name as et.label for et in ui.equipmentTypes[exp.experimentalFacility]"
                                  class="form-control"
-                                 ng-model="exp.experimentType"
-                                 id="id_experiment_type">
+                                 ng-model="exp.equipmentType"
+                                 id="id-equipment-type">
                           </select>
                               </td>
                             </tr>
                             <tr>
-                              <td colspan="3">
+                              <td colspan="4">
                                 <textarea style="width:100%; height:3em;" 
                                           id="id_experiment_description"
                                           placeholder="Descrpition..."
@@ -152,7 +162,7 @@
                   <span class="tag-title">{{sensorList.value.title}}</span>
                   <button class="btn btn-xsm btn-danger"
                           ng-if="data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]).length === 0"
-                          ng-click="delRelEntity(modelConfig, {experiments: experiment.uuid,
+                          ng-click="delRelEntity(sensorList, {experiments: experiment.uuid,
                                                                modelConfigs: modelConfig.uuid})">
                     <i class="fa fa-minus"></i>
                     <span class="sr-only">Delete</span>
@@ -166,7 +176,7 @@
                       <span class="tag-title">{{event.value.title}}</span>
                       <button class="btn btn-xsm btn-danger"
                               ng-if="data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid, event.uuid]).length === 0"
-                              ng-click="delRelEntity(sensorList, {experiments: experiment.uuid,
+                              ng-click="delRelEntity(event, {experiments: experiment.uuid,
                                                                   modelConfigs: modelConfig.uuid,
                                                                   sensorLists: sensorList.uuid})">
                         <i class="fa fa-minus"></i>
