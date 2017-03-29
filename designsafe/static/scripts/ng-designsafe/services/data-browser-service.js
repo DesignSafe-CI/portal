@@ -1411,8 +1411,9 @@
               };
               for (var t in tags){
                   for(var st in tags[t]){
-                      if (_.find(tags[t][st], predicate)){
-                          tag = st;
+                      var _tag = _.find(tags[t][st], predicate);
+                      if (_tag){
+                          tag = {tag: st, desc: _tag.desc};
                       }
                   }
               }

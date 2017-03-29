@@ -41,12 +41,15 @@
                                         for tag in entity.tagsAsOptions"
                             ng-model="data.fileSubTags[entity.uuid][file.uuid()]">
                     </select>
-                    <span ng-if="getFileSubTag(file, entity)">{{getFileSubTag(file, entity)}}</span>
+                    <span style="font-weight:bold;"
+                          ng-if="getFileSubTag(file, entity)">{{getFileSubTag(file, entity).tag}}</span>
                   </td>
                   <td>
                       <input type="text" class="control-form" 
                              ng-if="!getFileSubTag(file, entity)"
                              ng-model="data.fileSubTagsDesc[entity.uuid][file.uuid()]"/>
+                    <span style="font-weight:bold;"
+                          ng-if="getFileSubTag(file, entity)">{{getFileSubTag(file, entity).desc}}</span>
                   </td>
                 </tr>
               </tbody>
