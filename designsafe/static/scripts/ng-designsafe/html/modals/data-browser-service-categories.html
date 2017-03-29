@@ -36,14 +36,16 @@
                   <td>
                     <select class="control-form"
                             ng-if="!isFileTagged(file, entity)"
-                            ng-options="opt.name as opt.label for opt in ui.labels[entity.name]"
+                            data-options="opt.name as opt.label for opt in ui.labels[entity.name]"
+                            ng-options="tag.label group by tag.tagType
+                                        for tag in entity.tagsAsOptions"
                             ng-model="data.fileSubTags[entity.uuid][file.uuid()]">
-                            <option value="none" selected="selected"></option>
                     </select>
                     <span ng-if="isFileTagged(file, entity)">{{getFileSubTag(file, entity)}}</span>
                   </td>
                   <td>
-                      <input type="text" class="control-form" />
+                      <input type="text" class="control-form" 
+                             ng-model="data.fileSubTagsDesc[entity.uuid][file.uuid()]"/>
                   </td>
                 </tr>
               </tbody>
@@ -80,6 +82,8 @@
                 <span ng-class="{'selected': isProjectTagSel(modelConfig)}"
                       class="label tag-blue">Model Config</span>
                 <span class="tab-title">{{modelConfig.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(modelConfig)}" class="fa"></i>
                 </button>
               </div>
           </div>
@@ -91,6 +95,8 @@
                 <span ng-class="{'selected': isProjectTagSel(sensor)}"
                       class="label tag-green">Sensor</span>
                 <span class="tab-title">{{sensor.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(sensor)}" class="fa"></i>
                 </button>
               </div>
           </div>
@@ -102,6 +108,8 @@
                 <span ng-class="{'selected': isProjectTagSel(event)}" 
                       class="label tag-red">Events</span>
                 <span class="tab-title">{{event.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(event)}" class="fa"></i>
                 </button>
               </div>
           </div>
@@ -113,6 +121,8 @@
                 <span ng-class="{'selected': isProjectTagSel(analysis)}" 
                       class="label tag-light-blue">Analysis</span>
                 <span class="tab-title">{{analysis.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(analysis) }" class="fa"></i>
                 </button>
               </div>
           </div>
