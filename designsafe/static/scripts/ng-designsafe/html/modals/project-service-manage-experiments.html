@@ -67,12 +67,18 @@
                                      ng-model="exp.title">
                               </td>
                               <td>
-                              <input type="text" class="form-control" id="id_experiment_ef"
-                                     ng-model="exp.experimentalFacility">
+                          <select ng-options="ef.name as ef.label for ef in ui.efs[data.project.value.projectType]"
+                                  class="form-control"
+                                  ng-model="exp.experimentalFacility"
+                                  id="experiment-ef">
+                          </select>
                               </td>
                               <td>
-                              <input type="text" class="form-control" id="id_experiment_type"
-                                     ng-model="exp.experimentType">
+                          <select ng-options="et.name as et.label for et in ui.experimentTypes[exp.experimentalFacility]"
+                                 class="form-control"
+                                 ng-model="exp.experimentType"
+                                 id="id_experiment_type">
+                          </select>
                               </td>
                             </tr>
                             <tr>

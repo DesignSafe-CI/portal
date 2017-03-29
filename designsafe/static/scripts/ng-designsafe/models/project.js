@@ -140,6 +140,29 @@
       return self._allRelatedObjects;
     };
 
+    /**
+     *
+     * Returns an entity if it's related to any file in the array
+     * or any of the parent directories.
+     *
+     */
+    Project.prototype.getParentEntity = function(files){
+      var self = this;
+      var entities = self.getAllRelatedObjects();
+      var ret = _.filter(entities, function(entity){
+          return _.find(files, function(file){
+            return _.find(entity._filePaths, function(filePath){
+              var re = new RegExp('^'+filePath);
+              //if (re.test(file.path) && file.path.replace(re, '').length > 0){
+              if (re.test(file.path)){
+                return true;
+              }
+            });
+          });
+      });
+      return ret;
+    };
+
     return Project;
   }]);
 })(window, angular, jQuery, _);

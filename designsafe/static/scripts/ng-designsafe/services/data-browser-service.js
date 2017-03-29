@@ -44,6 +44,19 @@
       ui: {}
     };
 
+    var efs = {
+      'experimental': [
+        {name: 'none', label: 'None'},
+        {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
+         {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
+         {name: 'eqss-utaustin', label: 'Experimental equipment site specializing in dynamic in-situ testing using mobile shakers, UT Austin'},
+         {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida'},
+         {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University'},
+         {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego'},
+         {name: 'ohhwrl-oregon', label:  'O.H. Hinsdale Wave Research Laboratory, Oregon State University'}
+      ]
+    };
+
     var apiParams = {
       fileMgr : 'agave',
       baseUrl : '/api/agave/files'
@@ -1288,9 +1301,35 @@
                          project: currentState.project,
                          fileProjectTags: [],
                          newFileProjectTags: [],
-                         projectTagsToUnrelate: []};
+                         projectTagsToUnrelate: [],
+                         fileSubTags: {}};
 
           $scope.ui = {error: false};
+          $scope.ui.analysisData = [
+            {name: 'graph', label: 'Graph'},
+            {name: 'visualization', label: 'Visualization'},
+            {name: 'table', label: 'Table'},
+            {name: 'other', label: 'Other'}
+          ];
+          $scope.ui.analysisApplication = [
+            {name: 'matlab', label: 'Matlab'},
+            {name: 'r', label: 'R'},
+            {name: 'jupyter', label: 'Jupyter'},
+            {name: 'other', label: 'Other'}
+          ];
+          $scope.ui.labels = {};
+          $scope.ui.labels['designsafe.project.model_config'] = [
+            {name: 'modelDrawing', label: 'Model Drawing'}
+          ];
+          $scope.ui.labels['designsafe.project.event'] = [
+            {name: 'load', label: 'Load'}
+          ];
+          $scope.ui.labels['designsafe.project.sensor_list'] = [
+            {name: 'sensorDrawing', label: 'Sensor Drawing'}
+          ];
+          $scope.ui.labels['designsafe.project.analysis'] = [
+            {name: 'script', label: 'Script'}
+          ];
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
               !_.isEmpty(listing.metadata.project)){
@@ -1332,6 +1371,8 @@
             }
           });
 
+          $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+
 		  $scope.doSaveMetadata = function($event) {
 			$event.preventDefault();
 			$uibModalInstance.close($scope.data);
@@ -1368,7 +1409,7 @@
               {label: 'Analysis',
                name: 'designsafe.project.analysis'}
               ];
-          $scope.data.form.projectTagToAdd = {};
+          $scope.data.form.projectTagToAdd = {optional:{}};
 
           $scope.isProjectTagSel = function(entity){
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
@@ -1460,6 +1501,9 @@
               entity.sensorListType = newTag.tagAttibute;
             } else if (name === 'model_config'){
               entity.coverage = newTag.tagAttribute;
+            }
+            for (var attr in $scope.data.form.projectTagToAdd.optional){
+              entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
             }
             $scope.ui.addingTag = true;
             entity.title = newTag.tagTitle;

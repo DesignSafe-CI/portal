@@ -8,6 +8,55 @@
 
     var logger = Logging.getLogger('DataDepot.ProjectService');
 
+    var efs = {
+      'experimental': [
+        {name: 'none', label: 'None'},
+        {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
+         {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
+         {name: 'eqss-utaustin', label: 'Experimental equipment site specializing in dynamic in-situ testing using mobile shakers, UT Austin'},
+         {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida'},
+         {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University'},
+         {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego'},
+         {name: 'ohhwrl-oregon', label:  'O.H. Hinsdale Wave Research Laboratory, Oregon State University'}
+      ]
+    };
+
+    var experimentTypes = {
+      'atlss': [{name: 'hybrid_simulation', label: 'Hybrid Simulation'}],
+      'cgm-ucdavis': [{name: '9-m_radius_dynamic_geotechnical_centrifuge', label: '9m Radius Dynamic Geotechnical Centrifuge'},
+                      {name: '1-m_radius_dynamic_geotechnical_centrifuge', label: '1m Radius Dynamic Geotechnical Centrifuge'}],
+      'eqss-utaustin': [
+        {name: 'liquidator', 
+         label: 'Low Frequency, Two Axis Shaker (Liquidator)'},
+        {name: 't-rex',
+         label: 'High Force Three Axis Shaker (T Rex)'},
+        {name: 'tractor-t-rex',
+         label: 'Tractor-Trailer Rig, Big Rig, with T-Rex'},
+        {name: 'raptor',
+         label: 'Single Axis Vertical Shaker (Raptor)'},
+        {name: 'rattler',
+         label: 'Single Axis Horizontal Shaker (Rattler)'},
+        {name: 'thumper',
+         label: 'Urban, Three axis Shaker (Thumper)'}],
+      'pfsml-florida': [
+        {name: 'blwt', label: 'Boundary Layer Wind Tunnel (BLWT)'},
+        {name: 'abl', label: 'Atmospheric Boundary Layer Wind Tunnel Test (ABL)'}, 
+        {name: 'wdrt', label: 'Wind Driven Rain Test'},
+        {name: 'wtdt', label: 'wind_tunnel_destructive_test'},
+        {name: 'dfs', label: 'Dynamic Flow Simulator (DFS)'},
+        {name: 'hapla', label: 'High Airflow Pressure Loading Actuator (HAPLA)'},
+        {name: 'spla', label: 'Spatiotemporal Pressure Loading Actuator (SPLA)'} 
+      ],
+      'wwhr-florida': [{name: 'pmtp', label: 'Physical_measurement_test_protocol'}, 
+                       {name: 'fmtp', label: 'Failure Mode Test Protocol'},
+                       {name: 'wdrtp', label: 'Wind Driven Rain Test Protocol'}],
+      'lhpost-sandiego': [{name: 'lhpost', label: 'Large High Performance Outdoor Shake Table (LHPOST)'}],
+      'ohhwrl-oregon': [{name: 'lwf', label: 'Large Wave Flume (LWF)'},
+                        {name: 'dwb', label: 'Directional Wave Basin (DWB)'},
+                        {name: 'mobs', label: 'Mobile Shaker'}, 
+                        {name: 'pla', label: 'pressure_loading_actuator'}]
+    };
+
     var service = {};
 
     var projectResource = httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
@@ -112,7 +161,9 @@
             project: options.project
           };
           $scope.ui = {
-              experiments: {}
+              experiments: {},
+              efs: efs,
+              experimentTypes: experimentTypes
               };
           $scope.form = {
             curExperiments: [],
@@ -374,6 +425,7 @@
               label: 'Field Reconnaissance'}, {
               id: 'other',
               label: 'Other'}];
+          $scope.efs = efs;
 
           if (project) {
             $scope.form.uuid = project.uuid;
@@ -381,6 +433,7 @@
             $scope.form.awardNumber = project.value.awardNumber || '';
             $scope.form.indentifier = project.value.identifier || '';
             $scope.form.description = project.value.description || '';
+            $scope.form.experimentalFacility = project.value.experimentalFacility || '';
             if (typeof project.value.projectType !== 'undefined'){
                $scope.form.projectType = _.find($scope.projectTypes, function(projectType){ return projectType.id === project.value.projectType; }); 
             }
@@ -417,12 +470,16 @@
             var projectData = {
               title: $scope.form.title,
               awardNumber: $scope.form.awardNumber,
-              description: $scope.form.description
+              description: $scope.form.description,
             };
             if ($scope.form.pi && $scope.form.pi.username){
               projectData.pi = $scope.form.pi.username;
             }
-            if ($scope.form.projectType.id !== 'undefined'){
+
+            //if (typeof $scope.form.experimentalFacility !== 'undefined'){
+            //  projectData.experimentalFacility = $scope.form.experimentalFacility;
+            //}
+            if (typeof $scope.form.projectType.id !== 'undefined'){
               projectData.projectType = $scope.form.projectType.id;
             }
             if ($scope.form.uuid) {
