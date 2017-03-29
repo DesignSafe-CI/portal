@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 import datetime
 import logging
 import json
-import subprocess
 
 
 logger = logging.getLogger(__name__)
@@ -26,8 +25,6 @@ def check_or_create_agave_home_dir(username):
             body = {'action': 'mkdir', 'path': username}
             ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
                             filePath='', body=body)
-            logger.info("subprocess.call(['setfacl', '-m', 'd:u:tg458981:rwX,u:' + {} + ':rwX', '/corral-repl/tacc/NHERI/shared/' + {}])",username, username)
-            subprocess.call(['setfacl', '-m', 'd:u:tg458981:rwX,u:' + username + ':rwX', '/corral-repl/tacc/NHERI/shared/' + username])
 
             # add dir to index
             fm = FileManager(agave_client=ag)
