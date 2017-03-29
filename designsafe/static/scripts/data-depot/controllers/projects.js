@@ -9,7 +9,8 @@
     DataBrowserService.apiParams.searchState = undefined;
 
     $scope.data = {
-      navItems: []
+      navItems: [],
+      projects: []
     };
 
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
@@ -50,9 +51,11 @@
   }]);
 
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'Django', 'ProjectService', function ($scope, $state, Django, ProjectService) {
-
+    $scope.ui = {};
+    $scope.ui.busy = true;
+    $scope.data.projects = [];
     ProjectService.list().then(function(projects) {
-
+      $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
 
@@ -65,13 +68,44 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $q) {
 
     $scope.data = {};
 
+    function setEntitiesRel(resp){
+      $scope.data.project.setEntitiesRel(resp);
+    }
+
     ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
+      DataBrowserService.state().project = project;
+      DataBrowserService.state().loadingEntities = true;
+      $scope.data.loadingEntities = true;
+      var _related = project._related;
+      var tasks = [];
+      for (var attrname in _related){
+        var name = _related[attrname];
+        if (name != 'designsafe.file'){
+          tasks.push(ProjectEntitiesService.listEntities(
+            {uuid: projectId, name: name})
+            .then(setEntitiesRel)
+            );
+        }
+      }
+      $q.all(tasks).then(
+        function(resp){
+          //$scope.data.project.setupAllRels();
+          return resp;
+        }).then(
+        function(resp){
+            DataBrowserService.state().loadingEntities = false;
+            $scope.data.loadingEntities = false;
+        }, function(err){
+            DataBrowserService.state().loadingEntities = false;
+            $scope.data.loadingEntities = false;
+        });
     });
+
 
     $scope.editProject = function($event) {
       $event.preventDefault();
@@ -88,16 +122,45 @@
       });
     };
 
+    $scope.manageExperiments = function($event) {
+      $event.preventDefault();
+      var experiments = $scope.data.project[$scope.data.project.getRelatedAttrName('designsafe.project.experiment')];
+      ProjectService.manageExperiments({'experiments': experiments,
+                                        'project': $scope.data.project}).then(function (experiments) {
+        $scope.data.experiments = experiments;
+      });
+    };
+
+    $scope.dateString = function(s){
+      var d = Date(s);
+      return d;
+    };
+
+    $scope.showListing = function(){
+      //DataBrowserService.state().showMainListing = true;
+      //DataBrowserService.state().showPreviewListing = false;
+      DataBrowserService.showListing();
+    };
+
+    $scope.showPreview = function(){
+      //DataBrowserService.state().showMainListing = false;
+      //DataBrowserService.state().showPreviewListing = true;
+      DataBrowserService.showPreview();
+    };
+
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
     $scope.browser = DataBrowserService.state();
+    $scope.browser.listings = {};
+    $scope.browser.ui = {};
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
+
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
       .then(function () {
         $scope.browser = DataBrowserService.state();
@@ -113,11 +176,90 @@
             projectTitle: projectTitle
           });
         });
+        if (typeof $scope.browser.loadingEntities !== 'undefined' &&
+            !$scope.browser.loadingEntities){
+          var entities = $scope.browser.project.getAllRelatedObjects();
+          _.each($scope.browser.listing.children, function(child){
+            child.setEntities(DataBrowserService.state().project.uuid, entities);
+          });
+        } else {
+          $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
+            if (!newVal){
+              var entities = $scope.browser.project.getAllRelatedObjects();
+              _.each($scope.browser.listing.children, function(child){
+                child.setEntities($scope.browser.project.uuid, entities);
+              });
+              //var _state = DataBrowserService.state();
+              //_state.project.setupAllRels();
+              //$scope.browser = _state;
+            }
+          });
+        }
       });
 
-    $scope.onBrowseData = function onBrowseData($event, file) {
+    var setFilesDetails = function(filePaths){
+      filePaths = _.uniq(filePaths);
+      var p = $q(function(resolve, reject){
+        var results = [];
+        var index = 0;
+        var size = 5;
+        var fileCalls = _.map(filePaths, function(filePath){
+          return FileListing.get({system: 'project-' + projectId, 
+                                  path: filePath},
+                                  DataBrowserService.apiParams)
+            .then(function(resp){
+              var allEntities = $scope.browser.project.getAllRelatedObjects(); 
+              var entities = _.filter(allEntities, function(entity){
+                return _.contains(entity._filePaths, resp.path);
+              });
+              _.each(entities, function(entity){
+                $scope.browser.listings[entity.uuid].push(resp);
+              });
+              return resp;
+            });
+        });
 
+        function step(){
+          var calls = fileCalls.slice(index, index += size);
+          if(calls.length){
+            $q.all(calls).then(function(res){
+              results.concat(res);
+              step();
+              return res;
+            }).catch(reject);
+          } else { 
+            resolve(results);
+          }
+        }
+        step();
+      });
+      $scope.browser.ui.listingPreview = true;
+      p.then(function(results){
+        $scope.browser.ui.listingPreview = false;
+      }, function(err){
+        $scope.browser.ui.listingPreview = false;
+        $scope.browser.ui.error = err;
+      });
+    };
+
+    $scope.$watch('browser.showPreviewListing', function(newVal, oldVal){
+      if (newVal){
+        $scope.browser.ui.loadingListings = true;
+        $scope.browser.listings = {};
+        var entities = $scope.browser.project.getAllRelatedObjects();
+        var allFilePaths = [];
+        _.each(entities, function(entity){
+          $scope.browser.listings[entity.uuid] = [];
+          allFilePaths = allFilePaths.concat(entity._filePaths);
+        });
+        $scope.data.rootPaths = allFilePaths;
+        setFilesDetails(allFilePaths);
+      }
+    });
+
+    $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
+      DataBrowserService.showListing();
       if (file.type === 'file') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
@@ -163,6 +305,12 @@
     $scope.onDetail = function($event, file) {
       $event.stopPropagation();
       DataBrowserService.preview(file, $scope.browser.listing);
+    };
+
+    $scope.openPreviewTree = function($event, entityUuid){
+      $event.preventDefault();
+      $event.stopPropagation();
+      DataBrowserService.openPreviewTree(entityUuid);
     };
 
   }]);

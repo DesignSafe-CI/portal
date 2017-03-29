@@ -23,7 +23,71 @@
           !_.isEmpty(apiParams)){
         this.apiParams = apiParams;
       }
+      if (typeof this._entities === 'undefined'){
+        this._entities = [];
+      }
+      if (typeof this._entityTags === 'undefined'){
+        this._entityTags = [];
+      }
     }
+
+    FileListing.prototype.setEntities = function(projectId, entities){
+      var self = this;
+      var path = self.path;
+      _.each(entities, function(entity){
+        if (typeof entity !== 'undefined' &&
+            typeof entity._links !== 'undefined' &&
+            typeof entity._links.associationIds !== 'undefined'){
+          _.each(entity._links.associationIds, function(asc){
+            if (asc.title === 'file'){
+              var comps = asc.href.split('project-' + projectId, 2);
+              if ( comps.length === 2 &&
+                   path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '')){
+                self._entities.push(entity);
+              }
+            }
+          });
+        }
+      });
+      if(self._entities.length){
+        var myAsoc = _.find(self._entities[0]._links.associationIds,
+          function(asc){
+          if (asc.title === 'file'){
+            var comps = asc.href.split('project-' + projectId, 2);
+            return self.path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
+          }
+        });
+        var myUuid = myAsoc.rel;
+        _.each(self._entities, function(entity){
+          if( _.contains(entity.value.modelDrawing || [], myUuid)){
+            self._entityTags.push('Model Drawing');
+          }
+          else if (_.contains(entity.value.load || [], myUuid)){
+            self._entityTags.push('Load');
+          }
+          else if (_.contains(entity.value.sensorDrawing || [], myUuid)) {
+            self._entityTags.push('Sensor Drawing');
+          }
+          else if(_.contains(entity.value.script || [], myUuid)) {
+            self._entityTags.push('Script');
+          }
+        });
+        self._entityTags = _.uniq(self._entityTags);
+      }
+    };
+
+    FileListing.prototype.uuid = function(){
+      try{
+        var parser = document.createElement('a');
+        parser.href = decodeURIComponent(this._links.metadata.href);
+        var q = parser.search.substring(3);
+        var uuid = JSON.parse(decodeURIComponent(q)).associationIds;
+        return uuid;
+      }
+      catch(e){
+        return '';
+      }
+    };
 
     FileListing.prototype.parentPath = function(){
       var pathComps = this.path.split('/');

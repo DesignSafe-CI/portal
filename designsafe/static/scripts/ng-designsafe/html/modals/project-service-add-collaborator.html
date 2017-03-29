@@ -65,6 +65,20 @@
                         <ds-user username="cur.user.username" format="name-email"></ds-user>
                         <span class="label label-info" ng-if="data.project.value.pi === cur.user.username">PI</span>
                     </label>
+                    <button class="btn btn-sm btn-default"
+                            data-toggle="collapse"
+                            data-target="#{{cur.user.username}}-experiments">
+                            <i class="fa fa-caret-square-o-down"></i>
+                    </button>
+                    <div class="collapse" id="{{cur.user.username}}-experiments">
+                      <ul style="list-style:none;">
+                        <li ng-repeat="exp in data.experiments">
+                          <input type="checkbox" name="author-{{cur.user.username}}"
+                                 ng-model="form.authors[cur.user.username][exp.uuid]"/>
+                          <label for="author-{{cur.user.username}}">{{exp.value.title}}</label>
+                        </li>
+                      </ul>
+                    </div>
                 </div>
             </div>
 

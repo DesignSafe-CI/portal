@@ -383,3 +383,161 @@
 .modal-dialog.modal-md {
     width:800px;
 }
+
+tr.experiment-deleted {
+    text-decoration: line-through;
+}
+
+.ds-text-light-blue {
+    color: #5BC0DE;
+}
+
+.ds-text-blue {
+    color: #0567CC;
+}
+
+.ds-text-green {
+    color: #2EA89A;
+}
+
+.ds-text-red { 
+    color: #D04348;
+}
+
+span.label.tag-light-blue {
+    border: 2px solid #5BC0DE;
+    color: black;
+}
+
+span.label.tag-light-blue.selected {
+    border: 2px solid #5BC0DE;
+    background: #5BC0DE;
+    color: white;
+}
+
+span.label.tag-blue {
+    border: 2px solid #0567CC;
+    color: black;
+}
+
+span.label.tag-blue.selected {
+    border: 2px solid #0567CC;
+    background:#0567CC;
+    color: white;
+}
+
+span.label.tag-green {
+    border: 2px solid #2EA89A;
+    color: black;
+}
+
+span.label.tag-green.selected {
+    border: 2px solid #2EA89A;
+    background:#2EA89A;
+    color: white;
+}
+
+span.label.tag-red {
+    border: 2px solid #D04348;
+    color: black;
+}
+
+span.label.tag-red.selected {
+    border: 2px solid #D04348;
+    background:#D04348;
+    color: white;
+}
+
+.data-model-tree ul, li {
+    list-style: none; margin: 0; padding: 0; 
+}
+
+.data-model-tree ul { 
+    padding-left: 1em; 
+}
+
+.data-model-tree li { 
+    padding-left: 1em;
+    border: 1px solid black;
+    border-width: 0 0 1px 1px; 
+}
+
+.data-model-tree li.tree-container { 
+    border-bottom: 0px; 
+}
+
+.data-model-tree li.empty { 
+    font-style: italic;
+    color: silver;
+    border-color: silver;
+}
+
+.data-model-tree li div.tree-el { 
+    margin: 0;
+    background: white;
+    position: relative;
+    top: 1em; 
+    padding:5px 2px;
+}
+
+.data-model-tree li ul { 
+    border-top: 1px solid black; 
+    margin-left: -1em;     
+    padding-left: 2em; 
+}
+.data-model-tree ul li ul {
+    border-left: 1px solid black;
+    margin-left: -15px;
+}
+
+.data-model-tree ul.event-ul {
+    border-left: 1px solid white;
+}
+
+.data-model-tree.data-model-preview-tree ul.model-config-ul li:last-child ul.sensor-list-ul {
+    border-left: 1px solid white;
+}
+
+.btn-xsm {
+  padding:1px 1.5px;
+}
+
+.preview-wrapper {
+    overflow:visible;
+}
+
+.folder-tick {
+	display: inline-block;
+    /* border: 1px solid lightgrey; */
+    height: 3em;
+    width: 10em;
+    text-align: center;
+    /* vertical-align: bottom; */
+    border-bottom: 30px solid lightgrey;
+    border-right: 30px solid white;
+    border-left: 30px solid white;
+    padding-top: 10px;
+}
+
+.existing-experiments-listing {
+    margin-bottom:10px;
+}
+
+.add-extra-category {
+    margin-top:20px;
+}
+
+.simple-table tbody tr td,
+.simple-table tbody tr th{
+    padding:0px 5px;
+}
+
+.simple-table tbody tr td:first-child, 
+.simple-table tbody tr th:first-child {
+    padding-left:0px;
+}
+
+.simple-table tbody tr td:last-child, 
+.simple-table tbody tr th:last-child {
+    padding-right:0px;
+}

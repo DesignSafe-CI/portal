@@ -57,9 +57,13 @@
                 <button class="btn btn-default" ng-disabled="state.uploading || (data.uploads|length) === 0" type="button" ng-click="reset()">Reset</button>
             </div>
             <div class="pull-right">
-                <button class="btn btn-primary" ng-disabled="state.uploading || state.retry || (data.uploads|length) === 0" type="button" ng-click="upload()">
+                <button class="btn btn-primary" ng-disabled="(state.uploading || state.retry || (data.uploads|length) === 0 ) || state.ui.tagFiles" type="button" ng-click="upload()">
                     <span ng-if="! state.uploading">Begin upload</span>
                     <span ng-if="state.uploading"><i class="fa fa-refresh fa-spin"></i> Uploading</span>
+                </button>
+                <button class="btn btn-success" ng-if="(state.uploading || state.retry || (data.uploads|length)) && state.ui.tagFiles"
+                        type="button" ng-click="tagFiles()">
+                    <span ng-if="!state.uploading">Tag Files</span>
                 </button>
                 <button class="btn btn-default" ng-disabled="state.uploading" type="button" ng-click="cancel()">Cancel</button>
             </div>
