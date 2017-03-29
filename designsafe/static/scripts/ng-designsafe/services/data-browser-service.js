@@ -164,7 +164,7 @@
       currentState.busy = true;
       currentState.busyListing = true;
       currentState.error = null;
-      currentState.loadingMore = false;
+      currentState.loadingMore = true;
       currentState.reachedEnd = false;
       currentState.busyListingPage = false;
       currentState.page = 0;
@@ -172,6 +172,8 @@
         select([], true);
         currentState.busy = false;
         currentState.busyListing = false;
+        currentState.loadingMore = false;
+        currentState.reachedEnd = false;
         currentState.listing = listing;
         return listing;
       }, function (err) {
@@ -179,6 +181,8 @@
         currentState.busyListing = false;
         currentState.listing = null;
         currentState.error = err.data;
+        currentState.loadingMore = false;
+        currentState.reachedEnd = false;
       });
     }
 
