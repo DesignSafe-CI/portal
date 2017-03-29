@@ -179,8 +179,24 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
 
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
+class ProjectMetaLookupMixin(object):
+    def _lookup_model(self, name):
+        if name == 'designsafe.project':
+            return ExperimentalProject
+        elif name == 'designsafe.project.experiment':
+            return Experiment
+        elif name == 'designsafe.project.event':
+            return Event
+        elif name == 'designsafe.project.analysis':
+            return Analysis
+        elif name == 'designsafe.project.sensor_list':
+            return SensorList
+        elif name == 'designsafe.project.model_config':
+            return ModelConfiguration
+        else:
+            raise ValueError('No module found with that name.')
 
-class ProjectInstanceView(SecureMixin, BaseApiView):
+class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
 
     def get(self, request, project_id):
         """
@@ -189,8 +205,11 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         :rtype: JsonResponse
         """
         ag = request.user.agave_oauth.client
-        project = Project.from_uuid(agave_client=ag, uuid=project_id)
-        return JsonResponse(project, encoder=AgaveJSONEncoder, safe=False)
+        #project = Project.from_uuid(agave_client=ag, uuid=project_id)
+        meta_obj = ag.meta.getMetadata(uuid=project_id)
+        model_cls = self._lookup_model(meta_obj['name'])
+        project = model_cls(**meta_obj)
+        return JsonResponse(project.to_body_dict(), safe=False)
 
     def post(self, request, project_id):
         """
@@ -212,6 +231,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
         project_type = post_data.get('projectType', 'other')
         associated_projects = post_data.get('associatedProjects', {})
         description = post_data.get('description', '')
+        team_members = post_data.get('teamMembers', [])
         new_pi = post_data.get('pi')
         if p.pi != new_pi:
             p.pi = new_pi
@@ -220,7 +240,8 @@ class ProjectInstanceView(SecureMixin, BaseApiView):
                  award_number=award_number,
                  project_type=project_type,
                  associated_projects=associated_projects,
-                 description=description)
+                 description=description, 
+                 team_members=team_members)
         p.save()
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
@@ -302,44 +323,9 @@ class ProjectDataView(SecureMixin, BaseApiView):
 
         return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
 
-class ProjectMetaLookupMixin(object):
-    def _lookup_model(self, name):
-        if name == 'designsafe.project':
-            return ExperimentalProject
-        elif name == 'designsafe.project.experiment':
-            return Experiment
-        elif name == 'designsafe.project.event':
-            return Event
-        elif name == 'designsafe.project.analysis':
-            return Analysis
-        elif name == 'designsafe.project.sensor_list':
-            return SensorList
-        elif name == 'designsafe.project.model_config':
-            return ModelConfiguration
-        else:
-            raise ValueError('No module found with that name.')
-
-class ProjectMetaListView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
-
-    def get(self, request, project_id, name):
-        """
-
-        :return:
-        :rtype: JsonResponse
-        """
-        ag = request.user.agave_oauth.client
-        name = name.strip('/')
-        try:
-            model = self._lookup_model(name)
-            resp = model._meta.model_manager.list(ag, name, project_id)
-        except ValueError:
-            return HttpResponseBadRequest('Entity not valid.')
-
-        return JsonResponse([o.to_body_dict() for o in resp], safe=False)
-
 class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
-    def get(self, request, name, project_id=None, uuid=None):
+    def get(self, request, project_id=None, name=None, uuid=None):
         """
 
         :return:
@@ -347,14 +333,17 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = request.user.agave_oauth.client
         try:
-            model = self._lookup_model(name)
-            if project_id is not None:
+            if name is not None:
+                model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
-            elif uuid is None:
-                resp = model._meta.model_manager.get(ag, uuid)
+                return JsonResponse([r.to_body_dict() for r in resp], safe=False)
+            elif uuid is not None:
+                meta = ag.meta.getMetadata(uuid=uuid)
+                model = self._lookup_model(meta['name'])
+                resp = model(**meta)
+                return JsonResponse(resp.to_body_dict(), safe=False)
         except ValueError:
             return HttpResponseBadRequest('Entity not valid.')
-        return JsonResponse(resp.to_body_dict(), safe=False)
 
     def post(self, request, project_id, name):
         """
