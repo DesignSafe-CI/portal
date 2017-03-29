@@ -15,7 +15,9 @@ from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 ProjectCollectionView,
                                                 ProjectDataView,
                                                 ProjectCollaboratorsView,
-                                                ProjectInstanceView)
+                                                ProjectInstanceView,
+                                                ProjectMetaListView,
+                                                ProjectMetaView)
 
 urlpatterns = [
     url(r'^$', ProjectCollectionView.as_view(), name='index'),
@@ -27,4 +29,8 @@ urlpatterns = [
         ProjectDataView.as_view(), name='project_data'),
     url(r'^(?P<project_id>[a-z0-9\-]+)/data/(?P<file_path>.*)/$',
         ProjectDataView.as_view(), name='project_data'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/meta/list/((?P<name>.*))?/?$', ProjectMetaListView.as_view(), name='project_meta'),
+
+    url(r'^(?P<project_id>[a-z0-9\-]+)/meta/(?P<name>[a-zA-Z0-9\.\-_])/?$', ProjectMetaView.as_view(), name='project_meta'),
+    url(r'^(?P<project_id>[a-z0-9\-]+)/meta/(?P<name>[a-zA-Z0-9\.\-_])/((?P<uuid>[^ \/]))?/?$', ProjectMetaView.as_view(), name='project_meta'),
 ]

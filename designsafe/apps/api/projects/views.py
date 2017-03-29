@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.http import JsonResponse
 from django.http.response import HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from designsafe.apps.api import tasks
@@ -13,6 +13,9 @@ from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from requests.exceptions import HTTPError
+from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
+                                                 Experiment, ModelConfiguration,
+                                                 Event, Analysis, SensorList)
 import logging
 import json
 
@@ -297,3 +300,77 @@ class ProjectDataView(SecureMixin, BaseApiView):
         listing = BaseFileResource.listing(ag, p.project_system_id, list_path)
 
         return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
+
+class ProjectMetaLookupMixin(object):
+    def _lookup_model(self, name):
+        if name == 'designsafe.project':
+            return ExperimentalProject
+        elif name == 'designsafe.project.experiment':
+            return Experiment
+        elif name == 'designsafe.project.event':
+            return Event
+        elif name == 'designsafe.project.analysis':
+            return Analysis
+        elif name == 'designsafe.project.sensor_list':
+            return SensorList
+        elif name == 'designsafe.project.model_config':
+            return ModelConfiguration
+        else:
+            raise ValueError('No module found with that name.')
+
+class ProjectMetaListView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
+
+    def get(self, request, project_id, name):
+        """
+
+        :return:
+        :rtype: JsonResponse
+        """
+        ag = request.user.agave_oauth.client
+        name = name.strip('/')
+        try:
+            model = self._lookup_model(name)
+            resp = model._meta.model_manager.list(ag, name, project_id)
+        except ValueError:
+            return HttpResponseBadRequest('Entity not valid.')
+
+        return JsonResponse([o.to_body_dict() for o in resp], safe=False)
+
+class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
+
+    def get(self, request, project_id, name, uuid):
+        """
+
+        :return:
+        :rtype: JsonResponse
+        """
+        try:
+            model = self._lookup_model(name)
+            resp = model._meta.model_manager.get(ag, uuid)
+        except ValueError:
+            return HttpResponseBadRequest('Entity not valid.')
+        return JsonResponse(resp.to_boy_dict(), safe=False)
+
+    def post(self, request, project_id, name):
+        """
+
+        :param request:
+        :return:
+        """
+        ag = get_service_account_client()
+
+        if request.is_ajax():
+            post_data = json.loads(request.body)
+        else:
+            post_data = request.POST.copy()
+
+        try:
+            model_cls = self._lookup_model(name)
+            model = model_cls(**post_data)
+            model.project.add(project_id)
+            saved = model.save()
+            resp = model_cls(**saved)
+        except ValueError:
+            return HttpResponseBadRequest('Entity not valid.')
+
+        return JsonResponse(resp.to_body_dict(), safe=False)
