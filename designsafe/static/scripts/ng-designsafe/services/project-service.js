@@ -244,6 +244,7 @@
             $event.preventDefault();
             $scope.data.busy = true;
             var addActions = _.map($scope.form.addExperiments, function(exp){
+              exp.description = exp.description || '';
               if (exp.title && exp.experimentalFacility && exp.experimentType && exp.description){
                 return ProjectEntitiesService.create({
                   data: {
@@ -383,7 +384,7 @@
             }
             $scope.ui.addingTag = true;
             entity.title = newTag.tagTitle;
-            entity.description = newTag.tagDescription;
+            entity.description = newTag.tagDescription || '';
             if (typeof $scope.data.files !== 'undefined'){
               entity.filePaths = _.map($scope.data.files,
                                      function(file){
@@ -392,7 +393,7 @@
             }
             $scope.ui.addingTag = true;
             ProjectEntitiesService.create({data: {
-                uuid: currentState.project.uuid,
+                uuid: $scope.data.project.uuid,
                 name: newTag.tagType,
                 entity: entity
             }})

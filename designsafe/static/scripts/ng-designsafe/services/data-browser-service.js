@@ -809,7 +809,7 @@
                 $scope.images.push({file:file});
             }
           });
-          $scope.images[0] = $scope.hrefs[0]
+          $scope.images[0] = $scope.hrefs[0];
 
           if ($scope.images.length > 10) {
             $scope.carouselSettings.dots = false;
@@ -1609,7 +1609,7 @@
             }
             $scope.ui.addingTag = true;
             entity.title = newTag.tagTitle;
-            entity.description = newTag.tagDescription;
+            entity.description = newTag.tagDescription || '';
             if (typeof $scope.data.files !== 'undefined'){
               entity.filePaths = _.map($scope.data.files,
                                      function(file){
@@ -1972,7 +1972,7 @@
             }
             $scope.ui.addingTag = true;
             entity.title = newTag.tagTitle;
-            entity.description = newTag.tagDescription;
+            entity.description = newTag.tagDescription || '';
             if (typeof $scope.data.files !== 'undefined'){
               entity.filePaths = _.map($scope.data.files,
                                      function(file){

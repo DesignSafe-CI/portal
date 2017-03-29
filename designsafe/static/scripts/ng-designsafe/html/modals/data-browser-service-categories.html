@@ -63,18 +63,22 @@
         </button>
       </div>
       </div>
-    <!--
-    <div ng-if="data.file">
-        <ul>
-         <li ng-repeat="file in data.files">
-           <div style="background:lightgray; display:inline-block; padding:0 1px;">
+    <div ng-if="!ui.parentEntities.length"
+         style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid lightgrey;">
+        <table class="simple-table">
+          <tbody>
+         <tr ng-repeat="file in data.files">
+         <td>
            <i class="fa {{ file.icon()}}"></i>
            {{file.name}}
-           </div>
-         </li>
-        </ul>
+         </td>
+         <td >
+         <strong>Unassigned</strong>
+         </td>
+         </tr>
+         </tbody>
+        </table>
     </div>
-    -->
     <div class="add-project-labels" style="border-bottom: 1px solid lightgray; padding-bottom:10px;">
        <h4>Inventory</h4>
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
