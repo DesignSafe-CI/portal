@@ -71,6 +71,7 @@
           ng-mouseover="feature.hover=true"
           ng-class="{'active': lg == vm.active_layer_group}"
           ng-mouseleave="feature.hover=false"
+          ng-click="vm.current_layer ? vm.current_layer = null : vm.current_layer = feature"
           on-drop-success="vm.drop_feature_success($event, $index, feature)"
           ui-draggable="true"
           drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
@@ -83,7 +84,7 @@
               <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature)"></i>
             </div>
             <div class="pull-right">
-              <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature)"> </i>
+              <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature); $event.stopPropagation()"> </i>
             </div>
           </div>
       </li>
@@ -96,9 +97,8 @@
 
   </div> <!-- End of sidebar -->
   <div id="current_layer_details" ng-show="vm.current_layer">
-    <div class="pull-right">
-      <i class="fa fa-trash pull-right"> </i>
-      <i class="fa fa-close pull-left" ng-click="vm.current_layer=null"></i>
+    <div class="tools">
+      <i class="fa fa-close" ng-click="vm.current_layer=null"></i>
     </div>
     <li class="list-group-item menu clearfix">
       <div class="left"> Fill: </div>
@@ -173,14 +173,14 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-              <li>Save to Data Depot</li>
-              <li ng-click="vm.save_project()">Save locally </li>
+              <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
+              <li ng-click="vm.save_locally()">Save locally </li>
             </ul>
           </div>
 
           <div class="btn-group" role="group">
             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Data
+              Import Data
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">

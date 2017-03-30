@@ -190,6 +190,9 @@ var MapProject = function () {
           var json = feature.toGeoJSON();
           //add in any options
           json.label = lg.label;
+          if (feature.image_src) {
+            json.properties.image_src = feature.image_src;
+          }
           tmp.features.push(json);
         });
         out.features.push(tmp);
@@ -388,8 +391,8 @@ var MapSidebarCtrl = function () {
 
     // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', function (e) {
-      _this.current_layer ? _this.current_layer = null : _this.current_layer = e.layer;
-      _this.$scope.$apply();
+      // this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
+      // this.$scope.$apply();
     });
 
     this.add_draw_controls(this.active_layer_group.feature_group);
@@ -550,18 +553,20 @@ var MapSidebarCtrl = function () {
       this.current_layer.setStyle({ prop: this.current_layer.options[prop] });
     }
   }, {
-    key: 'save_project',
-    value: function save_project() {
-      var gjson = this.project.to_json();
-      console.log(gjson);
-      // let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
-      // let url  = URL.createObjectURL(blob);
-      //
-      // let a = document.createElement('a');
-      // a.download    = this.map_title + ".json";
-      // a.href        = url;
-      // a.textContent = "Download";
-      // a.click();
+    key: 'save_locally',
+    value: function save_locally() {
+      this.GeoDataService.save_locally(this.project);
+    }
+  }, {
+    key: 'save_to_depot',
+    value: function save_to_depot() {
+      var _this5 = this;
+
+      this.loading = true;
+      this.GeoDataService.save_to_depot(this.project).then(function (resp) {
+        console.log(resp);
+        _this5.loading = false;
+      });
     }
   }]);
 
@@ -629,14 +634,15 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GeoDataService = function () {
-  GeoDataService.$inject = ["$http", "$q"];
-  function GeoDataService($http, $q) {
+  GeoDataService.$inject = ["$http", "$q", "UserService"];
+  function GeoDataService($http, $q, UserService) {
     'ngInject';
 
     _classCallCheck(this, GeoDataService);
 
     this.$http = $http;
     this.$q = $q;
+    this.UserService = UserService;
     this.image_icon = L.divIcon({
       iconSize: [40, 40],
       html: "<div style='background-color:red'></div>",
@@ -645,6 +651,40 @@ var GeoDataService = function () {
   }
 
   _createClass(GeoDataService, [{
+    key: '_resize_image',
+    value: function _resize_image(blob) {
+      var max_width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 400;
+      var max_height = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 400;
+
+
+      var base64 = this._arrayBufferToBase64(blob);
+      // Create and initialize two canvas
+      var canvas = document.createElement("canvas");
+      var ctx = canvas.getContext("2d");
+      var canvasCopy = document.createElement("canvas");
+      var copyContext = canvasCopy.getContext("2d");
+
+      // Create original image
+      var img = new Image();
+      img.src = base64;
+
+      // Determine new ratio based on max size
+      var ratio = 1;
+      if (img.width > max_width) ratio = max_width / img.width;else if (img.height > max_height) ratio = max_height / img.height;
+
+      // Draw original image in second canvas
+      canvasCopy.width = img.width;
+      canvasCopy.height = img.height;
+      copyContext.drawImage(img, 0, 0);
+
+      // Copy and resize second canvas to first canvas
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
+
+      return canvas.toDataURL();
+    }
+  }, {
     key: '_arrayBufferToBase64',
     value: function _arrayBufferToBase64(buffer) {
       var binary = '';
@@ -653,7 +693,8 @@ var GeoDataService = function () {
       for (var i = 0; i < len; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
-      return btoa(binary);
+      var encoded = btoa(binary);
+      return 'data:image/jpg;base64,' + encoded;
     }
   }, {
     key: '_from_kml',
@@ -696,6 +737,7 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         var features = [];
         blob = JSON.parse(blob);
+        console.log(blob);
         L.geoJSON(blob).getLayers().forEach(function (l) {
           features.push(l);
         });
@@ -716,6 +758,22 @@ var GeoDataService = function () {
       });
     }
   }, {
+    key: '_make_image_marker',
+    value: function _make_image_marker(lat, lon, thumb, preview) {
+      var icon = L.divIcon({
+        iconSize: [40, 40],
+        html: "<div class='image' style='background:url(" + thumb + ");background-size: 100% 100%'></div>",
+        className: 'leaflet-marker-photo'
+      });
+
+      var marker = L.marker([lat, lon], { icon: icon }).bindPopup("<img src=" + preview + ">", {
+        className: 'leaflet-popup-photo',
+        maxWidth: "auto"
+      });
+
+      return marker;
+    }
+  }, {
     key: '_from_image',
     value: function _from_image(file) {
       var _this2 = this;
@@ -723,7 +781,7 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         var exif = EXIF.readFromBinaryFile(file);
         console.log(exif);
-        var encoded = 'data:image/jpg;base64,' + _this2._arrayBufferToBase64(file);
+        var encoded = _this2._arrayBufferToBase64(file);
         var lat = exif.GPSLatitude;
         var lon = exif.GPSLongitude;
 
@@ -732,30 +790,23 @@ var GeoDataService = function () {
         var lonRef = exif.GPSLongitudeRef || "W";
         lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
         lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
-        var icon = L.divIcon({
-          iconSize: [40, 40],
-          html: "<div class='image' style='background:url(" + encoded + ");background-size: 100% 100%'></div>",
-          className: 'leaflet-marker-photo'
-        });
-
-        var marker = L.marker([lat, lon], { icon: icon })
-        // .bindPopup("<div class='image' style='background:url(" + encoded + ")'>",
-        //     {
-        //       className: 'leaflet-popup-photo',
-        //       minWidth: 200
-        //     });
-        .bindPopup("<img src=" + encoded + ">", {
-          className: 'leaflet-popup-photo',
-          maxWidth: "auto"
-        });
-
-        marker.image_src = encoded;
+        var thumb = _this2._resize_image(file, 100, 100);
+        var preview = _this2._resize_image(file, 400, 400);
+        var hq = _this2._resize_image(file, 800, 800);
+        var marker = _this2._make_image_marker(lat, lon, thumb, preview);
+        marker.image_src = hq;
         res([marker]);
       });
     }
   }, {
     key: '_load_dsmap',
     value: function _load_dsmap(json_blob) {}
+
+    /*
+    This will return a promise that resolves to an array of features
+    that can be added to a LayerGroup
+    */
+
   }, {
     key: 'load_from_local_file',
     value: function load_from_local_file(file) {
@@ -817,6 +868,7 @@ var GeoDataService = function () {
         responseType = 'arraybuffer';
       }
       return this.$http.get(f.agaveUrl(), { 'responseType': responseType }).then(function (resp) {
+        console.log(resp);
         var p = null;
         switch (ext) {
           case 'kml':
@@ -845,6 +897,32 @@ var GeoDataService = function () {
         }
         return p;
       });
+    }
+  }, {
+    key: 'save_locally',
+    value: function save_locally(project) {
+      var gjson = project.to_json();
+      var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+
+      var a = document.createElement('a');
+      a.download = project.name + ".dsmap";
+      a.href = url;
+      a.textContent = "Download";
+      a.click();
+    }
+  }, {
+    key: 'save_to_depot',
+    value: function save_to_depot(project) {
+      var gjson = project.to_json();
+      var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
+      console.log(blob);
+      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/' + this.UserService.currentUser().username;
+      var form = new FormData();
+      var file = new File([blob], project.name + '.dsmap');
+
+      form.append('fileToUpload', file, 'test.test.test');
+      return this.$http.post(base_file_url, form, { headers: { 'Content-Type': undefined } });
     }
   }]);
 

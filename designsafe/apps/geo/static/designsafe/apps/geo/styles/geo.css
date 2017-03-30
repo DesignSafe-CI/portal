@@ -148,6 +148,11 @@
   background: grey;
 }
 
+#current_layer_details .tools{
+  padding-bottom: 5px;
+  border-bottom: 1px solid #707070;
+}
+
 #current_layer_details .list-group-item .left {
   float: left;
   width: 50%;

@@ -24,6 +24,9 @@ export default class MapProject {
         let json = feature.toGeoJSON();
         //add in any options
         json.label = lg.label;
+        if (feature.image_src) {
+          json.properties.image_src = feature.image_src;
+        }
         tmp.features.push(json);
       });
       out.features.push(tmp);

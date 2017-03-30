@@ -53,8 +53,8 @@ export default class MapSidebarCtrl {
 
     // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', (e) => {
-      this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
-      this.$scope.$apply();
+      // this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
+      // this.$scope.$apply();
     });
 
     this.add_draw_controls(this.active_layer_group.feature_group);
@@ -197,17 +197,17 @@ export default class MapSidebarCtrl {
   }
 
 
-  save_project () {
-    let gjson = this.project.to_json();
-    console.log(gjson)
-    // let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
-    // let url  = URL.createObjectURL(blob);
-    //
-    // let a = document.createElement('a');
-    // a.download    = this.map_title + ".json";
-    // a.href        = url;
-    // a.textContent = "Download";
-    // a.click();
+  save_locally () {
+    this.GeoDataService.save_locally(this.project);
+  }
+
+  save_to_depot () {
+    this.loading = true;
+    this.GeoDataService.save_to_depot(this.project).then( (resp) => {
+      console.log(resp);
+      this.loading = false;
+    });
+
   }
 
 }
