@@ -245,7 +245,7 @@
             $scope.data.busy = true;
             var addActions = _.map($scope.form.addExperiments, function(exp){
               exp.description = exp.description || '';
-              if (exp.title && exp.experimentalFacility && exp.experimentType && exp.description){
+              if (exp.title && exp.experimentalFacility && exp.experimentType){
                 return ProjectEntitiesService.create({
                   data: {
                     uuid: $scope.data.project.uuid,

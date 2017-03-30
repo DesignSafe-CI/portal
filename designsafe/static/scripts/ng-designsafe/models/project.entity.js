@@ -185,6 +185,27 @@
       return false;
     };
 
+    ProjectEntity.prototype.getFileSubTag = function(file){
+        var self = this;
+        var tags = self.value.tags;
+        var tag;
+        var equal = function(val){
+            return val === file.uuid();
+        };
+        var predicate = function(item){
+            return _.findIndex(item.file, equal) > -1;
+        };
+        for (var t in tags){
+            for(var st in tags[t]){
+                var _tag = _.find(tags[t][st], predicate);
+                if (_tag){
+                    tag = {tag: st, desc: _tag.desc};
+                }
+            }
+        }
+        return tag;
+    };
+
     return ProjectEntity;
   }]);
 })(window, angular, jQuery, _);

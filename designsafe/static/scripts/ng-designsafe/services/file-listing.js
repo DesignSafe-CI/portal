@@ -57,21 +57,23 @@
             return self.path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
           }
         });
-        var myUuid = myAsoc.rel;
-        _.each(self._entities, function(entity){
-          if( _.contains(entity.value.modelDrawing || [], myUuid)){
-            self._entityTags.push('Model Drawing');
-          }
-          else if (_.contains(entity.value.load || [], myUuid)){
-            self._entityTags.push('Load');
-          }
-          else if (_.contains(entity.value.sensorDrawing || [], myUuid)) {
-            self._entityTags.push('Sensor Drawing');
-          }
-          else if(_.contains(entity.value.script || [], myUuid)) {
-            self._entityTags.push('Script');
-          }
-        });
+        if (myAsoc){
+          var myUuid = myAsoc.rel;
+          _.each(self._entities, function(entity){
+            if( _.contains(entity.value.modelDrawing || [], myUuid)){
+              self._entityTags.push('Model Drawing');
+            }
+            else if (_.contains(entity.value.load || [], myUuid)){
+              self._entityTags.push('Load');
+            }
+            else if (_.contains(entity.value.sensorDrawing || [], myUuid)) {
+              self._entityTags.push('Sensor Drawing');
+            }
+            else if(_.contains(entity.value.script || [], myUuid)) {
+              self._entityTags.push('Script');
+            }
+          });
+        }
         self._entityTags = _.uniq(self._entityTags);
       }
     };

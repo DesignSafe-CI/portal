@@ -1397,7 +1397,8 @@
           };
           _setEntities();
 
-          $scope.getTagList = function(entity){
+          $scope.isFileSubTagValid = function(file, entity){
+            return typeof entity.getFileSubTag(file) !== 'undefined';
           };
 
           $scope.getFileSubTag = function(file, entity){
@@ -1422,6 +1423,10 @@
 
           $scope.saveFileTags = function(){
             var sttasks = [];
+            var updateFn = function(e){
+                        var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                        ent.update(e);
+                        };
             for (var euuid in $scope.data.fileSubTags){
               var sts = $scope.data.fileSubTags[euuid] || [];
               var entity = currentState.project.getRelatedByUuid(euuid);
@@ -1429,14 +1434,26 @@
                 if (sts[fuuid] == 'none'){
                   continue;
                 }
-                if (typeof entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] !== 'undefined' && _.isArray(entity.value.tags[sts[fuuid].tagType][sts[fuuid].name])){
-                entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push({file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]});
+                if (typeof entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] !== 'undefined' &&
+                    _.isArray(entity.value.tags[sts[fuuid].tagType][sts[fuuid].name])){
+                  
+                  if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
+                        {file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]});
+                  } else {
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
+                        {file: [fuuid]});
+                  }
                 } else {
-                entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]}];
+                  if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]}];
+                  } else {
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid]}];
+                  }
                 }
 
                 sttasks.push(ProjectEntitiesService.update(
-                        {data: {uuid: entity.uuid, entity:entity}}));
+                        {data: {uuid: entity.uuid, entity:entity}}).then(updateFn));
                 }
               }
             $scope.ui.busy = true;
