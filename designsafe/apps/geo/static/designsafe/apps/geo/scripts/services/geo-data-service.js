@@ -96,8 +96,6 @@ export default class GeoDataService {
   _from_json (blob) {
     return this.$q( (res, rej) => {
       let features = [];
-      blob = JSON.parse(blob);
-      console.log(blob)
       L.geoJSON(blob).getLayers().forEach( (l) => {
         features.push(l);
       });
@@ -138,7 +136,6 @@ export default class GeoDataService {
   _from_image (file) {
     return this.$q( (res, rej) => {
       let exif = EXIF.readFromBinaryFile(file);
-      console.log(exif)
       let encoded = this._arrayBufferToBase64(file);
       let lat = exif.GPSLatitude;
       let lon = exif.GPSLongitude;
@@ -150,16 +147,29 @@ export default class GeoDataService {
       lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
       let thumb = this._resize_image(file, 100, 100);
       let preview = this._resize_image(file, 400, 400);
-      let hq = this._resize_image(file, 800, 800);
+      // let hq = this._resize_image(file, 800, 800);
       let marker = this._make_image_marker(lat, lon, thumb, preview);
-      marker.image_src = hq;
+      marker.image_src = preview;
       res([marker]);
     });
   }
 
 
-  _load_dsmap (json_blob) {
-
+  _from_dsmap (json) {
+    return this.$q( (res, rej) => {
+      json = JSON.parse(json);
+      let project = new MapProject();
+      project.name = json.name;
+      json.features.forEach( (d)=> {
+        let lg = new LayerGroup(d.label, new L.FeatureGroup());
+        let group = L.geoJSON(d);
+        group.getLayers().forEach( (feat) => {
+          lg.feature_group.addLayer(feat);
+        });
+        project.layer_groups.push(lg);
+      });
+      return res(project);
+    });
   }
 
   /*
@@ -199,6 +209,9 @@ export default class GeoDataService {
             break;
           case 'jpg':
             p = this._from_image(e.target.result);
+            break;
+          case 'dsmap':
+            p = this._from_dsmap(e.target.result);
             break;
           default:
             p = this._from_json(e.target.result);
@@ -242,12 +255,16 @@ export default class GeoDataService {
         case 'jpg':
           p = this._from_image(resp.data);
           break;
+        case 'dsmap':
+          p = this._from_dsmap(resp.data);
+          break;
         default:
           p = this._from_json(resp.data);
       }
       return p;
     });
   }
+
   save_locally (project) {
     let gjson = project.to_json();
     let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});

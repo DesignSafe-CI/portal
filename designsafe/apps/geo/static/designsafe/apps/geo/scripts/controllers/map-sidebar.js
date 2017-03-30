@@ -137,7 +137,9 @@ export default class MapSidebarCtrl {
   }
 
   get_feature_type (f) {
-    if (f instanceof L.Marker) {
+    if (f.image_src) {
+      return 'Image';
+    } else if (f instanceof L.Marker) {
       return 'Point';
     } else if (f instanceof L.Polygon) {
       return 'Polygon';
@@ -164,8 +166,7 @@ export default class MapSidebarCtrl {
   }
 
   drop_feature_success (ev, data, lg) {
-    console.log("drag_feature_success", ev, data, lg)
-    // lg.feature_group.getLayers().splicer(idx, 1);
+    console.log("drag_feature_success", ev, data, lg);
   }
 
   load_from_data_depot(f) {
@@ -180,22 +181,32 @@ export default class MapSidebarCtrl {
   }
 
   local_file_selected (ev) {
+    this.loading = true;
     let file = ev.target.files[0];
-    let lf = this.GeoDataService.load_from_local_file(file).then( (features) => {
-      features.forEach( (f) => {
-        this.active_layer_group.feature_group.addLayer(f);
-      });
+    let lf = this.GeoDataService.load_from_local_file(file).then( (retval) => {
+      if (retval instanceof MapProject) {
+        console.log(retval)
+        this.project = retval;
+        this.project.layer_groups.forEach( (lg)=> {
+          console.log(lg)
+          this.map.addLayer(lg.feature_group);
+        });
+      } else {
+        retval.forEach( (f) => {
+          this.active_layer_group.feature_group.addLayer(f);
+        });
 
-      this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
+        this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
+      }
+      this.loading = false;
+      $('#file_picker').val('');
     });
 
   }
 
-
   update_layer_style (prop) {
     this.current_layer.setStyle({prop: this.current_layer.options[prop]});
   }
-
 
   save_locally () {
     this.GeoDataService.save_locally(this.project);
@@ -204,7 +215,6 @@ export default class MapSidebarCtrl {
   save_to_depot () {
     this.loading = true;
     this.GeoDataService.save_to_depot(this.project).then( (resp) => {
-      console.log(resp);
       this.loading = false;
     });
 

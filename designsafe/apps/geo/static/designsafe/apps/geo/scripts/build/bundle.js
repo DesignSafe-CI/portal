@@ -189,7 +189,6 @@ var MapProject = function () {
         lg.feature_group.getLayers().forEach(function (feature) {
           var json = feature.toGeoJSON();
           //add in any options
-          json.label = lg.label;
           if (feature.image_src) {
             json.properties.image_src = feature.image_src;
           }
@@ -486,7 +485,9 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'get_feature_type',
     value: function get_feature_type(f) {
-      if (f instanceof L.Marker) {
+      if (f.image_src) {
+        return 'Image';
+      } else if (f instanceof L.Marker) {
         return 'Point';
       } else if (f instanceof L.Polygon) {
         return 'Polygon';
@@ -517,7 +518,6 @@ var MapSidebarCtrl = function () {
     key: 'drop_feature_success',
     value: function drop_feature_success(ev, data, lg) {
       console.log("drag_feature_success", ev, data, lg);
-      // lg.feature_group.getLayers().splicer(idx, 1);
     }
   }, {
     key: 'load_from_data_depot',
@@ -538,13 +538,25 @@ var MapSidebarCtrl = function () {
     value: function local_file_selected(ev) {
       var _this4 = this;
 
+      this.loading = true;
       var file = ev.target.files[0];
-      var lf = this.GeoDataService.load_from_local_file(file).then(function (features) {
-        features.forEach(function (f) {
-          _this4.active_layer_group.feature_group.addLayer(f);
-        });
+      var lf = this.GeoDataService.load_from_local_file(file).then(function (retval) {
+        if (retval instanceof _mapProject2.default) {
+          console.log(retval);
+          _this4.project = retval;
+          _this4.project.layer_groups.forEach(function (lg) {
+            console.log(lg);
+            _this4.map.addLayer(lg.feature_group);
+          });
+        } else {
+          retval.forEach(function (f) {
+            _this4.active_layer_group.feature_group.addLayer(f);
+          });
 
-        _this4.map.fitBounds(_this4.active_layer_group.feature_group.getBounds());
+          _this4.map.fitBounds(_this4.active_layer_group.feature_group.getBounds());
+        }
+        _this4.loading = false;
+        $('#file_picker').val('');
       });
     }
   }, {
@@ -564,7 +576,6 @@ var MapSidebarCtrl = function () {
 
       this.loading = true;
       this.GeoDataService.save_to_depot(this.project).then(function (resp) {
-        console.log(resp);
         _this5.loading = false;
       });
     }
@@ -736,8 +747,6 @@ var GeoDataService = function () {
     value: function _from_json(blob) {
       return this.$q(function (res, rej) {
         var features = [];
-        blob = JSON.parse(blob);
-        console.log(blob);
         L.geoJSON(blob).getLayers().forEach(function (l) {
           features.push(l);
         });
@@ -780,7 +789,6 @@ var GeoDataService = function () {
 
       return this.$q(function (res, rej) {
         var exif = EXIF.readFromBinaryFile(file);
-        console.log(exif);
         var encoded = _this2._arrayBufferToBase64(file);
         var lat = exif.GPSLatitude;
         var lon = exif.GPSLongitude;
@@ -792,15 +800,30 @@ var GeoDataService = function () {
         lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
         var thumb = _this2._resize_image(file, 100, 100);
         var preview = _this2._resize_image(file, 400, 400);
-        var hq = _this2._resize_image(file, 800, 800);
+        // let hq = this._resize_image(file, 800, 800);
         var marker = _this2._make_image_marker(lat, lon, thumb, preview);
-        marker.image_src = hq;
+        marker.image_src = preview;
         res([marker]);
       });
     }
   }, {
-    key: '_load_dsmap',
-    value: function _load_dsmap(json_blob) {}
+    key: '_from_dsmap',
+    value: function _from_dsmap(json) {
+      return this.$q(function (res, rej) {
+        json = JSON.parse(json);
+        var project = new _mapProject2.default();
+        project.name = json.name;
+        json.features.forEach(function (d) {
+          var lg = new _layer_group2.default(d.label, new L.FeatureGroup());
+          var group = L.geoJSON(d);
+          group.getLayers().forEach(function (feat) {
+            lg.feature_group.addLayer(feat);
+          });
+          project.layer_groups.push(lg);
+        });
+        return res(project);
+      });
+    }
 
     /*
     This will return a promise that resolves to an array of features
@@ -844,6 +867,9 @@ var GeoDataService = function () {
               break;
             case 'jpg':
               p = _this3._from_image(e.target.result);
+              break;
+            case 'dsmap':
+              p = _this3._from_dsmap(e.target.result);
               break;
             default:
               p = _this3._from_json(e.target.result);
@@ -891,6 +917,9 @@ var GeoDataService = function () {
             break;
           case 'jpg':
             p = _this4._from_image(resp.data);
+            break;
+          case 'dsmap':
+            p = _this4._from_dsmap(resp.data);
             break;
           default:
             p = _this4._from_json(resp.data);

@@ -77,11 +77,11 @@
           drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
           >
 
-          <div> <i class="fa fa-file-o"></i> </div>
+          <div> <i class="fa" ng-class="vm.get_feature_type(feature) === 'Image' ? 'fa-image' : 'fa-file-o'"></i> </div>
           <div> {{vm.get_feature_type(feature)}} </div>
           <div class="pull-right">
             <div class="pull-left">
-              <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature)"></i>
+              <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature); $event.stopPropagation()"></i>
             </div>
             <div class="pull-right">
               <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature); $event.stopPropagation()"> </i>
@@ -169,10 +169,11 @@
 
           <div class="btn-group" role="group">
             <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Save
+              File
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
+              <li ng-click="vm.open_existing_project()">Open Existing Project</li>
               <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
               <li ng-click="vm.save_locally()">Save locally </li>
             </ul>
