@@ -240,6 +240,22 @@ class Experiment(RelatedEntity):
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(ExperimentalProject)
 
+class AnalysisTagGeneral(MetadataModel):
+    _is_nested = True
+    analysis_data_graph = fields.ListField('Analysis Data Graph', list_cls=DataTag)
+    analysis_data_visualization = fields.ListField('Analysis Data Visualization', list_cls=DataTag)
+    analysis_data_table = fields.ListField('Analysis Data Table', list_cls=DataTag)
+    application = fields.ListField('Application', list_cls=DataTag)
+    application_matlab = fields.ListField('Application MATLAB', list_cls=DataTag)
+    application_r = fields.ListField('Application R', list_cls=DataTag)
+    application_jupiter_notebook = fields.ListField('Application Notebook', list_cls=DataTag)
+    application_other = fields.ListField('Application Other', list_cls=DataTag)
+    application_script = fields.ListField('Application Script', list_cls=DataTag)
+
+class AnalysisTag(MetadataModel):
+    _is_nested = True
+    general = fields.NestedObjectField(AnalysisTagGeneral)
+
 class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
     analysis_type = fields.CharField('Analysis Type', max_length=255, default='other')
@@ -248,6 +264,7 @@ class Analysis(RelatedEntity):
     analysis_data = fields.CharField('Analysis Data', max_length=1024, default='')
     application = fields.CharField('Analysis Data', max_length=1024, default='')
     script = fields.RelatedObjectField(FileModel, multiple=True)
+    tags = fields.NestedObjectField(AnalysisTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
     #events = fields.RelatedObjectField(Event)
@@ -307,10 +324,17 @@ class ModelConfigTagWind(MetadataModel):
     scale_large = fields.ListField('Scale Large', list_cls=DataTag)
     scale_small = fields.ListField('Scale Small', list_cls=DataTag)
     tower = fields.ListField('Tower', list_cls=DataTag)
+
+class ModelConfigTagGeneral(MetadataModel):
+    _is_nested = True
+    model_drawing = fields.ListField('Model Drawing', list_cls=DataTag)
+    image = fields.ListField('Model Drawing', list_cls=DataTag)
+    video = fields.ListField('Model Drawing', list_cls=DataTag)
     
 class ModelConfigTag(MetadataModel):
     _is_nested = True
     centrifuge = fields.NestedObjectField(ModelConfigTagCentrifuge)
+    general = fields.NestedObjectField(ModelConfigTagGeneral)
     shake_table = fields.NestedObjectField(ModelConfigTagShakeTable)
     wave = fields.NestedObjectField(ModelConfigTagWave)
     wind = fields.NestedObjectField(ModelConfigTagWind)
@@ -319,12 +343,12 @@ class ModelConfiguration(RelatedEntity):
     model_name = 'designsafe.project.model_config'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
-    spatial = fields.CharField('Spatial', max_length=1024)
-    lat = fields.CharField('Lat', max_length=1024)
-    lon = fields.CharField('Lon', max_length=1024)
-    model_drawing = fields.RelatedObjectField(FileModel, multiple=True)
-    image = fields.NestedObjectField(DataTag)
-    video = fields.NestedObjectField(DataTag)
+    #spatial = fields.CharField('Spatial', max_length=1024)
+    #lat = fields.CharField('Lat', max_length=1024)
+    #lon = fields.CharField('Lon', max_length=1024)
+    #model_drawing = fields.RelatedObjectField(FileModel, multiple=True)
+    #image = fields.NestedObjectField(DataTag)
+    #video = fields.NestedObjectField(DataTag)
     tags = fields.NestedObjectField(ModelConfigTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
@@ -378,9 +402,15 @@ class SensorListTagWind(MetadataModel):
     strain_gauge = fields.ListField('Strain Gauge', list_cls=DataTag)
     string_potentiometer = fields.ListField('String Potentiometer', list_cls=DataTag)
 
+class SensorListTagGeneral(MetadataModel):
+    _is_nested = True
+    sensor_list = fields.ListField('Sensor List', list_cls=DataTag)
+    sensor_drawing = fields.ListField('Sensor Drawing', list_cls=DataTag)
+
 class SensorListTag(MetadataModel):
     _is_nested = True
     centrifuge = fields.NestedObjectField(SensorListTagCentrifuge)
+    general = fields.NestedObjectField(SensorListTagGeneral)
     shake_table = fields.NestedObjectField(SensorListTagShakeTable)
     wave = fields.NestedObjectField(SensorListTagWave)
     wind = fields.NestedObjectField(SensorListTagWind)
@@ -390,7 +420,7 @@ class SensorList(RelatedEntity):
     sensor_list_type = fields.CharField('Sensor List Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    sensor_drawing = fields.RelatedObjectField(FileModel, multiple=True)
+    #sensor_drawing = fields.RelatedObjectField(FileModel, multiple=True)
     tags = fields.NestedObjectField(SensorListTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
@@ -459,10 +489,16 @@ class EventTagWind(MetadataModel):
     wind_tunnel_closed_circuit = fields.ListField('Wind Tunnel closed Circuit', list_cls=DataTag)
     three_sec_gust = fields.ListField('Three Sec Gust', list_cls=DataTag)
 
+class EventTagGeneral(MetadataModel):
+    _is_nested=True
+    data_units = fields.ListField('Data Units', list_cls=DataTag)
+    image = fields.ListField('Image', list_cls=DataTag)
+    video = fields.ListField('Video', list_cls=DataTag)
 
 class EventTag(MetadataModel):
     _is_nested = True
     centrifuge = fields.NestedObjectField(EventTagCentrifuge)
+    general = fields.NestedObjectField(EventTagGeneral)
     shake_table = fields.NestedObjectField(EventTagShakeTable)
     wave = fields.NestedObjectField(EventTagWave)
     wind = fields.NestedObjectField(EventTagWind)
@@ -472,7 +508,7 @@ class Event(RelatedEntity):
     event_type = fields.CharField('Event Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    load = fields.RelatedObjectField(FileModel, multiple=True)
+    #load = fields.RelatedObjectField(FileModel, multiple=True)
     tags = fields.NestedObjectField(SensorListTag)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)

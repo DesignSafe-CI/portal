@@ -400,7 +400,8 @@
             .then(
                function(resp){
                  $scope.data.form.projectTagToAdd = {optional:{}};
-                 currentState.project.addEntity(resp);
+                 //currentState.project.addEntity(resp);
+                 $scope.data.project.addEntity(res);
                  _setFileEntities();
                  _setEntities();
                  $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
