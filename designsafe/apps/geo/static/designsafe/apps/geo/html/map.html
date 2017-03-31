@@ -1,212 +1,177 @@
-<div id="geo_container">
-  <div id="navbar">
-    <div class="nav-icon"> <i class="fa fa-home"></i> </div>
-    <div class="nav-icon active"> <i class="fa fa-map "></i> </div>
-    <div class="nav-icon"> <i class="fa fa-database"></i> </div>
-    <div class="nav-icon"> <i class="fa fa-gears"></i> </div>
-    <div class="nav-icon"> <i class="fa fa-question-circle"></i> </div>
-    <div class="nav-icon" ng-show="vm.loading"> <i class="fa fa-spin fa-spinner"></i></div>
+<div id="geo_sidebar">
+<input style="display:none" type="file" id="file_picker" custom-on-change handler="vm.local_file_selected(ev)">
+<!-- <ul class="list-group">
+  <li class="list-group-item menu" style="background:#eaeaea;margin-top:0px">
+    <a href="/">
+      <img src="/static/images/ds-logo-horiz.png" width="180"></img>
+    </a>
+  </li>
+</ul> -->
+
+<li class="list-group-item menu clearfix title"
+    ng-mouseover="vm.title_hover=true"
+    ng-mouseleave="vm.title_hover=false">
+  <span class="strong map-title"> {{vm.project.name}} </span>
+
+  <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=!vm.edit_title"></i>
+</li>
+
+<li class="list-group-item menu clearfix action" ng-click="vm.create_layer_group()">
+  <div tooltip="Create a new Layer Group">
+    <i class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
   </div>
-  <div id="geo_sidebar">
-    <input style="display:none" type="file" id="file_picker" custom-on-change handler="vm.local_file_selected(ev)">
-    <!-- <ul class="list-group">
-      <li class="list-group-item menu" style="background:#eaeaea;margin-top:0px">
-        <a href="/">
-          <img src="/static/images/ds-logo-horiz.png" width="180"></img>
-        </a>
-      </li>
-    </ul> -->
+</li>
 
-    <li class="list-group-item menu clearfix title"
-        ng-mouseover="vm.title_hover=true"
-        ng-mouseleave="vm.title_hover=false">
-      <span class="strong map-title"> {{vm.project.name}} </span>
-
-      <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=!vm.edit_title"></i>
-    </li>
-
-    <li class="list-group-item menu clearfix action" ng-click="vm.create_layer_group()">
-      <div tooltip="Create a new Layer Group">
-        <i class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
+<div ng-repeat="lg in vm.project.layer_groups track by $index" ui-on-Drop="vm.on_drop($event, $data, lg)">
+  <li class="list-group-item menu clearfix"
+      ng-class="{'active': lg == vm.active_layer_group}"
+      ng-mouseover="lg.show_edit_icon=true"
+      ng-mouseleave="lg.show_edit_icon=false"
+      >
+    <div> <i class="fa"
+             ng-class="{'fa-chevron-right': !lg.show_contents, 'fa-chevron-down': lg.show_contents}"
+             ng-click="lg.show_contents= !lg.show_contents"></i>
+    </div>
+    <!-- <div>
+      <i class="fa fa-database"></i>
+    </div> -->
+    <div ng-click="vm.select_active_layer_group(lg)">
+      <span class="pull-left" ng-hide="lg.show_edit_label"> {{lg.label}} </span>
+      <div ng-show="lg.show_edit_label">
+        <input type="text" ng-model="lg.label">
+        <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
       </div>
-    </li>
+      <span class="lg-count"> {{lg.num_features()}} features </span>
+    </div>
+    <div class="pull-right">
+      <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
+      <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
+      <i class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
+    </div>
+  </li>
+  <li class="list-group-item menu lg-tools clearfix" ng-show="lg.show_tools">
+    <div>
+      <span> Tools: </span>
+      <i class="fa fa-trash" ng-click="vm.delete_layer_group(lg, $index)" tooltip="Delete this layer group" > </i>
+      <i class="fa fa-crosshairs" ng-click="vm.zoom_to(lg.feature_group)" tooltip="Zoom to group"></i>
+    </div>
+  </li>
+  <li class="list-group-item menu clearfix subgroup"
+      ng-show="lg.show_contents"
+      ng-repeat="feature in lg.feature_group.getLayers() track by $index"
+      ng-mouseover="feature.hover=true"
+      ng-class="{'active': lg == vm.active_layer_group}"
+      ng-mouseleave="feature.hover=false"
+      ng-click="vm.current_layer ? vm.current_layer = null : vm.current_layer = feature"
+      on-drop-success="vm.drop_feature_success($event, $index, feature)"
+      ui-draggable="true"
+      drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
+      >
 
-    <div ng-repeat="lg in vm.project.layer_groups track by $index" ui-on-Drop="vm.on_drop($event, $data, lg)">
-      <li class="list-group-item menu clearfix"
-          ng-class="{'active': lg == vm.active_layer_group}"
-          ng-mouseover="lg.show_edit_icon=true"
-          ng-mouseleave="lg.show_edit_icon=false"
-          >
-        <div> <i class="fa"
-                 ng-class="{'fa-chevron-right': !lg.show_contents, 'fa-chevron-down': lg.show_contents}"
-                 ng-click="lg.show_contents= !lg.show_contents"></i>
-        </div>
-        <!-- <div>
-          <i class="fa fa-database"></i>
-        </div> -->
-        <div ng-click="vm.select_active_layer_group(lg)">
-          <span class="pull-left" ng-hide="lg.show_edit_label"> {{lg.label}} </span>
-          <div ng-show="lg.show_edit_label">
-            <input type="text" ng-model="lg.label">
-            <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
-          </div>
-          <span class="lg-count"> {{lg.num_features()}} features </span>
+      <div> <i class="fa" ng-class="vm.get_feature_type(feature) === 'Image' ? 'fa-image' : 'fa-file-o'"></i> </div>
+      <div> {{vm.get_feature_type(feature)}} </div>
+      <div class="pull-right">
+        <div class="pull-left">
+          <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature); $event.stopPropagation()"></i>
         </div>
         <div class="pull-right">
-          <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
-          <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
-          <i class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
+          <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature); $event.stopPropagation()"> </i>
         </div>
-      </li>
-      <li class="list-group-item menu lg-tools clearfix" ng-show="lg.show_tools">
-        <div>
-          <span> Tools: </span>
-          <i class="fa fa-trash" ng-click="vm.delete_layer_group(lg, $index)" tooltip="Delete this layer group" > </i>
-          <i class="fa fa-crosshairs" ng-click="vm.zoom_to(lg.feature_group)" tooltip="Zoom to group"></i>
-        </div>
-      </li>
-      <li class="list-group-item menu clearfix subgroup"
-          ng-show="lg.show_contents"
-          ng-repeat="feature in lg.feature_group.getLayers() track by $index"
-          ng-mouseover="feature.hover=true"
-          ng-class="{'active': lg == vm.active_layer_group}"
-          ng-mouseleave="feature.hover=false"
-          ng-click="vm.current_layer ? vm.current_layer = null : vm.current_layer = feature"
-          on-drop-success="vm.drop_feature_success($event, $index, feature)"
-          ui-draggable="true"
-          drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
-          >
-
-          <div> <i class="fa" ng-class="vm.get_feature_type(feature) === 'Image' ? 'fa-image' : 'fa-file-o'"></i> </div>
-          <div> {{vm.get_feature_type(feature)}} </div>
-          <div class="pull-right">
-            <div class="pull-left">
-              <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature); $event.stopPropagation()"></i>
-            </div>
-            <div class="pull-right">
-              <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature); $event.stopPropagation()"> </i>
-            </div>
-          </div>
-      </li>
-    </div>
-
-
-
-
-
-
-  </div> <!-- End of sidebar -->
-  <div id="current_layer_details" ng-show="vm.current_layer">
-    <div class="tools">
-      <i class="fa fa-close" ng-click="vm.current_layer=null"></i>
-    </div>
-    <li class="list-group-item menu clearfix">
-      <div class="left"> Fill: </div>
-      <div class="right">
-        <input type="color"
-               class="form-control"
-               ng-model="vm.current_layer.options.fillColor"
-               ng-change=vm.update_layer_style('fillColor')>
       </div>
+  </li>
+</div>
 
-    </li>
-    <li class="list-group-item menu clearfix">
-      <div class="left"> Lat: </div>
-      <div class="right"> {{vm.current_layer.getLatLng().lat}} </div>
-    </li>
-    <li class="list-group-item menu clearfix">
-      <div class="left"> Lon: </div>
-      <div class="right"> {{vm.current_layer.getLatLng().lng}} </div>
-    </li>
-    <!-- <table class="table table-condensed table-bordered">
 
-      <tr>
-        <td> Stroke </td>
-        <td>
-          <input type="color"
-                  class="form-control"
-                 ng-model="vm.current_layer.options.color"
-                 ng-change=vm.update_layer_style('color')>
-          </input>
-        </td>
-      </tr>
-      <tr>
-        <td> Opacity </td>
-        <td>
-          <input type="number" min=0 max=1.0 step=0.01
-                  class="form-control"
-                 ng-model="vm.current_layer.options.fillOpacity"
-                 ng-change=vm.update_layer_style('fillOpacity')>
-          </input>
-        </td>
-      </tr>
-      <tr>
-        <td> Description </td>
-        <td>
-          <textarea  class="form-control" ng-model="vm.current_layer.options.description"></textarea>
-        </td>
-      </tr>
-    </table> -->
+
+
+
+
+</div> <!-- End of sidebar -->
+
+<div id="current_layer_details" ng-show="vm.current_layer">
+  <div class="tools">
+    <i class="fa fa-close" ng-click="vm.current_layer=null"></i>
   </div>
-
-
-  <div id="map_project_details" ng-show="vm.edit_title">
-
-    <div class="form-group">
-      <label> Title </label>
-      <input type="text" ng-model="vm.project.name" class="form-control">
+  <li class="list-group-item menu clearfix">
+    <div class="left"> Fill: </div>
+    <div class="right">
+      <input type="color"
+             class="form-control"
+             ng-model="vm.current_layer.options.fillColor"
+             ng-change=vm.update_layer_style('fillColor')>
     </div>
-    <div class="form-group">
-      <label> Description </label>
-      <textarea ng-model="vm.project.description" class="form-control" rows="5"></textarea>
-    </div>
+
+  </li>
+  <li class="list-group-item menu clearfix">
+    <div class="left"> Lat: </div>
+    <div class="right"> {{vm.current_layer.getLatLng().lat}} </div>
+  </li>
+  <li class="list-group-item menu clearfix">
+    <div class="left"> Lon: </div>
+    <div class="right"> {{vm.current_layer.getLatLng().lng}} </div>
+  </li>
+</div>
+
+
+<div id="map_project_details" ng-show="vm.edit_title">
+  <div class="form-group">
+    <label> Title </label>
+    <input type="text" ng-model="vm.project.name" class="form-control">
   </div>
+  <div class="form-group">
+    <label> Description </label>
+    <textarea ng-model="vm.project.description" class="form-control" rows="5"></textarea>
+  </div>
+</div>
 
-  <div id="right_panel">
-    <div id="top_toolbar">
-      <div class="btn-toolbar">
-        <div class="btn-group">
+<div id="right_panel">
+  <div id="top_toolbar">
+    <div class="btn-toolbar">
+      <div class="btn-group">
 
-          <div class="btn-group" role="group">
-            <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              File
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li ng-click="vm.open_existing_project()">Open Existing Project</li>
-              <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
-              <li ng-click="vm.save_locally()">Save locally </li>
-            </ul>
-          </div>
-
-          <div class="btn-group" role="group">
-            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Import Data
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li ng-click="vm.open_file_dialog()"> Import file locally</li>
-              <li ng-click="vm.open_db_modal()"> Import from Data Depot </li>
-            </ul>
-          </div>
-
-          <div class="btn-group" role="group">
-            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Colors
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu clearfix">
-              <li>primary <input type="color" ng-model="vm.primary_color" class="pull-right"></li>
-              <li> secondary <input type="color" ng-model="vm.secondary_color" class="pull-right"></li>
-            </ul>
-          </div>
+        <div class="btn-group" role="group">
+          <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            File
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li ng-click="vm.open_existing_project()">Open Existing Project</li>
+            <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
+            <li ng-click="vm.save_locally()">Save locally </li>
+          </ul>
         </div>
 
-        <div id="mouse_coordinates" class="pull-right">
-          <span> Lat: {{vm.current_mouse_coordinates.lat | number:4}} Lon: {{vm.current_mouse_coordinates.lng| number:4 }} </span>
+        <div class="btn-group" role="group">
+          <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Import Data
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li ng-click="vm.open_file_dialog()"> Import file locally</li>
+            <li ng-click="vm.open_db_modal()"> Import from Data Depot </li>
+          </ul>
+        </div>
+
+        <div class="btn-group" role="group">
+          <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Colors
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu clearfix">
+            <li>primary <input type="color" ng-model="vm.primary_color" class="pull-right"></li>
+            <li> secondary <input type="color" ng-model="vm.secondary_color" class="pull-right"></li>
+          </ul>
         </div>
       </div>
 
+      <i class="fa fa-spin fa-refresh blue" ng-show="vm.loading"></i>
+
+      <div id="mouse_coordinates" class="pull-right">
+        <span> Lat: {{vm.current_mouse_coordinates.lat | number:4}} Lon: {{vm.current_mouse_coordinates.lng| number:4 }} </span>
+      </div>
     </div>
-    <div id="geo_map"> </div>
+  </div>
+
+  <div id="geo_map"> </div>
+
 </div>

@@ -1,0 +1,25 @@
+<div id="geo_container">
+  <div id="navbar">
+    <div class="nav-icon">
+      <i class="fa fa-home"></i>
+    </div>
+    <div class="nav-icon" ui-sref="geo.map" ui-sref-active="active">
+      <i class="fa fa-map "></i>
+    </div>
+    <div class="nav-icon">
+      <a href="/data/browser">
+        <i class="fa fa-database"></i>
+      </a>
+    </div>
+    <div class="nav-icon">
+      <i class="fa fa-gears"></i>
+    </div>
+    <div class="nav-icon" ui-sref="geo.help" ui-sref-active="active">
+      <i class="fa fa-question-circle"></i>
+    </div>
+    <div class="nav-icon" ng-show="vm.loading">
+      <i class="fa fa-spin fa-spinner"></i>
+    </div>
+  </div>
+  <div ui-view style="display:flex;width:100%"></div>
+</div>

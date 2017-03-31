@@ -12,7 +12,8 @@ export default class MapProject {
       "type": "FeatureCollection",
       "features": [],
       "ds_map": true,
-      "name": this.name
+      "name": this.name,
+      "description": this.description
     };
     this.layer_groups.forEach( (lg) => {
       let tmp = {

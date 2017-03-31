@@ -5,22 +5,32 @@ import {mod as geo_services} from './services';
 let mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
-function config($stateProvider, $uibTooltipProvider) {
+function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';
+
+  $locationProvider.html5Mode({
+    enabled: false
+  });
+
   $stateProvider.state('geo', {
     url: '',
-    templateUrl: '/static/designsafe/apps/geo/html/map.html',
-    controller: 'MapSidebarCtrl as vm',
+    abstract: true,
+    templateUrl: '/static/designsafe/apps/geo/html/index.html',
     resolve: {
       auth: function () {
         return true;
       }
     }
+  }).state('geo.map', {
+    url: '/map',
+    templateUrl: '/static/designsafe/apps/geo/html/map.html',
+    controller: 'MapSidebarCtrl as vm'
   }).state('geo.help', {
     url: '/help',
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
+  $urlRouterProvider.when('/', '/map');
 
   //config popups etc
   $uibTooltipProvider.options({popupDelay:1000});

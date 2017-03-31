@@ -15,7 +15,14 @@ export default class GeoDataService {
       html: "<div style='background-color:red'></div>",
       className: 'leaflet-marker-photo'
     });
+    this.active_project = null;
+  }
 
+  current_project(project) {
+    if (!(project)) {
+      return this.active_project;
+    }
+    this.active_project = project;
   }
 
   _resize_image (blob, max_width=400, max_height=400) {

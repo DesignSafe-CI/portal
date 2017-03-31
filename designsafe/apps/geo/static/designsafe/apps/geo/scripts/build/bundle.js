@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -178,7 +178,8 @@ var MapProject = function () {
         "type": "FeatureCollection",
         "features": [],
         "ds_map": true,
-        "name": this.name
+        "name": this.name,
+        "description": this.description
       };
       this.layer_groups.forEach(function (lg) {
         var tmp = {
@@ -231,7 +232,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(7);
+var _mapSidebar = __webpack_require__(8);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
@@ -239,12 +240,17 @@ var _dbModal = __webpack_require__(0);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
+var _help = __webpack_require__(7);
+
+var _help2 = _interopRequireDefault(_help);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mod = angular.module('ds.geo.controllers', []);
 
 mod.controller('MapSidebarCtrl', _mapSidebar2.default);
 mod.controller('DBModalCtrl', _dbModal2.default);
+mod.controller('HelpCtrl', _help2.default);
 exports.default = mod;
 
 /***/ }),
@@ -258,7 +264,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(8);
+var _customOnChange = __webpack_require__(9);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -280,11 +286,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _geoStateService = __webpack_require__(10);
+var _geoStateService = __webpack_require__(11);
 
 var _geoStateService2 = _interopRequireDefault(_geoStateService);
 
-var _geoDataService = __webpack_require__(9);
+var _geoDataService = __webpack_require__(10);
 
 var _geoDataService2 = _interopRequireDefault(_geoDataService);
 
@@ -301,6 +307,30 @@ exports.default = mod;
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var HelpCtrl = function HelpCtrl($scope) {
+  'ngInject';
+
+  _classCallCheck(this, HelpCtrl);
+
+  this.$scope = $scope;
+};
+HelpCtrl.$inject = ["$scope"];
+
+exports.default = HelpCtrl;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -335,8 +365,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$uibModal", "DataService", "$http", "GeoDataService"];
-  function MapSidebarCtrl($scope, $window, $timeout, $uibModal, DataService, $http, GeoDataService) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$uibModal", "DataService", "$http", "GeoDataService"];
+  function MapSidebarCtrl($scope, $window, $timeout, $interval, $uibModal, DataService, $http, GeoDataService) {
     'ngInject';
 
     var _this = this;
@@ -346,6 +376,7 @@ var MapSidebarCtrl = function () {
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
+    this.$interval = $interval;
     this.$window = $window;
     this.$uibModal = $uibModal;
     this.DataService = DataService;
@@ -372,21 +403,35 @@ var MapSidebarCtrl = function () {
       'Street': streets,
       'Satellite': satellite
     };
-
-    this.project = new _mapProject2.default('New Map');
-    console.log(this.project);
     this.map = L.map('geo_map', { layers: [streets, satellite], measureControl: true }).setView([0, 0], 3);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
+
+    if (this.GeoDataService.current_project()) {
+      this.project = this.GeoDataService.current_project();
+      this.project.layer_groups.forEach(function (lg) {
+        _this.map.addLayer(lg.feature_group);
+        _this.map.removeLayer(lg.feature_group);
+        _this.map.addLayer(lg.feature_group);
+      });
+    } else {
+      this.project = new _mapProject2.default('New Map');
+      this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
+      this.map.addLayer(this.project.layer_groups[0].feature_group);
+    }
 
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout(function () {
       _this.map.invalidateSize();
     }, 10);
 
-    this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
-    this.map.addLayer(this.project.layer_groups[0].feature_group);
     this.active_layer_group = this.project.layer_groups[0];
+
+    // Auto keep track of current project in the GeoDataService
+    // so that if they switch states they will not lose work...
+    $interval(function () {
+      _this.GeoDataService.current_project(_this.project);
+    }, 1000);
 
     // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', function (e) {
@@ -451,6 +496,7 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'show_hide_layer_group',
     value: function show_hide_layer_group(lg) {
+      console.log(lg);
       lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
     }
   }, {
@@ -587,7 +633,7 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -614,7 +660,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -659,9 +705,18 @@ var GeoDataService = function () {
       html: "<div style='background-color:red'></div>",
       className: 'leaflet-marker-photo'
     });
+    this.active_project = null;
   }
 
   _createClass(GeoDataService, [{
+    key: 'current_project',
+    value: function current_project(project) {
+      if (!project) {
+        return this.active_project;
+      }
+      this.active_project = project;
+    }
+  }, {
     key: '_resize_image',
     value: function _resize_image(blob) {
       var max_width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 400;
@@ -961,7 +1016,7 @@ var GeoDataService = function () {
 exports.default = GeoDataService;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -984,13 +1039,13 @@ var GeoStateService = function GeoStateService($scope, $state) {
 exports.default = GeoStateService;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-config.$inject = ["$stateProvider", "$uibTooltipProvider"];
+config.$inject = ["$stateProvider", "$uibTooltipProvider", "$urlRouterProvider", "$locationProvider"];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1004,23 +1059,32 @@ var _services = __webpack_require__(6);
 var mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
 
-function config($stateProvider, $uibTooltipProvider) {
+function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';
+
+  $locationProvider.html5Mode({
+    enabled: false
+  });
 
   $stateProvider.state('geo', {
     url: '',
-    templateUrl: '/static/designsafe/apps/geo/html/map.html',
-    controller: 'MapSidebarCtrl as vm',
+    abstract: true,
+    templateUrl: '/static/designsafe/apps/geo/html/index.html',
     resolve: {
       auth: function auth() {
         return true;
       }
     }
+  }).state('geo.map', {
+    url: '/map',
+    templateUrl: '/static/designsafe/apps/geo/html/map.html',
+    controller: 'MapSidebarCtrl as vm'
   }).state('geo.help', {
     url: '/help',
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
+  $urlRouterProvider.when('/', '/map');
 
   //config popups etc
   $uibTooltipProvider.options({ popupDelay: 1000 });

@@ -5,11 +5,12 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $uibModal, DataService, $http, GeoDataService) {
+  constructor ($scope, $window, $timeout, $interval, $uibModal, DataService, $http, GeoDataService) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
+    this.$interval = $interval;
     this.$window = $window;
     this.$uibModal = $uibModal;
     this.DataService = DataService;
@@ -37,19 +38,34 @@ export default class MapSidebarCtrl {
       'Street': streets,
       'Satellite': satellite
     };
-
-    this.project = new MapProject('New Map');
-    console.log(this.project)
     this.map = L.map('geo_map', {layers: [streets, satellite], measureControl:true}).setView([0, 0], 3);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
+    if (this.GeoDataService.current_project()) {
+      this.project = this.GeoDataService.current_project();
+      this.project.layer_groups.forEach( (lg)=>{
+        this.map.addLayer(lg.feature_group);
+        this.map.removeLayer(lg.feature_group);
+        this.map.addLayer(lg.feature_group);
+      });
+    } else {
+      this.project = new MapProject('New Map');
+      this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+      this.map.addLayer(this.project.layer_groups[0].feature_group);
+    }
+
+
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout( () => {this.map.invalidateSize();}, 10);
 
-    this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
-    this.map.addLayer(this.project.layer_groups[0].feature_group);
     this.active_layer_group = this.project.layer_groups[0];
+
+    // Auto keep track of current project in the GeoDataService
+    // so that if they switch states they will not lose work...
+    $interval( () => {
+      this.GeoDataService.current_project(this.project);
+    }, 1000);
 
     // update the current layer to show the details tab
     this.active_layer_group.feature_group.on('click', (e) => {
@@ -111,6 +127,7 @@ export default class MapSidebarCtrl {
   }
 
   show_hide_layer_group (lg) {
+    console.log(lg)
     lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
   }
 
