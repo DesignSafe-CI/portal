@@ -365,8 +365,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$uibModal", "DataService", "$http", "GeoDataService"];
-  function MapSidebarCtrl($scope, $window, $timeout, $interval, $uibModal, DataService, $http, GeoDataService) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$q", "$uibModal", "DataService", "$http", "GeoDataService"];
+  function MapSidebarCtrl($scope, $window, $timeout, $interval, $q, $uibModal, DataService, $http, GeoDataService) {
     'ngInject';
 
     var _this = this;
@@ -378,6 +378,7 @@ var MapSidebarCtrl = function () {
     this.$timeout = $timeout;
     this.$interval = $interval;
     this.$window = $window;
+    this.$q = $q;
     this.$uibModal = $uibModal;
     this.DataService = DataService;
     this.$http = $http;
@@ -1092,7 +1093,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
-  $urlRouterProvider.when('/', '/map');
+  $urlRouterProvider.when('/', '/#/map');
 
   //config popups etc
   $uibTooltipProvider.options({ popupDelay: 1000 });

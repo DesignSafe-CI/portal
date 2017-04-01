@@ -5,13 +5,14 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $interval, $uibModal, DataService, $http, GeoDataService) {
+  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, DataService, $http, GeoDataService) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
     this.$interval = $interval;
     this.$window = $window;
+    this.$q = $q;
     this.$uibModal = $uibModal;
     this.DataService = DataService;
     this.$http = $http;

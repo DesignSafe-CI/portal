@@ -30,7 +30,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
-  $urlRouterProvider.when('/', '/map');
+  $urlRouterProvider.when('/', '/#/map');
 
   //config popups etc
   $uibTooltipProvider.options({popupDelay:1000});
