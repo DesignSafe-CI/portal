@@ -199,26 +199,31 @@ export default class MapSidebarCtrl {
 
   local_file_selected (ev) {
     this.loading = true;
-    let file = ev.target.files[0];
-    let lf = this.GeoDataService.load_from_local_file(file).then( (retval) => {
-      if (retval instanceof MapProject) {
-        console.log(retval)
-        this.project = retval;
-        this.project.layer_groups.forEach( (lg)=> {
-          console.log(lg)
-          this.map.addLayer(lg.feature_group);
-        });
-      } else {
-        retval.forEach( (f) => {
-          this.active_layer_group.feature_group.addLayer(f);
-        });
+    let reqs = [];
+    for (let i=0; i<ev.target.files.length; i++) {
+      // debugger
+      let file = ev.target.files[i];
+      let prom = this.GeoDataService.load_from_local_file(file).then( (retval) => {
+        if (retval instanceof MapProject) {
+          this.project = retval;
+          this.project.layer_groups.forEach( (lg)=> {
+            this.map.addLayer(lg.feature_group);
+          });
+        } else {
+          retval.forEach( (f) => {
+            this.active_layer_group.feature_group.addLayer(f);
+          });
 
-        this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
-      }
+          this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
+        }
+      });
+      reqs.push(prom);
+      // this.loading = false;
+    };
+    this.$q.all(reqs).then( ()=>{
       this.loading = false;
       $('#file_picker').val('');
     });
-
   }
 
   update_layer_style (prop) {

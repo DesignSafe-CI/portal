@@ -585,22 +585,28 @@ var MapSidebarCtrl = function () {
       var _this4 = this;
 
       this.loading = true;
-      var file = ev.target.files[0];
-      var lf = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-        if (retval instanceof _mapProject2.default) {
-          console.log(retval);
-          _this4.project = retval;
-          _this4.project.layer_groups.forEach(function (lg) {
-            console.log(lg);
-            _this4.map.addLayer(lg.feature_group);
-          });
-        } else {
-          retval.forEach(function (f) {
-            _this4.active_layer_group.feature_group.addLayer(f);
-          });
+      var reqs = [];
+      for (var i = 0; i < ev.target.files.length; i++) {
+        // debugger
+        var file = ev.target.files[i];
+        var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
+          if (retval instanceof _mapProject2.default) {
+            _this4.project = retval;
+            _this4.project.layer_groups.forEach(function (lg) {
+              _this4.map.addLayer(lg.feature_group);
+            });
+          } else {
+            retval.forEach(function (f) {
+              _this4.active_layer_group.feature_group.addLayer(f);
+            });
 
-          _this4.map.fitBounds(_this4.active_layer_group.feature_group.getBounds());
-        }
+            _this4.map.fitBounds(_this4.active_layer_group.feature_group.getBounds());
+          }
+        });
+        reqs.push(prom);
+        // this.loading = false;
+      };
+      this.$q.all(reqs).then(function () {
         _this4.loading = false;
         $('#file_picker').val('');
       });
@@ -872,6 +878,8 @@ var GeoDataService = function () {
           var lg = new _layer_group2.default(d.label, new L.FeatureGroup());
           var group = L.geoJSON(d);
           group.getLayers().forEach(function (feat) {
+            console.log(feat);
+            if (feat instanceof L.Marker && feat.image_src) {}
             lg.feature_group.addLayer(feat);
           });
           project.layer_groups.push(lg);

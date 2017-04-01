@@ -171,6 +171,10 @@ export default class GeoDataService {
         let lg = new LayerGroup(d.label, new L.FeatureGroup());
         let group = L.geoJSON(d);
         group.getLayers().forEach( (feat) => {
+          console.log(feat);
+          if ((feat instanceof L.Marker) && (feat.image_src)) {
+
+          }
           lg.feature_group.addLayer(feat);
         });
         project.layer_groups.push(lg);
