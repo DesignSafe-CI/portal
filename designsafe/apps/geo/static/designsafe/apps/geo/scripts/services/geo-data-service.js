@@ -296,7 +296,7 @@ export default class GeoDataService {
     let form = new FormData();
     let file = new File([blob], project.name + '.dsmap');
 
-    form.append('fileToUpload', file, 'test.test.test');
+    form.append('fileToUpload', file, project.name + '.dsmap');
     return this.$http.post(base_file_url, form, {headers: {'Content-Type': undefined}});
   }
 
