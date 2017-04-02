@@ -18,6 +18,7 @@
         onDetail: '&',
         scrollToTop: '&',
         scrollToBottom: '&',
+        openPreviewTree: '&',
       }
     };
   });

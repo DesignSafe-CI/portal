@@ -31,14 +31,14 @@ class BaseFileMetadata(BaseMetadataResource):
             if not meta_objs:
                 defaults = kwargs
                 defaults['name'] = 'designsafe.file'
-                defaults['value'] = {'fileUUID': file_obj.uuid,
+                defaults['value'] = {'fileUuid': file_obj.uuid,
                                      'keywords': []}
                 defaults['associationIds'] = [file_obj.uuid]
 
             project_uuid = kwargs.get('project_uuid')
             if re.search(r'^project-', file_obj.system) or project_uuid:
                 project_uuid = project_uuid or file_obj.system.replace('project-', '', 1)
-                defaults['value'].update({'projectUUID': project_uuid})
+                defaults['value'].update({'projectUuid': project_uuid})
                 defaults['associationIds'].append(project_uuid)
         else:
             defaults = kwargs
@@ -98,7 +98,7 @@ class BaseFileMetadata(BaseMetadataResource):
         return meta_pems_users
 
     def match_pems_to_project(self, project_uuid = None):
-        project_uuid = project_uuid or self.value.get('projectUUID')
+        project_uuid = project_uuid or self.value.get('projectUUID', self.value.get('projectUuid'))
         logger.debug('matchins pems to project: %s', project_uuid)
         if not project_uuid:
             return self

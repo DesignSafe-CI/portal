@@ -3,7 +3,6 @@ import logging
 import re
 import os
 import sys
-import subprocess
 from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
