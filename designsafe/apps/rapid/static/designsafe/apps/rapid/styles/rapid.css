@@ -85,8 +85,8 @@ body {
 }
 
 .event-listing .event-title {
-  margin-bottom: 0.5em;
   font-weight: bold;
+  color: #5e5e5e;
 }
 
 .event-listing.earthquake {

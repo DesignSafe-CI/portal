@@ -23,7 +23,6 @@ export default class RapidMainCtrl {
     this.map.zoomControl.setPosition('topright');
 
     this.event_types = this.RapidDataService.get_event_types();
-    console.log(this.event_types)
 
     this.RapidDataService.get_events().then( (resp)=>{
       this.events = resp;
@@ -41,7 +40,6 @@ export default class RapidMainCtrl {
   search () {
     console.log(this.filter_options)
     let tmp = _.filter(this.events, (item)=>{
-      console.log(item)
       if (this.filter_options.event_type) {
         return item.event_type == this.filter_options.event_type.event_type;
       } else {
@@ -49,7 +47,6 @@ export default class RapidMainCtrl {
       }
       // return item.title.substring(0, this.search_text.length) === this.search_text;
     });
-    console.log(tmp);
     this.filtered_events = tmp;
   }
 

@@ -128,7 +128,6 @@ var RapidMainCtrl = function () {
     this.map.zoomControl.setPosition('topright');
 
     this.event_types = this.RapidDataService.get_event_types();
-    console.log(this.event_types);
 
     this.RapidDataService.get_events().then(function (resp) {
       _this.events = resp;
@@ -151,7 +150,6 @@ var RapidMainCtrl = function () {
 
       console.log(this.filter_options);
       var tmp = _.filter(this.events, function (item) {
-        console.log(item);
         if (_this2.filter_options.event_type) {
           return item.event_type == _this2.filter_options.event_type.event_type;
         } else {
@@ -159,7 +157,6 @@ var RapidMainCtrl = function () {
         }
         // return item.title.substring(0, this.search_text.length) === this.search_text;
       });
-      console.log(tmp);
       this.filtered_events = tmp;
     }
   }, {
