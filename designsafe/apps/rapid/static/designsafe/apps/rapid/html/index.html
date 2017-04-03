@@ -1,2 +1,50 @@
-<div id="rapid_container">
+<div id="rapid_main">
+  <div id="show_sidebar_handle">
+    <div class="sidebar-handle" ng-click="vm.show_sidebar = !vm.show_sidebar">
+      <i class="fa fa-chevron-right"> </i>
+    </div>
+  </div>
+  <div id="sidebar" ng-show="vm.show_sidebar">
+    <div class="sidebar-handle" ng-click="vm.show_sidebar = !vm.show_sidebar">
+      <i class="fa fa-chevron-left"> </i>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-description">
+        <h3> Rapid Logo </h3>
+      </div>
+      <div class="event-search">
+        <div class="input-group">
+          <input type="text" class="form-control" ng-model="vm.search_text" ng-change="vm.search()"></input>
+          <span class="input-group-btn">
+            <button class="btn btn-default"> <i class="fa fa-trash"></i></button>
+          </span>
+        </div>
+      </div>
+      <div class="filter-options">
+        <div class="form-group">
+          <label> Event Type </label>
+          <select class="form-control"
+                  ng-options="et.display for et in vm.event_types track by et.event_type"
+                  ng-change="vm.search()"
+                  ng-model="vm.filter_options.event_type"></select>
+        </div>
+        <div class="form-group">
+          <label> Start date </label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="form-group">
+          <label> End date </label>
+          <input type="date" class="form-control">
+        </div>
+        <button class="btn btn-sm btn-info" ng-click="vm.clear_filters()"> Clear </button>
+      </div>
+      <div ng-show="vm.filtered_events">
+        <event-listing ng-repeat="event in vm.filtered_events" event=event ng-click="vm.zoom_to(event)"></event-listing>
+      </div>
+      <div ng-show="!vm.filtered_events">
+        <event-listing ng-repeat="event in vm.events" event=event ng-click="vm.zoom_to(event)"></event-listing>
+      </div>
+    </div>
+  </div>
+  <div id="map"></div>
 </div>
