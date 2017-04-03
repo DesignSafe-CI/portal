@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'designsafe.apps.token_access',
     'designsafe.apps.search',
     'designsafe.apps.geo',
+    'designsafe.apps.rapid',
 
     #haystack integration
     'haystack'

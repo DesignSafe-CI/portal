@@ -47,6 +47,8 @@ urlpatterns = patterns(
                                     namespace='designsafe_search')),
     url(r'^geo/', include('designsafe.apps.geo.urls',
                                     namespace='designsafe_geo')),
+    url(r'^rapid/', include('designsafe.apps.rapid.urls',
+                                    namespace='designsafe_rapid')),
 
 
     # auth
