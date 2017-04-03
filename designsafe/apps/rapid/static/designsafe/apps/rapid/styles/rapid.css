@@ -97,8 +97,14 @@ body {
 }
 
 .event-listing .event-date {
-  background: #645690;
-  border-radius: 5px;
+  background: #1a8a9c;
+  border-radius: 1px;
   padding: 2px 2px 2px 2px;
   color: #fff;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.filter-options {
+  padding: 5px;
 }

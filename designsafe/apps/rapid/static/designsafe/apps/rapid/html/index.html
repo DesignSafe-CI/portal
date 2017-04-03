@@ -20,7 +20,10 @@
           </span>
         </div>
       </div>
-      <div class="filter-options">
+      <div class="text-center" ng-show="!vm.show_filter_options">
+        <span class="" ng-click="vm.show_filter_options=true"> Show filter options </span>
+      </div>
+      <div class="filter-options" ng-show="vm.show_filter_options">
         <div class="form-group">
           <label> Event Type </label>
           <select class="form-control"
@@ -36,7 +39,8 @@
           <label> End date </label>
           <input type="date" class="form-control">
         </div>
-        <button class="btn btn-sm btn-info" ng-click="vm.clear_filters()"> Clear </button>
+        <button class="btn btn-xs btn-info" ng-click="vm.clear_filters()"> Clear </button>
+        <button class="btn btn-xs btn-default" ng-click="vm.show_filter_options=false"> Hide </button>
       </div>
       <div ng-show="vm.filtered_events">
         <event-listing ng-repeat="event in vm.filtered_events" event=event ng-click="vm.zoom_to(event)"></event-listing>
