@@ -1,7 +1,17 @@
-<div class="event-listing earthquake">
+<div class="event-listing"
+  ng-class="{'earthquake':event.event_type==='earthquake',
+             'flood':event.event_type==='flood',
+             'tsunami':event.event_type === 'tsunami',
+             'landslide':event.event_type === 'landslide',
+             'hurricane':event.event_type === 'hurricane',
+
+            }"
+  >
   <div class="earthquake event-title"> {{event.title}} </div>
   <div class="event-location">
     <span> {{event.location_description}} </span>
   </div>
-  <span class="event-date"> {{event.event_date | date: 'yyyy-MM-dd'}} </span>
+  <div>
+    <span class="event-date"> {{event.event_date | date: 'yyyy-MM-dd'}} </span>
+  </div>
 </div>

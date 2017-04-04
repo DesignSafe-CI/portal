@@ -1,9 +1,12 @@
 export default class RapidMainCtrl {
-  constructor ($scope, RapidDataService) {
+  constructor ($scope, $compile, RapidDataService) {
     'ngInject';
+    this.$scope = $scope;
+    this.$compile = $compile;
     this.RapidDataService = RapidDataService;
     this.show_sidebar = true;
     this.filter_options = {};
+    this.active_rapid_event = null;
 
     let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -27,27 +30,37 @@ export default class RapidMainCtrl {
     this.RapidDataService.get_events().then( (resp)=>{
       this.events = resp;
       this.events.forEach((d)=> {
+        let template = "<div class=''>" +
+          "<h3> {{event.title}} </h3>" +
+          "<div ng-repeat='dataset in event.datasets'>" +
+          "<a href='{{dataset.href}}'> {{dataset.doi}} </a>"+
+          "</div>";
+        let linker = this.$compile(angular.element(template));
         let marker = L.marker([d.location.lat, d.location.lon]);
+        let newScope = this.$scope.$new();
+        newScope.event = d;
+        // marker.bindPopup(linker(newScope)[0], {className : 'rapid-popup'});
         this.map.addLayer(marker);
+        marker.rapid_event = d;
+        marker.on('click', (ev) => {
+          if (marker.rapid_event == this.active_rapid_event) {
+            this.active_rapid_event = null;
+          } else {
+            this.active_rapid_event = marker.rapid_event;
+          }
+          this.$scope.$apply();
+        });
       });
     });
   }
 
-  zoom_to (ev) {
+  select_event (ev) {
     this.map.setView([ev.location.lat, ev.location.lon],8, {animate: true});
+    this.active_rapid_event = ev;
   }
 
   search () {
-    console.log(this.filter_options)
-    let tmp = _.filter(this.events, (item)=>{
-      if (this.filter_options.event_type) {
-        return item.event_type == this.filter_options.event_type.event_type;
-      } else {
-        return true;
-      }
-      // return item.title.substring(0, this.search_text.length) === this.search_text;
-    });
-    this.filtered_events = tmp;
+    this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
   }
 
   clear_filters () {

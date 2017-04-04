@@ -1,0 +1,16 @@
+<div class="event-listing">
+  <img ng-src="{{event.main_image_url}}" class="image-responsive" ng-if="event.main_image_url"></img>
+  <div class="earthquake event-title"> {{event.title}} </div>
+  <div class="event-location">
+    <span> {{event.location_description}} </span>
+  </div>
+  <div>
+    <span class="event-date"> {{event.event_date | date: 'yyyy-MM-dd'}} </span>
+  </div>
+  <div>
+    <h5> Available datasets </h5>
+    <div class="event-dataset" ng-repeat = "dataset in event.datasets">
+      <a href="{{dataset.href}}"> {{dataset.doi}}: {{dataset.title}} </a>
+    </div>
+  </div>
+</div>

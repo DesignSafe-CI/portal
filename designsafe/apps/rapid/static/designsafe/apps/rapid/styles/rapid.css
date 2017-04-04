@@ -16,17 +16,17 @@ body {
   width: 25%;
   position: absolute;
   top: 0px;
-  height: calc(100vh - 50px);
-  height:100%;
+  /*height: calc(100vh - 50px);*/
+  height:100vh;
   background: rgba(255, 255, 255, 0.95);
   /*overflow-y: hidden;*/
-  overflow-x: visible;
+  /*overflow-x: visible;*/
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   z-index: 500;
 }
 
-#sidebar .sidebar-content {
-  overflow-y: scroll;
+#sidebar .events-results {
+  height: 100%;
 }
 
 #sidebar .event-listing .event-title {
@@ -42,7 +42,7 @@ body {
   cursor: pointer;
   height:3em;
   z-index: 500;
-  box-shadow: 0px 1px 4px rgba(0,0,0,0.3);
+  /*box-shadow: 0px 1px 4px rgba(0,0,0,0.3);*/
   border-left: 1px solid #D4D4D4;
 }
 
@@ -56,10 +56,19 @@ body {
   background: rgba(255, 255, 255, 0.95);
   cursor: pointer;
   height:3em;
-  box-shadow: 0px 1px 4px rgba(0,0,0,0.3);
+  /*box-shadow: 0px 1px 4px rgba(0,0,0,0.3);*/
   border-left: 1px solid #D4D4D4;
 
   /*line-height: 2em;*/
+}
+
+#show_sidebar_handle i, .sidebar-handle i {
+  position: relative;
+  top: calc(22.5%);
+}
+
+#sidebar .sidebar-header {
+  border-bottom: 2px solid #d3d3d3;
 }
 
 #map {
@@ -68,19 +77,22 @@ body {
 
 .event-search {
   padding: 10px;
-  background: #037fc7;
+  background: #4285F4;
 }
 
-.event-listing {
-  border-bottom: 1px solid #707070;
-  cursor: pointer;
+.event-listing, .event-listing-detail {
+  border-bottom: 1px solid #d3d3d3;
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
-.event-listing:hover {
+.search-container .event-listing {
+  cursor: pointer;
+}
+
+.search-container .event-listing:hover {
   background-color: #d3d3d3;
 }
 
@@ -93,9 +105,17 @@ body {
   border-left: 5px solid #e46e28;
 }
 .event-listing.flood {
-  border-left: 5px solid blue;
+  border-left: 5px solid #4285F4;
 }
-
+.event-listing.tsunami {
+  border-left: 5px solid #a765fe;
+}
+.event-listing.landslide {
+  border-left: 5px solid #62a241;
+}
+.event-listing.hurricane {
+  border-left: 5px solid #d34141;
+}
 .event-listing .event-date {
   background: #1a8a9c;
   border-radius: 1px;
@@ -105,6 +125,28 @@ body {
   font-weight: bold;
 }
 
+.event-listing .event-dataset {
+  /*border-bottom: 1px solid #d2d2d2;*/
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+
 .filter-options {
   padding: 5px;
+}
+
+.filter-options-button {
+  font-size: 0.9em;
+  color: #6f6f6f;
+  cursor: pointer;
+}
+
+.rapid-popup {
+  background: #d3d3d3;
+  border-radius: 0px;
+}
+
+.rapid-popup .leaflet-popup-content-wrapper {
+  border-radius: 0px;
 }
