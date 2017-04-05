@@ -69,6 +69,11 @@ body {
 
 #sidebar .sidebar-header {
   border-bottom: 2px solid #d3d3d3;
+  /*background: #d3d3d3;*/
+}
+
+#sidebar .sidebar-header h2 {
+  font-family: 'Monoton', cursive;
 }
 
 #map {
@@ -117,7 +122,7 @@ body {
   border-left: 5px solid #d34141;
 }
 .event-listing .event-date {
-  background: #1a8a9c;
+  background: #777777;
   border-radius: 1px;
   padding: 2px 2px 2px 2px;
   color: #fff;

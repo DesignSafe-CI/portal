@@ -1,7 +1,6 @@
 <div id="rapid_main">
-  <div id="show_sidebar_handle">
+  <div id="show_sidebar_handle" ng-show="!vm.show_sidebar" ng-click="vm.show_sidebar = !vm.show_sidebar">
     <div class="sidebar-handle"
-         ng-click="vm.show_sidebar = !vm.show_sidebar"
          tooltip="Expand sidebar"
          tooltip-placement="right">
       <i class="fa fa-chevron-right"> </i>
@@ -16,7 +15,7 @@
     </div>
     <div class="sidebar-content">
       <div class="sidebar-header">
-        <h3> Rapid Logo </h3>
+        <h2> Rapid </h2>
       </div>
       <div ng-show="vm.active_rapid_event">
         <div class="text-center">
