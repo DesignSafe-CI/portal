@@ -256,4 +256,51 @@
     };
   });
 
+  mod.directive('yamzTerm', ['$http', function($http){
+    return {
+        restrict: 'EA',
+        scope: {
+            termId: '@',
+            title: '='
+        },
+        link: function(scope, element, attrs){
+          element.attr('data-toggle', 'tooltip');
+          element.tooltip({container: 'body',
+                           html: true,
+                           title:'Loading...',
+                           placement: function(tip, el){
+                               var $el = $(el);
+                               var pos = $el.position();
+                               if (pos.left > $el.width() + 10 && pos.top > $el.height() + 10){
+                                   return "left";
+                               } else if (pos.left < $el.width() + 10 && pos.top > $el.height() + 10){
+                                   return "right";
+                               }else if (pos.top < $el.height() + 10 && pos){
+                                   return "bottom";
+                               } else { 
+                                   return "top";
+                               }
+                           }});
+          element.on('mouseover', function(env){
+              var title = element.attr('data-original-title');
+              if (typeof title === 'undefined' || title.length === 0 || title === 'Loading...'){
+                $http.get('/api/projects/yamz/' + scope.termId)
+                  .then(function(res){
+                      var data = res.data;
+                      var content = '<p> <strong>Definition: </strong>' + data.definition + 
+                                    '<br/> <br/>' +
+                                    '<strong>Examples: </strong>' + data.examples + '</p>';
+                      element.attr('title', content);
+                      element.tooltip('fixTitle');
+                      element.tooltip('show');
+                  });
+              }
+          });
+          element.on('mouseleave', function(){
+            //element.tooltip('hide');
+          });
+        }
+    };
+  }]);
+
 })(angular, jQuery);
