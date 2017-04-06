@@ -330,8 +330,8 @@
             // if (options.path === '/') {
               // options.path = Django.user;
             // }
-            DataBrowserService.apiParams.fileMgr = 'agave';
-            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.fileMgr = 'community';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
             DataBrowserService.apiParams.searchState = 'dataSearch';
             return DataBrowserService.browse(options);
           }],
