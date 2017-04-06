@@ -336,14 +336,7 @@
             return DataBrowserService.browse(options);
           }],
           'auth': function($q) {
-            if (Django.context.authenticated) {
               return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
           }
         }
       })
@@ -405,7 +398,7 @@
             (window.location.port ? ':' + window.location.port : '') +
             '/ws/websockets?subscribe-broadcast&subscribe-user'
         );
-	}])
+	}]);
 // 	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
 // 	  WSBusService.init(WSBusService.url);
 //     }]);
