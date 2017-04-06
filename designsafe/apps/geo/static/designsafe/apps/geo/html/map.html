@@ -41,7 +41,7 @@
         <input type="text" ng-model="lg.label">
         <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
       </div>
-      <span class="lg-count"> {{lg.num_features()}} features </span>
+      <span class="lg-count" ng-show="!lg.show_edit_label"> {{lg.num_features()}} features </span>
     </div>
     <div class="pull-right">
       <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
@@ -62,17 +62,19 @@
       ng-mouseover="feature.hover=true"
       ng-class="{'active': lg == vm.active_layer_group}"
       ng-mouseleave="feature.hover=false"
-      ng-click="vm.current_layer ? vm.current_layer = null : vm.current_layer = feature"
+      ng-click="vm.select_feature(lg, feature)"
       on-drop-success="vm.drop_feature_success($event, $index, feature)"
       ui-draggable="true"
       drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
       >
 
       <div> <i class="fa" ng-class="vm.get_feature_type(feature) === 'Image' ? 'fa-image' : 'fa-file-o'"></i> </div>
-      <div> {{vm.get_feature_type(feature)}} </div>
+      <div ng-if="!feature.options.label"> {{vm.get_feature_type(feature)}} </div>
+      <div ng-if="feature.options.label"> {{feature.options.label}} </div>
+
       <div class="pull-right">
         <div class="pull-left">
-          <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(feature); $event.stopPropagation()"></i>
+          <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(lg, feature); $event.stopPropagation()"></i>
         </div>
         <div class="pull-right">
           <i class="fa fa-crosshairs" ng-click="vm.zoom_to(feature); $event.stopPropagation()"> </i>
@@ -92,6 +94,14 @@
   <div class="tools">
     <i class="fa fa-close" ng-click="vm.current_layer=null"></i>
   </div>
+  <li class="list-group-item menu clearfix">
+    <div class="left">
+      Label
+    </div>
+    <div class="right">
+      <input type="text" ng-model="vm.current_layer.options.label">
+    </div>
+  </li>
   <li class="list-group-item menu clearfix">
     <div class="left"> Fill: </div>
     <div class="right">
@@ -162,6 +172,10 @@
             <li> secondary <input type="color" ng-model="vm.secondary_color" class="pull-right"></li>
           </ul>
         </div>
+      </div>
+      <div class="btn-group" role="group">
+        <button class="btn btn-xs btn-default" tooltip="undo" tooltip-placement="bottom"> <i class="fa fa-undo"></i></button>
+        <button class="btn btn-xs btn-default" tooltip="redo" tooltip-placement="bottom"> <i class="fa fa-repeat"></i></button>
       </div>
 
       <i class="fa fa-spin fa-refresh blue" ng-show="vm.loading"></i>

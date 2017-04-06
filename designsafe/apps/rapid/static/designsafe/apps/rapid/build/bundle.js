@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -90,11 +90,11 @@ mod.controller('RapidMainCtrl', _rapidMainCtrl2.default);
 "use strict";
 
 
-var _eventListing = __webpack_require__(4);
+var _eventListing = __webpack_require__(5);
 
 var _eventListing2 = _interopRequireDefault(_eventListing);
 
-var _eventListingDetailed = __webpack_require__(7);
+var _eventListingDetailed = __webpack_require__(4);
 
 var _eventListingDetailed2 = _interopRequireDefault(_eventListingDetailed);
 
@@ -112,7 +112,7 @@ mod.directive('eventListingDetailed', _eventListingDetailed2.default);
 "use strict";
 
 
-var _rapidDataService = __webpack_require__(5);
+var _rapidDataService = __webpack_require__(6);
 
 var _rapidDataService2 = _interopRequireDefault(_rapidDataService);
 
@@ -228,6 +228,26 @@ exports.default = RapidMainCtrl;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = eventListingDetailed;
+function eventListingDetailed() {
+  return {
+    templateUrl: "/static/designsafe/apps/rapid/html/event-listing-detailed.html",
+    scope: {
+      event: '=event'
+    }
+  };
+}
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = eventListing;
 function eventListing() {
   return {
@@ -239,7 +259,7 @@ function eventListing() {
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -377,7 +397,7 @@ var RapidDataService = function () {
 exports.default = RapidDataService;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -421,26 +441,6 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = eventListingDetailed;
-function eventListingDetailed() {
-  return {
-    templateUrl: "/static/designsafe/apps/rapid/html/event-listing-detailed.html",
-    scope: {
-      event: '=event'
-    }
-  };
-}
 
 /***/ })
 /******/ ]);

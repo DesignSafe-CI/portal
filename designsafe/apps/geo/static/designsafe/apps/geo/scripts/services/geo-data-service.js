@@ -10,12 +10,8 @@ export default class GeoDataService {
     this.$http = $http;
     this.$q = $q;
     this.UserService = UserService;
-    this.image_icon = L.divIcon({
-      iconSize: [40, 40],
-      html: "<div style='background-color:red'></div>",
-      className: 'leaflet-marker-photo'
-    });
     this.active_project = null;
+    this.previous_project_state = null;
   }
 
   current_project(project) {
@@ -26,36 +22,40 @@ export default class GeoDataService {
   }
 
   _resize_image (blob, max_width=400, max_height=400) {
+    return this.$q( (res, rej) => {
+      let base64 = this._arrayBufferToBase64(blob);
+      // Create and initialize two canvas
+      let canvas = document.createElement("canvas");
+      let ctx = canvas.getContext("2d");
+      let canvasCopy = document.createElement("canvas");
+      let copyContext = canvasCopy.getContext("2d");
 
-    let base64 = this._arrayBufferToBase64(blob);
-    // Create and initialize two canvas
-    var canvas = document.createElement("canvas");
-    var ctx = canvas.getContext("2d");
-    var canvasCopy = document.createElement("canvas");
-    var copyContext = canvasCopy.getContext("2d");
+      // Create original image
+      let img = new Image();
+      img.src = base64;
+      img.onload = ()=>{
+        console.log(img.width);
 
-    // Create original image
-    var img = new Image();
-    img.src = base64;
+        // debugger
+        // Determine new ratio based on max size
+        let ratio = 1;
+        if(img.width > max_width) {
+          ratio = max_width / img.width;
+        } else if(img.height > max_height) {
+          ratio = max_height / img.height;
+        }
+        // Draw original image in second canvas
+        canvasCopy.width = img.width;
+        canvasCopy.height = img.height;
+        copyContext.drawImage(img, 0, 0);
 
-    // Determine new ratio based on max size
-    var ratio = 1;
-    if(img.width > max_width)
-      ratio = max_width / img.width;
-    else if(img.height > max_height)
-      ratio = max_height / img.height;
-
-    // Draw original image in second canvas
-    canvasCopy.width = img.width;
-    canvasCopy.height = img.height;
-    copyContext.drawImage(img, 0, 0);
-
-    // Copy and resize second canvas to first canvas
-    canvas.width = img.width * ratio;
-    canvas.height = img.height * ratio;
-    ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
-
-    return canvas.toDataURL();
+        // Copy and resize second canvas to first canvas
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
+        res(canvas.toDataURL());
+      };
+    });
   }
 
   _arrayBufferToBase64( buffer ) {
@@ -104,6 +104,7 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       let features = [];
       L.geoJSON(blob).getLayers().forEach( (l) => {
+        console.log(l);
         features.push(l);
       });
       res(features);
@@ -136,7 +137,8 @@ export default class GeoDataService {
                 maxWidth: "auto",
                 // maxHeight: 400
               });
-
+    marker.options.image_src = preview;
+    marker.options.thumb_src = thumb;
     return marker;
   }
 
@@ -152,28 +154,37 @@ export default class GeoDataService {
       let lonRef = exif.GPSLongitudeRef || "W";
       lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
       lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
-      let thumb = this._resize_image(file, 100, 100);
-      let preview = this._resize_image(file, 400, 400);
-      // let hq = this._resize_image(file, 800, 800);
-      let marker = this._make_image_marker(lat, lon, thumb, preview);
-      marker.image_src = preview;
-      res([marker]);
+      let thumb = null;
+      let preview = null;
+      this._resize_image(file, 100, 100).then( (resp)=>{
+        thumb = resp;
+      }).then( ()=>{
+        return this._resize_image(file, 400, 400);
+      }).then( (resp)=>{
+        preview = resp;
+        let marker = this._make_image_marker(lat, lon, thumb, preview);
+        res([marker]);
+      });
+
     });
   }
 
 
   _from_dsmap (json) {
     return this.$q( (res, rej) => {
-      json = JSON.parse(json);
+      // if (json instanceof String) {
       let project = new MapProject();
       project.name = json.name;
       json.features.forEach( (d)=> {
         let lg = new LayerGroup(d.label, new L.FeatureGroup());
         let group = L.geoJSON(d);
         group.getLayers().forEach( (feat) => {
-          console.log(feat);
-          if ((feat instanceof L.Marker) && (feat.image_src)) {
-
+          feat.options.label = feat.feature.properties.label;
+          if ((feat instanceof L.Marker) && (feat.feature.properties.image_src)) {
+            let latlng = feat.getLatLng();
+            feat = this._make_image_marker(latlng.lat, latlng.lng, feat.feature.properties.thumb_src, feat.feature.properties.image_src);
+            // feat.options.image_src = feat.feature.properties.image_src;
+            // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }
           lg.feature_group.addLayer(feat);
         });
@@ -204,10 +215,10 @@ export default class GeoDataService {
             p =  this._from_kml(e.target.result);
             break;
           case 'json':
-            p = this._from_json(e.target.result);
+            p = this._from_json(JSON.parse(e.target.result));
             break;
           case 'geojson':
-            p = this._from_json(e.target.result);
+            p = this._from_json(JSON.parse(e.target.result));
             break;
           case 'kmz':
             p = this._from_kmz(e.target.result);
@@ -222,10 +233,10 @@ export default class GeoDataService {
             p = this._from_image(e.target.result);
             break;
           case 'dsmap':
-            p = this._from_dsmap(e.target.result);
+            p = this._from_dsmap(JSON.parse(e.target.result));
             break;
           default:
-            p = this._from_json(e.target.result);
+            p = this._from_json(JSON.parse(e.target.result));
         }
         return res(p);
       };
@@ -242,7 +253,6 @@ export default class GeoDataService {
       responseType = 'arraybuffer';
     }
     return this.$http.get(f.agaveUrl(), {'responseType': responseType}).then((resp) => {
-      console.log(resp)
       let p = null;
       switch (ext) {
         case 'kml':

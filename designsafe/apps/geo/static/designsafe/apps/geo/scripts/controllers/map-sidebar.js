@@ -43,6 +43,8 @@ export default class MapSidebarCtrl {
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
+    // this.$scope.$watch(()=>{return this.current_layer;}, (newval, oldval)=>{console.log(newval);});
+
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
       this.project.layer_groups.forEach( (lg)=>{
@@ -122,9 +124,9 @@ export default class MapSidebarCtrl {
     this.project.layer_groups.splice(i, 1);
   }
 
-  delete_feature (f) {
+  delete_feature (lg, f) {
     this.map.removeLayer(f);
-    this.active_layer_group.feature_group.removeLayer(f);
+    lg.feature_group.removeLayer(f);
   }
 
   show_hide_layer_group (lg) {
@@ -138,6 +140,11 @@ export default class MapSidebarCtrl {
     this.active_layer_group = lg;
     lg.active = true;
     lg.show = true;
+  }
+
+  select_feature(lg, feature) {
+    this.active_layer_group = lg;
+    this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
   }
 
   open_db_modal () {
@@ -155,7 +162,7 @@ export default class MapSidebarCtrl {
   }
 
   get_feature_type (f) {
-    if (f.image_src) {
+    if (f.options.image_src) {
       return 'Image';
     } else if (f instanceof L.Marker) {
       return 'Point';
@@ -187,15 +194,28 @@ export default class MapSidebarCtrl {
     console.log("drag_feature_success", ev, data, lg);
   }
 
-  load_from_data_depot(f) {
-    this.loading = true;
-    this.GeoDataService.load_from_data_depot(f).then( (features) => {
-      features.forEach( (f) => {
+  _load_data_success (retval) {
+    if (retval instanceof MapProject) {
+      this.project.clear();
+      this.project = retval;
+      this.project.layer_groups.forEach( (lg)=> {
+        this.map.addLayer(lg.feature_group);
+      });
+      this.active_layer_group = this.project.layer_groups[0];
+    } else {
+      //it will be an array of features...
+      retval.forEach( (f) => {
         this.active_layer_group.feature_group.addLayer(f);
       });
       this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
-      this.loading = false;
-    });
+    }
+  }
+
+  load_from_data_depot(f) {
+    this.loading = true;
+    this.GeoDataService.load_from_data_depot(f)
+      .then( (retval) =>{this._load_data_success(retval);})
+      .then( ()=>{ this.loading = false;});
   }
 
   local_file_selected (ev) {
@@ -204,25 +224,13 @@ export default class MapSidebarCtrl {
     for (let i=0; i<ev.target.files.length; i++) {
       // debugger
       let file = ev.target.files[i];
-      let prom = this.GeoDataService.load_from_local_file(file).then( (retval) => {
-        if (retval instanceof MapProject) {
-          this.project = retval;
-          this.project.layer_groups.forEach( (lg)=> {
-            this.map.addLayer(lg.feature_group);
-          });
-        } else {
-          retval.forEach( (f) => {
-            this.active_layer_group.feature_group.addLayer(f);
-          });
-
-          this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
-        }
-      });
+      let prom = this.GeoDataService.load_from_local_file(file).then( (retval) =>{this._load_data_success(retval);});
       reqs.push(prom);
       // this.loading = false;
     };
     this.$q.all(reqs).then( ()=>{
       this.loading = false;
+      //reset the picker
       $('#file_picker').val('');
     });
   }
