@@ -12,6 +12,7 @@ from django.http import (HttpResponseRedirect, HttpResponseBadRequest,
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
 from designsafe.apps.api.agave import get_service_account_client
@@ -90,10 +91,15 @@ class FileMediaView(View):
         logger.info(file_path)
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+
+            if file_mgr_name == 'public':
+                ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            elif request.user.is_authenticated():
+                ag = request.user.agave_oauth.client
+            else:
                 return HttpResponseForbidden('Log in required')
 
-            fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            fm = AgaveFileManager(agave_client=ag)
             f = fm.listing(system_id, file_path)
             if request.GET.get('preview', False):
                 context = {
@@ -210,8 +216,7 @@ class FileMediaView(View):
         else:
             body = request.POST.copy()
 
-        if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public':
+        if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated():
                 return HttpResponseForbidden('Log in required')
 
