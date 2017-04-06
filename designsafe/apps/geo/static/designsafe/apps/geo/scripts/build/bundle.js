@@ -1052,10 +1052,12 @@ var GeoDataService = function () {
       var url = URL.createObjectURL(blob);
 
       var a = document.createElement('a');
+      document.body.appendChild(a);
       a.download = project.name + ".dsmap";
       a.href = url;
       a.textContent = "Download";
       a.click();
+      document.body.removeChild(a);
     }
   }, {
     key: 'save_to_depot',

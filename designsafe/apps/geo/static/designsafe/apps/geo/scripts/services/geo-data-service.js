@@ -292,10 +292,12 @@ export default class GeoDataService {
     let url  = URL.createObjectURL(blob);
 
     let a = document.createElement('a');
+    document.body.appendChild(a);
     a.download    = project.name + ".dsmap";
     a.href        = url;
     a.textContent = "Download";
     a.click();
+    document.body.removeChild(a);
   }
 
   save_to_depot (project) {
