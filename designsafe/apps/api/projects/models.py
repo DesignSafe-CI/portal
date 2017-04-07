@@ -62,7 +62,7 @@ class Project(BaseMetadataResource):
         else:
             query = json.dumps(q)
 
-        records = agave_client.meta.listMetadata(q=query, privilege=False)
+        records = agave_client.meta.listMetadata(q=query, privileged=False)
         return [cls(agave_client=agave_client, **r) for r in records]
 
     def team_members(self):
