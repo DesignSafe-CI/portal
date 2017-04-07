@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.25
+
+Improvements:
+
+- Community Data available.
+
+Fixes:
+
+- Sitewide Search IE11 fix.
+- Public data is viewable by Anonymous user.
+
 ## v0.9.24
 
 Fixes:
