@@ -8,7 +8,7 @@
     <form>
       <div class="pull-left" style="width:49%;">
         <div class="form-group required">
-            <yamz-term term-id="h1553"><i class="fa fa-question-circle"></i></yamz-term>
+            <yamz-term term-id="h1551"><i class="fa fa-question-circle"></i></yamz-term>
             <label for="id_title">Project title</label>
             <input type="text" required class="form-control" id="id_title" name="title" placeholder="Project title" ng-model="form.title" autofocus select-on-focus>
 
@@ -38,12 +38,14 @@
           <input type="text" class="form-control" id="identifier-id" ng-model="form.identifier" disabled/>
         </div>
         <div class="form-group">
+          <yamz-term term-id="h1264"><i class="fa fa-question-circle"></i></yamz-term>
           <label for="award-number-id">Award Number:</label>
           <input type="text" class="form-control" id="award-number-id" ng-model="form.awardNumber" />
         </div>
       </div>
       <div style="clear:both;">
         <div class="form-group required">
+          <yamz-term term-id="h1550"><i class="fa fa-question-circle"></i></yamz-term>
           <label for="projecttype-id">Project Type:</label>
           <select ng-options="projectType.label for projectType in projectTypes"
                   ng-model="form.projectType"
@@ -68,6 +70,7 @@
       <div style="clear:both;">
         <div class="well well-sm">
           <div ng-if="form.associatedProjects.length">
+          <yamz-term term-id="h1554"><i class="fa fa-question-circle"></i></yamz-term>
           <p> Associated Project - Link to Project <p>
           <div ng-repeat="associatedProject in form.associatedProjects">
               <div>
@@ -87,6 +90,7 @@
       </div>
       <div style="clear:both;">
         <div class="form-group">
+          <yamz-term term-id="h1552"><i class="fa fa-question-circle"></i></yamz-term>
           <label for="description-id">Description:</label>
           <textarea class="form-control" id="description-id" ng-model="form.description" />
         </div>
