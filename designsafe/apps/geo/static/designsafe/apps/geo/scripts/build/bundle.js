@@ -831,6 +831,7 @@ var GeoDataService = function () {
         var zipper = new JSZip();
         zipper.loadAsync(blob).then(function (zip) {
 
+          console.log(zip);
           //loop over all the files in the archive
           for (var key in zip.files) {
             var ext = key.split('.').pop();
@@ -839,6 +840,7 @@ var GeoDataService = function () {
             }
           }
         }).then(function (txt) {
+          debugger;
           var features = _this2._from_kml(txt);
           res(features);
         });

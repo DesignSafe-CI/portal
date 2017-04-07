@@ -86,6 +86,7 @@ export default class GeoDataService {
       let zipper = new JSZip();
       zipper.loadAsync(blob).then( (zip) => {
 
+        console.log(zip)
         //loop over all the files in the archive
         for (let key in zip.files) {
           let ext = key.split('.').pop();
@@ -94,6 +95,7 @@ export default class GeoDataService {
           }
         }
       }).then( (txt) => {
+        debugger
         let features = this._from_kml(txt);
         res(features);
       });
