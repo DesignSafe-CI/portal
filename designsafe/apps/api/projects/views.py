@@ -60,7 +60,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         """
         #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
-        projects = Project.list_projects(agave_client=ag)
+        q = request.GET.get('q', None)
+        if not q:
+            projects = Project.list_projects(agave_client=ag)
+        else:
+            projects = Project.search(q=q, agave_client=ag)
         data = {'projects': projects}
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
