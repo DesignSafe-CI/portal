@@ -415,7 +415,7 @@ var _services = __webpack_require__(2);
 var _directives = __webpack_require__(1);
 
 var mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ds.rapid.controllers', 'ds.rapid.services', 'ds.rapid.directives');
+mod.requires.push('ui.router', 'ds.rapid.controllers', 'ds.rapid.services', 'ds.rapid.directives', 'ngAnimate');
 
 function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';

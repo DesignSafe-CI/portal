@@ -12,6 +12,41 @@ body {
   position: relative;
 }
 
+.slide-down.ng-hide {
+  transform: translate(0, -100%);
+}
+
+.slide-down.ng-hide-add {
+  transition: 1.0s linear all;
+}
+
+
+/* Animations for the sidebar and details...*/
+.slide-in.ng-hide {
+  transform: translate(-100%, 0);
+}
+
+.slide-in.ng-hide-add,
+.slide-in.ng-hide-remove {
+  transition: 0.2s linear all;
+}
+
+.fade.ng-hide {
+  opacity: 0;
+}
+
+.fade.ng-hide-add {
+  transition: 0.0s linear all;
+}
+
+.fade.ng-hide-remove {
+  transition: 0.5s linear all;
+}
+
+.fade {
+  opacity:1;
+}
+
 #sidebar {
   width: 25%;
   position: absolute;

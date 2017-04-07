@@ -3,7 +3,7 @@ import {mod as rapid_services} from './services';
 import {mod as rapid_directives} from './directives';
 
 let mod = angular.module('designsafe');
-mod.requires.push('ui.router','ds.rapid.controllers', 'ds.rapid.services', 'ds.rapid.directives');
+mod.requires.push('ui.router','ds.rapid.controllers', 'ds.rapid.services', 'ds.rapid.directives', 'ngAnimate');
 
 function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';

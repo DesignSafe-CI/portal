@@ -6,7 +6,7 @@
       <i class="fa fa-chevron-right"> </i>
     </div>
   </div>
-  <div id="sidebar" ng-show="vm.show_sidebar">
+  <div id="sidebar" ng-show="vm.show_sidebar" class="slide-in">
     <div class="sidebar-handle"
          ng-click="vm.show_sidebar = !vm.show_sidebar"
          tooltip="Collapse sidebar"
@@ -17,7 +17,7 @@
       <div class="sidebar-header">
         <h2> Rapid </h2>
       </div>
-      <div ng-show="vm.active_rapid_event">
+      <div ng-show="vm.active_rapid_event" class="fade">
         <div class="text-center">
           <span class="filter-options-button" ng-click="vm.active_rapid_event=null"> Back to results </span>
         </div>
@@ -35,7 +35,7 @@
         <div class="text-center" ng-show="!vm.show_filter_options">
           <span class="filter-options-button" ng-click="vm.show_filter_options=true"> Show filter options </span>
         </div>
-        <div class="filter-options" ng-show="vm.show_filter_options">
+        <div class="filter-options slide-in" ng-show="vm.show_filter_options">
           <div class="form-group">
             <label> Event Type </label>
             <select class="form-control"
