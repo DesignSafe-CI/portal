@@ -90,14 +90,15 @@ class FileMediaView(View):
     def get(self, request, file_mgr_name, system_id, file_path):
         logger.info(file_path)
         if file_mgr_name == AgaveFileManager.NAME \
-            or file_mgr_name == 'public':
-
-            if file_mgr_name == 'public':
-                ag = get_user_model().objects.get(username='envision').agave_oauth.client
-            elif request.user.is_authenticated():
-                ag = request.user.agave_oauth.client
+            or file_mgr_name == 'public' \
+            or file_mgr_name == 'community':
+            if not request.user.is_authenticated():
+                if file_mgr_name in ['public', 'community']:
+                    ag = get_user_model().objects.get(username='envision').agave_oauth.client
+                else:
+                    return HttpResponseForbidden('Log in required')
             else:
-                return HttpResponseForbidden('Log in required')
+                ag = request.user.agave_oauth.client
 
             fm = AgaveFileManager(agave_client=ag)
             f = fm.listing(system_id, file_path)
@@ -216,12 +217,21 @@ class FileMediaView(View):
         else:
             body = request.POST.copy()
 
-        if file_mgr_name == AgaveFileManager.NAME:
-            if not request.user.is_authenticated():
-                return HttpResponseForbidden('Log in required')
+        if file_mgr_name == AgaveFileManager.NAME \
+            or file_mgr_name == 'public' \
+            or file_mgr_name == 'community':
 
-            fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
+            if not request.user.is_authenticated():
+                if file_mgr_name in ['public', 'community']:
+                    ag = get_user_model().objects.get(username='envision').agave_oauth.client
+                else:
+                    return HttpResponseForbidden('Log in required')
+            else:
+                ag = request.user.agave_oauth.client
+
+            fm = AgaveFileManager(agave_client=ag)
             action = body.get('action', '')
+            logger.info('action: %s', action)
             if action == 'copy':
                 try:
                     event_data = {
