@@ -104,6 +104,7 @@ export default class GeoDataService {
 
   _from_json (blob) {
     return this.$q( (res, rej) => {
+      if (blob.ds_map) return res(this._from_dsmap(blob));
       let features = [];
       L.geoJSON(blob).getLayers().forEach( (l) => {
         console.log(l);
@@ -177,22 +178,27 @@ export default class GeoDataService {
       // if (json instanceof String) {
       let project = new MapProject();
       project.name = json.name;
+      json.layer_groups.forEach( (name) => {
+        project.layer_groups.push(new LayerGroup(name, new L.FeatureGroup()));
+      });
       json.features.forEach( (d)=> {
-        let lg = new LayerGroup(d.label, new L.FeatureGroup());
-        let group = L.geoJSON(d);
-        group.getLayers().forEach( (feat) => {
-          feat.options.label = feat.feature.properties.label;
-          if ((feat instanceof L.Marker) && (feat.feature.properties.image_src)) {
-            let latlng = feat.getLatLng();
-            feat = this._make_image_marker(latlng.lat, latlng.lng, feat.feature.properties.thumb_src, feat.feature.properties.image_src);
+        let feature = L.geoJSON(d);
+        feature.eachLayer( (layer)=> {
+          console.log(layer);
+          let layer_group_index = d.layer_group_index;
+          if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
+            let latlng = layer.getLatLng();
+            layer = this._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src);
             // feat.options.image_src = feat.feature.properties.image_src;
             // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }
-          lg.feature_group.addLayer(feat);
+          project.layer_groups[layer_group_index].feature_group.addLayer(layer);
+          console.log(d.properties)
+          layer.options.label = d.properties.label;
         });
-        project.layer_groups.push(lg);
+
       });
-      return res(project);
+      res(project);
     });
   }
 
@@ -295,7 +301,7 @@ export default class GeoDataService {
 
     let a = document.createElement('a');
     document.body.appendChild(a);
-    a.download    = project.name + ".dsmap";
+    a.download    = project.name + ".geojson";
     a.href        = url;
     a.textContent = "Download";
     a.click();
@@ -310,7 +316,7 @@ export default class GeoDataService {
     let form = new FormData();
     let file = new File([blob], project.name + '.dsmap');
 
-    form.append('fileToUpload', file, project.name + '.dsmap');
+    form.append('fileToUpload', file, project.name + '.geojson');
     return this.$http.post(base_file_url, form, {headers: {'Content-Type': undefined}});
   }
 

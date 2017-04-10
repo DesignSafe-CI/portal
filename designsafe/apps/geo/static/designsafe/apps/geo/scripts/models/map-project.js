@@ -9,7 +9,6 @@ export default class MapProject {
 
   clear() {
     this.layer_groups.forEach( (lg) => {
-      console.log(lg)
       lg.feature_group.clearLayers();
     });
   }
@@ -21,9 +20,12 @@ export default class MapProject {
       "features": [],
       "ds_map": true,
       "name": this.name,
-      "description": this.description
+      "description": this.description,
+      "num_layers": this.layer_groups.length,
+      "layer_groups": []
     };
-    this.layer_groups.forEach( (lg) => {
+    this.layer_groups.forEach( (lg, lg_idx) => {
+      out.layer_groups.push(lg.label);
       let tmp = {
         "type": "FeatureCollection",
         "features": [],
@@ -31,24 +33,26 @@ export default class MapProject {
       };
       lg.feature_group.getLayers().forEach( (feature) => {
         let json = feature.toGeoJSON();
-        console.log(feature, json)
         let opts = _.clone(feature.options);
         delete opts.icon;
-        let opt_keys = ['label', 'color', 'fillColor', 'description', 'image_src', 'thumb_src'];
+        let opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src'];
 
-        //add in any options
-        if (feature.options.image_src) {
-          json.properties.image_src = feature.options.image_src;
-        }
-        if (feature.options.thumb_src) {
-          json.properties.thumb_src = feature.options.thumb_src;
-        }
+        // //add in any options
+        // if (feature.options.image_src) {
+        //   json.properties.image_src = feature.options.image_src;
+        // }
+        // if (feature.options.thumb_src) {
+        //   json.properties.thumb_src = feature.options.thumb_src;
+        // }
         for (let key in opts) {
-          json.properties[key] = opts[key];
+          if (opt_keys.indexOf(key) !== -1) {
+            console.log(key, opt_keys.indexOf(key))
+            json.properties[key] = opts[key];
+          }
         };
-        tmp.features.push(json);
+        json.layer_group_index = lg_idx;
+        out.features.push(json);
       });
-      out.features.push(tmp);
     });
     return out;
   }

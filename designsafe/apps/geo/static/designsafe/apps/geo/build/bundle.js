@@ -175,7 +175,6 @@ var MapProject = function () {
     key: "clear",
     value: function clear() {
       this.layer_groups.forEach(function (lg) {
-        console.log(lg);
         lg.feature_group.clearLayers();
       });
     }
@@ -187,9 +186,12 @@ var MapProject = function () {
         "features": [],
         "ds_map": true,
         "name": this.name,
-        "description": this.description
+        "description": this.description,
+        "num_layers": this.layer_groups.length,
+        "layer_groups": []
       };
-      this.layer_groups.forEach(function (lg) {
+      this.layer_groups.forEach(function (lg, lg_idx) {
+        out.layer_groups.push(lg.label);
         var tmp = {
           "type": "FeatureCollection",
           "features": [],
@@ -197,24 +199,26 @@ var MapProject = function () {
         };
         lg.feature_group.getLayers().forEach(function (feature) {
           var json = feature.toGeoJSON();
-          console.log(feature, json);
           var opts = _.clone(feature.options);
           delete opts.icon;
-          var opt_keys = ['label', 'color', 'fillColor', 'description', 'image_src', 'thumb_src'];
+          var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src'];
 
-          //add in any options
-          if (feature.options.image_src) {
-            json.properties.image_src = feature.options.image_src;
-          }
-          if (feature.options.thumb_src) {
-            json.properties.thumb_src = feature.options.thumb_src;
-          }
+          // //add in any options
+          // if (feature.options.image_src) {
+          //   json.properties.image_src = feature.options.image_src;
+          // }
+          // if (feature.options.thumb_src) {
+          //   json.properties.thumb_src = feature.options.thumb_src;
+          // }
           for (var key in opts) {
-            json.properties[key] = opts[key];
+            if (opt_keys.indexOf(key) !== -1) {
+              console.log(key, opt_keys.indexOf(key));
+              json.properties[key] = opts[key];
+            }
           };
-          tmp.features.push(json);
+          json.layer_group_index = lg_idx;
+          out.features.push(json);
         });
-        out.features.push(tmp);
       });
       return out;
     }
@@ -416,7 +420,7 @@ var MapSidebarCtrl = function () {
 
     var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: '&copy;',
-      maxZoom: 18
+      maxZoom: 20
     });
 
     var basemaps = {
@@ -636,7 +640,7 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          _this5._load_data_success(retval);
+          return _this5._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
@@ -849,7 +853,10 @@ var GeoDataService = function () {
   }, {
     key: '_from_json',
     value: function _from_json(blob) {
+      var _this3 = this;
+
       return this.$q(function (res, rej) {
+        if (blob.ds_map) return res(_this3._from_dsmap(blob));
         var features = [];
         L.geoJSON(blob).getLayers().forEach(function (l) {
           console.log(l);
@@ -891,11 +898,11 @@ var GeoDataService = function () {
   }, {
     key: '_from_image',
     value: function _from_image(file) {
-      var _this3 = this;
+      var _this4 = this;
 
       return this.$q(function (res, rej) {
         var exif = EXIF.readFromBinaryFile(file);
-        var encoded = _this3._arrayBufferToBase64(file);
+        var encoded = _this4._arrayBufferToBase64(file);
         var lat = exif.GPSLatitude;
         var lon = exif.GPSLongitude;
 
@@ -906,13 +913,13 @@ var GeoDataService = function () {
         lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
         var thumb = null;
         var preview = null;
-        _this3._resize_image(file, 100, 100).then(function (resp) {
+        _this4._resize_image(file, 100, 100).then(function (resp) {
           thumb = resp;
         }).then(function () {
-          return _this3._resize_image(file, 400, 400);
+          return _this4._resize_image(file, 400, 400);
         }).then(function (resp) {
           preview = resp;
-          var marker = _this3._make_image_marker(lat, lon, thumb, preview);
+          var marker = _this4._make_image_marker(lat, lon, thumb, preview);
           res([marker]);
         });
       });
@@ -920,28 +927,32 @@ var GeoDataService = function () {
   }, {
     key: '_from_dsmap',
     value: function _from_dsmap(json) {
-      var _this4 = this;
+      var _this5 = this;
 
       return this.$q(function (res, rej) {
         // if (json instanceof String) {
         var project = new _mapProject2.default();
         project.name = json.name;
+        json.layer_groups.forEach(function (name) {
+          project.layer_groups.push(new _layer_group2.default(name, new L.FeatureGroup()));
+        });
         json.features.forEach(function (d) {
-          var lg = new _layer_group2.default(d.label, new L.FeatureGroup());
-          var group = L.geoJSON(d);
-          group.getLayers().forEach(function (feat) {
-            feat.options.label = feat.feature.properties.label;
-            if (feat instanceof L.Marker && feat.feature.properties.image_src) {
-              var latlng = feat.getLatLng();
-              feat = _this4._make_image_marker(latlng.lat, latlng.lng, feat.feature.properties.thumb_src, feat.feature.properties.image_src);
+          var feature = L.geoJSON(d);
+          feature.eachLayer(function (layer) {
+            console.log(layer);
+            var layer_group_index = d.layer_group_index;
+            if (layer instanceof L.Marker && layer.feature.properties.image_src) {
+              var latlng = layer.getLatLng();
+              layer = _this5._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src);
               // feat.options.image_src = feat.feature.properties.image_src;
               // feat.options.thumb_src = feat.feature.properties.thumb_src;
             }
-            lg.feature_group.addLayer(feat);
+            project.layer_groups[layer_group_index].feature_group.addLayer(layer);
+            console.log(d.properties);
+            layer.options.label = d.properties.label;
           });
-          project.layer_groups.push(lg);
         });
-        return res(project);
+        res(project);
       });
     }
 
@@ -953,7 +964,7 @@ var GeoDataService = function () {
   }, {
     key: 'load_from_local_file',
     value: function load_from_local_file(file) {
-      var _this5 = this;
+      var _this6 = this;
 
       return this.$q(function (res, rej) {
         var ext = GeoUtils.get_file_extension(file.name);
@@ -968,31 +979,31 @@ var GeoDataService = function () {
           var p = null;
           switch (ext) {
             case 'kml':
-              p = _this5._from_kml(e.target.result);
+              p = _this6._from_kml(e.target.result);
               break;
             case 'json':
-              p = _this5._from_json(JSON.parse(e.target.result));
+              p = _this6._from_json(JSON.parse(e.target.result));
               break;
             case 'geojson':
-              p = _this5._from_json(JSON.parse(e.target.result));
+              p = _this6._from_json(JSON.parse(e.target.result));
               break;
             case 'kmz':
-              p = _this5._from_kmz(e.target.result);
+              p = _this6._from_kmz(e.target.result);
               break;
             case 'gpx':
-              p = _this5._from_gpx(e.target.result);
+              p = _this6._from_gpx(e.target.result);
               break;
             case 'jpeg':
-              p = _this5._from_image(e.target.result);
+              p = _this6._from_image(e.target.result);
               break;
             case 'jpg':
-              p = _this5._from_image(e.target.result);
+              p = _this6._from_image(e.target.result);
               break;
             case 'dsmap':
-              p = _this5._from_dsmap(JSON.parse(e.target.result));
+              p = _this6._from_dsmap(JSON.parse(e.target.result));
               break;
             default:
-              p = _this5._from_json(JSON.parse(e.target.result));
+              p = _this6._from_json(JSON.parse(e.target.result));
           }
           return res(p);
         };
@@ -1006,7 +1017,7 @@ var GeoDataService = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this6 = this;
+      var _this7 = this;
 
       var ext = GeoUtils.get_file_extension(f.name);
       var responseType = 'text';
@@ -1017,31 +1028,31 @@ var GeoDataService = function () {
         var p = null;
         switch (ext) {
           case 'kml':
-            p = _this6._from_kml(resp.data);
+            p = _this7._from_kml(resp.data);
             break;
           case 'json':
-            p = _this6._from_json(resp.data);
+            p = _this7._from_json(resp.data);
             break;
           case 'geojson':
-            p = _this6._from_json(resp.data);
+            p = _this7._from_json(resp.data);
             break;
           case 'kmz':
-            p = _this6._from_kmz(resp.data);
+            p = _this7._from_kmz(resp.data);
             break;
           case 'gpx':
-            p = _this6._from_gpx(resp.data);
+            p = _this7._from_gpx(resp.data);
             break;
           case 'jpeg':
-            p = _this6._from_image(resp.data);
+            p = _this7._from_image(resp.data);
             break;
           case 'jpg':
-            p = _this6._from_image(resp.data);
+            p = _this7._from_image(resp.data);
             break;
           case 'dsmap':
-            p = _this6._from_dsmap(resp.data);
+            p = _this7._from_dsmap(resp.data);
             break;
           default:
-            p = _this6._from_json(resp.data);
+            p = _this7._from_json(resp.data);
         }
         return p;
       });
@@ -1055,7 +1066,7 @@ var GeoDataService = function () {
 
       var a = document.createElement('a');
       document.body.appendChild(a);
-      a.download = project.name + ".dsmap";
+      a.download = project.name + ".geojson";
       a.href = url;
       a.textContent = "Download";
       a.click();
@@ -1071,7 +1082,7 @@ var GeoDataService = function () {
       var form = new FormData();
       var file = new File([blob], project.name + '.dsmap');
 
-      form.append('fileToUpload', file, project.name + '.dsmap');
+      form.append('fileToUpload', file, project.name + '.geojson');
       return this.$http.post(base_file_url, form, { headers: { 'Content-Type': undefined } });
     }
   }]);

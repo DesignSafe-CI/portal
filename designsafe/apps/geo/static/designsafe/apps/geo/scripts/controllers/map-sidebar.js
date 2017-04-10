@@ -32,7 +32,7 @@ export default class MapSidebarCtrl {
     let satellite = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: '&copy;',
-      maxZoom: 18,
+      maxZoom: 20,
     });
 
     let basemaps = {
@@ -224,7 +224,7 @@ export default class MapSidebarCtrl {
     for (let i=0; i<ev.target.files.length; i++) {
       // debugger
       let file = ev.target.files[i];
-      let prom = this.GeoDataService.load_from_local_file(file).then( (retval) =>{this._load_data_success(retval);});
+      let prom = this.GeoDataService.load_from_local_file(file).then( (retval) =>{return this._load_data_success(retval);});
       reqs.push(prom);
       // this.loading = false;
     };
