@@ -136,9 +136,22 @@ var LayerGroup = function () {
   }
 
   _createClass(LayerGroup, [{
-    key: "num_features",
+    key: 'num_features',
     value: function num_features() {
       return this.feature_group.getLayers().length;
+    }
+  }, {
+    key: 'get_feature_type',
+    value: function get_feature_type(f) {
+      if (f.options.image_src) {
+        return 'Image';
+      } else if (f instanceof L.Marker) {
+        return 'Point';
+      } else if (f instanceof L.Polygon) {
+        return 'Polygon';
+      } else {
+        return 'Path';
+      }
     }
   }]);
 
@@ -159,6 +172,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _L = __webpack_require__(13);
+
+var _L2 = _interopRequireDefault(_L);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -409,6 +428,7 @@ var MapSidebarCtrl = function () {
 
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
+    console.log($window.L_PREFER_CANVAS);
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -427,7 +447,11 @@ var MapSidebarCtrl = function () {
       'Street': streets,
       'Satellite': satellite
     };
-    this.map = L.map('geo_map', { layers: [streets, satellite], measureControl: true }).setView([0, 0], 3);
+    this.map = L.map('geo_map', {
+      layers: [streets, satellite],
+      measureControl: true,
+      preferCanvas: true
+    }).setView([0, 0], 3);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
@@ -539,6 +563,7 @@ var MapSidebarCtrl = function () {
     value: function select_feature(lg, feature) {
       this.active_layer_group = lg;
       this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
+      console.log(lg.get_feature_type(feature));
     }
   }, {
     key: 'open_db_modal',
@@ -559,19 +584,6 @@ var MapSidebarCtrl = function () {
       this.$timeout(function () {
         $('#file_picker').click();
       }, 0);
-    }
-  }, {
-    key: 'get_feature_type',
-    value: function get_feature_type(f) {
-      if (f.options.image_src) {
-        return 'Image';
-      } else if (f instanceof L.Marker) {
-        return 'Point';
-      } else if (f instanceof L.Polygon) {
-        return 'Polygon';
-      } else {
-        return 'Path';
-      }
     }
   }, {
     key: 'zoom_to',
@@ -820,7 +832,9 @@ var GeoDataService = function () {
         var features = [];
         var l = omnivore.kml.parse(text_blob);
         l.getLayers().forEach(function (d) {
-          d.feature.properties = {};
+          console.log(d);
+          // d.feature.properties = {};
+          d.options.label = d.feature.properties.name;
           features.push(d);
         });
         res(features);
@@ -834,17 +848,21 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         var zipper = new JSZip();
         zipper.loadAsync(blob).then(function (zip) {
-
           console.log(zip);
+          // debugger
           //loop over all the files in the archive
+          var proms = [];
           for (var key in zip.files) {
+            console.log(key);
             var ext = key.split('.').pop();
             if (ext === 'kml') {
               return zip.files[key].async('text');
             }
+            if (ext === 'jpg') {
+              return zip.files[key].async('arraybuffer');
+            }
           }
         }).then(function (txt) {
-          debugger;
           var features = _this2._from_kml(txt);
           res(features);
         });
@@ -1170,6 +1188,12 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = L;
 
 /***/ })
 /******/ ]);

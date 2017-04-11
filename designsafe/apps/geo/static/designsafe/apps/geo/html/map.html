@@ -68,9 +68,15 @@
       drag="{idx:$index, pidx:$parent.$index, fid:feature._leaflet_id}"
       >
 
-      <div> <i class="fa" ng-class="vm.get_feature_type(feature) === 'Image' ? 'fa-image' : 'fa-file-o'"></i> </div>
-      <div ng-if="!feature.options.label"> {{vm.get_feature_type(feature)}} </div>
-      <div ng-if="feature.options.label"> {{feature.options.label}} </div>
+      <div> <i class="fa" ng-class="{'fa-image': lg.get_feature_type(feature) === 'Image',
+                                     'fa-map-marker': lg.get_feature_type(feature) === 'Point',
+                                     'fa-line-chart': lg.get_feature_type(feature) === 'Polygon',
+                                     'fa-line-chart': lg.get_feature_type(feature) === 'Path'
+                                    }">
+            </i>
+      </div>
+      <div ng-if="!feature.options.label"> {{ lg.get_feature_type(feature) }} </div>
+      <div ng-if="feature.options.label"> {{ feature.options.label }} </div>
 
       <div class="pull-right">
         <div class="pull-left">

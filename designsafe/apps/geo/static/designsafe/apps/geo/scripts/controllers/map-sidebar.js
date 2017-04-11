@@ -20,6 +20,7 @@ export default class MapSidebarCtrl {
 
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
+    console.log($window.L_PREFER_CANVAS)
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -39,7 +40,11 @@ export default class MapSidebarCtrl {
       'Street': streets,
       'Satellite': satellite
     };
-    this.map = L.map('geo_map', {layers: [streets, satellite], measureControl:true}).setView([0, 0], 3);
+    this.map = L.map('geo_map', {
+        layers: [streets, satellite],
+        measureControl:true,
+        preferCanvas: true
+      }).setView([0, 0], 3);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
@@ -145,6 +150,7 @@ export default class MapSidebarCtrl {
   select_feature(lg, feature) {
     this.active_layer_group = lg;
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
+    console.log(lg.get_feature_type(feature));
   }
 
   open_db_modal () {
@@ -159,18 +165,6 @@ export default class MapSidebarCtrl {
     this.$timeout(() => {
       $('#file_picker').click();
     }, 0);
-  }
-
-  get_feature_type (f) {
-    if (f.options.image_src) {
-      return 'Image';
-    } else if (f instanceof L.Marker) {
-      return 'Point';
-    } else if (f instanceof L.Polygon) {
-      return 'Polygon';
-    } else {
-      return 'Path';
-    }
   }
 
   zoom_to(feature) {

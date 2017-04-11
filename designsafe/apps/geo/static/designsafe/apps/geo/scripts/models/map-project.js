@@ -1,3 +1,4 @@
+import L from 'L';
 
 export default class MapProject {
 

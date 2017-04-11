@@ -74,7 +74,9 @@ export default class GeoDataService {
       let features = [];
       let l = omnivore.kml.parse(text_blob);
       l.getLayers().forEach((d) => {
-        d.feature.properties = {};
+        console.log(d)
+        // d.feature.properties = {};
+        d.options.label = d.feature.properties.name;
         features.push(d);
       });
       res(features);
@@ -85,17 +87,21 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       let zipper = new JSZip();
       zipper.loadAsync(blob).then( (zip) => {
-
         console.log(zip)
+        // debugger
         //loop over all the files in the archive
+        let proms = [];
         for (let key in zip.files) {
+          console.log(key)
           let ext = key.split('.').pop();
           if (ext === 'kml') {
             return zip.files[key].async('text');
           }
+          if (ext === 'jpg') {
+            return zip.files[key].async('arraybuffer');
+          }
         }
       }).then( (txt) => {
-        debugger
         let features = this._from_kml(txt);
         res(features);
       });
