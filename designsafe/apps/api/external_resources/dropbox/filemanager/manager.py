@@ -95,7 +95,7 @@ class FileManager(object):
                 entries = dropbox_item.entries
 
                 while True:
-                    children.extend([DropboxFile(item, item.path_display, parent=dropbox_item).to_dict(default_pems=default_pems)
+                    children.extend([DropboxFile(item, item.path_display.encode('utf-8'), parent=dropbox_item).to_dict(default_pems=default_pems)
                                 for item in entries])
                     if has_more:
                         folder = self.dropbox_api.files_list_folder_continue(cursor)
