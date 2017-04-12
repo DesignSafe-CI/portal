@@ -119,6 +119,16 @@
 
   </li>
   <li class="list-group-item menu clearfix">
+    <div class="left"> Stroke: </div>
+    <div class="right">
+      <input type="color"
+             class="form-control"
+             ng-model="vm.current_layer.options.color"
+             ng-change=vm.update_layer_style('color')>
+    </div>
+
+  </li>
+  <li class="list-group-item menu clearfix">
     <div class="left"> Lat: </div>
     <div class="right"> {{vm.current_layer.getLatLng().lat}} </div>
   </li>
@@ -151,7 +161,7 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
-            <li ng-click="vm.open_existing_project()">Open Existing Project</li>
+            <!-- <li ng-click="vm.open_existing_project()">Open Existing Project</li> -->
             <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
             <li ng-click="vm.save_locally()">Save locally </li>
           </ul>

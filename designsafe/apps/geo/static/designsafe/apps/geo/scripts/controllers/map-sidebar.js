@@ -20,7 +20,6 @@ export default class MapSidebarCtrl {
 
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
-    console.log($window.L_PREFER_CANVAS)
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -135,7 +134,6 @@ export default class MapSidebarCtrl {
   }
 
   show_hide_layer_group (lg) {
-    console.log(lg)
     lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
   }
 
@@ -151,6 +149,7 @@ export default class MapSidebarCtrl {
     this.active_layer_group = lg;
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
     console.log(lg.get_feature_type(feature));
+    console.log(feature)
   }
 
   open_db_modal () {
@@ -196,6 +195,7 @@ export default class MapSidebarCtrl {
         this.map.addLayer(lg.feature_group);
       });
       this.active_layer_group = this.project.layer_groups[0];
+      this.map.fitBounds(this.project.get_bounds());
     } else {
       //it will be an array of features...
       retval.forEach( (f) => {

@@ -14,6 +14,13 @@ export default class MapProject {
     });
   }
 
+  get_bounds() {
+    let bounds = [];
+    this.layer_groups.forEach( (lg) => {
+      bounds.push(lg.feature_group.getBounds());
+    });
+    return bounds;
+  }
 
   to_json() {
     let out = {

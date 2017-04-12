@@ -87,8 +87,6 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       let zipper = new JSZip();
       zipper.loadAsync(blob).then( (zip) => {
-        console.log(zip)
-        // debugger
         //loop over all the files in the archive
         let proms = [];
         for (let key in zip.files) {
@@ -184,6 +182,7 @@ export default class GeoDataService {
       // if (json instanceof String) {
       let project = new MapProject();
       project.name = json.name;
+      project.description = json.description;
       json.layer_groups.forEach( (name) => {
         project.layer_groups.push(new LayerGroup(name, new L.FeatureGroup()));
       });
@@ -199,7 +198,6 @@ export default class GeoDataService {
             // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }
           project.layer_groups[layer_group_index].feature_group.addLayer(layer);
-          console.log(d.properties)
           layer.options.label = d.properties.label;
         });
 

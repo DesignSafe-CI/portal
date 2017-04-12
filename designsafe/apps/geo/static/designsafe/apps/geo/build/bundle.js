@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -173,7 +173,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(13);
+var _L = __webpack_require__(12);
 
 var _L2 = _interopRequireDefault(_L);
 
@@ -196,6 +196,15 @@ var MapProject = function () {
       this.layer_groups.forEach(function (lg) {
         lg.feature_group.clearLayers();
       });
+    }
+  }, {
+    key: "get_bounds",
+    value: function get_bounds() {
+      var bounds = [];
+      this.layer_groups.forEach(function (lg) {
+        bounds.push(lg.feature_group.getBounds());
+      });
+      return bounds;
     }
   }, {
     key: "to_json",
@@ -428,7 +437,6 @@ var MapSidebarCtrl = function () {
 
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
-    console.log($window.L_PREFER_CANVAS);
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
@@ -546,7 +554,6 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'show_hide_layer_group',
     value: function show_hide_layer_group(lg) {
-      console.log(lg);
       lg.show ? this.map.addLayer(lg.feature_group) : this.map.removeLayer(lg.feature_group);
     }
   }, {
@@ -564,6 +571,7 @@ var MapSidebarCtrl = function () {
       this.active_layer_group = lg;
       this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
       console.log(lg.get_feature_type(feature));
+      console.log(feature);
     }
   }, {
     key: 'open_db_modal',
@@ -621,6 +629,7 @@ var MapSidebarCtrl = function () {
           _this3.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
+        this.map.fitBounds(this.project.get_bounds());
       } else {
         //it will be an array of features...
         retval.forEach(function (f) {
@@ -848,8 +857,6 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         var zipper = new JSZip();
         zipper.loadAsync(blob).then(function (zip) {
-          console.log(zip);
-          // debugger
           //loop over all the files in the archive
           var proms = [];
           for (var key in zip.files) {
@@ -951,6 +958,7 @@ var GeoDataService = function () {
         // if (json instanceof String) {
         var project = new _mapProject2.default();
         project.name = json.name;
+        project.description = json.description;
         json.layer_groups.forEach(function (name) {
           project.layer_groups.push(new _layer_group2.default(name, new L.FeatureGroup()));
         });
@@ -966,7 +974,6 @@ var GeoDataService = function () {
               // feat.options.thumb_src = feat.feature.properties.thumb_src;
             }
             project.layer_groups[layer_group_index].feature_group.addLayer(layer);
-            console.log(d.properties);
             layer.options.label = d.properties.label;
           });
         });
@@ -1135,6 +1142,12 @@ exports.default = GeoStateService;
 
 /***/ }),
 /* 12 */
+/***/ (function(module, exports) {
+
+module.exports = L;
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1188,12 +1201,6 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-module.exports = L;
 
 /***/ })
 /******/ ]);
