@@ -70,5 +70,7 @@ pyjwt==1.4.2
 chardet==2.3.0
 ipdb
 
+beautifulsoup4==4.5.3
+
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.2.0#egg=pytas-1.2.0

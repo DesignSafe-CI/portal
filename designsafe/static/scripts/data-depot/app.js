@@ -282,8 +282,37 @@
           }
         }
       })
+      .state('communityData', {
+        // url: '/community/',
+        // template: '<pre>local/communityData.html</pre>'
+        url: '/public/designsafe.storage.community/{filePath:any}',
+        controller: 'CommunityDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.community',
+          filePath: '/'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var options = {
+              system: ($stateParams.systemId || 'designsafe.storage.community'),
+              path: ($stateParams.filePath || '/')
+            };
+            // if (options.path === '/') {
+              // options.path = Django.user;
+            // }
+            DataBrowserService.apiParams.fileMgr = 'community';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            DataBrowserService.apiParams.searchState = 'dataSearch';
+            return DataBrowserService.browse(options);
+          }],
+          'auth': function($q) {
+              return true;
+          }
+        }
+      })
       .state('publicData', {
-        url: '/public/{systemId}/{filePath:any}',
+        url: '/public/nees.public/{filePath:any}',
         controller: 'PublicationDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
         params: {
@@ -309,42 +338,6 @@
               return false;
             });
           }]
-        }
-      })
-      .state('communityData', {
-        // url: '/community/',
-        // template: '<pre>local/communityData.html</pre>'
-        url: '/agave/{systemId}/',
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.community',
-          filePath: '/'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var options = {
-              system: ($stateParams.systemId || 'designsafe.storage.community'),
-              path: ($stateParams.filePath || '/')
-            };
-            // if (options.path === '/') {
-              // options.path = Django.user;
-            // }
-            DataBrowserService.apiParams.fileMgr = 'agave';
-            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            DataBrowserService.apiParams.searchState = 'dataSearch';
-            return DataBrowserService.browse(options);
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
-          }
         }
       })
       .state('trainingMaterials', {
@@ -405,7 +398,7 @@
             (window.location.port ? ':' + window.location.port : '') +
             '/ws/websockets?subscribe-broadcast&subscribe-user'
         );
-	}])
+	}]);
 // 	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
 // 	  WSBusService.init(WSBusService.url);
 //     }]);

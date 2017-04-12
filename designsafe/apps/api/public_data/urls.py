@@ -35,7 +35,7 @@ urlpatterns = [
     #     PUT     /media/<file_mgr_name>/<system_id>/<file_path>/
     #     DELETE  /media/<file_mgr_name>/<system_id>/<file_path>/
     url(r'^files/media/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
-        FileMediaView.as_view(), name='public_files_media'),
+        PublicMediaView.as_view(), name='public_files_media'),
 
 
     # Permission operations:

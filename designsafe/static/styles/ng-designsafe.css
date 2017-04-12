@@ -541,3 +541,7 @@ span.label.tag-red.selected {
 .simple-table tbody tr th:last-child {
     padding-right:0px;
 }
+
+.tooltip-inner {
+    max-width:350px !important;
+}
