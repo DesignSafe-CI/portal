@@ -36,4 +36,12 @@
       return 0;
     };
   });
+
+  mod.filter('toTrusted', function ($sce) {
+    return function (value) {
+        console.log(value)
+        return $sce.trustAsHtml(value);
+    };
+  });
+
 })(window, angular);
