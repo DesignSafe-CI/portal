@@ -255,9 +255,12 @@
            ng-if="ui.showExtraCat">
         <div style="display:inline-block; width:20%">
           <label for="id-tag-type" style="display:block">Type</label>
-          <select class="form-control" name="tag-type" id="id-tag-type"
-                  ng-options="item.name as item.label for item in ui.tagTypes"
-                  ng-model="data.form.projectTagToAdd.tagType"/>
+          <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
+               ng-model="data.form.projectTagToAdd.tagType">
+            <yamz-term term-id="{{item.yamzId}}">
+              <i class="fa fa-question-circle"></i>
+            </yamz-term><span>{{item.label}}</span>
+          </div>
         </div>
         <div style="display:inline-block; width:45%;">
           <label for="id-tag-title" style="display:block">Title</label>

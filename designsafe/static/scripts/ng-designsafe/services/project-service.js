@@ -254,6 +254,7 @@
                   }
                 }).then(function(res){
                   $scope.data.project.addEntity(res);
+                  //$scope.data.experiments.push(res);
                 });
               }
             });
@@ -274,7 +275,7 @@
           };
 
           $scope.removeExperiments = function($event){
-            $event.preventDefault();
+            $event && $event.preventDefault();
             $scope.data.busy = true;
 
             var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
@@ -282,6 +283,14 @@
                 data: {
                   uuid: uuid,
                 }
+              }).then(function(entity){
+                var entityAttr = $scope.data.project.getRelatedAttrName(entity.name);
+                var entitiesArray = $scope.data.project[entityAttr];
+                entitiesArray = _.filter(entitiesArray, function(e){
+                        return e.uuid !== entity.uuid;
+                    });
+                $scope.data.project[entityAttr] = entitiesArray;
+                $scope.data.experiments = $scope.data.project[entityAttr];
               });
             });
 
@@ -341,13 +350,17 @@
           $scope.ui.addingTag = false;
           $scope.ui.tagTypes = [
               {label: 'Model Config',
-               name: 'designsafe.project.model_config'},
+               name: 'designsafe.project.model_config',
+               yamzId: 'h1312'},
               {label: 'Sensor',
-               name: 'designsafe.project.sensor_list'},
+               name: 'designsafe.project.sensor_list',
+               yamzId: 'h1557'},
               {label: 'Event',
-               name: 'designsafe.project.event'},
+               name: 'designsafe.project.event',
+               yamzId: 'h1253'},
               {label: 'Analysis',
-               name: 'designsafe.project.analysis'}
+               name: 'designsafe.project.analysis',
+               yamzId: 'h1333'}
               ];
           $scope.ui.analysisData = [
             {name: 'graph', label: 'Graph'},
@@ -401,10 +414,7 @@
                function(resp){
                  $scope.data.form.projectTagToAdd = {optional:{}};
                  //currentState.project.addEntity(resp);
-                 $scope.data.project.addEntity(res);
-                 _setFileEntities();
-                 _setEntities();
-                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+                 $scope.data.project.addEntity(resp);
                  $scope.ui.error = false;
                  $scope.ui.addingTag = false;
                },
