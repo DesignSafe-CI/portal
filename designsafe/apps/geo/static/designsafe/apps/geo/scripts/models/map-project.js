@@ -22,6 +22,13 @@ export default class MapProject {
     return bounds;
   }
 
+  num_features () {
+    total = 0;
+    this.layer_groups.forEach( (lg) => {
+      total += lg.num_features();
+    });
+  }
+
   to_json() {
     let out = {
       "type": "FeatureCollection",

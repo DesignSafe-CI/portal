@@ -1,3 +1,7 @@
+/*#geo_container .modal-dialog {
+  color: #000000
+}*/
+
 
 #geo_container {
   display: flex;
@@ -6,7 +10,7 @@
   font-family: 'Open Sans', sans-serif;
 }
 
-#geo_container h1, h2, h3, h4, h5, h6 {
+#geo_container h1, #geo_container h2, #geo_container h3 {
   color: #fff;
 }
 

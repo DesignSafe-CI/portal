@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -173,7 +173,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(12);
+var _L = __webpack_require__(13);
 
 var _L2 = _interopRequireDefault(_L);
 
@@ -205,6 +205,14 @@ var MapProject = function () {
         bounds.push(lg.feature_group.getBounds());
       });
       return bounds;
+    }
+  }, {
+    key: "num_features",
+    value: function num_features() {
+      total = 0;
+      this.layer_groups.forEach(function (lg) {
+        total += lg.num_features();
+      });
     }
   }, {
     key: "to_json",
@@ -294,6 +302,14 @@ var _help = __webpack_require__(7);
 
 var _help2 = _interopRequireDefault(_help);
 
+var _settingsModal = __webpack_require__(16);
+
+var _settingsModal2 = _interopRequireDefault(_settingsModal);
+
+var _confirmClearModal = __webpack_require__(17);
+
+var _confirmClearModal2 = _interopRequireDefault(_confirmClearModal);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mod = angular.module('ds.geo.controllers', []);
@@ -301,6 +317,9 @@ var mod = angular.module('ds.geo.controllers', []);
 mod.controller('MapSidebarCtrl', _mapSidebar2.default);
 mod.controller('DBModalCtrl', _dbModal2.default);
 mod.controller('HelpCtrl', _help2.default);
+mod.controller('SettingsModalCtrl', _settingsModal2.default);
+mod.controller('ConfirmClearModalCtrl', _confirmClearModal2.default);
+
 exports.default = mod;
 
 /***/ }),
@@ -314,7 +333,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(9);
+var _customOnChange = __webpack_require__(10);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -336,20 +355,25 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _geoStateService = __webpack_require__(11);
+var _geoStateService = __webpack_require__(12);
 
 var _geoStateService2 = _interopRequireDefault(_geoStateService);
 
-var _geoDataService = __webpack_require__(10);
+var _geoDataService = __webpack_require__(11);
 
 var _geoDataService2 = _interopRequireDefault(_geoDataService);
 
+var _geoSettingsService = __webpack_require__(15);
+
+var _geoSettingsService2 = _interopRequireDefault(_geoSettingsService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import customOnChange from './custom-on-change';
-var mod = angular.module('ds.geo.services', []);
+var mod = angular.module('ds.geo.services', []); // import customOnChange from './custom-on-change';
+
 mod.service('GeoStateService', _geoStateService2.default);
 mod.service('GeoDataService', _geoDataService2.default);
+mod.service('GeoSettingsService', _geoSettingsService2.default);
 
 // mod.directive('customOnChange', customOnChange);
 
@@ -587,11 +611,40 @@ var MapSidebarCtrl = function () {
       });
     }
   }, {
+    key: 'open_settings_modal',
+    value: function open_settings_modal() {
+      var modal = this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
+        controller: "SettingsModalCtrl as vm"
+      });
+      modal.result.then(function (s) {
+        console.log(s);
+      });
+    }
+  }, {
     key: 'open_file_dialog',
     value: function open_file_dialog() {
       this.$timeout(function () {
         $('#file_picker').click();
       }, 0);
+    }
+  }, {
+    key: 'create_new_project',
+    value: function create_new_project() {
+      var _this3 = this;
+
+      var modal = this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
+        controller: "ConfirmClearModalCtrl as vm"
+      });
+      modal.result.then(function (s) {
+        _this3.project.clear();
+        var p = new _mapProject2.default('New Project');
+        p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
+        _this3.project = p;
+        _this3.active_layer_group = _this3.project.layer_groups[0];
+        _this3.map.addLayer(_this3.active_layer_group.feature_group);
+      });
     }
   }, {
     key: 'zoom_to',
@@ -620,20 +673,19 @@ var MapSidebarCtrl = function () {
   }, {
     key: '_load_data_success',
     value: function _load_data_success(retval) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (retval instanceof _mapProject2.default) {
-        this.project.clear();
-        this.project = retval;
-        this.project.layer_groups.forEach(function (lg) {
-          _this3.map.addLayer(lg.feature_group);
+
+        retval.layer_groups.forEach(function (lg) {
+          _this4.project.layer_groups.push(lg);
         });
         this.active_layer_group = this.project.layer_groups[0];
         this.map.fitBounds(this.project.get_bounds());
       } else {
         //it will be an array of features...
         retval.forEach(function (f) {
-          _this3.active_layer_group.feature_group.addLayer(f);
+          _this4.active_layer_group.feature_group.addLayer(f);
         });
         this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
       }
@@ -641,19 +693,19 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this4 = this;
+      var _this5 = this;
 
       this.loading = true;
       this.GeoDataService.load_from_data_depot(f).then(function (retval) {
-        _this4._load_data_success(retval);
+        _this5._load_data_success(retval);
       }).then(function () {
-        _this4.loading = false;
+        _this5.loading = false;
       });
     }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
-      var _this5 = this;
+      var _this6 = this;
 
       this.loading = true;
       var reqs = [];
@@ -661,17 +713,17 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          return _this5._load_data_success(retval);
+          return _this6._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
       };
       this.$q.all(reqs).then(function () {
-        _this5.loading = false;
+        _this6.loading = false;
         //reset the picker
         $('#file_picker').val('');
       }).then(function () {
-        _this5.toastr.success('Imported file');
+        _this6.toastr.success('Imported file');
       });
     }
   }, {
@@ -687,14 +739,14 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot() {
-      var _this6 = this;
+      var _this7 = this;
 
       this.loading = true;
       this.GeoDataService.save_to_depot(this.project).then(function (resp) {
-        _this6.loading = false;
-        _this6.toastr.success('Saved to data depot');
+        _this7.loading = false;
+        _this7.toastr.success('Saved to data depot');
       }, function (err) {
-        _this6.toastr.error('Save failed!');
+        _this7.toastr.error('Save failed!');
       });
     }
   }]);
@@ -705,7 +757,8 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 9 */
+/* 9 */,
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -732,7 +785,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -846,7 +899,6 @@ var GeoDataService = function () {
         var features = [];
         var l = omnivore.kml.parse(text_blob);
         l.getLayers().forEach(function (d) {
-          console.log(d);
           // d.feature.properties = {};
           d.options.label = d.feature.properties.name;
           features.push(d);
@@ -865,13 +917,9 @@ var GeoDataService = function () {
           //loop over all the files in the archive
           var proms = [];
           for (var key in zip.files) {
-            console.log(key);
             var ext = key.split('.').pop();
             if (ext === 'kml') {
               return zip.files[key].async('text');
-            }
-            if (ext === 'jpg') {
-              return zip.files[key].async('arraybuffer');
             }
           }
         }).then(function (txt) {
@@ -889,7 +937,6 @@ var GeoDataService = function () {
         if (blob.ds_map) return res(_this3._from_dsmap(blob));
         var features = [];
         L.geoJSON(blob).getLayers().forEach(function (l) {
-          console.log(l);
           features.push(l);
         });
         res(features);
@@ -1123,7 +1170,7 @@ var GeoDataService = function () {
 exports.default = GeoDataService;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1146,13 +1193,13 @@ var GeoStateService = function GeoStateService($scope, $state) {
 exports.default = GeoStateService;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = L;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1206,6 +1253,114 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GeoSettingsService = function GeoSettingsService() {
+  _classCallCheck(this, GeoSettingsService);
+
+  this.settings = {
+    default_color: '#ff0000',
+    measurement_units: 'si'
+  };
+};
+
+exports.default = GeoSettingsService;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SettingsModalCtrl = function () {
+  SettingsModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
+  function SettingsModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
+    'ngInject';
+
+    _classCallCheck(this, SettingsModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+    this.GeoSettingsService = GeoSettingsService;
+    this.settings = GeoSettingsService.settings;
+  }
+
+  _createClass(SettingsModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.GeoSettingsService.settings = this.settings;
+      this.$uibModalInstance.close(this.settings);
+    }
+  }]);
+
+  return SettingsModalCtrl;
+}();
+
+exports.default = SettingsModalCtrl;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ConfirmClearModalCtrl = function () {
+  ConfirmClearModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
+  function ConfirmClearModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
+    'ngInject';
+
+    _classCallCheck(this, ConfirmClearModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+  }
+
+  _createClass(ConfirmClearModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close('ok');
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return ConfirmClearModalCtrl;
+}();
+
+exports.default = ConfirmClearModalCtrl;
 
 /***/ })
 /******/ ]);

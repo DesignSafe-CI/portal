@@ -161,10 +161,33 @@ export default class MapSidebarCtrl {
     modal.result.then( (f) => {this.load_from_data_depot(f);});
   }
 
+  open_settings_modal () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
+      controller: "SettingsModalCtrl as vm",
+    });
+    modal.result.then( (s) => {console.log(s);});
+  }
+
   open_file_dialog () {
     this.$timeout(() => {
       $('#file_picker').click();
     }, 0);
+  }
+
+  create_new_project () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
+      controller: "ConfirmClearModalCtrl as vm",
+    });
+    modal.result.then( (s) => {
+      this.project.clear();
+      let p = new MapProject('New Project');
+      p.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+      this.project = p;
+      this.active_layer_group = this.project.layer_groups[0];
+      this.map.addLayer(this.active_layer_group.feature_group);
+    });
   }
 
   zoom_to(feature) {
@@ -190,10 +213,9 @@ export default class MapSidebarCtrl {
 
   _load_data_success (retval) {
     if (retval instanceof MapProject) {
-      this.project.clear();
-      this.project = retval;
-      this.project.layer_groups.forEach( (lg)=> {
-        this.map.addLayer(lg.feature_group);
+
+      retval.layer_groups.forEach( (lg) => {
+        this.project.layer_groups.push(lg);
       });
       this.active_layer_group = this.project.layer_groups[0];
       this.map.fitBounds(this.project.get_bounds());

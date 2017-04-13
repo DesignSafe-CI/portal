@@ -162,6 +162,7 @@
           </button>
           <ul class="dropdown-menu">
             <!-- <li ng-click="vm.open_existing_project()">Open Existing Project</li> -->
+            <li ng-click="vm.create_new_project()"> New Project </li> 
             <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
             <li ng-click="vm.save_locally()">Save locally </li>
           </ul>
@@ -179,14 +180,9 @@
         </div>
 
         <div class="btn-group" role="group">
-          <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Colors
-            <span class="caret"></span>
+          <button class="btn btn-default btn-xs dropdown-toggle" ng-click="vm.open_settings_modal()">
+            Settings
           </button>
-          <ul class="dropdown-menu clearfix">
-            <li>primary <input type="color" ng-model="vm.primary_color" class="pull-right"></li>
-            <li> secondary <input type="color" ng-model="vm.secondary_color" class="pull-right"></li>
-          </ul>
         </div>
       </div>
       <div class="btn-group" role="group">

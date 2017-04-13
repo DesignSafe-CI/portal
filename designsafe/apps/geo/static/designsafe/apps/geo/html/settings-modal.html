@@ -1,0 +1,19 @@
+<div class="modal-header">
+  <h3> Options </h3>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <label> Default Color </label>
+    <input type="color" class="form-control" ng-model="vm.settings.default_color"></input>
+  </div>
+  <div class="form-group">
+    <label> Measurement Units </label>
+    <select class="form-control"  ng-model="vm.settings.measurement_units">
+      <option value='si'> SI </option>
+      <option value='imperial'> Imperial </option>
+    </select>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary pull-right" ng-click="vm.ok()"> Save </button>
+</div>
