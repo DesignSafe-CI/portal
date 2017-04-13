@@ -47,6 +47,7 @@ export default class RapidMainCtrl {
             this.active_rapid_event = null;
           } else {
             this.active_rapid_event = marker.rapid_event;
+            this.show_sidebar = true;
           }
           this.$scope.$apply();
         });

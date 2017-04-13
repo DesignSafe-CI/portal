@@ -240,7 +240,6 @@ var MapProject = function () {
           // }
           for (var key in opts) {
             if (opt_keys.indexOf(key) !== -1) {
-              console.log(key, opt_keys.indexOf(key));
               json.properties[key] = opts[key];
             }
           };
@@ -416,8 +415,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$q", "$uibModal", "DataService", "$http", "GeoDataService"];
-  function MapSidebarCtrl($scope, $window, $timeout, $interval, $q, $uibModal, DataService, $http, GeoDataService) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$q", "$uibModal", "toastr", "DataService", "$http", "GeoDataService"];
+  function MapSidebarCtrl($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService) {
     'ngInject';
 
     var _this = this;
@@ -434,6 +433,7 @@ var MapSidebarCtrl = function () {
     this.DataService = DataService;
     this.$http = $http;
     this.GeoDataService = GeoDataService;
+    this.toastr = toastr;
 
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
@@ -670,6 +670,8 @@ var MapSidebarCtrl = function () {
         _this5.loading = false;
         //reset the picker
         $('#file_picker').val('');
+      }).then(function () {
+        _this5.toastr.success('Imported file');
       });
     }
   }, {
@@ -690,6 +692,9 @@ var MapSidebarCtrl = function () {
       this.loading = true;
       this.GeoDataService.save_to_depot(this.project).then(function (resp) {
         _this6.loading = false;
+        _this6.toastr.success('Saved to data depot');
+      }, function (err) {
+        _this6.toastr.error('Save failed!');
       });
     }
   }]);
@@ -1165,7 +1170,7 @@ var _controllers = __webpack_require__(4);
 var _services = __webpack_require__(6);
 
 var mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services');
+mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
 
 function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';

@@ -54,7 +54,6 @@ export default class MapProject {
         // }
         for (let key in opts) {
           if (opt_keys.indexOf(key) !== -1) {
-            console.log(key, opt_keys.indexOf(key))
             json.properties[key] = opts[key];
           }
         };

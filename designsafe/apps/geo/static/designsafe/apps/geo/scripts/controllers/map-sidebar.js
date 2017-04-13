@@ -5,7 +5,7 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, DataService, $http, GeoDataService) {
+  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
@@ -17,6 +17,7 @@ export default class MapSidebarCtrl {
     this.DataService = DataService;
     this.$http = $http;
     this.GeoDataService = GeoDataService;
+    this.toastr = toastr;
 
     this.primary_color = '#ff0000';
     this.secondary_color = '#ff0000';
@@ -226,6 +227,8 @@ export default class MapSidebarCtrl {
       this.loading = false;
       //reset the picker
       $('#file_picker').val('');
+    }).then( () => {
+      this.toastr.success('Imported file');
     });
   }
 
@@ -241,6 +244,9 @@ export default class MapSidebarCtrl {
     this.loading = true;
     this.GeoDataService.save_to_depot(this.project).then( (resp) => {
       this.loading = false;
+      this.toastr.success('Saved to data depot');
+    }, (err) => {
+      this.toastr.error('Save failed!');
     });
 
   }
