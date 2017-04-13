@@ -140,7 +140,7 @@
             ng-repeat="experiment in data.project.experiment_set | orderBy: experiment.value.title"
             style="border:none;">
           <div class="tree-el">  
-          <span class="ul-title">{{experiment.value.title}}</span>
+          <span class="ul-title"> <strong>{{experiment.value.title}}</strong> </span>
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
@@ -148,10 +148,10 @@
               <div class="tree-el">
               <span class="label tag-blue">Model Config</span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
-              <button class="btn btn-xsm btn-danger"
+              <button class="btn btn-xsm btn-link"
                       ng-if="data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid] ).length === 0"
                       ng-click="delRelEntity(modelConfig,{experiments: experiment.uuid})">
-                <i class="fa fa-minus"></i>
+                <i class="fa fa-times-circle" style="color:black;"></i>
                 <span class="sr-only">Delete</span>
               </button>
               </div>
@@ -161,11 +161,11 @@
                   <div class="tree-el">  
                   <span class="label tag-green">Sensor</span>
                   <span class="tag-title">{{sensorList.value.title}}</span>
-                  <button class="btn btn-xsm btn-danger"
+                  <button class="btn btn-xsm btn-link"
                           ng-if="data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]).length === 0"
                           ng-click="delRelEntity(sensorList, {experiments: experiment.uuid,
                                                                modelConfigs: modelConfig.uuid})">
-                    <i class="fa fa-minus"></i>
+                    <i class="fa fa-times-circle" style="color:black;"></i>
                     <span class="sr-only">Delete</span>
                   </button>
                   </div>
@@ -175,12 +175,12 @@
                       <div class="tree-el">
                       <span class="label tag-red tree-el">Event</span>
                       <span class="tag-title">{{event.value.title}}</span>
-                      <button class="btn btn-xsm btn-danger"
+                      <button class="btn btn-xsm btn-link"
                               ng-if="data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid, event.uuid]).length === 0"
                               ng-click="delRelEntity(event, {experiments: experiment.uuid,
                                                                   modelConfigs: modelConfig.uuid,
                                                                   sensorLists: sensorList.uuid})">
-                        <i class="fa fa-minus"></i>
+                        <i class="fa fa-times-circle" style="color:black;"></i>
                         <span class="sr-only">Delete</span>
                       </button>
                       </div>
@@ -194,13 +194,13 @@
                               ng-options="entity as entity.value.title for entity in data.project.event_set"
                               ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent">
                       </select>
-                      <button class="btn btn-sm btn-info"
+                      <button class="btn btn-sm btn-link"
                               ng-click="saveRelEntity(form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent,
                                                   {project:data.project.uuid,
                                                    experiments: experiment.uuid,
                                                    modelConfigs:modelConfig.uuid,
                                                    sensorLists: sensorList.uuid})">
-                        <i class="fa fa-plus"></i><span class="sr-only">Add Event</span>
+                        <i class="fa fa-plus-circle"></i><span class="sr-only">Add Event</span>
                       </button>
                       </div>
                     </li>
@@ -215,12 +215,12 @@
                           ng-options="entity as entity.value.title for entity in data.project.sensorlist_set"
                           ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList">
                   </select>
-                  <button class="btn btn-sm btn-info"
+                  <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList,
                                               {project:data.project.uuid,
                                                experiments: experiment.uuid,
                                                modelConfigs: modelConfig.uuid})">
-                    <i class="fa fa-plus"></i><span class="sr-only">Add Sensor</span>
+                    <i class="fa fa-plus-circle"></i><span class="sr-only">Add Sensor</span>
                   </button>
                   </div>
                 </li>
@@ -232,18 +232,30 @@
                       ng-options="entity as entity.value.title for entity in data.project.modelconfiguration_set"
                       ng-model="form.updateExperiments[experiment.uuid].relModelConfig">
               </select>
-              <button class="btn btn-sm btn-info"
+              <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateExperiments[experiment.uuid].relModelConfig,
                                           {project:data.project.uuid,
                                            experiments:experiment.uuid})">
-                <i class="fa fa-plus"></i><span class="sr-only">Add Model Config</span>
+                <i class="fa fa-plus-circle"></i><span class="sr-only">Add Model Config</span>
               </button>
               </div>
             </li>
           </ul>
         </li>
       </ul>
+
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="label tag-light-blue">Analysis</span>
+          <span class="ul-title">{{analysis.value.title}}</span>
+          </div>
+        </li>
+      </ul>
     </div>
+
     <div class="add-extra-category">
       <button class="btn btn-info"
               ng-click="ui.showExtraCat=true"

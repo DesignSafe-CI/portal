@@ -149,7 +149,7 @@
         });
         self._displayName = displayName;
       }
-      if (self._displayName === 'SensorList') self._displayName = 'Sensor';
+      if (self._displayName === 'SensorList') self._displayName = 'Sensor Info';
 
       return self._displayName;
     };

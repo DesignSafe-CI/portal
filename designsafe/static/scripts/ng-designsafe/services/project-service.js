@@ -177,7 +177,8 @@
               experiments: {},
               efs: efs,
               experimentTypes: experimentTypes,
-              equipmentTypes: equipmentTypes
+              equipmentTypes: equipmentTypes,
+              updateExperiments: {}
               };
           $scope.form = {
             curExperiments: [],
@@ -341,6 +342,7 @@
               var entity =  _.find(options.project[attrName], 
                                     function(entity){ if (entity.uuid === res.uuid){ return entity; }});
               entity.update(res);
+              $scope.form.updateExperiments = {};
             },
             function(err){
               $uibModalInstance.reject(err.data);
@@ -352,7 +354,7 @@
               {label: 'Model Config',
                name: 'designsafe.project.model_config',
                yamzId: 'h1312'},
-              {label: 'Sensor',
+              {label: 'Sensor Info',
                name: 'designsafe.project.sensor_list',
                yamzId: 'h1557'},
               {label: 'Event',

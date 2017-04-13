@@ -486,7 +486,7 @@ span.label.tag-red.selected {
     padding-left: 2em; 
 }
 .data-model-tree ul li ul {
-    border-left: 1px solid black;
+    /*border-left: 1px solid black;*/
     margin-left: -15px;
 }
 

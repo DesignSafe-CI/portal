@@ -1885,7 +1885,7 @@
           $scope.ui.tagTypes = [
               {label: 'Model Config',
                name: 'designsafe.project.model_config'},
-              {label: 'Sensor',
+              {label: 'Sensor Info',
                name: 'designsafe.project.sensor_list'},
               {label: 'Event',
                name: 'designsafe.project.event'},
