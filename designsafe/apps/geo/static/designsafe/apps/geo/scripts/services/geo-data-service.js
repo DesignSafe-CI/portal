@@ -306,13 +306,19 @@ export default class GeoDataService {
     document.body.removeChild(a);
   }
 
-  save_to_depot (project) {
+  save_to_depot (project, path) {
     let gjson = project.to_json();
     let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
     console.log(blob);
-    let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/' + this.UserService.currentUser().username;
+    let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default';
+    let post_url = base_file_url;
+    if (path.type === 'dir') {
+      post_url = post_url + path.path;
+    } else {
+      post_url = post_url + path.trail[path.trail.length-2];
+    }
     let form = new FormData();
-    let file = new File([blob], project.name + '.dsmap');
+    let file = new File([blob], project.name + '.geojson');
 
     form.append('fileToUpload', file, project.name + '.geojson');
     return this.$http.post(base_file_url, form, {headers: {'Content-Type': undefined}});

@@ -149,8 +149,6 @@ export default class MapSidebarCtrl {
   select_feature(lg, feature) {
     this.active_layer_group = lg;
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
-    console.log(lg.get_feature_type(feature));
-    console.log(feature)
   }
 
   open_db_modal () {
@@ -194,7 +192,7 @@ export default class MapSidebarCtrl {
     if (feature instanceof L.Marker) {
        let latLngs = [ feature.getLatLng() ];
        let markerBounds = L.latLngBounds(latLngs);
-       this.map.fitBounds(markerBounds);
+       this.map.fitBounds(markerBounds, {maxZoom: 16});
     } else {
       this.map.fitBounds(feature.getBounds());
     };
@@ -216,15 +214,22 @@ export default class MapSidebarCtrl {
 
       retval.layer_groups.forEach( (lg) => {
         this.project.layer_groups.push(lg);
+        this.map.addLayer(lg.feature_group);
       });
       this.active_layer_group = this.project.layer_groups[0];
       this.map.fitBounds(this.project.get_bounds());
     } else {
+
+      if (this.project.layer_groups.length == 0) {
+        this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+        this.active_layer_group = this.project.layer_groups[0];
+        this.map.addLayer(this.project.layer_groups[0].feature_group);
+      }
       //it will be an array of features...
       retval.forEach( (f) => {
         this.active_layer_group.feature_group.addLayer(f);
       });
-      this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
+      this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), {maxZoom: 16});
     }
   }
 
@@ -260,7 +265,14 @@ export default class MapSidebarCtrl {
   }
 
   update_layer_style (prop) {
-    this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+    let tmp = this.current_layer;
+    // debugger;
+    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+    console.log(prop, this.current_layer.options[prop])
+    let styles = {};
+    styles[prop] = this.current_layer.options[prop];
+    this.current_layer.setStyle(styles);
+    console.log(this.current_layer.options)
   }
 
   save_locally () {
@@ -269,12 +281,21 @@ export default class MapSidebarCtrl {
 
   save_to_depot () {
     this.loading = true;
-    this.GeoDataService.save_to_depot(this.project).then( (resp) => {
-      this.loading = false;
-      this.toastr.success('Saved to data depot');
-    }, (err) => {
-      this.toastr.error('Save failed!');
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+      controller: "DBModalCtrl as vm",
     });
+    modal.result.then( (f) => {
+      console.log(f);
+      this.GeoDataService.save_to_depot(this.project, f).then( (resp) => {
+        this.loading = false;
+        this.toastr.success('Saved to data depot');
+      }, (err) => {
+        this.toastr.error('Save failed!');
+        this.loading = false;
+      });
+    });
+
 
   }
 

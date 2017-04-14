@@ -105,7 +105,7 @@
       Label
     </div>
     <div class="right">
-      <input type="text" ng-model="vm.current_layer.options.label">
+      <input type="text" class="form-control" ng-model="vm.current_layer.options.label" >
     </div>
   </li>
   <li class="list-group-item menu clearfix">
@@ -125,6 +125,16 @@
              class="form-control"
              ng-model="vm.current_layer.options.color"
              ng-change=vm.update_layer_style('color')>
+    </div>
+
+  </li>
+  <li class="list-group-item menu clearfix">
+    <div class="left"> Opacity: </div>
+    <div class="right">
+      <input type="number" min=0 max=1 step=0.01
+             class="form-control"
+             ng-model="vm.current_layer.options.fillOpacity"
+             ng-change=vm.update_layer_style('fillOpacity')>
     </div>
 
   </li>
@@ -162,7 +172,7 @@
           </button>
           <ul class="dropdown-menu">
             <!-- <li ng-click="vm.open_existing_project()">Open Existing Project</li> -->
-            <li ng-click="vm.create_new_project()"> New Project </li> 
+            <li ng-click="vm.create_new_project()"> New Project </li>
             <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
             <li ng-click="vm.save_locally()">Save locally </li>
           </ul>

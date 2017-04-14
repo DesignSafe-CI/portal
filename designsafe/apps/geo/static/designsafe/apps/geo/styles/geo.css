@@ -44,7 +44,7 @@
 #geo_sidebar, #current_layer_details, #map_project_details {
   /*padding-top: 10px;*/
   width: 20%;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0px;
   float: left;
   flex: 0 0 230px;

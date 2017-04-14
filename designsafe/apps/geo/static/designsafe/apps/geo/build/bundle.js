@@ -235,8 +235,8 @@ var MapProject = function () {
         };
         lg.feature_group.getLayers().forEach(function (feature) {
           var json = feature.toGeoJSON();
-          var opts = _.clone(feature.options);
-          delete opts.icon;
+          // These are all the keys in the options object that we need to
+          // re-create the layers in the application after loading.
           var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src'];
 
           // //add in any options
@@ -246,9 +246,9 @@ var MapProject = function () {
           // if (feature.options.thumb_src) {
           //   json.properties.thumb_src = feature.options.thumb_src;
           // }
-          for (var key in opts) {
+          for (var key in feature.options) {
             if (opt_keys.indexOf(key) !== -1) {
-              json.properties[key] = opts[key];
+              json.properties[key] = feature.options[key];
             }
           };
           json.layer_group_index = lg_idx;
@@ -637,8 +637,6 @@ var MapSidebarCtrl = function () {
     value: function select_feature(lg, feature) {
       this.active_layer_group = lg;
       this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
-      console.log(lg.get_feature_type(feature));
-      console.log(feature);
     }
   }, {
     key: 'open_db_modal',
@@ -695,7 +693,7 @@ var MapSidebarCtrl = function () {
       if (feature instanceof L.Marker) {
         var latLngs = [feature.getLatLng()];
         var markerBounds = L.latLngBounds(latLngs);
-        this.map.fitBounds(markerBounds);
+        this.map.fitBounds(markerBounds, { maxZoom: 16 });
       } else {
         this.map.fitBounds(feature.getBounds());
       };
@@ -722,15 +720,22 @@ var MapSidebarCtrl = function () {
 
         retval.layer_groups.forEach(function (lg) {
           _this4.project.layer_groups.push(lg);
+          _this4.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
         this.map.fitBounds(this.project.get_bounds());
       } else {
+
+        if (this.project.layer_groups.length == 0) {
+          this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
+          this.active_layer_group = this.project.layer_groups[0];
+          this.map.addLayer(this.project.layer_groups[0].feature_group);
+        }
         //it will be an array of features...
         retval.forEach(function (f) {
           _this4.active_layer_group.feature_group.addLayer(f);
         });
-        this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
+        this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
       }
     }
   }, {
@@ -773,7 +778,14 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'update_layer_style',
     value: function update_layer_style(prop) {
-      this.current_layer.setStyle({ prop: this.current_layer.options[prop] });
+      var tmp = this.current_layer;
+      // debugger;
+      // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+      console.log(prop, this.current_layer.options[prop]);
+      var styles = {};
+      styles[prop] = this.current_layer.options[prop];
+      this.current_layer.setStyle(styles);
+      console.log(this.current_layer.options);
     }
   }, {
     key: 'save_locally',
@@ -786,11 +798,19 @@ var MapSidebarCtrl = function () {
       var _this7 = this;
 
       this.loading = true;
-      this.GeoDataService.save_to_depot(this.project).then(function (resp) {
-        _this7.loading = false;
-        _this7.toastr.success('Saved to data depot');
-      }, function (err) {
-        _this7.toastr.error('Save failed!');
+      var modal = this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+        controller: "DBModalCtrl as vm"
+      });
+      modal.result.then(function (f) {
+        console.log(f);
+        _this7.GeoDataService.save_to_depot(_this7.project, f).then(function (resp) {
+          _this7.loading = false;
+          _this7.toastr.success('Saved to data depot');
+        }, function (err) {
+          _this7.toastr.error('Save failed!');
+          _this7.loading = false;
+        });
       });
     }
   }]);
@@ -1235,13 +1255,19 @@ var GeoDataService = function () {
     }
   }, {
     key: 'save_to_depot',
-    value: function save_to_depot(project) {
+    value: function save_to_depot(project, path) {
       var gjson = project.to_json();
       var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
       console.log(blob);
-      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/' + this.UserService.currentUser().username;
+      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default';
+      var post_url = base_file_url;
+      if (path.type === 'dir') {
+        post_url = post_url + path.path;
+      } else {
+        post_url = post_url + path.trail[path.trail.length - 2];
+      }
       var form = new FormData();
-      var file = new File([blob], project.name + '.dsmap');
+      var file = new File([blob], project.name + '.geojson');
 
       form.append('fileToUpload', file, project.name + '.geojson');
       return this.$http.post(base_file_url, form, { headers: { 'Content-Type': undefined } });
@@ -1313,10 +1339,14 @@ module.exports = L;
 "use strict";
 
 
-config.$inject = ["$stateProvider", "$uibTooltipProvider", "$urlRouterProvider", "$locationProvider"];
+config.$inject = ["$stateProvider", "$uibTooltipProvider", "$urlRouterProvider", "$locationProvider", "toastrConfig"];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _angular = __webpack_require__(17);
+
+var _angular2 = _interopRequireDefault(_angular);
 
 var _directives = __webpack_require__(5);
 
@@ -1324,11 +1354,17 @@ var _controllers = __webpack_require__(4);
 
 var _services = __webpack_require__(6);
 
-var mod = angular.module('designsafe');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = _angular2.default.module('designsafe');
 mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
 
-function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
+function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider, toastrConfig) {
   'ngInject';
+
+  _angular2.default.extend(toastrConfig, {
+    timeOut: 2000
+  });
 
   $locationProvider.html5Mode({
     enabled: false
@@ -1361,6 +1397,12 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+module.exports = angular;
 
 /***/ })
 /******/ ]);

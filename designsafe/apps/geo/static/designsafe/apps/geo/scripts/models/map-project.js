@@ -48,8 +48,8 @@ export default class MapProject {
       };
       lg.feature_group.getLayers().forEach( (feature) => {
         let json = feature.toGeoJSON();
-        let opts = _.clone(feature.options);
-        delete opts.icon;
+        // These are all the keys in the options object that we need to
+        // re-create the layers in the application after loading.
         let opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src'];
 
         // //add in any options
@@ -59,9 +59,9 @@ export default class MapProject {
         // if (feature.options.thumb_src) {
         //   json.properties.thumb_src = feature.options.thumb_src;
         // }
-        for (let key in opts) {
+        for (let key in feature.options) {
           if (opt_keys.indexOf(key) !== -1) {
-            json.properties[key] = opts[key];
+            json.properties[key] = feature.options[key];
           }
         };
         json.layer_group_index = lg_idx;
