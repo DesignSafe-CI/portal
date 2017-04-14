@@ -38,8 +38,7 @@ class FileManager(object):
             self.dropbox_api = Dropbox(dropbox_token.access_token)
 
         except DropboxUserToken.DoesNotExist:
-            message = 'You need to connect your Dropbox.com account ' \
-                      'before you can access your Dropbox.com files.'
+            message = 'Connect your Dropbox account <a href="'+ reverse('dropbox_integration:index') + '">here</a>'
             raise ApiException(status=400, message=message, extra={
                 'action_url': reverse('dropbox_integration:index'),
                 'action_label': 'Connect Dropbox.com Account'
