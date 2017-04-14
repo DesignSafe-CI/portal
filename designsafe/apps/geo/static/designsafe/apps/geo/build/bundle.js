@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -173,7 +173,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(13);
+var _L = __webpack_require__(15);
 
 var _L2 = _interopRequireDefault(_L);
 
@@ -290,7 +290,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(8);
+var _mapSidebar = __webpack_require__(9);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
@@ -298,15 +298,15 @@ var _dbModal = __webpack_require__(0);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _help = __webpack_require__(7);
+var _help = __webpack_require__(8);
 
 var _help2 = _interopRequireDefault(_help);
 
-var _settingsModal = __webpack_require__(16);
+var _settingsModal = __webpack_require__(10);
 
 var _settingsModal2 = _interopRequireDefault(_settingsModal);
 
-var _confirmClearModal = __webpack_require__(17);
+var _confirmClearModal = __webpack_require__(7);
 
 var _confirmClearModal2 = _interopRequireDefault(_confirmClearModal);
 
@@ -333,7 +333,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(10);
+var _customOnChange = __webpack_require__(11);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -355,15 +355,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _geoStateService = __webpack_require__(12);
+var _geoStateService = __webpack_require__(14);
 
 var _geoStateService2 = _interopRequireDefault(_geoStateService);
 
-var _geoDataService = __webpack_require__(11);
+var _geoDataService = __webpack_require__(12);
 
 var _geoDataService2 = _interopRequireDefault(_geoDataService);
 
-var _geoSettingsService = __webpack_require__(15);
+var _geoSettingsService = __webpack_require__(13);
 
 var _geoSettingsService2 = _interopRequireDefault(_geoSettingsService);
 
@@ -390,6 +390,49 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ConfirmClearModalCtrl = function () {
+  ConfirmClearModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
+  function ConfirmClearModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
+    'ngInject';
+
+    _classCallCheck(this, ConfirmClearModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+  }
+
+  _createClass(ConfirmClearModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close('ok');
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return ConfirmClearModalCtrl;
+}();
+
+exports.default = ConfirmClearModalCtrl;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var HelpCtrl = function HelpCtrl($scope) {
@@ -404,7 +447,7 @@ HelpCtrl.$inject = ["$scope"];
 exports.default = HelpCtrl;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -698,7 +741,8 @@ var MapSidebarCtrl = function () {
       this.loading = true;
       this.GeoDataService.load_from_data_depot(f).then(function (retval) {
         _this5._load_data_success(retval);
-      }).then(function () {
+      }, function (err) {
+        _this5.toastr.error('Load failed!');
         _this5.loading = false;
       });
     }
@@ -757,8 +801,48 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 9 */,
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SettingsModalCtrl = function () {
+  SettingsModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
+  function SettingsModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
+    'ngInject';
+
+    _classCallCheck(this, SettingsModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+    this.GeoSettingsService = GeoSettingsService;
+    this.settings = GeoSettingsService.settings;
+  }
+
+  _createClass(SettingsModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.GeoSettingsService.settings = this.settings;
+      this.$uibModalInstance.close(this.settings);
+    }
+  }]);
+
+  return SettingsModalCtrl;
+}();
+
+exports.default = SettingsModalCtrl;
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -785,7 +869,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1170,7 +1254,31 @@ var GeoDataService = function () {
 exports.default = GeoDataService;
 
 /***/ }),
-/* 12 */
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GeoSettingsService = function GeoSettingsService() {
+  _classCallCheck(this, GeoSettingsService);
+
+  this.settings = {
+    default_color: '#ff0000',
+    measurement_units: 'si'
+  };
+};
+
+exports.default = GeoSettingsService;
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1193,13 +1301,13 @@ var GeoStateService = function GeoStateService($scope, $state) {
 exports.default = GeoStateService;
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = L;
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1253,114 +1361,6 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var GeoSettingsService = function GeoSettingsService() {
-  _classCallCheck(this, GeoSettingsService);
-
-  this.settings = {
-    default_color: '#ff0000',
-    measurement_units: 'si'
-  };
-};
-
-exports.default = GeoSettingsService;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var SettingsModalCtrl = function () {
-  SettingsModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
-  function SettingsModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
-    'ngInject';
-
-    _classCallCheck(this, SettingsModalCtrl);
-
-    this.$scope = $scope;
-    this.$uibModalInstance = $uibModalInstance;
-    this.GeoSettingsService = GeoSettingsService;
-    this.settings = GeoSettingsService.settings;
-  }
-
-  _createClass(SettingsModalCtrl, [{
-    key: 'ok',
-    value: function ok() {
-      this.GeoSettingsService.settings = this.settings;
-      this.$uibModalInstance.close(this.settings);
-    }
-  }]);
-
-  return SettingsModalCtrl;
-}();
-
-exports.default = SettingsModalCtrl;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ConfirmClearModalCtrl = function () {
-  ConfirmClearModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
-  function ConfirmClearModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
-    'ngInject';
-
-    _classCallCheck(this, ConfirmClearModalCtrl);
-
-    this.$scope = $scope;
-    this.$uibModalInstance = $uibModalInstance;
-  }
-
-  _createClass(ConfirmClearModalCtrl, [{
-    key: 'ok',
-    value: function ok() {
-      this.$uibModalInstance.close('ok');
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      this.$uibModalInstance.dismiss('cancel');
-    }
-  }]);
-
-  return ConfirmClearModalCtrl;
-}();
-
-exports.default = ConfirmClearModalCtrl;
 
 /***/ })
 /******/ ]);

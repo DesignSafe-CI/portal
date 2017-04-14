@@ -231,8 +231,13 @@ export default class MapSidebarCtrl {
   load_from_data_depot(f) {
     this.loading = true;
     this.GeoDataService.load_from_data_depot(f)
-      .then( (retval) =>{this._load_data_success(retval);})
-      .then( ()=>{ this.loading = false;});
+      .then(
+      (retval) =>{
+        this._load_data_success(retval);},
+      (err)=> {
+        this.toastr.error('Load failed!');
+        this.loading = false;
+      });
   }
 
   local_file_selected (ev) {
