@@ -8,7 +8,8 @@
     'ds.notifications',
     'ds.wsBus',
     'toastr',
-    'logging'
+    'logging',
+    'ui.customSelect'
   );
 
   function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {

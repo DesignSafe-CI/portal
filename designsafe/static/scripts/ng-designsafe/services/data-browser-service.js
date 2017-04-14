@@ -1496,13 +1496,17 @@
           $scope.ui.addingTag = false;
           $scope.ui.tagTypes = [
               {label: 'Model Config',
-               name: 'designsafe.project.model_config'},
-              {label: 'Sensor',
-               name: 'designsafe.project.sensor_list'},
+               name: 'designsafe.project.model_config',
+               yamzId: 'h1312'},
+              {label: 'Sensor Info',
+               name: 'designsafe.project.sensor_list',
+               yamzId: 'h1557'},
               {label: 'Event',
-               name: 'designsafe.project.event'},
+               name: 'designsafe.project.event',
+               yamzId: 'h1253'},
               {label: 'Analysis',
-               name: 'designsafe.project.analysis'}
+               name: 'designsafe.project.analysis',
+               yamzId: 'h1333'}
               ];
           $scope.data.form.projectTagToAdd = {optional:{}};
 
@@ -1881,7 +1885,7 @@
           $scope.ui.tagTypes = [
               {label: 'Model Config',
                name: 'designsafe.project.model_config'},
-              {label: 'Sensor',
+              {label: 'Sensor Info',
                name: 'designsafe.project.sensor_list'},
               {label: 'Event',
                name: 'designsafe.project.event'},

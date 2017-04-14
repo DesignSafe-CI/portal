@@ -124,7 +124,12 @@
 
     $scope.manageExperiments = function($event) {
       $event.preventDefault();
-      var experiments = $scope.data.project[$scope.data.project.getRelatedAttrName('designsafe.project.experiment')];
+      var experimentsAttr = $scope.data.project.getRelatedAttrName('designsafe.project.experiment');
+      var experiments = $scope.data.project[experimentsAttr];
+      if (typeof experiments === 'undefined'){
+        $scope.data.project[experimentsAttr] = [];
+        experiments = $scope.data.project[experimentsAttr];
+      }
       ProjectService.manageExperiments({'experiments': experiments,
                                         'project': $scope.data.project}).then(function (experiments) {
         $scope.data.experiments = experiments;

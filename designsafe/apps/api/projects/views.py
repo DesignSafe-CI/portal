@@ -247,7 +247,8 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
                  description=description, 
                  team_members=team_members)
         p.save()
-        return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
+        project = ExperimentalProject(**p.to_dict())
+        return JsonResponse(project.to_body_dict())
 
 
 class ProjectCollaboratorsView(SecureMixin, BaseApiView):
@@ -356,8 +357,11 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         :rtype: JsonResponse
         """
         ag = get_service_account_client()
+        meta_obj = ag.meta.getMetadata(uuid=uuid)
+        model = self._lookup_model(meta_obj['name'])
+        meta = model(**meta_obj)
         ag.meta.deleteMetadata(uuid=uuid)
-        return JsonResponse({'message':'OK'}, safe=False)
+        return JsonResponse(meta.to_body_dict(), safe=False)
 
     def post(self, request, project_id, name):
         """
