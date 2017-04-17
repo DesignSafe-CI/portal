@@ -5,7 +5,7 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService) {
+  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService, GeoSettingsService) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
@@ -17,14 +17,14 @@ export default class MapSidebarCtrl {
     this.DataService = DataService;
     this.$http = $http;
     this.GeoDataService = GeoDataService;
+    this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
 
-    this.primary_color = '#ff0000';
-    this.secondary_color = '#ff0000';
+    this.settings = this.GeoSettingsService.settings;
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
-    this.open_db_modal = this.open_db_modal.bind(this);
+    // this.open_db_modal = this.open_db_modal.bind(this);
 
     let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -57,6 +57,7 @@ export default class MapSidebarCtrl {
         this.map.removeLayer(lg.feature_group);
         this.map.addLayer(lg.feature_group);
       });
+      this.map.fitBounds(this.project.get_bounds());
     } else {
       this.project = new MapProject('New Map');
       this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
@@ -152,28 +153,6 @@ export default class MapSidebarCtrl {
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
   }
 
-  open_db_modal () {
-    let modal = this.$uibModal.open({
-      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
-      controller: "DBModalCtrl as vm",
-    });
-    modal.result.then( (f) => {this.load_from_data_depot(f);});
-  }
-
-  open_settings_modal () {
-    let modal = this.$uibModal.open({
-      templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
-      controller: "SettingsModalCtrl as vm",
-    });
-    modal.result.then( (s) => {console.log(s);});
-  }
-
-  open_file_dialog () {
-    this.$timeout(() => {
-      $('#file_picker').click();
-    }, 0);
-  }
-
   create_new_project () {
     let modal = this.$uibModal.open({
       templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
@@ -234,6 +213,31 @@ export default class MapSidebarCtrl {
     }
   }
 
+  open_db_modal () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+      controller: "DBModalCtrl as vm",
+      resolve: {
+        saveas: ()=> {return null;}
+      }
+    });
+    modal.result.then( (f) => {this.load_from_data_depot(f);});
+  }
+
+  open_settings_modal () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
+      controller: "SettingsModalCtrl as vm",
+    });
+    modal.result.then( (s) => {console.log(s);});
+  }
+
+  open_file_dialog () {
+    this.$timeout(() => {
+      $('#file_picker').click();
+    }, 0);
+  }
+
   load_from_data_depot(f) {
     this.loading = true;
     this.GeoDataService.load_from_data_depot(f)
@@ -282,6 +286,9 @@ export default class MapSidebarCtrl {
     let modal = this.$uibModal.open({
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
       controller: "DBModalCtrl as vm",
+      resolve: {
+        saveas: ()=> {return this.project.name + '.geojson';}
+      }
     });
     modal.result.then( (f) => {
       console.log(f);

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,8 +82,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var DBModalCtrl = function () {
-  DBModalCtrl.$inject = ["$scope", "$uibModalInstance"];
-  function DBModalCtrl($scope, $uibModalInstance) {
+  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "saveas"];
+  function DBModalCtrl($scope, $uibModalInstance, saveas) {
     'ngInject';
 
     _classCallCheck(this, DBModalCtrl);
@@ -91,6 +91,8 @@ var DBModalCtrl = function () {
     this.$scope = $scope;
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
+    this.saveas = saveas;
+    console.log(saveas);
   }
 
   _createClass(DBModalCtrl, [{
@@ -173,7 +175,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(16);
+var _L = __webpack_require__(15);
 
 var _L2 = _interopRequireDefault(_L);
 
@@ -290,7 +292,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(10);
+var _mapSidebar = __webpack_require__(9);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
@@ -298,15 +300,15 @@ var _dbModal = __webpack_require__(0);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _help = __webpack_require__(9);
+var _help = __webpack_require__(8);
 
 var _help2 = _interopRequireDefault(_help);
 
-var _settingsModal = __webpack_require__(11);
+var _settingsModal = __webpack_require__(10);
 
 var _settingsModal2 = _interopRequireDefault(_settingsModal);
 
-var _confirmClearModal = __webpack_require__(8);
+var _confirmClearModal = __webpack_require__(7);
 
 var _confirmClearModal2 = _interopRequireDefault(_confirmClearModal);
 
@@ -333,7 +335,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(12);
+var _customOnChange = __webpack_require__(11);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -355,15 +357,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _geoStateService = __webpack_require__(15);
+var _geoStateService = __webpack_require__(14);
 
 var _geoStateService2 = _interopRequireDefault(_geoStateService);
 
-var _geoDataService = __webpack_require__(13);
+var _geoDataService = __webpack_require__(12);
 
 var _geoDataService2 = _interopRequireDefault(_geoDataService);
 
-var _geoSettingsService = __webpack_require__(14);
+var _geoSettingsService = __webpack_require__(13);
 
 var _geoSettingsService2 = _interopRequireDefault(_geoSettingsService);
 
@@ -380,8 +382,7 @@ mod.service('GeoSettingsService', _geoSettingsService2.default);
 exports.default = mod;
 
 /***/ }),
-/* 7 */,
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -424,7 +425,7 @@ var ConfirmClearModalCtrl = function () {
 exports.default = ConfirmClearModalCtrl;
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -448,7 +449,7 @@ HelpCtrl.$inject = ["$scope"];
 exports.default = HelpCtrl;
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -483,8 +484,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapSidebarCtrl = function () {
-  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$q", "$uibModal", "toastr", "DataService", "$http", "GeoDataService"];
-  function MapSidebarCtrl($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService) {
+  MapSidebarCtrl.$inject = ["$scope", "$window", "$timeout", "$interval", "$q", "$uibModal", "toastr", "DataService", "$http", "GeoDataService", "GeoSettingsService"];
+  function MapSidebarCtrl($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService, GeoSettingsService) {
     'ngInject';
 
     var _this = this;
@@ -501,14 +502,14 @@ var MapSidebarCtrl = function () {
     this.DataService = DataService;
     this.$http = $http;
     this.GeoDataService = GeoDataService;
+    this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
 
-    this.primary_color = '#ff0000';
-    this.secondary_color = '#ff0000';
+    this.settings = this.GeoSettingsService.settings;
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
-    this.open_db_modal = this.open_db_modal.bind(this);
+    // this.open_db_modal = this.open_db_modal.bind(this);
 
     var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -540,6 +541,7 @@ var MapSidebarCtrl = function () {
         _this.map.removeLayer(lg.feature_group);
         _this.map.addLayer(lg.feature_group);
       });
+      this.map.fitBounds(this.project.get_bounds());
     } else {
       this.project = new _mapProject2.default('New Map');
       this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
@@ -641,52 +643,21 @@ var MapSidebarCtrl = function () {
       this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
     }
   }, {
-    key: 'open_db_modal',
-    value: function open_db_modal() {
-      var _this2 = this;
-
-      var modal = this.$uibModal.open({
-        templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
-        controller: "DBModalCtrl as vm"
-      });
-      modal.result.then(function (f) {
-        _this2.load_from_data_depot(f);
-      });
-    }
-  }, {
-    key: 'open_settings_modal',
-    value: function open_settings_modal() {
-      var modal = this.$uibModal.open({
-        templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
-        controller: "SettingsModalCtrl as vm"
-      });
-      modal.result.then(function (s) {
-        console.log(s);
-      });
-    }
-  }, {
-    key: 'open_file_dialog',
-    value: function open_file_dialog() {
-      this.$timeout(function () {
-        $('#file_picker').click();
-      }, 0);
-    }
-  }, {
     key: 'create_new_project',
     value: function create_new_project() {
-      var _this3 = this;
+      var _this2 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
         controller: "ConfirmClearModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this3.project.clear();
+        _this2.project.clear();
         var p = new _mapProject2.default('New Project');
         p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
-        _this3.project = p;
-        _this3.active_layer_group = _this3.project.layer_groups[0];
-        _this3.map.addLayer(_this3.active_layer_group.feature_group);
+        _this2.project = p;
+        _this2.active_layer_group = _this2.project.layer_groups[0];
+        _this2.map.addLayer(_this2.active_layer_group.feature_group);
       });
     }
   }, {
@@ -716,13 +687,13 @@ var MapSidebarCtrl = function () {
   }, {
     key: '_load_data_success',
     value: function _load_data_success(retval) {
-      var _this4 = this;
+      var _this3 = this;
 
       if (retval instanceof _mapProject2.default) {
 
         retval.layer_groups.forEach(function (lg) {
-          _this4.project.layer_groups.push(lg);
-          _this4.map.addLayer(lg.feature_group);
+          _this3.project.layer_groups.push(lg);
+          _this3.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
         this.map.fitBounds(this.project.get_bounds());
@@ -735,10 +706,46 @@ var MapSidebarCtrl = function () {
         }
         //it will be an array of features...
         retval.forEach(function (f) {
-          _this4.active_layer_group.feature_group.addLayer(f);
+          _this3.active_layer_group.feature_group.addLayer(f);
         });
         this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
       }
+    }
+  }, {
+    key: 'open_db_modal',
+    value: function open_db_modal() {
+      var _this4 = this;
+
+      var modal = this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+        controller: "DBModalCtrl as vm",
+        resolve: {
+          saveas: function saveas() {
+            return null;
+          }
+        }
+      });
+      modal.result.then(function (f) {
+        _this4.load_from_data_depot(f);
+      });
+    }
+  }, {
+    key: 'open_settings_modal',
+    value: function open_settings_modal() {
+      var modal = this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
+        controller: "SettingsModalCtrl as vm"
+      });
+      modal.result.then(function (s) {
+        console.log(s);
+      });
+    }
+  }, {
+    key: 'open_file_dialog',
+    value: function open_file_dialog() {
+      this.$timeout(function () {
+        $('#file_picker').click();
+      }, 0);
     }
   }, {
     key: 'load_from_data_depot',
@@ -799,7 +806,12 @@ var MapSidebarCtrl = function () {
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
-        controller: "DBModalCtrl as vm"
+        controller: "DBModalCtrl as vm",
+        resolve: {
+          saveas: function saveas() {
+            return _this7.project.name + '.geojson';
+          }
+        }
       });
       modal.result.then(function (f) {
         console.log(f);
@@ -823,7 +835,7 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -864,7 +876,7 @@ var SettingsModalCtrl = function () {
 exports.default = SettingsModalCtrl;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -891,7 +903,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1284,7 +1296,7 @@ var GeoDataService = function () {
 exports.default = GeoDataService;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1300,7 +1312,8 @@ var GeoSettingsService = function GeoSettingsService() {
   _classCallCheck(this, GeoSettingsService);
 
   this.settings = {
-    default_color: '#ff0000',
+    default_fill_color: '#ff0000',
+    default_stroke_color: '#ff0000',
     measurement_units: 'si'
   };
 };
@@ -1308,7 +1321,7 @@ var GeoSettingsService = function GeoSettingsService() {
 exports.default = GeoSettingsService;
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1331,13 +1344,13 @@ var GeoStateService = function GeoStateService($scope, $state) {
 exports.default = GeoStateService;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = L;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

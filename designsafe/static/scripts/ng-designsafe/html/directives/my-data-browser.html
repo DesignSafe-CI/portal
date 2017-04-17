@@ -15,6 +15,16 @@
             </span>
             <span ng-repeat-end ng-if="!$last">/</span>
         </caption>
+        <caption style="white-space:nowrap" ng-if="saveas">
+          <label> Save as: </label> </br>
+          <span
+            ng-repeat-start="dirElem in data.dirPath track by $index"
+            class="text">
+            {{dirElem}}
+          </span>
+          <span ng-repeat-end ng-if="!$last">/</span>
+          <span> / {{ saveas }} </span>
+        </caption>
         <thead>
         <th>File name</th>
         <th>Size</th>
