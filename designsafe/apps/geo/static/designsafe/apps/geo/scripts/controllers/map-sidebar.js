@@ -127,6 +127,7 @@ export default class MapSidebarCtrl {
   delete_layer_group (lg, i) {
     this.map.removeLayer(lg.feature_group);
     this.project.layer_groups.splice(i, 1);
+    this.active_layer_group = this.project.layer_groups[0];
   }
 
   delete_feature (lg, f) {
@@ -268,11 +269,9 @@ export default class MapSidebarCtrl {
     let tmp = this.current_layer;
     // debugger;
     // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
-    console.log(prop, this.current_layer.options[prop])
     let styles = {};
     styles[prop] = this.current_layer.options[prop];
     this.current_layer.setStyle(styles);
-    console.log(this.current_layer.options)
   }
 
   save_locally () {
@@ -280,13 +279,13 @@ export default class MapSidebarCtrl {
   }
 
   save_to_depot () {
-    this.loading = true;
     let modal = this.$uibModal.open({
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
       controller: "DBModalCtrl as vm",
     });
     modal.result.then( (f) => {
       console.log(f);
+      this.loading = true;
       this.GeoDataService.save_to_depot(this.project, f).then( (resp) => {
         this.loading = false;
         this.toastr.success('Saved to data depot');
@@ -294,6 +293,8 @@ export default class MapSidebarCtrl {
         this.toastr.error('Save failed!');
         this.loading = false;
       });
+    }, (rej) => {
+      this.loading = false;
     });
 
 

@@ -8,7 +8,6 @@ function (DataBrowserService, UserService, FileListing, DataService) {
     },
     templateUrl: '/static/scripts/ng-designsafe/html/directives/my-data-browser.html',
     link: function ($scope, element, attrs) {
-      console.log($scope.picker);
       $scope.picker = $scope.picker || 'all';
       $scope.data = {
         busyListingPage: true,

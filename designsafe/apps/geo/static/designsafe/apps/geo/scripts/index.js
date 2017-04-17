@@ -1,8 +1,6 @@
-import angular from 'angular';
 import {mod as geo_directives} from './directives';
 import {mod as geo_controllers} from './controllers';
 import {mod as geo_services} from './services';
-
 
 let mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
@@ -11,11 +9,11 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
   'ngInject';
 
   angular.extend(toastrConfig, {
-    timeOut: 2000,
+    timeOut: 1000
   });
 
   $locationProvider.html5Mode({
-    enabled: false
+    enabled: true
   });
 
   $stateProvider.state('geo', {
@@ -36,7 +34,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
-  $urlRouterProvider.when('/', '/#/map');
+  $urlRouterProvider.when('/', '/map');
 
   //config popups etc
   $uibTooltipProvider.options({popupDelay:1000});
