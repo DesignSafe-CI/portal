@@ -252,6 +252,34 @@
           <span class="label tag-light-blue">Analysis</span>
           <span class="ul-title">{{analysis.value.title}}</span>
           </div>
+
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="event in data.project.getRelated('event_set', analysis.uuid)">
+              <div class="tree-el">
+              <span class="label tag-blue">Event</span>
+              <span class="tag-title">{{event.value.title}}</span>
+              <button class="btn btn-xsm btn-link"
+                      ng-click="delRelEntity(event,{analysis: analysis.uuid})">
+                <i class="fa fa-times-circle" style="color:black;"></i>
+                <span class="sr-only">Delete</span>
+              </button>
+            </li>
+            <li>
+              <div class="tree-el">
+              <select
+                      ng-options="entity as entity.value.title for entity in data.project.event_set"
+                      ng-model="form.updateAnalysis[analysis.uuid].relEvent">
+              </select>
+              <button class="btn btn-sm btn-link"
+                      ng-click="saveRelEntity(form.updateExperiments[analysis.uuid].relEvent,
+                                          {project:data.project.uuid,
+                                           analysis: analysis.uuid})">
+                <i class="fa fa-plus-circle"></i><span class="sr-only">Add Event</span>
+              </button>
+              </div>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
