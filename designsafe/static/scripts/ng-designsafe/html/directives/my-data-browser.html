@@ -6,24 +6,20 @@
        data-bottom-height="0">
       <table class="table table-striped">
         <caption style="white-space:nowrap">
-          <label>Browsing:</label><br>
-            <span
-              ng-repeat-start="dirElem in data.dirPath track by $index"
-              class="text text-info">
-                <a href="#"
-                   ng-click="browseTrail($event, $index)">{{dirElem}}</a>
-            </span>
-            <span ng-repeat-end ng-if="!$last">/</span>
-        </caption>
-        <caption style="white-space:nowrap" ng-if="saveas">
-          <label> Save as: </label> </br>
+          <label ng-if="!saveas">Browsing:</label>
+          <label ng-if="saveas"> Save to:</label></br>
           <span
             ng-repeat-start="dirElem in data.dirPath track by $index"
-            class="text">
-            {{dirElem}}
+            class="text text-info">
+              <a href="#"
+                 ng-click="browseTrail($event, $index)">{{dirElem}}</a>
           </span>
           <span ng-repeat-end ng-if="!$last">/</span>
-          <span> / {{ saveas }} </span>
+        </caption>
+        <caption style="white-space:nowrap" ng-if="saveas">
+          <label> Filename: </label> </br>
+          <input class="form-control" ng-model="saveas" type="text"></input
+
         </caption>
         <thead>
         <th>File name</th>

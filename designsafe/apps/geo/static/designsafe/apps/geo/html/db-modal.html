@@ -1,8 +1,14 @@
 <div class="modal-body">
-  <my-data-browser selected="vm.selected" saveas="vm.saveas"></my-data-browser>
+  <my-data-browser selected="vm.selected" saveas="vm.saveas" picker="file"></my-data-browser>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-primary pull-right" ng-click="vm.ok()" ng-disabled="!vm.selected"> Ok </button>
+  <button class="btn btn-primary pull-right"
+          ng-if="vm.saveas"
+          ng-click="vm.ok()"> Save </button>
+  <button class="btn btn-primary pull-right"
+          ng-if="!vm.saveas"
+          ng-click="vm.ok()"
+          ng-disabled="!vm.selected"> Ok </button>
   <button class="btn btn-warning pull-left" ng-click="vm.cancel()" > Cancel </button>
 
 </div>

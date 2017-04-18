@@ -6,7 +6,6 @@ export default class DBModalCtrl {
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
     this.saveas = saveas;
-    console.log(saveas)
   }
 
   ok () {

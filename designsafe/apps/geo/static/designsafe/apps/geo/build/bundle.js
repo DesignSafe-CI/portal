@@ -92,7 +92,6 @@ var DBModalCtrl = function () {
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
     this.saveas = saveas;
-    console.log(saveas);
   }
 
   _createClass(DBModalCtrl, [{
