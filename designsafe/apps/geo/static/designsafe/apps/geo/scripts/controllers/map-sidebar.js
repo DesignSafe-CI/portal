@@ -57,7 +57,11 @@ export default class MapSidebarCtrl {
         this.map.removeLayer(lg.feature_group);
         this.map.addLayer(lg.feature_group);
       });
-      this.map.fitBounds(this.project.get_bounds());
+      try {
+        this.map.fitBounds(this.project.get_bounds(), {maxZoom: 16});
+      } catch (e) {
+        console.log('get_bounds fail', e);
+      }
     } else {
       this.project = new MapProject('New Map');
       this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
@@ -68,6 +72,7 @@ export default class MapSidebarCtrl {
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout( () => {this.map.invalidateSize();}, 10);
 
+    // init an active layer group
     this.active_layer_group = this.project.layer_groups[0];
 
     // Auto keep track of current project in the GeoDataService
@@ -76,19 +81,14 @@ export default class MapSidebarCtrl {
       this.GeoDataService.current_project(this.project);
     }, 1000);
 
-    // update the current layer to show the details tab
-    this.active_layer_group.feature_group.on('click', (e) => {
-      // this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
-      // this.$scope.$apply();
-    });
 
     this.add_draw_controls(this.active_layer_group.feature_group);
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
-      object.options.color = this.secondary_color;
-      object.options.fillColor = this.primary_color;
-      object.options.fillOpacity = 0.8;
+      object.options.color = this.settings.default_stroke_color;
+      object.options.fillColor = this.settings.default_fill_color;
+      object.options.fillOpacity = this.settings.default_fill_opacity;
       this.active_layer_group.feature_group.addLayer(object);
       this.$scope.$apply();
     });
@@ -172,9 +172,17 @@ export default class MapSidebarCtrl {
     if (feature instanceof L.Marker) {
        let latLngs = [ feature.getLatLng() ];
        let markerBounds = L.latLngBounds(latLngs);
-       this.map.fitBounds(markerBounds, {maxZoom: 16});
+       try {
+         this.map.fitBounds(markerBounds, {maxZoom: 16});
+       } catch (e) {
+         console.log(e);
+       }
     } else {
-      this.map.fitBounds(feature.getBounds());
+      try {
+        this.map.fitBounds(feature.getBounds(), {maxZoom: 16});
+      } catch (e) {
+        console.log(e);
+      }
     };
   }
 
@@ -197,7 +205,11 @@ export default class MapSidebarCtrl {
         this.map.addLayer(lg.feature_group);
       });
       this.active_layer_group = this.project.layer_groups[0];
-      this.map.fitBounds(this.project.get_bounds());
+      try {
+        this.map.fitBounds(this.project.get_bounds());
+      } catch (e) {
+        console.log(e);
+      }
     } else {
 
       if (this.project.layer_groups.length == 0) {
@@ -209,7 +221,11 @@ export default class MapSidebarCtrl {
       retval.forEach( (f) => {
         this.active_layer_group.feature_group.addLayer(f);
       });
-      this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), {maxZoom: 16});
+      try {
+        this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), {maxZoom: 16});
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 
@@ -229,7 +245,9 @@ export default class MapSidebarCtrl {
       templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
       controller: "SettingsModalCtrl as vm",
     });
-    modal.result.then( (s) => {console.log(s);});
+    modal.result.then( (s) => {
+      this.settings = this.GeoSettingsService.settings;
+    });
   }
 
   open_file_dialog () {
@@ -300,10 +318,9 @@ export default class MapSidebarCtrl {
         this.toastr.error('Save failed!');
         this.loading = false;
       });
-    }, (rej) => {
+    }, (rej)=> {
       this.loading = false;
     });
-
 
   }
 

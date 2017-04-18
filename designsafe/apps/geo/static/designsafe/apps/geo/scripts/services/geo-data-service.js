@@ -34,9 +34,6 @@ export default class GeoDataService {
       let img = new Image();
       img.src = base64;
       img.onload = ()=>{
-        console.log(img.width);
-
-        // debugger
         // Determine new ratio based on max size
         let ratio = 1;
         if(img.width > max_width) {
@@ -105,8 +102,11 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       if (blob.ds_map) return res(this._from_dsmap(blob));
       let features = [];
-      L.geoJSON(blob).getLayers().forEach( (l) => {
-        features.push(l);
+      L.geoJSON(blob).getLayers().forEach( (layer) => {
+        for (let key in layer.feature.properties) {
+          layer.options[key] = layer.feature.properties[key];
+        }
+        features.push(layer);
       });
       res(features);
     });
@@ -184,6 +184,9 @@ export default class GeoDataService {
         let feature = L.geoJSON(d);
         feature.eachLayer( (layer)=> {
           console.log(layer);
+          for (let key in layer.feature.properties) {
+            layer.options[key] = layer.feature.properties[key];
+          }
           let layer_group_index = d.layer_group_index;
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();

@@ -11,6 +11,10 @@
     <input type="color" class="form-control" ng-model="vm.settings.default_stroke_color"></input>
   </div>
   <div class="form-group">
+    <label> Fill Opacity </label>
+    <input type="number" min=0, max=1.0 step=0.01 class="form-control" ng-model="vm.settings.default_fill_opacity"></input>
+  </div>
+  <div class="form-group">
     <label> Measurement Units </label>
     <select class="form-control"  ng-model="vm.settings.measurement_units">
       <option value='si'> SI </option>

@@ -23,7 +23,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
 
       DataBrowserService.browse({system: $scope.data.system}).then(function (resp) {
         $scope.data.filesListing = resp;
-        // $scope.selected = resp;
+        $scope.selected = resp;
         $scope.data.loading = false;
         $scope.data.filePath = $scope.data.filesListing.path;
         $scope.data.dirPath = $scope.data.filePath.split('/');

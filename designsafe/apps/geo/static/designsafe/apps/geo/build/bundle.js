@@ -540,7 +540,11 @@ var MapSidebarCtrl = function () {
         _this.map.removeLayer(lg.feature_group);
         _this.map.addLayer(lg.feature_group);
       });
-      this.map.fitBounds(this.project.get_bounds());
+      try {
+        this.map.fitBounds(this.project.get_bounds(), { maxZoom: 16 });
+      } catch (e) {
+        console.log('get_bounds fail', e);
+      }
     } else {
       this.project = new _mapProject2.default('New Map');
       this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
@@ -552,6 +556,7 @@ var MapSidebarCtrl = function () {
       _this.map.invalidateSize();
     }, 10);
 
+    // init an active layer group
     this.active_layer_group = this.project.layer_groups[0];
 
     // Auto keep track of current project in the GeoDataService
@@ -560,19 +565,13 @@ var MapSidebarCtrl = function () {
       _this.GeoDataService.current_project(_this.project);
     }, 1000);
 
-    // update the current layer to show the details tab
-    this.active_layer_group.feature_group.on('click', function (e) {
-      // this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
-      // this.$scope.$apply();
-    });
-
     this.add_draw_controls(this.active_layer_group.feature_group);
 
     this.map.on('draw:created', function (e) {
       var object = e.layer;
-      object.options.color = _this.secondary_color;
-      object.options.fillColor = _this.primary_color;
-      object.options.fillOpacity = 0.8;
+      object.options.color = _this.settings.default_stroke_color;
+      object.options.fillColor = _this.settings.default_fill_color;
+      object.options.fillOpacity = _this.settings.default_fill_opacity;
       _this.active_layer_group.feature_group.addLayer(object);
       _this.$scope.$apply();
     });
@@ -665,9 +664,17 @@ var MapSidebarCtrl = function () {
       if (feature instanceof L.Marker) {
         var latLngs = [feature.getLatLng()];
         var markerBounds = L.latLngBounds(latLngs);
-        this.map.fitBounds(markerBounds, { maxZoom: 16 });
+        try {
+          this.map.fitBounds(markerBounds, { maxZoom: 16 });
+        } catch (e) {
+          console.log(e);
+        }
       } else {
-        this.map.fitBounds(feature.getBounds());
+        try {
+          this.map.fitBounds(feature.getBounds(), { maxZoom: 16 });
+        } catch (e) {
+          console.log(e);
+        }
       };
     }
   }, {
@@ -695,7 +702,11 @@ var MapSidebarCtrl = function () {
           _this3.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
-        this.map.fitBounds(this.project.get_bounds());
+        try {
+          this.map.fitBounds(this.project.get_bounds());
+        } catch (e) {
+          console.log(e);
+        }
       } else {
 
         if (this.project.layer_groups.length == 0) {
@@ -707,7 +718,11 @@ var MapSidebarCtrl = function () {
         retval.forEach(function (f) {
           _this3.active_layer_group.feature_group.addLayer(f);
         });
-        this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
+        try {
+          this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
+        } catch (e) {
+          console.log(e);
+        }
       }
     }
   }, {
@@ -731,12 +746,14 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'open_settings_modal',
     value: function open_settings_modal() {
+      var _this5 = this;
+
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
         controller: "SettingsModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        console.log(s);
+        _this5.settings = _this5.GeoSettingsService.settings;
       });
     }
   }, {
@@ -749,20 +766,20 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this5 = this;
+      var _this6 = this;
 
       this.loading = true;
       this.GeoDataService.load_from_data_depot(f).then(function (retval) {
-        _this5._load_data_success(retval);
+        _this6._load_data_success(retval);
       }, function (err) {
-        _this5.toastr.error('Load failed!');
-        _this5.loading = false;
+        _this6.toastr.error('Load failed!');
+        _this6.loading = false;
       });
     }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
-      var _this6 = this;
+      var _this7 = this;
 
       this.loading = true;
       var reqs = [];
@@ -770,17 +787,17 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          return _this6._load_data_success(retval);
+          return _this7._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
       };
       this.$q.all(reqs).then(function () {
-        _this6.loading = false;
+        _this7.loading = false;
         //reset the picker
         $('#file_picker').val('');
       }).then(function () {
-        _this6.toastr.success('Imported file');
+        _this7.toastr.success('Imported file');
       });
     }
   }, {
@@ -801,29 +818,29 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot() {
-      var _this7 = this;
+      var _this8 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
           saveas: function saveas() {
-            return _this7.project.name + '.geojson';
+            return _this8.project.name + '.geojson';
           }
         }
       });
       modal.result.then(function (f) {
         console.log(f);
-        _this7.loading = true;
-        _this7.GeoDataService.save_to_depot(_this7.project, f).then(function (resp) {
-          _this7.loading = false;
-          _this7.toastr.success('Saved to data depot');
+        _this8.loading = true;
+        _this8.GeoDataService.save_to_depot(_this8.project, f).then(function (resp) {
+          _this8.loading = false;
+          _this8.toastr.success('Saved to data depot');
         }, function (err) {
-          _this7.toastr.error('Save failed!');
-          _this7.loading = false;
+          _this8.toastr.error('Save failed!');
+          _this8.loading = false;
         });
       }, function (rej) {
-        _this7.loading = false;
+        _this8.loading = false;
       });
     }
   }]);
@@ -974,9 +991,6 @@ var GeoDataService = function () {
         var img = new Image();
         img.src = base64;
         img.onload = function () {
-          console.log(img.width);
-
-          // debugger
           // Determine new ratio based on max size
           var ratio = 1;
           if (img.width > max_width) {
@@ -1053,8 +1067,11 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         if (blob.ds_map) return res(_this3._from_dsmap(blob));
         var features = [];
-        L.geoJSON(blob).getLayers().forEach(function (l) {
-          features.push(l);
+        L.geoJSON(blob).getLayers().forEach(function (layer) {
+          for (var key in layer.feature.properties) {
+            layer.options[key] = layer.feature.properties[key];
+          }
+          features.push(layer);
         });
         res(features);
       });
@@ -1135,6 +1152,9 @@ var GeoDataService = function () {
           var feature = L.geoJSON(d);
           feature.eachLayer(function (layer) {
             console.log(layer);
+            for (var key in layer.feature.properties) {
+              layer.options[key] = layer.feature.properties[key];
+            }
             var layer_group_index = d.layer_group_index;
             if (layer instanceof L.Marker && layer.feature.properties.image_src) {
               var latlng = layer.getLatLng();
@@ -1313,6 +1333,7 @@ var GeoSettingsService = function GeoSettingsService() {
   this.settings = {
     default_fill_color: '#ff0000',
     default_stroke_color: '#ff0000',
+    default_fill_opacity: 0.5,
     measurement_units: 'si'
   };
 };
