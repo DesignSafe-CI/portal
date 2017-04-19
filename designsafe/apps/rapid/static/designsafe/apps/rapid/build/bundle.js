@@ -169,16 +169,23 @@ var RapidMainCtrl = function () {
     this.map = L.map('map', { layers: [streets, satellite] }).setView([0, 0], 2);
     this.map.zoomControl.setPosition('topright');
 
-    this.event_types = this.RapidDataService.get_event_types();
+    this.RapidDataService.get_event_types().then(function (resp) {
+      _this.event_types = resp;
+      console.log(resp);
+    });
 
     this.RapidDataService.get_events().then(function (resp) {
       _this.events = resp;
       _this.events.forEach(function (d) {
-        var template = "<div class=''>" + "<h3> {{event.title}} </h3>" + "<div ng-repeat='dataset in event.datasets'>" + "<a href='{{dataset.href}}'> {{dataset.doi}} </a>" + "</div>";
-        var linker = _this.$compile(angular.element(template));
+        // let template = "<div class=''>" +
+        //   "<h3> {{event.title}} </h3>" +
+        //   "<div ng-repeat='dataset in event.datasets'>" +
+        //   "<a href='{{dataset.href}}'> {{dataset.doi}} </a>"+
+        //   "</div>";
+        // let linker = this.$compile(angular.element(template));
         var marker = L.marker([d.location.lat, d.location.lon]);
-        var newScope = _this.$scope.$new();
-        newScope.event = d;
+        // let newScope = this.$scope.$new();
+        // newScope.event = d;
         // marker.bindPopup(linker(newScope)[0], {className : 'rapid-popup'});
         _this.map.addLayer(marker);
         marker.rapid_event = d;
@@ -187,6 +194,7 @@ var RapidMainCtrl = function () {
             _this.active_rapid_event = null;
           } else {
             _this.active_rapid_event = marker.rapid_event;
+            _this.show_sidebar = true;
           }
           _this.$scope.$apply();
         });
@@ -359,19 +367,9 @@ var RapidDataService = function () {
   }, {
     key: 'get_event_types',
     value: function get_event_types() {
-      return [{
-        event_type: 'earthquake',
-        display: 'Earthquake'
-      }, {
-        event_type: 'tsunami',
-        display: 'Tsunami'
-      }, {
-        event_type: 'flood',
-        display: 'Flood'
-      }, {
-        event_type: 'hurricane',
-        display: 'Hurricane'
-      }];
+      return this.$http.get('/rapid/event-types').then(function (resp) {
+        return resp.data;
+      });
     }
   }, {
     key: 'search',
@@ -379,7 +377,7 @@ var RapidDataService = function () {
       var tmp = _.filter(events, function (item) {
         var f1 = true;
         if (filter_options.event_type) {
-          f1 = item.event_type == filter_options.event_type.event_type;
+          f1 = item.event_type == filter_options.event_type.name;
         }
         var f2 = true;
         if (filter_options.search_text) {
