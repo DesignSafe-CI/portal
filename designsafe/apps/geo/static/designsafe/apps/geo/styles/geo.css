@@ -1,3 +1,7 @@
+/*#geo_container .modal-dialog {
+  color: #000000
+}*/
+
 
 #geo_container {
   display: flex;
@@ -6,7 +10,7 @@
   font-family: 'Open Sans', sans-serif;
 }
 
-#geo_container h1, h2, h3, h4, h5, h6 {
+#geo_container h1, #geo_container h2, #geo_container h3 {
   color: #fff;
 }
 
@@ -40,7 +44,7 @@
 #geo_sidebar, #current_layer_details, #map_project_details {
   /*padding-top: 10px;*/
   width: 20%;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0px;
   float: left;
   flex: 0 0 230px;

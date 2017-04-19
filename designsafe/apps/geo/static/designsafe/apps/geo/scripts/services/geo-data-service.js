@@ -34,9 +34,6 @@ export default class GeoDataService {
       let img = new Image();
       img.src = base64;
       img.onload = ()=>{
-        console.log(img.width);
-
-        // debugger
         // Determine new ratio based on max size
         let ratio = 1;
         if(img.width > max_width) {
@@ -74,7 +71,6 @@ export default class GeoDataService {
       let features = [];
       let l = omnivore.kml.parse(text_blob);
       l.getLayers().forEach((d) => {
-        console.log(d)
         // d.feature.properties = {};
         d.options.label = d.feature.properties.name;
         features.push(d);
@@ -90,13 +86,9 @@ export default class GeoDataService {
         //loop over all the files in the archive
         let proms = [];
         for (let key in zip.files) {
-          console.log(key)
           let ext = key.split('.').pop();
           if (ext === 'kml') {
             return zip.files[key].async('text');
-          }
-          if (ext === 'jpg') {
-            return zip.files[key].async('arraybuffer');
           }
         }
       }).then( (txt) => {
@@ -110,9 +102,11 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       if (blob.ds_map) return res(this._from_dsmap(blob));
       let features = [];
-      L.geoJSON(blob).getLayers().forEach( (l) => {
-        console.log(l);
-        features.push(l);
+      L.geoJSON(blob).getLayers().forEach( (layer) => {
+        for (let key in layer.feature.properties) {
+          layer.options[key] = layer.feature.properties[key];
+        }
+        features.push(layer);
       });
       res(features);
     });
@@ -190,6 +184,9 @@ export default class GeoDataService {
         let feature = L.geoJSON(d);
         feature.eachLayer( (layer)=> {
           console.log(layer);
+          for (let key in layer.feature.properties) {
+            layer.options[key] = layer.feature.properties[key];
+          }
           let layer_group_index = d.layer_group_index;
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();
@@ -312,16 +309,24 @@ export default class GeoDataService {
     document.body.removeChild(a);
   }
 
-  save_to_depot (project) {
+  save_to_depot (project, path) {
+    let form = new FormData();
     let gjson = project.to_json();
     let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
-    console.log(blob);
-    let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default/' + this.UserService.currentUser().username;
-    let form = new FormData();
-    let file = new File([blob], project.name + '.dsmap');
-
-    form.append('fileToUpload', file, project.name + '.geojson');
-    return this.$http.post(base_file_url, form, {headers: {'Content-Type': undefined}});
+    let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default';
+    let post_url = base_file_url;
+    let file = null;
+    if (path.type === 'dir') {
+      post_url = post_url + path.path;
+      file = new File([blob], project.name + '.geojson');
+      form.append('fileToUpload', file, project.name + '.geojson');
+    } else {
+      // A file was picked, so this WILL replace it
+      post_url = post_url + path.trail[path.trail.length-2].path;
+      file = new File([blob], path.name);
+      form.append('fileToUpload', file, path.name);
+    }
+    return this.$http.post(post_url, form, {headers: {'Content-Type': undefined}});
   }
 
 }

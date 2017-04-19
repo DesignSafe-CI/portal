@@ -5,7 +5,7 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService) {
+  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService, GeoSettingsService) {
     'ngInject';
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
@@ -17,14 +17,14 @@ export default class MapSidebarCtrl {
     this.DataService = DataService;
     this.$http = $http;
     this.GeoDataService = GeoDataService;
+    this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
 
-    this.primary_color = '#ff0000';
-    this.secondary_color = '#ff0000';
+    this.settings = this.GeoSettingsService.settings;
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
-    this.open_db_modal = this.open_db_modal.bind(this);
+    // this.open_db_modal = this.open_db_modal.bind(this);
 
     let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -57,6 +57,11 @@ export default class MapSidebarCtrl {
         this.map.removeLayer(lg.feature_group);
         this.map.addLayer(lg.feature_group);
       });
+      try {
+        this.map.fitBounds(this.project.get_bounds(), {maxZoom: 16});
+      } catch (e) {
+        console.log('get_bounds fail', e);
+      }
     } else {
       this.project = new MapProject('New Map');
       this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
@@ -67,6 +72,7 @@ export default class MapSidebarCtrl {
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout( () => {this.map.invalidateSize();}, 10);
 
+    // init an active layer group
     this.active_layer_group = this.project.layer_groups[0];
 
     // Auto keep track of current project in the GeoDataService
@@ -75,19 +81,14 @@ export default class MapSidebarCtrl {
       this.GeoDataService.current_project(this.project);
     }, 1000);
 
-    // update the current layer to show the details tab
-    this.active_layer_group.feature_group.on('click', (e) => {
-      // this.current_layer ? this.current_layer = null : this.current_layer = e.layer;
-      // this.$scope.$apply();
-    });
 
     this.add_draw_controls(this.active_layer_group.feature_group);
 
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
-      object.options.color = this.secondary_color;
-      object.options.fillColor = this.primary_color;
-      object.options.fillOpacity = 0.8;
+      object.options.color = this.settings.default_stroke_color;
+      object.options.fillColor = this.settings.default_fill_color;
+      object.options.fillOpacity = this.settings.default_fill_opacity;
       this.active_layer_group.feature_group.addLayer(object);
       this.$scope.$apply();
     });
@@ -127,6 +128,7 @@ export default class MapSidebarCtrl {
   delete_layer_group (lg, i) {
     this.map.removeLayer(lg.feature_group);
     this.project.layer_groups.splice(i, 1);
+    this.active_layer_group = this.project.layer_groups[0];
   }
 
   delete_feature (lg, f) {
@@ -149,31 +151,38 @@ export default class MapSidebarCtrl {
   select_feature(lg, feature) {
     this.active_layer_group = lg;
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
-    console.log(lg.get_feature_type(feature));
-    console.log(feature)
   }
 
-  open_db_modal () {
+  create_new_project () {
     let modal = this.$uibModal.open({
-      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
-      controller: "DBModalCtrl as vm",
+      templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
+      controller: "ConfirmClearModalCtrl as vm",
     });
-    modal.result.then( (f) => {this.load_from_data_depot(f);});
-  }
-
-  open_file_dialog () {
-    this.$timeout(() => {
-      $('#file_picker').click();
-    }, 0);
+    modal.result.then( (s) => {
+      this.project.clear();
+      let p = new MapProject('New Project');
+      p.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+      this.project = p;
+      this.active_layer_group = this.project.layer_groups[0];
+      this.map.addLayer(this.active_layer_group.feature_group);
+    });
   }
 
   zoom_to(feature) {
     if (feature instanceof L.Marker) {
        let latLngs = [ feature.getLatLng() ];
        let markerBounds = L.latLngBounds(latLngs);
-       this.map.fitBounds(markerBounds);
+       try {
+         this.map.fitBounds(markerBounds, {maxZoom: 16});
+       } catch (e) {
+         console.log(e);
+       }
     } else {
-      this.map.fitBounds(feature.getBounds());
+      try {
+        this.map.fitBounds(feature.getBounds(), {maxZoom: 16});
+      } catch (e) {
+        console.log(e);
+      }
     };
   }
 
@@ -190,27 +199,73 @@ export default class MapSidebarCtrl {
 
   _load_data_success (retval) {
     if (retval instanceof MapProject) {
-      this.project.clear();
-      this.project = retval;
-      this.project.layer_groups.forEach( (lg)=> {
+
+      retval.layer_groups.forEach( (lg) => {
+        this.project.layer_groups.push(lg);
         this.map.addLayer(lg.feature_group);
       });
       this.active_layer_group = this.project.layer_groups[0];
-      this.map.fitBounds(this.project.get_bounds());
+      try {
+        this.map.fitBounds(this.project.get_bounds());
+      } catch (e) {
+        console.log(e);
+      }
     } else {
+
+      if (this.project.layer_groups.length == 0) {
+        this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
+        this.active_layer_group = this.project.layer_groups[0];
+        this.map.addLayer(this.project.layer_groups[0].feature_group);
+      }
       //it will be an array of features...
       retval.forEach( (f) => {
         this.active_layer_group.feature_group.addLayer(f);
       });
-      this.map.fitBounds(this.active_layer_group.feature_group.getBounds());
+      try {
+        this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), {maxZoom: 16});
+      } catch (e) {
+        console.log(e);
+      }
     }
+  }
+
+  open_db_modal () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+      controller: "DBModalCtrl as vm",
+      resolve: {
+        saveas: ()=> {return null;}
+      }
+    });
+    modal.result.then( (f) => {this.load_from_data_depot(f);});
+  }
+
+  open_settings_modal () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
+      controller: "SettingsModalCtrl as vm",
+    });
+    modal.result.then( (s) => {
+      this.settings = this.GeoSettingsService.settings;
+    });
+  }
+
+  open_file_dialog () {
+    this.$timeout(() => {
+      $('#file_picker').click();
+    }, 0);
   }
 
   load_from_data_depot(f) {
     this.loading = true;
     this.GeoDataService.load_from_data_depot(f)
-      .then( (retval) =>{this._load_data_success(retval);})
-      .then( ()=>{ this.loading = false;});
+      .then(
+      (retval) =>{
+        this._load_data_success(retval);},
+      (err)=> {
+        this.toastr.error('Load failed!');
+        this.loading = false;
+      });
   }
 
   local_file_selected (ev) {
@@ -233,7 +288,12 @@ export default class MapSidebarCtrl {
   }
 
   update_layer_style (prop) {
-    this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+    let tmp = this.current_layer;
+    // debugger;
+    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+    let styles = {};
+    styles[prop] = this.current_layer.options[prop];
+    this.current_layer.setStyle(styles);
   }
 
   save_locally () {
@@ -241,12 +301,25 @@ export default class MapSidebarCtrl {
   }
 
   save_to_depot () {
-    this.loading = true;
-    this.GeoDataService.save_to_depot(this.project).then( (resp) => {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
+      controller: "DBModalCtrl as vm",
+      resolve: {
+        saveas: ()=> {return this.project.name + '.geojson';}
+      }
+    });
+    modal.result.then( (f) => {
+      console.log(f);
+      this.loading = true;
+      this.GeoDataService.save_to_depot(this.project, f).then( (resp) => {
+        this.loading = false;
+        this.toastr.success('Saved to data depot');
+      }, (err) => {
+        this.toastr.error('Save failed!');
+        this.loading = false;
+      });
+    }, (rej)=> {
       this.loading = false;
-      this.toastr.success('Saved to data depot');
-    }, (err) => {
-      this.toastr.error('Save failed!');
     });
 
   }
