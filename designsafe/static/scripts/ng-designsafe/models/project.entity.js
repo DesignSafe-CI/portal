@@ -6,6 +6,12 @@
   module.factory('ProjectEntityModel', ['Logging', function(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.ProjectEntityModel');
 
+    function _camelCaseToTitle(str){
+        str = str.replace(/([A-Z])/g, " $1");
+        str = str.charAt(0).toUpperCase() + str.slice(1);
+        return str;
+    }
+
     function ProjectEntity(data){
       var self = this;
       angular.extend(self, data);
@@ -15,7 +21,7 @@
         var res = [];
         _.forEach(self.value.tags, function(val, tagsType){
             var r = _.map(Object.keys(val), function(v){
-                return {tagType: tagsType, name: v, label: v};
+                return {tagType: tagsType, name: v, label: _camelCaseToTitle(v)};
             });
             res = res.concat(r);
         });
@@ -143,7 +149,7 @@
         });
         self._displayName = displayName;
       }
-      if (self._displayName === 'SensorList') self._displayName = 'Sensor';
+      if (self._displayName === 'SensorList') self._displayName = 'Sensor Info';
 
       return self._displayName;
     };

@@ -76,7 +76,7 @@ class PublicMediaView(FileMediaView):
             body = request.POST.copy()
 
         action = body.get('action', '')
-        if action in ['copy', 'mkdir', 'move', 'rename', 'trash']:
+        if action in ['mkdir', 'move', 'rename', 'trash']:
             return HttpResponseBadRequest('Invalid Action')
 
         return super(PublicMediaView, self).put(request, *args, **kwargs)

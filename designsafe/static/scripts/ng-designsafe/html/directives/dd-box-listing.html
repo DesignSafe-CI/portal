@@ -45,9 +45,7 @@
             </div>
 
             <div ng-if="! browser.busy && browser.error" class="text-center">
-                <p class="alert alert-danger">
-                    {{ browser.error.message || browser.error }}
-                </p>
+                <p class="alert alert-danger" ng-bind-html="browser.error.message || browser.error | toTrusted"></p>
             </div>
 
             <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
