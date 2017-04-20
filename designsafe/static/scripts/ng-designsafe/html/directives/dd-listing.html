@@ -86,8 +86,10 @@
 
 <div>
   <div
-        ng-repeat="experiment in browser.project.experiment_set"
-         ng-if="browser.showPreviewListing"
+        ng-repeat="experiment in publicationCtrl().filterExperiments(browser.project.experiment_set)"
+         ng-if="browser.showPreviewListing &&
+                (!browser.publishPipeline ||
+                browser.publishPipeline != 'meta')"
          style="background:#fff;">
     <div style="border:1px solid black; background:white;">
       <div style="width:50%; display:inline-block;">
@@ -103,7 +105,7 @@
         </div>
       </div>
     </div>
-    <div ng-repeat="event in browser.project.getRelated('event_set', experiment.uuid)">
+    <div ng-repeat="event in publicationCtrl().filterEvents(browser.project.getRelated('event_set', experiment.uuid))">
     <div style="padding:3px;">
       <span class="ds-text-red folder-tick">Event Data </span>
       <span style="color:light-gray">Link to: </span>
@@ -138,9 +140,20 @@
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
+        <th ng-if="browser.publishPipeline">
+          <button class="btn btn-default"
+                  ng-if="! (browser.publication[experiment.uuid][event.uuid] && browser.publication[experiment.uuid][event.uuid].length)"
+                  ng-click="publicationCtrl().selectAllFiles(experiment, event)">
+                  <i class="fa fa-check"></i> Select All
+                  </button>
+          <button class="btn btn-default"
+                  ng-if="browser.publication[experiment.uuid][event.uuid] && browser.publication[experiment.uuid][event.uuid].length"
+                  ng-click="publicationCtrl().deselectAllFiles(experiment, event)">
+                  <i class="fa fa-times"></i> Deselect All</button>
+        </th>
         </thead>
         <tbody>
-          <tr ng-repeat="file in browser.listings[event.uuid]">
+          <tr ng-repeat="file in publicationCtrl().filterFiles(experiment, event, browser.listings[event.uuid])">
             <td><i class="fa {{file.icon()}}"></i>
                 <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
                 {{file.name}}
@@ -148,6 +161,20 @@
             </td>
             <td>{{file.length|bytes}}</td>
             <td>{{file.lastModified|date:"short"}}</td>
+            <td ng-if="browser.publishPipeline">
+                <button class="btn btn-success"
+                        ng-if="publicationCtrl().isFileSelectedForPublication(experiment, event, file)"
+                        ng-click="publicationCtrl().deselectFileForPublication(experiment, event, file)"
+                        title="Selected">
+                  <i class="fa fa-check"></i><span class="sr-only">Selected</span>
+                </button>
+                <button class="btn btn-danger"
+                        ng-if="!publicationCtrl().isFileSelectedForPublication(experiment, event, file)"
+                        ng-click="publicationCtrl().selectFileForPublication(experiment, event, file)"
+                        title="Not Selected">
+                  <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
+                </button>
+            </td>
           </tr>
         </tbody>
     </table>
@@ -157,7 +184,9 @@
 
 </div>
     <div class="project-preview-entities-details"
-         ng-if="browser.showPreviewListing">
+         ng-if="browser.showPreviewListing &&
+               (!browser.publishPipeline || 
+                browser.publishPipeline === 'select')">
 
       <div ng-repeat="modelConfig in browser.project.modelconfiguration_set">
         <div class="dropdown" id="details-{{modelConfig.uuid}}">
@@ -249,6 +278,144 @@
         </div>
       </div>
 
+    </div>
+
+    <div class="meta-review"
+        ng-if="browser.publishPipeline === 'meta'">
+      <div class="title">
+        Project Information
+        <span class="pull-right"><a href="/help">Need Help?</a></span>
+      </div>  
+      <div class="content">
+       <div class="content-wrapper">
+       <h3>Project Information</h3>
+        <div class="meta-row">
+          <span class="attr pull-left">Date of Publication</span>
+          <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
+          </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Project Title </span><span>(required)</span>
+          <span class="value pull-right">{{browser.project.value.title}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Project Type </span><span>(required)</span>
+          <span class="value pull-right">{{browser.project.value.projectType}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Participant Instiutions </span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="inst in browser.project.participantInstitutions(browser.publication.experimentsList)">
+                {{inst.label}}
+                </span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Team Members </span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="username in browser.project.value.teamMembers">
+                <ds-user username="username" format="name"></ds-user>
+                </span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Project Description </span><span>(required)</span>
+          <span class="value pull-right">{{browser.project.value.descrpition}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Funding Agency & Award Number</span><span> (recommended)</span>
+          <span class="value pull-right">{{browser.project.value.awardNumber}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Associated Projects</span><span> (recommended)</span>
+          <span class="value pull-right"
+                ng-repeat="asoc in browser.project.value.associatedProjects">
+                {{asoc}}
+                </span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Rights </span><span>(required)</span>
+          <span class="value pull-right">Licence #1</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Subject </span><span>(required)</span>
+          <span class="value pull-right"></span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Publisher </span><span>(required)</span>
+          <span class="value pull-right">Designsafe-CI</span>
+        </div>
+        <div class="meta-row">
+        </div>
+      </div>
+     <div class="content-wrapper"
+          ng-repeat="exp in browser.publication.experimentsList">
+          <h3>Experiment Information</h3>
+
+        <div class="meta-row">
+          <span class="attr pull-left">Date of Publication</span>
+          <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
+          </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Experiment Title</span><span>(required)</span>
+          <span class="value pull-right">{{exp.value.title}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Experiment Type</span><span>(required)</span>
+          <span class="value pull-right">{{exp.getET(exp.value.experimentalFacility, exp.value.experimentType).label}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Experiment Facility</span><span>(required)</span>
+          <span class="value pull-right">{{exp.getEF(browser.project.value.projectType, exp.value.experimentalFacility).label}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Authors</span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="username in browser.project.value.teamMembers">
+                <ds-user username="username" format="name"></ds-user>
+                </span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Model Configurations</span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)">
+                {{model_config.value.title}}
+                </span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Sensor Information</span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="sensor_list in browser.project.getRelated('sensorlist_set', exp.uuid)">
+                {{sensor_list.value.title}}
+                </span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Events</span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="event in browser.project.getRelated('event_set', exp.uuid)">
+                {{event.value.title}}
+                </span>
+        </div>
+     </div>
+     <div class="content-wrapper"
+          ng-repeat="analysis in browser.project.analysis_set">
+          <h3>Analysis Information</h3>
+        <div class="meta-row">
+          <span class="attr pull-left">Date of Publication</span>
+          <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
+        <div class="meta-row">
+          <span class="attr pull-left">Analysis Title</span><span>(required)</span>
+          <span class="value pull-right">{{analysis.value.title}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Description</span><span>(required)</span>
+          <span class="value pull-right">{{analysis.value.description}}</span>
+        </div>
+        <div class="meta-row">
+          <span class="attr pull-left">Referenced Data</span><span>(required)</span>
+          <span class="value pull-right"
+                ng-repeat="event in browser.project.getRelated('event_set', analysis.uuid)">
+                [Event] {{event.value.title}}
+          </span>
+        </div>
+     </div>
     </div>
 
 </div>
