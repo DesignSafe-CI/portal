@@ -19,6 +19,7 @@
         scrollToTop: '&',
         scrollToBottom: '&',
         openPreviewTree: '&',
+        publicationCtrl: '&'
       }
     };
   });
