@@ -17,6 +17,7 @@ module.exports = function(config){
       '/var/www/designsafe-ci.org/static/vendor/nbviewer/lib/nbv.js',
       '/var/www/designsafe-ci.org/static/vendor/prismjs/prism.js',
       '/var/www/designsafe-ci.org/static/vendor/makred/lib/marked.js',
+      '/var/www/designsafe-ci.org/static/vendor/js-custom-select/js/customSelect.js',
 
       '/var/www/designsafe-ci.org/static/vendor/angular/angular.min.js',
       '/var/www/designsafe-ci.org/static/vendor/angular-sanitize/angular-sanitize.min.js',
