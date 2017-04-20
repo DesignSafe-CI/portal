@@ -81,7 +81,7 @@
                     <ul style="list-style:none;">
                       <li ng-repeat="exp in data.experiments">
                         <input type="checkbox" name="author-{{cur.user.username}}"
-                               ng-model="form.authors[cur.user.username][exp.uuid]"/>
+                               ng-model="form.authors[exp.uuid][cur.user.username]"/>
                         <label for="author-{{cur.user.username}}">{{exp.value.title}}</label>
                       </li>
                     </ul>
