@@ -26,7 +26,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
       }
     }
   }).state('geo.map', {
-    url: '/map',
+    url: '/hazmapper',
     templateUrl: '/static/designsafe/apps/geo/html/map.html',
     controller: 'MapSidebarCtrl as vm'
   }).state('geo.help', {
@@ -34,7 +34,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
-  $urlRouterProvider.when('/', '/map');
+  $urlRouterProvider.when('/', '/hazmapper');
 
   //config popups etc
   $uibTooltipProvider.options({popupDelay:1000});

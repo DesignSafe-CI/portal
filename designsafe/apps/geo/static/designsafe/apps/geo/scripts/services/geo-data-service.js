@@ -124,15 +124,15 @@ export default class GeoDataService {
     });
   }
 
-  _make_image_marker (lat, lon, thumb, preview) {
+  _make_image_marker (lat, lon, thumb, preview, original) {
     let icon = L.divIcon({
       iconSize: [40, 40],
-      html: "<div class='image' style='background:url(" + thumb + ");background-size: 100% 100%'></div>",
+      html: "<div class='image' style='background:url(" + original + ");background-size: 100% 100%'></div>",
       className: 'leaflet-marker-photo'
     });
 
     let marker = L.marker([lat, lon], {icon: icon})
-          .bindPopup("<img src=" + preview + ">",
+          .bindPopup("<img src=" + preview + "><a target=blank onclick='window.open(this.href)' href=" + original + ">full res</a>",
               {
                 className: 'leaflet-popup-photo',
                 maxWidth: "auto",
@@ -140,33 +140,37 @@ export default class GeoDataService {
               });
     marker.options.image_src = preview;
     marker.options.thumb_src = thumb;
+    marker.options.original_src = original;
     return marker;
   }
 
   _from_image (file) {
     return this.$q( (res, rej) => {
-      let exif = EXIF.readFromBinaryFile(file);
-      let encoded = this._arrayBufferToBase64(file);
-      let lat = exif.GPSLatitude;
-      let lon = exif.GPSLongitude;
+      try {
+        let exif = EXIF.readFromBinaryFile(file);
+        let encoded = this._arrayBufferToBase64(file);
+        let lat = exif.GPSLatitude;
+        let lon = exif.GPSLongitude;
+        //Convert coordinates to WGS84 decimal
+        let latRef = exif.GPSLatitudeRef || "N";
+        let lonRef = exif.GPSLongitudeRef || "W";
+        lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
+        lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
 
-      //Convert coordinates to WGS84 decimal
-      let latRef = exif.GPSLatitudeRef || "N";
-      let lonRef = exif.GPSLongitudeRef || "W";
-      lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
-      lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
-      let thumb = null;
-      let preview = null;
-      this._resize_image(file, 100, 100).then( (resp)=>{
-        thumb = resp;
-      }).then( ()=>{
-        return this._resize_image(file, 400, 400);
-      }).then( (resp)=>{
-        preview = resp;
-        let marker = this._make_image_marker(lat, lon, thumb, preview);
-        res([marker]);
-      });
-
+        let thumb = null;
+        let preview = null;
+        this._resize_image(file, 100, 100).then( (resp)=>{
+          thumb = resp;
+        }).then( ()=>{
+          return this._resize_image(file, 400, 400);
+        }).then( (resp)=>{
+          preview = resp;
+          let marker = this._make_image_marker(lat, lon, thumb, preview, encoded);
+          res([marker]);
+        });
+      } catch (e) {
+        rej(e);
+      }
     });
   }
 
@@ -183,14 +187,25 @@ export default class GeoDataService {
       json.features.forEach( (d)=> {
         let feature = L.geoJSON(d);
         feature.eachLayer( (layer)=> {
-          console.log(layer);
           for (let key in layer.feature.properties) {
             layer.options[key] = layer.feature.properties[key];
+          }
+          try {
+            let styles = {
+              fillColor: layer.feature.properties.fillColor,
+              color: layer.feature.properties.color,
+              opacity: layer.feature.properties.opacity
+            };
+            layer.setStyle(styles);
+          } catch (e) {
+            // this can get caught for marker type objects, which for some reason
+            // do not have a setStyle() method
+            console.log(e);
           }
           let layer_group_index = d.layer_group_index;
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();
-            layer = this._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src);
+            layer = this._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src, layer.feature.properties.original_src);
             // feat.options.image_src = feat.feature.properties.image_src;
             // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }

@@ -238,7 +238,7 @@ var MapProject = function () {
           var json = feature.toGeoJSON();
           // These are all the keys in the options object that we need to
           // re-create the layers in the application after loading.
-          var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src'];
+          var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'original_src'];
 
           // //add in any options
           // if (feature.options.image_src) {
@@ -525,9 +525,10 @@ var MapSidebarCtrl = function () {
     };
     this.map = L.map('geo_map', {
       layers: [streets, satellite],
-      measureControl: true,
       preferCanvas: true
     }).setView([0, 0], 3);
+    var mc = new L.Control.Measure({ primaryLengthUnit: 'meters', primaryAreaUnit: 'meters' });
+    mc.addTo(this.map);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
@@ -1091,19 +1092,20 @@ var GeoDataService = function () {
     }
   }, {
     key: '_make_image_marker',
-    value: function _make_image_marker(lat, lon, thumb, preview) {
+    value: function _make_image_marker(lat, lon, thumb, preview, original) {
       var icon = L.divIcon({
         iconSize: [40, 40],
-        html: "<div class='image' style='background:url(" + thumb + ");background-size: 100% 100%'></div>",
+        html: "<div class='image' style='background:url(" + original + ");background-size: 100% 100%'></div>",
         className: 'leaflet-marker-photo'
       });
 
-      var marker = L.marker([lat, lon], { icon: icon }).bindPopup("<img src=" + preview + ">", {
+      var marker = L.marker([lat, lon], { icon: icon }).bindPopup("<img src=" + preview + "><a target=blank onclick='window.open(this.href)' href=" + original + ">full res</a>", {
         className: 'leaflet-popup-photo',
         maxWidth: "auto"
       });
       marker.options.image_src = preview;
       marker.options.thumb_src = thumb;
+      marker.options.original_src = original;
       return marker;
     }
   }, {
@@ -1112,27 +1114,33 @@ var GeoDataService = function () {
       var _this4 = this;
 
       return this.$q(function (res, rej) {
-        var exif = EXIF.readFromBinaryFile(file);
-        var encoded = _this4._arrayBufferToBase64(file);
-        var lat = exif.GPSLatitude;
-        var lon = exif.GPSLongitude;
+        try {
+          (function () {
+            var exif = EXIF.readFromBinaryFile(file);
+            var encoded = _this4._arrayBufferToBase64(file);
+            var lat = exif.GPSLatitude;
+            var lon = exif.GPSLongitude;
+            //Convert coordinates to WGS84 decimal
+            var latRef = exif.GPSLatitudeRef || "N";
+            var lonRef = exif.GPSLongitudeRef || "W";
+            lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
+            lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
 
-        //Convert coordinates to WGS84 decimal
-        var latRef = exif.GPSLatitudeRef || "N";
-        var lonRef = exif.GPSLongitudeRef || "W";
-        lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
-        lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
-        var thumb = null;
-        var preview = null;
-        _this4._resize_image(file, 100, 100).then(function (resp) {
-          thumb = resp;
-        }).then(function () {
-          return _this4._resize_image(file, 400, 400);
-        }).then(function (resp) {
-          preview = resp;
-          var marker = _this4._make_image_marker(lat, lon, thumb, preview);
-          res([marker]);
-        });
+            var thumb = null;
+            var preview = null;
+            _this4._resize_image(file, 100, 100).then(function (resp) {
+              thumb = resp;
+            }).then(function () {
+              return _this4._resize_image(file, 400, 400);
+            }).then(function (resp) {
+              preview = resp;
+              var marker = _this4._make_image_marker(lat, lon, thumb, preview, encoded);
+              res([marker]);
+            });
+          })();
+        } catch (e) {
+          rej(e);
+        }
       });
     }
   }, {
@@ -1151,14 +1159,25 @@ var GeoDataService = function () {
         json.features.forEach(function (d) {
           var feature = L.geoJSON(d);
           feature.eachLayer(function (layer) {
-            console.log(layer);
             for (var key in layer.feature.properties) {
               layer.options[key] = layer.feature.properties[key];
+            }
+            try {
+              var styles = {
+                fillColor: layer.feature.properties.fillColor,
+                color: layer.feature.properties.color,
+                opacity: layer.feature.properties.opacity
+              };
+              layer.setStyle(styles);
+            } catch (e) {
+              // this can get caught for marker type objects, which for some reason
+              // do not have a setStyle() method
+              console.log(e);
             }
             var layer_group_index = d.layer_group_index;
             if (layer instanceof L.Marker && layer.feature.properties.image_src) {
               var latlng = layer.getLatLng();
-              layer = _this5._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src);
+              layer = _this5._make_image_marker(latlng.lat, latlng.lng, layer.feature.properties.thumb_src, layer.feature.properties.image_src, layer.feature.properties.original_src);
               // feat.options.image_src = feat.feature.properties.image_src;
               // feat.options.thumb_src = feat.feature.properties.thumb_src;
             }
@@ -1411,7 +1430,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
       }
     }
   }).state('geo.map', {
-    url: '/map',
+    url: '/hazmapper',
     templateUrl: '/static/designsafe/apps/geo/html/map.html',
     controller: 'MapSidebarCtrl as vm'
   }).state('geo.help', {
@@ -1419,7 +1438,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
     templateUrl: '/static/designsafe/apps/geo/html/help.html',
     controller: 'HelpCtrl as vm'
   });
-  $urlRouterProvider.when('/', '/map');
+  $urlRouterProvider.when('/', '/hazmapper');
 
   //config popups etc
   $uibTooltipProvider.options({ popupDelay: 1000 });

@@ -42,9 +42,10 @@ export default class MapSidebarCtrl {
     };
     this.map = L.map('geo_map', {
         layers: [streets, satellite],
-        measureControl:true,
         preferCanvas: true
       }).setView([0, 0], 3);
+    let mc = new L.Control.Measure({primaryLengthUnit:'meters', primaryAreaUnit: 'meters'});
+    mc.addTo(this.map);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 

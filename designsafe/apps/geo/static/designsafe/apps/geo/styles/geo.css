@@ -10,7 +10,7 @@
   font-family: 'Open Sans', sans-serif;
 }
 
-#geo_container h1, #geo_container h2, #geo_container h3 {
+#geo_container h1, #geo_container h2 {
   color: #fff;
 }
 
@@ -43,11 +43,11 @@
 
 #geo_sidebar, #current_layer_details, #map_project_details {
   /*padding-top: 10px;*/
-  width: 20%;
+  width: 25%;
   font-size: 13px;
   letter-spacing: 0px;
   float: left;
-  flex: 0 0 230px;
+  flex: 0 0 20%;
   height: 100vh;
   background: #313131;
   border-right: 1px solid #6e6e6e;
@@ -171,7 +171,7 @@
 
 
 #geo_map {
-  width: 100%;
+  /*width: 100%;*/
   flex: 1;
   background: grey;
 }
