@@ -522,6 +522,7 @@ class Event(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     #load = fields.RelatedObjectField(FileModel, multiple=True)
     tags = fields.NestedObjectField(SensorListTag)
+    analysis = fields.RelatedObjectField(Analysis)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
     model_configs = fields.RelatedObjectField(ModelConfiguration)

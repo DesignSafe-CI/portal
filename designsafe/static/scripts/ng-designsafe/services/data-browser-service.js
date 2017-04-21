@@ -1563,7 +1563,7 @@
                   $scope.data.projectTagsToUnrelate.push(entity);
                 }
             } else {
-              $scope.data.newFileProjectTags.push(entity);
+              $scope.data.newFileProjectTags = [entity];
             }
           };
 
@@ -1608,6 +1608,25 @@
                $scope.ui.error = er;
              }
            );
+          };
+
+          $scope.deleteCategory = function(){
+              $scope.ui.busy = true;
+              var entity = $scope.data.newFileProjectTags[0];
+              ProjectEntitiesService.delete({
+                  data: {
+                      uuid: entity.uuid
+                  }
+              }).then(function(entity){
+                  $scope.data.project.removeEntity(entity);
+                  _setFileEntities();
+                  _setEntities();
+                  $scope.ui.busy = false;
+              }, function(err){
+                  $scope.ui.busy = false;
+                  $scope.ui.error = err;
+                  $scope.data.newFileProjectTags = [];
+              });
           };
           
           $scope.addProjectTag = function(){
@@ -1926,7 +1945,7 @@
                   $scope.data.projectTagsToUnrelate.push(entity);
                 }
             } else {
-              $scope.data.newFileProjectTags.push(entity);
+              $scope.data.newFileProjectTags = [entity];
             }
           };
 

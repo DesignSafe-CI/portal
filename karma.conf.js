@@ -32,6 +32,7 @@ module.exports = function(config){
       '/var/www/designsafe-ci.org/static/vendor/angular-schema-form/dist/bootstrap-decorator.js',
       '/var/www/designsafe-ci.org/static/vendor/angular-httpi/build/httpi.min.js ',
       '/var/www/designsafe-ci.org/static/vendor/angular-ui-router/release/angular-ui-router.js',
+      '/var/www/designsafe-ci.org/static/vendor/js-custom-select/js/customSelect.js',
 
       '/var/www/designsafe-ci.org/static/djng/js/django-angular.js',
 

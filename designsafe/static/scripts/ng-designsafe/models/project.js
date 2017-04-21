@@ -167,6 +167,40 @@
       return ret;
     };
 
+    Project.prototype.removeEntity = function(entity){
+        var self = this;
+        var entityAttr = self.getRelatedAttrName(entity.name);
+        var entitiesArray = self[entityAttr];
+        entitiesArray = _.filter(entitiesArray, function(e){
+                return e.uuid !== entity.uuid;
+            });
+        self[entityAttr] = entitiesArray;
+    };
+
+    Project.prototype.dateOfPublication = function(){
+      var today = new Date();
+      var dd = today.getDate();
+      var mm = today.getMonth()+1; //January is 0!
+
+      var yyyy = today.getFullYear();
+      if(dd<10){
+              dd='0'+dd;
+      } 
+      if(mm<10){
+              mm='0'+mm;
+      } 
+      today = dd+'/'+mm+'/'+yyyy;
+      return today;
+    };
+
+    Project.prototype.participantInstitutions = function(experiments){
+      self = this;
+      return _.map(experiments, function(exp){
+          return exp.getEF(self.value.projectType,
+                           exp.value.experimentalFacility);
+      });
+    };
+
     return Project;
   }]);
 })(window, angular, jQuery, _);

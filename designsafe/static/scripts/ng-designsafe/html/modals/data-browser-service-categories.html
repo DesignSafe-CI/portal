@@ -138,11 +138,17 @@
 
       <div>
         <button class="btn btn-sm btn-info"
-                ng-disabled = "data.newFileProjectTags.length == 0 &&
-                               data.projectTagsToUnrelate.length == 0"
+                ng-disabled = "(data.newFileProjectTags.length == 0 &&
+                               data.projectTagsToUnrelate.length == 0)"
                 ng-click="saveRelations()">
                 <i class="fa fa-check"></i> Categorize
         </button>
+        <button class="btn btn-sm btn-danger"
+                ng-disabled="data.newFileProjectTags.length == 0"
+                ng-click="deleteCategory()">
+                <i class="fa fa-times"></i> Delete Category
+        </button>
+        <span> {{data.newFileProjectTags[0]._displayName}} {{data.newFileProjectTags[0].value.title}}</span>
       </div>
       <!--
       </div>
