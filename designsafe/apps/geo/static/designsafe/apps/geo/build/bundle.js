@@ -82,8 +82,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var DBModalCtrl = function () {
-  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "saveas"];
-  function DBModalCtrl($scope, $uibModalInstance, saveas) {
+  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "filename"];
+  function DBModalCtrl($scope, $uibModalInstance, filename) {
     'ngInject';
 
     _classCallCheck(this, DBModalCtrl);
@@ -91,13 +91,14 @@ var DBModalCtrl = function () {
     this.$scope = $scope;
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
-    this.saveas = saveas;
+    this.saveas = { filename: filename };
   }
 
   _createClass(DBModalCtrl, [{
     key: 'ok',
     value: function ok() {
-      this.$uibModalInstance.close(this.selected);
+      console.log(this.saveas.filename);
+      this.$uibModalInstance.close({ selected: this.selected, saveas: this.saveas.filename });
     }
   }, {
     key: 'cancel',
@@ -652,7 +653,7 @@ var MapSidebarCtrl = function () {
       });
       modal.result.then(function (s) {
         _this2.project.clear();
-        var p = new _mapProject2.default('New Project');
+        var p = new _mapProject2.default('New Map');
         p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
         _this2.project = p;
         _this2.active_layer_group = _this2.project.layer_groups[0];
@@ -735,7 +736,7 @@ var MapSidebarCtrl = function () {
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
-          saveas: function saveas() {
+          filename: function filename() {
             return null;
           }
         }
@@ -825,15 +826,16 @@ var MapSidebarCtrl = function () {
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
-          saveas: function saveas() {
+          filename: function filename() {
             return _this8.project.name + '.geojson';
           }
         }
       });
-      modal.result.then(function (f) {
-        console.log(f);
+      modal.result.then(function (res) {
+        console.log(res);
+        res.selected.name = res.saveas.filename;
         _this8.loading = true;
-        _this8.GeoDataService.save_to_depot(_this8.project, f).then(function (resp) {
+        _this8.GeoDataService.save_to_depot(_this8.project, res.selected).then(function (resp) {
           _this8.loading = false;
           _this8.toastr.success('Saved to data depot');
         }, function (err) {
@@ -1308,6 +1310,7 @@ var GeoDataService = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot(project, path) {
+      console.log(project, path);
       var form = new FormData();
       var gjson = project.to_json();
       var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
@@ -1316,8 +1319,8 @@ var GeoDataService = function () {
       var file = null;
       if (path.type === 'dir') {
         post_url = post_url + path.path;
-        file = new File([blob], project.name + '.geojson');
-        form.append('fileToUpload', file, project.name + '.geojson');
+        file = new File([blob], path.name + '.geojson');
+        form.append('fileToUpload', file, path.name + '.geojson');
       } else {
         // A file was picked, so this WILL replace it
         post_url = post_url + path.trail[path.trail.length - 2].path;

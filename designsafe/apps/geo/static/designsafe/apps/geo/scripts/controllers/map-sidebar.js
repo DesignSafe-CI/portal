@@ -161,7 +161,7 @@ export default class MapSidebarCtrl {
     });
     modal.result.then( (s) => {
       this.project.clear();
-      let p = new MapProject('New Project');
+      let p = new MapProject('New Map');
       p.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
       this.project = p;
       this.active_layer_group = this.project.layer_groups[0];
@@ -235,7 +235,7 @@ export default class MapSidebarCtrl {
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
       controller: "DBModalCtrl as vm",
       resolve: {
-        saveas: ()=> {return null;}
+        filename: ()=> {return null;}
       }
     });
     modal.result.then( (f) => {this.load_from_data_depot(f);});
@@ -306,13 +306,14 @@ export default class MapSidebarCtrl {
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
       controller: "DBModalCtrl as vm",
       resolve: {
-        saveas: ()=> {return this.project.name + '.geojson';}
+        filename: ()=> {return this.project.name + '.geojson';}
       }
     });
-    modal.result.then( (f) => {
-      console.log(f);
+    modal.result.then( (res) => {
+      console.log(res);
+      res.selected.name = res.saveas.filename;
       this.loading = true;
-      this.GeoDataService.save_to_depot(this.project, f).then( (resp) => {
+      this.GeoDataService.save_to_depot(this.project, res.selected).then( (resp) => {
         this.loading = false;
         this.toastr.success('Saved to data depot');
       }, (err) => {
