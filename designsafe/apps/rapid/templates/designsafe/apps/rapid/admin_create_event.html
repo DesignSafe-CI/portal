@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load bootstrap3 sekizai_tags staticfiles %}
+
+
+
+{% block content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Create a Rapid Natural Hazard Event </h2>
+        <form method="post" action="">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <div class="form-group">
+            <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+{% addtoblock 'js' %}
+
+<script>
+  $(document).ready(function () {
+    $('#id_event_date').datepicker();
+  })
+</script>
+
+{% endaddtoblock %}
+
+
+{% endblock content %}

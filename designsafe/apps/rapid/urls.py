@@ -5,6 +5,8 @@ urlpatterns = patterns(
     'designsafe.apps.rapid.views',
     url(r'^event-types/?$', 'get_event_types', name="get_event_types"),
     url(r'^events/?$', 'get_events', name="get_events"),
+    url(r'^admin/?$', 'admin', name="admin"),
+    url(r'^admin/create-event', 'admin_create_event', name="admin_create_event"),
     url(r'^.*$', 'index', name='index'),
 
 )
