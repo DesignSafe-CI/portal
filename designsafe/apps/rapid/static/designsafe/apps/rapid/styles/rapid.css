@@ -1,14 +1,18 @@
 body {
-  background: #fff;
+  /*background: #fff;*/
   font-family: 'Open Sans', sans-serif;
 }
+#rapid {
+  margin-top: -20px;
+}
+
 #rapid .navbar {
   margin-bottom: 0px;
 }
 #rapid_main {
   /*display: flex;*/
   /*flex-direction: row;*/
-  min-height: calc(100vh - 0px);
+  /*min-height: calc(100vh - 165px);*/
   position: relative;
 }
 

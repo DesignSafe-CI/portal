@@ -1,4 +1,4 @@
-{% extends "uber_base.html" %}
+{% extends "base.html" %}
 {% load sekizai_tags %}
 {% load static %}
 
@@ -11,9 +11,11 @@
 
 
 {% block content %}
-<div id="rapid">
-  <div>
-    <div ui-view></div>
+<div class="">
+  <div id="rapid">
+    <div>
+      <div ui-view></div>
+    </div>
   </div>
 </div>
 {% addtoblock "js" %}
