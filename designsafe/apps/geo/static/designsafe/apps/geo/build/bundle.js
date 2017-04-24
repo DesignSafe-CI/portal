@@ -144,6 +144,7 @@ var LayerGroup = function () {
   }, {
     key: 'get_feature_type',
     value: function get_feature_type(f) {
+      // debugger
       if (f.options.image_src) {
         return 'Image';
       } else if (f instanceof L.Marker) {
