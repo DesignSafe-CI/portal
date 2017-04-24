@@ -42,7 +42,7 @@ export default class MapSidebarCtrl {
     };
     this.map = L.map('geo_map', {
         layers: [streets, satellite],
-        preferCanvas: true
+        preferCanvas: false
       }).setView([0, 0], 3);
     let mc = new L.Control.Measure({primaryLengthUnit:'meters', primaryAreaUnit: 'meters'});
     mc.addTo(this.map);
@@ -69,6 +69,7 @@ export default class MapSidebarCtrl {
       this.map.addLayer(this.project.layer_groups[0].feature_group);
     }
 
+    // this._add_click_handlers();
 
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout( () => {this.map.invalidateSize();}, 10);
@@ -117,6 +118,26 @@ export default class MapSidebarCtrl {
     this.drawControl = dc;
   }
 
+  feature_click (layer) {
+    console.log(layer);
+  }
+
+  // Adds click handlers to map elements. This does NOT feel
+  // right to me...
+  _add_click_handlers () {
+    this.project.layer_groups.forEach( (lg) => {
+      lg.feature_group.on('click', (ev)=> {
+        this.project.layer_groups.forEach( (lg) => {
+          lg.feature_group.getLayers().forEach( (layer)=>{
+            layer.active = false;
+            if (layer == ev.layer) {
+              layer.active = true;
+            }
+          });
+        });
+      });
+    });
+  }
 
   create_layer_group () {
     let lg = new LayerGroup("New Group", new L.FeatureGroup());
@@ -238,7 +259,7 @@ export default class MapSidebarCtrl {
         filename: ()=> {return null;}
       }
     });
-    modal.result.then( (f) => {this.load_from_data_depot(f);});
+    modal.result.then( (f, saveas) => {this.load_from_data_depot(f);});
   }
 
   open_settings_modal () {
@@ -310,8 +331,9 @@ export default class MapSidebarCtrl {
       }
     });
     modal.result.then( (res) => {
-      console.log(res);
-      res.selected.name = res.saveas.filename;
+      let newname = res.saveas;
+      this.project.name = newname.split('.')[0];
+      res.selected.name = res.saveas;
       this.loading = true;
       this.GeoDataService.save_to_depot(this.project, res.selected).then( (resp) => {
         this.loading = false;

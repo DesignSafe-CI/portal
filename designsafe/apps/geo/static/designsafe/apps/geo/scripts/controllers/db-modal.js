@@ -5,11 +5,10 @@ export default class DBModalCtrl {
     this.$scope = $scope;
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
-    this.saveas = {filename: filename}
+    this.saveas = {filename: filename};
   }
 
   ok () {
-    console.log(this.saveas.filename)
     this.$uibModalInstance.close({selected:this.selected, saveas:this.saveas.filename});
   };
 

@@ -334,8 +334,8 @@ export default class GeoDataService {
     let file = null;
     if (path.type === 'dir') {
       post_url = post_url + path.path;
-      file = new File([blob], path.name + '.geojson');
-      form.append('fileToUpload', file, path.name + '.geojson');
+      file = new File([blob], path.name);
+      form.append('fileToUpload', file, path.name);
     } else {
       // A file was picked, so this WILL replace it
       post_url = post_url + path.trail[path.trail.length-2].path;

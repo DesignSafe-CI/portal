@@ -60,7 +60,7 @@
       ng-show="lg.show_contents"
       ng-repeat="feature in lg.feature_group.getLayers() track by $index"
       ng-mouseover="feature.hover=true"
-      ng-class="{'active': lg == vm.active_layer_group}"
+      ng-class="{'active': lg == vm.active_layer_group, 'highlight': feature.active}"
       ng-mouseleave="feature.hover=false"
       ng-click="vm.select_feature(lg, feature)"
       on-drop-success="vm.drop_feature_success($event, $index, feature)"
@@ -172,9 +172,9 @@
           </button>
           <ul class="dropdown-menu">
             <!-- <li ng-click="vm.open_existing_project()">Open Existing Project</li> -->
-            <li ng-click="vm.create_new_project()"> New Map </li>
-            <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
-            <li ng-click="vm.save_locally()">Save locally </li>
+            <li ng-click="vm.create_new_project()"> New HazMap </li>
+            <li ng-click="vm.save_to_depot()">Save HazMap to Data Depot</li>
+            <li ng-click="vm.save_locally()">Save HazMap locally </li>
           </ul>
         </div>
 
@@ -184,8 +184,8 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
-            <li ng-click="vm.open_file_dialog()"> Import file locally</li>
-            <li ng-click="vm.open_db_modal()"> Import from Data Depot </li>
+            <li ng-click="vm.open_file_dialog()"> Import data locally</li>
+            <li ng-click="vm.open_db_modal()"> Import data from Data Depot </li>
           </ul>
         </div>
 

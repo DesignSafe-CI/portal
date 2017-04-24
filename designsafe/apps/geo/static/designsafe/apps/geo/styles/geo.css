@@ -125,6 +125,11 @@
 
 }
 
+#geo_sidebar .list-group-item.subgroup.active.highlight {
+  border: 1px solid #50dfbe;
+}
+
+
 #geo_sidebar .list-group-item.menu.title{
   background-color: #404040;
   padding-top: 15px;
