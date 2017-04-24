@@ -68,7 +68,7 @@ django-haystack==2.6
 cryptography==1.7.2
 pyjwt==1.4.2
 chardet==2.3.0
-ipdb
+
 
 beautifulsoup4==4.5.3
 

@@ -276,7 +276,6 @@
           };
 
           $scope.removeExperiments = function($event){
-            $event && $event.preventDefault();
             $scope.data.busy = true;
 
             var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
@@ -440,12 +439,13 @@
      * @param {string} options.uuid The Project uuid
      * @returns {Promise}
      */
-    service.manageCollaborators = function(options) {
+    service.manageCollaborators = function(project) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-add-collaborator.html',
         controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
           $scope.data = {
-            busy: true
+            busy: true,
+            project: project
           };
           $scope.form = {
             curUsers: [],
@@ -456,22 +456,22 @@
           };
           var loads = [
             //projectResource.get({params: angular.copy(options)}),
-            service.get(angular.copy(options)),
-            collabResource.get({params: angular.copy(options)}),
-            ProjectEntitiesService.listEntities({uuid: options.uuid, name: 'designsafe.project.experiment'})
+            //service.get(angular.copy(options)),
+            collabResource.get({params: {uuid: project.uuid}}),
+            ProjectEntitiesService.listEntities({uuid: project.uuid,
+                                name: 'designsafe.project.experiment'})
           ];
           $q.all(loads).then(function (results) {
             $scope.data.busy = false;
-            $scope.data.project = results[0];
-            $scope.data.experiments = results[2];
+            $scope.data.experiments = results[1];
 
-            $scope.form.curUsers = _.map(results[1].data.teamMembers, function (collab) {
+            $scope.form.curUsers = _.map(results[0].data.teamMembers, function (collab) {
               return {
                 user: {username: collab},
                 remove: false
               };
             });
-            $scope.form.curCoPis = _.map(results[1].data.coPis, function (collab) {
+            $scope.form.curCoPis = _.map(results[0].data.coPis, function (collab) {
               return {
                 user: {username: collab},
                 remove: false
@@ -513,7 +513,7 @@
             $uibModalInstance.dismiss();
           };
 
-          $scope.saveCollaborators = function ($event) {
+          $scope.saveCollaborators = function ($eent) {
             $event.preventDefault();
             $scope.data.busy = true;
 
@@ -545,6 +545,9 @@
               }
             }));
 
+                //ProjectEntitiesService.update(
+                //    {data: {uuid: entity.uuid, entity: entity}}
+                //)
             var tasks = removeActions.concat(addActions);
             $q.all(tasks).then(
               function (results) {

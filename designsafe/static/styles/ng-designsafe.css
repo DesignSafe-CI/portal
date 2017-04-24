@@ -548,3 +548,48 @@ span.label.tag-red.selected {
     background-color: white;
     border:1px solid black;
 }
+
+.grayed-out {
+    background-color:lightgray;
+}
+
+.wizard-steps .active {
+    font-weight:bold;
+}
+
+.meta-review {
+    width:100%;
+    background:white;
+    overflow:auto;
+}
+
+.meta-review .title {
+    text-align:center;
+    border-bottom:1px solid black;
+    padding:5px;
+}
+
+.meta-review .content {
+    padding:5px;
+}
+.meta-review .content-wrapper {
+    border-bottom:1px solid black;
+}
+
+.meta-review .content .meta-row {
+    width:100%;
+    overflow:auto;
+    margin:5px 0px;
+}
+
+.meta-review .content .meta-row .attr {
+    font-weight:bold;
+    display:inline-block;
+    width:45%;
+    text-align:right;
+}
+
+.meta-review .content .meta-row .value {
+    display:inline-block;
+    width:45%;
+    text-align:left;

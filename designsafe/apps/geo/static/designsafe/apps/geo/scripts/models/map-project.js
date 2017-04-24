@@ -50,7 +50,16 @@ export default class MapProject {
         let json = feature.toGeoJSON();
         // These are all the keys in the options object that we need to
         // re-create the layers in the application after loading.
-        let opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src'];
+        let opt_keys = [
+          'label',
+          'color',
+          'fillColor',
+          'fillOpacity',
+          'description',
+          'image_src',
+          'thumb_src',
+          'original_src',
+        ];
 
         // //add in any options
         // if (feature.options.image_src) {
