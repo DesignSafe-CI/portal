@@ -44,15 +44,17 @@ export default class MapSidebarCtrl {
         layers: [streets, satellite],
         preferCanvas: false
       }).setView([0, 0], 3);
-    let mc = new L.Control.Measure({primaryLengthUnit:'meters', primaryAreaUnit: 'meters'});
-    mc.addTo(this.map);
+    this.mc = new L.Control.Measure({primaryLengthUnit:'meters', primaryAreaUnit: 'meters'});
+    this.mc.addTo(this.map);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    // this.$scope.$watch(()=>{return this.current_layer;}, (newval, oldval)=>{console.log(newval);});
-
+    // Load in a map project from the data service if one does exist, if not
+    // create a new one from scratch
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
+
+      // For some reason, need to readd the feature groups for markers to be displayed correctly???
       this.project.layer_groups.forEach( (lg)=>{
         this.map.addLayer(lg.feature_group);
         this.map.removeLayer(lg.feature_group);
@@ -83,9 +85,10 @@ export default class MapSidebarCtrl {
       this.GeoDataService.current_project(this.project);
     }, 1000);
 
-
     this.add_draw_controls(this.active_layer_group.feature_group);
 
+    // This handles making sure that the features that get created with the draw tool
+    // are styled with the default colors etc.
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
       object.options.color = this.settings.default_stroke_color;
@@ -269,6 +272,7 @@ export default class MapSidebarCtrl {
     });
     modal.result.then( (s) => {
       this.settings = this.GeoSettingsService.settings;
+
     });
   }
 

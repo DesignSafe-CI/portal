@@ -1,4 +1,4 @@
-{% extends "uber_base.html" %}
+{% extends "base.html" %}
 {% load sekizai_tags %}
 {% load static %}
 
@@ -11,7 +11,9 @@
 
 
 {% block content %}
-<div id="rapid">
+<div class="">
+  <div id="rapid">
+
   <!--
   <nav class="navbar navbar-default">
     <div class="container-fluid">
@@ -24,8 +26,9 @@
   </nav>
 -->
 
-  <div>
-    <div ui-view></div>
+    <div>
+      <div ui-view></div>
+    </div>
   </div>
 </div>
 {% addtoblock "js" %}
