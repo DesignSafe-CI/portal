@@ -153,6 +153,9 @@ export default class MapSidebarCtrl {
   delete_layer_group (lg, i) {
     this.map.removeLayer(lg.feature_group);
     this.project.layer_groups.splice(i, 1);
+    if (this.project.layer_groups.length === 0) {
+      this.create_layer_group();
+    }
     this.active_layer_group = this.project.layer_groups[0];
   }
 
