@@ -135,6 +135,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _L = __webpack_require__(8);
+
+var _L2 = _interopRequireDefault(_L);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var RapidMainCtrl = function () {
@@ -153,11 +159,11 @@ var RapidMainCtrl = function () {
     this.filter_options = {};
     this.active_rapid_event = null;
 
-    var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    var streets = _L2.default.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     });
 
-    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    var satellite = _L2.default.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: '&copy;',
       maxZoom: 18
     });
@@ -166,7 +172,7 @@ var RapidMainCtrl = function () {
       'Street': streets,
       'Satellite': satellite
     };
-    this.map = L.map('map', { layers: [streets, satellite] }).setView([0, 0], 2);
+    this.map = _L2.default.map('map', { layers: [streets, satellite] }).setView([0, 0], 2);
     this.map.zoomControl.setPosition('topright');
 
     this.RapidDataService.get_event_types().then(function (resp) {
@@ -183,7 +189,7 @@ var RapidMainCtrl = function () {
         //   "<a href='{{dataset.href}}'> {{dataset.doi}} </a>"+
         //   "</div>";
         // let linker = this.$compile(angular.element(template));
-        var marker = L.marker([d.location.lat, d.location.lon]);
+        var marker = _L2.default.marker([d.location.lat, d.location.lon]);
         // let newScope = this.$scope.$new();
         // newScope.event = d;
         // marker.bindPopup(linker(newScope)[0], {className : 'rapid-popup'});
@@ -439,6 +445,12 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = L;
 
 /***/ })
 /******/ ]);

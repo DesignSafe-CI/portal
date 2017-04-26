@@ -12,12 +12,8 @@ body {
 #rapid_main {
   /*display: flex;*/
   /*flex-direction: row;*/
-<<<<<<< HEAD
-  /*min-height: calc(100vh - 165px);*/
-=======
   /*min-height: calc(100vh - 300px);*/
   height: 750px;
->>>>>>> geo
   position: relative;
   margin-top: -20px;
 }
@@ -73,7 +69,7 @@ body {
 
 #sidebar .events-results {
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #sidebar .event-listing .event-title {

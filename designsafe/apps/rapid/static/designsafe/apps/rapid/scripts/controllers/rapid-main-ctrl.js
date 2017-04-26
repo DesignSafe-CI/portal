@@ -1,3 +1,5 @@
+import L from 'L';
+
 export default class RapidMainCtrl {
   constructor ($scope, $compile, RapidDataService) {
     'ngInject';
