@@ -12,6 +12,7 @@ export default class LayerGroup {
   }
 
   get_feature_type (f) {
+    // debugger
     if (f.options.image_src) {
       return 'Image';
     } else if (f instanceof L.Marker) {

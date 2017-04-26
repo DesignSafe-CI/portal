@@ -42,17 +42,19 @@ export default class MapSidebarCtrl {
     };
     this.map = L.map('geo_map', {
         layers: [streets, satellite],
-        preferCanvas: true
+        preferCanvas: false
       }).setView([0, 0], 3);
-    let mc = new L.Control.Measure({primaryLengthUnit:'meters', primaryAreaUnit: 'meters'});
-    mc.addTo(this.map);
+    this.mc = new L.Control.Measure({primaryLengthUnit:'meters', primaryAreaUnit: 'meters'});
+    this.mc.addTo(this.map);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    // this.$scope.$watch(()=>{return this.current_layer;}, (newval, oldval)=>{console.log(newval);});
-
+    // Load in a map project from the data service if one does exist, if not
+    // create a new one from scratch
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
+
+      // For some reason, need to readd the feature groups for markers to be displayed correctly???
       this.project.layer_groups.forEach( (lg)=>{
         this.map.addLayer(lg.feature_group);
         this.map.removeLayer(lg.feature_group);
@@ -69,6 +71,7 @@ export default class MapSidebarCtrl {
       this.map.addLayer(this.project.layer_groups[0].feature_group);
     }
 
+    // this._add_click_handlers();
 
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout( () => {this.map.invalidateSize();}, 10);
@@ -82,9 +85,10 @@ export default class MapSidebarCtrl {
       this.GeoDataService.current_project(this.project);
     }, 1000);
 
-
     this.add_draw_controls(this.active_layer_group.feature_group);
 
+    // This handles making sure that the features that get created with the draw tool
+    // are styled with the default colors etc.
     this.map.on('draw:created',  (e) => {
       let object = e.layer;
       object.options.color = this.settings.default_stroke_color;
@@ -117,6 +121,26 @@ export default class MapSidebarCtrl {
     this.drawControl = dc;
   }
 
+  feature_click (layer) {
+    console.log(layer);
+  }
+
+  // Adds click handlers to map elements. This does NOT feel
+  // right to me...
+  _add_click_handlers () {
+    this.project.layer_groups.forEach( (lg) => {
+      lg.feature_group.on('click', (ev)=> {
+        this.project.layer_groups.forEach( (lg) => {
+          lg.feature_group.getLayers().forEach( (layer)=>{
+            layer.active = false;
+            if (layer == ev.layer) {
+              layer.active = true;
+            }
+          });
+        });
+      });
+    });
+  }
 
   create_layer_group () {
     let lg = new LayerGroup("New Group", new L.FeatureGroup());
@@ -129,6 +153,9 @@ export default class MapSidebarCtrl {
   delete_layer_group (lg, i) {
     this.map.removeLayer(lg.feature_group);
     this.project.layer_groups.splice(i, 1);
+    if (this.project.layer_groups.length === 0) {
+      this.create_layer_group();
+    }
     this.active_layer_group = this.project.layer_groups[0];
   }
 
@@ -161,7 +188,7 @@ export default class MapSidebarCtrl {
     });
     modal.result.then( (s) => {
       this.project.clear();
-      let p = new MapProject('New Project');
+      let p = new MapProject('New Map');
       p.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
       this.project = p;
       this.active_layer_group = this.project.layer_groups[0];
@@ -235,10 +262,10 @@ export default class MapSidebarCtrl {
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
       controller: "DBModalCtrl as vm",
       resolve: {
-        saveas: ()=> {return null;}
+        filename: ()=> {return null;}
       }
     });
-    modal.result.then( (f) => {this.load_from_data_depot(f);});
+    modal.result.then( (f, saveas) => {this.load_from_data_depot(f);});
   }
 
   open_settings_modal () {
@@ -248,6 +275,7 @@ export default class MapSidebarCtrl {
     });
     modal.result.then( (s) => {
       this.settings = this.GeoSettingsService.settings;
+
     });
   }
 
@@ -306,13 +334,15 @@ export default class MapSidebarCtrl {
       templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
       controller: "DBModalCtrl as vm",
       resolve: {
-        saveas: ()=> {return this.project.name + '.geojson';}
+        filename: ()=> {return this.project.name + '.geojson';}
       }
     });
-    modal.result.then( (f) => {
-      console.log(f);
+    modal.result.then( (res) => {
+      let newname = res.saveas;
+      this.project.name = newname.split('.')[0];
+      res.selected.name = res.saveas;
       this.loading = true;
-      this.GeoDataService.save_to_depot(this.project, f).then( (resp) => {
+      this.GeoDataService.save_to_depot(this.project, res.selected).then( (resp) => {
         this.loading = false;
         this.toastr.success('Saved to data depot');
       }, (err) => {

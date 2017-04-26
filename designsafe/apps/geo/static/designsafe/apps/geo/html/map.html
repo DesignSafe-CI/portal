@@ -7,7 +7,9 @@
     </a>
   </li>
 </ul> -->
-
+<li class="list-group-item menu logo">
+  <img class="img-responsive" src="/static/designsafe/apps/geo/images/logo.png"></img>
+</li>
 <li class="list-group-item menu clearfix title"
     ng-mouseover="vm.title_hover=true"
     ng-mouseleave="vm.title_hover=false">
@@ -60,7 +62,7 @@
       ng-show="lg.show_contents"
       ng-repeat="feature in lg.feature_group.getLayers() track by $index"
       ng-mouseover="feature.hover=true"
-      ng-class="{'active': lg == vm.active_layer_group}"
+      ng-class="{'active': lg == vm.active_layer_group, 'highlight': feature.active}"
       ng-mouseleave="feature.hover=false"
       ng-click="vm.select_feature(lg, feature)"
       on-drop-success="vm.drop_feature_success($event, $index, feature)"
@@ -70,8 +72,8 @@
 
       <div> <i class="fa" ng-class="{'fa-image': lg.get_feature_type(feature) === 'Image',
                                      'fa-map-marker': lg.get_feature_type(feature) === 'Point',
-                                     'fa-line-chart': lg.get_feature_type(feature) === 'Polygon',
-                                     'fa-line-chart': lg.get_feature_type(feature) === 'Path'
+                                     'icon-polygon': lg.get_feature_type(feature) === 'Polygon',
+                                     'icon-point-to-point': lg.get_feature_type(feature) === 'Path'
                                     }">
             </i>
       </div>
@@ -172,9 +174,10 @@
           </button>
           <ul class="dropdown-menu">
             <!-- <li ng-click="vm.open_existing_project()">Open Existing Project</li> -->
-            <li ng-click="vm.create_new_project()"> New Map </li>
-            <li ng-click="vm.save_to_depot()">Save to Data Depot</li>
-            <li ng-click="vm.save_locally()">Save locally </li>
+
+            <li ng-click="vm.create_new_project()"> New HazMap </li>
+            <li ng-click="vm.save_to_depot()">Save HazMap to Data Depot</li>
+            <li ng-click="vm.save_locally()">Save HazMap locally </li>
           </ul>
         </div>
 
@@ -184,8 +187,8 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu">
-            <li ng-click="vm.open_file_dialog()"> Import file locally</li>
-            <li ng-click="vm.open_db_modal()"> Import from Data Depot </li>
+            <li ng-click="vm.open_file_dialog()"> Import data locally</li>
+            <li ng-click="vm.open_db_modal()"> Import data from Data Depot </li>
           </ul>
         </div>
 
