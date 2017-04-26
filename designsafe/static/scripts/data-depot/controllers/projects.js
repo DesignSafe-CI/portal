@@ -114,7 +114,9 @@
 
 
     $scope.editProject = function($event) {
-      $event.preventDefault();
+      if ($event){
+        $event.preventDefault();
+      }
       ProjectService.editProject($scope.data.project)
         .then(function (project) {
           $scope.data.project = project;
@@ -122,14 +124,18 @@
     };
 
     $scope.manageCollabs = function($event) {
-      $event.preventDefault();
+      if ($event){
+        $event.preventDefault();
+      }
       ProjectService.manageCollaborators($scope.data.project).then(function (project) {
         $scope.data.project = project;
       });
     };
 
     $scope.manageExperiments = function($event) {
-      $event.preventDefault();
+      if ($event){
+        $event.preventDefault();
+      }
       var experimentsAttr = $scope.data.project.getRelatedAttrName('designsafe.project.experiment');
       var experiments = $scope.data.project[experimentsAttr];
       if (typeof experiments === 'undefined'){
@@ -201,14 +207,14 @@
 
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, $q) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
     $scope.browser = DataBrowserService.state();
     $scope.browser.listings = {};
     $scope.browser.ui = {};
-    $scope.browser.publication = {experimentsList: [], eventsList: []};
+    $scope.browser.publication = {experimentsList: [], eventsList: [], users: []};
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
@@ -285,11 +291,45 @@
         }
         step();
       });
-      $scope.browser.ui.listingPreview = true;
-      p.then(function(results){
-        $scope.browser.ui.listingPreview = false;
+      return p.then(function(results){
+          return results;
       }, function(err){
-        $scope.browser.ui.listingPreview = false;
+        $scope.browser.ui.error = err;
+      });
+    };
+
+    var setUserDetails = function(usernames){
+      filePaths = _.uniq(usernames);
+      var p = $q(function(resolve, reject){
+        var results = [];
+        var index = 0;
+        var size = 5;
+        var calls = _.map(usernames, function(username){
+          return UserService.get(username)
+            .then(function(resp){
+                resp._ui = {order:0};
+                $scope.browser.publication.users.push(resp);
+            });
+        });
+
+        function step(){
+          var _calls = calls.slice(index, index += size);
+          if(_calls.length){
+            $q.all(_calls).then(function(res){
+              results.concat(res);
+              step();
+              return res;
+            }).catch(reject);
+          } else { 
+            resolve(results);
+          }
+        }
+        step();
+      });
+      $scope.browser.ui.loadingPreview = true;
+      return p.then(function(results){
+        return results;
+      }, function(err){
         $scope.browser.ui.error = err;
       });
     };
@@ -305,7 +345,12 @@
           allFilePaths = allFilePaths.concat(entity._filePaths);
         });
         $scope.data.rootPaths = allFilePaths;
-        setFilesDetails(allFilePaths);
+        setFilesDetails(allFilePaths)
+        .then(function(){
+            setUserDetails($scope.browser.project.value.teamMembers)
+            .then(function(){
+            });
+        });
       }
     });
 
@@ -380,7 +425,65 @@
       }
     }
 
+    $scope.editProject = function() {
+      ProjectService.editProject($scope.browser.project)
+        .then(function (project) {
+          $scope.browser.project = project;
+        });
+    };
+
+    $scope.manageCollabs = function() {
+      ProjectService.manageCollaborators($scope.browser.project).then(function (project) {
+        $scope.browserproject = project;
+      });
+    };
+
+    $scope.manageExperiments = function() {
+      var experimentsAttr = $scope.browser.project.getRelatedAttrName('designsafe.project.experiment');
+      var experiments = $scope.browser.project[experimentsAttr];
+      if (typeof experiments === 'undefined'){
+        $scope.browser.project[experimentsAttr] = [];
+        experiments = $scope.browser.project[experimentsAttr];
+      }
+      ProjectService.manageExperiments({'experiments': experiments,
+                                        'project': $scope.browser.project}).then(function (experiments) {
+        $scope.browser.experiments = experiments;
+      });
+    };
+
     $scope.publicationCtrl = {
+
+      moveOrderUp: function(ent){
+        if (typeof ent._ui.order === 'undefined'){
+          ent._ui.order = 0;
+        } else if (ent._ui.order > 0){
+          ent._ui.order -= 1;
+        }
+      },
+
+      moveOrderDown: function(ent){
+        if (typeof ent._ui.order === 'undefined'){
+          ent._ui.order = 0;
+        } else{
+          ent._ui.order += 1;
+        }
+      },
+
+      openEditProject : function(){
+          $scope.editProject();
+      },
+
+      openEditExperiments: function(){
+        $scope.manageExperiments();
+      },
+
+      openEditTeamMembers: function(){
+        $scope.manageCollabs();
+      },
+
+      openEditCategories: function(){
+        DataBrowserService.viewCategories();
+      },
 
       selectAllFiles : function(exp, evt){
         var listing = $scope.browser.listings[evt.uuid];
