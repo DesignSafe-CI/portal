@@ -228,6 +228,38 @@
             return res;
           };
 
+          $scope.editExp = function(exp){
+            $scope.editExpForm = {
+                exp: exp,
+                title: exp.value.title,
+                facility: exp.getEF($scope.data.project.value.projectType,
+                                    exp.value.experimentalFacility).label,
+                type: exp.value.experimentType,
+                equipment: exp.getET(exp.value.experimentalFacility,
+                                        exp.value.experimentType).label,
+                description: exp.value.description
+            };
+            $scope.ui.showEditExperimentForm = true;
+          };
+
+          $scope.saveEditExperiment = function(){
+              var exp = $scope.editExpForm.exp;
+              exp.value.title = $scope.editExpForm.title;
+              exp.value.description = $scope.editExpForm.description;
+              $scope.ui.savingEditExp = true;
+              ProjectEntitiesService.update({data: {
+                  uuid: exp.uuid,
+                  entity: exp
+              }}).then(function(e){
+                  var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                  ent.update(e);
+                  $scope.ui.savingEditExp = false;
+                  $scope.data.experiments = $scope.data.project.experiment_set;
+                  $scope.ui.showEditExperimentForm = false;
+                  return e;
+              });
+          };
+
           $scope.toggleDeleteExperiment = function(uuid){
             if (uuid in $scope.ui.experiments &&
                 $scope.ui.experiments[uuid].deleted){

@@ -32,14 +32,18 @@
               <tr ng-repeat-start="experiment in data.experiments"
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
                 <td>{{experiment.value.title}}</td>
-                <td>{{getEF(experiment.value.experimentalFacility).label}}</td>
+                <td>{{experiment.getEF(data.project.value.projectType, experiment.value.experimentalFacility).label}}</td>
                 <td>{{experiment.value.experimentType}}</td>
-                <td>{{getET(getEF(experiment.value.experimentalFacility).name, experiment.value.experimentType).label}}</td>
-                <td><button class="btn btn-sm btn-danger"
+                <td>{{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}</td>
+                <td><button class="btn btn-sm btn-link"
                             ng-click="toggleDeleteExperiment(experiment.uuid)"
                             alt="Mark experiment for deletion">
-                    <i class="fa" ng-class="{'fa-mail-reply': ui.experiments[experiment.uuid].deleted, 'fa-remove': !ui.experiments[experiment.uuid].deleted}"></i>
+                    <i class="fa text-danger" ng-class="{'fa-mail-reply': ui.experiments[experiment.uuid].deleted, 'fa-times-circle': !ui.experiments[experiment.uuid].deleted}"></i>
                     <span class="sr-only">Delete</span>
+                    <button class="btn btn-sm btn-link"
+                            ng-click="editExp(experiment)">
+                            Edit <i class="fa fa-pencil-square-o"></i>
+                    </button>
               </tr>
               <tr ng-repeat-end style="border-bottom:2px solid black;"
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
@@ -53,9 +57,68 @@
                   ng-disabled="form.deleteExperiments.length==0">
                   Remove experiments
           </button>
+          <div class="experiment-add-form well well-sm"
+                ng-if="ui.showEditExperimentForm">
+            <form>
+                <button class="btn btn-sm btn-link pull-right"
+                        ng-click="ui.showEditExperimentForm = false"
+                        title="Close">
+                        <i class="fa fa-times"></i>
+                </button>
+                <p>Edit Experiment(s):</p>
+                <div style="display:inline-block; width:15%;">
+                  <label for="id-exp-title" style="display:block">Title</label>
+                  <input class="form-control" name="exp-title" id="id-exp-title"
+                         ng-model="editExpForm.title"/>
+                </div>
+                <div style="display:inline-block; width:45%;">
+                  <label for="id-exp-title" style="display:block">Experiment Facility</label>
+                  <input class="form-control" disabled ng-model="editExpForm.facility"/>
+                </div>
+                <div style="display:inline-block; width:15%;">
+                  <label for="id-exp-title" style="display:block">Experiment Type</label>
+                  <input class="form-control" disabled ng-model="editExpForm.type"/>
+                </div>
+                <div style="display:inline-block; width:15%;">
+                  <label for="id-exp-title" style="display:block">Equipment Type</label>
+                  <input class="form-control" disabled ng-model="editExpForm.equipment"/>
+                </div>
+                <div style="display:inline-block; width:90%; padding-top:5px;">
+                  <textarea style="width:100%;" placeholder="Description"
+                ng-model="editExpForm.description">
+                </textarea>
+                </div>
+                <button class="btn btn-info btn-sm"
+                        ng-click="saveEditExperiment()"
+                        ng-disabled="ui.savingEditExp">
+                    <span ng-if="!ui.savingEditExp">
+                    <i class="fa fa-check"></i> Save Experiment
+                    </span>
+
+                    <span style="padding: 9px;"
+                          class="bg-info text-info"
+                          ng-if="ui.savingEditExp">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </span>
+                </button>
+            </div>
+        </form>
+
+          </div>
         </div>
+        <button class="btn btn-info"
+                ng-click="ui.showAddExperimentForm = true;"
+                ng-if="!ui.showAddExperimentForm">
+                <i class="fa fa-plus"></i> Add Experiment
+        </button>
         <form>
-            <div class="well well-sm">
+            <div class="well well-sm"
+                 ng-if="ui.showAddExperimentForm">
+                 <button class="btn btn-link pull-right"
+                         ng-click="ui.showAddExperimentForm = false;"
+                         title="Close">
+                 <i class="fa fa-times"></i>
+                 </button>
                 <p>Add Experiment(s):</p>
                 <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
                 <div class="form-group">

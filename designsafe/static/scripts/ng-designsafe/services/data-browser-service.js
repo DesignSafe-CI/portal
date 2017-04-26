@@ -1509,6 +1509,7 @@
                yamzId: 'h1333'}
               ];
           $scope.data.form.projectTagToAdd = {optional:{}};
+          $scope.data.catForm = {};
 
           $scope.isProjectTagSel = function(entity){
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
@@ -1608,6 +1609,35 @@
                $scope.ui.error = er;
              }
            );
+          };
+
+          $scope.openEditCategory = function(){
+              var cat = $scope.data.newFileProjectTags[0];
+              $scope.data.catForm = {
+                  entity: cat,
+                  type: cat._displayName,
+                  title: cat.value.title,
+                  description: cat.value.description
+              };
+              $scope.ui.showEditCategory = true;
+          };
+
+          $scope.saveEditCategory = function(){
+              var cat = $scope.data.catForm.entity;
+              cat.value.title = $scope.data.catForm.title;
+              cat.value.description = $scope.data.catForm.description;
+              $scope.ui.editFormSaving = true;
+              ProjectEntitiesService.update({data: {
+                                        uuid: cat.uuid,
+                                        entity: cat
+                                      }}).then(function(e){
+                                          var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                                          ent.update(e);
+                                          $scope.ui.editFormSaving = false;
+                                          $scope.data.catForm = {};
+                                          $scope.ui.showEditCategory = false;
+                                          return e;
+                                      });
           };
 
           $scope.deleteCategory = function(){
