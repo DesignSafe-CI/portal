@@ -204,6 +204,45 @@
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title"> <strong>{{experiment.value.title}}</strong> </span>
+            <button class="btn btn-sm btn-link"
+                    style="margin-left:5px; padding:0; display:inline-block;"
+                    ng-click="ui.showAddReport[experiment.uuid] = true"
+                    ng-if="!ui.showAddReport[experiment.uuid] &&
+                           !data.project.getRelated('report_set', experiment.uuid).length">
+                    <i class="fa fa-plus-square"></i> Add Report
+            </button>
+            <div style="margin-left:5px; display:inline-block;"
+                 ng-if="ui.showAddReport[experiment.uuid] && 
+                           !data.project.getRelated('report_set', experiment.uuid).length">
+              <select
+                      ng-options="report as report.value.title for report in data.project.report_set"
+                      ng-model="form.updateExperiments[experiment.uuid].relProject">
+                      <option value="">Reports</option>
+              </select>
+              <button class="btn btn-sm btn-link"
+                      ng-click="saveRelEntity(form.updateExperiments[experiment.uuid].relProject,
+                                          {project:data.project.uuid,
+                                          experiments: experiment.uuid});
+                                ui.showAddReport[experiment.uuid]=false"
+                      title="Add Report">
+                <i class="fa fa-plus-circle fa-2"></i><span class="sr-only">Add Report</span>
+              </button>
+            </div>
+            <div style="margin-left:5px; display:inline-block;"
+                 ng-if="data.project.getRelated('report_set', experiment.uuid).length">
+                <span class="label tag-black">Report</span>
+                <span class="tab-title">
+                {{data.project.getRelated('report_set', experiment.uuid)[0].value.title}}   
+                </span>
+                <button class="btn btn-xsm btn-link"
+                        style="display:inline-block;"
+                        ng-if="data.project.getRelated('report_set', experiment.uuid).length"
+                        ng-click="delRelEntity(data.project.getRelated('report_set', experiment.uuid)[0],
+                                              {experiments: experiment.uuid})">
+                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                  <span class="sr-only">Delete</span>
+                </button>
+            </div>
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
