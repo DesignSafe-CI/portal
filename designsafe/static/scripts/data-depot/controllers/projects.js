@@ -116,6 +116,7 @@
     $scope.showText = function(text){
         $uibModal.open({
             template: '<div class="modal-header">' + 
+                        '<h3>Description</h3>' +
                       '</div>' +
                       '<div class="modal-body">' + 
                         '<div style="border: 1px solid black;"' +
@@ -518,6 +519,7 @@
       showText : function(text){
           $uibModal.open({
               template: '<div class="modal-header">' + 
+                          '<h3> Description </h3>' +
                         '</div>' +
                         '<div class="modal-body">' + 
                           '<div style="border: 1px solid black;"' +
