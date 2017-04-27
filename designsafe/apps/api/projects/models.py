@@ -529,3 +529,11 @@ class Event(RelatedEntity):
     model_configs = fields.RelatedObjectField(ModelConfiguration)
     sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class Report(RelatedEntity):
+    model_name = 'designsafe.project.report'
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
