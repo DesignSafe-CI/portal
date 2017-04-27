@@ -182,11 +182,13 @@
     };
 
     $scope.publishPipeline_prev = function(st){
-      if (st == 'review'){
-        $scope.state.publishPipeline = 'select';
-      }
-      else if (st == 'meta'){
+      if (st == 'agreement'){
+        $scope.state.publishPipeline = 'meta';
+      } else if (st == 'meta'){
         $scope.state.publishPipeline = 'review';
+      }
+      else if (st == 'review'){
+        $scope.state.publishPipeline = 'select';
       }
       else {
         $scope.state.publishPipeline = 'select';
@@ -200,8 +202,10 @@
       else if (st == 'review'){
         $scope.state.publishPipeline = 'meta';
       }
-      else {
-        $scope.state.publishPipeline = 'meta';
+      else if (st == 'meta'){
+        $scope.state.publishPipeline = 'agreement';
+      }else {
+        $scope.state.publishPipeline = 'agreement';
       }
     };
 
@@ -453,7 +457,7 @@
 
     $scope.publicationCtrl = {
 
-      moveOrderUp: function(ent){
+      moveOrderUp: function(ent, total){
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
         } else if (ent._ui.order > 0){
@@ -461,10 +465,11 @@
         }
       },
 
-      moveOrderDown: function(ent){
+      moveOrderDown: function(ent, total){
+        total = parseInt(total);
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
-        } else{
+        } else if (ent._ui.order < total - 1){
           ent._ui.order += 1;
         }
       },
