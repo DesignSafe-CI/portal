@@ -58,7 +58,8 @@
             </button>
             <div class="wizard-steps" style="display:inline-block;">
               <span class="steps"
-                    ng-class="{'active': state.publishPipeline=='select'}"> Selection</span>
+                    ng-class="{'active': state.publishPipeline=='select'}"> 
+                    Selection</span>
               <span class="line">
                --
               </span>
@@ -71,12 +72,17 @@
               </span>
               <span class="edit-info" 
                     ng-class="{'active': state.publishPipeline=='meta'}">
-                    Edit Information
+                    Metadata
+              </span>
+               -- 
+              <span class="edit-info" 
+                    ng-class="{'active': state.publishPipeline=='agreement'}">
+                    Agreement
               </span>
             </div>
             <button class="btn btn-default pull-right"
                     ng-click="publishPipeline_next(state.publishPipeline)"
-                    ng-if="state.publishPipeline!='meta'">
+                    ng-if="state.publishPipeline!='agreement'">
              Next <i class="fa fa-arrow-right"></i> 
             </button>
           </div> 
@@ -90,7 +96,7 @@
           </div>
 
           <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
-               ng-if="state.publishPipeline == 'meta'">
+               ng-if="state.publishPipeline == 'agreement'">
             <button class="btn btn-danger"
                     ng-click="publishPipeline_publish()">
                 Request DOI & Publish <i class="fa fa-check"></i>
