@@ -273,7 +273,7 @@
                   </div>
                   <ul>
                     <li 
-                        ng-repeat="event in data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid])">
+                        ng-repeat="event in all_events = data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: ['_ui.order', 'value.title']">
                       <div class="tree-el">
                       <span class="label tag-red tree-el">Event</span>
                       <span class="tag-title">{{event.value.title}}</span>
@@ -285,6 +285,18 @@
                         <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                         <span class="sr-only">Delete</span>
                       </button>
+                        <div style="display:inline-block;">
+                          <button class="btn btn-sm btn-link"
+                                  title="Move order Up"
+                                  style="display:inline-block;"
+                                  ng-click="moveOrderUp(event, all_events.length, all_events)" >
+                          <i class="fa fa-arrow-up"></i></button>
+                          <button class="btn btn-sm btn-link"
+                                  title="Move order Down"
+                                  style="display:inline-block;"
+                             ng-click="moveOrderDown(event, all_events.length, all_events)">
+                          <i class="fa fa-arrow-down"></i></button>
+                        </div>
                       </div>
                     </li>
                     <!--
