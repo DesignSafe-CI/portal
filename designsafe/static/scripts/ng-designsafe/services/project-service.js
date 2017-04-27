@@ -10,10 +10,10 @@
 
     var efs = {
       'experimental': [
-        {name: 'none', label: 'None'},
+        {name: 'other', label: 'Other'},
         {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
          {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
-         {name: 'eqss-utaustin', label: 'Experimental equipment site specializing in dynamic in-situ testing using mobile shakers, UT Austin'},
+         {name: 'eqss-utaustin', label: 'Field mobile shakers, UT Austin'},
          {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida'},
          {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University'},
          {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego'},
@@ -241,6 +241,24 @@
                 description: exp.value.description
             };
             $scope.ui.showEditExperimentForm = true;
+          };
+
+
+          $scope.moveOrderUp = function(ent, total, list){
+            if (typeof ent._ui.order === 'undefined'){
+              ent._ui.order = 0;
+            } else if (ent._ui.order > 0){
+              ent._ui.order -= 1;
+            }
+          };
+
+          $scope.moveOrderDown = function(ent, total, list){
+            total = parseInt(total);
+            if (typeof ent._ui.order === 'undefined'){
+              ent._ui.order = 0;
+            } else if (ent._ui.order < total - 1){
+              ent._ui.order += 1;
+            }
           };
 
           $scope.saveEditExperiment = function(){
