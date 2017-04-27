@@ -125,10 +125,12 @@
       Sensor List
       </a>
       <div class="pull-right">
-        <button class="btn btn-sm btn-link">
+        <button class="btn btn-sm btn-link"
+                title="Move order Up">
         <i class="fa fa-arrow-up"
            ng-click="publicationCtrl.moveOrderUp(event, all_events.length)"></i></button>
         <button class="btn btn-sm btn-link"
+                title="Move order Down"
            ng-click="publicationCtrl.moveOrderDown(event, all_events.length)"><i class="fa fa-arrow-down"></i></button>
       </div>
     </div>
@@ -354,11 +356,13 @@
           <div class="value pull-right">
           <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
                 <button class="btn btn-sm btn-link pull-right"
+                        title="Move order Up"
                         ng-click="publicationCtrl.moveOrderUp(user, browser.publication.users.length)"
                         style="padding:0;">
                         <i class="fa fa-arrow-up"></i>
                 </button>
                 <button class="btn btn-sm btn-link pull-right"
+                        title="Move order Down"
                         ng-click="publicationCtrl.moveOrderDown(user, browser.publication.users.length)"
                         style="padding:0;">
                         <i class="fa fa-arrow-down"></i>
