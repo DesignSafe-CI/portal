@@ -164,6 +164,7 @@
 #geo_container .dropdown-menu {
   padding: 0px;
   background-color: #313131;
+  min-width: 200px;
 }
 
 #geo_container .dropdown-menu li {

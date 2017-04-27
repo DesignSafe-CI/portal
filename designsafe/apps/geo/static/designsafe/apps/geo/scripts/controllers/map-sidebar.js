@@ -221,11 +221,20 @@ export default class MapSidebarCtrl {
     lg.feature_group.addLayer(feature);
   }
 
+  update_layer_style (prop) {
+    let tmp = this.current_layer;
+    // debugger;
+    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+    let styles = {};
+    styles[prop] = this.current_layer.options[prop];
+    this.current_layer.setStyle(styles);
+  }
+
   drop_feature_success (ev, data, lg) {
     console.log("drag_feature_success", ev, data, lg);
   }
 
-  _load_data_success (retval) {
+  _load_data_success (retval, clear=false) {
     if (retval instanceof MapProject) {
 
       retval.layer_groups.forEach( (lg) => {
@@ -255,6 +264,15 @@ export default class MapSidebarCtrl {
         console.log(e);
       }
     }
+  }
+
+  open_existing_locally () {
+    console.log('open_existing_locally')
+    this.open_file_dialog();
+  }
+
+  open_existing_from_depot() {
+    this.open_db_modal();
   }
 
   open_db_modal () {
@@ -314,15 +332,6 @@ export default class MapSidebarCtrl {
     }).then( () => {
       this.toastr.success('Imported file');
     });
-  }
-
-  update_layer_style (prop) {
-    let tmp = this.current_layer;
-    // debugger;
-    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
-    let styles = {};
-    styles[prop] = this.current_layer.options[prop];
-    this.current_layer.setStyle(styles);
   }
 
   save_locally () {

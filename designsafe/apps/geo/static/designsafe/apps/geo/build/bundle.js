@@ -724,6 +724,16 @@ var MapSidebarCtrl = function () {
       lg.feature_group.addLayer(feature);
     }
   }, {
+    key: 'update_layer_style',
+    value: function update_layer_style(prop) {
+      var tmp = this.current_layer;
+      // debugger;
+      // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+      var styles = {};
+      styles[prop] = this.current_layer.options[prop];
+      this.current_layer.setStyle(styles);
+    }
+  }, {
     key: 'drop_feature_success',
     value: function drop_feature_success(ev, data, lg) {
       console.log("drag_feature_success", ev, data, lg);
@@ -732,6 +742,8 @@ var MapSidebarCtrl = function () {
     key: '_load_data_success',
     value: function _load_data_success(retval) {
       var _this4 = this;
+
+      var clear = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       if (retval instanceof _mapProject2.default) {
 
@@ -762,6 +774,17 @@ var MapSidebarCtrl = function () {
           console.log(e);
         }
       }
+    }
+  }, {
+    key: 'open_existing_locally',
+    value: function open_existing_locally() {
+      console.log('open_existing_locally');
+      this.open_file_dialog();
+    }
+  }, {
+    key: 'open_existing_from_depot',
+    value: function open_existing_from_depot() {
+      this.open_db_modal();
     }
   }, {
     key: 'open_db_modal',
@@ -837,16 +860,6 @@ var MapSidebarCtrl = function () {
       }).then(function () {
         _this8.toastr.success('Imported file');
       });
-    }
-  }, {
-    key: 'update_layer_style',
-    value: function update_layer_style(prop) {
-      var tmp = this.current_layer;
-      // debugger;
-      // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
-      var styles = {};
-      styles[prop] = this.current_layer.options[prop];
-      this.current_layer.setStyle(styles);
     }
   }, {
     key: 'save_locally',
