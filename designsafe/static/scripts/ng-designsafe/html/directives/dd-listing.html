@@ -91,8 +91,17 @@
                 browser.publishPipeline != 'meta' &&
                 browser.publishPipeline != 'agreement')"
          style="background:#fff;">
-    <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-      <div style= "width:50%; display:inline-block;">
+
+        <div class="dropdown" id="details-{{experiment.uuid}}">
+          <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
+                  style="width:100%;">
+            Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="data-{{experiment.uuid}}" class="collapse in">
+
+
+    <div style="border:1px solid black; background:white; margin-bottom:15px;">
+      <div style= "width:50%; display:inline-block; padding:5px;">
       <h3>{{experiment.value.title}}</h3>
       <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
       <p style="overflow:hidden; display:block; height:20px;">{{experiment.value.description}}</p>
@@ -111,13 +120,13 @@
       </div>
     </div>
     <div ng-if="!publicationCtrl.filterEvents(browser.project.getRelated('event_set', experiment.uuid)).length"
-        class="bg-info" style="padding:10px;">
+        class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
         This Experiment has no Events.
     </div>
     <div ng-repeat="event in all_events = publicationCtrl.filterEvents(browser.project.getRelated('event_set', experiment.uuid)) | orderBy: ['_ui.order', 'value.title']"
         style="margin-bottom:10px;">
     <div style="padding:3px;">
-      <span class="ds-text-red folder-tick">Event Data </span>
+      <span class="ds-text-red folder-tick">Event Data: {{event.value.title}} </span>
       <span style="color:light-gray">Link to: </span>
       <a class="ds-text-blue" href="#details-{{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).uuid}}"
       data-toggle="collapse" data-target="#files-{{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).uuid}}">
@@ -129,17 +138,22 @@
       </a>
       <div class="pull-right">
         <button class="btn btn-sm btn-link"
-                title="Move order Up">
-        <i class="fa fa-arrow-up"
-           ng-click="publicationCtrl.moveOrderUp(event, all_events.length)"></i></button>
+                title="Move order Up"
+                ng-click="publicationCtrl.moveOrderUp(event, all_events.length)" >
+        <i class="fa fa-arrow-up"></i></button>
         <button class="btn btn-sm btn-link"
                 title="Move order Down"
-           ng-click="publicationCtrl.moveOrderDown(event, all_events.length)"><i class="fa fa-arrow-down"></i></button>
+           ng-click="publicationCtrl.moveOrderDown(event, all_events.length)">
+        <i class="fa fa-arrow-down"></i></button>
       </div>
     </div>
-    <div style="position:absolute; left:-100px; margin-top:-20px; width:110px;">
+    <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
       <div style="border-bottom:1px solid lightgrey;">
+      <!--
       <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">{{event.value.title}}</a>
+      --><a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">
+      Relations
+      </a>
       </div>
       <div>
       <a class="ds-text-blue" href="" ng-click="openPreviewTree()($event, event.value.modelConfigs[0])">
@@ -201,6 +215,8 @@
     </div>
     </div>
 
+    </div>
+
 </div>
     <div class="project-preview-entities-details"
          ng-if="browser.showPreviewListing &&
@@ -211,7 +227,7 @@
         <div class="dropdown" id="details-{{modelConfig.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                   style="width:100%;">
-            Model Config {{modelConfig.value.title}}
+            Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
           <div id="files-{{modelConfig.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
@@ -241,7 +257,7 @@
         <div class="dropdown" id="details-{{sensorList.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                   style="width:100%;">
-            Sensor List {{sensorList.value.title}}
+            Sensor Info {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
           <div id="files-{{sensorList.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
@@ -269,11 +285,22 @@
 
       <div ng-repeat="analysis in browser.project.analysis_set | orderBy: 'value.title'">
         <div class="dropdown" id="details-{{analysis.uuid}}">
-          <button class="btn btn-default btn-sm collapsed ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+          <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                   style="width:100%;">
-            Analysis {{analysis.value.title}}
+            Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
-          <div id="files-{{analysis.uuid}}" class="collapse">
+          <div id="files-{{analysis.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <div style= "width:50%; display:inline-block;">
+              <h3>{{analysis.value.title}}</h3>
+              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
+              <p style="overflow:hidden; display:block; height:20px;">{{analysis.value.description}}</p>
+                  <button class="btn btn-link btn-sm"
+                          ng-click="publicationCtrl.showText(analysis.value.description)">
+                    <i class="fa fa-external-link"></i> Show</button>
+              </div>
+            </div>
+
             <table  class="table table-bordered table-striped"
                     style="background-color: #fff;">
                 <thead>
@@ -296,6 +323,8 @@
           </div>
         </div>
       </div>
+
+    </div>
 
     </div>
 
@@ -349,7 +378,7 @@
         </div>
         <div class="meta-row">
         <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl.editField(browser.publication.users, [{id:'last_name', name:'last_name', label:'Last Name', uniq:'username', type:'text'},
+          <a href="#" ng-click="publicationCtrl.editUsers([{id:'last_name', name:'last_name', label:'Last Name', uniq:'username', type:'text'},
                                                                                       {id:'first_name', name:'first_name', label:'First Name', uniq:'username', type:'text'}])">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
@@ -425,10 +454,10 @@
           <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span>Keywords </span><span class="text-danger">(*)</span>
+          <span>Keywords </span><span class="text-danger">(*)</span><br/>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="for keyword in browser.project.value.keywords.split(',')">{{keyword}}</span><br/>
+          <span ng-repeat="keyword in browser.project.value.keywords.split(',')">{{keyword}}</span><br/>
           </div>
         </div>
         <div class="meta-row">
@@ -582,13 +611,18 @@
           </div>
         </div>
      </div>
-  <div   class="agreement-div"
-         ng-if="browser.showPreviewListing &&
-                browser.publishPipeline == 'agreement'"
-         style="background:#fff; min-height:500px;">
-         <p>Agreement</p>
-   </div>
 
     </div>
 
 </div>
+</div>
+  <div class="agreement-div"
+         ng-if="browser.showPreviewListing && browser.publishPipeline === 'agreement'"
+         style="background:#fff; min-height:500px; padding:10px;">
+         <h2>Agreement</h2>
+         <p>
+            Agreement placeholder.
+         </p>
+   </div>
+
+   </div>
