@@ -271,6 +271,7 @@ export default class GeoDataService {
   // @param f: a file from DataService
   // returns a promise with the LayerGroup
   load_from_data_depot(f) {
+    console.log(f)
     let ext = GeoUtils.get_file_extension(f.name);
     let responseType = 'text';
     if ((ext === 'kmz') || (ext === 'jpg') || (ext === 'jpeg')) {

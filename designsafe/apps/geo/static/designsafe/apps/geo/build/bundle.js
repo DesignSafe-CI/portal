@@ -538,12 +538,8 @@ var MapSidebarCtrl = function () {
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
 
-      // For some reason, need to readd the feature groups for markers to be displayed correctly???
-      this.project.layer_groups.forEach(function (lg) {
-        _this.map.addLayer(lg.feature_group);
-        _this.map.removeLayer(lg.feature_group);
-        _this.map.addLayer(lg.feature_group);
-      });
+      this._init_map_layers();
+
       try {
         this.map.fitBounds(this.project.get_bounds(), { maxZoom: 16 });
       } catch (e) {
@@ -611,6 +607,18 @@ var MapSidebarCtrl = function () {
     value: function feature_click(layer) {
       console.log(layer);
     }
+  }, {
+    key: '_init_map_layers',
+    value: function _init_map_layers() {
+      var _this2 = this;
+
+      // For some reason, need to readd the feature groups for markers to be displayed correctly???
+      this.project.layer_groups.forEach(function (lg) {
+        _this2.map.addLayer(lg.feature_group);
+        _this2.map.removeLayer(lg.feature_group);
+        _this2.map.addLayer(lg.feature_group);
+      });
+    }
 
     // Adds click handlers to map elements. This does NOT feel
     // right to me...
@@ -618,11 +626,11 @@ var MapSidebarCtrl = function () {
   }, {
     key: '_add_click_handlers',
     value: function _add_click_handlers() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.project.layer_groups.forEach(function (lg) {
         lg.feature_group.on('click', function (ev) {
-          _this2.project.layer_groups.forEach(function (lg) {
+          _this3.project.layer_groups.forEach(function (lg) {
             lg.feature_group.getLayers().forEach(function (layer) {
               layer.active = false;
               if (layer == ev.layer) {
@@ -681,19 +689,19 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'create_new_project',
     value: function create_new_project() {
-      var _this3 = this;
+      var _this4 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
         controller: "ConfirmClearModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this3.project.clear();
+        _this4.project.clear();
         var p = new _mapProject2.default('New Map');
         p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
-        _this3.project = p;
-        _this3.active_layer_group = _this3.project.layer_groups[0];
-        _this3.map.addLayer(_this3.active_layer_group.feature_group);
+        _this4.project = p;
+        _this4.active_layer_group = _this4.project.layer_groups[0];
+        _this4.map.addLayer(_this4.active_layer_group.feature_group);
       });
     }
   }, {
@@ -741,15 +749,17 @@ var MapSidebarCtrl = function () {
   }, {
     key: '_load_data_success',
     value: function _load_data_success(retval) {
-      var _this4 = this;
+      var _this5 = this;
 
-      var clear = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      if (retval instanceof _mapProject2.default) {
+      if (this.open_existing) {
+        this.project = retval;
+        this._init_map_layers();
+        this.open_existing = false;
+      } else if (retval instanceof _mapProject2.default) {
 
         retval.layer_groups.forEach(function (lg) {
-          _this4.project.layer_groups.push(lg);
-          _this4.map.addLayer(lg.feature_group);
+          _this5.project.layer_groups.push(lg);
+          _this5.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
         try {
@@ -766,7 +776,7 @@ var MapSidebarCtrl = function () {
         }
         //it will be an array of features...
         retval.forEach(function (f) {
-          _this4.active_layer_group.feature_group.addLayer(f);
+          _this5.active_layer_group.feature_group.addLayer(f);
         });
         try {
           this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
@@ -779,17 +789,19 @@ var MapSidebarCtrl = function () {
     key: 'open_existing_locally',
     value: function open_existing_locally() {
       console.log('open_existing_locally');
+      this.open_existing = true;
       this.open_file_dialog();
     }
   }, {
     key: 'open_existing_from_depot',
     value: function open_existing_from_depot() {
+      this.open_existing = true;
       this.open_db_modal();
     }
   }, {
     key: 'open_db_modal',
     value: function open_db_modal() {
-      var _this5 = this;
+      var _this6 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
@@ -801,20 +813,20 @@ var MapSidebarCtrl = function () {
         }
       });
       modal.result.then(function (f, saveas) {
-        _this5.load_from_data_depot(f);
+        _this6.load_from_data_depot(f);
       });
     }
   }, {
     key: 'open_settings_modal',
     value: function open_settings_modal() {
-      var _this6 = this;
+      var _this7 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
         controller: "SettingsModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this6.settings = _this6.GeoSettingsService.settings;
+        _this7.settings = _this7.GeoSettingsService.settings;
       });
     }
   }, {
@@ -827,20 +839,22 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this7 = this;
+      var _this8 = this;
 
       this.loading = true;
-      this.GeoDataService.load_from_data_depot(f).then(function (retval) {
-        _this7._load_data_success(retval);
+      this.GeoDataService.load_from_data_depot(f.selected).then(function (retval) {
+        _this8._load_data_success(retval);
+        _this8.loading = false;
       }, function (err) {
-        _this7.toastr.error('Load failed!');
-        _this7.loading = false;
+        _this8.toastr.error('Load failed!');
+        _this8.loading = false;
+        _this8.open_existing = false;
       });
     }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
-      var _this8 = this;
+      var _this9 = this;
 
       this.loading = true;
       var reqs = [];
@@ -848,17 +862,17 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          return _this8._load_data_success(retval);
+          return _this9._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
       };
       this.$q.all(reqs).then(function () {
-        _this8.loading = false;
+        _this9.loading = false;
         //reset the picker
         $('#file_picker').val('');
       }).then(function () {
-        _this8.toastr.success('Imported file');
+        _this9.toastr.success('Imported file');
       });
     }
   }, {
@@ -869,31 +883,32 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot() {
-      var _this9 = this;
+      var _this10 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
           filename: function filename() {
-            return _this9.project.name + '.geojson';
+            return _this10.project.name + '.geojson';
           }
         }
       });
       modal.result.then(function (res) {
+        console.log(res);
         var newname = res.saveas;
-        _this9.project.name = newname.split('.')[0];
+        _this10.project.name = newname.split('.')[0];
         res.selected.name = res.saveas;
-        _this9.loading = true;
-        _this9.GeoDataService.save_to_depot(_this9.project, res.selected).then(function (resp) {
-          _this9.loading = false;
-          _this9.toastr.success('Saved to data depot');
+        _this10.loading = true;
+        _this10.GeoDataService.save_to_depot(_this10.project, res.selected).then(function (resp) {
+          _this10.loading = false;
+          _this10.toastr.success('Saved to data depot');
         }, function (err) {
-          _this9.toastr.error('Save failed!');
-          _this9.loading = false;
+          _this10.toastr.error('Save failed!');
+          _this10.loading = false;
         });
       }, function (rej) {
-        _this9.loading = false;
+        _this10.loading = false;
       });
     }
   }]);
@@ -1304,6 +1319,7 @@ var GeoDataService = function () {
     value: function load_from_data_depot(f) {
       var _this7 = this;
 
+      console.log(f);
       var ext = GeoUtils.get_file_extension(f.name);
       var responseType = 'text';
       if (ext === 'kmz' || ext === 'jpg' || ext === 'jpeg') {

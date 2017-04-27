@@ -54,12 +54,8 @@ export default class MapSidebarCtrl {
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
 
-      // For some reason, need to readd the feature groups for markers to be displayed correctly???
-      this.project.layer_groups.forEach( (lg)=>{
-        this.map.addLayer(lg.feature_group);
-        this.map.removeLayer(lg.feature_group);
-        this.map.addLayer(lg.feature_group);
-      });
+      this._init_map_layers();
+
       try {
         this.map.fitBounds(this.project.get_bounds(), {maxZoom: 16});
       } catch (e) {
@@ -123,6 +119,15 @@ export default class MapSidebarCtrl {
 
   feature_click (layer) {
     console.log(layer);
+  }
+
+  _init_map_layers() {
+    // For some reason, need to readd the feature groups for markers to be displayed correctly???
+    this.project.layer_groups.forEach( (lg)=>{
+      this.map.addLayer(lg.feature_group);
+      this.map.removeLayer(lg.feature_group);
+      this.map.addLayer(lg.feature_group);
+    });
   }
 
   // Adds click handlers to map elements. This does NOT feel
@@ -234,8 +239,13 @@ export default class MapSidebarCtrl {
     console.log("drag_feature_success", ev, data, lg);
   }
 
-  _load_data_success (retval, clear=false) {
-    if (retval instanceof MapProject) {
+  _load_data_success (retval) {
+    if (this.open_existing) {
+      this.project = retval;
+      this._init_map_layers();
+      this.open_existing = false;
+    }
+    else if (retval instanceof MapProject) {
 
       retval.layer_groups.forEach( (lg) => {
         this.project.layer_groups.push(lg);
@@ -268,10 +278,12 @@ export default class MapSidebarCtrl {
 
   open_existing_locally () {
     console.log('open_existing_locally')
+    this.open_existing = true;
     this.open_file_dialog();
   }
 
   open_existing_from_depot() {
+    this.open_existing = true;
     this.open_db_modal();
   }
 
@@ -305,13 +317,16 @@ export default class MapSidebarCtrl {
 
   load_from_data_depot(f) {
     this.loading = true;
-    this.GeoDataService.load_from_data_depot(f)
+    this.GeoDataService.load_from_data_depot(f.selected)
       .then(
       (retval) =>{
-        this._load_data_success(retval);},
+        this._load_data_success(retval);
+        this.loading = false;
+      },
       (err)=> {
         this.toastr.error('Load failed!');
         this.loading = false;
+        this.open_existing = false;
       });
   }
 
@@ -347,6 +362,7 @@ export default class MapSidebarCtrl {
       }
     });
     modal.result.then( (res) => {
+      console.log(res)
       let newname = res.saveas;
       this.project.name = newname.split('.')[0];
       res.selected.name = res.saveas;
