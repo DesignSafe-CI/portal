@@ -37,7 +37,9 @@ function (DataBrowserService, UserService, FileListing, DataService) {
         if ($scope.picker === 'file' && file.type !== 'folder' && file.type !== 'dir') {
             file.selected = true;
             $scope.selected = file;
-            if ($scope.saveas) $scope.saveas = file.name;
+            if ($scope.saveas.filename) {
+              $scope.saveas.filename = file.name;
+            }
         } else if ($scope.picker === 'folder' && (file.type !== 'folder' || file.type !== 'dir')) {
           file.selected = true;
           $scope.selected = file;

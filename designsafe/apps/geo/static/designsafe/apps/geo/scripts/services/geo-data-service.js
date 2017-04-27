@@ -5,11 +5,12 @@ import MapProject from '../models/map-project';
 
 export default class GeoDataService {
 
-  constructor ($http, $q, UserService) {
+  constructor ($http, $q, UserService, GeoSettingsService) {
     'ngInject';
     this.$http = $http;
     this.$q = $q;
     this.UserService = UserService;
+    this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
     this.previous_project_state = null;
   }
@@ -187,6 +188,18 @@ export default class GeoDataService {
       json.features.forEach( (d)=> {
         let feature = L.geoJSON(d);
         feature.eachLayer( (layer)=> {
+
+          // If there were no styles applied, it might be transparent???
+          if (!(layer.feature.properties.color)) {
+           layer.feature.properties.color = '#ff0000';
+          }
+          if (!(layer.feature.properties.fillColor)) {
+            layer.feature.properties.fillColor = '#ff0000';
+          };
+          if (!(layer.feature.properties.opacity)) {
+            layer.feature.properties.opacity = 1.0;
+          };
+
           for (let key in layer.feature.properties) {
             layer.options[key] = layer.feature.properties[key];
           }
@@ -202,6 +215,7 @@ export default class GeoDataService {
             // do not have a setStyle() method
             console.log(e);
           }
+    
           let layer_group_index = d.layer_group_index;
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();
@@ -325,7 +339,6 @@ export default class GeoDataService {
   }
 
   save_to_depot (project, path) {
-    console.log(project, path)
     let form = new FormData();
     let gjson = project.to_json();
     let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});

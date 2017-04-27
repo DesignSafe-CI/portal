@@ -54,17 +54,9 @@ export default class MapSidebarCtrl {
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
 
-      // For some reason, need to readd the feature groups for markers to be displayed correctly???
-      this.project.layer_groups.forEach( (lg)=>{
-        this.map.addLayer(lg.feature_group);
-        this.map.removeLayer(lg.feature_group);
-        this.map.addLayer(lg.feature_group);
-      });
-      try {
-        this.map.fitBounds(this.project.get_bounds(), {maxZoom: 16});
-      } catch (e) {
-        console.log('get_bounds fail', e);
-      }
+      this._init_map_layers();
+      this.fit_map_to_project();
+
     } else {
       this.project = new MapProject('New Map');
       this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
@@ -106,6 +98,14 @@ export default class MapSidebarCtrl {
 
   } // end constructor
 
+  fit_map_to_project() {
+    try {
+      this.map.fitBounds(this.project.get_bounds(), {maxZoom: 16});
+    } catch (e) {
+      console.log('get_bounds fail', e);
+    }
+  }
+
   add_draw_controls (fg) {
     let dc = new L.Control.Draw({
       position: 'topright',
@@ -123,6 +123,19 @@ export default class MapSidebarCtrl {
 
   feature_click (layer) {
     console.log(layer);
+  }
+
+  _init_map_layers() {
+    // For some reason, need to readd the feature groups for markers to be displayed correctly???
+    this.project.layer_groups.forEach( (lg)=>{
+      // lg.feature_group.getLayers().forEach( (layer)=>{
+      //   this.map.addLayer(layer);
+      // });
+      // this.map.addLayer(lg.feature_group);
+      this.map.removeLayer(lg.feature_group);
+      this.map.addLayer(lg.feature_group);
+    });
+    this.active_layer_group = this.project.layer_groups[0];
   }
 
   // Adds click handlers to map elements. This does NOT feel
@@ -187,6 +200,10 @@ export default class MapSidebarCtrl {
       controller: "ConfirmClearModalCtrl as vm",
     });
     modal.result.then( (s) => {
+      this.map.eachLayer(function (layer) {
+        console.log(layer)
+        // this.map.removeLayer(layer);
+      });
       this.project.clear();
       let p = new MapProject('New Map');
       p.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
@@ -221,23 +238,34 @@ export default class MapSidebarCtrl {
     lg.feature_group.addLayer(feature);
   }
 
+  update_layer_style (prop) {
+    let tmp = this.current_layer;
+    // debugger;
+    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
+    let styles = {};
+    styles[prop] = this.current_layer.options[prop];
+    this.current_layer.setStyle(styles);
+  }
+
   drop_feature_success (ev, data, lg) {
     console.log("drag_feature_success", ev, data, lg);
   }
 
   _load_data_success (retval) {
-    if (retval instanceof MapProject) {
+    if (this.open_existing) {
+      this.project = retval;
+      this._init_map_layers();
+      this.fit_map_to_project();
+      this.open_existing = false;
+    }
+    else if (retval instanceof MapProject) {
 
       retval.layer_groups.forEach( (lg) => {
         this.project.layer_groups.push(lg);
         this.map.addLayer(lg.feature_group);
       });
       this.active_layer_group = this.project.layer_groups[0];
-      try {
-        this.map.fitBounds(this.project.get_bounds());
-      } catch (e) {
-        console.log(e);
-      }
+      this.fit_map_to_project();
     } else {
 
       if (this.project.layer_groups.length == 0) {
@@ -249,12 +277,18 @@ export default class MapSidebarCtrl {
       retval.forEach( (f) => {
         this.active_layer_group.feature_group.addLayer(f);
       });
-      try {
-        this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), {maxZoom: 16});
-      } catch (e) {
-        console.log(e);
-      }
+      this.fit_map_to_project();
     }
+  }
+
+  open_existing_locally () {
+    this.open_existing = true;
+    this.open_file_dialog();
+  }
+
+  open_existing_from_depot() {
+    this.open_existing = true;
+    this.open_db_modal();
   }
 
   open_db_modal () {
@@ -287,13 +321,16 @@ export default class MapSidebarCtrl {
 
   load_from_data_depot(f) {
     this.loading = true;
-    this.GeoDataService.load_from_data_depot(f)
+    this.GeoDataService.load_from_data_depot(f.selected)
       .then(
       (retval) =>{
-        this._load_data_success(retval);},
+        this._load_data_success(retval);
+        this.loading = false;
+      },
       (err)=> {
         this.toastr.error('Load failed!');
         this.loading = false;
+        this.open_existing = false;
       });
   }
 
@@ -316,15 +353,6 @@ export default class MapSidebarCtrl {
     });
   }
 
-  update_layer_style (prop) {
-    let tmp = this.current_layer;
-    // debugger;
-    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
-    let styles = {};
-    styles[prop] = this.current_layer.options[prop];
-    this.current_layer.setStyle(styles);
-  }
-
   save_locally () {
     this.GeoDataService.save_locally(this.project);
   }
@@ -338,6 +366,7 @@ export default class MapSidebarCtrl {
       }
     });
     modal.result.then( (res) => {
+      console.log(res)
       let newname = res.saveas;
       this.project.name = newname.split('.')[0];
       res.selected.name = res.saveas;
