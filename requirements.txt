@@ -72,5 +72,7 @@ chardet==2.3.0
 
 beautifulsoup4==4.5.3
 
+ipdb==0.10.2
+
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.2.0#egg=pytas-1.2.0
