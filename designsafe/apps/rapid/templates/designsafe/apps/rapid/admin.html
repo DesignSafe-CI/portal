@@ -7,8 +7,25 @@
       <div class="col-md-12">
         <h2> Rapid Admin </h2>
         <a class="btn btn-default" href="{% url 'designsafe_rapid:admin_create_event' %}">
-          <i class="fa fa-plus"> </i> Create New Rapid Event
+          <i class="fa fa-plus"> Create New Rapid Event </i>
         </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table table-hover">
+          <tr>
+            <th> Title </th>
+            <th> Created </th>
+          </tr>
+          {% for event in rapid_events %}
+            <tr>
+              <td> {{event.title}} </td>
+              <td> {{event.created_date}} </td>
+              <td> <a href="{% url 'designsafe_rapid:admin_edit_event' event_id=event.id %}"class="btn btn-sm btn-info"> Edit </a> </td>
+            </tr>
+          {% endfor %}
+        </table>
       </div>
     </div>
   </div>

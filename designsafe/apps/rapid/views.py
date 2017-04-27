@@ -29,7 +29,12 @@ def get_events(request):
 
 @login_required
 def admin(request):
-    return render(request, 'designsafe/apps/rapid/admin.html')
+    s = RapidNHEvent.search()
+    results = s.execute()
+    logger.info(results)
+    context = {}
+    context["rapid_events"] = results
+    return render(request, 'designsafe/apps/rapid/admin.html', context)
 
 @login_required
 def admin_create_event(request):
@@ -38,8 +43,6 @@ def admin_create_event(request):
         if form.is_valid():
             logger.info(form.cleaned_data)
             ev = RapidNHEvent(**form.cleaned_data)
-            ev.bullshit = "HELLO"
-            logger.info(ev)
             ev.save()
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
@@ -51,3 +54,7 @@ def admin_create_event(request):
         context = {}
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
+
+@login_required
+def admin_edit_event(request):
+    logger.info(request)
