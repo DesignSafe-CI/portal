@@ -512,6 +512,7 @@
             };
          }]
         });
+        return modal;
     };
 
     var _publicationCtrl = {
