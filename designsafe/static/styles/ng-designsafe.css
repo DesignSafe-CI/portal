@@ -521,7 +521,6 @@ span.label.tag-red.selected {
 	display: inline-block;
     /* border: 1px solid lightgrey; */
     height: 3em;
-    width: 10em;
     text-align: center;
     /* vertical-align: bottom; */
     border-bottom: 30px solid lightgrey;
@@ -604,3 +603,12 @@ span.label.tag-red.selected {
     display:inline-block;
     width:45%;
     text-align:left;
+}
+
+.dropdown button.collapsed .dropdown-caret:before {
+    content: "\f078";
+}
+
+.dropdown button .dropdown-caret:before {
+    content: "\f077";
+}
