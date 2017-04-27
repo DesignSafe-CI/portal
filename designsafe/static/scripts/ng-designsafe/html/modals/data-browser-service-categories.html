@@ -135,6 +135,21 @@
               </div>
           </div>
         </div>
+        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
+          <div class="col-xs-3">
+              <div ng-repeat="report in data.project.report_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(report)">
+                <span ng-class="{'selected': isProjectTagSel(report)}" 
+                      class="label tag-black">Report</span>
+                <span class="tab-title">{{report.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(report) }" class="fa"></i>
+                </button>
+              </div>
+          </div>
+        </div>
 
       <div>
         <button class="btn btn-sm btn-info"
