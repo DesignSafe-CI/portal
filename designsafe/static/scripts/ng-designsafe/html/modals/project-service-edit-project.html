@@ -35,7 +35,7 @@
       <div class="pull-right" style="width:49%">
         <div class="form-group">
           <label for="identifier-id">Project Identifier:</label>
-          <input type="text" class="form-control" id="identifier-id" ng-model="form.identifier" disabled/>
+          <input type="text" class="form-control" id="identifier-id" ng-model="form.projectId" disabled/>
         </div>
         <div class="form-group">
           <yamz-term term-id="h1264"><i class="fa fa-question-circle"></i></yamz-term>
@@ -89,6 +89,13 @@
         </div>
       </div>
       <div style="clear:both;">
+        <div class="form-group">
+          <label for="id-keywords">Keywords</label>
+          <input class="form-control" type="text" id="id-keywords" ng-model="form.keywords" />
+          <p class="help-block">
+            Add keywords separated by commas. e.g. keyword 1, keyword 2, keyword 3
+          </p>
+        </div>
         <div class="form-group">
           <yamz-term term-id="h1552"><i class="fa fa-question-circle"></i></yamz-term>
           <label for="description-id">Description:</label>

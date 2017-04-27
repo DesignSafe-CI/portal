@@ -68,13 +68,14 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $q) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $uibModal, $q) {
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
 
     function setEntitiesRel(resp){
       $scope.data.project.setEntitiesRel(resp);
+      return resp;
     }
 
     ProjectService.get({uuid: projectId}).then(function (project) {
@@ -112,6 +113,29 @@
         );
     });
 
+    $scope.showText = function(text){
+        $uibModal.open({
+            template: '<div class="modal-header">' + 
+                      '</div>' +
+                      '<div class="modal-body">' + 
+                        '<div style="border: 1px solid black;"' +
+                                   '"padding:5px;">' +
+                          '{{text}}' +
+                        '</div>' +
+                      '</div>' + 
+                      '<div class="modal-footer">' + 
+                        '<button class="btn btn-default" ng-click="close()">' + 
+                          'Close' + 
+                        '</button>' +
+                      '</div>',
+            controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+                $scope.text = text;
+                $scope.close = function(){
+                    $uibModalInstance.dismiss('Close');
+                };
+            }]
+        });
+    };
 
     $scope.editProject = function($event) {
       if ($event){
@@ -490,6 +514,30 @@
     };
 
     var _publicationCtrl = {
+
+      showText : function(text){
+          $uibModal.open({
+              template: '<div class="modal-header">' + 
+                        '</div>' +
+                        '<div class="modal-body">' + 
+                          '<div style="border: 1px solid black;"' +
+                                     '"padding:5px;">' +
+                            '{{text}}' +
+                          '</div>' +
+                        '</div>' + 
+                        '<div class="modal-footer">' + 
+                          '<button class="btn btn-default" ng-click="close()">' + 
+                            'Close' + 
+                          '</button>' +
+                        '</div>',
+              controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+                  $scope.text = text;
+                  $scope.close = function(){
+                      $uibModalInstance.dismiss('Close');
+                  };
+              }]
+          });
+      },
 
       moveOrderUp: function(ent, total){
         if (typeof ent._ui.order === 'undefined'){

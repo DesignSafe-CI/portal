@@ -6,7 +6,7 @@
             <tbody>
             <tr>
               <th>ID</th>
-              <td>{{data.project.vlue.id}}</td>
+              <td>{{data.project.value.projectId}}</td>
             </tr>
             <tr>
                 <th>PI</th>
@@ -24,6 +24,14 @@
             <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
             <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
+        </div>
+        <div class="project-desc" style="background:white; padding:5px; margin:5px 0px; border:1px solid black; height:100px; overflow:hidden; word-wrap:overflow;">
+          <p>
+          {{data.project.value.description.substring(0, 300)}}
+          </p>
+          <button class="btn btn-link btn-sm"
+                  ng-click="showText(data.project.value.description)">
+            <i class="fa fa-external-link"></i> Show</button>
         </div>
         </div>
         <div class="btn-group" role="group" aria-label="Listing views"
