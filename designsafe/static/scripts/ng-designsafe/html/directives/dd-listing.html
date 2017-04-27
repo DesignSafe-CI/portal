@@ -89,23 +89,25 @@
         ng-repeat="experiment in publicationCtrl().filterExperiments(browser.project.experiment_set) | orderBy: 'value.title'"
          ng-if="browser.showPreviewListing &&
                 (!browser.publishPipeline ||
-                browser.publishPipeline != 'meta')"
+                browser.publishPipeline != 'meta' &&
+                browser.publishPipeline != 'agreement')"
          style="background:#fff;">
-    <div style="border:1px solid black; background:white;">
+    <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
       <div style="width:50%; display:inline-block;">
       <h3>{{experiment.value.title}}</h3>
       <p>{{experiment.value.descrpition}}</p>
       </div>
       <div style="width:49%; vertical-align:top; display:inline-block;">
-        <div style="border:1px solid black;">
+        <div style="border:1px solid black; padding:5px;">
           {{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
         </div>
-        <div style="border:1px solid black;">
+        <div style="border:1px solid black; padding:5px;">
           {{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}
         </div>
       </div>
     </div>
-    <div ng-repeat="event in publicationCtrl().filterEvents(browser.project.getRelated('event_set', experiment.uuid)) | orderBy: ['_ui.order', 'value.title']">
+    <div ng-repeat="event in all_events = publicationCtrl().filterEvents(browser.project.getRelated('event_set', experiment.uuid)) | orderBy: ['_ui.order', 'value.title']"
+        style="margin-bottom:10px;">
     <div style="padding:3px;">
       <span class="ds-text-red folder-tick">Event Data </span>
       <span style="color:light-gray">Link to: </span>
@@ -120,9 +122,9 @@
       <div class="pull-right">
         <button class="btn btn-sm btn-link">
         <i class="fa fa-arrow-up"
-           ng-click="publicationCtrl().moveOrderUp(event)"></i></button>
+           ng-click="publicationCtrl().moveOrderUp(event, all_events.length)"></i></button>
         <button class="btn btn-sm btn-link"
-           ng-click="publicationCtrl().moveOrderDown(event)"><i class="fa fa-arrow-down"></i></button>
+           ng-click="publicationCtrl().moveOrderDown(event, all_events.length)"><i class="fa fa-arrow-down"></i></button>
       </div>
     </div>
     <div style="position:absolute; left:-100px; margin-top:-20px; width:110px;">
@@ -140,7 +142,7 @@
       </a>
       </div>
     </div>
-    <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px;">
+    <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; max-height:300px; overflow:scroll;">
     <table  class="table table-bordered table-striped"
             style="background-color: #fff;">
         <thead>
@@ -325,14 +327,30 @@
                 </span>
         </div>
         <div class="meta-row">
+        <div class="attr pull-left">
           <a href="#" ng-click="publicationCtrl().openEditTeamMembers()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Team Members </span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="username in browser.project.value.teamMembers">
-                <ds-user username="username" format="name"></ds-user>
+          <span>Team Members </span><span class="text-danger">(*)</span>
+          </div>
+
+          <div class="value pull-right">
+          <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
+                <button class="btn btn-sm btn-link pull-right"
+                        ng-click="publicationCtrl().moveOrderUp(user, browser.publication.users.length)"
+                        style="padding:0;">
+                        <i class="fa fa-arrow-up"></i>
+                </button>
+                <button class="btn btn-sm btn-link pull-right"
+                        ng-click="publicationCtrl().moveOrderDown(user, browser.publication.users.length)"
+                        style="padding:0;">
+                        <i class="fa fa-arrow-down"></i>
+                </button>
+          <span>
+                {{user.last_name}}, {{user.first_name}}  
                 </span>
+          </div>
+          </div>
         </div>
         <div class="meta-row">
           <a href="#" ng-click="publicationCtrl().openEditProject()">
@@ -406,11 +424,16 @@
           <span class="value pull-right">{{exp.getEF(browser.project.value.projectType, exp.value.experimentalFacility).label}}</span>
         </div>
         <div class="meta-row">
-          <span class="attr pull-left">Authors</span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="username in browser.project.value.teamMembers">
-                <ds-user username="username" format="name"></ds-user>
+          <div class="attr pull-left">
+          <span>Authors</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
+          <span>
+                {{user.last_name}}, {{user.first_name}}  
                 </span>
+          </div>
+          </div>
         </div>
         <div class="meta-row">
           <a href="#" ng-click="publicationCtrl().openEditExperiments()">
@@ -471,6 +494,13 @@
           </span>
         </div>
      </div>
+  <div   class="agreement"
+         ng-if="browser.showPreviewListing &&
+                browser.publishPipeline == 'agreement'"
+         style="background:#fff; min-height:500px;">
+         <p>Agreement</p>
+   </div>
+
     </div>
 
 </div>
