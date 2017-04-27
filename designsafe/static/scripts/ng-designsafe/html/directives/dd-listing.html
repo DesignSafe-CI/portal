@@ -325,7 +325,7 @@
           </a>
           <span>Project Type </span><span class="text-danger">(*)</span>
           </div>
-          <div class="attr pull-right">
+          <div class="value pull-right">
           <span>{{browser.project.value.projectType}}</span>
           </div>
         </div>
@@ -502,7 +502,7 @@
           <div class="value pull-right">
           <span ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)">
                 {{model_config.value.title}}
-                </span>
+                </span><br/>
           </div>
         </div>
         <div class="meta-row">
@@ -515,7 +515,7 @@
           <div class="value pull-right">
           <span ng-repeat="sensor_list in browser.project.getRelated('sensorlist_set', exp.uuid)">
                 {{sensor_list.value.title}}
-                </span>
+                </span><br/>
           </div>
         </div>
         <div class="meta-row">
@@ -528,7 +528,7 @@
           <div class="value pull-right">
           <span ng-repeat="event in browser.project.getRelated('event_set', exp.uuid)">
                 {{event.value.title}}
-                </span>
+                </span><br/>
           </div>
         </div>
      </div>
@@ -571,7 +571,7 @@
           <div class="value pull-right">
           <span ng-repeat="event in browser.project.getRelated('event_set', analysis.uuid)">
                 [Event] {{event.value.title}}
-          </span>
+          </span><br/>
           </div>
         </div>
      </div>
