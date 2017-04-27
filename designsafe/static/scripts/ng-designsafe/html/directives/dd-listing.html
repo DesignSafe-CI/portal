@@ -85,8 +85,7 @@
   </div>
 
 <div>
-  <div
-        ng-repeat="experiment in publicationCtrl.filterExperiments(browser.project.experiment_set) | orderBy: 'value.title'"
+  <div ng-repeat="experiment in publicationCtrl.filterExperiments(browser.project.experiment_set) | orderBy: 'value.title'"
          ng-if="browser.showPreviewListing &&
                 (!browser.publishPipeline ||
                 browser.publishPipeline != 'meta' &&
@@ -110,6 +109,10 @@
           {{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}
         </div>
       </div>
+    </div>
+    <div ng-if="!publicationCtrl.filterEvents(browser.project.getRelated('event_set', experiment.uuid)).length"
+        class="bg-info" style="padding:10px;">
+        This Experiment has no Events.
     </div>
     <div ng-repeat="event in all_events = publicationCtrl.filterEvents(browser.project.getRelated('event_set', experiment.uuid)) | orderBy: ['_ui.order', 'value.title']"
         style="margin-bottom:10px;">
