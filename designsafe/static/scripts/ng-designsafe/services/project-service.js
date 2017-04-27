@@ -178,7 +178,8 @@
               efs: efs,
               experimentTypes: experimentTypes,
               equipmentTypes: equipmentTypes,
-              updateExperiments: {}
+              updateExperiments: {},
+              showAddReport: {}
               };
           $scope.form = {
             curExperiments: [],
@@ -393,7 +394,10 @@
                yamzId: 'h1253'},
               {label: 'Analysis',
                name: 'designsafe.project.analysis',
-               yamzId: 'h1333'}
+               yamzId: 'h1333'},
+              {label: 'Report',
+               name: 'designsafe.project.report',
+               yamzId: ''}
               ];
           $scope.ui.analysisData = [
             {name: 'graph', label: 'Graph'},

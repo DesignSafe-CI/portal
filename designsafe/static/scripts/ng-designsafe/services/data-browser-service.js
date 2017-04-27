@@ -1506,7 +1506,10 @@
                yamzId: 'h1253'},
               {label: 'Analysis',
                name: 'designsafe.project.analysis',
-               yamzId: 'h1333'}
+               yamzId: 'h1333'},
+              {label: 'Report',
+               name: 'designsafe.project.report',
+               yamzId: ''}
               ];
           $scope.data.form.projectTagToAdd = {optional:{}};
           $scope.data.catForm = {};
