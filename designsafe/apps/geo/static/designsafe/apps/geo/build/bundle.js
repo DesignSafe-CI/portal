@@ -539,12 +539,7 @@ var MapSidebarCtrl = function () {
       this.project = this.GeoDataService.current_project();
 
       this._init_map_layers();
-
-      try {
-        this.map.fitBounds(this.project.get_bounds(), { maxZoom: 16 });
-      } catch (e) {
-        console.log('get_bounds fail', e);
-      }
+      this.fit_map_to_project();
     } else {
       this.project = new _mapProject2.default('New Map');
       this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
@@ -587,6 +582,15 @@ var MapSidebarCtrl = function () {
   } // end constructor
 
   _createClass(MapSidebarCtrl, [{
+    key: 'fit_map_to_project',
+    value: function fit_map_to_project() {
+      try {
+        this.map.fitBounds(this.project.get_bounds(), { maxZoom: 16 });
+      } catch (e) {
+        console.log('get_bounds fail', e);
+      }
+    }
+  }, {
     key: 'add_draw_controls',
     value: function add_draw_controls(fg) {
       var dc = new L.Control.Draw({
@@ -614,10 +618,14 @@ var MapSidebarCtrl = function () {
 
       // For some reason, need to readd the feature groups for markers to be displayed correctly???
       this.project.layer_groups.forEach(function (lg) {
-        _this2.map.addLayer(lg.feature_group);
+        // lg.feature_group.getLayers().forEach( (layer)=>{
+        //   this.map.addLayer(layer);
+        // });
+        // this.map.addLayer(lg.feature_group);
         _this2.map.removeLayer(lg.feature_group);
         _this2.map.addLayer(lg.feature_group);
       });
+      this.active_layer_group = this.project.layer_groups[0];
     }
 
     // Adds click handlers to map elements. This does NOT feel
@@ -696,6 +704,10 @@ var MapSidebarCtrl = function () {
         controller: "ConfirmClearModalCtrl as vm"
       });
       modal.result.then(function (s) {
+        _this4.map.eachLayer(function (layer) {
+          console.log(layer);
+          // this.map.removeLayer(layer);
+        });
         _this4.project.clear();
         var p = new _mapProject2.default('New Map');
         p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
@@ -754,6 +766,7 @@ var MapSidebarCtrl = function () {
       if (this.open_existing) {
         this.project = retval;
         this._init_map_layers();
+        this.fit_map_to_project();
         this.open_existing = false;
       } else if (retval instanceof _mapProject2.default) {
 
@@ -762,11 +775,7 @@ var MapSidebarCtrl = function () {
           _this5.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
-        try {
-          this.map.fitBounds(this.project.get_bounds());
-        } catch (e) {
-          console.log(e);
-        }
+        this.fit_map_to_project();
       } else {
 
         if (this.project.layer_groups.length == 0) {
@@ -778,17 +787,12 @@ var MapSidebarCtrl = function () {
         retval.forEach(function (f) {
           _this5.active_layer_group.feature_group.addLayer(f);
         });
-        try {
-          this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
-        } catch (e) {
-          console.log(e);
-        }
+        this.fit_map_to_project();
       }
     }
   }, {
     key: 'open_existing_locally',
     value: function open_existing_locally() {
-      console.log('open_existing_locally');
       this.open_existing = true;
       this.open_file_dialog();
     }
@@ -1018,8 +1022,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GeoDataService = function () {
-  GeoDataService.$inject = ["$http", "$q", "UserService"];
-  function GeoDataService($http, $q, UserService) {
+  GeoDataService.$inject = ["$http", "$q", "UserService", "GeoSettingsService"];
+  function GeoDataService($http, $q, UserService, GeoSettingsService) {
     'ngInject';
 
     _classCallCheck(this, GeoDataService);
@@ -1027,6 +1031,7 @@ var GeoDataService = function () {
     this.$http = $http;
     this.$q = $q;
     this.UserService = UserService;
+    this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
     this.previous_project_state = null;
   }
@@ -1226,6 +1231,18 @@ var GeoDataService = function () {
         json.features.forEach(function (d) {
           var feature = L.geoJSON(d);
           feature.eachLayer(function (layer) {
+
+            // If there were no styles applied, it might be transparent???
+            if (!layer.feature.properties.color) {
+              layer.feature.properties.color = '#ff0000';
+            }
+            if (!layer.feature.properties.fillColor) {
+              layer.feature.properties.fillColor = '#ff0000';
+            };
+            if (!layer.feature.properties.opacity) {
+              layer.feature.properties.opacity = 1.0;
+            };
+
             for (var key in layer.feature.properties) {
               layer.options[key] = layer.feature.properties[key];
             }
@@ -1241,6 +1258,7 @@ var GeoDataService = function () {
               // do not have a setStyle() method
               console.log(e);
             }
+
             var layer_group_index = d.layer_group_index;
             if (layer instanceof L.Marker && layer.feature.properties.image_src) {
               var latlng = layer.getLatLng();
@@ -1319,7 +1337,6 @@ var GeoDataService = function () {
     value: function load_from_data_depot(f) {
       var _this7 = this;
 
-      console.log(f);
       var ext = GeoUtils.get_file_extension(f.name);
       var responseType = 'text';
       if (ext === 'kmz' || ext === 'jpg' || ext === 'jpeg') {
@@ -1376,7 +1393,6 @@ var GeoDataService = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot(project, path) {
-      console.log(project, path);
       var form = new FormData();
       var gjson = project.to_json();
       var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
