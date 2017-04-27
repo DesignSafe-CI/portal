@@ -214,6 +214,7 @@ class ExperimentalProject(MetadataModel):
     award_number = fields.CharField('Award Number', max_length=255)
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
+    keywords = fields.ListField('Keywords')
 
     def to_body_dict(self):
         body_dict = super(ExperimentalProject, self).to_body_dict()
@@ -527,4 +528,12 @@ class Event(RelatedEntity):
     experiments = fields.RelatedObjectField(Experiment)
     model_configs = fields.RelatedObjectField(ModelConfiguration)
     sensor_lists = fields.RelatedObjectField(SensorList)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class Report(RelatedEntity):
+    model_name = 'designsafe.project.report'
+    title = fields.CharField('Title', max_length=1024)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(ExperimentalProject)
+    experiments = fields.RelatedObjectField(Experiment)
     files = fields.RelatedObjectField(FileModel, multiple=True)

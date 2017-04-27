@@ -415,6 +415,17 @@ span.label.tag-light-blue.selected {
     color: white;
 }
 
+span.label.tag-black {
+    border: 2px solid #000;
+    color: black;
+}
+
+span.label.tag-black.selected {
+    border: 2px solid #000;
+    background:#000;
+    color: white;
+}
+
 span.label.tag-blue {
     border: 2px solid #0567CC;
     color: black;

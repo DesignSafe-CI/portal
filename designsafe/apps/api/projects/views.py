@@ -16,7 +16,8 @@ from designsafe.apps.accounts.models import DesignSafeProfile
 from requests.exceptions import HTTPError
 from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
                                                  Experiment, ModelConfiguration,
-                                                 Event, Analysis, SensorList)
+                                                 Event, Analysis, SensorList,
+                                                 Report)
 import logging
 import json
 
@@ -197,6 +198,8 @@ class ProjectMetaLookupMixin(object):
             return SensorList
         elif name == 'designsafe.project.model_config':
             return ModelConfiguration
+        elif name == 'designsafe.project.report':
+            return Report
         else:
             raise ValueError('No module found with that name.')
 

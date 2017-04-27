@@ -20,7 +20,6 @@ function (DataBrowserService, UserService, FileListing, DataService) {
         filePath: '',
       };
       $scope.selected = null;
-
       DataBrowserService.browse({system: $scope.data.system}).then(function (resp) {
         $scope.data.filesListing = resp;
         $scope.selected = resp;

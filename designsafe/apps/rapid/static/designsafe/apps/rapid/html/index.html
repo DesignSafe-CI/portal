@@ -39,7 +39,7 @@
           <div class="form-group">
             <label> Event Type </label>
             <select class="form-control"
-                    ng-options="et.display for et in vm.event_types track by et.event_type"
+                    ng-options="et.display_name for et in vm.event_types track by et.name"
                     ng-change="vm.search()"
                     ng-model="vm.filter_options.event_type"></select>
           </div>

@@ -1,15 +1,15 @@
 export default class DBModalCtrl {
 
-  constructor ($scope, $uibModalInstance, saveas) {
+  constructor ($scope, $uibModalInstance, filename) {
     'ngInject';
     this.$scope = $scope;
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
-    this.saveas = saveas;
+    this.saveas = {filename: filename};
   }
 
   ok () {
-    this.$uibModalInstance.close(this.selected);
+    this.$uibModalInstance.close({selected:this.selected, saveas:this.saveas.filename});
   };
 
   cancel () {

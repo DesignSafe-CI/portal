@@ -87,31 +87,16 @@ export default class RapidDataService {
   }
 
   get_event_types () {
-    return [
-      {
-        event_type: 'earthquake',
-        display: 'Earthquake'
-      },
-      {
-        event_type: 'tsunami',
-        display: 'Tsunami'
-      },
-      {
-        event_type: 'flood',
-        display: 'Flood'
-      },
-      {
-        event_type: 'hurricane',
-        display: 'Hurricane'
-      },
-    ];
+    return this.$http.get('/rapid/event-types').then( (resp) => {
+      return resp.data;
+    });
   }
 
   search (events, filter_options) {
     let tmp = _.filter(events, (item)=>{
       let f1 = true;
       if (filter_options.event_type) {
-        f1 = item.event_type == filter_options.event_type.event_type;
+        f1 = item.event_type == filter_options.event_type.name;
       }
       let f2 = true;
       if (filter_options.search_text) {

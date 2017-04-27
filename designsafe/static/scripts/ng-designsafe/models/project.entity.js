@@ -26,18 +26,20 @@
             res = res.concat(r);
         });
       self.tagsAsOptions = res;
+      self._ui = {order:0};
       if (self.name === 'designsafe.project.experiment'){
         self._ui = {
+          order:0,
           efs: {
             'experimental': [
               {name: 'none', label: 'None'},
-              {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
-               {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
-               {name: 'eqss-utaustin', label: 'Experimental equipment site specializing in dynamic in-situ testing using mobile shakers, UT Austin'},
-               {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida'},
-               {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University'},
-               {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego'},
-               {name: 'ohhwrl-oregon', label:  'O.H. Hinsdale Wave Research Laboratory, Oregon State University'}
+              {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University', institution: 'Lehigh University'},
+               {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis', institution: 'UC Davis'},
+               {name: 'eqss-utaustin', label: 'Experimental equipment site specializing in dynamic in-situ testing using mobile shakers, UT Austin', institution: 'UT Austin'},
+               {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida', institution: 'University of Florida'},
+               {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University', institution: 'Florida International University'},
+               {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego', institution: 'University of California San Diego'},
+               {name: 'ohhwrl-oregon', label:  'O.H. Hinsdale Wave Research Laboratory, Oregon State University', institution: 'Oregon State University'}
             ]
           },
         experimentTypes: {

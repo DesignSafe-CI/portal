@@ -82,8 +82,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var DBModalCtrl = function () {
-  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "saveas"];
-  function DBModalCtrl($scope, $uibModalInstance, saveas) {
+  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "filename"];
+  function DBModalCtrl($scope, $uibModalInstance, filename) {
     'ngInject';
 
     _classCallCheck(this, DBModalCtrl);
@@ -91,13 +91,13 @@ var DBModalCtrl = function () {
     this.$scope = $scope;
     this.$uibModalInstance = $uibModalInstance;
     this.selected = null;
-    this.saveas = saveas;
+    this.saveas = { filename: filename };
   }
 
   _createClass(DBModalCtrl, [{
     key: 'ok',
     value: function ok() {
-      this.$uibModalInstance.close(this.selected);
+      this.$uibModalInstance.close({ selected: this.selected, saveas: this.saveas.filename });
     }
   }, {
     key: 'cancel',
@@ -144,6 +144,7 @@ var LayerGroup = function () {
   }, {
     key: 'get_feature_type',
     value: function get_feature_type(f) {
+      // debugger
       if (f.options.image_src) {
         return 'Image';
       } else if (f instanceof L.Marker) {
@@ -525,17 +526,19 @@ var MapSidebarCtrl = function () {
     };
     this.map = L.map('geo_map', {
       layers: [streets, satellite],
-      preferCanvas: true
+      preferCanvas: false
     }).setView([0, 0], 3);
-    var mc = new L.Control.Measure({ primaryLengthUnit: 'meters', primaryAreaUnit: 'meters' });
-    mc.addTo(this.map);
+    this.mc = new L.Control.Measure({ primaryLengthUnit: 'meters', primaryAreaUnit: 'meters' });
+    this.mc.addTo(this.map);
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    // this.$scope.$watch(()=>{return this.current_layer;}, (newval, oldval)=>{console.log(newval);});
-
+    // Load in a map project from the data service if one does exist, if not
+    // create a new one from scratch
     if (this.GeoDataService.current_project()) {
       this.project = this.GeoDataService.current_project();
+
+      // For some reason, need to readd the feature groups for markers to be displayed correctly???
       this.project.layer_groups.forEach(function (lg) {
         _this.map.addLayer(lg.feature_group);
         _this.map.removeLayer(lg.feature_group);
@@ -551,6 +554,8 @@ var MapSidebarCtrl = function () {
       this.project.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
       this.map.addLayer(this.project.layer_groups[0].feature_group);
     }
+
+    // this._add_click_handlers();
 
     // trick to fix the tiles that sometimes don't load for some reason...
     $timeout(function () {
@@ -568,6 +573,8 @@ var MapSidebarCtrl = function () {
 
     this.add_draw_controls(this.active_layer_group.feature_group);
 
+    // This handles making sure that the features that get created with the draw tool
+    // are styled with the default colors etc.
     this.map.on('draw:created', function (e) {
       var object = e.layer;
       object.options.color = _this.settings.default_stroke_color;
@@ -600,6 +607,33 @@ var MapSidebarCtrl = function () {
       this.drawControl = dc;
     }
   }, {
+    key: 'feature_click',
+    value: function feature_click(layer) {
+      console.log(layer);
+    }
+
+    // Adds click handlers to map elements. This does NOT feel
+    // right to me...
+
+  }, {
+    key: '_add_click_handlers',
+    value: function _add_click_handlers() {
+      var _this2 = this;
+
+      this.project.layer_groups.forEach(function (lg) {
+        lg.feature_group.on('click', function (ev) {
+          _this2.project.layer_groups.forEach(function (lg) {
+            lg.feature_group.getLayers().forEach(function (layer) {
+              layer.active = false;
+              if (layer == ev.layer) {
+                layer.active = true;
+              }
+            });
+          });
+        });
+      });
+    }
+  }, {
     key: 'create_layer_group',
     value: function create_layer_group() {
       var lg = new _layer_group2.default("New Group", new L.FeatureGroup());
@@ -613,6 +647,9 @@ var MapSidebarCtrl = function () {
     value: function delete_layer_group(lg, i) {
       this.map.removeLayer(lg.feature_group);
       this.project.layer_groups.splice(i, 1);
+      if (this.project.layer_groups.length === 0) {
+        this.create_layer_group();
+      }
       this.active_layer_group = this.project.layer_groups[0];
     }
   }, {
@@ -644,19 +681,19 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'create_new_project',
     value: function create_new_project() {
-      var _this2 = this;
+      var _this3 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
         controller: "ConfirmClearModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this2.project.clear();
-        var p = new _mapProject2.default('New Project');
+        _this3.project.clear();
+        var p = new _mapProject2.default('New Map');
         p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
-        _this2.project = p;
-        _this2.active_layer_group = _this2.project.layer_groups[0];
-        _this2.map.addLayer(_this2.active_layer_group.feature_group);
+        _this3.project = p;
+        _this3.active_layer_group = _this3.project.layer_groups[0];
+        _this3.map.addLayer(_this3.active_layer_group.feature_group);
       });
     }
   }, {
@@ -694,13 +731,13 @@ var MapSidebarCtrl = function () {
   }, {
     key: '_load_data_success',
     value: function _load_data_success(retval) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (retval instanceof _mapProject2.default) {
 
         retval.layer_groups.forEach(function (lg) {
-          _this3.project.layer_groups.push(lg);
-          _this3.map.addLayer(lg.feature_group);
+          _this4.project.layer_groups.push(lg);
+          _this4.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
         try {
@@ -717,7 +754,7 @@ var MapSidebarCtrl = function () {
         }
         //it will be an array of features...
         retval.forEach(function (f) {
-          _this3.active_layer_group.feature_group.addLayer(f);
+          _this4.active_layer_group.feature_group.addLayer(f);
         });
         try {
           this.map.fitBounds(this.active_layer_group.feature_group.getBounds(), { maxZoom: 16 });
@@ -729,32 +766,32 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'open_db_modal',
     value: function open_db_modal() {
-      var _this4 = this;
+      var _this5 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
-          saveas: function saveas() {
+          filename: function filename() {
             return null;
           }
         }
       });
-      modal.result.then(function (f) {
-        _this4.load_from_data_depot(f);
+      modal.result.then(function (f, saveas) {
+        _this5.load_from_data_depot(f);
       });
     }
   }, {
     key: 'open_settings_modal',
     value: function open_settings_modal() {
-      var _this5 = this;
+      var _this6 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
         controller: "SettingsModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this5.settings = _this5.GeoSettingsService.settings;
+        _this6.settings = _this6.GeoSettingsService.settings;
       });
     }
   }, {
@@ -767,20 +804,20 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this6 = this;
+      var _this7 = this;
 
       this.loading = true;
       this.GeoDataService.load_from_data_depot(f).then(function (retval) {
-        _this6._load_data_success(retval);
+        _this7._load_data_success(retval);
       }, function (err) {
-        _this6.toastr.error('Load failed!');
-        _this6.loading = false;
+        _this7.toastr.error('Load failed!');
+        _this7.loading = false;
       });
     }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
-      var _this7 = this;
+      var _this8 = this;
 
       this.loading = true;
       var reqs = [];
@@ -788,17 +825,17 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          return _this7._load_data_success(retval);
+          return _this8._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
       };
       this.$q.all(reqs).then(function () {
-        _this7.loading = false;
+        _this8.loading = false;
         //reset the picker
         $('#file_picker').val('');
       }).then(function () {
-        _this7.toastr.success('Imported file');
+        _this8.toastr.success('Imported file');
       });
     }
   }, {
@@ -819,29 +856,31 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot() {
-      var _this8 = this;
+      var _this9 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
-          saveas: function saveas() {
-            return _this8.project.name + '.geojson';
+          filename: function filename() {
+            return _this9.project.name + '.geojson';
           }
         }
       });
-      modal.result.then(function (f) {
-        console.log(f);
-        _this8.loading = true;
-        _this8.GeoDataService.save_to_depot(_this8.project, f).then(function (resp) {
-          _this8.loading = false;
-          _this8.toastr.success('Saved to data depot');
+      modal.result.then(function (res) {
+        var newname = res.saveas;
+        _this9.project.name = newname.split('.')[0];
+        res.selected.name = res.saveas;
+        _this9.loading = true;
+        _this9.GeoDataService.save_to_depot(_this9.project, res.selected).then(function (resp) {
+          _this9.loading = false;
+          _this9.toastr.success('Saved to data depot');
         }, function (err) {
-          _this8.toastr.error('Save failed!');
-          _this8.loading = false;
+          _this9.toastr.error('Save failed!');
+          _this9.loading = false;
         });
       }, function (rej) {
-        _this8.loading = false;
+        _this9.loading = false;
       });
     }
   }]);
@@ -1308,6 +1347,7 @@ var GeoDataService = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot(project, path) {
+      console.log(project, path);
       var form = new FormData();
       var gjson = project.to_json();
       var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
@@ -1316,8 +1356,8 @@ var GeoDataService = function () {
       var file = null;
       if (path.type === 'dir') {
         post_url = post_url + path.path;
-        file = new File([blob], project.name + '.geojson');
-        form.append('fileToUpload', file, project.name + '.geojson');
+        file = new File([blob], path.name);
+        form.append('fileToUpload', file, path.name);
       } else {
         // A file was picked, so this WILL replace it
         post_url = post_url + path.trail[path.trail.length - 2].path;

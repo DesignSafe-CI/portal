@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Rapid Admin </h2>
+        <a class="btn btn-default" href="{% url 'designsafe_rapid:admin_create_event' %}">
+          <i class="fa fa-plus"> </i> Create New Rapid Event
+        </a>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}

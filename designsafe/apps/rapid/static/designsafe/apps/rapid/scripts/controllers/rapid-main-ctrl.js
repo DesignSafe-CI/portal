@@ -1,3 +1,5 @@
+import L from 'L';
+
 export default class RapidMainCtrl {
   constructor ($scope, $compile, RapidDataService) {
     'ngInject';
@@ -25,20 +27,23 @@ export default class RapidMainCtrl {
     this.map = L.map('map', {layers: [streets, satellite]}).setView([0, 0], 2);
     this.map.zoomControl.setPosition('topright');
 
-    this.event_types = this.RapidDataService.get_event_types();
+    this.RapidDataService.get_event_types().then( (resp)=> {
+      this.event_types = resp;
+      console.log(resp)
+    });
 
     this.RapidDataService.get_events().then( (resp)=>{
       this.events = resp;
       this.events.forEach((d)=> {
-        let template = "<div class=''>" +
-          "<h3> {{event.title}} </h3>" +
-          "<div ng-repeat='dataset in event.datasets'>" +
-          "<a href='{{dataset.href}}'> {{dataset.doi}} </a>"+
-          "</div>";
-        let linker = this.$compile(angular.element(template));
+        // let template = "<div class=''>" +
+        //   "<h3> {{event.title}} </h3>" +
+        //   "<div ng-repeat='dataset in event.datasets'>" +
+        //   "<a href='{{dataset.href}}'> {{dataset.doi}} </a>"+
+        //   "</div>";
+        // let linker = this.$compile(angular.element(template));
         let marker = L.marker([d.location.lat, d.location.lon]);
-        let newScope = this.$scope.$new();
-        newScope.event = d;
+        // let newScope = this.$scope.$new();
+        // newScope.event = d;
         // marker.bindPopup(linker(newScope)[0], {className : 'rapid-popup'});
         this.map.addLayer(marker);
         marker.rapid_event = d;
