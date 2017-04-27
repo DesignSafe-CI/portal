@@ -26,9 +26,10 @@
             res = res.concat(r);
         });
       self.tagsAsOptions = res;
-      self._ui = {};
+      self._ui = {order:0};
       if (self.name === 'designsafe.project.experiment'){
         self._ui = {
+          order:0,
           efs: {
             'experimental': [
               {name: 'none', label: 'None'},
