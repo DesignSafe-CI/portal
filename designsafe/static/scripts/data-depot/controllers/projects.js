@@ -211,7 +211,7 @@
 
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $q) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
@@ -308,11 +308,13 @@
         var results = [];
         var index = 0;
         var size = 5;
+        var userIndex = 0;
         var calls = _.map(usernames, function(username){
           return UserService.get(username)
             .then(function(resp){
-                resp._ui = {order:0};
+                resp._ui = {order:userIndex};
                 $scope.browser.publication.users.push(resp);
+                userIndex += 1;
             });
         });
 
@@ -455,7 +457,39 @@
       });
     };
 
-    $scope.publicationCtrl = {
+    var _editFieldModal = function(objArr, fields){
+        modal = $uibModal.open({
+          template : '<div class="modal-body">' + 
+                       '<div class="form-group" ' + 
+                             'ng-repeat="obj in data.objArr">' + 
+                         '<div ng-repeat="field in ui.fields">' +
+                           '<label for="{{field.id}}-{{obj[field.uniq]}}">{{field.label}}</label>' + 
+                           '<input type="{{field.type}}" class="form-control" name="{{field.name}}-{{obj[field.uniq]}}"' + 
+                                   'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
+                         '</div>' +
+                       '</div>' +
+                     '</div>' + 
+                     '<div class="modal-footer">' +
+                       '<button class="btn btn-default" ng-click="close()">Close</button>' + 
+                       '<button class="btn btn-info" ng-click="save()">Save</button>' + 
+                     '</div>',
+         controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+            $scope.ui = {fields: fields,
+                         form: {}};
+            $scope.data = {objArr: angular.copy(objArr)};
+
+            $scope.close = function(){
+                $uibModalInstance.dismiss('Cancel');
+            };
+
+            $scope.save = function(){
+                $uibModalInstance.close($scope.data.objArr);
+            };
+         }]
+        });
+    };
+
+    var _publicationCtrl = {
 
       moveOrderUp: function(ent, total){
         if (typeof ent._ui.order === 'undefined'){
@@ -568,8 +602,26 @@
         } else {
             return $scope.browser.publication[exp.uuid][evt.uuid];
         }
+      },
+
+      editUsers : function(fields){
+        modal = _editFieldModal($scope.browser.publication.users, fields);
+
+        modal.result.then(function(respArr){
+          $scope.browser.publication.users = respArr;
+        });
+      },
+
+      editFacilities : function(fields){
+        modal = _editFieldModal($scope.browser.publication.facilities, fields);
+
+        modal.result.then(function(respArr){
+          $scope.browser.publication.facilities = respArr;
+        });
       }
     };
+
+    $scope.publicationCtrl = _publicationCtrl;
 
   }]);
 })(window, angular);

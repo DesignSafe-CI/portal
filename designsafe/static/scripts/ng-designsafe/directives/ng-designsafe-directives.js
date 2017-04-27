@@ -292,7 +292,7 @@
                                     '<strong>Examples: </strong>' + data.examples + '</p>';
                       element.attr('title', content);
                       element.tooltip('fixTitle');
-                      element.tooltip('show');
+                      //element.tooltip('show');
                   });
               }
           });
