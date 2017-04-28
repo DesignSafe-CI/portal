@@ -38,31 +38,43 @@ def admin(request):
 
 @login_required
 def admin_create_event(request):
+    form = rapid_forms.RapidNHEventForm(request.POST or None)
+    logger.info(form.fields["event_type"])
+    q = RapidNHEventType.search()
+    event_types = q.execute()
+    options = [(et.name, et.display_name) for et in event_types]
+    form.fields["event_type"].choices = options
     if request.method == 'POST':
-        form = rapid_forms.RapidNHEventForm(request.POST)
         if form.is_valid():
             logger.info(form.cleaned_data)
-            ev = RapidNHEvent(**form.cleaned_data)
-            ev.save()
+            ev = RapidNHEvent()
+            ev.location_description = form.cleaned_data["location_description"]
+            ev.location = {"lat": form.cleaned_data["lat"], "lon":form.cleaned_data["lon"]}
+            ev.date = form.cleaned_data["event_date"]
+            ev.event_type = form.cleaned_data["event_type"]
+            ev.title = form.cleaned_data["title"]
+            if form.cleaned_data["image"]:
+                logger.info(form.cleaned_data["image"])
+            ev.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
             context = {}
             context["form"] = form
             return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
     else:
-        form = rapid_forms.RapidNHEventForm()
         context = {}
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
 
 @login_required
 def admin_edit_event(request, event_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
     if request.method == 'POST':
         form = rapid_forms.RapidNHEventForm(request.POST)
-        try:
-            event = RapidNHEvent.get(event_id)
-        except:
-            return HttpResponseNotFound()
+
         if form.is_valid():
             logger.info(form.cleaned_data)
             ev = RapidNHEvent(**form.cleaned_data)
@@ -73,12 +85,7 @@ def admin_edit_event(request, event_id):
             context["form"] = form
             return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
     else:
-        try:
-            event = RapidNHEvent.get(event_id)
-        except:
-            return HttpResponseNotFound()
         form = rapid_forms.RapidNHEventForm(initial=event.to_dict())
-
         context = {}
         context["form"] = form
         context["event"] = event
@@ -90,8 +97,12 @@ def admin_event_add_dataset(request, event_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
-    form = rapid_forms.RapidNHEventDatasetForm()
-    context = {}
-    context["event"] = event
-    context["form"] = form
-    return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
+    if request.method == 'POST':
+        pass
+    else:
+
+        form = rapid_forms.RapidNHEventDatasetForm()
+        context = {}
+        context["event"] = event
+        context["form"] = form
+        return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
