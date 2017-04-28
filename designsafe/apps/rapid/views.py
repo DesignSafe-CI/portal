@@ -1,3 +1,4 @@
+import uuid
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
@@ -9,6 +10,14 @@ from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
 
 logger = logging.getLogger(__name__)
+
+from designsafe import settings
+
+
+def handle_uploaded_file(f):
+    with open('some/file/name.txt', 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
 
 @login_required
 def index(request):
@@ -72,20 +81,22 @@ def admin_edit_event(request, event_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
+    form = rapid_forms.RapidNHEventForm(request.POST or event.to_dict())
+    q = RapidNHEventType.search()
+    event_types = q.execute()
+    options = [(et.name, et.display_name) for et in event_types]
+    form.fields["event_type"].choices = options
     if request.method == 'POST':
-        form = rapid_forms.RapidNHEventForm(request.POST)
-
         if form.is_valid():
             logger.info(form.cleaned_data)
             ev = RapidNHEvent(**form.cleaned_data)
-            ev.save()
+            ev.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
             context = {}
             context["form"] = form
             return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
     else:
-        form = rapid_forms.RapidNHEventForm(initial=event.to_dict())
         context = {}
         context["form"] = form
         context["event"] = event
@@ -97,11 +108,13 @@ def admin_event_add_dataset(request, event_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
-    if request.method == 'POST':
-        pass
-    else:
 
-        form = rapid_forms.RapidNHEventDatasetForm()
+    form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+    else:
         context = {}
         context["event"] = event
         context["form"] = form
