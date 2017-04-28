@@ -23,4 +23,8 @@ class RapidNHEventForm(forms.Form):
             "lon": cleaned_data['lon']
         }
 
-    
+
+class RapidNHEventDatasetForm(forms.Form):
+    doi = forms.CharField(label="DOI", required=False)
+    link = forms.CharField(label="Link to Data Depot", required=True)
+    description = forms.CharField(label="Brief description", required=True)

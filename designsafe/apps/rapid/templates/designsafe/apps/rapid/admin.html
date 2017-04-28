@@ -1,4 +1,6 @@
+
 {% extends "base.html" %}
+{% load ds_filters %}
 
 {% block content %}
 
@@ -16,13 +18,17 @@
         <table class="table table-hover">
           <tr>
             <th> Title </th>
+            <th> Location </th>
             <th> Created </th>
           </tr>
           {% for event in rapid_events %}
             <tr>
               <td> {{event.title}} </td>
+              <td> {{event.location_description}} </td>
               <td> {{event.created_date}} </td>
-              <td> <a href="{% url 'designsafe_rapid:admin_edit_event' event_id=event.id %}"class="btn btn-sm btn-info"> Edit </a> </td>
+              <td> <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}"class="btn btn-sm btn-info"> Edit </a> </td>
+             <td>  <a href="{% url 'designsafe_rapid:admin_event_add_dataset' event|private:'_id' %}" class="btn btn-info"> Add Dataset </a> </td>
+
             </tr>
           {% endfor %}
         </table>
