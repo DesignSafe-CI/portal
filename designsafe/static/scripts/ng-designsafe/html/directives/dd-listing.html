@@ -365,14 +365,15 @@
         </div>
         <div class="meta-row">
           <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
+          <a href="#" ng-click="publicationCtrl.editInsts([{id:'label', name:'label', label:'Institution', uniq: 'name', type:'text'}])">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
           <span>Participant Instiutions </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="inst in browser.project.participantInstitutions(browser.publication.experimentsList)">
-                {{inst.institution}}
+          <span ng-repeat="inst in browser.publication.institutions"
+                style="display:block;">
+                {{inst.label}}
                 </span>
           </div>
         </div>
@@ -457,7 +458,8 @@
           <span>Keywords </span><span class="text-danger">(*)</span><br/>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="keyword in browser.project.value.keywords.split(',')">{{keyword}}</span><br/>
+          <span ng-repeat="keyword in browser.project.value.keywords.split(',')"
+                style="display:block;">{{keyword}}</span><br/>
           </div>
         </div>
         <div class="meta-row">
@@ -536,7 +538,8 @@
           <span>Model Configurations</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)">
+          <span ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)"
+                style="display:block;">
                 {{model_config.value.title}}
                 </span><br/>
           </div>
@@ -549,7 +552,8 @@
           <span>Sensor Information</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="sensor_list in browser.project.getRelated('sensorlist_set', exp.uuid)">
+          <span ng-repeat="sensor_list in browser.project.getRelated('sensorlist_set', exp.uuid)"
+                style="display:block;">
                 {{sensor_list.value.title}}
                 </span><br/>
           </div>
@@ -562,7 +566,8 @@
           <span>Events</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="event in browser.project.getRelated('event_set', exp.uuid)">
+          <span ng-repeat="event in browser.project.getRelated('event_set', exp.uuid)"
+                style="display:block;">
                 {{event.value.title}}
                 </span><br/>
           </div>
@@ -605,7 +610,8 @@
           <span>Referenced Data</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span ng-repeat="event in browser.project.getRelated('event_set', analysis.uuid)">
+          <span ng-repeat="event in browser.project.getRelated('event_set', analysis.uuid)"
+                style="display:block;">
                 [Event] {{event.value.title}}
           </span><br/>
           </div>

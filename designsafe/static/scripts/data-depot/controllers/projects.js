@@ -225,6 +225,20 @@
         $scope.state.publishPipeline = 'review';
       }
       else if (st == 'review'){
+        var institutions = [];
+        _.each($scope.state.publication.experimentsList, function(exp){
+            var o = {
+                label: exp.getEF($scope.state.project.value.projectType,
+                exp.value.experimentalFacility).institution,
+                name: exp.value.experimentalFacility
+                };
+            institutions.push(o);
+        });
+        _.each($scope.state.publication.users, function(user){
+            institutions.push({ label: user.profile.institution,
+                                name: user.username});
+        });
+        $scope.state.publication.institutions = _.uniq(institutions, function(inst){ return inst.label;});
         $scope.state.publishPipeline = 'meta';
       }
       else if (st == 'meta'){
@@ -378,9 +392,8 @@
         $scope.data.rootPaths = allFilePaths;
         setFilesDetails(allFilePaths)
         .then(function(){
-            setUserDetails($scope.browser.project.value.teamMembers)
-            .then(function(){
-            });
+            return setUserDetails($scope.browser.project.value.teamMembers);
+        }).then(function(){
         });
       }
     });
@@ -663,11 +676,11 @@
         });
       },
 
-      editFacilities : function(fields){
-        modal = _editFieldModal($scope.browser.publication.facilities, fields);
+      editInsts : function(fields){
+        modal = _editFieldModal($scope.browser.publication.institutions, fields);
 
         modal.result.then(function(respArr){
-          $scope.browser.publication.facilities = respArr;
+          $scope.browser.publication.institutions = respArr;
         });
       }
     };
