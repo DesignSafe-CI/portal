@@ -47,8 +47,7 @@
 
         function list(opts) {
           return $http({url: djangoUrl.reverse('designsafe_api:index'), method:'GET', params:opts}).then(function (resp) {
-
-            resp.data.forEach(function (d) {
+            resp.data.notifs.forEach(function (d) {
               d.datetime = new Date(d.datetime *1000);
             })
             return resp.data;

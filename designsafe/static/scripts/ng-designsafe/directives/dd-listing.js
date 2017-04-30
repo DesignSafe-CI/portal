@@ -19,7 +19,7 @@
         scrollToTop: '&',
         scrollToBottom: '&',
         openPreviewTree: '&',
-        publicationCtrl: '&'
+        publicationCtrl: '='
       }
     };
   });

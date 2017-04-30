@@ -106,11 +106,15 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         associated_projects = post_data.get('associatedProjects', {})
         description = post_data.get('description', '')
         new_pi = post_data.get('pi')
+        keywords = post_data.get('keywords', '')
+        project_id = post_data.get('projectId', '')
         p.update(title=title,
                  award_number=award_number,
                  project_type=project_type,
                  associated_projects=associated_projects,
-                 description=description)
+                 description=description,
+                 keywords=keywords,
+                 projectId=project_id)
         p.pi = new_pi
         p.save()
 
@@ -239,8 +243,10 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         associated_projects = post_data.get('associatedProjects', {})
         description = post_data.get('description', '')
         team_members = post_data.get('teamMembers', [])
+        keywords = post_data.get('keywords', '')
         new_pi = post_data.get('pi')
-        if p.pi != new_pi:
+        project_id = post_data.get('projectId', '')
+        if new_pi and  new_pi != 'null' and p.pi != new_pi:
             p.pi = new_pi
             p.add_collaborator(new_pi)
         p.update(title=title,
@@ -248,7 +254,9 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
                  project_type=project_type,
                  associated_projects=associated_projects,
                  description=description, 
-                 team_members=team_members)
+                 team_members=team_members,
+                 keywords=keywords,
+                 projectId=project_id)
         p.save()
         project = ExperimentalProject(**p.to_dict())
         return JsonResponse(project.to_body_dict())
@@ -344,7 +352,9 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
             if name is not None:
                 model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
-                return JsonResponse([r.to_body_dict() for r in resp], safe=False)
+                resp_list = [r.to_body_dict() for r in resp]
+                resp_list = sorted(resp_list, key=lambda x: x['created'])
+                return JsonResponse(resp_list, safe=False)
             elif uuid is not None:
                 meta = ag.meta.getMetadata(uuid=uuid)
                 model = self._lookup_model(meta['name'])

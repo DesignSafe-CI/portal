@@ -68,13 +68,14 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $q) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $uibModal, $q) {
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
 
     function setEntitiesRel(resp){
       $scope.data.project.setEntitiesRel(resp);
+      return resp;
     }
 
     ProjectService.get({uuid: projectId}).then(function (project) {
@@ -112,6 +113,30 @@
         );
     });
 
+    $scope.showText = function(text){
+        $uibModal.open({
+            template: '<div class="modal-header">' + 
+                        '<h3>Description</h3>' +
+                      '</div>' +
+                      '<div class="modal-body">' + 
+                        '<div style="border: 1px solid black;"' +
+                                   '"padding:5px;">' +
+                          '{{text}}' +
+                        '</div>' +
+                      '</div>' + 
+                      '<div class="modal-footer">' + 
+                        '<button class="btn btn-default" ng-click="close()">' + 
+                          'Close' + 
+                        '</button>' +
+                      '</div>',
+            controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+                $scope.text = text;
+                $scope.close = function(){
+                    $uibModalInstance.dismiss('Close');
+                };
+            }]
+        });
+    };
 
     $scope.editProject = function($event) {
       if ($event){
@@ -200,6 +225,20 @@
         $scope.state.publishPipeline = 'review';
       }
       else if (st == 'review'){
+        var institutions = [];
+        _.each($scope.state.publication.experimentsList, function(exp){
+            var o = {
+                label: exp.getEF($scope.state.project.value.projectType,
+                exp.value.experimentalFacility).institution,
+                name: exp.value.experimentalFacility
+                };
+            institutions.push(o);
+        });
+        _.each($scope.state.publication.users, function(user){
+            institutions.push({ label: user.profile.institution,
+                                name: user.username});
+        });
+        $scope.state.publication.institutions = _.uniq(institutions, function(inst){ return inst.label;});
         $scope.state.publishPipeline = 'meta';
       }
       else if (st == 'meta'){
@@ -211,7 +250,7 @@
 
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $q) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
@@ -308,11 +347,13 @@
         var results = [];
         var index = 0;
         var size = 5;
+        var userIndex = 0;
         var calls = _.map(usernames, function(username){
           return UserService.get(username)
             .then(function(resp){
-                resp._ui = {order:0};
+                resp._ui = {order:userIndex};
                 $scope.browser.publication.users.push(resp);
+                userIndex += 1;
             });
         });
 
@@ -351,9 +392,8 @@
         $scope.data.rootPaths = allFilePaths;
         setFilesDetails(allFilePaths)
         .then(function(){
-            setUserDetails($scope.browser.project.value.teamMembers)
-            .then(function(){
-            });
+            return setUserDetails($scope.browser.project.value.teamMembers);
+        }).then(function(){
         });
       }
     });
@@ -455,7 +495,65 @@
       });
     };
 
-    $scope.publicationCtrl = {
+    var _editFieldModal = function(objArr, fields){
+        modal = $uibModal.open({
+          template : '<div class="modal-body">' + 
+                       '<div class="form-group" ' + 
+                             'ng-repeat="obj in data.objArr">' + 
+                         '<div ng-repeat="field in ui.fields">' +
+                           '<label for="{{field.id}}-{{obj[field.uniq]}}">{{field.label}}</label>' + 
+                           '<input type="{{field.type}}" class="form-control" name="{{field.name}}-{{obj[field.uniq]}}"' + 
+                                   'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
+                         '</div>' +
+                       '</div>' +
+                     '</div>' + 
+                     '<div class="modal-footer">' +
+                       '<button class="btn btn-default" ng-click="close()">Close</button>' + 
+                       '<button class="btn btn-info" ng-click="save()">Save</button>' + 
+                     '</div>',
+         controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+            $scope.ui = {fields: fields,
+                         form: {}};
+            $scope.data = {objArr: angular.copy(objArr)};
+
+            $scope.close = function(){
+                $uibModalInstance.dismiss('Cancel');
+            };
+
+            $scope.save = function(){
+                $uibModalInstance.close($scope.data.objArr);
+            };
+         }]
+        });
+        return modal;
+    };
+
+    var _publicationCtrl = {
+
+      showText : function(text){
+          $uibModal.open({
+              template: '<div class="modal-header">' + 
+                          '<h3> Description </h3>' +
+                        '</div>' +
+                        '<div class="modal-body">' + 
+                          '<div style="border: 1px solid black;"' +
+                                     '"padding:5px;">' +
+                            '{{text}}' +
+                          '</div>' +
+                        '</div>' + 
+                        '<div class="modal-footer">' + 
+                          '<button class="btn btn-default" ng-click="close()">' + 
+                            'Close' + 
+                          '</button>' +
+                        '</div>',
+              controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+                  $scope.text = text;
+                  $scope.close = function(){
+                      $uibModalInstance.dismiss('Close');
+                  };
+              }]
+          });
+      },
 
       moveOrderUp: function(ent, total){
         if (typeof ent._ui.order === 'undefined'){
@@ -568,8 +666,26 @@
         } else {
             return $scope.browser.publication[exp.uuid][evt.uuid];
         }
+      },
+
+      editUsers : function(fields){
+        modal = _editFieldModal($scope.browser.publication.users, fields);
+
+        modal.result.then(function(respArr){
+          $scope.browser.publication.users = respArr;
+        });
+      },
+
+      editInsts : function(fields){
+        modal = _editFieldModal($scope.browser.publication.institutions, fields);
+
+        modal.result.then(function(respArr){
+          $scope.browser.publication.institutions = respArr;
+        });
       }
     };
+
+    $scope.publicationCtrl = _publicationCtrl;
 
   }]);
 })(window, angular);

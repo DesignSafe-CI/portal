@@ -50,6 +50,11 @@
       if (typeof name === 'undefined'){
         return;
       }
+      var entInd = 0;
+      _.each(entities, function(ent){
+        ent._ui.order = entInd;
+        entInd += 1;
+      });
       var attribute = self.getRelatedAttrName(name);
       self[attribute] = entities;
     };

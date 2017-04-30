@@ -39,7 +39,6 @@
 
   mod.filter('toTrusted', function ($sce) {
     return function (value) {
-        console.log(value)
         return $sce.trustAsHtml(value);
     };
   });
