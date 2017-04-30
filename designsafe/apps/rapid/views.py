@@ -1,4 +1,5 @@
 import uuid
+import os
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
@@ -15,7 +16,8 @@ from designsafe import settings
 
 
 def handle_uploaded_file(f):
-    with open('some/file/name.txt', 'wb+') as destination:
+    file_id = str(uuid.uuid1())
+    with open(os.path.join(settings.RAPID_UPLOAD_PATH, 'images', file_id), 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
@@ -90,6 +92,8 @@ def admin_edit_event(request, event_id):
         if form.is_valid():
             logger.info(form.cleaned_data)
             ev = RapidNHEvent(**form.cleaned_data)
+            # need to do something with the actual file in the uploads directory
+            # if it was changed. Delete it or else it will persist forever.
             ev.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
