@@ -80,6 +80,12 @@
           </div>
         </li>
     </ul>
+    <nav aria-label="Directory paging" ng-if="data.pagination.show">
+        <ul uib-pagination total-items="data.pagination.total" items-per-page="data.pagination.limit" ng-model="data.pagination.current" ng-change="pageChanged()"></ul>
+    </nav>
+    <div>
+      Displaying {{data.pagination.item_start}}-{{data.pagination.item_end}} of {{data.pagination.total}} items
+    </div>
 </div>
 
 <div ng-if="data.notifications.length === 0" class="jumbotron text-center">

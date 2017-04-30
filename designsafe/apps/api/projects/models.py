@@ -208,13 +208,14 @@ class ExperimentalProject(MetadataModel):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
     project_type = fields.CharField('Project Type', max_length=255, default='other')
+    project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
     pi = fields.CharField('Pi', max_length=255)
     award_number = fields.CharField('Award Number', max_length=255)
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
-    keywords = fields.ListField('Keywords')
+    keywords = fields.CharField('Keywords')
 
     def to_body_dict(self):
         body_dict = super(ExperimentalProject, self).to_body_dict()

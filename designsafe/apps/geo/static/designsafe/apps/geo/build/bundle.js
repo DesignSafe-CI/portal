@@ -278,7 +278,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.get_file_extension = get_file_extension;
 function get_file_extension(fname) {
-  return fname.split('.').pop();
+  return fname.split('.').pop().toLowerCase();
 }
 
 /***/ }),

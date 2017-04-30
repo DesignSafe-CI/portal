@@ -85,17 +85,30 @@
   </div>
 
 <div>
-  <div
-        ng-repeat="experiment in publicationCtrl().filterExperiments(browser.project.experiment_set) | orderBy: 'value.title'"
+  <div ng-repeat="experiment in publicationCtrl.filterExperiments(browser.project.experiment_set) | orderBy: 'value.title'"
          ng-if="browser.showPreviewListing &&
                 (!browser.publishPipeline ||
                 browser.publishPipeline != 'meta' &&
                 browser.publishPipeline != 'agreement')"
          style="background:#fff;">
-    <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-      <div style="width:50%; display:inline-block;">
+
+        <div class="dropdown" id="details-{{experiment.uuid}}">
+          <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
+                  style="width:100%;">
+            Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="data-{{experiment.uuid}}" class="collapse in">
+
+
+    <div style="border:1px solid black; background:white; margin-bottom:15px;">
+      <div style= "width:50%; display:inline-block; padding:5px;">
       <h3>{{experiment.value.title}}</h3>
-      <p>{{experiment.value.descrpition}}</p>
+      <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
+      <p style="overflow:hidden; display:block; height:20px;">{{experiment.value.description}}</p>
+          <button class="btn btn-link btn-sm"
+                  ng-click="publicationCtrl.showText(experiment.value.description)">
+            <i class="fa fa-external-link"></i> Show</button>
+      </div>
       </div>
       <div style="width:49%; vertical-align:top; display:inline-block;">
         <div style="border:1px solid black; padding:5px;">
@@ -106,10 +119,14 @@
         </div>
       </div>
     </div>
-    <div ng-repeat="event in all_events = publicationCtrl().filterEvents(browser.project.getRelated('event_set', experiment.uuid)) | orderBy: ['_ui.order', 'value.title']"
+    <div ng-if="!publicationCtrl.filterEvents(browser.project.getRelated('event_set', experiment.uuid)).length"
+        class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
+        This Experiment has no Events.
+    </div>
+    <div ng-repeat="event in all_events = publicationCtrl.filterEvents(browser.project.getRelated('event_set', experiment.uuid)) | orderBy: ['_ui.order', 'value.title']"
         style="margin-bottom:10px;">
     <div style="padding:3px;">
-      <span class="ds-text-red folder-tick">Event Data </span>
+      <span class="ds-text-red folder-tick">Event Data: {{event.value.title}} </span>
       <span style="color:light-gray">Link to: </span>
       <a class="ds-text-blue" href="#details-{{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).uuid}}"
       data-toggle="collapse" data-target="#files-{{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).uuid}}">
@@ -120,16 +137,23 @@
       Sensor List
       </a>
       <div class="pull-right">
-        <button class="btn btn-sm btn-link">
-        <i class="fa fa-arrow-up"
-           ng-click="publicationCtrl().moveOrderUp(event, all_events.length)"></i></button>
         <button class="btn btn-sm btn-link"
-           ng-click="publicationCtrl().moveOrderDown(event, all_events.length)"><i class="fa fa-arrow-down"></i></button>
+                title="Move order Up"
+                ng-click="publicationCtrl.moveOrderUp(event, all_events.length)" >
+        <i class="fa fa-arrow-up"></i></button>
+        <button class="btn btn-sm btn-link"
+                title="Move order Down"
+           ng-click="publicationCtrl.moveOrderDown(event, all_events.length)">
+        <i class="fa fa-arrow-down"></i></button>
       </div>
     </div>
-    <div style="position:absolute; left:-100px; margin-top:-20px; width:110px;">
+    <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
       <div style="border-bottom:1px solid lightgrey;">
+      <!--
       <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">{{event.value.title}}</a>
+      --><a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">
+      Relations
+      </a>
       </div>
       <div>
       <a class="ds-text-blue" href="" ng-click="openPreviewTree()($event, event.value.modelConfigs[0])">
@@ -152,17 +176,17 @@
         <th ng-if="browser.publishPipeline">
           <button class="btn btn-default"
                   ng-if="! (browser.publication[experiment.uuid][event.uuid] && browser.publication[experiment.uuid][event.uuid].length)"
-                  ng-click="publicationCtrl().selectAllFiles(experiment, event)">
+                  ng-click="publicationCtrl.selectAllFiles(experiment, event)">
                   <i class="fa fa-check"></i> Select All
                   </button>
           <button class="btn btn-default"
                   ng-if="browser.publication[experiment.uuid][event.uuid] && browser.publication[experiment.uuid][event.uuid].length"
-                  ng-click="publicationCtrl().deselectAllFiles(experiment, event)">
+                  ng-click="publicationCtrl.deselectAllFiles(experiment, event)">
                   <i class="fa fa-times"></i> Deselect All</button>
         </th>
         </thead>
         <tbody>
-          <tr ng-repeat="file in publicationCtrl().filterFiles(experiment, event, browser.listings[event.uuid]) | orderBy: ['type', 'path']">
+          <tr ng-repeat="file in publicationCtrl.filterFiles(experiment, event, browser.listings[event.uuid]) | orderBy: ['type', 'path']">
             <td><i class="fa {{file.icon()}}"></i>
                 <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
                 {{file.name}}
@@ -172,14 +196,14 @@
             <td>{{file.lastModified|date:"short"}}</td>
             <td ng-if="browser.publishPipeline">
                 <button class="btn btn-success"
-                        ng-if="publicationCtrl().isFileSelectedForPublication(experiment, event, file)"
-                        ng-click="publicationCtrl().deselectFileForPublication(experiment, event, file)"
+                        ng-if="publicationCtrl.isFileSelectedForPublication(experiment, event, file)"
+                        ng-click="publicationCtrl.deselectFileForPublication(experiment, event, file)"
                         title="Selected">
                   <i class="fa fa-check"></i><span class="sr-only">Selected</span>
                 </button>
                 <button class="btn btn-danger"
-                        ng-if="!publicationCtrl().isFileSelectedForPublication(experiment, event, file)"
-                        ng-click="publicationCtrl().selectFileForPublication(experiment, event, file)"
+                        ng-if="!publicationCtrl.isFileSelectedForPublication(experiment, event, file)"
+                        ng-click="publicationCtrl.selectFileForPublication(experiment, event, file)"
                         title="Not Selected">
                   <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
                 </button>
@@ -189,6 +213,8 @@
     </table>
     </div>
     </div>
+    </div>
+
     </div>
 
 </div>
@@ -201,7 +227,7 @@
         <div class="dropdown" id="details-{{modelConfig.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                   style="width:100%;">
-            Model Config {{modelConfig.value.title}}
+            Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
           <div id="files-{{modelConfig.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
@@ -231,7 +257,7 @@
         <div class="dropdown" id="details-{{sensorList.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                   style="width:100%;">
-            Sensor List {{sensorList.value.title}}
+            Sensor Info {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
           <div id="files-{{sensorList.uuid}}" class="collapse">
             <table  class="table table-bordered table-striped"
@@ -259,11 +285,22 @@
 
       <div ng-repeat="analysis in browser.project.analysis_set | orderBy: 'value.title'">
         <div class="dropdown" id="details-{{analysis.uuid}}">
-          <button class="btn btn-default btn-sm collapsed ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+          <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                   style="width:100%;">
-            Analysis {{analysis.value.title}}
+            Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
-          <div id="files-{{analysis.uuid}}" class="collapse">
+          <div id="files-{{analysis.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <div style= "width:50%; display:inline-block;">
+              <h3>{{analysis.value.title}}</h3>
+              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
+              <p style="overflow:hidden; display:block; height:20px;">{{analysis.value.description}}</p>
+                  <button class="btn btn-link btn-sm"
+                          ng-click="publicationCtrl.showText(analysis.value.description)">
+                    <i class="fa fa-external-link"></i> Show</button>
+              </div>
+            </div>
+
             <table  class="table table-bordered table-striped"
                     style="background-color: #fff;">
                 <thead>
@@ -289,6 +326,8 @@
 
     </div>
 
+    </div>
+
     <div class="meta-review"
         ng-if="browser.publishPipeline === 'meta'">
       <div class="title">
@@ -303,32 +342,45 @@
           <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
           </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditProject()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Project Title </span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{browser.project.value.title}}</span>
+          <span>Project Title </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{browser.project.value.title}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditProject()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Project Type </span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{browser.project.value.projectType}}</span>
+          <span>Project Type </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{browser.project.value.projectType}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.editInsts([{id:'label', name:'label', label:'Institution', uniq: 'name', type:'text'}])">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Participant Instiutions </span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="inst in browser.project.participantInstitutions(browser.publication.experimentsList)">
-                {{inst.institution}}
+          <span>Participant Instiutions </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span ng-repeat="inst in browser.publication.institutions"
+                style="display:block;">
+                {{inst.label}}
                 </span>
+          </div>
         </div>
         <div class="meta-row">
         <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl().openEditTeamMembers()">
+          <a href="#" ng-click="publicationCtrl.editUsers([{id:'last_name', name:'last_name', label:'Last Name', uniq:'username', type:'text'},
+                                                                                      {id:'first_name', name:'first_name', label:'First Name', uniq:'username', type:'text'}])">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
           <span>Team Members </span><span class="text-danger">(*)</span>
@@ -337,12 +389,14 @@
           <div class="value pull-right">
           <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
                 <button class="btn btn-sm btn-link pull-right"
-                        ng-click="publicationCtrl().moveOrderUp(user, browser.publication.users.length)"
+                        title="Move order Up"
+                        ng-click="publicationCtrl.moveOrderUp(user, browser.publication.users.length)"
                         style="padding:0;">
                         <i class="fa fa-arrow-up"></i>
                 </button>
                 <button class="btn btn-sm btn-link pull-right"
-                        ng-click="publicationCtrl().moveOrderDown(user, browser.publication.users.length)"
+                        title="Move order Down"
+                        ng-click="publicationCtrl.moveOrderDown(user, browser.publication.users.length)"
                         style="padding:0;">
                         <i class="fa fa-arrow-down"></i>
                 </button>
@@ -353,43 +407,68 @@
           </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditProject()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Project Description </span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{browser.project.value.descrpition}}</span>
+          <span>Project Description </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{browser.project.value.descrpition}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditProject()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Funding Agency & Award Number</span>
-          <span class="value pull-right">{{browser.project.value.awardNumber}}</span>
+          <span>Funding Agency & Award Number</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{browser.project.value.awardNumber}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditProject()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Associated Projects</span>
+          <span>Associated Projects</span>
+          </div>
+          <div class="value pull-right">
           <span class="value pull-right"
                 ng-repeat="asoc in browser.project.value.associatedProjects">
                 {{asoc}}
                 </span>
+          </div>
         </div>
         <div class="meta-row">
-          <span class="attr pull-left">Rights </span><span class="text-danger">(*)</span>
-          <span class="value pull-right">Licence #1</span>
+          <div class="attr pull-left">
+          <span>Rights </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>ODC-BY 1.0 [<a href="http://opendatacommons.org/licenses/by/1-0/"> http://opendatacommons.org/licenses/by/1-0/</a>]</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditProject()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Keywords </span><span class="text-danger">(*)</span>
-          <span class="value pull-right"></span>
+          <span>Keywords </span><span class="text-danger">(*)</span><br/>
+          </div>
+          <div class="value pull-right">
+          <span ng-repeat="keyword in browser.project.value.keywords.split(',')"
+                style="display:block;">{{keyword}}</span><br/>
+          </div>
         </div>
         <div class="meta-row">
-          <span class="attr pull-left">Publisher </span><span class="text-danger">(*)</span>
-          <span class="value pull-right">Designsafe-CI</span>
+          <div class="attr pull-left">
+          <span>Publisher </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>Designsafe-CI</span>
+          </div>
         </div>
         <div class="meta-row">
         </div>
@@ -399,29 +478,45 @@
           <h3>Experiment Information</h3>
 
         <div class="meta-row">
-          <span class="attr pull-left">Date of Publication</span>
-          <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
+          <div class="attr pull-left">
+          <span>Date of Publication</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{browser.project.dateOfPublication()}}</span>
+          </div>
           </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Experiment Title</span><span class="text-danger">(*)</span>
+          <span>Experiment Title</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
           <span class="value pull-right">{{exp.value.title}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Experiment Type</span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{exp.getET(exp.value.experimentalFacility, exp.value.experimentType).label}}</span>
+          <span>Experiment Type</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{exp.getET(exp.value.experimentalFacility, exp.value.experimentType).label}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Experiment Facility</span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{exp.getEF(browser.project.value.projectType, exp.value.experimentalFacility).label}}</span>
+          <span>Experiment Facility</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{exp.getEF(browser.project.value.projectType, exp.value.experimentalFacility).label}}</span>
+          </div>
         </div>
         <div class="meta-row">
           <div class="attr pull-left">
@@ -436,71 +531,104 @@
           </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Model Configurations</span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)">
+          <span>Model Configurations</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)"
+                style="display:block;">
                 {{model_config.value.title}}
-                </span>
+                </span><br/>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Sensor Information</span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="sensor_list in browser.project.getRelated('sensorlist_set', exp.uuid)">
+          <span>Sensor Information</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span ng-repeat="sensor_list in browser.project.getRelated('sensorlist_set', exp.uuid)"
+                style="display:block;">
                 {{sensor_list.value.title}}
-                </span>
+                </span><br/>
+          </div>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditExperiments()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditExperiments()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Events</span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="event in browser.project.getRelated('event_set', exp.uuid)">
+          <span>Events</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span ng-repeat="event in browser.project.getRelated('event_set', exp.uuid)"
+                style="display:block;">
                 {{event.value.title}}
-                </span>
+                </span><br/>
+          </div>
         </div>
      </div>
      <div class="content-wrapper"
           ng-repeat="analysis in browser.project.analysis_set | orderBy: ['_ui.order', 'value.title']">
           <h3>Analysis Information</h3>
         <div class="meta-row">
-          <span class="attr pull-left">Date of Publication</span>
-          <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
-        <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditCategories()">
-            <i class="fa fa-pencil-square-o"></i> Edit
-          </a>
-          <span class="attr pull-left">Analysis Title</span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{analysis.value.title}}</span>
+        <div class="attr pull-left">
+          <span>Date of Publication</span>
+        </div>
+        <div class="value pull-right">
+          <span>{{browser.project.dateOfPublication()}}</span>
         </div>
         <div class="meta-row">
-          <a href="#" ng-click="publicationCtrl().openEditCategories()">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditCategories()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span class="attr pull-left">Description</span><span class="text-danger">(*)</span>
-          <span class="value pull-right">{{analysis.value.description}}</span>
+          <span>Analysis Title</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{analysis.value.title}}</span>
+          </div>
         </div>
         <div class="meta-row">
-          <span class="attr pull-left">Referenced Data</span><span class="text-danger">(*)</span>
-          <span class="value pull-right"
-                ng-repeat="event in browser.project.getRelated('event_set', analysis.uuid)">
+          <div class="attr pull-left">
+          <a href="#" ng-click="publicationCtrl.openEditCategories()">
+            <i class="fa fa-pencil-square-o"></i> Edit
+          </a>
+          <span>Description</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span>{{analysis.value.description}}</span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+          <span>Referenced Data</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+          <span ng-repeat="event in browser.project.getRelated('event_set', analysis.uuid)"
+                style="display:block;">
                 [Event] {{event.value.title}}
-          </span>
+          </span><br/>
+          </div>
         </div>
      </div>
-  <div   class="agreement"
-         ng-if="browser.showPreviewListing &&
-                browser.publishPipeline == 'agreement'"
-         style="background:#fff; min-height:500px;">
-         <p>Agreement</p>
-   </div>
 
     </div>
 
 </div>
+</div>
+  <div class="agreement-div"
+         ng-if="browser.showPreviewListing && browser.publishPipeline === 'agreement'"
+         style="background:#fff; min-height:500px; padding:10px;">
+         <h2>Agreement</h2>
+         <p>
+            Agreement placeholder.
+         </p>
+   </div>
+
+   </div>

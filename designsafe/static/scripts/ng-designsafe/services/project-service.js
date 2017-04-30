@@ -10,10 +10,10 @@
 
     var efs = {
       'experimental': [
-        {name: 'none', label: 'None'},
+        {name: 'other', label: 'Other'},
         {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
          {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
-         {name: 'eqss-utaustin', label: 'Experimental equipment site specializing in dynamic in-situ testing using mobile shakers, UT Austin'},
+         {name: 'eqss-utaustin', label: 'Field mobile shakers, UT Austin'},
          {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida'},
          {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University'},
          {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego'},
@@ -241,6 +241,24 @@
                 description: exp.value.description
             };
             $scope.ui.showEditExperimentForm = true;
+          };
+
+
+          $scope.moveOrderUp = function(ent, total, list){
+            if (typeof ent._ui.order === 'undefined'){
+              ent._ui.order = 0;
+            } else if (ent._ui.order > 0){
+              ent._ui.order -= 1;
+            }
+          };
+
+          $scope.moveOrderDown = function(ent, total, list){
+            total = parseInt(total);
+            if (typeof ent._ui.order === 'undefined'){
+              ent._ui.order = 0;
+            } else if (ent._ui.order < total - 1){
+              ent._ui.order += 1;
+            }
           };
 
           $scope.saveEditExperiment = function(){
@@ -630,9 +648,10 @@
             $scope.form.uuid = project.uuid;
             $scope.form.title = project.value.title;
             $scope.form.awardNumber = project.value.awardNumber || '';
-            $scope.form.indentifier = project.value.identifier || '';
+            $scope.form.projectId = project.value.projectId || '';
             $scope.form.description = project.value.description || '';
             $scope.form.experimentalFacility = project.value.experimentalFacility || '';
+            $scope.form.keywords = project.value.keywords || '';
             if (typeof project.value.projectType !== 'undefined'){
                $scope.form.projectType = _.find($scope.projectTypes, function(projectType){ return projectType.id === project.value.projectType; }); 
             }
@@ -670,6 +689,7 @@
               title: $scope.form.title,
               awardNumber: $scope.form.awardNumber,
               description: $scope.form.description,
+              projectId: $scope.form.projectId
             };
             if ($scope.form.pi && $scope.form.pi.username){
               projectData.pi = $scope.form.pi.username;
@@ -689,6 +709,9 @@
                projectData.associatedProjects = $scope.form.associatedProjects || [];
                projectData.associatedProjects = _.filter(projectData.associatedProjects, function(associatedProject){ return !associatedProject.delete; });
                projectData.associatedProjects = projectData.associatedProjects.concat($scope.form.associatedProjectsAdded);
+            }
+            if (typeof $scope.form.keywords !== 'undefined'){
+              projectData.keywords = $scope.form.keywords;
             }
             service.save(projectData).then(function (project) {
               $uibModalInstance.close(project);
