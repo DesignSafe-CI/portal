@@ -52,7 +52,7 @@
   background: #313131;
   border-right: 1px solid #6e6e6e;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #map_project_details {
@@ -174,7 +174,10 @@
   padding-bottom: 2px;
 }
 
-
+#geo_container .dropdown-menu li a {
+  color: #74a7f3;
+  padding: 0;
+}
 
 #geo_map {
   /*width: 100%;*/
