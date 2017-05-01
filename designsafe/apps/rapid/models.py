@@ -26,6 +26,7 @@ class RapidNHEvent(DocType):
     main_image_uuid = String()
     datasets = Nested(
         properties={
+            "id": String(),
             "title": String(),
             "doi": String(),
             "url": String(),

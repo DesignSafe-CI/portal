@@ -1,5 +1,7 @@
 import uuid
 import os
+import datetime
+import dateutil
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import render
@@ -27,13 +29,13 @@ def index(request):
 
 def get_event_types(request):
     s = RapidNHEventType.search()
-    results  = s.execute()
+    results  = s.execute(ignore_cache=True)
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 
 def get_events(request):
     s = RapidNHEvent.search()
-    results = s.execute()
+    results = s.execute(ignore_cache=True)
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 
@@ -41,7 +43,7 @@ def get_events(request):
 @login_required
 def admin(request):
     s = RapidNHEvent.search()
-    results = s.execute()
+    results = s.execute(ignore_cache=True)
     logger.info(results)
     context = {}
     context["rapid_events"] = results
@@ -52,7 +54,7 @@ def admin_create_event(request):
     form = rapid_forms.RapidNHEventForm(request.POST or None)
     logger.info(form.fields["event_type"])
     q = RapidNHEventType.search()
-    event_types = q.execute()
+    event_types = q.execute(ignore_cache=True)
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
     if request.method == 'POST':
@@ -60,8 +62,13 @@ def admin_create_event(request):
             logger.info(form.cleaned_data)
             ev = RapidNHEvent()
             ev.location_description = form.cleaned_data["location_description"]
-            ev.location = {"lat": form.cleaned_data["lat"], "lon":form.cleaned_data["lon"]}
-            ev.date = form.cleaned_data["event_date"]
+            ev.location = {
+                "lat": form.cleaned_data["lat"],
+                "lon":form.cleaned_data["lon"]
+            }
+            ev.event_date = form.cleaned_data["event_date"]
+            logger.info(ev.event_date)
+            # ev.date = dateutil.parser.parse(ev.date)
             ev.event_type = form.cleaned_data["event_type"]
             ev.title = form.cleaned_data["title"]
             if form.cleaned_data["image"]:
@@ -88,6 +95,7 @@ def admin_edit_event(request, event_id):
     data = event.to_dict()
     data["lat"] = event.location.lat
     data["lon"] = event.location.lon
+    logger.info(data["event_date"])
     form = rapid_forms.RapidNHEventForm(request.POST or data)
     q = RapidNHEventType.search()
     event_types = q.execute()
@@ -98,10 +106,17 @@ def admin_edit_event(request, event_id):
     if request.method == 'POST':
         if form.is_valid():
             logger.info(form.cleaned_data)
-            ev = RapidNHEvent(**form.cleaned_data)
+            event.event_date = form.cleaned_data["event_date"]
+            event.location = {
+                "lat": form.cleaned_data["lat"],
+                "lon": form.cleaned_data["lon"]
+            }
+            event.title = form.cleaned_data["title"]
+            event.location_description = form.cleaned_data["location_description"]
+            event.event_type = form.cleaned_data["event_type"]
             # need to do something with the actual file in the uploads directory
             # if it was changed. Delete it or else it will persist forever.
-            ev.save(refresh=True)
+            event.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
             context = {}
@@ -125,13 +140,17 @@ def admin_event_add_dataset(request, event_id):
     if request.method == 'POST':
         if form.is_valid():
             logger.info(form.cleaned_data)
-            event.datasets.append(form.cleaned_data)
+            data = form.cleaned_data
+            data["id"] = str(uuid.uuid1())
+            event.datasets.append(data)
+            event.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
     else:
         context = {}
         context["event"] = event
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
+
 
 @login_required
 def admin_event_edit_dataset(request, event_id, dataset_id):
@@ -140,7 +159,7 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
     except:
         return HttpResponseNotFound()
 
-    form = rapid_forms.RapidNHEventDatasetForm(request.post or None)
+    form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():

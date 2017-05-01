@@ -9,6 +9,13 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
+        <ol class="breadcrumb">
+          <li> <a href="{% url 'designsafe_rapid:admin'%}"> Admin Home </a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
         <h2> Create a Rapid Natural Hazard Event </h2>
         <form method="post" action="">
           {% csrf_token %}

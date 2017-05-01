@@ -9,6 +9,13 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
+        <ol class="breadcrumb">
+          <li> <a href="{% url 'designsafe_rapid:admin'%}"> Admin Home </a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
         <h2> Edit Rapid Natural Hazard Event </h2>
 
         <form method="post" action="">
@@ -18,6 +25,27 @@
             <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
           </div>
         </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Datasets </h2>
+        <table class="table">
+          <tr>
+            <th> DOI </th>
+            <th> Url </th>
+            <th> Description </th>
+          </tr>
+          {% for dataset in event.datasets %}
+           <tr>
+             <td> {{ dataset.doi }} </td>
+             <td> {{ dataset.url }} </td>
+             <td> {{ dataset.description }} </td>
+             <td> <a class="btn btn-info" href="{% url 'designsafe_rapid:admin_event_edit_dataset' event|private:'_id' dataset.id %}"> Edit </a> </td>
+             <td> <a class="btn btn-danger" > Delete </a> </td>
+           </tr>
+          {% endfor %}
+        </table>
       </div>
     </div>
   </div>
