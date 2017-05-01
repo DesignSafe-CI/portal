@@ -1,10 +1,11 @@
 
 {% extends "base.html" %}
 {% load ds_filters %}
+{% load bootstrap3 sekizai_tags staticfiles %}
 
 {% block content %}
 
-  <div class="container">
+  <div class="container rapid-admin">
     <div class="row">
       <div class="col-md-12">
         <h2> Rapid Admin </h2>
@@ -22,6 +23,8 @@
             <th> Event Type </th>
             <th> Location </th>
             <th> Created </th>
+            <th> </th>
+            <th> </th>
           </tr>
           {% for event in rapid_events %}
             <tr>
@@ -31,7 +34,7 @@
               <td> {{event.location_description}} </td>
               <td> {{event.created_date}} </td>
               <td> <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}"class="btn btn-sm btn-info"> Edit </a> </td>
-              <td> <a href="{% url 'designsafe_rapid:admin_event_add_dataset' event|private:'_id' %}" class="btn btn-info"> Add Dataset </a> </td>
+              <td> <a href="{% url 'designsafe_rapid:admin_event_add_dataset' event|private:'_id' %}" class="btn btn-sm btn-info"> Add Dataset </a> </td>
 
             </tr>
           {% endfor %}
@@ -39,5 +42,9 @@
       </div>
     </div>
   </div>
+  {% addtoblock "css" %}
+      <link rel="stylesheet" href="{% static 'designsafe/apps/rapid/styles/rapid.css' %}" />
+  {% endaddtoblock %}
+
 
 {% endblock content %}

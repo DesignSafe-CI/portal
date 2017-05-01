@@ -171,3 +171,15 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
         context["event"] = event
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_event_edit_dataset.html', context)
+
+@login_required
+def admin_event_delete_dataset(request, event_id, dataset_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+    logger.info(request.method)
+    if request.method == 'POST':
+        event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
+        event.save()
+        return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
