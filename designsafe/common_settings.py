@@ -553,7 +553,7 @@ DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 
 #FOR RAPID UPLOADS
-RAPID_UPLOAD_PATH = '/corral-repl/tacc/NHERI/RAPID'
+DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 
 from celery_settings import *
 from external_resource_settings import *

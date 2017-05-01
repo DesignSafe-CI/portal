@@ -1,13 +1,11 @@
 import uuid
 import os
-import datetime
-import dateutil
+import StringIO
+from PIL import Image
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
-from requests import HTTPError
 from django.contrib.auth.decorators import login_required
-import json
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
@@ -16,12 +14,16 @@ logger = logging.getLogger(__name__)
 
 from designsafe import settings
 
+def thumbnail_image(fobj, size=(400, 400)):
+    im = Image.open(fobj)
+    im.thumbnail( (400, 400), Image.ANTIALIAS)
+    file_buffer = StringIO.StringIO()
+    im.save(file_buffer, format='JPEG')
+    return file_buffer
 
-def handle_uploaded_file(f):
-    file_id = str(uuid.uuid1())
-    with open(os.path.join(settings.RAPID_UPLOAD_PATH, 'images', file_id), 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
+def handle_uploaded_image(f, file_id):
+    with open(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', file_id), 'wb+') as destination:
+        destination.write(f.getvalue())
 
 @login_required
 def index(request):
@@ -44,22 +46,19 @@ def get_events(request):
 def admin(request):
     s = RapidNHEvent.search()
     results = s.execute(ignore_cache=True)
-    logger.info(results)
     context = {}
     context["rapid_events"] = results
     return render(request, 'designsafe/apps/rapid/admin.html', context)
 
 @login_required
 def admin_create_event(request):
-    form = rapid_forms.RapidNHEventForm(request.POST or None)
-    logger.info(form.fields["event_type"])
+    form = rapid_forms.RapidNHEventForm(request.POST or None, request.FILES or None)
     q = RapidNHEventType.search()
     event_types = q.execute(ignore_cache=True)
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
     if request.method == 'POST':
         if form.is_valid():
-            logger.info(form.cleaned_data)
             ev = RapidNHEvent()
             ev.location_description = form.cleaned_data["location_description"]
             ev.location = {
@@ -67,12 +66,18 @@ def admin_create_event(request):
                 "lon":form.cleaned_data["lon"]
             }
             ev.event_date = form.cleaned_data["event_date"]
-            logger.info(ev.event_date)
-            # ev.date = dateutil.parser.parse(ev.date)
             ev.event_type = form.cleaned_data["event_type"]
             ev.title = form.cleaned_data["title"]
-            if form.cleaned_data["image"]:
-                logger.info(form.cleaned_data["image"])
+            if request.FILES:
+                try:
+
+                    image_uuid = str(uuid.uuid1())
+                    f = request.FILES["image"]
+                    thumb = thumbnail_image(f)
+                    handle_uploaded_image(thumb, image_uuid)
+                    ev.main_image_uuid = image_uuid
+                except:
+                    return HttpResponseBadRequest("Hmm, a bad file perhaps?")
             ev.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
