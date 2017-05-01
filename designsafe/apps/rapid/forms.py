@@ -17,13 +17,13 @@ class RapidNHEventForm(forms.Form):
     lon = forms.FloatField(label="Longitude", required=True)
     image = forms.FileField(label="Banner image for detail", required=False)
 
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        self.location = {
-            "lat": cleaned_data['lat'],
-            "lon": cleaned_data['lon']
-        }
-        logger.info(self)
+    # def clean(self):
+    #     cleaned_data = self.cleaned_data
+    #     self.location = {
+    #         "lat": cleaned_data['lat'],
+    #         "lon": cleaned_data['lon']
+    #     }
+    #     logger.info(self)
 
 
 class RapidNHEventDatasetForm(forms.Form):

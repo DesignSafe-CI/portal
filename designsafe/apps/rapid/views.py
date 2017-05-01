@@ -83,11 +83,18 @@ def admin_edit_event(request, event_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
-    form = rapid_forms.RapidNHEventForm(request.POST or event.to_dict())
+    logger.info(event.to_dict())
+    logger.info(event.location.lon)
+    data = event.to_dict()
+    data["lat"] = event.location.lat
+    data["lon"] = event.location.lon
+    form = rapid_forms.RapidNHEventForm(request.POST or data)
     q = RapidNHEventType.search()
     event_types = q.execute()
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
+    form.fields['lat'].initial = event.location["lat"]
+    form.fields['lon'].initial = event.location["lon"]
     if request.method == 'POST':
         if form.is_valid():
             logger.info(form.cleaned_data)
@@ -117,9 +124,31 @@ def admin_event_add_dataset(request, event_id):
 
     if request.method == 'POST':
         if form.is_valid():
+            logger.info(form.cleaned_data)
+            event.datasets.append(form.cleaned_data)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
     else:
         context = {}
         context["event"] = event
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
+
+@login_required
+def admin_event_edit_dataset(request, event_id, dataset_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+
+    form = rapid_forms.RapidNHEventDatasetForm(request.post or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            logger.info(form.cleaned_data)
+            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+
+    else:
+        context = {}
+        context["event"] = event
+        context["form"] = form
+        return render(request, 'designsafe/apps/rapid/admin_event_edit_dataset.html', context)

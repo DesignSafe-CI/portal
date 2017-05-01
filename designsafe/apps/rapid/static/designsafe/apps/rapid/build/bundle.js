@@ -172,12 +172,14 @@ var RapidMainCtrl = function () {
       'Street': streets,
       'Satellite': satellite
     };
-    this.map = _L2.default.map('map', { layers: [streets, satellite] }).setView([0, 0], 2);
+    this.map = _L2.default.map('map', {
+      layers: [streets, satellite],
+      scrollWheelZoom: true
+    }).setView([0, 0], 2);
     this.map.zoomControl.setPosition('topright');
 
     this.RapidDataService.get_event_types().then(function (resp) {
       _this.event_types = resp;
-      console.log(resp);
     });
 
     this.RapidDataService.get_events().then(function (resp) {
