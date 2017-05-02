@@ -29,7 +29,6 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
         $scope.data.loading=true;
         $scope.data.selectedProject = null;
         ProjectService.list().then( function (resp) {
-          console.log(resp)
           $scope.project_list = resp;
           $scope.data.loading = false;
           $scope.data.projectSelected = false;
@@ -66,6 +65,8 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
           $scope.data.dirPath = [];
           $scope.listProjects();
         } else {
+          $scope.data.filesListing = null;
+          $scope.data.filePath = null;
           $scope.data.selectedProject = null;
           $scope.data.system = 'designsafe.storage.default';
           $scope.project_list = null;

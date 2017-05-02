@@ -2,9 +2,11 @@
   <div class="btn-group">
     <button class="btn btn-default"
             ng-class="{'btn-primary': data.source === 'mydata'}"
+            ng-disabled="data.loading"
             ng-click="setSource('mydata')"> My Data </button>
     <button class="btn btn-default"
             ng-class="{'btn-primary': data.source === 'myprojects'}"
+            ng-disabled="data.loading"
             ng-click="setSource('myprojects')"> My Projects </button>
   </div>
   <div>
@@ -47,8 +49,6 @@
             </td>
             <td>{{f.length|bytes:0}}</td>
           </tr>
-          <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
-          <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
       </tbody>
       <tbody ng-if="data.source === 'myprojects' && data.projectSelected == false">
         <tr
@@ -57,9 +57,14 @@
           <td> <a href="#"> <i class="fa fa-folder"> </i> {{project.value.title }} </td>
           <td> </td>
         </tr>
-        <tr ng-if="data.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
         <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
       </tbody>
     </table>
+    <div ng-if="data.loading" class="text-center">
+      <i class="fa fa-spin fa-circle-o-notch fa-2x"></i>
+    </div>
+    <div ng-if = "data.error">
+      <div class="alert alert-danger"> {{data.error}} </div>
+    </div>
   </div>
 </div>
