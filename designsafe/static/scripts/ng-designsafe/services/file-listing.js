@@ -235,7 +235,6 @@
 
     FileListing.prototype.fetch = function (params) {
       var self = this;
-      console.log(this.listingUrl())
       return $http.get(this.listingUrl(), {params: params}).then(function (resp) {
         angular.extend(self, resp.data);
 

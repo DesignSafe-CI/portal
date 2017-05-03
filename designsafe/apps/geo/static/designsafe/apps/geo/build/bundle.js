@@ -908,7 +908,6 @@ var MapSidebarCtrl = function () {
         }
       });
       modal.result.then(function (res) {
-        console.log(res);
         var newname = res.saveas;
         _this10.project.name = newname.split('.')[0];
         res.selected.name = res.saveas;
@@ -1405,8 +1404,9 @@ var GeoDataService = function () {
       var form = new FormData();
       var gjson = project.to_json();
       var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
-      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default';
+      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/';
       var post_url = base_file_url;
+      post_url = post_url + path.system;
       var file = null;
       if (path.type === 'dir') {
         post_url = post_url + path.path;

@@ -13,7 +13,8 @@
     <div>
       <label ng-if="!saveas.filename">Browsing:</label>
       <label ng-if="saveas.filename"> Save to:</label></br>
-      <span ng-if="data.selectedProject"> {{data.selectedProject.value.title}} </span>
+      <span ng-if="data.selectedProject" ng-click="selectProject(data.selectedProject)"> <a href="#"> {{data.selectedProject.value.title}} </a>
+      </span>
       <span
         ng-repeat-start="dirElem in data.dirPath track by $index"
         class="text text-info">

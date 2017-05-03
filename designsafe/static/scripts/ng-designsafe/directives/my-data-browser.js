@@ -40,6 +40,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
         $scope.data.filePath = '/';
         $scope.data.projectSelected = true;
         $scope.data.selectedProject = project;
+        $scope.selected = project;
         $scope.browse();
       };
 
@@ -51,6 +52,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
           $scope.data.loading = false;
           $scope.data.filePath = $scope.data.filesListing.path;
           $scope.data.dirPath = $scope.data.filePath.split('/');
+          console.log($scope.selected)
         }, function (err) {
           $scope.data.loading = false;
         });
@@ -59,7 +61,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
 
       $scope.setSource = function (src) {
         $scope.data.source = src;
-
+        $scope.selected = null;
         if ($scope.data.source === 'myprojects') {
           $scope.data.filesListing = null;
           $scope.data.dirPath = [];
@@ -91,6 +93,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
           file.selected = true;
           $scope.selected = file;
         }
+        console.log($scope.selected)
       };
       $scope.getFileIcon = DataService.getIcon;
 
@@ -110,6 +113,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
         if (file.type !== 'folder' && file.type !== 'dir'){
           return;
         }
+
         $scope.data.filesListing = null;
         $scope.data.loading = true;
         DataBrowserService.browse(file)
@@ -120,6 +124,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
               $scope.data.dirPath = $scope.data.filePath.split('/');
               // $scope.browser.listing = $scope.data.filesListing;
             }
+            $scope.selected = listing;
             $scope.data.loading = false;
           }, function(err){
             logger.log(err);
