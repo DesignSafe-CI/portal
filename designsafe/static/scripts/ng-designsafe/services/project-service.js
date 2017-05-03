@@ -248,8 +248,11 @@
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
             } else if (ent._ui.order > 0){
+              var order = ent._ui.order;
+              var _ent = _.find(list, function(e){ 
+                                            return e._ui.order === order - 1; });
               ent._ui.order -= 1;
-              list[$index-1]._ui.order += 1;
+              _ent._ui.order += 1;
             }
           };
 
@@ -257,8 +260,10 @@
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
             } else if (ent._ui.order < list.length - 1){
+              var _ent = _.find(list, function(e){ 
+                                            return e._ui.order === ent._ui.order + 1; });
               ent._ui.order += 1;
-              list[$index+1]._ui.order -= 1;
+              _ent._ui.order -= 1;
             }
           };
 
