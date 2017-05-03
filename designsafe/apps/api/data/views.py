@@ -190,8 +190,10 @@ class ProcessNotificationView(BaseDataView):
         logger.info('extra: {}'.format(extra))
 
         try:
-            target_path = extra['target_path']
+            # target_path = extra['target_path']
+            file_id = '%s%s' % (extra['system'], extra['trail'][-2]['path']) #path of the containing folder
         except KeyError as e:
             file_id = extra['id']
-            target_path = reverse('designsafe_data:data_depot') + 'agave/' + file_id + '/'
+
+        target_path = reverse('designsafe_data:data_depot') + 'agave/' + file_id + '/'
         return redirect(target_path)

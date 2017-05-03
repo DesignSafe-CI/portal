@@ -16,7 +16,7 @@
             if (msg.event_type == 'job') {
               url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
               return url;
-            } else if (msg.event_type == 'data') {
+            } else if (msg.event_type == 'data_depot') {
               url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
               return url;
             }
