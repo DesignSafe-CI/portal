@@ -23,7 +23,7 @@
         </div>
         <event-listing-detailed event="vm.active_rapid_event"></event-listing-detailed>
       </div>
-      <div class="search-container" ng-show="!vm.active_rapid_event">
+      <div class="search-container sb-row" ng-show="!vm.active_rapid_event">
         <div class="event-search">
           <div class="input-group">
             <input type="text" class="form-control" ng-model="vm.filter_options.search_text" ng-change="vm.search()"></input>
@@ -54,13 +54,13 @@
           <button class="btn btn-xs btn-info" ng-click="vm.clear_filters()"> Clear </button>
           <button class="btn btn-xs btn-default" ng-click="vm.show_filter_options=false"> Hide </button>
         </div>
-        <div class="events-results">
-          <div ng-show="vm.filtered_events">
-            <event-listing ng-repeat="event in vm.filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
-          </div>
-          <div ng-show="!vm.filtered_events">
-            <event-listing ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>
-          </div>
+      </div>
+      <div ng-show="!vm.active_rapid_event" class="event-results sb-row">
+        <div ng-show="vm.filtered_events" class="">
+          <event-listing ng-repeat="event in vm.filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
+        </div>
+        <div ng-show="!vm.filtered_events" class="">
+          <event-listing ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>
         </div>
       </div>
     </div>
