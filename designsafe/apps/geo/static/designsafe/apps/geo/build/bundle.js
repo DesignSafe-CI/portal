@@ -764,12 +764,21 @@ var MapSidebarCtrl = function () {
       var _this5 = this;
 
       if (this.open_existing) {
-        this.project = retval;
-        this._init_map_layers();
-        this.fit_map_to_project();
+        if (retval instanceof _mapProject2.default) {
+          //clear off all the layers from the map
+          this.project.layer_groups.forEach(function (lg) {
+            _this5.map.removeLayer(lg.feature_group);
+          });
+
+          // set the project to be the return value
+          this.project = retval;
+          this._init_map_layers();
+          this.fit_map_to_project();
+        } else {
+          this.toastr.error('Load failed! File was not compatible');
+        }
         this.open_existing = false;
       } else if (retval instanceof _mapProject2.default) {
-
         retval.layer_groups.forEach(function (lg) {
           _this5.project.layer_groups.push(lg);
           _this5.map.addLayer(lg.feature_group);
@@ -899,7 +908,6 @@ var MapSidebarCtrl = function () {
         }
       });
       modal.result.then(function (res) {
-        console.log(res);
         var newname = res.saveas;
         _this10.project.name = newname.split('.')[0];
         res.selected.name = res.saveas;
@@ -1396,8 +1404,9 @@ var GeoDataService = function () {
       var form = new FormData();
       var gjson = project.to_json();
       var blob = new Blob([JSON.stringify(gjson)], { type: "application/json" });
-      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default';
+      var base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/';
       var post_url = base_file_url;
+      post_url = post_url + path.system;
       var file = null;
       if (path.type === 'dir') {
         post_url = post_url + path.path;

@@ -1,5 +1,5 @@
-angular.module('designsafe').directive('myDataBrowser',  ['DataBrowserService', 'UserService', 'FileListing', 'DataService',
-function (DataBrowserService, UserService, FileListing, DataService) {
+angular.module('designsafe').directive('myDataBrowser',  ['DataBrowserService', 'UserService', 'FileListing', 'DataService', 'ProjectService',
+function (DataBrowserService, UserService, FileListing, DataService, ProjectService) {
   return {
     restrict: 'E',
     scope: {
@@ -12,23 +12,69 @@ function (DataBrowserService, UserService, FileListing, DataService) {
       $scope.picker = $scope.picker || 'all';
       $scope.data = {
         busyListingPage: true,
+        filesListing: null,
         wants: false,
-        loading: true,
+        loading: false,
         systemsList: [],
         system: 'designsafe.storage.default',
         dirPath: [],
         filePath: '',
+        source: 'mydata',
+        selectedProject: null
       };
+
       $scope.selected = null;
-      DataBrowserService.browse({system: $scope.data.system}).then(function (resp) {
-        $scope.data.filesListing = resp;
-        $scope.selected = resp;
-        $scope.data.loading = false;
-        $scope.data.filePath = $scope.data.filesListing.path;
-        $scope.data.dirPath = $scope.data.filePath.split('/');
-      }, function (err) {
-        $scope.data.loading = false;
-      });
+
+      $scope.listProjects = function () {
+        $scope.data.loading=true;
+        $scope.data.selectedProject = null;
+        ProjectService.list().then( function (resp) {
+          $scope.project_list = resp;
+          $scope.data.loading = false;
+          $scope.data.projectSelected = false;
+        });
+      };
+
+      $scope.selectProject = function (project) {
+        $scope.data.system = 'project-' + project.uuid;
+        $scope.data.filePath = '/';
+        $scope.data.projectSelected = true;
+        $scope.data.selectedProject = project;
+        $scope.selected = project;
+        $scope.browse();
+      };
+
+      $scope.browse = function () {
+        $scope.data.loading = true;
+        DataBrowserService.browse({system: $scope.data.system, path:$scope.data.filePath}).then(function (resp) {
+          $scope.data.filesListing = resp;
+          $scope.selected = resp;
+          $scope.data.loading = false;
+          $scope.data.filePath = $scope.data.filesListing.path;
+          $scope.data.dirPath = $scope.data.filePath.split('/');
+          console.log($scope.selected)
+        }, function (err) {
+          $scope.data.loading = false;
+        });
+      };
+      $scope.browse();
+
+      $scope.setSource = function (src) {
+        $scope.data.source = src;
+        $scope.selected = null;
+        if ($scope.data.source === 'myprojects') {
+          $scope.data.filesListing = null;
+          $scope.data.dirPath = [];
+          $scope.listProjects();
+        } else {
+          $scope.data.filesListing = null;
+          $scope.data.filePath = null;
+          $scope.data.selectedProject = null;
+          $scope.data.system = 'designsafe.storage.default';
+          $scope.project_list = null;
+          $scope.browse();
+        }
+      };
 
       $scope.selectRow = function (file, idx) {
         $scope.data.filesListing.children.forEach(function (d) {
@@ -47,6 +93,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
           file.selected = true;
           $scope.selected = file;
         }
+        console.log($scope.selected)
       };
       $scope.getFileIcon = DataService.getIcon;
 
@@ -66,6 +113,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
         if (file.type !== 'folder' && file.type !== 'dir'){
           return;
         }
+
         $scope.data.filesListing = null;
         $scope.data.loading = true;
         DataBrowserService.browse(file)
@@ -76,6 +124,7 @@ function (DataBrowserService, UserService, FileListing, DataService) {
               $scope.data.dirPath = $scope.data.filePath.split('/');
               // $scope.browser.listing = $scope.data.filesListing;
             }
+            $scope.selected = listing;
             $scope.data.loading = false;
           }, function(err){
             logger.log(err);

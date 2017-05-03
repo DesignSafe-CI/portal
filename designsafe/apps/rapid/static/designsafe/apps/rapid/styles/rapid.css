@@ -2,6 +2,11 @@ body {
   /*background: #fff;*/
   font-family: 'Open Sans', sans-serif;
 }
+
+.rapid-admin {
+  background-color: #fff;
+}
+
 #rapid {
   margin-top: -20px;
 }
@@ -12,8 +17,8 @@ body {
 #rapid_main {
   /*display: flex;*/
   /*flex-direction: row;*/
-  /*min-height: calc(100vh - 300px);*/
-  height: 750px;
+  height: calc(100vh - 200px);
+  /*height: 750px;*/
   position: relative;
   margin-top: -20px;
 }

@@ -215,7 +215,7 @@ export default class GeoDataService {
             // do not have a setStyle() method
             console.log(e);
           }
-    
+
           let layer_group_index = d.layer_group_index;
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();
@@ -342,8 +342,9 @@ export default class GeoDataService {
     let form = new FormData();
     let gjson = project.to_json();
     let blob = new Blob([JSON.stringify(gjson)], {type: "application/json"});
-    let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/designsafe.storage.default';
+    let base_file_url = 'https://agave.designsafe-ci.org/files/v2/media/system/';
     let post_url = base_file_url;
+    post_url = post_url + path.system;
     let file = null;
     if (path.type === 'dir') {
       post_url = post_url + path.path;

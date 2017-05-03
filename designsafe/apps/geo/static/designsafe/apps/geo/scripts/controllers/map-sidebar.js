@@ -253,13 +253,21 @@ export default class MapSidebarCtrl {
 
   _load_data_success (retval) {
     if (this.open_existing) {
-      this.project = retval;
-      this._init_map_layers();
-      this.fit_map_to_project();
-      this.open_existing = false;
-    }
-    else if (retval instanceof MapProject) {
+      if (retval instanceof MapProject) {
+        //clear off all the layers from the map
+        this.project.layer_groups.forEach( (lg) => {
+          this.map.removeLayer(lg.feature_group);
+        });
 
+        // set the project to be the return value
+        this.project = retval;
+        this._init_map_layers();
+        this.fit_map_to_project();
+      } else {
+        this.toastr.error('Load failed! File was not compatible');
+      }
+      this.open_existing = false;
+    } else if (retval instanceof MapProject) {
       retval.layer_groups.forEach( (lg) => {
         this.project.layer_groups.push(lg);
         this.map.addLayer(lg.feature_group);
@@ -366,7 +374,6 @@ export default class MapSidebarCtrl {
       }
     });
     modal.result.then( (res) => {
-      console.log(res)
       let newname = res.saveas;
       this.project.name = newname.split('.')[0];
       res.selected.name = res.saveas;
