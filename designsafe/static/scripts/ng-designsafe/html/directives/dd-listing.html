@@ -102,19 +102,21 @@
 
     <div style="border:1px solid black; background:white; margin-bottom:15px;">
       <div style= "width:50%; display:inline-block; padding:5px;">
-      <h3>{{experiment.value.title}}</h3>
-      <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
-      <p style="overflow:hidden; display:block; height:20px;">{{experiment.value.description}}</p>
+      <h3 style="margin-top:0">{{experiment.value.title}}</h3>
+      <div style="padding:5px; margin:5px 0px; height:80px; overflow:hidden; word-wrap:overflow;">
+      <p style="overflow:hidden; display:block; height:40px;">
+          <span style="font-weight:bold;"> Description: </span>{{experiment.value.description}}</p>
           <button class="btn btn-link btn-sm"
                   ng-click="publicationCtrl.showText(experiment.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
       </div>
       </div>
       <div style="width:49%; vertical-align:top; display:inline-block;">
-        <div style="border:1px solid black; padding:5px;">
-          {{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> Experimental Facility: </span>{{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
         </div>
-        <div style="border:1px solid black; padding:5px;">
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> Experiment Type: </span>
           {{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}
         </div>
       </div>
@@ -294,9 +296,10 @@
           <div id="files-{{analysis.uuid}}" class="collapse in">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <div style= "width:50%; display:inline-block;">
-              <h3>{{analysis.value.title}}</h3>
+              <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
               <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
-              <p style="overflow:hidden; display:block; height:20px;">{{analysis.value.description}}</p>
+              <p style="overflow:hidden; display:block; height:20px;">
+              <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
                   <button class="btn btn-link btn-sm"
                           ng-click="publicationCtrl.showText(analysis.value.description)">
                     <i class="fa fa-external-link"></i> Show</button>
@@ -324,8 +327,52 @@
             </table>
           </div>
         </div>
+
       </div>
 
+      <div ng-repeat="report in browser.project.report_set | orderBy: 'value.title'">
+        <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
+          <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                  style="width:100%;">
+            Report {{report.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="files-{{report.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <div style= "width:50%; display:inline-block;">
+              <h3 style="margin-top:0;">{{report.value.title}}</h3>
+              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
+              <p style="overflow:hidden; display:block; height:20px;">
+              <span style="font-weight:bold;">Description: </span>{{report.value.description}}</p>
+                  <button class="btn btn-link btn-sm"
+                          ng-click="publicationCtrl.showText(analysis.value.description)">
+                    <i class="fa fa-external-link"></i> Show</button>
+              </div>
+            </div>
+
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+                <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in browser.listings[report.uuid] | orderBy: ['type', 'path']">
+                    <td><i class="fa {{file.icon()}}"></i>
+                        <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                        {{file.name}}
+                        </a>
+                    </td>
+                    <td>{{file.length}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
     </div>
 
     </div>
