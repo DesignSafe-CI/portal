@@ -612,3 +612,8 @@ span.label.tag-red.selected {
 .dropdown button .dropdown-caret:before {
     content: "\f077";
 }
+
+.entity-preview-header > button{
+    background: #e6e6e6;
+    border:1px solid black;
+}

@@ -92,7 +92,7 @@
                 browser.publishPipeline != 'agreement')"
          style="background:#fff;">
 
-        <div class="dropdown" id="details-{{experiment.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{experiment.uuid}}">
           <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
                   style="width:100%;">
             Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
@@ -136,6 +136,7 @@
          data-toggle="collapse" data-target="#files-{{browser.project.getRelatedByUuid(event.value.sensorLists[0]).uuid}}">
       Sensor List
       </a>
+      <!--
       <div class="pull-right">
         <button class="btn btn-sm btn-link"
                 title="Move order Up"
@@ -146,6 +147,7 @@
            ng-click="publicationCtrl.moveOrderDown(event, all_events.length)">
         <i class="fa fa-arrow-down"></i></button>
       </div>
+      -->
     </div>
     <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
       <div style="border-bottom:1px solid lightgrey;">
@@ -224,7 +226,7 @@
                 browser.publishPipeline === 'select')">
 
       <div ng-repeat="modelConfig in browser.project.modelconfiguration_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{modelConfig.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                   style="width:100%;">
             Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
@@ -254,7 +256,7 @@
       </div>
 
       <div ng-repeat="sensorList in browser.project.sensorlist_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{sensorList.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                   style="width:100%;">
             Sensor Info {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
@@ -284,7 +286,7 @@
       </div>
 
       <div ng-repeat="analysis in browser.project.analysis_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{analysis.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
           <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                   style="width:100%;">
             Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
