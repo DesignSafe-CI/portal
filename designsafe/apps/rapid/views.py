@@ -1,14 +1,29 @@
+import uuid
+import os
+import StringIO
+from PIL import Image
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
-from requests import HTTPError
 from django.contrib.auth.decorators import login_required
-import json
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
 
 logger = logging.getLogger(__name__)
+
+from designsafe import settings
+
+def thumbnail_image(fobj, size=(400, 400)):
+    im = Image.open(fobj)
+    im.thumbnail( (400, 400), Image.ANTIALIAS)
+    file_buffer = StringIO.StringIO()
+    im.save(file_buffer, format='JPEG')
+    return file_buffer
+
+def handle_uploaded_image(f, file_id):
+    with open(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', file_id), 'wb+') as destination:
+        destination.write(f.getvalue())
 
 @login_required
 def index(request):
@@ -16,38 +31,160 @@ def index(request):
 
 def get_event_types(request):
     s = RapidNHEventType.search()
-    results  = s.execute()
+    results  = s.execute(ignore_cache=True)
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 
 def get_events(request):
     s = RapidNHEvent.search()
-    results = s.execute()
+    results = s.execute(ignore_cache=True)
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 
 
 @login_required
 def admin(request):
-    return render(request, 'designsafe/apps/rapid/admin.html')
+    s = RapidNHEvent.search()
+    results = s.execute(ignore_cache=True)
+    context = {}
+    context["rapid_events"] = results
+    return render(request, 'designsafe/apps/rapid/admin.html', context)
 
 @login_required
 def admin_create_event(request):
+    form = rapid_forms.RapidNHEventForm(request.POST or None, request.FILES or None)
+    q = RapidNHEventType.search()
+    event_types = q.execute(ignore_cache=True)
+    options = [(et.name, et.display_name) for et in event_types]
+    form.fields["event_type"].choices = options
     if request.method == 'POST':
-        form = rapid_forms.RapidNHEventForm(request.POST)
         if form.is_valid():
-            logger.info(form.cleaned_data)
-            ev = RapidNHEvent(**form.cleaned_data)
-            ev.bullshit = "HELLO"
-            logger.info(ev)
-            ev.save()
+            ev = RapidNHEvent()
+            ev.location_description = form.cleaned_data["location_description"]
+            ev.location = {
+                "lat": form.cleaned_data["lat"],
+                "lon":form.cleaned_data["lon"]
+            }
+            ev.event_date = form.cleaned_data["event_date"]
+            ev.event_type = form.cleaned_data["event_type"]
+            ev.title = form.cleaned_data["title"]
+            if request.FILES:
+                try:
+
+                    image_uuid = str(uuid.uuid1())
+                    f = request.FILES["image"]
+                    thumb = thumbnail_image(f)
+                    handle_uploaded_image(thumb, image_uuid)
+                    ev.main_image_uuid = image_uuid
+                except:
+                    return HttpResponseBadRequest("Hmm, a bad file perhaps?")
+            ev.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
             context = {}
             context["form"] = form
             return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
     else:
-        form = rapid_forms.RapidNHEventForm();
         context = {}
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
+
+@login_required
+def admin_edit_event(request, event_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+    logger.info(event.to_dict())
+    logger.info(event.location.lon)
+    data = event.to_dict()
+    data["lat"] = event.location.lat
+    data["lon"] = event.location.lon
+    logger.info(data["event_date"])
+    form = rapid_forms.RapidNHEventForm(request.POST or data)
+    q = RapidNHEventType.search()
+    event_types = q.execute()
+    options = [(et.name, et.display_name) for et in event_types]
+    form.fields["event_type"].choices = options
+    form.fields['lat'].initial = event.location["lat"]
+    form.fields['lon'].initial = event.location["lon"]
+    if request.method == 'POST':
+        if form.is_valid():
+            logger.info(form.cleaned_data)
+            event.event_date = form.cleaned_data["event_date"]
+            event.location = {
+                "lat": form.cleaned_data["lat"],
+                "lon": form.cleaned_data["lon"]
+            }
+            event.title = form.cleaned_data["title"]
+            event.location_description = form.cleaned_data["location_description"]
+            event.event_type = form.cleaned_data["event_type"]
+            # need to do something with the actual file in the uploads directory
+            # if it was changed. Delete it or else it will persist forever.
+            event.save(refresh=True)
+            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+        else:
+            context = {}
+            context["form"] = form
+            return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
+    else:
+        context = {}
+        context["form"] = form
+        context["event"] = event
+        return render(request, 'designsafe/apps/rapid/admin_edit_event.html', context)
+
+@login_required
+def admin_event_add_dataset(request, event_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+
+    form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            logger.info(form.cleaned_data)
+            data = form.cleaned_data
+            data["id"] = str(uuid.uuid1())
+            event.datasets.append(data)
+            event.save(refresh=True)
+            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+    else:
+        context = {}
+        context["event"] = event
+        context["form"] = form
+        return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
+
+
+@login_required
+def admin_event_edit_dataset(request, event_id, dataset_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+
+    form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            logger.info(form.cleaned_data)
+            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+
+    else:
+        context = {}
+        context["event"] = event
+        context["form"] = form
+        return render(request, 'designsafe/apps/rapid/admin_event_edit_dataset.html', context)
+
+@login_required
+def admin_event_delete_dataset(request, event_id, dataset_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+    logger.info(request.method)
+    if request.method == 'POST':
+        event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
+        event.save()
+        return HttpResponseRedirect(reverse('designsafe_rapid:admin'))

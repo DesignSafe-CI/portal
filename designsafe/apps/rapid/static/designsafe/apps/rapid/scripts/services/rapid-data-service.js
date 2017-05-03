@@ -7,82 +7,9 @@ export default class RapidDataService {
 
   get_events (opts) {
     console.log(opts);
-    // return this.$http.get('/rapid/events', opts).then( (resp) => {
-    //   console.log(resp);
-    // });
-    let events = [
-      {
-        title: 'Tejas Flood',
-        event_date: new Date(2016, 1, 1),
-        event_type: 'flood',
-        location_description: 'Central Texas',
-        main_image_url: '/static/designsafe/apps/rapid/images/example_event.jpeg',
-        location: {
-          lat: 30.0,
-          lon: -100.0,
-        },
-        datasets: [
-          {
-            doi: 'doi:123dfsf345',
-            href: 'www.designsafe-ci.org/data/browser',
-            title: 'Lidar of stuff'
-          },
-          {
-            doi: 'doi:123dfsf345',
-            href: 'www.designsafe-ci.org/data/browser',
-            title: 'Imagery of things'
-          },
-          {
-            doi: 'doi:123dfsf345',
-            href: 'www.designsafe-ci.org/data/browser',
-            title: 'Dog pictures and other words for a long title'
-          }
-        ]
-      },
-      {
-        title: 'New Zealand Earthquake',
-        event_date: new Date(2015, 1, 1),
-        event_type: 'earthquake',
-        location_description: 'Central New Zealand',
-        location: {
-          lat: -38.0,
-          lon: 177.0,
-        }
-      },
-      {
-        title: 'Japan Tsunami',
-        event_date: new Date(2015, 1, 1),
-        event_type: 'tsunami',
-        location_description: 'Fukushima Japan',
-        location: {
-          lat: 37.75,
-          lon: 140.4676,
-        }
-      },
-      {
-        title: 'Oso Landslide',
-        event_date: new Date(2015, 1, 1),
-        event_type: 'landslide',
-        location_description: 'Oso Washington',
-        location: {
-          lat: 48.27,
-          lon: -121.92,
-        }
-      },
-      {
-        title: 'Hurricane Katrina',
-        event_date: new Date(2015, 1, 1),
-        event_type: 'hurricane',
-        location_description: 'US Gulf Coast',
-        location: {
-          lat: 29.27,
-          lon: -90.92,
-        }
-      },
-    ];
-
-    return this.$q( (res, rej) => {
-      return res(events);
+    return this.$http.get('/rapid/events', opts).then( (resp) => {
+      console.log(resp);
+      return resp.data;
     });
   }
 

@@ -23,9 +23,10 @@ class RapidNHEvent(DocType):
     event_type = String()
     location_description = String()
     location = GeoPoint()
-    main_image_url = String()
+    main_image_uuid = String()
     datasets = Nested(
         properties={
+            "id": String(),
             "title": String(),
             "doi": String(),
             "url": String(),

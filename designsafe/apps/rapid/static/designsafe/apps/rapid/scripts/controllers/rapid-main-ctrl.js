@@ -24,12 +24,15 @@ export default class RapidMainCtrl {
       'Street': streets,
       'Satellite': satellite
     };
-    this.map = L.map('map', {layers: [streets, satellite]}).setView([0, 0], 2);
+    this.map = L.map('map', {
+        layers: [streets, satellite],
+        scrollWheelZoom: true
+      }
+    ).setView([0, 0], 2);
     this.map.zoomControl.setPosition('topright');
 
     this.RapidDataService.get_event_types().then( (resp)=> {
       this.event_types = resp;
-      console.log(resp)
     });
 
     this.RapidDataService.get_events().then( (resp)=>{
