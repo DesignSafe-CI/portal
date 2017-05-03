@@ -2,7 +2,7 @@
     <div ng-if="data.project" class="project-detail">
         <h2>{{ data.project.value.title }}</h2>
         <div style="width:50%; display:inline-block;">
-        <table class="table">
+        <table class="table" style="margin-bottom:0;">
             <tbody>
             <tr>
               <th>ID</th>
@@ -25,14 +25,15 @@
             <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
         </div>
-        <div class="project-desc" style="background:white; padding:5px; margin:5px 0px; border:1px solid black; height:100px; overflow:hidden; word-wrap:overflow;">
-          <p>
+        </div>
+        <div class="project-desc" style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc;">
+          <p style="display:inline-block; width:115px;"><strong>Description</strong></p>
+          <p style="display:inline-block;">
           {{data.project.value.description.substring(0, 300)}}
           </p>
           <button class="btn btn-link btn-sm"
                   ng-click="showText(data.project.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
-        </div>
         </div>
         <div class="btn-group" role="group" aria-label="Listing views"
              ng-if="!state.publishPipeline">
