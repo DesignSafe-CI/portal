@@ -34,7 +34,7 @@
                 <td>{{experiment.value.title}}</td>
                 <td>{{experiment.getEF(data.project.value.projectType, experiment.value.experimentalFacility).label}}</td>
                 <td>{{experiment.value.experimentType}}</td>
-                <td>{{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}</td>
+                <td>{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</td>
                 <td><button class="btn btn-sm btn-link"
                             ng-click="toggleDeleteExperiment(experiment.uuid)"
                             alt="Mark experiment for deletion">
@@ -273,7 +273,7 @@
                   </div>
                   <ul>
                     <li 
-                        ng-repeat="event in all_events = data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: ['_ui.order', 'value.title']">
+                        ng-repeat="event in all_events = data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el">Event</span>
                       <span class="tag-title">{{event.value.title}}</span>
@@ -289,12 +289,12 @@
                           <button class="btn btn-sm btn-link"
                                   title="Move order Up"
                                   style="display:inline-block;"
-                                  ng-click="moveOrderUp(event, all_events.length, all_events)" >
+                                  ng-click="moveOrderUp($index, event, all_events)" >
                           <i class="fa fa-arrow-up"></i></button>
                           <button class="btn btn-sm btn-link"
                                   title="Move order Down"
                                   style="display:inline-block;"
-                             ng-click="moveOrderDown(event, all_events.length, all_events)">
+                             ng-click="moveOrderDown($index, event, all_events)">
                           <i class="fa fa-arrow-down"></i></button>
                         </div>
                       </div>

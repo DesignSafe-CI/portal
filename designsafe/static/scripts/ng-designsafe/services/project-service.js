@@ -244,20 +244,21 @@
           };
 
 
-          $scope.moveOrderUp = function(ent, total, list){
+          $scope.moveOrderUp = function($index, ent, list){
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
             } else if (ent._ui.order > 0){
               ent._ui.order -= 1;
+              list[$index-1]._ui.order += 1;
             }
           };
 
-          $scope.moveOrderDown = function(ent, total, list){
-            total = parseInt(total);
+          $scope.moveOrderDown = function($index, ent, list){
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
-            } else if (ent._ui.order < total - 1){
+            } else if (ent._ui.order < list.length - 1){
               ent._ui.order += 1;
+              list[$index+1]._ui.order -= 1;
             }
           };
 
