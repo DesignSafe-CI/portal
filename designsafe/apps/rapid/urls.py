@@ -7,6 +7,7 @@ urlpatterns = patterns(
     url(r'^events/?$', 'get_events', name="get_events"),
     url(r'^admin/?$', 'admin', name="admin"),
     url(r'^admin/create-event', 'admin_create_event', name="admin_create_event"),
+    url(r'^admin/events/(?P<event_id>[-\w]+)/delete$', 'admin_delete_event', name="admin_delete_event"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/$', 'admin_edit_event', name="admin_edit_event"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/add-dataset/$', 'admin_event_add_dataset', name="admin_event_add_dataset"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/(?P<dataset_id>[-\w]+)/$', 'admin_event_edit_dataset', name="admin_event_edit_dataset"),

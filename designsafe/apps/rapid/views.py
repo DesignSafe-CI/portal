@@ -134,6 +134,18 @@ def admin_edit_event(request, event_id):
         return render(request, 'designsafe/apps/rapid/admin_edit_event.html', context)
 
 @login_required
+def admin_delete_event(request, event_id):
+    try:
+        event = RapidNHEvent.get(event_id)
+    except:
+        return HttpResponseNotFound()
+    if request.method == 'POST':
+        event.delete(refresh=True)
+        return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+
+
+
+@login_required
 def admin_event_add_dataset(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
