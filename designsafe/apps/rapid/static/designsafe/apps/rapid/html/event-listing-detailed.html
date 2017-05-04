@@ -22,7 +22,7 @@
   <div class="row">
     <h5> Available datasets: </h5>
     <div class="event-dataset" ng-repeat = "dataset in event.datasets">
-      <a href="{{dataset.url}}"> {{dataset.doi}}: {{dataset.title}} </a>
+      <a href="{{dataset.url}}"> {{dataset.title}} </a>
     </div>
     <div ng-show="!event.datasets">
       <span> No datasets available yet </span>

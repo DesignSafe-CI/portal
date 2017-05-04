@@ -219,6 +219,7 @@ var RapidMainCtrl = function () {
   }, {
     key: 'search',
     value: function search() {
+      console.log(this.filter_options);
       this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
     }
   }, {
@@ -305,7 +306,10 @@ var RapidDataService = function () {
     value: function get_events(opts) {
       console.log(opts);
       return this.$http.get('/rapid/events', opts).then(function (resp) {
-        console.log(resp);
+        resp.data.forEach(function (d) {
+          d.created_date = new Date(d.created_date);
+          d.event_date = new Date(d.event_date);
+        });
         return resp.data;
       });
     }
@@ -328,7 +332,15 @@ var RapidDataService = function () {
         if (filter_options.search_text) {
           f2 = item.title.substring(0, filter_options.search_text.length).toLowerCase() === filter_options.search_text.toLowerCase();
         }
-        return f1 && f2;
+        var f3 = true;
+        if (filter_options.start_date) {
+          f3 = item.event_date > filter_options.start_date;
+        }
+        var f4 = true;
+        if (filter_options.end_date) {
+          f4 = item.event_date < filter_options.end_date;
+        }
+        return f1 && f2 && f3 && f4;
       });
       return tmp;
     }

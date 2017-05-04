@@ -11,6 +11,7 @@ from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
 
 logger = logging.getLogger(__name__)
+metrics_logger = logging.getLogger('metrics')
 
 from designsafe import settings
 
@@ -27,6 +28,12 @@ def handle_uploaded_image(f, file_id):
 
 @login_required
 def index(request):
+    metrics_logger.info('Rapid Index',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'rapid_index_view'
+                 })
     return render(request, 'designsafe/apps/rapid/index.html')
 
 def get_event_types(request):
@@ -176,7 +183,11 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
     except:
         return HttpResponseNotFound()
 
-    form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
+    dataset = next((d for d in event.datasets if d.id == dataset_id), None)
+    if not dataset:
+        return HttpResponseNotFound()
+
+    form = rapid_forms.RapidNHEventDatasetForm(request.POST or dataset.to_dict())
 
     if request.method == 'POST':
         if form.is_valid():

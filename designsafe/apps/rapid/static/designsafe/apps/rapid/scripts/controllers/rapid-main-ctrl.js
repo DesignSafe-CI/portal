@@ -69,6 +69,7 @@ export default class RapidMainCtrl {
   }
 
   search () {
+    console.log(this.filter_options)
     this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
   }
 

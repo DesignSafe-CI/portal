@@ -8,7 +8,10 @@ export default class RapidDataService {
   get_events (opts) {
     console.log(opts);
     return this.$http.get('/rapid/events', opts).then( (resp) => {
-      console.log(resp);
+      resp.data.forEach( (d) =>{
+        d.created_date = new Date(d.created_date);
+        d.event_date = new Date(d.event_date);
+      });
       return resp.data;
     });
   }
@@ -29,7 +32,15 @@ export default class RapidDataService {
       if (filter_options.search_text) {
         f2 = item.title.substring(0, filter_options.search_text.length).toLowerCase() === filter_options.search_text.toLowerCase();
       }
-      return f1 && f2;
+      let f3 = true;
+      if (filter_options.start_date) {
+        f3 = item.event_date > filter_options.start_date;
+      }
+      let f4 = true;
+      if (filter_options.end_date) {
+        f4 = item.event_date < filter_options.end_date;
+      }
+      return f1 && f2 && f3 && f4;
     });
     return tmp;
   }
