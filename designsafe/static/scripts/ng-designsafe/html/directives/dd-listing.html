@@ -442,13 +442,13 @@
           <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
                 <button class="btn btn-sm btn-link pull-right"
                         title="Move order Up"
-                        ng-click="publicationCtrl.moveOrderUp(user, browser.publication.users.length)"
+                        ng-click="publicationCtrl.moveOrderUp($index, user, browser.publication.users)"
                         style="padding:0;">
                         <i class="fa fa-arrow-up"></i>
                 </button>
                 <button class="btn btn-sm btn-link pull-right"
                         title="Move order Down"
-                        ng-click="publicationCtrl.moveOrderDown(user, browser.publication.users.length)"
+                        ng-click="publicationCtrl.moveOrderDown($index, user, browser.publication.users)"
                         style="padding:0;">
                         <i class="fa fa-arrow-down"></i>
                 </button>

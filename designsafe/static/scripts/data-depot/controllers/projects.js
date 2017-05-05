@@ -574,20 +574,26 @@
           });
       },
 
-      moveOrderUp: function(ent, total){
+      moveOrderUp: function($index, ent, list){
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
         } else if (ent._ui.order > 0){
+          var order = ent._ui.order;
+          var _ent = _.find(list, function(e){ 
+                                        return e._ui.order === order - 1; });
           ent._ui.order -= 1;
+          _ent._ui.order += 1;
         }
       },
 
-      moveOrderDown: function(ent, total){
-        total = parseInt(total);
+      moveOrderDown: function($index, ent, list){
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
-        } else if (ent._ui.order < total - 1){
+        } else if (ent._ui.order < list.length - 1){
+          var _ent = _.find(list, function(e){ 
+                                        return e._ui.order === ent._ui.order + 1; });
           ent._ui.order += 1;
+          _ent._ui.order -= 1;
         }
       },
 
