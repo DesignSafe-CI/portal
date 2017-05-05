@@ -37,7 +37,7 @@
 
               if ($scope.data.notifications[i]['event_type'] == 'job') {
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': $scope.data.notifications[i]['pk']});
-              } else if ($scope.data.notifications[i]['event_type'] == 'data') {
+              } else if ($scope.data.notifications[i]['event_type'] == 'data_depot') {
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
               }
             }
