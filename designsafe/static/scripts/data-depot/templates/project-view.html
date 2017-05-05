@@ -25,6 +25,13 @@
             <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
         </div>
+            <div style="width:350px; height:100px; overflow:hidden;">
+                <img width="350" ng-src="{{ previewHref }}" 
+                     ng-if="previewHref && state.showPreviewListing"/>
+                <div ng-if="!previewHref && state.showPreviewListing">
+                  <i class="fa fa-spin fa-spinner"></i> Loading ...
+                </div>
+            </div>
         </div>
         <div class="project-desc" style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc;">
           <p style="display:inline-block; width:115px;"><strong>Description</strong></p>
@@ -35,6 +42,7 @@
                   ng-click="showText(data.project.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
         </div>
+
         <div class="btn-group" role="group" aria-label="Listing views"
              ng-if="!state.publishPipeline">
           <button class="btn btn-default"

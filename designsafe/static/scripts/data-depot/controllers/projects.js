@@ -68,7 +68,7 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $uibModal, $q) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q) {
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
@@ -137,7 +137,7 @@
             }]
         });
     };
-
+        
     $scope.editProject = function($event) {
       if ($event){
         $event.preventDefault();
@@ -189,7 +189,15 @@
     $scope.showPreview = function(){
       //DataBrowserService.state().showMainListing = false;
       //DataBrowserService.state().showPreviewListing = true;
+      $scope.previewHref = undefined;
       DataBrowserService.showPreview();
+      FileListing.get({'system': $scope.browser.listing.system,
+                       'name': 'projectimage.jpg',
+                       'path': '/projectimage.jpg'}).then(function(list){
+                        list.preview().then(function(data){
+                            $scope.previewHref = data.postit;
+                        });
+                      });
     };
 
     $scope.publishPipeline_start = function(){
