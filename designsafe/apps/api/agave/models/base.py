@@ -355,8 +355,10 @@ class Model(object):
                 value_dict[attrname] = list(set(value.uuids))
             elif isinstance(value, Model):
                 value_dict[attrname] = value.to_body_dict()
-            elif isinstance(field, ListField):
+            elif isinstance(field, ListField) and field.list_cls is not None:
                 value_dict[attrname] = [o.to_body_dict() for o in set(value)]
+            elif isinstance(field, ListField):
+                value_dict[attrname] = list(set(value))
             else:
                 value_dict[attrname] = value
         if not self._is_nested:

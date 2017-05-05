@@ -573,8 +573,8 @@
             $uibModalInstance.dismiss();
           };
 
-          $scope.saveCollaborators = function ($eent) {
-            $event.preventDefault();
+          $scope.saveCollaborators = function ($event) {
+            if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
 
             var removeActions = _.map($scope.form.curUsers, function (cur) {

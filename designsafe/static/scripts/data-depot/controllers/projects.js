@@ -152,8 +152,10 @@
       if ($event){
         $event.preventDefault();
       }
-      ProjectService.manageCollaborators($scope.data.project).then(function (project) {
-        $scope.data.project = project;
+      ProjectService.manageCollaborators($scope.data.project).then(function (res) {
+        $scope.data.project.pi = res.data.pi;
+        $scope.data.project.coPis = res.data.coPis;
+        $scope.data.project.teamMembers = res.data.teamMembers;
       });
     };
 
@@ -342,6 +344,7 @@
     };
 
     var setUserDetails = function(usernames){
+      $scope.browser.publication.users = [];
       filePaths = _.uniq(usernames);
       var p = $q(function(resolve, reject){
         var results = [];
