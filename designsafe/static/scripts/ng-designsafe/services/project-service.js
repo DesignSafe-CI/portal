@@ -237,7 +237,7 @@
                                     exp.value.experimentalFacility).label,
                 type: exp.value.experimentType,
                 equipment: exp.getET(exp.value.experimentalFacility,
-                                        exp.value.experimentType).label,
+                                        exp.value.equipmentType).label,
                 description: exp.value.description
             };
             $scope.ui.showEditExperimentForm = true;
