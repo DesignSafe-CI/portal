@@ -1,20 +1,19 @@
-from django.core import serializers
-from django.http import HttpResponse
 from django.shortcuts import render
-from requests import HTTPError
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-
-
-
-import json
 import logging
 
 
 logger = logging.getLogger(__name__)
+metrics_logger = logging.getLogger('metrics')
 
 @login_required
 def index(request):
+    metrics_logger.info('HazMapper Index',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'hazmapper_index_view'
+                 })
     return render(request, 'designsafe/apps/geo/index.html')
 
 @login_required
