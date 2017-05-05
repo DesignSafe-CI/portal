@@ -117,7 +117,11 @@
         </div>
         <div style="padding:5px;">
           <span style="font-weight:bold;"> Experiment Type: </span>
-          {{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}
+          <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
+        </div>
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> Equipment Type: </span>
+          <span style="text-transform:capitalize;">{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</span>
         </div>
       </div>
     </div>
@@ -541,7 +545,7 @@
           <span>Experiment Title</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span class="value pull-right">{{exp.value.title}}</span>
+          <span >{{exp.value.title}}</span>
           </div>
         </div>
         <div class="meta-row">
@@ -552,7 +556,7 @@
           <span>Experiment Type</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span>{{exp.getET(exp.value.experimentalFacility, exp.value.experimentType).label}}</span>
+          <span style="text-transform:capitalize">{{exp.value.experimentType}}</span>
           </div>
         </div>
         <div class="meta-row">
