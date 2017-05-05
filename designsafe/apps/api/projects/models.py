@@ -67,7 +67,6 @@ class Project(BaseMetadataResource):
     def team_members(self):
         permissions = BaseMetadataPermissionResource.list_permissions(
             self.uuid, self._agave)
-        logger.debug('self.value: %s', self.value)
         pi = self.pi
 
         co_pis_list = getattr(self, 'co_pis', [])
@@ -207,11 +206,12 @@ class RelatedEntity(MetadataModel):
 class ExperimentalProject(MetadataModel):
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
+    co_pis = fields.ListField('Co PIs')
     project_type = fields.CharField('Project Type', max_length=255, default='other')
     project_id = fields.CharField('Project Id')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
-    pi = fields.CharField('Pi', max_length=255)
+    pi = fields.CharField('PI', max_length=255)
     award_number = fields.CharField('Award Number', max_length=255)
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
@@ -251,6 +251,7 @@ class Experiment(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=1024)
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
+    equipment_type = fields.CharField('Equipment Type')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(ExperimentalProject)
 

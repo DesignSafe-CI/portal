@@ -33,8 +33,8 @@
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
                 <td>{{experiment.value.title}}</td>
                 <td>{{experiment.getEF(data.project.value.projectType, experiment.value.experimentalFacility).label}}</td>
-                <td>{{experiment.value.experimentType}}</td>
-                <td>{{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}</td>
+                <td><span style="text-transform: capitalize">{{experiment.value.experimentType}}</span></td>
+                <td>{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</td>
                 <td><button class="btn btn-sm btn-link"
                             ng-click="toggleDeleteExperiment(experiment.uuid)"
                             alt="Mark experiment for deletion">
@@ -66,26 +66,27 @@
                         <i class="fa fa-times"></i>
                 </button>
                 <p>Edit Experiment(s):</p>
-                <div style="display:inline-block; width:15%;">
+                <div class="form-group">
                   <label for="id-exp-title" style="display:block">Title</label>
                   <input class="form-control" name="exp-title" id="id-exp-title"
                          ng-model="editExpForm.title"/>
                 </div>
-                <div style="display:inline-block; width:45%;">
-                  <label for="id-exp-title" style="display:block">Experiment Facility</label>
-                  <input class="form-control" disabled ng-model="editExpForm.facility"/>
+                <div class="form-gropu">
+                  <label for="id-exp-facility" style="display:block">Experiment Facility</label>
+                  <input class="form-control" disabled ng-model="editExpForm.facility" id="id-exp-facility"/>
                 </div>
-                <div style="display:inline-block; width:15%;">
-                  <label for="id-exp-title" style="display:block">Experiment Type</label>
-                  <input class="form-control" disabled ng-model="editExpForm.type"/>
+                <div class="form-group">
+                  <label for="id-exp-type" style="display:block">Experiment Type</label>
+                  <input class="form-control" disabled ng-model="editExpForm.type" id="id-exp-type"/>
                 </div>
-                <div style="display:inline-block; width:15%;">
-                  <label for="id-exp-title" style="display:block">Equipment Type</label>
-                  <input class="form-control" disabled ng-model="editExpForm.equipment"/>
+                <div class="form-group">
+                  <label for="id-exp-equip" style="display:block">Equipment Type</label>
+                  <input class="form-control" disabled ng-model="editExpForm.equipment" id="id-exp-equip"/>
                 </div>
-                <div style="display:inline-block; width:90%; padding-top:5px;">
-                  <textarea style="width:100%;" placeholder="Description"
-                ng-model="editExpForm.description">
+                <div class="form-group">
+                  <label for="id-exp-desc">Description</label> 
+                  <textarea style="width:100%; height:3em;" placeholder="Description"
+                            ng-model="editExpForm.description" id="id-exp-desc">
                 </textarea>
                 </div>
                 <button class="btn btn-info btn-sm"
@@ -122,68 +123,43 @@
                 <p>Add Experiment(s):</p>
                 <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
                 <div class="form-group">
-                    <div class="row">
-                        <div class="col-xs-8" style="width:100%;">
-                        <table class="table">
-                          <thead>
-                            <tr>
-                            <td>Experiment Title</td>
-                            <td>Experiment Facility</td>
-                            <td>Experiment Type</td>
-                            <td>Equipment Type</td>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr ng-repeat-start="exp in form.addExperiments">
-                              <td>
-                              <input type="text" class="form-control" id="id_experiment_title"
-                                     ng-model="exp.title">
-                              </td>
-                              <td>
-                          <select ng-options="ef.name as ef.label for ef in ui.efs[data.project.value.projectType]"
-                                  class="form-control"
-                                  ng-model="exp.experimentalFacility"
-                                  id="experiment-ef">
-                          </select>
-                              </td>
-                              <td>
-                          <select ng-options="type.name as type.label for type in ui.experimentTypes[exp.experimentalFacility]"
-                                  class="form-control"
-                                  ng-model="exp.experimentType"
-                                  id="id-experiment-type">
-                          </select>
-                              </td>
-                              <td>
-                          <select ng-options="et.name as et.label for et in ui.equipmentTypes[exp.experimentalFacility]"
-                                 class="form-control"
-                                 ng-model="exp.equipmentType"
-                                 id="id-equipment-type">
-                          </select>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="4">
-                                <textarea style="width:100%; height:3em;" 
-                                          id="id_experiment_description"
-                                          placeholder="Descrpition..."
-                                          ng-model="exp.description"></textarea>
-                              </td>
-                            </tr>
-                            <tr ng-if="$index > 0" ng-repeat-end>
-                              <td colspan="3">
-                                <button class="btn btn-danger btn-sm"
-                                        ng-click="delNewExperiment($index)">
-                                          <i class="fa fa-remove"></i>
-                                          <span class="sr-only">Remove</span>
-                                </button>
-                            </tr>
-                          </tbody>
-                        </table>    
-                        </div>
-                    </div>
+                  <label for="add-exp-title">Experiment Title</label>
+                  <input type="txt" class="form-control" id="add-exp-title"
+                         ng-model="form.addExperiments[0].title" />
+                </div>
+                <div class="form-group">
+                  <label for="add-exp-facility">Experiment Facility</label>
+                      <select ng-options="ef.name as ef.label for ef in ui.efs[data.project.value.projectType]"
+                              class="form-control"
+                              ng-model="form.addExperiments[0].experimentalFacility"
+                              id="add-exp-facility">
+                      </select>
+                </div>
+                <div class="form-group">
+                  <label for="add-exp-type">Experiment Type</label>
+                  <select ng-options="type.name as type.label for type in ui.experimentTypes[form.addExperiments[0].experimentalFacility]"
+                          class="form-control"
+                          ng-model="form.addExperiments[0].experimentType"
+                          id="add-exp-type">
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="add-equip-type">Equipment Type</label>
+                  <select ng-options="et.name as et.label for et in ui.equipmentTypes[form.addExperiments[0].experimentalFacility]"
+                         class="form-control"
+                         ng-model="form.addExperiments[0].equipmentType"
+                         id="id-equipment-type">
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="add-exp-desc">Description</label>
+                  <textarea style="height:3em;"
+                            class="form-control"
+                            id="add-exp-desc"
+                            ng-model="form.addExperiments[0].description"></textarea>
                 </div>
                 <button class="btn btn-info btn-sm" ng-click="saveExperiment($event)">
-                    <i class="fa fa-plus"></i> Save Experiment
+                    <i class="fa fa-check"></i> Save Experiment
                 </button>
             </div>
         </form>
@@ -273,7 +249,7 @@
                   </div>
                   <ul>
                     <li 
-                        ng-repeat="event in all_events = data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: ['_ui.order', 'value.title']">
+                        ng-repeat="event in all_events = data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el">Event</span>
                       <span class="tag-title">{{event.value.title}}</span>
@@ -289,12 +265,12 @@
                           <button class="btn btn-sm btn-link"
                                   title="Move order Up"
                                   style="display:inline-block;"
-                                  ng-click="moveOrderUp(event, all_events.length, all_events)" >
+                                  ng-click="moveOrderUp($index, event, all_events)" >
                           <i class="fa fa-arrow-up"></i></button>
                           <button class="btn btn-sm btn-link"
                                   title="Move order Down"
                                   style="display:inline-block;"
-                             ng-click="moveOrderDown(event, all_events.length, all_events)">
+                             ng-click="moveOrderDown($index, event, all_events)">
                           <i class="fa fa-arrow-down"></i></button>
                         </div>
                       </div>
@@ -507,7 +483,7 @@
           <button class="btn btn-sm btn-info pull-left"
                   ng-click="addProjectTag()"
                   ng-disabled="ui.addingTag">
-                <i class="fa fa-plus"></i>
+                <i class="fa fa-check"></i>
                     Save Category
 
         <span style="display:inline-block;padding: 9px;"

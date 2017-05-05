@@ -34,6 +34,7 @@
     FileListing.prototype.setEntities = function(projectId, entities){
       var self = this;
       var path = self.path;
+      self._entities = [];
       _.each(entities, function(entity){
         if (typeof entity !== 'undefined' &&
             typeof entity._links !== 'undefined' &&
@@ -50,6 +51,7 @@
         }
       });
       if(self._entities.length){
+        self._entities = _.uniq(self._entities, function(e){ return e.uuid;});
         var myAsoc = _.find(self._entities[0]._links.associationIds,
           function(asc){
           if (asc.title === 'file'){

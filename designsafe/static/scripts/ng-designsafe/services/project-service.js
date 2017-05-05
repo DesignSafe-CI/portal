@@ -237,27 +237,33 @@
                                     exp.value.experimentalFacility).label,
                 type: exp.value.experimentType,
                 equipment: exp.getET(exp.value.experimentalFacility,
-                                        exp.value.experimentType).label,
+                                        exp.value.equipmentType).label,
                 description: exp.value.description
             };
             $scope.ui.showEditExperimentForm = true;
           };
 
 
-          $scope.moveOrderUp = function(ent, total, list){
+          $scope.moveOrderUp = function($index, ent, list){
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
             } else if (ent._ui.order > 0){
+              var order = ent._ui.order;
+              var _ent = _.find(list, function(e){ 
+                                            return e._ui.order === order - 1; });
               ent._ui.order -= 1;
+              _ent._ui.order += 1;
             }
           };
 
-          $scope.moveOrderDown = function(ent, total, list){
-            total = parseInt(total);
+          $scope.moveOrderDown = function($index, ent, list){
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
-            } else if (ent._ui.order < total - 1){
+            } else if (ent._ui.order < list.length - 1){
+              var _ent = _.find(list, function(e){ 
+                                            return e._ui.order === ent._ui.order + 1; });
               ent._ui.order += 1;
+              _ent._ui.order -= 1;
             }
           };
 
@@ -519,6 +525,13 @@
             $scope.data.busy = false;
             $scope.data.experiments = results[1];
 
+            _.each($scope.data.experiments, function(exp){
+              $scope.form.authors[exp.uuid] = {};
+              _.each(exp.value.authors, function(auth){
+                  $scope.form.authors[exp.uuid][auth] = true;
+              });
+            });
+
             $scope.form.curUsers = _.map(results[0].data.teamMembers, function (collab) {
               return {
                 user: {username: collab},
@@ -567,8 +580,20 @@
             $uibModalInstance.dismiss();
           };
 
-          $scope.saveCollaborators = function ($eent) {
-            $event.preventDefault();
+          $scope.authorship = [];
+
+          $scope.toggleUserToExp = function(exp, username){
+            var add = $scope.form.authors[exp.uuid][username];
+            if (add){
+                $scope.authorship.push({exp: exp, username: username});
+            } else {
+                $scope.authorship = _.reject($scope.authorship, function(obj){
+                                          return obj.username === username; });
+            }
+          };
+
+          $scope.saveCollaborators = function ($event) {
+            if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
 
             var removeActions = _.map($scope.form.curUsers, function (cur) {
@@ -598,11 +623,32 @@
                 }});
               }
             }));
+            
+            var expsToUpdate = [];
+            _.each($scope.authorship, function(obj){
+              expsToUpdate.push(obj.exp.uuid);
+              var exp = $scope.data.project.getRelatedByUuid(obj.exp.uuid);
+              exp.value.authors.push(obj.username);
+            });
+            
+            expsToUpdate = _.uniq(expsToUpdate);
+            var updateExps = _.map(expsToUpdate, function(uuid){
+              var _exp = $scope.data.project.getRelatedByUuid(uuid);
+              return ProjectEntitiesService.update({data: {
+                  uuid: _exp.uuid,
+                  entity: _exp
+              }}).then(function(e){
+                  var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                  ent.update(e);
+                  return e;
+              });
+            });
 
                 //ProjectEntitiesService.update(
                 //    {data: {uuid: entity.uuid, entity: entity}}
                 //)
             var tasks = removeActions.concat(addActions);
+            tasks = tasks.concat(updateExps);
             $q.all(tasks).then(
               function (results) {
                 $uibModalInstance.close(results);

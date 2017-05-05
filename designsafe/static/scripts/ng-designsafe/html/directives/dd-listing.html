@@ -92,7 +92,7 @@
                 browser.publishPipeline != 'agreement')"
          style="background:#fff;">
 
-        <div class="dropdown" id="details-{{experiment.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{experiment.uuid}}">
           <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
                   style="width:100%;">
             Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
@@ -102,20 +102,26 @@
 
     <div style="border:1px solid black; background:white; margin-bottom:15px;">
       <div style= "width:50%; display:inline-block; padding:5px;">
-      <h3>{{experiment.value.title}}</h3>
-      <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
-      <p style="overflow:hidden; display:block; height:20px;">{{experiment.value.description}}</p>
+      <h3 style="margin-top:0">{{experiment.value.title}}</h3>
+      <div style="padding:5px; margin:5px 0px; height:80px; overflow:hidden; word-wrap:overflow;">
+      <p style="overflow:hidden; display:block; height:40px;">
+          <span style="font-weight:bold;"> Description: </span>{{experiment.value.description}}</p>
           <button class="btn btn-link btn-sm"
                   ng-click="publicationCtrl.showText(experiment.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
       </div>
       </div>
       <div style="width:49%; vertical-align:top; display:inline-block;">
-        <div style="border:1px solid black; padding:5px;">
-          {{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> Experimental Facility: </span>{{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
         </div>
-        <div style="border:1px solid black; padding:5px;">
-          {{experiment.getET(experiment.value.experimentalFacility, experiment.value.experimentType).label}}
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> Experiment Type: </span>
+          <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
+        </div>
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> Equipment Type: </span>
+          <span style="text-transform:capitalize;">{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</span>
         </div>
       </div>
     </div>
@@ -136,6 +142,7 @@
          data-toggle="collapse" data-target="#files-{{browser.project.getRelatedByUuid(event.value.sensorLists[0]).uuid}}">
       Sensor List
       </a>
+      <!--
       <div class="pull-right">
         <button class="btn btn-sm btn-link"
                 title="Move order Up"
@@ -146,6 +153,7 @@
            ng-click="publicationCtrl.moveOrderDown(event, all_events.length)">
         <i class="fa fa-arrow-down"></i></button>
       </div>
+      -->
     </div>
     <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
       <div style="border-bottom:1px solid lightgrey;">
@@ -173,7 +181,7 @@
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
-        <th ng-if="browser.publishPipeline">
+        <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
           <button class="btn btn-default"
                   ng-if="! (browser.publication[experiment.uuid][event.uuid] && browser.publication[experiment.uuid][event.uuid].length)"
                   ng-click="publicationCtrl.selectAllFiles(experiment, event)">
@@ -194,7 +202,7 @@
             </td>
             <td>{{file.length|bytes}}</td>
             <td>{{file.lastModified|date:"short"}}</td>
-            <td ng-if="browser.publishPipeline">
+            <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                 <button class="btn btn-success"
                         ng-if="publicationCtrl.isFileSelectedForPublication(experiment, event, file)"
                         ng-click="publicationCtrl.deselectFileForPublication(experiment, event, file)"
@@ -224,7 +232,7 @@
                 browser.publishPipeline === 'select')">
 
       <div ng-repeat="modelConfig in browser.project.modelconfiguration_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{modelConfig.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                   style="width:100%;">
             Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
@@ -254,7 +262,7 @@
       </div>
 
       <div ng-repeat="sensorList in browser.project.sensorlist_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{sensorList.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
           <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                   style="width:100%;">
             Sensor Info {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
@@ -284,7 +292,7 @@
       </div>
 
       <div ng-repeat="analysis in browser.project.analysis_set | orderBy: 'value.title'">
-        <div class="dropdown" id="details-{{analysis.uuid}}">
+        <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
           <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                   style="width:100%;">
             Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
@@ -292,9 +300,10 @@
           <div id="files-{{analysis.uuid}}" class="collapse in">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <div style= "width:50%; display:inline-block;">
-              <h3>{{analysis.value.title}}</h3>
+              <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
               <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
-              <p style="overflow:hidden; display:block; height:20px;">{{analysis.value.description}}</p>
+              <p style="overflow:hidden; display:block; height:20px;">
+              <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
                   <button class="btn btn-link btn-sm"
                           ng-click="publicationCtrl.showText(analysis.value.description)">
                     <i class="fa fa-external-link"></i> Show</button>
@@ -322,8 +331,52 @@
             </table>
           </div>
         </div>
+       </div>
       </div>
 
+      <div ng-repeat="report in browser.project.report_set | orderBy: 'value.title'">
+        <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
+          <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                  style="width:100%;">
+            Report {{report.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="files-{{report.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <div style= "width:50%; display:inline-block;">
+              <h3 style="margin-top:0;">{{report.value.title}}</h3>
+              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
+              <p style="overflow:hidden; display:block; height:20px;">
+              <span style="font-weight:bold;">Description: </span>{{report.value.description}}</p>
+                  <button class="btn btn-link btn-sm"
+                          ng-click="publicationCtrl.showText(analysis.value.description)">
+                    <i class="fa fa-external-link"></i> Show</button>
+              </div>
+            </div>
+
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+                <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in browser.listings[report.uuid] | orderBy: ['type', 'path']">
+                    <td><i class="fa {{file.icon()}}"></i>
+                        <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                        {{file.name}}
+                        </a>
+                    </td>
+                    <td>{{file.length}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
     </div>
 
     </div>
@@ -357,15 +410,15 @@
           <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span>Project Type </span><span class="text-danger">(*)</span>
+          <span>Project Type </span><span class="text-danger" style="text-transform:capitalize">(*)</span>
           </div>
           <div class="value pull-right">
-          <span>{{browser.project.value.projectType}}</span>
+          <span style="text-transform:capitalize">{{browser.project.value.projectType}}</span>
           </div>
         </div>
         <div class="meta-row">
           <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl.editInsts([{id:'label', name:'label', label:'Institution', uniq: 'name', type:'text'}])">
+          <a href="#" ng-click="publicationCtrl.editInsts()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
           <span>Participant Instiutions </span><span class="text-danger">(*)</span>
@@ -379,8 +432,7 @@
         </div>
         <div class="meta-row">
         <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl.editUsers([{id:'last_name', name:'last_name', label:'Last Name', uniq:'username', type:'text'},
-                                                                                      {id:'first_name', name:'first_name', label:'First Name', uniq:'username', type:'text'}])">
+          <a href="#" ng-click="publicationCtrl.editUsers()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
           <span>Team Members </span><span class="text-danger">(*)</span>
@@ -390,13 +442,13 @@
           <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
                 <button class="btn btn-sm btn-link pull-right"
                         title="Move order Up"
-                        ng-click="publicationCtrl.moveOrderUp(user, browser.publication.users.length)"
+                        ng-click="publicationCtrl.moveOrderUp($index, user, browser.publication.users)"
                         style="padding:0;">
                         <i class="fa fa-arrow-up"></i>
                 </button>
                 <button class="btn btn-sm btn-link pull-right"
                         title="Move order Down"
-                        ng-click="publicationCtrl.moveOrderDown(user, browser.publication.users.length)"
+                        ng-click="publicationCtrl.moveOrderDown($index, user, browser.publication.users)"
                         style="padding:0;">
                         <i class="fa fa-arrow-down"></i>
                 </button>
@@ -414,7 +466,7 @@
           <span>Project Description </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span>{{browser.project.value.descrpition}}</span>
+          <span>{{browser.project.value.description}}</span>
           </div>
         </div>
         <div class="meta-row">
@@ -493,7 +545,7 @@
           <span>Experiment Title</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span class="value pull-right">{{exp.value.title}}</span>
+          <span >{{exp.value.title}}</span>
           </div>
         </div>
         <div class="meta-row">
@@ -504,7 +556,7 @@
           <span>Experiment Type</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span>{{exp.getET(exp.value.experimentalFacility, exp.value.experimentType).label}}</span>
+          <span style="text-transform:capitalize">{{exp.value.experimentType}}</span>
           </div>
         </div>
         <div class="meta-row">

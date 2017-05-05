@@ -281,7 +281,14 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
         username = post_data.get('username')
         member_type = post_data.get('memberType', 'teamMember')
+        logger.info('member Type: %s', member_type)
         project.add_collaborator(username)
+        members_list = project.value.get(member_type, [])
+        members_list.append(username)
+        _kwargs = {member_type: members_list}
+        project.update(**_kwargs)
+        project.save()
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         collab_users = get_user_model().objects.filter(username=username)
         if collab_users:
             collab_user = collab_users[0]
@@ -302,13 +309,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
                     html_message=body)
                 #logger.exception(err)
 
-        members_list = project.value.get(member_type, [])
-        members_list.append(username)
-        _kwargs = {member_type: members_list}
-        project.update(**_kwargs)
-        project.save()
-        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
-        return JsonResponse({'status': 'ok'})
+        return JsonResponse(project.team_members())
 
     def delete(self, request, project_id):
         if request.is_ajax():

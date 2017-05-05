@@ -10,7 +10,10 @@
     </div>
     <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
         <div class="btn-group">
-            <button class="btn btn-sm btn-default" title="Categorize" ng-click="ops.viewCategories()" ng-disabled="!tests.canViewMetadata">
+            <button class="btn btn-sm btn-default" title="Categorize"
+                    ng-click="ops.viewCategories()"
+                    ng-disabled="!tests.canViewCategories"
+                    ng-if="browser.listing.system.startsWith('project')">
                 <img src="/static/images/ds-icons/icon-categorize.png" width="50px" height="16px"/>
                 <span style="display:block;">Categorize</span>
             </button>

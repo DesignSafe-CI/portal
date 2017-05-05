@@ -415,7 +415,8 @@ class FileMediaView(View):
                     if file_listing.previewable:
                         preview_url = reverse('designsafe_api:files_media',
                                               args=[file_mgr_name, system_id, file_path])
-                        return JsonResponse({'href': '{}?preview=true'.format(preview_url)})
+                        return JsonResponse({'href': '{}?preview=true'.format(preview_url),
+                                             'postit': file_listing.download_postit(force=False, lifetime=360)})
                     else:
                         return HttpResponseBadRequest('Preview not available for this item')
                 except HTTPError as e:

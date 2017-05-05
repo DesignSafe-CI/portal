@@ -68,7 +68,7 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, $uibModal, $q) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q) {
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
@@ -137,7 +137,7 @@
             }]
         });
     };
-
+        
     $scope.editProject = function($event) {
       if ($event){
         $event.preventDefault();
@@ -152,8 +152,10 @@
       if ($event){
         $event.preventDefault();
       }
-      ProjectService.manageCollaborators($scope.data.project).then(function (project) {
-        $scope.data.project = project;
+      ProjectService.manageCollaborators($scope.data.project).then(function (res) {
+        $scope.data.project.pi = res.data.pi;
+        $scope.data.project.coPis = res.data.coPis;
+        $scope.data.project.teamMembers = res.data.teamMembers;
       });
     };
 
@@ -187,7 +189,15 @@
     $scope.showPreview = function(){
       //DataBrowserService.state().showMainListing = false;
       //DataBrowserService.state().showPreviewListing = true;
+      $scope.previewHref = undefined;
       DataBrowserService.showPreview();
+      FileListing.get({'system': $scope.browser.listing.system,
+                       'name': 'projectimage.jpg',
+                       'path': '/projectimage.jpg'}).then(function(list){
+                        list.preview().then(function(data){
+                            $scope.previewHref = data.postit;
+                        });
+                      });
     };
 
     $scope.publishPipeline_start = function(){
@@ -342,6 +352,7 @@
     };
 
     var setUserDetails = function(usernames){
+      $scope.browser.publication.users = [];
       filePaths = _.uniq(usernames);
       var p = $q(function(resolve, reject){
         var results = [];
@@ -373,6 +384,7 @@
       });
       $scope.browser.ui.loadingPreview = true;
       return p.then(function(results){
+        $scope.browser.publication.users = _.uniq($scope.browser.publication.users, function(obj){return obj.username;});
         return results;
       }, function(err){
         $scope.browser.ui.error = err;
@@ -495,15 +507,20 @@
       });
     };
 
-    var _editFieldModal = function(objArr, fields){
+    var _editFieldModal = function(objArr, title, fields, classes){
         modal = $uibModal.open({
-          template : '<div class="modal-body">' + 
+          template : '<div class="modal-header">' + 
+                       '<h3>{{ui.title}}</h3>' + 
+                     '</div>' + 
+                     '<div class="modal-body">' + 
                        '<div class="form-group" ' + 
-                             'ng-repeat="obj in data.objArr">' + 
+                             'ng-repeat="obj in data.objArr" style="overflow:auto;">' + 
                          '<div ng-repeat="field in ui.fields">' +
+                           '<div class="{{ui.classes[field.name]}}">' + 
                            '<label for="{{field.id}}-{{obj[field.uniq]}}">{{field.label}}</label>' + 
                            '<input type="{{field.type}}" class="form-control" name="{{field.name}}-{{obj[field.uniq]}}"' + 
                                    'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
+                           '</div>' + 
                          '</div>' +
                        '</div>' +
                      '</div>' + 
@@ -513,6 +530,8 @@
                      '</div>',
          controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
             $scope.ui = {fields: fields,
+                         classes: classes,
+                         title: title,
                          form: {}};
             $scope.data = {objArr: angular.copy(objArr)};
 
@@ -555,20 +574,26 @@
           });
       },
 
-      moveOrderUp: function(ent, total){
+      moveOrderUp: function($index, ent, list){
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
         } else if (ent._ui.order > 0){
+          var order = ent._ui.order;
+          var _ent = _.find(list, function(e){ 
+                                        return e._ui.order === order - 1; });
           ent._ui.order -= 1;
+          _ent._ui.order += 1;
         }
       },
 
-      moveOrderDown: function(ent, total){
-        total = parseInt(total);
+      moveOrderDown: function($index, ent, list){
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
-        } else if (ent._ui.order < total - 1){
+        } else if (ent._ui.order < list.length - 1){
+          var _ent = _.find(list, function(e){ 
+                                        return e._ui.order === ent._ui.order + 1; });
           ent._ui.order += 1;
+          _ent._ui.order -= 1;
         }
       },
 
@@ -668,16 +693,25 @@
         }
       },
 
-      editUsers : function(fields){
-        modal = _editFieldModal($scope.browser.publication.users, fields);
+      editUsers : function(){
+        fields = [
+          {id: 'last_name', name: 'last_name', label: 'Last Name', uniq: 'username', type: 'text'},
+          {id: 'first_name', name: 'first_name', label: 'First Name', uniq: 'username', type: 'text'}
+        ];
+        classes = {
+            'first_name': 'col-md-6',
+            'last_name': 'col-md-6'
+        };
+        modal = _editFieldModal($scope.browser.publication.users, 'Edit Users', fields, classes);
 
         modal.result.then(function(respArr){
           $scope.browser.publication.users = respArr;
         });
       },
 
-      editInsts : function(fields){
-        modal = _editFieldModal($scope.browser.publication.institutions, fields);
+      editInsts : function(){
+        fields = [{id:'label', name:'label', label:'Institution', uniq: 'name', type:'text'}];
+        modal = _editFieldModal($scope.browser.publication.institutions, 'Edit Institutions', fields);
 
         modal.result.then(function(respArr){
           $scope.browser.publication.institutions = respArr;
