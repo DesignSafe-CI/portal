@@ -406,15 +406,15 @@
           <a href="#" ng-click="publicationCtrl.openEditProject()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
-          <span>Project Type </span><span class="text-danger">(*)</span>
+          <span>Project Type </span><span class="text-danger" style="text-transform:capitalize">(*)</span>
           </div>
           <div class="value pull-right">
-          <span>{{browser.project.value.projectType}}</span>
+          <span style="text-transform:capitalize">{{browser.project.value.projectType}}</span>
           </div>
         </div>
         <div class="meta-row">
           <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl.editInsts([{id:'label', name:'label', label:'Institution', uniq: 'name', type:'text'}])">
+          <a href="#" ng-click="publicationCtrl.editInsts()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
           <span>Participant Instiutions </span><span class="text-danger">(*)</span>
@@ -428,8 +428,7 @@
         </div>
         <div class="meta-row">
         <div class="attr pull-left">
-          <a href="#" ng-click="publicationCtrl.editUsers([{id:'last_name', name:'last_name', label:'Last Name', uniq:'username', type:'text'},
-                                                                                      {id:'first_name', name:'first_name', label:'First Name', uniq:'username', type:'text'}])">
+          <a href="#" ng-click="publicationCtrl.editUsers()">
             <i class="fa fa-pencil-square-o"></i> Edit
           </a>
           <span>Team Members </span><span class="text-danger">(*)</span>
@@ -463,7 +462,7 @@
           <span>Project Description </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <span>{{browser.project.value.descrpition}}</span>
+          <span>{{browser.project.value.description}}</span>
           </div>
         </div>
         <div class="meta-row">

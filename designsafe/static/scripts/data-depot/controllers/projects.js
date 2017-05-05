@@ -373,6 +373,7 @@
       });
       $scope.browser.ui.loadingPreview = true;
       return p.then(function(results){
+        $scope.browser.publication.users = _.uniq($scope.browser.publication.users, function(obj){return obj.username;});
         return results;
       }, function(err){
         $scope.browser.ui.error = err;
@@ -495,15 +496,20 @@
       });
     };
 
-    var _editFieldModal = function(objArr, fields){
+    var _editFieldModal = function(objArr, title, fields, classes){
         modal = $uibModal.open({
-          template : '<div class="modal-body">' + 
+          template : '<div class="modal-header">' + 
+                       '<h3>{{ui.title}}</h3>' + 
+                     '</div>' + 
+                     '<div class="modal-body">' + 
                        '<div class="form-group" ' + 
-                             'ng-repeat="obj in data.objArr">' + 
+                             'ng-repeat="obj in data.objArr" style="overflow:auto;">' + 
                          '<div ng-repeat="field in ui.fields">' +
+                           '<div class="{{ui.classes[field.name]}}">' + 
                            '<label for="{{field.id}}-{{obj[field.uniq]}}">{{field.label}}</label>' + 
                            '<input type="{{field.type}}" class="form-control" name="{{field.name}}-{{obj[field.uniq]}}"' + 
                                    'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
+                           '</div>' + 
                          '</div>' +
                        '</div>' +
                      '</div>' + 
@@ -513,6 +519,8 @@
                      '</div>',
          controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
             $scope.ui = {fields: fields,
+                         classes: classes,
+                         title: title,
                          form: {}};
             $scope.data = {objArr: angular.copy(objArr)};
 
@@ -668,16 +676,25 @@
         }
       },
 
-      editUsers : function(fields){
-        modal = _editFieldModal($scope.browser.publication.users, fields);
+      editUsers : function(){
+        fields = [
+          {id: 'last_name', name: 'last_name', label: 'Last Name', uniq: 'username', type: 'text'},
+          {id: 'first_name', name: 'first_name', label: 'First Name', uniq: 'username', type: 'text'}
+        ];
+        classes = {
+            'first_name': 'col-md-6',
+            'last_name': 'col-md-6'
+        };
+        modal = _editFieldModal($scope.browser.publication.users, 'Edit Users', fields, classes);
 
         modal.result.then(function(respArr){
           $scope.browser.publication.users = respArr;
         });
       },
 
-      editInsts : function(fields){
-        modal = _editFieldModal($scope.browser.publication.institutions, fields);
+      editInsts : function(){
+        fields = [{id:'label', name:'label', label:'Institution', uniq: 'name', type:'text'}];
+        modal = _editFieldModal($scope.browser.publication.institutions, 'Edit Institutions', fields);
 
         modal.result.then(function(respArr){
           $scope.browser.publication.institutions = respArr;
