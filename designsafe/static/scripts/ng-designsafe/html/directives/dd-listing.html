@@ -181,7 +181,7 @@
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
-        <th ng-if="browser.publishPipeline">
+        <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
           <button class="btn btn-default"
                   ng-if="! (browser.publication[experiment.uuid][event.uuid] && browser.publication[experiment.uuid][event.uuid].length)"
                   ng-click="publicationCtrl.selectAllFiles(experiment, event)">
@@ -202,7 +202,7 @@
             </td>
             <td>{{file.length|bytes}}</td>
             <td>{{file.lastModified|date:"short"}}</td>
-            <td ng-if="browser.publishPipeline">
+            <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                 <button class="btn btn-success"
                         ng-if="publicationCtrl.isFileSelectedForPublication(experiment, event, file)"
                         ng-click="publicationCtrl.deselectFileForPublication(experiment, event, file)"
