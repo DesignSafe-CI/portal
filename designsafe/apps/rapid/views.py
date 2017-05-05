@@ -77,7 +77,6 @@ def admin_create_event(request):
             ev.title = form.cleaned_data["title"]
             if request.FILES:
                 try:
-
                     image_uuid = str(uuid.uuid1())
                     f = request.FILES["image"]
                     thumb = thumbnail_image(f)
@@ -102,13 +101,10 @@ def admin_edit_event(request, event_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
-    logger.info(event.to_dict())
-    logger.info(event.location.lon)
     data = event.to_dict()
     data["lat"] = event.location.lat
     data["lon"] = event.location.lon
-    logger.info(data["event_date"])
-    form = rapid_forms.RapidNHEventForm(request.POST or data)
+    form = rapid_forms.RapidNHEventForm(request.POST or data, request.FILES or None)
     q = RapidNHEventType.search()
     event_types = q.execute()
     options = [(et.name, et.display_name) for et in event_types]
@@ -116,8 +112,8 @@ def admin_edit_event(request, event_id):
     form.fields['lat'].initial = event.location["lat"]
     form.fields['lon'].initial = event.location["lon"]
     if request.method == 'POST':
+        logger.info(request.FILES)
         if form.is_valid():
-            logger.info(form.cleaned_data)
             event.event_date = form.cleaned_data["event_date"]
             event.location = {
                 "lat": form.cleaned_data["lat"],
@@ -126,8 +122,17 @@ def admin_edit_event(request, event_id):
             event.title = form.cleaned_data["title"]
             event.location_description = form.cleaned_data["location_description"]
             event.event_type = form.cleaned_data["event_type"]
-            # need to do something with the actual file in the uploads directory
-            # if it was changed. Delete it or else it will persist forever.
+            if request.FILES:
+                old_image_uuid = event.main_image_uuid
+                try:
+                    image_uuid = str(uuid.uuid1())
+                    f = request.FILES["image"]
+                    thumb = thumbnail_image(f)
+                    handle_uploaded_image(thumb, image_uuid)
+                    event.main_image_uuid = image_uuid
+                except:
+                    return HttpResponseBadRequest("Hmm, a bad file perhaps?")
+                os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
             event.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
@@ -147,6 +152,11 @@ def admin_delete_event(request, event_id):
     except:
         return HttpResponseNotFound()
     if request.method == 'POST':
+        image_uuid = event.main_image_uuid
+        try:
+            os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', image_uuid))
+        except:
+            pass
         event.delete(refresh=True)
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
