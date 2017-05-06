@@ -89,7 +89,7 @@
                         ng-click="toggleProjectTag(modelConfig)">
                 <span ng-class="{'selected': isProjectTagSel(modelConfig)}"
                       class="label tag-blue">Model Config</span>
-                <span class="tab-title">{{modelConfig.value.title}}</span>
+                <span class="tag-title">{{modelConfig.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(modelConfig)}" class="fa"></i>
                 </button>
@@ -102,7 +102,7 @@
                         ng-click="toggleProjectTag(sensor)">
                 <span ng-class="{'selected': isProjectTagSel(sensor)}"
                       class="label tag-green">Sensor Info</span>
-                <span class="tab-title">{{sensor.value.title}}</span>
+                <span class="tag-title">{{sensor.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(sensor)}" class="fa"></i>
                 </button>
@@ -115,7 +115,7 @@
                         ng-click="toggleProjectTag(event)">
                 <span ng-class="{'selected': isProjectTagSel(event)}" 
                       class="label tag-red">Events</span>
-                <span class="tab-title">{{event.value.title}}</span>
+                <span class="tag-title">{{event.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(event)}" class="fa"></i>
                 </button>
@@ -128,7 +128,7 @@
                         ng-click="toggleProjectTag(analysis)">
                 <span ng-class="{'selected': isProjectTagSel(analysis)}" 
                       class="label tag-light-blue">Analysis</span>
-                <span class="tab-title">{{analysis.value.title}}</span>
+                <span class="tag-title">{{analysis.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(analysis) }" class="fa"></i>
                 </button>
@@ -143,7 +143,7 @@
                         ng-click="toggleProjectTag(report)">
                 <span ng-class="{'selected': isProjectTagSel(report)}" 
                       class="label tag-black">Report</span>
-                <span class="tab-title">{{report.value.title}}</span>
+                <span class="tag-title">{{report.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(report) }" class="fa"></i>
                 </button>
