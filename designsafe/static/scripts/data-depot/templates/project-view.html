@@ -33,10 +33,10 @@
                 </div>
             </div>
         </div>
-        <div class="project-desc" style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc;">
+        <div class="project-desc" style="padding:5px; margin:5px 0px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc; max-height;115px;">
           <p style="display:inline-block; width:115px;"><strong>Description</strong></p>
-          <p style="display:inline-block;">
-          {{data.project.value.description.substring(0, 300)}}
+          <p style="display:inline-block; max-height:40px; overflow:hidden;">
+          {{data.project.value.description}}
           </p>
           <button class="btn btn-link btn-sm"
                   ng-click="showText(data.project.value.description)">
