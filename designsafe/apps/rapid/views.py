@@ -173,7 +173,6 @@ def admin_event_add_dataset(request, event_id):
 
     if request.method == 'POST':
         if form.is_valid():
-            logger.info(form.cleaned_data)
             data = form.cleaned_data
             data["id"] = str(uuid.uuid1())
             event.datasets.append(data)
@@ -216,7 +215,6 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
-    logger.info(request.method)
     if request.method == 'POST':
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
         event.save()
