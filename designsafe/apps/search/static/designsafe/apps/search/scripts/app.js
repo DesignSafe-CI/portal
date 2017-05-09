@@ -26,7 +26,7 @@
       $scope.data.type_filter = null;
       $scope.filetype_filter = 'all';
       $scope.searching = false;
-      $scope.inital_q = $location.search().q
+      $scope.inital_q = $location.search().q;
 
       $scope.search = function(reset){
         arguments.length ? reset = true : reset= false;
@@ -64,19 +64,19 @@
       $scope.next = function () {
         $scope.page_num = $scope.page_num + 1;
         $scope.search();
-      }
+      };
 
       $scope.prev = function () {
         $scope.page_num--;
         if ($scope.page_num < 0) $scope.page_num = 0;
         $scope.search();
-      }
+      };
 
       $scope.select_page = function (page_num) {
         $scope.page_num = page_num;
         $scope.offset = page_num * $scope.results_per_page;
         $scope.search();
-      }
+      };
 
       if ($scope.inital_q) {
         $scope.data.search_text = $scope.inital_q;
