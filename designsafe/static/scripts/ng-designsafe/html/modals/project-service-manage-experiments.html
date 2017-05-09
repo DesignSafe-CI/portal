@@ -2,6 +2,9 @@
     <h4 class="modal-title" style="borer:nonel">
         Manage Experiments
     </h4>
+    <p class="alert alert-info">
+        To delete an Experiment it is necessary to, first, remove every entity related to said experiment. After this, removing an experiment is safe.
+    </p>
 </div>
 <div class="modal-body">
     <div ng-if="data.busy">
@@ -201,7 +204,7 @@
                                           experiments: experiment.uuid});
                                 ui.showAddReport[experiment.uuid]=false"
                       title="Add Report">
-                <i class="fa fa-plus-circle fa-2"></i><span class="sr-only">Add Report</span>
+                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
               </button>
             </div>
             <div style="margin-left:5px; display:inline-block;"
@@ -292,7 +295,7 @@
                                                    modelConfigs:modelConfig.uuid,
                                                    sensorLists: sensorList.uuid})"
                               title="Add Event">
-                        <i class="fa fa-plus-circle fa-2"></i><span class="sr-only">Add Event</span>
+                        <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
                       </button>
                       </div>
                     </li>
@@ -314,7 +317,7 @@
                                                experiments: experiment.uuid,
                                                modelConfigs: modelConfig.uuid})"
                           title="Add Sensor">
-                    <i class="fa fa-plus-circle fa-2"></i><span class="sr-only">Add Sensor</span>
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
                   </button>
                   </div>
                 </li>
@@ -332,7 +335,7 @@
                                           {project:data.project.uuid,
                                            experiments:experiment.uuid})"
                       title="Add Model Config">
-                <i class="fa fa-plus-circle fa-2"></i><span class="sr-only">Add Model Config</span>
+                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
               </button>
               </div>
             </li>
@@ -373,7 +376,7 @@
                                           {project:data.project.uuid,
                                            analysis: analysis.uuid})"
                       title="Add Event">
-                <i class="fa fa-plus-circle fa-2"></i><span class="sr-only">Add Event</span>
+                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
               </button>
               </div>
             </li>
