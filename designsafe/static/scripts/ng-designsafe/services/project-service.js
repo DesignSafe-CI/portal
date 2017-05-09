@@ -605,6 +605,17 @@
               }
             });
 
+            var coPIsRemoveActions = _.map($scope.form.curCoPis, function(cur){
+              if(cur.remove){
+                return collabResource.delete({data:{
+                  uuid: $scope.dta.project.uuid,
+                  username: cur.user.username
+                }});
+              }
+            });
+
+            removeActions = removeActions.concat(coPIsRemoveActions);
+
             var addActions = _.map($scope.form.addUsers, function (add) {
               if (add.user && add.user.username) {
                 return collabResource.post({data: {
