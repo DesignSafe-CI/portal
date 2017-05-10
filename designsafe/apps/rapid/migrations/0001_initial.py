@@ -17,7 +17,12 @@ def add_rapid_event_types(apps, schema_editor):
         {"name": "tornado", "display_name": "Tornado"}
     ]
 
+    s = RapidNHEventType.search()
+
     for ev in events:
+        q = s.query("match", name=ev["name"])
+        if q.count() > 0:
+            continue
         et = RapidNHEventType(**ev)
         et.save()
 
