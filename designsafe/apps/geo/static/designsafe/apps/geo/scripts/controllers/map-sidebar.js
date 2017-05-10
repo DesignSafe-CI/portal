@@ -356,8 +356,12 @@ export default class MapSidebarCtrl {
       this.loading = false;
       //reset the picker
       $('#file_picker').val('');
-    }).then( () => {
       this.toastr.success('Imported file');
+    }, (rej)=>{
+      this.loading = false;
+      this.toastr.error('Load failed!');
+    }).then( () => {
+
     });
   }
 
