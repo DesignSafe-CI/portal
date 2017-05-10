@@ -29,8 +29,8 @@ def check_or_create_agave_home_dir(username):
             ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
             job_body = {
                 'inputs': {
-                    'username': request.user.username,
-                    'directory': 'shared/{}'.format(request.user.username)
+                    'username': username,
+                    'directory': 'shared/{}'.format(username)
                 },
                 'name': 'setfacl',
                 'appId': 'setfacl_corral3-0.1'
