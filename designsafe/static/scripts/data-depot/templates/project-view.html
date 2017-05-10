@@ -26,7 +26,7 @@
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
         </div>
             <div style="width:350px; height:100px; overflow:hidden;">
-                <img width="350" ng-src="{{ previewHref }}" 
+                <img width="350" ng-src="{{ previewHref }}"
                      ng-if="previewHref && state.showPreviewListing"/>
                 <div ng-if="!previewHref && state.showPreviewListing">
                   <i class="fa fa-spin fa-spinner"></i> Loading ...
@@ -57,7 +57,7 @@
                   style="border-radius:10px;
                 box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);">Publication Preview</button>
         </div>
-        
+
         <div style="text-align:center;"
              ng-class="{'pull-right': !state.publishPipeline}">
           <div class="btn-group pull-left" role="group" aria-label="Exit Publish"
@@ -71,28 +71,28 @@
             <button class="btn btn-default"
                     ng-click="publishPipeline_prev(state.publishPipeline)"
                     ng-if="state.publishPipeline!='select'">
-             <i class="fa fa-arrow-left"></i> Previous 
+             <i class="fa fa-arrow-left"></i> Previous
             </button>
             <div class="wizard-steps" style="display:inline-block;">
               <span class="steps"
-                    ng-class="{'active': state.publishPipeline=='select'}"> 
+                    ng-class="{'active': state.publishPipeline=='select'}">
                     Selection</span>
               <span class="line">
                --
               </span>
-              <span class="review" 
+              <span class="review"
                     ng-class="{'active': state.publishPipeline=='review'}">
                     Review
               </span>
               <span class="line">
                --
               </span>
-              <span class="edit-info" 
+              <span class="edit-info"
                     ng-class="{'active': state.publishPipeline=='meta'}">
                     Metadata
               </span>
-               -- 
-              <span class="edit-info" 
+               --
+              <span class="edit-info"
                     ng-class="{'active': state.publishPipeline=='agreement'}">
                     Agreement
               </span>
@@ -100,9 +100,9 @@
             <button class="btn btn-default pull-right"
                     ng-click="publishPipeline_next(state.publishPipeline)"
                     ng-if="state.publishPipeline!='agreement'">
-             Next <i class="fa fa-arrow-right"></i> 
+             Next <i class="fa fa-arrow-right"></i>
             </button>
-          </div> 
+          </div>
 
           <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
                ng-if="state.showPreviewListing && !state.publishPipeline">
@@ -114,9 +114,9 @@
 
           <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
                ng-if="state.publishPipeline == 'agreement'">
-            <button class="btn btn-danger"
+            <button id="requestAndPublish" class="btn btn-danger"
                     ng-click="publishPipeline_publish()"
-                    disabled>
+                    ng-disabled="!state.publishAgreement">
                 Request DOI & Publish <i class="fa fa-check"></i>
             </button>
           </div>

@@ -36,7 +36,7 @@
             </span>
             <span class="label selected"
               ng-repeat-start="entity in item._entities"
-              ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analysis', 'tag-black': entity.name === 'designsafe.project.report'}">{{ entity._displayName }}</span> 
+              ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analysis', 'tag-black': entity.name === 'designsafe.project.report'}">{{ entity._displayName }}</span>
             <span ng-repeat-end class="tag-title">{{entity.value.title}}</span>
             </div>
             </td>
@@ -234,7 +234,7 @@
 </div>
     <div class="project-preview-entities-details"
          ng-if="browser.showPreviewListing &&
-               (!browser.publishPipeline || 
+               (!browser.publishPipeline ||
                 browser.publishPipeline === 'select')">
 
       <div ng-repeat="modelConfig in browser.project.modelconfiguration_set | orderBy: 'value.title'">
@@ -392,7 +392,7 @@
       <div class="title">
         Project Information
         <span class="pull-right"><a href="/help">Need Help?</a></span>
-      </div>  
+      </div>
       <div class="content">
        <div class="content-wrapper">
        <h3>Project Information</h3>
@@ -459,7 +459,7 @@
                         <i class="fa fa-arrow-down"></i>
                 </button>
           <span>
-                {{user.last_name}}, {{user.first_name}}  
+                {{user.last_name}}, {{user.first_name}}
                 </span>
           </div>
           </div>
@@ -583,7 +583,7 @@
           <div class="value pull-right">
           <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
           <span>
-                {{user.last_name}}, {{user.first_name}}  
+                {{user.last_name}}, {{user.first_name}}
                 </span>
           </div>
           </div>
@@ -685,8 +685,9 @@
          style="background:#fff; min-height:500px; padding:10px;">
          <h2>Agreement</h2>
          <p>
-            Agreement placeholder.
+           I agree and understand that when I publish this data and receive a DOI that this will result in a locked, read-only publication that cannot be changed. If I have changes or revisions, this will result in a new DOI being created for the revised publication. I understand that my dataset meets the minimum metadata requirements per the <a href='https://www.designsafe-ci.org/rw/support/data-publication/'> Data Curation and Publication Guidelines</a>.
          </p>
+         <input type="checkbox" ng-click="publicationCtrl.togglePubAgreement()"> I agree 
    </div>
 
    </div>

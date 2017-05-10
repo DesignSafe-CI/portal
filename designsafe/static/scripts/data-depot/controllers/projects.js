@@ -115,18 +115,18 @@
 
     $scope.showText = function(text){
         $uibModal.open({
-            template: '<div class="modal-header">' + 
+            template: '<div class="modal-header">' +
                         '<h3>Description</h3>' +
                       '</div>' +
-                      '<div class="modal-body">' + 
+                      '<div class="modal-body">' +
                         '<div style="border: 1px solid black;"' +
                                    '"padding:5px;">' +
                           '{{text}}' +
                         '</div>' +
-                      '</div>' + 
-                      '<div class="modal-footer">' + 
-                        '<button class="btn btn-default" ng-click="close()">' + 
-                          'Close' + 
+                      '</div>' +
+                      '<div class="modal-footer">' +
+                        '<button class="btn btn-default" ng-click="close()">' +
+                          'Close' +
                         '</button>' +
                       '</div>',
             controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
@@ -137,7 +137,7 @@
             }]
         });
     };
-        
+
     $scope.editProject = function($event) {
       if ($event){
         $event.preventDefault();
@@ -315,11 +315,11 @@
         var index = 0;
         var size = 5;
         var fileCalls = _.map(filePaths, function(filePath){
-          return FileListing.get({system: 'project-' + projectId, 
+          return FileListing.get({system: 'project-' + projectId,
                                   path: filePath},
                                   DataBrowserService.apiParams)
             .then(function(resp){
-              var allEntities = $scope.browser.project.getAllRelatedObjects(); 
+              var allEntities = $scope.browser.project.getAllRelatedObjects();
               var entities = _.filter(allEntities, function(entity){
                 return _.contains(entity._filePaths, resp.path);
               });
@@ -338,7 +338,7 @@
               step();
               return res;
             }).catch(reject);
-          } else { 
+          } else {
             resolve(results);
           }
         }
@@ -376,7 +376,7 @@
               step();
               return res;
             }).catch(reject);
-          } else { 
+          } else {
             resolve(results);
           }
         }
@@ -509,24 +509,24 @@
 
     var _editFieldModal = function(objArr, title, fields, classes){
         modal = $uibModal.open({
-          template : '<div class="modal-header">' + 
-                       '<h3>{{ui.title}}</h3>' + 
-                     '</div>' + 
-                     '<div class="modal-body">' + 
-                       '<div class="form-group" ' + 
-                             'ng-repeat="obj in data.objArr" style="overflow:auto;">' + 
+          template : '<div class="modal-header">' +
+                       '<h3>{{ui.title}}</h3>' +
+                     '</div>' +
+                     '<div class="modal-body">' +
+                       '<div class="form-group" ' +
+                             'ng-repeat="obj in data.objArr" style="overflow:auto;">' +
                          '<div ng-repeat="field in ui.fields">' +
-                           '<div class="{{ui.classes[field.name]}}">' + 
-                           '<label for="{{field.id}}-{{obj[field.uniq]}}">{{field.label}}</label>' + 
-                           '<input type="{{field.type}}" class="form-control" name="{{field.name}}-{{obj[field.uniq]}}"' + 
+                           '<div class="{{ui.classes[field.name]}}">' +
+                           '<label for="{{field.id}}-{{obj[field.uniq]}}">{{field.label}}</label>' +
+                           '<input type="{{field.type}}" class="form-control" name="{{field.name}}-{{obj[field.uniq]}}"' +
                                    'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
-                           '</div>' + 
+                           '</div>' +
                          '</div>' +
                        '</div>' +
-                     '</div>' + 
+                     '</div>' +
                      '<div class="modal-footer">' +
-                       '<button class="btn btn-default" ng-click="close()">Close</button>' + 
-                       '<button class="btn btn-info" ng-click="save()">Save</button>' + 
+                       '<button class="btn btn-default" ng-click="close()">Close</button>' +
+                       '<button class="btn btn-info" ng-click="save()">Save</button>' +
                      '</div>',
          controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
             $scope.ui = {fields: fields,
@@ -551,18 +551,18 @@
 
       showText : function(text){
           $uibModal.open({
-              template: '<div class="modal-header">' + 
+              template: '<div class="modal-header">' +
                           '<h3> Description </h3>' +
                         '</div>' +
-                        '<div class="modal-body">' + 
+                        '<div class="modal-body">' +
                           '<div style="border: 1px solid black;"' +
                                      '"padding:5px;">' +
                             '{{text}}' +
                           '</div>' +
-                        '</div>' + 
-                        '<div class="modal-footer">' + 
-                          '<button class="btn btn-default" ng-click="close()">' + 
-                            'Close' + 
+                        '</div>' +
+                        '<div class="modal-footer">' +
+                          '<button class="btn btn-default" ng-click="close()">' +
+                            'Close' +
                           '</button>' +
                         '</div>',
               controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
@@ -579,7 +579,7 @@
           ent._ui.order = 0;
         } else if (ent._ui.order > 0){
           var order = ent._ui.order;
-          var _ent = _.find(list, function(e){ 
+          var _ent = _.find(list, function(e){
                                         return e._ui.order === order - 1; });
           ent._ui.order -= 1;
           _ent._ui.order += 1;
@@ -590,7 +590,7 @@
         if (typeof ent._ui.order === 'undefined'){
           ent._ui.order = 0;
         } else if (ent._ui.order < list.length - 1){
-          var _ent = _.find(list, function(e){ 
+          var _ent = _.find(list, function(e){
                                         return e._ui.order === ent._ui.order + 1; });
           ent._ui.order += 1;
           _ent._ui.order -= 1;
@@ -668,7 +668,7 @@
         $scope.browser.publication[exp.uuid][evt.uuid] = files;
         _addToLists(exp, evt);
       },
-      
+
       filterExperiments : function(experiments){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return experiments;
@@ -676,7 +676,7 @@
             return $scope.browser.publication.experimentsList;
         }
       },
-      
+
       filterEvents : function(events){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return events;
@@ -716,6 +716,10 @@
         modal.result.then(function(respArr){
           $scope.browser.publication.institutions = respArr;
         });
+      },
+
+      togglePubAgreement : function() {
+        $scope.state.publishAgreement = !$scope.state.publishAgreement;
       }
     };
 
