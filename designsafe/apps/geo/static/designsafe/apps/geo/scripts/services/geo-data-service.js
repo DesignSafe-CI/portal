@@ -149,7 +149,6 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       try {
         let exif = EXIF.readFromBinaryFile(file);
-        let encoded = this._arrayBufferToBase64(file);
         let lat = exif.GPSLatitude;
         let lon = exif.GPSLongitude;
         //Convert coordinates to WGS84 decimal
@@ -157,7 +156,10 @@ export default class GeoDataService {
         let lonRef = exif.GPSLongitudeRef || "W";
         lat = (lat[0] + lat[1]/60 + lat[2]/3600) * (latRef == "N" ? 1 : -1);
         lon = (lon[0] + lon[1]/60 + lon[2]/3600) * (lonRef == "W" ? -1 : 1);
-
+        if ((lat > 90) || (lat < -90) || (lon > 360) || (lon < -360)) {
+          rej('Bad EXIF GPS data');
+        }
+        let encoded = this._arrayBufferToBase64(file);
         let thumb = null;
         let preview = null;
         this._resize_image(file, 100, 100).then( (resp)=>{

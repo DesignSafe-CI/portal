@@ -884,9 +884,11 @@ var MapSidebarCtrl = function () {
         _this9.loading = false;
         //reset the picker
         $('#file_picker').val('');
-      }).then(function () {
         _this9.toastr.success('Imported file');
-      });
+      }, function (rej) {
+        _this9.loading = false;
+        _this9.toastr.error('Load failed!');
+      }).then(function () {});
     }
   }, {
     key: 'save_locally',
@@ -1197,7 +1199,6 @@ var GeoDataService = function () {
         try {
           (function () {
             var exif = EXIF.readFromBinaryFile(file);
-            var encoded = _this4._arrayBufferToBase64(file);
             var lat = exif.GPSLatitude;
             var lon = exif.GPSLongitude;
             //Convert coordinates to WGS84 decimal
@@ -1205,7 +1206,10 @@ var GeoDataService = function () {
             var lonRef = exif.GPSLongitudeRef || "W";
             lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
             lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
-
+            if (lat > 90 || lat < -90 || lon > 360 || lon < -360) {
+              rej('Bad EXIF GPS data');
+            }
+            var encoded = _this4._arrayBufferToBase64(file);
             var thumb = null;
             var preview = null;
             _this4._resize_image(file, 100, 100).then(function (resp) {
