@@ -28,7 +28,7 @@ export default class RapidMainCtrl {
         layers: [streets, satellite],
         scrollWheelZoom: true
       }
-    ).setView([0, 0], 2);
+    ).setView([30.2672, -97.7431], 2);
     this.map.zoomControl.setPosition('topright');
 
     this.RapidDataService.get_event_types().then( (resp)=> {
