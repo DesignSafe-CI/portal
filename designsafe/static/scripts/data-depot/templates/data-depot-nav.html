@@ -4,7 +4,7 @@
          ng-class="{'in': !routerItem.collapse}"
          ng-repeat="childItem in routerItems">
 
-        <a class="list-group-item"
+        <a tooltip="{{ childItem.description }}" class="list-group-item"
            ui-sref="{{ childItem.state }}"
            ui-sref-active="active">
             {{ childItem.name }}
