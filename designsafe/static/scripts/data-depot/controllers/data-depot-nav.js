@@ -13,12 +13,14 @@
         {
           name: 'Published',
           collapsible: false,
-          state: 'publicData'
+          state: 'publicData',
+          description: "Curated data/projects with DOI's"
         },
         {
           name: 'Community Data',
           collapsible: false,
-          state: 'communityData'
+          state: 'communityData',
+          description: 'Non-curated user-contributed data'
         }/*,
         {
           name: 'Training Materials',
@@ -32,12 +34,14 @@
           {
             name: 'My Data',
             collapsible: false,
-            state: 'myData'
+            state: 'myData',
+            description: 'Private directory for your data'
           },
           {
             name: 'My Projects',
             collapsible: false,
-            state: 'projects'
+            state: 'projects',
+            description: 'Group access to shared directories'
           },/*
           {
             name: 'My Publications',
@@ -47,17 +51,20 @@
           {
             name: 'Shared with Me',
             collapsible: false,
-            state: 'sharedData'
+            state: 'sharedData',
+            description: 'Data other users shared with me'
           },
           {
             name: 'Box.com',
             collapsible: false,
-            state: 'boxData'
+            state: 'boxData',
+            description: 'Access to my Box files for copying'
           },
           {
             name: 'Dropbox.com',
             collapsible: false,
-            state: 'dropboxData'
+            state: 'dropboxData',
+            description: 'Access to my Dropbox for copying'
           }
       );
 
