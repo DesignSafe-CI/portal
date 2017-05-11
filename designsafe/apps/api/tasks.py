@@ -3,6 +3,7 @@ import logging
 import re
 import os
 import sys
+import json
 from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
@@ -695,3 +696,29 @@ def check_project_meta_pems(self, metadata_uuid):
     service = get_service_account_client()
     bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
     bfm.match_pems_to_project()
+
+@shared_task(bind=True)
+def set_project_id(self, project_uuid):
+    from designsafe.apps.api.projects.models import ExperimentalProject
+    logger.debug('Setting project ID')
+    service = get_service_account_client()
+    project = ExperimentalProject._meta.model_manager.get(service, project_uuid)
+    id_metas = service.meta.listMetadata(q='{"name": "designsafe.project.id"}')
+    logger.debug(json.dumps(id_metas, indent=4))
+    if not len(id_metas):
+        raise Exception('No project Id found')
+
+    id_meta = id_metas[0]
+    project_id = int(id_meta['value']['id'])
+    project_id = project_id + 1
+    for i in range(10):
+        _projs = service.meta.listMetadata(q='{{"name": "designsafe.project", "value.projectId": {} }}'.format(project_id))
+        if len(_projs):
+            project_id = project_id + 1
+    
+    project.project_id = 'PRJ-{}'.format(str(project_id))
+    project.save(service)
+    logger.debug('updated project id={}'.format(project.uuid))
+    id_meta['value']['id'] = project_id
+    service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
+    logger.debug('updated id record={}'.format(id_meta['uuid']))

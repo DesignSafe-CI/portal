@@ -4,6 +4,7 @@ import six
 import json
 import re
 import logging
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -368,6 +369,12 @@ class Model(object):
 
         dict_obj.pop('modelManager', None)
         dict_obj.pop('modelName', None)
+        if (isinstance(dict_obj['created'], datetime.datetime)):
+            dict_obj['created'] = dict_obj['created'].isoformat()
+
+        if (isinstance(dict_obj['lastUpdated'], datetime.datetime)):
+            dict_obj['lastUpdated'] = dict_obj['lastUpdated'].isoformat()
+
         return dict_obj
 
     def save(self, agave_client):
