@@ -321,6 +321,27 @@ export default class MapSidebarCtrl {
     });
   }
 
+  open_image_overlay_modal () {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/image-overlay-modal.html",
+      controller: "ImageOverlayModalCtrl as vm",
+    });
+    modal.result.then( (res) => {
+      let bounds;
+      bounds = [
+        [res.min_lat, res.min_lon],
+        [res.max_lat, res.max_lon]
+      ];
+      if (res.file) {
+        this.GeoDataService.read_file_as_data_url(res.file).then( (data) => {
+          console.log(data);
+        });
+      }
+      let overlay = L.imageOverlay(res.url, bounds).addTo(this.map);
+      console.log(overlay);
+    });
+  }
+
   open_file_dialog () {
     this.$timeout(() => {
       $('#file_picker').click();

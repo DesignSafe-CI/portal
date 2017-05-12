@@ -239,6 +239,18 @@ export default class GeoDataService {
     });
   }
 
+  read_file_as_data_url(file) {
+
+    let reader = new FileReader();
+    return this.$q( (res, rej) => {
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+        return res(reader.result);
+      };
+    });
+  }
+
   /*
   This will return a promise that resolves to an array of features
   that can be added to a LayerGroup
