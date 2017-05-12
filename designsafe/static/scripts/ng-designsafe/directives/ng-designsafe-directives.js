@@ -3,21 +3,41 @@
 
   var mod = angular.module('designsafe');
 
+  mod.directive('fileModel', ['$parse',function ($parse) {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs) {
+        var model = $parse(attrs.fileModel);
+        var modelSetter = model.assign;
+        element.bind('change', function(){
+          scope.$apply(function(){
+            if (attrs.multiple) {
+              modelSetter(scope, element[0].files);
+            }
+            else {
+              modelSetter(scope, element[0].files[0]);
+            }
+          });
+        });
+      }
+    };
+  }]);
+
   mod.directive('spinnerOnLoad', function () {
     return {
       restrict: 'A',
       link: function (scope, element) {
-        element.parent().prepend("<div class='text-center spinner'><i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i></div>")
+        element.parent().prepend("<div class='text-center spinner'><i class='fa fa-spinner fa-pulse fa-3x fa-fw'></i></div>");
         element.css('display', 'none');
         element.on('load', function (ev) {
           element.parent().find(".spinner").remove();
           element.css('display', 'block');
-        })
+        });
 
       }
-    }
+    };
 
-  })
+  });
 
   mod.directive('httpSrc', ['$http', function ($http) {
    return {
@@ -277,7 +297,7 @@
                                    return "right";
                                }else if (pos.top < $el.height() + 10 && pos){
                                    return "bottom";
-                               } else { 
+                               } else {
                                    return "top";
                                }
                            }});
@@ -287,7 +307,7 @@
                 $http.get('/api/projects/yamz/' + scope.termId)
                   .then(function(res){
                       var data = res.data;
-                      var content = '<p> <strong>Definition: </strong>' + data.definition + 
+                      var content = '<p> <strong>Definition: </strong>' + data.definition +
                                     '<br/> <br/>' +
                                     '<strong>Examples: </strong>' + data.examples + '</p>';
                       element.attr('title', content);

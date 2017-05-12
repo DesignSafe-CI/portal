@@ -1,0 +1,52 @@
+<div class="modal-header">
+  <h3 class="modal-title"> Overlay an image </h3>
+</div>
+<div class="modal-body">
+  <form novalidate>
+    <div class="form-group">
+      <label> Select Local File: </label>
+      <input type="file" class="form-control" file-model="vm.data.file">
+    </div>
+    <div class="form-group">
+      <label> URL of image </label>
+      <input type="text" class="form-control" ng-model="vm.data.url"> </input>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label> Min Latitude </label>
+          <input type="number" class="form-control" ng-model="vm.data.min_lat"> </input>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label> Max Latitude </label>
+          <input type="number" class="form-control" ng-model="vm.data.max_lat"> </input>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label> Min Longitude </label>
+          <input type="number" class="form-control" ng-model="vm.data.min_lon" required> </input>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label> Max Longitude </label>
+          <input type="number" class="form-control" ng-model="vm.data.max_lon" required> </input>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary pull-right"
+          ng-click="vm.ok()">
+          Ok
+  </button>
+  <button class="btn btn-warning pull-left" ng-click="vm.cancel()" > Cancel </button>
+
+</div>

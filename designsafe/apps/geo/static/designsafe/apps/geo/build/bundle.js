@@ -300,6 +300,10 @@ var _dbModal = __webpack_require__(0);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
+var _imageOverlayModal = __webpack_require__(17);
+
+var _imageOverlayModal2 = _interopRequireDefault(_imageOverlayModal);
+
 var _help = __webpack_require__(8);
 
 var _help2 = _interopRequireDefault(_help);
@@ -321,6 +325,7 @@ mod.controller('DBModalCtrl', _dbModal2.default);
 mod.controller('HelpCtrl', _help2.default);
 mod.controller('SettingsModalCtrl', _settingsModal2.default);
 mod.controller('ConfirmClearModalCtrl', _confirmClearModal2.default);
+mod.controller('ImageOverlayModalCtrl', _imageOverlayModal2.default);
 
 exports.default = mod;
 
@@ -843,6 +848,27 @@ var MapSidebarCtrl = function () {
       });
     }
   }, {
+    key: 'open_image_overlay_modal',
+    value: function open_image_overlay_modal() {
+      var _this8 = this;
+
+      var modal = this.$uibModal.open({
+        templateUrl: "/static/designsafe/apps/geo/html/image-overlay-modal.html",
+        controller: "ImageOverlayModalCtrl as vm"
+      });
+      modal.result.then(function (res) {
+        var bounds = void 0;
+        bounds = [[res.min_lat, res.min_lon], [res.max_lat, res.max_lon]];
+        if (res.file) {
+          _this8.GeoDataService.read_file_as_data_url(res.file).then(function (data) {
+            console.log(data);
+          });
+        }
+        var overlay = L.imageOverlay(res.url, bounds).addTo(_this8.map);
+        console.log(overlay);
+      });
+    }
+  }, {
     key: 'open_file_dialog',
     value: function open_file_dialog() {
       this.$timeout(function () {
@@ -852,22 +878,22 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this8 = this;
+      var _this9 = this;
 
       this.loading = true;
       this.GeoDataService.load_from_data_depot(f.selected).then(function (retval) {
-        _this8._load_data_success(retval);
-        _this8.loading = false;
+        _this9._load_data_success(retval);
+        _this9.loading = false;
       }, function (err) {
-        _this8.toastr.error('Load failed!');
-        _this8.loading = false;
-        _this8.open_existing = false;
+        _this9.toastr.error('Load failed!');
+        _this9.loading = false;
+        _this9.open_existing = false;
       });
     }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
-      var _this9 = this;
+      var _this10 = this;
 
       this.loading = true;
       var reqs = [];
@@ -875,19 +901,19 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          return _this9._load_data_success(retval);
+          return _this10._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
       };
       this.$q.all(reqs).then(function () {
-        _this9.loading = false;
+        _this10.loading = false;
         //reset the picker
         $('#file_picker').val('');
-        _this9.toastr.success('Imported file');
+        _this10.toastr.success('Imported file');
       }, function (rej) {
-        _this9.loading = false;
-        _this9.toastr.error('Load failed!');
+        _this10.loading = false;
+        _this10.toastr.error('Load failed!');
       }).then(function () {});
     }
   }, {
@@ -898,31 +924,31 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot() {
-      var _this10 = this;
+      var _this11 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
           filename: function filename() {
-            return _this10.project.name + '.geojson';
+            return _this11.project.name + '.geojson';
           }
         }
       });
       modal.result.then(function (res) {
         var newname = res.saveas;
-        _this10.project.name = newname.split('.')[0];
+        _this11.project.name = newname.split('.')[0];
         res.selected.name = res.saveas;
-        _this10.loading = true;
-        _this10.GeoDataService.save_to_depot(_this10.project, res.selected).then(function (resp) {
-          _this10.loading = false;
-          _this10.toastr.success('Saved to data depot');
+        _this11.loading = true;
+        _this11.GeoDataService.save_to_depot(_this11.project, res.selected).then(function (resp) {
+          _this11.loading = false;
+          _this11.toastr.success('Saved to data depot');
         }, function (err) {
-          _this10.toastr.error('Save failed!');
-          _this10.loading = false;
+          _this11.toastr.error('Save failed!');
+          _this11.loading = false;
         });
       }, function (rej) {
-        _this10.loading = false;
+        _this11.loading = false;
       });
     }
   }]);
@@ -1149,14 +1175,21 @@ var GeoDataService = function () {
 
       return this.$q(function (res, rej) {
         if (blob.ds_map) return res(_this3._from_dsmap(blob));
-        var features = [];
-        L.geoJSON(blob).getLayers().forEach(function (layer) {
-          for (var key in layer.feature.properties) {
-            layer.options[key] = layer.feature.properties[key];
-          }
-          features.push(layer);
-        });
-        res(features);
+
+        try {
+          (function () {
+            var features = [];
+            L.geoJSON(blob).getLayers().forEach(function (layer) {
+              for (var key in layer.feature.properties) {
+                layer.options[key] = layer.feature.properties[key];
+              }
+              features.push(layer);
+            });
+            res(features);
+          })();
+        } catch (e) {
+          rej('Bad geoJSON');
+        }
       });
     }
   }, {
@@ -1283,6 +1316,19 @@ var GeoDataService = function () {
           });
         });
         res(project);
+      });
+    }
+  }, {
+    key: 'read_file_as_data_url',
+    value: function read_file_as_data_url(file) {
+
+      var reader = new FileReader();
+      return this.$q(function (res, rej) {
+        reader.readAsDataURL(file);
+
+        reader.onload = function (e) {
+          return res(reader.result);
+        };
       });
     }
 
@@ -1545,6 +1591,57 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImageOverlayModalCtrl = function () {
+  ImageOverlayModalCtrl.$inject = ["$scope", "$uibModalInstance"];
+  function ImageOverlayModalCtrl($scope, $uibModalInstance) {
+    'ngInject';
+
+    _classCallCheck(this, ImageOverlayModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+    this.data = {
+      file: null,
+      url: null,
+      min_lat: null,
+      max_lat: null,
+      min_lon: null,
+      max_lon: null
+    };
+  }
+
+  _createClass(ImageOverlayModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close(this.data);
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return ImageOverlayModalCtrl;
+}();
+
+exports.default = ImageOverlayModalCtrl;
 
 /***/ })
 /******/ ]);
