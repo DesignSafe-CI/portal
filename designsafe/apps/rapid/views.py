@@ -200,7 +200,13 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
 
     if request.method == 'POST':
         if form.is_valid():
-            logger.info(form.cleaned_data)
+            dataset["doi"] = form.cleaned_data["doi"]
+            dataset["title"] = form.cleaned_data["title"]
+            dataset["url"] = form.cleaned_data["url"]
+
+            event.datasets = [d for d in event.datasets if d["id"] != dataset["id"]]
+            event.datasets.append(dataset)
+            event.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
     else:
@@ -217,5 +223,5 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
         return HttpResponseNotFound()
     if request.method == 'POST':
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
-        event.save()
+        event.save(refresh=True)
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
