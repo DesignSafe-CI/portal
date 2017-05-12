@@ -1,6 +1,7 @@
 import six
 import json
 import logging
+import xml.etree.ElementTree as ET
 
 from designsafe.apps.api.agave.models.metadata import (BaseMetadataResource,
                                                        BaseMetadataPermissionResource)
@@ -12,6 +13,7 @@ from designsafe.apps.api.agave.models.systems import roles as system_roles
 from designsafe.apps.api.agave import to_camel_case
 from designsafe.apps.api.agave.models.base import Model as MetadataModel
 from designsafe.apps.api.agave.models import fields
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -228,6 +230,7 @@ class ExperimentalProject(MetadataModel):
             body_dict['_related'][attrname] = field.related_obj_name
 
         return body_dict
+
 
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
