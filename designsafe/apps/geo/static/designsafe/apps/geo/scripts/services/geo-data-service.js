@@ -102,14 +102,19 @@ export default class GeoDataService {
   _from_json (blob) {
     return this.$q( (res, rej) => {
       if (blob.ds_map) return res(this._from_dsmap(blob));
-      let features = [];
-      L.geoJSON(blob).getLayers().forEach( (layer) => {
-        for (let key in layer.feature.properties) {
-          layer.options[key] = layer.feature.properties[key];
-        }
-        features.push(layer);
-      });
-      res(features);
+
+      try {
+        let features = [];
+        L.geoJSON(blob).getLayers().forEach( (layer) => {
+          for (let key in layer.feature.properties) {
+            layer.options[key] = layer.feature.properties[key];
+          }
+          features.push(layer);
+        });
+        res(features);
+      } catch (e) {
+        rej('Bad geoJSON');
+      }
     });
   }
 
