@@ -27,7 +27,7 @@
             <span class="sr-only">Toggle Dropdown</span>
           </button>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'designsafe_accounts:manage_profile' %}">Manage Account</a></li>
+            <li><a href="{% url 'designsafe_dashboard:index' %}">Dashboard</a></li>
             <li><a href="{% url 'designsafe_notifications:index' %}">Notifications</a></li>
             <li><a href="{% url 'logout' %}">Log out</a></li>
             {% if user.is_impersonate %}
