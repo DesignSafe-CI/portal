@@ -1,15 +1,17 @@
 import re
 import logging
+import codecs
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from django.contrib.auth import get_user_model
 import datetime
+import dateutil.parser
 import requests
 
 logger = logging.getLogger(__name__)
 
-USER = 'uta_peteng'
-PASSWORD = 'dUbLfaim#3'
+USER = 'user'
+PASSWORD = 'pass'
 CREDS = (USER, PASSWORD)
 BASE_URI = 'https://ezid.cdlib.org/'
 SHOULDER = 'doi:10.5072/FK2'
@@ -23,9 +25,9 @@ def pretty_print(xml):
 
 def _project_header():
     xml_obj = ET.Element("resource")
+    xml_obj.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
     xml_obj.attrib["xmlns"] = "http://datacite.org/schema/kernel-4"
-    xml_obj.attrib["xmlns:xs"] = "http://www.w3.org/2001/XMLSchema"
-    xml_obj.attrib["xsi:schemaLocation"] = "http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-4/metadata.xsd"
+    xml_obj.attrib["xsi:schemaLocation"] = "http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd"
     return xml_obj
 
 def _unescape(s):
@@ -37,15 +39,49 @@ def parse_response(res):
                           for l in res.decode("UTF-8").splitlines())
     return response
 
+def _escape(s, key=True):
+    if key:
+        return re.sub("[%:\r\n]", lambda c: "%%%02X" % ord(c.group(0)), s)
+    else:
+        return re.sub("[%\r\n]", lambda c: "%%%02X" % ord(c.group(0)), s)
+
+def format_req(metadata):
+    anvl = []
+    for key, value in metadata.items():
+        key = _escape(key)
+        if value.startswith("@") and len(value) > 1:
+            f = codecs.open(value[1:], encoding="UTF-8")    
+            value = f.read()
+            f.close()
+        value = _escape(value, False)
+        anvl.append("%s: %s" % (key, value))
+    return "\n".join(anvl)
+
 def _reserve_doi(xml_obj):
-    metadata = {'_status': 'reserved', 'datacite': xml_obj}
-    res = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
-                        data=metadata, auth=CREDS, headers={'Content-Type': 'text/plain'})
-    res = parse_response(res.text)
+    xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
+    metadata = {'_status': 'reserved', 'datacite': xml_str}
+    response = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
+                             data=format_req(metadata),
+                             auth=CREDS,
+                             headers={'Content-Type': 'text/plain'})
+    res = parse_response(response.text)
     if 'success' in res:
         return res['success']
     else:
-        logger.exception(res['error'])
+        raise Exception(res['error'])
+
+def _update_doi(xml_obj, doi, status='reserved'):
+    xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
+    metadata = {'_status': status, 'datacite': xml_str}
+    response = requests.post('{}/id/{}'.format(BASE_URI, doi),
+                             data=format_req(metadata),
+                             auth=CREDS,
+                             headers={'Content-Type': 'text/plain'})
+    logger.debug('%s', doi)
+    res = parse_response(response.text)
+    if 'success' in res:
+        return res['success']
+    else:
         raise Exception(res['error'])
 
 def _project_required_xml(publication):
@@ -53,55 +89,129 @@ def _project_required_xml(publication):
     proj = project_body['value']
     xml_obj = _project_header()
 
-    resource = ET.SubElement(xml_obj, 'resource')
+    resource = xml_obj
     identifier = ET.SubElement(resource, 'identifier')
     identifier.attrib['identifierType'] = 'DOI'
-    identifier.text = SHOULDER
+    identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
     um = get_user_model()
-    for author in [proj['pi']] + proj['coPis'] + proj['teamMember']:
-        user = um.objects.get(username=author)
-        creator = ET.SubElement(creators, 'creator')
-        creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
+    for author in [proj['pi']] + proj['coPis'] + proj['teamMembers']:
+        try:
+            user = um.objects.get(username=author)
+            creator = ET.SubElement(creators, 'creator')
+            creator_name = ET.SubElement(creator, 'creatorName')
+            creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
+        except um.DoesNotExist as err:
+            logger.debug('User not found: %s', author)
 
     titles = ET.SubElement(resource, 'titles')
-    title = ET.SubElement(titles, 'titles')
+    title = ET.SubElement(titles, 'title')
     title.text = proj['title']
     publisher = ET.SubElement(resource, 'publisher')
     publisher.text = 'Designsafe-CI'
 
-    now = datetime.datetime.now()
+    now = dateutil.parser.parse(publication['created'])
     publication_year = ET.SubElement(resource, 'publicationYear')
-    publication_year.text = now.year
+    publication_year.text = str(now.year)
 
     resource_type = ET.SubElement(resource, 'resourceType')
-    resource_type.text = proj['projectType']
+    resource_type.text = proj['projectType'].title()
+    resource_type.attrib['resourceTypeGeneral'] = 'Other'
+    descriptions = ET.SubElement(resource, 'descriptions')
+    desc = ET.SubElement(descriptions, 'description')
+    desc.attrib['descriptionType'] = 'Description'
+    desc.text = proj['description']
     return xml_obj
 
-def _project_publish_xml(publication):
+def _experiment_required_xml(experiment, created):
+    exp = experiment['value']
+    xml_obj = _project_header()
+
+    resource = xml_obj
+    identifier = ET.SubElement(resource, 'identifier')
+    identifier.attrib['identifierType'] = 'DOI'
+    identifier.text = SHOULDER.replace('doi:', '')
+    creators = ET.SubElement(resource, 'creators')
+    um = get_user_model()
+    for author in exp['author']:
+        try:
+            user = um.objects.get(username=author)
+            creator = ET.SubElement(creators, 'creator')
+            creator_name = ET.SubElement(creator, 'creatorName')
+            creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
+        except um.DoesNotExist as err:
+            logger.debug('User not found: %s', author)
+
+    titles = ET.SubElement(resource, 'titles')
+    title = ET.SubElement(titles, 'title')
+    title.text = exp['title']
+    publisher = ET.SubElement(resource, 'publisher')
+    publisher.text = 'Designsafe-CI'
+
+    now = dateutil.parser.parse(created)
+    publication_year = ET.SubElement(resource, 'publicationYear')
+    publication_year.text = str(now.year)
+
+    resource_type = ET.SubElement(resource, 'resourceType')
+    resource_type.text = exp['experimentType'].title()
+    resource_type.attrib['resourceTypeGeneral'] = 'Other'
+    return xml_obj
+
+def experiment_reserve_xml(experiment, created):
+    exp = experiment['value']
+    xml_obj = _experiment_required_xml(experiment, created)
+    now = dateutil.parser.parse(created)
+    reserve_res = _reserve_doi(xml_obj)
+    doi, ark = reserve_res.split('|')
+    doi = doi.strip()
+    ark = ark.strip()
+    identifier = xml_obj.find('identifier')
+    identifier.text = doi
+    resource = xml_obj
+    contributors = ET.SubElement(resource, 'contributors')
+    contributor = ET.SubElement(contributors, 'contributor')
+    contributor.attrib['contributorType'] = 'HostingInstitution'
+    name = ET.SubElement(contributor, 'contributorName')
+    name.text = exp['experimentalFacility']
+    descriptions = ET.SubElement(resource, 'descriptions')
+    desc = ET.SubElement(descriptions, 'description')
+    desc.attrib['descriptionType'] = 'Description'
+    desc.text = exp['description']
+    return xml_obj
+
+
+def project_reserve_xml(publication):
     project_body = publication['project']
     proj = project_body['value']
     xml_obj = _project_required_xml(publication)
-    now = datetime.datetime.now()
-    doi = _reserve_doi(xml_obj)
+    logger.debug('required xml: %s', pretty_print(xml_obj))
+    now = dateutil.parser.parse(publication['created'])
+    reserve_resp = _reserve_doi(xml_obj)
+    doi, ark = reserve_resp.split('|')
+    doi = doi.strip()
+    ark = ark.strip()
+    #logger.debug('doi: %s', doi)
+    identifier = xml_obj.find('identifier')
+    identifier.text = doi
 
     #Optional stuff
-    resource = xml_obj.find('resource')
+    resource = xml_obj
     subjects = ET.SubElement(resource, 'subjects')
-    for keyword in proj['keywords']:
+    for keyword in proj['keywords'].split(','):
         subject = ET.SubElement(subjects, 'subject')
-        subject.text = keyword
+        subject.text = keyword.strip().title()
 
     institutions = publication['institutions']
     contributors = ET.SubElement(resource, 'contributors')
     for institution in institutions:
         contrib = ET.SubElement(contributors, 'contributor')
-        contrib.text = institution
+        name = ET.SubElement(contrib, 'contributorName')
+        name.text = institution['label']
+        contrib.attrib['contributorType'] = 'HostingInstitution'
 
     dates = ET.SubElement(resource, 'dates')
     date_publication = ET.SubElement(dates, 'date')
-    date_publication.attrib['dateType'] = 'Date of Publication'
+    date_publication.attrib['dateType'] = 'Accepted'
     date_publication.text = '{}-{}-{}'.format(now.year, now.month, now.day)
 
     language = ET.SubElement(resource, 'language')
@@ -121,9 +231,22 @@ def _project_publish_xml(publication):
     rights = ET.SubElement(rights_list, 'rights')
     rights.attrib['rightsURI'] = 'http://opendatacommons.org/licenses/by/1-0/'
     rights.text = 'ODC-BY 1.0'
-
-    return xml_obj
-
-def publish_project(publication):
-    xml_obj = _project_publish_xml(publication)
     logger.debug(pretty_print(xml_obj))
+    _update_doi(xml_obj, doi)
+    return (doi, ark, xml_obj)
+
+def publish_project(xml_obj):
+    #doi, ark, xml_obj = _project_publish_xml(publication)
+    logger.debug(pretty_print(xml_obj))
+    xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
+    metadata = {'_status': 'public', 'datacite': xml_str}
+    res = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
+                        format_req(metadata),
+                        auth=CREDS,
+                        headers={'Content-Type': 'text/plain'})
+    res = parse_response(res.text)
+    if 'success' in res:
+        return res['success'].split('|')
+    else:
+        logger.exception(res['error'])
+        raise Exception(res['error'])
