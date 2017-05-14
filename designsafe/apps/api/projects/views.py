@@ -45,7 +45,6 @@ class PublicationView(SecureMixin, BaseApiView):
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
         pub = PublicationManager().save_publication(data['publication'])
-        logger.debug('publication saved: %s', pub.id)
         return JsonResponse({'status': 200,
                              'message': 'Your publication has been '
                                         'schedule for publication'},

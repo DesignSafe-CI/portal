@@ -267,9 +267,7 @@
       var modelConfigs = [];
       var sensorLists = [];
       if (publication.experimentsList){
-        experimentsList = angular.copy(publication.experimentsList);
-        delete publication.experimentsList;
-        _.each(publication.experimentsList, function(exp){
+        experimentsList = _.map(publication.experimentsList, function(exp){
           exp.value.equipmentType = exp.getET(exp.value.experimentalFacility,
                                               exp.value.equipmentType).label;
           exp.value.experimentalFacility = exp.getEF($scope.state.project
@@ -277,7 +275,9 @@
                 exp.value.experimentalFacility).label;
           exp.events = $scope.state.publication;
           delete exp._ui;
+          return exp;
         });
+        delete publication.experimentsList;
       }
       if (publication.eventsList){
         var _eventsList = angular.copy(publication.eventsList);
@@ -296,22 +296,22 @@
             delete evt.tagsAsOptions;
         });
         _.each(mcfsUuids, function(mcf){
-          var _mcf = $scope.state.project.getBk(mcf);
+          var _mcf = angular.copy($scope.state.project.getRelatedByUuid(mcf));
           delete _mcf.tagsAsOptions;
           modelConfigs.push(_mcf);
         });
         _.each(slsUuids, function(slt){
-          var _slt = $scope.state.project.getRelatedByUuid(slt);
+          var _slt = angular.copy($scope.state.project.getRelatedByUuid(slt));
           delete _slt.tagsAsOptions;
           sensorLists.push(_slt);
         });
       }
       if (publication.analysisList){
-        analysisList = angular.copy(publication.analysisList);
-        delete publication.analysisList;
-        _.each(publication.analysisList, function(ana){
+        analysisList = _.map(publication.analysisList, function(ana){
           delete ana.tagsAsOptions;
+          return ana;
         });
+        delete publication.analysisList;
       }
       if (publication.reportsList) {
         reportsList = angular.copy(publication.reportsList);
@@ -329,6 +329,7 @@
       publication.sensorLists = sensorLists;
       publication.analysisList = analysisList;
       publication.reportsList = reportsList;
+      publication.experimentsList = experimentsList;
       $http.post('/api/projects/publication/', {publication: publication})
         .then(function(resp){
           $scope.state.publicationMsg = resp.data.message;
