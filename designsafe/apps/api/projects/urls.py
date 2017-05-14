@@ -16,13 +16,17 @@ from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 ProjectDataView,
                                                 ProjectCollaboratorsView,
                                                 ProjectInstanceView,
-                                                ProjectMetaView)
+                                                ProjectMetaView,
+                                                PublicationView)
 from designsafe.apps.api.projects.managers.yamz import YamzBaseView
 
 urlpatterns = [
     url(r'^$', ProjectCollectionView.as_view(), name='index'),
 
     url(r'^yamz/(?P<term_id>[a-zA-Z0-9]+)/?$', YamzBaseView.as_view(), name='yamz'),
+
+    url(r'^publication', PublicationView.as_view(), name='publication'),
+    url(r'^publication/((?P<project_id>[a-zA-Z0-9\-\_\.]+)/?)?', PublicationView.as_view(), name='publication'),
 
     url(r'^listing/(?P<username>[a-zA-Z0-9\-_\.]+)/?$', ProjectListingView.as_view(), name='listing'),
 
