@@ -96,6 +96,26 @@ class Publication(object):
     def to_dict(self):
         return self._wrap.to_dict()
 
+    def related_file_paths(self):
+        dict_obj = self._wrap.to_dict()
+        related_objs = dict_obj.get('modelConfigs', []) + \
+                       dict_obj.get('analysisList', []) + \
+                       dict_obj.get('sensorsList', []) + \
+                       dict_obj.get('eventsList', [])
+        file_paths = []
+        proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
+        for obj in related_objs:
+            file_paths += obj['_filePaths']
+
+        return file_paths
+
+    def __getattr__(self, name):
+        val = getattr(self._wrap, name, None)
+        if val:
+            return val
+        else:
+            raise AttributeError('\'Publication\' has no attribute \'{}\''.format(name))
+
 class CMSIndexed(DocType):
     class Meta:
         index = 'cms'
@@ -504,6 +524,7 @@ class PublicationManager(object):
     def save_publication(self, publication):
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
+        publication['status'] = 'publishing'
         pub = Publication(publication)
         pub.save()
         return pub
