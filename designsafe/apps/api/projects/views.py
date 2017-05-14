@@ -18,6 +18,7 @@ from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
                                                  Experiment, ModelConfiguration,
                                                  Event, Analysis, SensorList,
                                                  Report)
+from designsafe.apps.api.agave.filemanager.public_search_index import PublicationManager
 import logging
 import json
 
@@ -33,6 +34,22 @@ def template_project_storage_system(project):
     system_template['storage']['rootDir'] = \
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
+
+class PublicationView(SecureMixin, BaseApiView):
+    def post(self, request):
+        if request.is_ajax():
+            data = json.loads(request.body)
+
+        else:
+            data = request.POST
+
+        #logger.debug('publication: %s', json.dumps(data, indent=2))
+        pub = PublicationManager().save_publication(data['publication'])
+        logger.debug('publication saved: %s', pub.id)
+        return JsonResponse({'status': 200,
+                             'message': 'Your publication has been '
+                                        'schedule for publication'},
+                            status=200)
 
 class ProjectListingView(SecureMixin, BaseApiView):
     def get(self, request, username):
