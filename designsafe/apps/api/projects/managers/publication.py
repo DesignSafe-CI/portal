@@ -124,7 +124,7 @@ def _project_required_xml(publication):
     desc.text = proj['description']
     return xml_obj
 
-def _experiment_required_xml(experiment, created):
+def _experiment_required_xml(users, experiment, created):
     exp = experiment['value']
     xml_obj = _project_header()
 
@@ -134,9 +134,15 @@ def _experiment_required_xml(experiment, created):
     identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
     um = get_user_model()
-    for author in exp['author']:
+    authors = exp.get('authors')
+    authors = authors or users
+    for author in authors:
         try:
-            user = um.objects.get(username=author)
+            if isinstance(author, basestring):
+                user = um.objects.get(username=author)
+            else:
+                user = um.objects.get(username=author['username'])
+
             creator = ET.SubElement(creators, 'creator')
             creator_name = ET.SubElement(creator, 'creatorName')
             creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
@@ -156,11 +162,72 @@ def _experiment_required_xml(experiment, created):
     resource_type = ET.SubElement(resource, 'resourceType')
     resource_type.text = exp['experimentType'].title()
     resource_type.attrib['resourceTypeGeneral'] = 'Other'
+    descriptions = ET.SubElement(resource, 'descriptions')
+    desc = ET.SubElement(descriptions, 'description')
+    desc.attrib['descriptionType'] = 'Description'
+    desc.text = exp['description']
     return xml_obj
 
-def experiment_reserve_xml(experiment, created):
+def _analysis_required_xml(users, analysis, created):
+    anl = analysis['value']
+    xml_obj = _project_header()
+
+    resource = xml_obj
+    identifier = ET.SubElement(resource, 'identifier')
+    identifier.attrib['identifierType'] = 'DOI'
+    identifier.text = SHOULDER.replace('doi:', '')
+    creators = ET.SubElement(resource, 'creators')
+    um = get_user_model()
+    for author in users:
+        try:
+            if isinstance(author, basestring):
+                user = um.objects.get(username=author)
+            else:
+                user = um.objects.get(username=author['username'])
+            creator = ET.SubElement(creators, 'creator')
+            creator_name = ET.SubElement(creator, 'creatorName')
+            creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
+        except um.DoesNotExist as err:
+            logger.debug('User not found: %s', author)
+
+    titles = ET.SubElement(resource, 'titles')
+    title = ET.SubElement(titles, 'title')
+    title.text = anl['title']
+    publisher = ET.SubElement(resource, 'publisher')
+    publisher.text = 'Designsafe-CI'
+
+    now = dateutil.parser.parse(created)
+    publication_year = ET.SubElement(resource, 'publicationYear')
+    publication_year.text = str(now.year)
+
+    resource_type = ET.SubElement(resource, 'resourceType')
+    resource_type.text = 'Analysis'
+    resource_type.attrib['resourceTypeGeneral'] = 'Other'
+    descriptions = ET.SubElement(resource, 'descriptions')
+    desc = ET.SubElement(descriptions, 'description')
+    desc.attrib['descriptionType'] = 'Description'
+    desc.text = anl['description']
+    return xml_obj
+
+def analysis_reserve_xml(publication, analysis, created):
+    anl = analysis['value']
+    xml_obj = _analysis_required_xml(publication['users'], analysis,
+                                     created)
+    now = dateutil.parser.parse(created)
+    reserve_res = _reserve_doi(xml_obj)
+    doi, ark = reserve_res.split('|')
+    doi = doi.strip()
+    ark = ark.strip()
+    identifier = xml_obj.find('identifier')
+    identifier.text = doi
+    resource = xml_obj
+    _update_doi(xml_obj, doi)
+    return (doi, ark, xml_obj)
+
+def experiment_reserve_xml(publication, experiment, created):
     exp = experiment['value']
-    xml_obj = _experiment_required_xml(experiment, created)
+    xml_obj = _experiment_required_xml(publication['users'], experiment,
+                                       created)
     now = dateutil.parser.parse(created)
     reserve_res = _reserve_doi(xml_obj)
     doi, ark = reserve_res.split('|')
@@ -174,12 +241,34 @@ def experiment_reserve_xml(experiment, created):
     contributor.attrib['contributorType'] = 'HostingInstitution'
     name = ET.SubElement(contributor, 'contributorName')
     name.text = exp['experimentalFacility']
-    descriptions = ET.SubElement(resource, 'descriptions')
-    desc = ET.SubElement(descriptions, 'description')
-    desc.attrib['descriptionType'] = 'Description'
-    desc.text = exp['description']
-    return xml_obj
+    subjects = ET.SubElement(resource, 'subjects')
+    exp_type = ET.SubElement(subjects, 'subject')
+    exp_type.text = exp['experimentType'].title()
+    eq_type = ET.SubElement(subjects, 'subject')
+    eq_type.text = exp['equipmentType']
+    events = [event for event in publication['eventsList'] if \
+              experiment['uuid'] in event['associationIds']]
 
+    for event in events:
+        event_subj = ET.SubElement(subjects, 'subject')
+        event_subj.text = event['value']['title']
+
+    mcfs = [mcf for mcf in publication['modelConfigs'] if \
+              experiment['uuid'] in mcf['associationIds']]
+
+    for mcf in mcfs:
+        mcf_subj = ET.SubElement(subjects, 'subject')
+        mcf_subj.text = mcf['value']['title']
+
+    slts = [slt for slt in publication['sensorLists'] if \
+              experiment['uuid'] in slt['associationIds']]
+
+    for slt in slts:
+        slt_subj = ET.SubElement(subjects, 'subject')
+        slt_subj.text = slt['value']['title']
+
+    _update_doi(xml_obj, doi)
+    return (doi, ark, xml_obj)
 
 def project_reserve_xml(publication):
     project_body = publication['project']
@@ -236,12 +325,24 @@ def project_reserve_xml(publication):
     _update_doi(xml_obj, doi)
     return (doi, ark, xml_obj)
 
-def publish_project(xml_obj):
+def add_related(xml_obj, dois):
+    doi = xml_obj.find('identifier').text
+    resource = xml_obj
+    related_ids = ET.SubElement(resource, 'relatedIdentifiers')
+    for _doi in dois:
+        related = ET.SubElement(related_ids, 'relatedIdentifier')
+        related.attrib['relatedIdentifierType'] = 'DOI'
+        related.text = _doi
+
+    _update_doi(xml_obj, doi)
+    return (doi, xml_obj)
+
+def publish_project(doi, xml_obj):
     #doi, ark, xml_obj = _project_publish_xml(publication)
     logger.debug(pretty_print(xml_obj))
     xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
     metadata = {'_status': 'public', 'datacite': xml_str}
-    res = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
+    res = requests.post('{}/id/{}'.format(BASE_URI, doi),
                         format_req(metadata),
                         auth=CREDS,
                         headers={'Content-Type': 'text/plain'})
@@ -251,3 +352,25 @@ def publish_project(xml_obj):
     else:
         logger.exception(res['error'])
         raise Exception(res['error'])
+
+def resrve_publication(publication):
+    proj_doi, proj_ark, proj_xml = project_reserve_xml(publication)
+    exps_dois = []
+    anl_dois = []
+    publication['project']['doi'] = proj_doi
+    for exp in publication['experimentsList']:
+        exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
+                                    exp, publication['created'])
+        add_related(exp_xml, [proj_doi])
+        exps_dois.append(exp_doi)
+        exp['doi'] = exp_doi
+
+    for anl in publication['analysisList']:
+        anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
+                                    anl, publication['created'])
+        add_related(anl_xml, [proj_doi])
+        anl_dois.append(anl_doi)
+        anl['doi'] = anl_doi
+
+    add_related(proj_xml, exps_dois + anl_dois)
+    return publication
