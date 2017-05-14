@@ -4,14 +4,15 @@ import codecs
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from django.contrib.auth import get_user_model
+from django.conf import settings
 import datetime
 import dateutil.parser
 import requests
 
 logger = logging.getLogger(__name__)
 
-USER = 'user'
-PASSWORD = 'pass'
+USER = settings.EZID_USER
+PASSWORD = settings.EZID_PASS
 CREDS = (USER, PASSWORD)
 BASE_URI = 'https://ezid.cdlib.org/'
 SHOULDER = 'doi:10.5072/FK2'

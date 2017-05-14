@@ -557,6 +557,9 @@ DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 
+EZID_USER = os.environ.get('EZID_USER')
+EZID_PASS = os.environ.get('EZID_PASS')
+
 from celery_settings import *
 from external_resource_settings import *
 from elasticsearch_settings import *

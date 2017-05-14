@@ -260,23 +260,75 @@
 
     $scope.publishPipeline_publish = function(){
       var publication = angular.copy($scope.state.publication);
+      var experimentsList = [];
+      var eventsList = [];
+      var analysisList = [];
+      var reportsList = [];
+      var modelConfigs = [];
+      var sensorLists = [];
+      if (publication.experimentsList){
+        experimentsList = angular.copy(publication.experimentsList);
+        delete publication.experimentsList;
+        _.each(publication.experimentsList, function(exp){
+          exp.value.equipmentType = exp.getET(exp.value.experimentalFacility,
+                                              exp.value.equipmentType).label;
+          exp.value.experimentalFacility = exp.getEF($scope.state.project
+                .value.projectType,
+                exp.value.experimentalFacility).label;
+          exp.events = $scope.state.publication;
+          delete exp._ui;
+        });
+      }
+      if (publication.eventsList){
+        var _eventsList = angular.copy(publication.eventsList);
+        delete publication.eventsList;
+        var expsUuids = _.map(experimentsList, function(exp){
+                              return exp.uuid; });
+        eventsList = _.filter(_eventsList,
+                   function(evt){
+                     return _.intersection(evt.associationIds, expsUuids);
+                   });
+        var mcfsUuids = [];
+        var slsUuids = [];
+        _.each(eventsList, function(evt){
+            mcfsUuids = mcfsUuids.concat(evt.value.modelConfigs);
+            slsUuids = slsUuids.concat(evt.value.sensorLists);
+            delete evt.tagsAsOptions;
+        });
+        _.each(mcfsUuids, function(mcf){
+          var _mcf = $scope.state.project.getBk(mcf);
+          delete _mcf.tagsAsOptions;
+          modelConfigs.push(_mcf);
+        });
+        _.each(slsUuids, function(slt){
+          var _slt = $scope.state.project.getRelatedByUuid(slt);
+          delete _slt.tagsAsOptions;
+          sensorLists.push(_slt);
+        });
+      }
+      if (publication.analysisList){
+        analysisList = angular.copy(publication.analysisList);
+        delete publication.analysisList;
+        _.each(publication.analysisList, function(ana){
+          delete ana.tagsAsOptions;
+        });
+      }
+      if (publication.reportsList) {
+        reportsList = angular.copy(publication.reportsList);
+        delete publication.reportsList;
+      }
       var project = angular.copy($scope.state.project);
       delete project._allRelatedObjects;
       _.each(project._related, function(val, key){
         delete project[key];
       });
-      _.each(publication.experimentsList, function(exp){
-        exp.value.equipmentType = exp.getET(exp.value.experimentalFacility, exp.value.equipmentType).label;
-        exp.value.experimentalFacility = exp.getEF($scope.state.project.value.projectType, exp.value.experimentalFacility).label;
-        exp.events = $scope.state.publication;
-        delete exp._ui;
-      });
-      _.each(publication.analysisList, function(ana){
-        delete ana.tagsAsOptions;
-      });
-      delete project._set;
       delete publication.filesSelected;
       publication.project = project;
+      publication.eventsList = eventsList;
+      publication.modelConfigs = modelConfigs;
+      publication.sensorLists = sensorLists;
+      publication.analysisList = analysisList;
+      publication.reportsList = reportsList;
       $http.post('/api/projects/publication/', {publication: publication})
         .then(function(resp){
           $scope.state.publicationMsg = resp.data.message;
