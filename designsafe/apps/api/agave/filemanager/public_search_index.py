@@ -38,6 +38,63 @@ try:
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
+class PublicationIndexed(DocType):
+    class Meta:
+        index = 'published'
+        doc_type = 'publication'
+
+class Publication(object):
+    def __init__(self, wrap=None, project_id=None, *args, **kwargs):
+        if wrap is not None:
+            if isinstance(wrap, PublicationIndexed):
+                self._wrap = wrap
+            else:
+                s = PublicationIndexed.search()
+                s.query = Q({"term":
+                              {"projectId._exact": wrap['projectId']}
+                            })
+                try:
+                    res = s.execute()
+                except TransportError as e:
+                    if e.status_code != 404:
+                        res = s.execute()
+                
+                if res.hits.total:
+                    self._wrap = res[0]
+                    raise Exception('Initializing from existent publication '
+                                    'and a publication object was given. '
+                                    'Are you sure you want to do this? ')
+                else: 
+                    self._wrap = PublicationIndexed(**wrap)
+
+        elif project_id is not None:
+            s = PublicationIndexed.search()
+            s.query = Q({"term": {"projectId._exact": project_id }})
+            logger.debug('p serach query: {}'.format(s.to_dict()))
+            try:
+                res = s.execute()
+            except TransportError as e:
+                if e.status_code == 404:
+                    raise
+                res = s.execute()
+            
+            if res.hits.total:
+                self._wrap = res[0]
+            else:
+                self._wrap = None
+        else:
+            raise ValueError('Cannot initialize Publication')
+
+    @property
+    def id(self):
+        return self._wrap.meta.id
+
+    def save(self, **kwargs):
+        self._wrap.save(**kwargs)
+        return self
+
+    def to_dict(self):
+        return self._wrap.to_dict()
 
 class CMSIndexed(DocType):
     class Meta:
@@ -442,3 +499,12 @@ class PublicElasticFileManager(BaseFileManager):
             'permissions': 'READ'
         }
         return result
+
+class PublicationManager(object):
+    def save_publication(self, publication):
+        publication['projectId'] = publication['project']['value']['projectId']
+        publication['created'] = datetime.datetime.now().isoformat()
+        pub = Publication(publication)
+        pub.save()
+        return pub
+
