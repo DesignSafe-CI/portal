@@ -56,7 +56,11 @@
       if (file.type === 'file'){
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
-        $state.go('publicData', {systemId: file.system, filePath: file.path});
+        if (file.system === 'nees.public'){
+          $state.go('publicData', {systemId: file.system, filePath: file.path});
+        } else {
+          $state.go('publishedData', {systemId: file.system, filePath: file.path});
+        }
       }
     };
 
@@ -105,7 +109,11 @@
       if (typeof file.metadata === 'undefined' ||
           file.metadata === null ||
           _.isEmpty(file.metadata)){
-        return file.name;
+          if(file.meta && file.meta.title){
+              return file.meta.title;
+          } else {
+            return file.name;
+            }
       }
       var pathComps = file.path.split('/');
       var experiment_re = /^experiment/;
