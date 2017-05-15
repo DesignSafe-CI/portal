@@ -124,9 +124,10 @@
           <span style="text-transform:capitalize;">{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</span>
         </div>
         <div style="padding:5px;" ng-if="browser.project.getRelated('report_set', experiment.uuid).length">
+          <span style="font-weight:bold;"> Experiment Report: </span>
           <a href="#details-{{browser.project.getRelated('report_set', experiment.uuid)[0].uuid}}"
              class="btn btn-link">
-          <span style="font-weight:bold;">Report</span>
+          <span style="font-weight:bold;">{{browser.project.getRelated('report_set', experiment.uuid)[0].value.title}}</span>
           </a>
         </div>
       </div>
