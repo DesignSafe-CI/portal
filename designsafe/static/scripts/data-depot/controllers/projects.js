@@ -275,6 +275,7 @@
                 exp.value.experimentalFacility).label;
           exp.events = $scope.state.publication;
           delete exp._ui;
+          delete exp.events;
           return exp;
         });
         delete publication.experimentsList;
@@ -294,27 +295,69 @@
             mcfsUuids = mcfsUuids.concat(evt.value.modelConfigs);
             slsUuids = slsUuids.concat(evt.value.sensorLists);
             delete evt.tagsAsOptions;
+            evt.fileObjs = _.map($scope.state.listings[evt.uuid], function(f){
+                  return {
+                      'path': f.path,
+                      'type': f.type,
+                      'length': f.length,
+                      'name': f.name
+                  };
+            });
         });
         _.each(mcfsUuids, function(mcf){
           var _mcf = angular.copy($scope.state.project.getRelatedByUuid(mcf));
           delete _mcf.tagsAsOptions;
+          _mcf.fileObjs = _.map($scope.state.listings[_mcf.uuid], function(f){
+              return {
+                  'path': f.path,
+                  'type': f.type,
+                  'length': f.length,
+                  'name': f.name
+              };
+          });
           modelConfigs.push(_mcf);
         });
         _.each(slsUuids, function(slt){
           var _slt = angular.copy($scope.state.project.getRelatedByUuid(slt));
           delete _slt.tagsAsOptions;
+          _slt.fileObjs = _.map($scope.state.listings[_slt.uuid], function(f){
+            return {
+                'path': f.path,
+                'type': f.type,
+                'length': f.length,
+                'name': f.name
+            };
+          });
           sensorLists.push(_slt);
         });
       }
       if (publication.analysisList){
         analysisList = _.map(publication.analysisList, function(ana){
           delete ana.tagsAsOptions;
+          ana.fileObjs = _.map($scope.state.listings[ana.uuid], function(f){
+              return {
+                  'path': f.path,
+                  'type': f.type,
+                  'length': f.length,
+                  'name': f.name
+              };
+          });
           return ana;
         });
         delete publication.analysisList;
       }
       if (publication.reportsList) {
-        reportsList = angular.copy(publication.reportsList);
+        reportsList = _.map(publication.reportsList, function(rep){
+            rep.fileObjs = _.map($scope.state.listings[rep.uuid], function(f){
+                return {
+                    'path': f.path,
+                    'type': f.type,
+                    'length': f.length,
+                    'name': f.name
+                };
+            });
+            return rep;
+        });
         delete publication.reportsList;
       }
       var project = angular.copy($scope.state.project);
