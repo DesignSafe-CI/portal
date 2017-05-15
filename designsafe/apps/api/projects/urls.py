@@ -25,8 +25,8 @@ urlpatterns = [
 
     url(r'^yamz/(?P<term_id>[a-zA-Z0-9]+)/?$', YamzBaseView.as_view(), name='yamz'),
 
-    url(r'^publication', PublicationView.as_view(), name='publication'),
     url(r'^publication/((?P<project_id>[a-zA-Z0-9\-\_\.]+)/?)?', PublicationView.as_view(), name='publication'),
+    url(r'^publication/?', PublicationView.as_view(), name='publication'),
 
     url(r'^listing/(?P<username>[a-zA-Z0-9\-_\.]+)/?$', ProjectListingView.as_view(), name='listing'),
 
