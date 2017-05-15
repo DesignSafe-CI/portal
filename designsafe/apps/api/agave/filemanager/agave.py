@@ -28,6 +28,8 @@ class AgaveFileManager(BaseFileManager):
          'path': '/corral-repl/tacc/NHERI/shared'},
         {'regex': r'^designsafe.storage.community$',
          'path': '/corral-repl/tacc/NHERI/community'},
+        {'regex': r'^designsafe.storage.published$',
+         'path': '/corral-repl/tacc/NHERI/published'},
         {'regex': r'^project\-',
          'path': '/corral-repl/tacc/NHERI/projects'}
     ]
