@@ -3,8 +3,9 @@
   app.requires.push('django.context');
 
   app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django',
-                                         'DataBrowserService',
-                 function ($scope, $state, Django, DataBrowserService) {
+                                     'DataBrowserService', 'FileListing',
+                 function ($scope, $state, Django, DataBrowserService,
+                           FileListing) {
 
   $scope.browser = DataBrowserService.state();
   $scope.state = {
@@ -12,21 +13,57 @@
         reachedEnd : false,
         page : 0
       };
-
+  if ($scope.browser.listing.projectId){
+    _.each($scope.browser.listing.eventsList, function(evt){
+        evt.files = _.map(evt.fileObjs, function(f){
+            f.system = 'designsafe.storage.published';
+            f.path = $scope.browser.listing.projectId + f.path;
+            return FileListing.init(f);
+        });
+    });
+    _.each($scope.browser.listing.modelConfigs, function(mcf){
+        mcf.files = _.map(mcf.fileObjs, function(f){
+            f.system = 'designsafe.storage.published';
+            f.path = $scope.browser.listing.projectId + f.path;
+            return FileListing.init(f);
+        });
+    });
+    _.each($scope.browser.listing.sensorLists, function(slt){
+        slt.files = _.map(slt.fileObjs, function(f){
+            f.system = 'designsafe.storage.published';
+            f.path = $scope.browser.listing.projectId + f.path;
+            return FileListing.init(f);
+        });
+    });
+    _.each($scope.browser.listing.analysisList, function(anl){
+        anl.files = _.map(anl.fileObjs, function(f){
+            f.system = 'designsafe.storage.published';
+            f.path = $scope.browser.listing.projectId + f.path;
+            return FileListing.init(f);
+        });
+    });
+    _.each($scope.browser.listing.reportsList, function(rep){
+        rep.files = _.map(rep.fileObjs, function(f){
+            f.system = 'designsafe.storage.published';
+            f.path = $scope.browser.listing.projectId + f.path;
+            return FileListing.init(f);
+        });
+    });
+  }
   if (! $scope.browser.error){
     $scope.browser.listing.href = $state.href('publishedData', {
       system: $scope.browser.listing.system,
       filePath: $scope.browser.listing.path
     });
     _.each($scope.browser.listing.children, function (child) {
-      child.href = $state.href('publicData', {system: child.system, filePath: child.path});
+      child.href = $state.href('publishedData', {system: child.system, filePath: child.path});
     });
   }
 
   $scope.data = {
     customRoot: {
       name: 'Published',
-      href: $state.href('publicData', {systemId: $scope.browser.listing.system,
+      href: $state.href('publicData', {systemId: 'nees.public',
                                           filePath: 'public/'})
     }
   };
@@ -56,7 +93,7 @@
       if (file.type === 'file'){
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
-        $state.go('publicData', {systemId: file.system, filePath: file.path});
+        $state.go('publishedData', {systemId: file.system, filePath: file.path});
       }
     };
 
@@ -119,6 +156,20 @@
       }
       return file.name;
     };
+
+    $scope.getRelated = function(attrib, uuids){
+      if (_.isString(uuids)){
+          uuids = [uuids];
+      }
+      var ents = $scope.browser.listing[attrib];
+      var res = _.filter(ents, function(ent){
+          if (_.intersection(uuids, ent.associationIds).length === uuids.length){
+              return ent;
+          }
+      });
+      return res;
+    };
+
 
   }]);
 })(window, angular);
