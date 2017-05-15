@@ -9,6 +9,7 @@ from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from requests.exceptions import HTTPError
 
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
@@ -718,7 +719,55 @@ def set_project_id(self, project_uuid):
     
     project.project_id = 'PRJ-{}'.format(str(project_id))
     project.save(service)
-    logger.debug('updated project id={}'.format(project.uuid))
+    logger.debug('updated project id=%s', project.uuid)
     id_meta['value']['id'] = project_id
     service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
-    logger.debug('updated id record={}'.format(id_meta['uuid']))
+    logger.debug('updated id record=%s', id_meta['uuid'])
+
+@shared_task(bind=True)
+def copy_publication_files_to_corral(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+    from designsafe.apps.api.agave.models.files import BaseFileResource
+    publication = Publication(project_id=project_id)
+    filepaths = publication.related_file_paths()
+    base_path = ''.join(['/', publication.projectId])
+    service = get_service_account_client()
+    service.files.manage(systemId=settings.PUBLISHED_SYSTEM,
+                         filePath='/',
+                         body={'action': 'mkdir',
+                               'path': base_path})
+    base_dir = BaseFileResource.listing(system=settings.PUBLISHED_SYSTEM,
+                                        path=base_path,
+                                        agave_client=service)
+    proj_system = 'project-{}'.format(publication.project['uuid'])
+    for filepath in filepaths:
+        filepath = filepath.strip('/')
+        logger.info('Copying: {}'.format(filepath))
+        path_comps = filepath.split('/')
+        parent_path = os.path.join(*path_comps[:-1])
+        file_obj = BaseFileResource.\
+                      listing(system=proj_system,
+                                  path=filepath,
+                                  agave_client=service)
+        if file_obj.type == 'dir':
+            logger.info('path is a directory, ensuring path exists')
+            base_obj = BaseFileResource.\
+                         ensure_path(service,
+                                     settings.PUBLISHED_SYSTEM,
+                                     os.path.join(base_path, parent_path))
+        else:
+            logger.info('path is a file, ensuring parent path exists')
+            base_obj = BaseFileResource.\
+                         ensure_path(service,
+                                     settings.PUBLISHED_SYSTEM,
+                                     os.path.join(base_path, parent_path))
+
+        base_obj.import_data(file_obj.system, file_obj.path)
+        try: 
+            image = BaseFileResource.\
+                      listing(system=proj_system,
+                              path='projectimage.jpg',
+                              agave_client=service)
+            base_obj.import_data(image.system, image.path)
+        except HTTPError as err:
+            logger.debug('No project image')
