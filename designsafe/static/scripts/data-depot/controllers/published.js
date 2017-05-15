@@ -14,7 +14,7 @@
       };
 
   if (! $scope.browser.error){
-    $scope.browser.listing.href = $state.href('publicData', {
+    $scope.browser.listing.href = $state.href('publishedData', {
       system: $scope.browser.listing.system,
       filePath: $scope.browser.listing.path
     });
