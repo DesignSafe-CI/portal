@@ -341,6 +341,29 @@
           }]
         }
       })
+      .state('publishedData', {
+        url: '/public/designsafe.storage.published/{filePath:any}',
+        controller: 'PublishedDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/published-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.published',
+          filePath: ''
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService){
+          }],
+          'auth': function($q){
+              return true;
+          },
+          userAuth: ['UserService', function (UserService) {
+            return UserService.authenticate().then(function (resp) {
+              return true;
+            }, function (err) {
+              return false;
+            });
+          }]
+        }
+      })
       .state('trainingMaterials', {
         url: '/training/',
         template: '<pre>local/trainingMaterials.html</pre>'
