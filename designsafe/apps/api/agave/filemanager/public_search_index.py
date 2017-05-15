@@ -85,6 +85,19 @@ class Publication(object):
         else:
             raise ValueError('Cannot initialize Publication')
 
+    @classmethod
+    def listing(self):
+        s = PublicationIndexed.search()
+        s.query = Q({"match_all":{}})
+        try:
+            res = s.execute()
+        except TransportError as err:
+            if err.satus_code == 404:
+                raise
+            res = s.execute()
+
+        return res, s.scan()
+
     @property
     def id(self):
         return self._wrap.meta.id
@@ -415,6 +428,23 @@ class PublicElasticFileManager(BaseFileManager):
     def listing(self, system, file_path, offset=0, limit=100):
         file_path = file_path or '/'
         listing = PublicObject.listing(system, file_path, offset, limit)
+        res, publications = Publication.listing()
+        children = [{'agavePath': 'agave://designsafe.storage.published/{}'.format(pub.project.value.projectId),
+                     'children': [],
+                     'deleted': False,
+                     'format': 'folder',
+                     'length': 24731027,
+                     'meta': {
+                         'title': pub.project['value']['title']
+                     },
+                     'name': pub.project.value.projectId,
+                     'path': '/{}'.format(pub.project.value.projectId),
+                     'permissions': 'READ',
+                     'project': pub.project.value.projectId,
+                     'system': 'designsafe.storage.published',
+                     'systemId': 'designsafe.storage.published',
+                     'type': 'dir'} for pub in publications]
+        listing.children = children + listing.children
         return listing
 
     def search(self, system, query_string, 
