@@ -26,7 +26,7 @@
       'cgm-ucdavis': [{name: '9-m_radius_dynamic_geotechnical_centrifuge', label: '9m Radius Dynamic Geotechnical Centrifuge'},
                       {name: '1-m_radius_dynamic_geotechnical_centrifuge', label: '1m Radius Dynamic Geotechnical Centrifuge'}],
       'eqss-utaustin': [
-        {name: 'liquidator', 
+        {name: 'liquidator',
          label: 'Low Frequency, Two Axis Shaker (Liquidator)'},
         {name: 't-rex',
          label: 'High Force Three Axis Shaker (T Rex)'},
@@ -40,20 +40,20 @@
          label: 'Urban, Three axis Shaker (Thumper)'}],
       'pfsml-florida': [
         {name: 'blwt', label: 'Boundary Layer Wind Tunnel (BLWT)'},
-        {name: 'abl', label: 'Atmospheric Boundary Layer Wind Tunnel Test (ABL)'}, 
+        {name: 'abl', label: 'Atmospheric Boundary Layer Wind Tunnel Test (ABL)'},
         {name: 'wdrt', label: 'Wind Driven Rain Test'},
         {name: 'wtdt', label: 'wind_tunnel_destructive_test'},
         {name: 'dfs', label: 'Dynamic Flow Simulator (DFS)'},
         {name: 'hapla', label: 'High Airflow Pressure Loading Actuator (HAPLA)'},
-        {name: 'spla', label: 'Spatiotemporal Pressure Loading Actuator (SPLA)'} 
+        {name: 'spla', label: 'Spatiotemporal Pressure Loading Actuator (SPLA)'}
       ],
-      'wwhr-florida': [{name: 'pmtp', label: 'Physical_measurement_test_protocol'}, 
+      'wwhr-florida': [{name: 'pmtp', label: 'Physical_measurement_test_protocol'},
                        {name: 'fmtp', label: 'Failure Mode Test Protocol'},
                        {name: 'wdrtp', label: 'Wind Driven Rain Test Protocol'}],
       'lhpost-sandiego': [{name: 'lhpost', label: 'Large High Performance Outdoor Shake Table (LHPOST)'}],
       'ohhwrl-oregon': [{name: 'lwf', label: 'Large Wave Flume (LWF)'},
                         {name: 'dwb', label: 'Directional Wave Basin (DWB)'},
-                        {name: 'mobs', label: 'Mobile Shaker'}, 
+                        {name: 'mobs', label: 'Mobile Shaker'},
                         {name: 'pla', label: 'pressure_loading_actuator'}]
     };
 
@@ -75,7 +75,7 @@
     var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
    //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
    //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
-   
+
 
     /**
      * Get a list of Projects for the current user
@@ -249,7 +249,7 @@
               ent._ui.order = 0;
             } else if (ent._ui.order > 0){
               var order = ent._ui.order;
-              var _ent = _.find(list, function(e){ 
+              var _ent = _.find(list, function(e){
                                             return e._ui.order === order - 1; });
               ent._ui.order -= 1;
               _ent._ui.order += 1;
@@ -260,7 +260,7 @@
             if (typeof ent._ui.order === 'undefined'){
               ent._ui.order = 0;
             } else if (ent._ui.order < list.length - 1){
-              var _ent = _.find(list, function(e){ 
+              var _ent = _.find(list, function(e){
                                             return e._ui.order === ent._ui.order + 1; });
               ent._ui.order += 1;
               _ent._ui.order -= 1;
@@ -395,7 +395,7 @@
                   break;
                 }
               }
-              var entity =  _.find(options.project[attrName], 
+              var entity =  _.find(options.project[attrName],
                                     function(entity){ if (entity.uuid === res.uuid){ return entity; }});
               entity.update(res);
               $scope.form.updateExperiments = {};
@@ -507,30 +507,40 @@
             busy: true,
             project: project
           };
-          $scope.form = {
-            curUsers: [],
-            addUsers: [{}],
-            curCoPis: [],
-            addCoPis: [{}],
-            authors:{}
-          };
-          var loads = [
-            //projectResource.get({params: angular.copy(options)}),
-            //service.get(angular.copy(options)),
-            collabResource.get({params: {uuid: project.uuid}}),
-            ProjectEntitiesService.listEntities({uuid: project.uuid,
-                                name: 'designsafe.project.experiment'})
-          ];
-          $q.all(loads).then(function (results) {
-            $scope.data.busy = false;
-            $scope.data.experiments = results[1];
 
-            _.each($scope.data.experiments, function(exp){
-              $scope.form.authors[exp.uuid] = {};
-              _.each(exp.value.authors, function(auth){
-                  $scope.form.authors[exp.uuid][auth] = true;
+          $scope.initForm = function () {
+            $scope.form = {
+              curUsers: [],
+              addUsers: [{}],
+              curCoPis: [],
+              addCoPis: [{}],
+              authors:{}
+            };
+          };
+          $scope.initForm();
+
+
+
+          $scope.loadData = function () {
+            var loads = [
+              //projectResource.get({params: angular.copy(options)}),
+              //service.get(angular.copy(options)),
+              collabResource.get({params: {uuid: project.uuid}}),
+              ProjectEntitiesService.listEntities({uuid: project.uuid,
+                                  name: 'designsafe.project.experiment'})
+            ];
+            $q.all(loads).then(function (results) {
+              console.log(results);
+              $scope.data.busy = false;
+              $scope.data.experiments = results[1];
+
+              _.each($scope.data.experiments, function(exp){
+                $scope.form.authors[exp.uuid] = {};
+                _.each(exp.value.authors, function(auth){
+                    $scope.form.authors[exp.uuid][auth] = true;
               });
             });
+
 
             $scope.form.curUsers = _.map(results[0].data.teamMembers, function (collab) {
               return {
@@ -544,10 +554,13 @@
                 remove: false
               };
             });
-          }, function (error) {
-            $scope.data.busy = false;
-            $scope.data.error = error.data.message || error.data;
-          });
+            }, function (error) {
+              $scope.data.busy = false;
+              $scope.data.error = error.data.message || error.data;
+            });
+          };
+
+          $scope.loadData();
 
           $scope.canManage = function (user) {
             var noManage = $scope.data.project.value.pi === user ||
@@ -595,6 +608,7 @@
           $scope.saveCollaborators = function ($event) {
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
+            console.log($scope.form)
 
             var removeActions = _.map($scope.form.curUsers, function (cur) {
               if (cur.remove) {
@@ -607,8 +621,9 @@
 
             var coPIsRemoveActions = _.map($scope.form.curCoPis, function(cur){
               if(cur.remove){
+                console.log(cur)
                 return collabResource.delete({data:{
-                  uuid: $scope.dta.project.uuid,
+                  uuid: $scope.data.project.uuid,
                   username: cur.user.username
                 }});
               }
@@ -627,6 +642,7 @@
 
             addActions.concat(_.map($scope.form.addCoPis, function (add) {
               if (add.user && add.user.username) {
+                console.log(add);
                 return collabResource.post({data: {
                   uuid: $scope.data.project.uuid,
                   username: add.user.username,
@@ -634,14 +650,15 @@
                 }});
               }
             }));
-            
+            console.log(addActions);
+
             var expsToUpdate = [];
             _.each($scope.authorship, function(obj){
               expsToUpdate.push(obj.exp.uuid);
               var exp = $scope.data.project.getRelatedByUuid(obj.exp.uuid);
               exp.value.authors.push(obj.username);
             });
-            
+
             expsToUpdate = _.uniq(expsToUpdate);
             var updateExps = _.map(expsToUpdate, function(uuid){
               var _exp = $scope.data.project.getRelatedByUuid(uuid);
@@ -660,12 +677,21 @@
                 //)
             var tasks = removeActions.concat(addActions);
             tasks = tasks.concat(updateExps);
+            console.log(tasks)
             $q.all(tasks).then(
               function (results) {
-                $uibModalInstance.close(results);
+                console.log(results)
+                // $uibModalInstance.close(results);
+                // $scope.data.busy = true;
+                $scope.initForm();
+                $scope.loadData();
               },
               function (error) {
-                $uibModalInstance.reject(error.data);
+                // $uibModalInstance.reject(error.data);
+                $scope.data.busy = true;
+                console.log(error)
+                $scope.initForm();
+                $scope.loadData();
               }
             );
           };
@@ -710,7 +736,7 @@
             $scope.form.experimentalFacility = project.value.experimentalFacility || '';
             $scope.form.keywords = project.value.keywords || '';
             if (typeof project.value.projectType !== 'undefined'){
-               $scope.form.projectType = _.find($scope.projectTypes, function(projectType){ return projectType.id === project.value.projectType; }); 
+               $scope.form.projectType = _.find($scope.projectTypes, function(projectType){ return projectType.id === project.value.projectType; });
             }
             if (typeof project.value.associatedProjects !== 'undefined'){
                $scope.form.associatedProjects = _.filter(project.value.associatedProjects, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });

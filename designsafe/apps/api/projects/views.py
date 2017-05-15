@@ -190,11 +190,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                 try:
                     collab_user.profile.send_mail(
                         "[Designsafe-CI] You have been added to a project!",
-                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
+                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title,
                         url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,))))
                 except DesignSafeProfile.DoesNotExist as err:
                     logger.info("Could not send email to user %s", collab_user)
-                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title, 
+                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title,
                         url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,)))
                     send_mail(
                         "[Designsafe-CI] You have been added to a project!",
@@ -203,7 +203,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                         [collab_user.email],
                         html_message=body)
                     #logger.exception(err)
-        tasks.set_project_id.apply_async(args=(p.uuid),queue="api")    
+        tasks.set_project_id.apply_async(args=(p.uuid),queue="api")
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 class ProjectMetaLookupMixin(object):
@@ -238,6 +238,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         meta_obj = ag.meta.getMetadata(uuid=project_id)
         model_cls = self._lookup_model(meta_obj['name'])
         project = model_cls(**meta_obj)
+        logger.info(project.__dict__)
         return JsonResponse(project.to_body_dict(), safe=False)
 
     def post(self, request, project_id):
@@ -271,7 +272,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
                  award_number=award_number,
                  project_type=project_type,
                  associated_projects=associated_projects,
-                 description=description, 
+                 description=description,
                  team_members=team_members,
                  keywords=keywords,
                  projectId=project_id)
@@ -298,26 +299,31 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         username = post_data.get('username')
+
         member_type = post_data.get('memberType', 'teamMember')
         logger.info('member Type: %s', member_type)
-        project.add_collaborator(username)
-        members_list = project.value.get(member_type, [])
-        members_list.append(username)
-        _kwargs = {member_type: members_list}
-        project.update(**_kwargs)
+        if member_type == 'teamMember':
+            project.add_collaborator(username)
+        elif member_type == 'coPis':
+            project.add_co_pi(username)
+        # members_list = project.value.get(member_type, [])
+        # members_list.append(username)
+        # _kwargs = {member_type: members_list}
+        # project.update(**_kwargs)
         project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         collab_users = get_user_model().objects.filter(username=username)
+        # collab_users = []
         if collab_users:
             collab_user = collab_users[0]
             try:
                 collab_user.profile.send_mail(
                     "[Designsafe-CI] You have been added to a project!",
-                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, 
+                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
                     url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
             except DesignSafeProfile.DoesNotExist as err:
                 logger.info("Could not send email to user %s", collab_user)
-                body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title, 
+                body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
                     url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
                 send_mail(
                     "[Designsafe-CI] You have been added to a project!",
@@ -339,6 +345,8 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
         project.remove_collaborator(post_data.get('username'))
+        project.remove_co_pi(post_data.get('username'))
+        project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
         return JsonResponse({'status': 'ok'})
 
@@ -419,7 +427,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
                 project_system = ''.join(['project-', project_id])
                 user_ag = request.user.agave_oauth.client
                 for file_path in file_paths:
-                    file_obj = BaseFileResource.listing(user_ag, 
+                    file_obj = BaseFileResource.listing(user_ag,
                                                         project_system,
                                                         file_path)
 

@@ -71,10 +71,9 @@ class Project(BaseMetadataResource):
             self.uuid, self._agave)
         pi = self.pi
 
-        co_pis_list = getattr(self, 'co_pis', [])
-        co_pis = []
-        if co_pis_list:
-            co_pis = [x.username for x in permissions if x.username in co_pis_list]
+        co_pis = getattr(self, 'co_pis', [])
+        logger.info(co_pis)
+        # co_pis = [x.username for x in permissions if x.username in co_pis_list]
 
         team_members_list = [x.username for x in permissions if x.username not in co_pis + [pi]]
         return {'pi': pi,
@@ -152,6 +151,29 @@ class Project(BaseMetadataResource):
     def co_pis(self):
         return self.value.get('coPis', [])
 
+    def add_co_pi(self, username):
+        logger.info('Adding Co PI "{}" to project "{}"'.format(username, self.uuid))
+
+        self.add_collaborator(username)
+        logger.info(self.value)
+        coPis = self.value.get('coPis', [])
+
+        coPis.append(username)
+        self.value['coPis'] = coPis
+
+    def remove_co_pi(self, username):
+        logger.info('Removing Co PI "{}" to project "{}"'.format(username, self.uuid))
+        # Set permissions on the metadata record
+        self.remove_collaborator(username)
+
+        coPis = self.value.get('coPis', [])
+        logger.info(coPis)
+        coPis = [uname for uname in coPis if uname != username]
+        logger.info(coPis)
+
+        self.value['coPis'] = coPis
+        logger.info(self.value)
+
     @co_pis.setter
     def co_pis(self, value):
         # TODO is this assertion valuable?
@@ -203,7 +225,7 @@ class RelatedEntity(MetadataModel):
         body_dict['_relatedFields'] = []
         for attrname, field in six.iteritems(self._meta._related_fields):
             body_dict['_relatedFields'].append(attrname)
-        return body_dict 
+        return body_dict
 
 class ExperimentalProject(MetadataModel):
     model_name = 'designsafe.project'
@@ -348,7 +370,7 @@ class ModelConfigTagGeneral(MetadataModel):
     model_drawing = fields.ListField('Model Drawing', list_cls=DataTag)
     image = fields.ListField('Model Drawing', list_cls=DataTag)
     video = fields.ListField('Model Drawing', list_cls=DataTag)
-    
+
 class ModelConfigTag(MetadataModel):
     _is_nested = True
     centrifuge = fields.NestedObjectField(ModelConfigTagCentrifuge)
