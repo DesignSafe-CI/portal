@@ -725,6 +725,14 @@ def set_project_id(self, project_uuid):
     logger.debug('updated id record=%s', id_meta['uuid'])
 
 @shared_task(bind=True)
+def save_publication(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
+    from designsafe.apps.api.projects.managers import publication as PublicationManager
+    pub = Publication(project_id=project_id)
+    publication = PublicationManager.resrve_publication(pub.to_dict())
+    pub.update(**publication)
+
+@shared_task(bind=True)
 def copy_publication_files_to_corral(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication
     from designsafe.apps.api.agave.models.files import BaseFileResource
