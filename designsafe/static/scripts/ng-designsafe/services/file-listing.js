@@ -550,6 +550,10 @@
       }
     }
 
+    function init(obj){
+        return new FileListing(obj);
+    }
+
     /**
      * @param {object} options
      * @param {string} options.system
@@ -568,7 +572,8 @@
      */
     return {
       get: get,
-      search: search
+      search: search,
+      init: init
     };
 
   }]);
