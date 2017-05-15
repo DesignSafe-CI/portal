@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="project-desc" style="padding:5px; margin:5px 0px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc; max-height;115px;">
-          <p style="display:inline-block; width:115px;"><strong>Description</strong></p>
+          <p style="display:inline-block; width:135px;"><strong>Project Description</strong></p>
           <p style="display:inline-block; max-height:40px; overflow:hidden;">
           {{data.project.value.description}}
           </p>
@@ -120,6 +120,11 @@
                 Request DOI & Publish <i class="fa fa-check"></i>
             </button>
           </div>
+        </div>
+        <div class="alert alert-info"
+             style="margin-top:20px;"
+             ng-if="data.project.publicationStatus == 'publishing'">
+          <p>This project is currently in a publication process. Please do not modify any data or metadata in this project.</p>
         </div>
     </div>
 
