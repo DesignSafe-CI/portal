@@ -347,10 +347,16 @@
         templateUrl: '/static/scripts/data-depot/templates/published-data-listing.html',
         params: {
           systemId: 'designsafe.storage.published',
-          filePath: ''
+          filePath: '',
         },
         resolve: {
           'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService){
+            var systemId = $stateParams.systemId || 'designsafe.storage.published';
+            var filePath = $stateParams.filePath;
+            DataBrowserService.apiParams.fileMgr = 'published';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            DataBrowserService.apiParams.searchState = undefined;
+            return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q){
               return true;
