@@ -153,9 +153,9 @@
         $event.preventDefault();
       }
       ProjectService.manageCollaborators($scope.data.project).then(function (res) {
-        $scope.data.project.pi = res.data.pi;
-        $scope.data.project.coPis = res.data.coPis;
-        $scope.data.project.teamMembers = res.data.teamMembers;
+        // $scope.data.project.pi = res.data.pi;
+        // $scope.data.project.coPis = res.data.coPis;
+        // $scope.data.project.teamMembers = res.data.teamMembers;
       });
     };
 
@@ -782,7 +782,7 @@
         } else {
           $scope.browser.publication.filesSelected[ent.uuid] = listing;
           _addToLists(ent);
-        }    
+        }
       },
 
       deselectAllFiles : function(ent, evt){
@@ -834,7 +834,7 @@
                 _removeFromLists(ent, evt);
             }
           }
-        } else { 
+        } else {
           $scope.browser.publication.filesSelected[ent.uuid] = files;
           if (!$scope.browser.publication.filesSelected[ent.uuid].length){
             delete $scope.browser.publication.filesSelected[ent.uuid];
