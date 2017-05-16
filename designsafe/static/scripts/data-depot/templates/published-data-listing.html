@@ -22,6 +22,11 @@
         </table>
         </div>
         <div style="width:49%; display:inline-block; vertical-align:top;">
+        <div class="btn-group" role="group" aria-label="Project Actions">
+            <button class="btn btn-sm btn-default" ng-click="viewProject($event)">View Project</button>
+            <button class="btn btn-sm btn-default" ng-click="viewCollabs($event)">View Team Members</button>
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="viewExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments</button>
+        </div>
             <div style="width:350px; height:100px; overflow:hidden;">
                 <img width="350" ng-src="{{ previewHref }}"
                      ng-if="previewHref && state.showPreviewListing"/>
@@ -96,12 +101,14 @@
     <div style="padding:3px;">
       <span class="ds-text-red folder-tick">Event Data: {{event.value.title}} </span>
       <span style="color:light-gray">Link to: </span>
-      <a class="ds-text-blue" href="#details-{{getRelated('modelConfigs', event.uuid)[0].uuid}}"
-      data-toggle="collapse" data-target="#files-{{getRelated('modelConfigs', event.uuid)[0].uuid}}">
+      <a class="ds-text-blue" href="#details-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}"
+      data-toggle="collapse" data-target="#files-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}">
       Model Configuration
       </a>
-      <a class="ds-text-green" href="#details-{{getRelated('sensorLists', event.uuid)[0].uuid}}"
-         data-toggle="collapse" data-target="#files-{{getRelated('sensorLists', event.uuid)[0].uuid}}">
+      <a class="ds-text-green" href="#details-{{getRelated('sensorLists', [experiment.uuid, 
+                                                    getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}"
+         data-toggle="collapse" data-target="#files-{{getRelated('sensorLists', [experiment.uuid, 
+                                                    getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}">
       Sensor List
       </a>
       <!--
@@ -127,12 +134,13 @@
       </div>
       <div>
       <a class="ds-text-blue" href="" ng-click="openPreviewTree()($event, event.value.modelConfigs[0])">
-        {{browser.project.getRelatedByUuid(event.value.modelConfigs[0]).value.title}}
+        {{getRelated('modelConfigs', [experiment.uuid])[0].value.title}}
       </a>
       </div>
       <div>
       <a class="ds-text-green" href="" ng-click="openPreviewTree()($event, event.value.sensorLists[0])">
-        {{browser.project.getRelatedByUuid(event.value.sensorLists[0]).value.title}}
+        {{getRelated('sensorLists', [experiment.uuid, 
+                getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].value.title}}
       </a>
       </div>
     </div>
