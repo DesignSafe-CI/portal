@@ -10,7 +10,7 @@
 
     var efs = {
       'experimental': [
-        {name: 'other', label: 'Other'},
+        //{name: 'other', label: 'Other'},
         {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
          {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
          {name: 'eqss-utaustin', label: 'Field mobile shakers, UT Austin'},
