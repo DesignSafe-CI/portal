@@ -52,7 +52,6 @@ django:
     - memcached:memcached
     - elasticsearch:elasticsearch
     - mysql:mysql
-    - rabbitmq:rabbitmq
     - worker:worker
   volumes:
     - .:/portal
@@ -116,6 +115,9 @@ worker:
     - BROKER_URL_VHOST=
     - BROKER_URL_USERNAME=guest
     - BROKER_URL_PWD=guest
+    - CELERY_RESULT_BACKEND_USERNAME=
+    - CELERY_RESULT_BACKEND_HOST=redis
+    - CELERY_RESULT_BACKEND_PORT=6379
   links:
     - redis:redis
     - memcached:memcached
@@ -125,7 +127,4 @@ worker:
   volumes:
     - .:/portal
     - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-  dns:
-    - 8.8.8.8
-    - 8.8.4.4
   command: ./bin/run-celery-debug.sh

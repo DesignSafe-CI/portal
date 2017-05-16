@@ -311,6 +311,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         # _kwargs = {member_type: members_list}
         # project.update(**_kwargs)
         project.save()
+        logger.info(project.value)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         collab_users = get_user_model().objects.filter(username=username)
         # collab_users = []
@@ -344,7 +345,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
-        project.remove_collaborator(post_data.get('username'))
+        # project.remove_collaborator(post_data.get('username'))
         project.remove_co_pi(post_data.get('username'))
         project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')

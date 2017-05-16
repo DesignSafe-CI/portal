@@ -154,17 +154,15 @@ class Project(BaseMetadataResource):
     def add_co_pi(self, username):
         logger.info('Adding Co PI "{}" to project "{}"'.format(username, self.uuid))
 
-        self.add_collaborator(username)
         logger.info(self.value)
         coPis = self.value.get('coPis', [])
 
         coPis.append(username)
         self.value['coPis'] = coPis
+        self.add_collaborator(username)
 
     def remove_co_pi(self, username):
         logger.info('Removing Co PI "{}" to project "{}"'.format(username, self.uuid))
-        # Set permissions on the metadata record
-        self.remove_collaborator(username)
 
         coPis = self.value.get('coPis', [])
         logger.info(coPis)
@@ -173,6 +171,9 @@ class Project(BaseMetadataResource):
 
         self.value['coPis'] = coPis
         logger.info(self.value)
+        # Set permissions on the metadata record
+        self.remove_collaborator(username)
+
 
     @co_pis.setter
     def co_pis(self, value):
