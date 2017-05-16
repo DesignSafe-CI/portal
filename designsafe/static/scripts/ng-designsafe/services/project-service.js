@@ -589,26 +589,28 @@
             return UserService.search({q: q});
           };
 
-          $scope.cancel = function () {
-            $uibModalInstance.dismiss();
-          };
 
           $scope.authorship = [];
 
           $scope.toggleUserToExp = function(exp, username){
             var add = $scope.form.authors[exp.uuid][username];
+            $scope.authorship.push(exp);
             if (add){
-                $scope.authorship.push({exp: exp, username: username});
+                exp.value.authors.push(username);
             } else {
-                $scope.authorship = _.reject($scope.authorship, function(obj){
-                                          return obj.username === username; });
+                // $scope.authorship = _.reject($scope.authorship, function(obj){
+                                          // return obj.username === username; });
+                exp.value.authors = _.filter(exp.value.authors, function (d) {
+                  return d !== username;
+                });
             }
+
+            console.log(exp)
           };
 
           $scope.saveCollaborators = function ($event) {
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
-            console.log($scope.form)
 
             var removeActions = _.map($scope.form.curUsers, function (cur) {
               if (cur.remove) {
@@ -621,7 +623,6 @@
 
             var coPIsRemoveActions = _.map($scope.form.curCoPis, function(cur){
               if(cur.remove){
-                console.log(cur)
                 return collabResource.delete({data:{
                   uuid: $scope.data.project.uuid,
                   username: cur.user.username
@@ -642,7 +643,6 @@
 
             addActions.concat(_.map($scope.form.addCoPis, function (add) {
               if (add.user && add.user.username) {
-                console.log(add);
                 return collabResource.post({data: {
                   uuid: $scope.data.project.uuid,
                   username: add.user.username,
@@ -650,18 +650,19 @@
                 }});
               }
             }));
-            console.log(addActions);
 
             var expsToUpdate = [];
             _.each($scope.authorship, function(obj){
-              expsToUpdate.push(obj.exp.uuid);
-              var exp = $scope.data.project.getRelatedByUuid(obj.exp.uuid);
-              exp.value.authors.push(obj.username);
+              expsToUpdate.push(obj);
+
+              // var exp = $scope.data.project.getRelatedByUuid(obj.exp.uuid);
             });
 
-            expsToUpdate = _.uniq(expsToUpdate);
-            var updateExps = _.map(expsToUpdate, function(uuid){
-              var _exp = $scope.data.project.getRelatedByUuid(uuid);
+            // TODO This should probably be a stack or something...
+            // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
+            var updateExps = _.map(expsToUpdate, function(_exp){
+              // var _exp = $scope.data.project.getRelatedByUuid(uuid);
+              console.log(_exp)
               return ProjectEntitiesService.update({data: {
                   uuid: _exp.uuid,
                   entity: _exp
@@ -694,6 +695,11 @@
                 $scope.loadData();
               }
             );
+          };
+
+          $scope.cancel = function () {
+            console.log($scope.data.project)
+            $uibModalInstance.close($scope.data.project);
           };
         }]
       });

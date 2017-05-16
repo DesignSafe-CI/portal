@@ -74,6 +74,7 @@
                 <div style="width:7%; text-align:center; display:inline-block;">
                 <button class="btn btn-sm btn-default"
                         data-toggle="collapse"
+                        ng-disabled="! canManage(cur.user.username)"
                         data-target="#{{cur.user.username}}-experiments">
                         <i class="fa fa-caret-square-o-down"></i>
                   </button>

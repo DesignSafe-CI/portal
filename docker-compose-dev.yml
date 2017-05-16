@@ -42,11 +42,14 @@ django:
     - WS_BACKEND_HOST=redis
     - WS_BACKEND_DB=0
     - WS_BACKEND_PORT=6379
-    - BROKER_URL_HOST=rabbitmq
-    - BROKER_URL_PORT=5672
+    - BROKER_URL_HOST=redis
+    - BROKER_URL_PORT=6379
     - BROKER_URL_VHOST=
-    - BROKER_URL_USERNAME=guest
-    - BROKER_URL_PWD=guest
+    - BROKER_URL_USERNAME=
+    - BROKER_URL_PWD=
+    - BROKER_URL_PROTOCOL=redis://
+    - CELERY_RESULT_BACKEND_HOST=redis
+    - CELERY_RESULT_BACKEND_PORT=6379
   links:
     - redis:redis
     - memcached:memcached
@@ -110,12 +113,12 @@ worker:
     - DATABASE_USER=DS_DEV
     - DATABASE_PASSWORD=DS_DEV
     - DS_LOCAL_DEV=True
-    - BROKER_URL_HOST=rabbitmq
-    - BROKER_URL_PORT=5672
+    - BROKER_URL_HOST=redis
+    - BROKER_URL_PORT=6379
     - BROKER_URL_VHOST=
-    - BROKER_URL_USERNAME=guest
-    - BROKER_URL_PWD=guest
-    - CELERY_RESULT_BACKEND_USERNAME=
+    - BROKER_URL_USERNAME=
+    - BROKER_URL_PWD=
+    - BROKER_URL_PROTOCOL=redis://
     - CELERY_RESULT_BACKEND_HOST=redis
     - CELERY_RESULT_BACKEND_PORT=6379
   links:
@@ -127,4 +130,7 @@ worker:
   volumes:
     - .:/portal
     - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
   command: ./bin/run-celery-debug.sh

@@ -318,7 +318,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         logger.info(project.value)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         collab_users = get_user_model().objects.filter(username=username)
-        # collab_users = []
+        collab_users = []
         if collab_users:
             collab_user = collab_users[0]
             try:
