@@ -4,8 +4,9 @@
 
   app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django',
                                      'DataBrowserService', 'FileListing',
+                                     '$uibModal','$http',
                  function ($scope, $state, Django, DataBrowserService,
-                           FileListing) {
+                           FileListing, $uibModal, $http) {
 
   $scope.browser = DataBrowserService.state();
   $scope.state = {
@@ -13,6 +14,16 @@
         reachedEnd : false,
         page : 0
       };
+  var projId = '';
+  if ($scope.browser.listing.projectId){
+      projId = $scope.browser.listing.projectId;
+  } else {
+      projId = $scope.browser.listing.path.split('/')[0];
+      $http.get('/api/projects/publication/' + projId)
+        .then(function(resp){
+            $scope.browser.publication = resp.data.publication;
+      });
+  }
   if ($scope.browser.listing.projectId){
     _.each($scope.browser.listing.eventsList, function(evt){
         evt.files = _.map(evt.fileObjs, function(f){
@@ -161,7 +172,12 @@
       if (_.isString(uuids)){
           uuids = [uuids];
       }
-      var ents = $scope.browser.listing[attrib];
+      var ents = [];
+      if ($scope.browser.listing.projectId){
+          ents = $scope.browser.listing[attrib];
+      } else {
+          ents = $scope.browser.publication[attrib];
+      }
       var res = _.filter(ents, function(ent){
           if (_.intersection(uuids, ent.associationIds).length === uuids.length){
               return ent;
@@ -170,6 +186,72 @@
       return res;
     };
 
+    $scope.viewCollabs = function(){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-collabs.html',
+        controller: function($uibModalInstance, browser){
+            var $ctrl = this;
+            $ctrl.data = {};
+            if (browser.listing.project){
+                $ctrl.data.project = browser.listing.project;
+            } else {
+                $ctrl.data.project = browser.publication.project;
+            }
+            $ctrl.close = function(){
+                $uibModalInstance.dismiss('close');
+            };
+        },
+        controllerAs: '$ctrl',
+        resolve: {
+            browser: $scope.browser
+        }
+      });
+    };
 
+    $scope.viewProject = function(){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-project.html',
+        controller: function($uibModalInstance, browser){
+            var $ctrl = this;
+            $ctrl.data = {};
+            if (browser.listing.project){
+                $ctrl.data.publication = browser.listing;
+            } else {
+                $ctrl.data.publication = browser.publication;
+            }
+            $ctrl.close = function(){
+                $uibModalInstance.dismiss('close');
+            };
+        },
+        controllerAs: '$ctrl',
+        resolve: {
+            browser: $scope.browser
+        }
+      });
+    };
+    
+    $scope.viewExperiments = function(){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-experiments.html',
+        controller: function($uibModalInstance, browser){
+            var $ctrl = this;
+            $ctrl.data = {};
+            if (browser.listing.project){
+                $ctrl.data.publication = browser.listing;
+            } else {
+                $ctrl.data.publication = browser.publication;
+            }
+            $ctrl.close = function(){
+                $uibModalInstance.dismiss('close');
+            };
+        },
+        controllerAs: '$ctrl',
+        resolve: {
+            browser: $scope.browser
+        },
+        scope: $scope,
+        size: 'lg'
+      });
+    };
   }]);
 })(window, angular);
