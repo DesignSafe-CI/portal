@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <h3>Team Members</h3>
+</div>
+<div class="modal-body">
+    <h3>PI</h3>
+    <ds-user username="$ctrl.data.project.value.pi" format="name-email"></ds-user>
+    <hr>
+    <h3>Co PIs</h3>
+    <div ng-repeat="coPi in $ctrl.data.project.value.coPis">
+      <ds-user username="coPi" format="name-email"></ds-user>
+    </div>
+    <hr>
+    <h3>Team Members</h3>
+    <div ng-repeat="user in $ctrl.data.project.value.teamMembers">
+      <ds-user username="user" format="name-email"></ds-user>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-info"
+            ng-click="$ctrl.close()">Close</button>
+</div>
