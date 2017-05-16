@@ -18,7 +18,7 @@ from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
                                                  Experiment, ModelConfiguration,
                                                  Event, Analysis, SensorList,
                                                  Report)
-from designsafe.apps.api.agave.filemanager.public_search_index import PublicationManager
+from designsafe.apps.api.agave.filemanager.public_search_index import PublicationManager, Publication
 from designsafe.apps.api import tasks
 import logging
 import json
@@ -37,6 +37,10 @@ def template_project_storage_system(project):
     return system_template
 
 class PublicationView(SecureMixin, BaseApiView):
+    def get(self, request, project_id):
+        pub = Publication(project_id=project_id)
+        return JsonResponse(pub.to_dict())
+
     def post(self, request):
         if request.is_ajax():
             data = json.loads(request.body)

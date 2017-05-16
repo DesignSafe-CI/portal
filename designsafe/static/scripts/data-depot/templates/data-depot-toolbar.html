@@ -12,26 +12,37 @@
         <div class="btn-group">
             <button class="btn btn-sm btn-default" title="Categorize"
                     ng-click="ops.viewCategories()"
-                    ng-disabled="!tests.canViewCategories"
+                    ng-disabled="!tests.canViewCategories ||
+                                  browser.project.publicationStatus === 'publishing'"
                     ng-if="browser.listing.system.startsWith('project')">
                 <img src="/static/images/ds-icons/icon-categorize.png" width="50px" height="16px"/>
                 <span style="display:block;">Categorize</span>
             </button>
-            <button class="btn btn-sm btn-default" title="Categorize" ng-click="ops.viewMetadata()" ng-disabled="!tests.canViewMetadata">
+            <button class="btn btn-sm btn-default" title="Categorize" ng-click="ops.viewMetadata()"
+                     ng-disabled="!tests.canViewMetadata ||
+                                  browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-tags"></i><span style="display:block;">Tag</span>
             </button>
-            <button class="btn btn-sm btn-default" title="Rename" ng-click="ops.rename()" ng-disabled="!tests.canRename">
+            <button class="btn btn-sm btn-default" title="Rename" ng-click="ops.rename()"
+                     ng-disabled="!tests.canRename ||
+                                  browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-pencil"></i><span style="display:block;">Rename</span>
             </button>
         </div>
         <div class="btn-group">
-            <button class="btn btn-sm btn-default" title="Move" ng-click="ops.move()" ng-disabled="!tests.canMove">
+            <button class="btn btn-sm btn-default" title="Move" ng-click="ops.move()"
+                     ng-disabled="!tests.canMove ||
+                                  browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-arrows"></i><span style="display:block;">Move</span>
             </button>
-            <button class="btn btn-sm btn-default" title="Copy" ng-click="ops.copy()" ng-disabled="!tests.canCopy">
+            <button class="btn btn-sm btn-default" title="Copy" ng-click="ops.copy()"
+                     ng-disabled="!tests.canCopy ||
+                                  browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-copy"></i><span style="display:block;">Copy</span>
             </button>
-            <button class="btn btn-sm btn-default" title="Preview" ng-click="ops.preview()" ng-disabled="!tests.canPreview">
+            <button class="btn btn-sm btn-default" title="Preview" ng-click="ops.preview()"
+                     ng-disabled="!tests.canPreview ||
+                                  browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
             </button>
             <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!UserService.userAuthenticated()">
@@ -40,17 +51,23 @@
          </div>
          <div class="btn-group">
 
-            <button class="btn btn-sm btn-default" title="Download" ng-click="ops.download()" ng-disabled="!tests.canDownload">
+            <button class="btn btn-sm btn-default" title="Download" ng-click="ops.download()"
+                     ng-disabled="!tests.canDownload">
                 <i class="fa fa-cloud-download"></i><span style="display:block;">Download</span>
             </button>
         </div>
         <div class="btn-group">
-            <button class="btn btn-sm btn-default" title="Share" ng-click="ops.share()" ng-disabled="!tests.canShare">
+            <button class="btn btn-sm btn-default" title="Share" ng-click="ops.share()"
+                     ng-disabled="!tests.canShare ||
+                                  browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-send"></i><span style="display:block;">Share</span>
             </button>
         </div>
         <div class="btn-group">
-            <button class="btn btn-sm btn-default" title="Move to trash" ng-click="ops.trash()" ng-disabled="!tests.canTrash" ng-if="!tests.canDelete">
+            <button class="btn btn-sm btn-default" title="Move to trash" ng-click="ops.trash()"
+                     ng-disabled="!tests.canTrash ||
+                                  browser.project.publicationStatus === 'publishing'"
+                     ng-if="!tests.canDelete">
                 <i class="fa fa-trash"></i><span style="display:block;">Move to Trash</span>
             </button>
              <button class="btn btn-sm btn-danger" title="Delete selected files" ng-click="ops.rm()" ng-disabled="!tests.canDelete" ng-if="tests.canDelete">

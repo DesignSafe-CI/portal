@@ -382,7 +382,7 @@
 
   }]);
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $q) {
+  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$http', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
@@ -399,6 +399,8 @@
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
       .then(function () {
         $scope.browser = DataBrowserService.state();
+        $scope.browser.busy = true;
+        $scope.browser.busyListing = true;
         $scope.browser.listing.href = $state.href('projects.view.data', {
           projectId: projectId,
           filePath: $scope.browser.listing.path,
@@ -430,6 +432,19 @@
             }
           });
         }
+      }).then(function(){
+        $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
+          .then(function(resp){
+              $scope.browser.project.doi = resp.data.project.doi;
+              DataBrowserService.state().project.doi = resp.data.project.doi;
+              $scope.browser.project.publicationStatus = resp.data.status;
+              DataBrowserService.state().project.publicationStatus = resp.data.status;
+              $scope.browser.busy = false;
+              $scope.browser.busyListing = false;
+          }, function(){
+              $scope.browser.busy = false;
+              $scope.browser.busyListing = false;
+          });
       });
 
     var setFilesDetails = function(filePaths){
