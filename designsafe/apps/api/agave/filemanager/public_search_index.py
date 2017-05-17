@@ -12,6 +12,7 @@ import json
 import os
 import re
 import datetime
+import itertools
 from django.conf import settings
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, DocType
@@ -86,17 +87,22 @@ class Publication(object):
             raise ValueError('Cannot initialize Publication')
 
     @classmethod
-    def listing(self):
-        s = PublicationIndexed.search()
-        s.query = Q({"match_all":{}})
-        try:
-            res = s.execute()
-        except TransportError as err:
-            if err.satus_code == 404:
-                raise
-            res = s.execute()
+    def listing(cls):
+        list_search = PublicSearchManager(cls,
+                                          PublicationIndexed.search(),
+                                          page_size=100)
+        list_search._search.query = Q({"match_all":{}})
+        list_search.sort({'projectId._exact': 'asc'})
+        #s = PublicationIndexed.search()
+        #s.query = Q({"match_all":{}})
+        #try:
+        #    res = s.execute()
+        #except TransportError as err:
+        #    if err.satus_code == 404:
+        #        raise
+        #    res = s.execute()
 
-        return res, s.scan()
+        return list_search.results(0)
 
     @property
     def id(self):
@@ -108,6 +114,25 @@ class Publication(object):
 
     def to_dict(self):
         return self._wrap.to_dict()
+
+    def to_file(self):
+        dict_obj = {'agavePath': 'agave://designsafe.storage.published/{}'.\
+                                 format(self.project.value.projectId),
+                     'children': [],
+                     'deleted': False,
+                     'format': 'folder',
+                     'length': 24731027,
+                     'meta': {
+                         'title': self.project['value']['title']
+                     },
+                     'name': self.project.value.projectId,
+                     'path': '/{}'.format(self.project.value.projectId),
+                     'permissions': 'READ',
+                     'project': self.project.value.projectId,
+                     'system': 'designsafe.storage.published',
+                     'systemId': 'designsafe.storage.published',
+                     'type': 'dir'}
+        return dict_obj
 
     def related_file_paths(self):
         dict_obj = self._wrap.to_dict()
@@ -397,7 +422,7 @@ class PublicObject(object):
         obj_dict = self._doc.to_dict()
         obj_dict['system'] = self.system
         obj_dict['path'] = self.path
-        obj_dict['children'] = [doc.to_dict() if hasattr(doc, 'to_dict') else doc for doc in self.children]
+        obj_dict['children'] = [doc.to_dict() if not hasattr(doc, 'projectId') else doc.to_file() for doc in self.children]
         obj_dict['metadata'] = self.metadata()
         obj_dict['permissions'] = 'READ'
         obj_dict['trail'] = self.trail()
@@ -428,23 +453,23 @@ class PublicElasticFileManager(BaseFileManager):
     def listing(self, system, file_path, offset=0, limit=100):
         file_path = file_path or '/'
         listing = PublicObject.listing(system, file_path, offset, limit)
-        res, publications = Publication.listing()
-        children = [{'agavePath': 'agave://designsafe.storage.published/{}'.format(pub.project.value.projectId),
-                     'children': [],
-                     'deleted': False,
-                     'format': 'folder',
-                     'length': 24731027,
-                     'meta': {
-                         'title': pub.project['value']['title']
-                     },
-                     'name': pub.project.value.projectId,
-                     'path': '/{}'.format(pub.project.value.projectId),
-                     'permissions': 'READ',
-                     'project': pub.project.value.projectId,
-                     'system': 'designsafe.storage.published',
-                     'systemId': 'designsafe.storage.published',
-                     'type': 'dir'} for pub in publications]
-        listing.children = list(children) + (listing.children)
+        publications = Publication.listing()
+        #children = [{'agavePath': 'agave://designsafe.storage.published/{}'.format(pub.project.value.projectId),
+        #             'children': [],
+        #             'deleted': False,
+        #             'format': 'folder',
+        #             'length': 24731027,
+        #             'meta': {
+        #                 'title': pub.project['value']['title']
+        #             },
+        #             'name': pub.project.value.projectId,
+        #             'path': '/{}'.format(pub.project.value.projectId),
+        #             'permissions': 'READ',
+        #             'project': pub.project.value.projectId,
+        #             'system': 'designsafe.storage.published',
+        #             'systemId': 'designsafe.storage.published',
+        #             'type': 'dir'} for pub in publications]
+        listing.children = itertools.chain(publications, listing.children)
         return listing
 
     def search(self, system, query_string, 
