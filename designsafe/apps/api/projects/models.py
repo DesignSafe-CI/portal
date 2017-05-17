@@ -154,23 +154,21 @@ class Project(BaseMetadataResource):
     def add_co_pi(self, username):
         logger.info('Adding Co PI "{}" to project "{}"'.format(username, self.uuid))
 
-        logger.info(self.value)
         coPis = self.value.get('coPis', [])
 
         coPis.append(username)
-        self.value['coPis'] = coPis
+        self.value['coPis'] = list(set(coPis))
         self.add_collaborator(username)
 
     def remove_co_pi(self, username):
         logger.info('Removing Co PI "{}" to project "{}"'.format(username, self.uuid))
 
         coPis = self.value.get('coPis', [])
-        logger.info(coPis)
+        # logger.info(coPis)
         coPis = [uname for uname in coPis if uname != username]
-        logger.info(coPis)
 
         self.value['coPis'] = coPis
-        logger.info(self.value)
+        # logger.info(self.value)
         # Set permissions on the metadata record
         self.remove_collaborator(username)
 

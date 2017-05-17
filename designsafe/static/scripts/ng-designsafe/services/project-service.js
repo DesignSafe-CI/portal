@@ -530,7 +530,6 @@
                                   name: 'designsafe.project.experiment'})
             ];
             $q.all(loads).then(function (results) {
-              console.log(results);
               $scope.data.busy = false;
               $scope.data.experiments = results[1];
 
@@ -605,7 +604,6 @@
                 });
             }
 
-            console.log(exp)
           };
 
           $scope.saveCollaborators = function ($event) {
@@ -660,7 +658,6 @@
             // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
             var updateExps = _.map(expsToUpdate, function(_exp){
               // var _exp = $scope.data.project.getRelatedByUuid(uuid);
-              console.log(_exp)
               return ProjectEntitiesService.update({data: {
                   uuid: _exp.uuid,
                   entity: _exp
@@ -676,10 +673,8 @@
                 //)
             var tasks = removeActions.concat(addActions);
             tasks = tasks.concat(updateExps);
-            console.log(tasks)
             $q.all(tasks).then(
               function (results) {
-                console.log(results)
                 // $uibModalInstance.close(results);
                 // $scope.data.busy = true;
                 $scope.initForm();
@@ -696,7 +691,6 @@
           };
 
           $scope.cancel = function () {
-            console.log($scope.data.project)
             $uibModalInstance.close($scope.data.project);
           };
         }]
