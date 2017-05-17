@@ -17,12 +17,16 @@
   var projId = '';
   if ($scope.browser.listing.projectId){
       projId = $scope.browser.listing.projectId;
+      $scope.project = $scope.browser.listing.project;
   } else {
-      projId = $scope.browser.listing.path.split('/')[0];
-      $http.get('/api/projects/publication/' + projId)
-        .then(function(resp){
-            $scope.browser.publication = resp.data.publication;
-      });
+      projId = $scope.browser.listing.path.split('/')[1];
+      if (projId){
+        $http.get('/api/projects/publication/' + projId)
+          .then(function(resp){
+              $scope.browser.publication = resp.data;
+              $scope.project = resp.data.project;
+        });
+      }
   }
   if ($scope.browser.listing.projectId){
     _.each($scope.browser.listing.eventsList, function(evt){
