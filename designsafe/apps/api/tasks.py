@@ -39,6 +39,10 @@ def reindex_agave(self, username, file_id, full_indexing=True,
                            pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
+    parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
+    agave_fm.indexer.index(system_id, parent_path, file_user,
+                           levels = 1)
+
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions, recursive):
@@ -771,12 +775,50 @@ def copy_publication_files_to_corral(self, project_id):
             base_obj.import_data(image.system, image.path)
         except HTTPError as err:
             logger.debug('No project image')
+    save_to_fedora.apply_async(args=[project_id])
 
 @shared_task(bind=True)
 def save_publication(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
     from designsafe.apps.api.projects.managers import publication as PublicationManager
     pub = Publication(project_id=project_id)
-    publication = PublicationManager.resrve_publication(pub.to_dict())
+    publication = PublicationManager.reserve_publication(pub.to_dict())
     pub.update(**publication)
-    copy_publication_files_to_corral.apply_async(args=(pub.projectId),queue="publication")
+    copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
+
+@shared_task(bind=True)
+def save_to_fedora(self, project_id):
+    import requests
+    import magic
+    _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
+    fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
+    res = requests.get(fedora_base)
+    if res.status_code == 404 or res.status_code == 410:
+        requests.put(fedora_base)
+    
+    fedora_project_base = ''.join([fedora_base, '/', project_id])
+    res = requests.get(fedora_project_base)
+    if res.status_code == 404 or res.status_code == 410:
+        requests.put(fedora_project_base)
+
+    headers = {'Content-Type': 'text/plain'}
+    #logger.debug('walking: %s', _root)
+    for root, dirs, files in os.walk(_root):
+        for name in files:
+            mime = magic.Magic(mime=True)
+            headers['Content-Type'] = mime.from_file(os.path.join(root, name))
+            #files
+            full_path = os.path.join(root, name)
+            _path = full_path.replace(_root, '', 1)
+            url = ''.join([fedora_project_base, _path])
+            #logger.debug('uploading: %s', url)
+            with open(os.path.join(root, name), 'rb') as _file:
+                requests.put(url, data=_file, headers=headers)
+
+        for name in dirs:
+            #dirs
+            full_path = os.path.join(root, name)
+            _path = full_path.replace(_root, '', 1)
+            url = ''.join([fedora_project_base, _path])
+            #logger.debug('creating: %s', _path)
+            requests.put(url)

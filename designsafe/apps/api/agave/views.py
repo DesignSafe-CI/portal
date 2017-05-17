@@ -613,7 +613,7 @@ class FilePermissionsView(View):
                     Notification.OPERATION: 'data_depot_share',
                     Notification.STATUS: Notification.SUCCESS,
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: 'Permissions for a file/folder has been updated.',
+                    Notification.MESSAGE: 'Permissions for a file/folder is being updated.',
                     Notification.EXTRA: {'system': system_id,
                                          'path': file_path,
                                          'username': username,
@@ -631,7 +631,7 @@ class FilePermissionsView(View):
                     Notification.EXTRA: {'message': err.response.text}
                 }
                 Notification.objects.create(**event_data)
-                return HttpResponseBadRequest(e.response.text)
+                return HttpResponseBadRequest(err.response.text)
             return JsonResponse(pem, encoder=AgaveJSONEncoder, safe=False)
 
         return HttpResponseBadRequest("Unsupported operation")
