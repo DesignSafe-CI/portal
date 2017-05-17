@@ -508,6 +508,8 @@
             project: project
           };
 
+          console.log($scope.data.project)
+
           $scope.initForm = function () {
             $scope.form = {
               curUsers: [],
