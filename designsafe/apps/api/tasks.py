@@ -775,7 +775,7 @@ def copy_publication_files_to_corral(self, project_id):
             base_obj.import_data(image.system, image.path)
         except HTTPError as err:
             logger.debug('No project image')
-    save_to_fedora.apply_async(args=(project_id))
+    save_to_fedora.apply_async(args=[project_id])
 
 @shared_task(bind=True)
 def save_publication(self, project_id):
@@ -784,7 +784,7 @@ def save_publication(self, project_id):
     pub = Publication(project_id=project_id)
     publication = PublicationManager.reserve_publication(pub.to_dict())
     pub.update(**publication)
-    copy_publication_files_to_corral.apply_async(args=(pub.projectId),queue="files")
+    copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
 
 @shared_task(bind=True)
 def save_to_fedora(self, project_id):

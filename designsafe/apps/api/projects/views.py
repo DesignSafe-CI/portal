@@ -50,7 +50,7 @@ class PublicationView(SecureMixin, BaseApiView):
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
         pub = PublicationManager().save_publication(data['publication'])
-        tasks.save_publication.apply_async(args=(pub.projectId),queue='files')
+        tasks.save_publication.apply_async(args=[pub.projectId],queue='files')
         return JsonResponse({'status': 200,
                              'message': 'Your publication has been '
                                         'schedule for publication'},
@@ -207,7 +207,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                         [collab_user.email],
                         html_message=body)
                     #logger.exception(err)
-        tasks.set_project_id.apply_async(args=(p.uuid),queue="api")    
+        tasks.set_project_id.apply_async(args=[p.uuid],queue="api")    
         return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
 
 class ProjectMetaLookupMixin(object):
