@@ -41,7 +41,7 @@ class PublicationView(SecureMixin, BaseApiView):
         pub = Publication(project_id=project_id)
         return JsonResponse(pub.to_dict())
 
-    def post(self, request):
+    def post(self, request, **kwargs):
         if request.is_ajax():
             data = json.loads(request.body)
 
@@ -50,7 +50,7 @@ class PublicationView(SecureMixin, BaseApiView):
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
         pub = PublicationManager().save_publication(data['publication'])
-        tasks.save_publication.apply_async(args=(pub.projectId),queue='publication')
+        tasks.save_publication.apply_async(args=(pub.projectId),queue='files')
         return JsonResponse({'status': 200,
                              'message': 'Your publication has been '
                                         'schedule for publication'},
