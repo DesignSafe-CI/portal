@@ -397,7 +397,7 @@ class PublicObject(object):
         obj_dict = self._doc.to_dict()
         obj_dict['system'] = self.system
         obj_dict['path'] = self.path
-        obj_dict['children'] = [doc.to_dict() for doc in self.children]
+        obj_dict['children'] = [doc.to_dict() if hasattr(doc, 'to_dict') else doc for doc in self.children]
         obj_dict['metadata'] = self.metadata()
         obj_dict['permissions'] = 'READ'
         obj_dict['trail'] = self.trail()
@@ -444,7 +444,7 @@ class PublicElasticFileManager(BaseFileManager):
                      'system': 'designsafe.storage.published',
                      'systemId': 'designsafe.storage.published',
                      'type': 'dir'} for pub in publications]
-        listing.children = children + listing.children
+        listing.children = list(children) + (listing.children)
         return listing
 
     def search(self, system, query_string, 
