@@ -39,6 +39,10 @@ def reindex_agave(self, username, file_id, full_indexing=True,
                            pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
+    parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
+    agave_fm.indexer.index(system_id, parent_path, file_user,
+                           levels = 1)
+
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions, recursive):
@@ -771,18 +775,19 @@ def copy_publication_files_to_corral(self, project_id):
             base_obj.import_data(image.system, image.path)
         except HTTPError as err:
             logger.debug('No project image')
+    save_to_fedora.apply_async(args=(project_id))
 
 @shared_task(bind=True)
 def save_publication(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
     from designsafe.apps.api.projects.managers import publication as PublicationManager
     pub = Publication(project_id=project_id)
-    publication = PublicationManager.resrve_publication(pub.to_dict())
+    publication = PublicationManager.reserve_publication(pub.to_dict())
     pub.update(**publication)
-    copy_publication_files_to_corral.apply_async(args=(pub.projectId),queue="publication")
+    copy_publication_files_to_corral.apply_async(args=(pub.projectId),queue="files")
 
 @shared_task(bind=True)
-def save_to_fedore(self, project_id):
+def save_to_fedora(self, project_id):
     import requests
     import magic
     _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
