@@ -71,14 +71,17 @@ def _reserve_doi(xml_obj):
     else:
         raise Exception(res['error'])
 
-def _update_doi(xml_obj, doi, status='reserved'):
-    xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
-    metadata = {'_status': status, 'datacite': xml_str}
+def _update_doi(doi, xml_obj=None, status='reserved'):
+    if xml_obj is not None:
+        xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
+        metadata = {'_status': status, 'datacite': xml_str}
+    else:
+        metadata = {'_status': status}
+
     response = requests.post('{}/id/{}'.format(BASE_URI, doi),
                              data=format_req(metadata),
                              auth=CREDS,
                              headers={'Content-Type': 'text/plain'})
-    logger.debug('%s', doi)
     res = parse_response(response.text)
     if 'success' in res:
         return res['success']
@@ -116,11 +119,11 @@ def _project_required_xml(publication):
     publication_year.text = str(now.year)
 
     resource_type = ET.SubElement(resource, 'resourceType')
-    resource_type.text = proj['projectType'].title()
-    resource_type.attrib['resourceTypeGeneral'] = 'Other'
+    resource_type.text = "Project/{}".format(proj['projectType'].title())
+    resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
     descriptions = ET.SubElement(resource, 'descriptions')
     desc = ET.SubElement(descriptions, 'description')
-    desc.attrib['descriptionType'] = 'Description'
+    desc.attrib['descriptionType'] = 'Abstract'
     desc.text = proj['description']
     return xml_obj
 
@@ -160,11 +163,11 @@ def _experiment_required_xml(users, experiment, created):
     publication_year.text = str(now.year)
 
     resource_type = ET.SubElement(resource, 'resourceType')
-    resource_type.text = exp['experimentType'].title()
-    resource_type.attrib['resourceTypeGeneral'] = 'Other'
+    resource_type.text = "Experiment/{}".format(exp['experimentType'].title())
+    resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
     descriptions = ET.SubElement(resource, 'descriptions')
     desc = ET.SubElement(descriptions, 'description')
-    desc.attrib['descriptionType'] = 'Description'
+    desc.attrib['descriptionType'] = 'Abstract'
     desc.text = exp['description']
     return xml_obj
 
@@ -205,7 +208,7 @@ def _analysis_required_xml(users, analysis, created):
     resource_type.attrib['resourceTypeGeneral'] = 'Other'
     descriptions = ET.SubElement(resource, 'descriptions')
     desc = ET.SubElement(descriptions, 'description')
-    desc.attrib['descriptionType'] = 'Description'
+    desc.attrib['descriptionType'] = 'Abstract'
     desc.text = anl['description']
     return xml_obj
 
@@ -221,7 +224,7 @@ def analysis_reserve_xml(publication, analysis, created):
     identifier = xml_obj.find('identifier')
     identifier.text = doi
     resource = xml_obj
-    _update_doi(xml_obj, doi)
+    _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
 def experiment_reserve_xml(publication, experiment, created):
@@ -267,7 +270,7 @@ def experiment_reserve_xml(publication, experiment, created):
         slt_subj = ET.SubElement(subjects, 'subject')
         slt_subj.text = slt['value']['title']
 
-    _update_doi(xml_obj, doi)
+    _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
 def project_reserve_xml(publication):
@@ -322,7 +325,7 @@ def project_reserve_xml(publication):
     rights.attrib['rightsURI'] = 'http://opendatacommons.org/licenses/by/1-0/'
     rights.text = 'ODC-BY 1.0'
     logger.debug(pretty_print(xml_obj))
-    _update_doi(xml_obj, doi)
+    _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
 def add_related(xml_obj, dois):
@@ -332,9 +335,10 @@ def add_related(xml_obj, dois):
     for _doi in dois:
         related = ET.SubElement(related_ids, 'relatedIdentifier')
         related.attrib['relatedIdentifierType'] = 'DOI'
+        related.attrib['relationType'] = 'IsPartOf'
         related.text = _doi
 
-    _update_doi(xml_obj, doi)
+    _update_doi(doi, xml_obj)
     return (doi, xml_obj)
 
 def publish_project(doi, xml_obj):
@@ -353,10 +357,11 @@ def publish_project(doi, xml_obj):
         logger.exception(res['error'])
         raise Exception(res['error'])
 
-def resrve_publication(publication):
+def reserve_publication(publication):
     proj_doi, proj_ark, proj_xml = project_reserve_xml(publication)
     exps_dois = []
     anl_dois = []
+    xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
     for exp in publication['experimentsList']:
         exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
@@ -364,6 +369,7 @@ def resrve_publication(publication):
         add_related(exp_xml, [proj_doi])
         exps_dois.append(exp_doi)
         exp['doi'] = exp_doi
+        xmls[exp_doi] = exp_xml
 
     for anl in publication['analysisList']:
         anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
@@ -371,6 +377,10 @@ def resrve_publication(publication):
         add_related(anl_xml, [proj_doi])
         anl_dois.append(anl_doi)
         anl['doi'] = anl_doi
+        xmls[anl_doi] = anl_xml
 
     add_related(proj_xml, exps_dois + anl_dois)
+    for _doi in [proj_doi] + exps_dois + anl_dois:
+        logger.debug(_doi)
+        _update_doi(_doi, xmls[_doi], status='public')
     return publication
