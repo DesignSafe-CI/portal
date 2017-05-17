@@ -507,30 +507,40 @@
             busy: true,
             project: project
           };
-          $scope.form = {
-            curUsers: [],
-            addUsers: [{}],
-            curCoPis: [],
-            addCoPis: [{}],
-            authors:{}
-          };
-          var loads = [
-            //projectResource.get({params: angular.copy(options)}),
-            //service.get(angular.copy(options)),
-            collabResource.get({params: {uuid: project.uuid}}),
-            ProjectEntitiesService.listEntities({uuid: project.uuid,
-                                name: 'designsafe.project.experiment'})
-          ];
-          $q.all(loads).then(function (results) {
-            $scope.data.busy = false;
-            $scope.data.experiments = results[1];
 
-            _.each($scope.data.experiments, function(exp){
-              $scope.form.authors[exp.uuid] = {};
-              _.each(exp.value.authors, function(auth){
-                  $scope.form.authors[exp.uuid][auth] = true;
+          $scope.initForm = function () {
+            $scope.form = {
+              curUsers: [],
+              addUsers: [{}],
+              curCoPis: [],
+              addCoPis: [{}],
+              authors:{}
+            };
+          };
+          $scope.initForm();
+
+
+
+          $scope.loadData = function () {
+            var loads = [
+              //projectResource.get({params: angular.copy(options)}),
+              //service.get(angular.copy(options)),
+              collabResource.get({params: {uuid: project.uuid}}),
+              ProjectEntitiesService.listEntities({uuid: project.uuid,
+                                  name: 'designsafe.project.experiment'})
+            ];
+            $q.all(loads).then(function (results) {
+              console.log(results);
+              $scope.data.busy = false;
+              $scope.data.experiments = results[1];
+
+              _.each($scope.data.experiments, function(exp){
+                $scope.form.authors[exp.uuid] = {};
+                _.each(exp.value.authors, function(auth){
+                    $scope.form.authors[exp.uuid][auth] = true;
               });
             });
+
 
             $scope.form.curUsers = _.map(results[0].data.teamMembers, function (collab) {
               return {
@@ -544,10 +554,13 @@
                 remove: false
               };
             });
-          }, function (error) {
-            $scope.data.busy = false;
-            $scope.data.error = error.data.message || error.data;
-          });
+            }, function (error) {
+              $scope.data.busy = false;
+              $scope.data.error = error.data.message || error.data;
+            });
+          };
+
+          $scope.loadData();
 
           $scope.canManage = function (user) {
             var noManage = $scope.data.project.value.pi === user ||
@@ -576,20 +589,23 @@
             return UserService.search({q: q});
           };
 
-          $scope.cancel = function () {
-            $uibModalInstance.dismiss();
-          };
 
           $scope.authorship = [];
 
           $scope.toggleUserToExp = function(exp, username){
             var add = $scope.form.authors[exp.uuid][username];
+            $scope.authorship.push(exp);
             if (add){
-                $scope.authorship.push({exp: exp, username: username});
+                exp.value.authors.push(username);
             } else {
-                $scope.authorship = _.reject($scope.authorship, function(obj){
-                                          return obj.username === username; });
+                // $scope.authorship = _.reject($scope.authorship, function(obj){
+                                          // return obj.username === username; });
+                exp.value.authors = _.filter(exp.value.authors, function (d) {
+                  return d !== username;
+                });
             }
+
+            console.log(exp)
           };
 
           $scope.saveCollaborators = function ($event) {
@@ -637,14 +653,14 @@
 
             var expsToUpdate = [];
             _.each($scope.authorship, function(obj){
-              expsToUpdate.push(obj.exp.uuid);
-              var exp = $scope.data.project.getRelatedByUuid(obj.exp.uuid);
-              exp.value.authors.push(obj.username);
+              expsToUpdate.push(obj);
             });
 
-            expsToUpdate = _.uniq(expsToUpdate);
-            var updateExps = _.map(expsToUpdate, function(uuid){
-              var _exp = $scope.data.project.getRelatedByUuid(uuid);
+            // TODO This should probably be a stack or something...
+            // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
+            var updateExps = _.map(expsToUpdate, function(_exp){
+              // var _exp = $scope.data.project.getRelatedByUuid(uuid);
+              console.log(_exp)
               return ProjectEntitiesService.update({data: {
                   uuid: _exp.uuid,
                   entity: _exp
@@ -660,14 +676,28 @@
                 //)
             var tasks = removeActions.concat(addActions);
             tasks = tasks.concat(updateExps);
+            console.log(tasks)
             $q.all(tasks).then(
               function (results) {
-                $uibModalInstance.close(results);
+                console.log(results)
+                // $uibModalInstance.close(results);
+                // $scope.data.busy = true;
+                $scope.initForm();
+                $scope.loadData();
               },
               function (error) {
-                $uibModalInstance.reject(error.data);
+                // $uibModalInstance.reject(error.data);
+                $scope.data.busy = true;
+                console.log(error)
+                $scope.initForm();
+                $scope.loadData();
               }
             );
+          };
+
+          $scope.cancel = function () {
+            console.log($scope.data.project)
+            $uibModalInstance.close($scope.data.project);
           };
         }]
       });

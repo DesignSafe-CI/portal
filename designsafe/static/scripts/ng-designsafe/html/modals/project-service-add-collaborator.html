@@ -74,6 +74,7 @@
                 <div style="width:7%; text-align:center; display:inline-block;">
                 <button class="btn btn-sm btn-default"
                         data-toggle="collapse"
+                        ng-disabled="! canManage(cur.user.username)"
                         data-target="#{{cur.user.username}}-experiments">
                         <i class="fa fa-caret-square-o-down"></i>
                   </button>
@@ -124,7 +125,7 @@
         <button ng-disabled="data.busy || data.error" class="btn btn-primary" type="button" ng-click="saveCollaborators($event)">
             Save Collaborator Settings
         </button>
-        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
     </div>
 </div>
 <script type="text/ng-template" id="local/share_user_search_result.html">

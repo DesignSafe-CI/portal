@@ -153,9 +153,16 @@
         $event.preventDefault();
       }
       ProjectService.manageCollaborators($scope.data.project).then(function (res) {
+<<<<<<< HEAD
         // $scope.data.project.pi = res.data.pi;
         // $scope.data.project.coPis = res.data.coPis;
         // $scope.data.project.teamMembers = res.data.teamMembers;
+=======
+        console.log(res)
+        $scope.data.project.pi = res.data.pi;
+        $scope.data.project.coPis = res.data.coPis;
+        $scope.data.project.teamMembers = res.data.teamMembers;
+>>>>>>> fixes
       });
     };
 
