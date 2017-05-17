@@ -1,22 +1,22 @@
 <dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
 <!-- Published View -->
 <div class="project">
-    <div ng-if="browser.listing.project" class="project-detail">
-        <h2>{{ browser.listing.project.value.title }}</h2>
+    <div class="project-detail">
+        <h2>{{ project.value.title }}</h2>
         <div style="width:50%; display:inline-block;">
         <table class="table" style="margin-bottom:0;">
             <tbody>
             <tr>
               <th>ID</th>
-              <td>{{browser.listing.project.value.projectId}}</td>
+              <td>{{project.value.projectId}}</td>
             </tr>
             <tr>
                 <th>PI</th>
-                <td><ds-user username="browser.listing.project.value.pi" format="name-username">{{ browser.listing.project.value.pi }}</ds-user></td>
+                <td><ds-user username="project.value.pi" format="name-username">{{ project.value.pi }}</ds-user></td>
             </tr>
             <tr>
               <th>Created</th>
-              <td>{{browser.listing.project.created}}</td>
+              <td>{{project.created}}</td>
             </tr>
             </tbody>
         </table>
@@ -38,10 +38,10 @@
         <div class="project-desc" style="padding:5px; margin:5px 0px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc; max-height;115px;">
           <p style="display:inline-block; width:115px;"><strong>Description</strong></p>
           <p style="display:inline-block; max-height:40px; overflow:hidden;">
-          {{browser.listing.project.value.description}}
+          {{project.value.description}}
           </p>
           <button class="btn btn-link btn-sm"
-                  ng-click="showText(browser.listing.project.value.description)">
+                  ng-click="showText(project.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
         </div>
     </div>
