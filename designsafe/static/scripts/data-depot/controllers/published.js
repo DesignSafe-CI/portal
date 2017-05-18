@@ -190,10 +190,25 @@
       return res;
     };
 
+    $scope.getUserDets = function(username){
+      var users;
+      if ($scope.browser.listing.projectId){
+        users = $scope.browser.listing.users;
+      } else {
+        useres = $scope.browser.publication.users;
+      }
+      var user = _.find(users, function(usr){
+        return usr.username === username;
+      });
+      if (user){
+        return user.last_name + ', ' + user.first_name + ' <' + user.email + '>';
+      }
+    };
+
     $scope.viewCollabs = function(){
       $uibModal.open({
         templateUrl: '/static/scripts/data-depot/templates/view-collabs.html',
-        controller: function($uibModalInstance, browser){
+        controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
             var $ctrl = this;
             $ctrl.data = {};
             if (browser.listing.project){
@@ -204,18 +219,19 @@
             $ctrl.close = function(){
                 $uibModalInstance.dismiss('close');
             };
-        },
+        }],
         controllerAs: '$ctrl',
         resolve: {
             browser: $scope.browser
-        }
+        }, 
+        scope: $scope
       });
     };
 
     $scope.viewProject = function(){
       $uibModal.open({
         templateUrl: '/static/scripts/data-depot/templates/view-project.html',
-        controller: function($uibModalInstance, browser){
+        controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
             var $ctrl = this;
             $ctrl.data = {};
             if (browser.listing.project){
@@ -226,18 +242,19 @@
             $ctrl.close = function(){
                 $uibModalInstance.dismiss('close');
             };
-        },
+        }],
         controllerAs: '$ctrl',
         resolve: {
             browser: $scope.browser
-        }
+        },
+        size: 'lg'
       });
     };
     
     $scope.viewExperiments = function(){
       $uibModal.open({
         templateUrl: '/static/scripts/data-depot/templates/view-experiments.html',
-        controller: function($uibModalInstance, browser){
+        controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
             var $ctrl = this;
             $ctrl.data = {};
             if (browser.listing.project){
@@ -248,7 +265,7 @@
             $ctrl.close = function(){
                 $uibModalInstance.dismiss('close');
             };
-        },
+        }],
         controllerAs: '$ctrl',
         resolve: {
             browser: $scope.browser
@@ -256,6 +273,63 @@
         scope: $scope,
         size: 'lg'
       });
+    };
+
+    $scope.viewRelations = function(uuid){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-relations.html',
+        controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
+            var $ctrl = this;
+            $ctrl.data = {};
+            if (browser.listing.project){
+                $ctrl.data.publication = browser.listing;
+            } else {
+                $ctrl.data.publication = browser.publication;
+            }
+            $ctrl.data.selectedUuid = uuid;
+            $ctrl.isSelected = function(uuid){
+                if (uuid ===$ctrl.data.selectedUuid){
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            $ctrl.close = function(){
+                $uibModalInstance.dismiss('close');
+            };
+        }],
+        controllerAs: '$ctrl',
+        resolve: {
+            browser: $scope.browser
+        },
+        scope: $scope,
+        size: 'lg'
+      });
+    };
+
+    $scope.showText = function(text){
+        $uibModal.open({
+            template: '<div class="modal-header">' +
+                        '<h3>Description</h3>' +
+                      '</div>' +
+                      '<div class="modal-body">' +
+                        '<div style="border: 1px solid black;"' +
+                                   '"padding:5px;">' +
+                          '{{text}}' +
+                        '</div>' +
+                      '</div>' +
+                      '<div class="modal-footer">' +
+                        '<button class="btn btn-default" ng-click="close()">' +
+                          'Close' +
+                        '</button>' +
+                      '</div>',
+            controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
+                $scope.text = text;
+                $scope.close = function(){
+                    $uibModalInstance.dismiss('Close');
+                };
+            }]
+        });
     };
   }]);
 })(window, angular);
