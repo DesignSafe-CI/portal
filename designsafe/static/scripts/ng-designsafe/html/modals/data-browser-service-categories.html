@@ -54,6 +54,13 @@
                     <span style="font-weight:bold;"
                           ng-if="isFileSubTagValid(file, entity)">{{entity.getFileSubTag(file).desc}}</span>
                   </td>
+                  <td>
+                    <button class="btn btn-sm btn-link"
+                            title="Delete category from file"
+                            ng-click="unrelateFile(file, entity)">
+                        <i class="fa fa-times"></i>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
