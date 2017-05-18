@@ -36,9 +36,9 @@
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="viewExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments</button>
         </div>
             <div style="width:350px; height:100px; overflow:hidden;">
-                <img width="350" ng-src="{{ previewHref }}"
-                     ng-if="previewHref && state.showPreviewListing"/>
-                <div ng-if="!previewHref && state.showPreviewListing">
+                <img width="350" ng-src="{{ imageHref }}"
+                     ng-if="imageHref && state.showPreviewListing"/>
+                <div ng-if="!imageHref && state.showPreviewListing">
                   <i class="fa fa-spin fa-spinner"></i> Loading ...
                 </div>
             </div>

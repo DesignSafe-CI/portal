@@ -28,6 +28,14 @@
         });
       }
   }
+      FileListing.get({'system': 'designsafe.storage.published',
+                       'name': 'projectimage.jpg',
+                       'path': '/' + projId + '/projectimage.jpg'}).then(function(list){
+                        list.preview().then(function(data){
+                            $scope.imageHref = data.postit;
+                        });
+                      });
+
   if ($scope.browser.listing.projectId){
     _.each($scope.browser.listing.eventsList, function(evt){
         evt.files = _.map(evt.fileObjs, function(f){
