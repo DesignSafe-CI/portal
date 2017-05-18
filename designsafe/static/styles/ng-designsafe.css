@@ -628,3 +628,17 @@ span.tag-title {
     border:1px solid black;
     white-space:normal;
 }
+
+.modal-body .modal-row {
+    margin-bottom:10px;
+    overflow:auto;
+    text-align:center;
+}
+
+.modal-body .modal-row .det-label {
+    text-align:right;
+}
+
+.modal-body .modal-row .det-val {
+    text-align:left;
+}
