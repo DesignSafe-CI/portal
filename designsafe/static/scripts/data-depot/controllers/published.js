@@ -339,5 +339,46 @@
             }]
         });
     };
-  }]);
+
+    $scope.showCitation = function(ent){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-citation.html',
+        controller: ['$uibModal', 'browser', function($uibModalInstance, browser){
+          var $ctrl = this;
+          $ctrl.data = {};
+          $ctrl.data.ent = ent;
+          $ctrl.ui.style = 'BibTex';
+          $ctrl.ui.styles = ['BibTeX', 'Endnote'];
+          var authors = '';
+          if (browser.listing.project){
+              $ctrl.data.publication = browser.listing;
+          } else {
+              $ctrl.data.publication = browser.publication;
+          }
+          $ctrl.getCitation = function(){
+            _.each($ctrl.data.publication.users, function(usr){
+            });
+            if ($ctrl.data.style === 'BibTex'){
+              $ctrl.data.citation = 
+                '@misc{dataset, \n' +
+                ' author = {' + $scope.model.metadata.Creator.value + '} \n' +
+                ' title = {' + $scope.model.metadata.Title.value + '} \n' +
+                ' publisher = {' + $scope.model.metadata.Publisher.value + '} \n' +
+                ' year = {' + $scope.model.metadata["Publication Year"].value + '} \n' +
+                ' note = {' + $scope.model.metadata.Description.value + '} \n' +
+                '}';
+        } else if ($ctrl.data.style === 'Endnote'){
+        }
+      };
+    }],
+    size: 'md',
+    controllerAs: '$ctrl',
+    resolve: {
+        browser: $scope.browser
+    }, 
+    scope: $scope
+    });
+};
+
+}]);
 })(window, angular);
