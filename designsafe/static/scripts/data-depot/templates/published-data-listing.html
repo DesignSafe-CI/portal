@@ -26,6 +26,13 @@
               <th>DOI</th>
               <td>{{project.doi}}</td>
             </tr>
+            <tr>
+              <th><button class="btn btn-info btn-sm"
+                          ng-click="showCitation(project)">Citation
+                  </button>
+              <th>
+              <td></td>
+            </tr>
             </tbody>
         </table>
         </div>
@@ -95,6 +102,17 @@
         <div style="padding:5px;">
           <span style="font-weight:bold;"> DOI: </span>
           <span>{{experiment.doi}}</span>
+        </div>
+        <div style="padding:5px;">
+          <span style="font-weight:bold;">Authors : </span>
+          <div ng-repeat="user in filterUsers(experiment.value.authors, browser.listing.users)">
+            <span>{{user.last_name}}, {{user.first_name}} <{{user.email}}></span>
+          </div>
+        </div>
+        <div style="padding:5px;"><button class="btn btn-info btn-sm"
+                          ng-click="showCitation(experiment)">Citation
+                  </button>
+        </div>
         </div>
         <div style="padding:5px;" ng-if="getRelated('reportsList', experiment.uuid).length">
           <a href="#details-{{getRelated('reportsList', experiment.uuid)[0].uuid}}"
@@ -260,6 +278,10 @@
               <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
               <p style="overflow:hidden; display:block; height:20px;">
               <span style="font-weight:bold;">DOI: </span>{{analysis.doi}}
+              <div style="padding:5px;"><button class="btn btn-info btn-sm"
+                          ng-click="showCitation(analysis)">Citation
+                  </button>
+              </div>
               <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
                   <button class="btn btn-link btn-sm"
                           ng-click="showText(analysis.value.description)">
