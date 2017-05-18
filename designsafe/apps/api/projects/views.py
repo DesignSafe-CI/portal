@@ -4,6 +4,9 @@ from django.http.response import HttpResponseForbidden
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from designsafe.apps.api.decorators import agave_jwt_login
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
@@ -36,11 +39,18 @@ def template_project_storage_system(project):
         system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
-class PublicationView(SecureMixin, BaseApiView):
+class PublicationView(BaseApiView):
     def get(self, request, project_id):
         pub = Publication(project_id=project_id)
-        return JsonResponse(pub.to_dict())
+        if pub is not None:
+            return JsonResponse(pub.to_dict())
+        else:
+            return JsonResponse({'status': 404,
+                                 'message': 'Not found'},
+                                 status=404)
 
+    @method_decorator(agave_jwt_login)
+    @method_decorator(login_required)
     def post(self, request, **kwargs):
         if request.is_ajax():
             data = json.loads(request.body)
