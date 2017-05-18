@@ -219,7 +219,7 @@
     
     $scope.filterUsers = function(usernames, users){
         return _.filter(users, function(usr){
-            return _.contains(usernames, usr);
+            return _.contains(usernames, usr.username);
         });
       };
 
@@ -368,7 +368,7 @@
               $ctrl.data.publication = browser.publication;
           }
           _.each($ctrl.data.publication.users, function(usr, index, list){
-            var str = $scope.getUserDets(usr, true);
+            var str = $scope.getUserDets(usr.username, true);
             if (index < list.length - 1){
               authors +=  str + ' and ';
             } else {

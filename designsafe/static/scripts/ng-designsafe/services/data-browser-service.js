@@ -1582,8 +1582,11 @@
                                             ent.update(e);
                                             return e;
                                            }).then(function(){
+               $scope.data.newFileProjectTags = [];
+               $scope.data.projectTagsToUnrelate = [];
                                                _setFileEntities();
                                                _setEntities();
+               $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
                                                $scope.ui.busy = false;
                                            });
           };

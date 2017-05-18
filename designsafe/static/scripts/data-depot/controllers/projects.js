@@ -711,7 +711,7 @@
 
       filterUsers: function(usernames, users){
         return _.filter(users, function(usr){
-            return _.contains(usernames, usr);
+            return _.contains(usernames, usr.username);
         });
       },
 
