@@ -82,9 +82,9 @@ class Publication(object):
             if res.hits.total:
                 self._wrap = res[0]
             else:
-                self._wrap = None
+                self._wrap = PublicationIndexed(projectId=project_id)
         else:
-            raise ValueError('Cannot initialize Publication')
+            self._wrap = PublicationIndexed()
 
     @classmethod
     def listing(cls):
