@@ -154,7 +154,6 @@
       }
       ProjectService.manageCollaborators($scope.data.project).then(function (res) {
 
-        console.log(res)
         // $scope.data.project.pi = res.data.pi;
         // $scope.data.project.coPis = res.data.coPis;
         // $scope.data.project.teamMembers = res.data.teamMembers;
@@ -544,7 +543,10 @@
         $scope.data.rootPaths = allFilePaths;
         setFilesDetails(allFilePaths)
         .then(function(){
-            return setUserDetails($scope.browser.project.value.teamMembers);
+            users = [$scope.browser.project.value.pi]
+                      .concat($scope.browser.project.value.coPis)
+                      .concat($scope.browser.project.value.teamMembers);
+            return setUserDetails(users);
         }).then(function(){
         });
       }
