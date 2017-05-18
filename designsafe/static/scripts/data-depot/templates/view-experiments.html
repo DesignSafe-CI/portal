@@ -62,7 +62,7 @@
                   <span class="label tag-green">Sensor</span>
                   <span class="tag-title">{{sensorList.value.title}}</span>
                   </div>
-                  <ul>
+                  <ul class="event-ul">
                     <li ng-repeat="event in getRelated('eventsList', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el">Event</span>
@@ -100,7 +100,7 @@
 </div>
 <div class="modal-footer">
   <button class="btn btn-info"
-          data-ng-lick="$ctrl.close()">
+          data-ng-click="$ctrl.close()">
     Close
   </button>
 </div>
