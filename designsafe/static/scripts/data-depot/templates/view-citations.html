@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <h3>Citation</h3>
+</div>
+<div class="modal-body">
+  <p>
+    {{$ctrl.ui.ieeeCitation}}
+  </p>
+  <select class="form-control"
+          ng-options="style for style in $ctrl.ui.styles"
+          ng-model="$ctrl.ui.style"
+          ng-change="$ctrl.getCitation()">
+  </select>
+  <div class="citation-value">
+    <pre>
+    {{$ctrl.data.citation}}
+    </pre>
+  </div>
+  <button class="btn btn-default"
+          ng-click="$ctrl.downloadCitation()">Download</button>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-info"
+          ng-click="$ctrl.close()">
+          Close
+  </button>
+</div>
