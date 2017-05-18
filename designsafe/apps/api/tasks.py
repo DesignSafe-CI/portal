@@ -728,7 +728,7 @@ def set_project_id(self, project_uuid):
     service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
     logger.debug('updated id record=%s', id_meta['uuid'])
 
-@shared_task(bind=True)
+@shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication
     from designsafe.apps.api.agave.models.files import BaseFileResource
@@ -765,8 +765,10 @@ def copy_publication_files_to_corral(self, project_id):
                          ensure_path(service,
                                      settings.PUBLISHED_SYSTEM,
                                      os.path.join(base_path, parent_path))
-
-        base_obj.import_data(file_obj.system, file_obj.path)
+        try:
+            base_obj.import_data(file_obj.system, file_obj.path)
+        except Exception as err:
+            self.retry(exc=err)
         try: 
             image = BaseFileResource.\
                       listing(system=proj_system,
