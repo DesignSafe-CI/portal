@@ -650,7 +650,8 @@
           <span>Authors</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
+          <div ng-repeat="user in publicationCtrl.filterUsers(exp.value.authors, 
+                          browser.publication.users) | orderBy: ['_ui.order', 'last_name']" >
           <span>
                 {{user.last_name}}, {{user.first_name}}
                 </span>
