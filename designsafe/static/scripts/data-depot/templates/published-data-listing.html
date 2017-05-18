@@ -12,11 +12,19 @@
             </tr>
             <tr>
                 <th>PI</th>
-                <td><ds-user username="project.value.pi" format="name-username">{{ project.value.pi }}</ds-user></td>
+                <td>
+                <span>{{getUserDets(project.value.pi)}}</span>
+                <!--
+                <ds-user username="project.value.pi" format="name-username">{{ project.value.pi }}</ds-user></td>
+                -->
             </tr>
             <tr>
               <th>Created</th>
               <td>{{project.created}}</td>
+            </tr>
+            <tr>
+              <th>DOI</th>
+              <td>{{project.doi}}</td>
             </tr>
             </tbody>
         </table>
@@ -68,7 +76,7 @@
       <p style="overflow:hidden; display:block; height:40px;">
           <span style="font-weight:bold;"> Description: </span>{{experiment.value.description}}</p>
           <button class="btn btn-link btn-sm"
-                  ng-click="publicationCtrl.showText(experiment.value.description)">
+                  ng-click="showText(experiment.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
       </div>
       </div>
@@ -83,6 +91,10 @@
         <div style="padding:5px;">
           <span style="font-weight:bold;"> Equipment Type: </span>
           <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
+        </div>
+        <div style="padding:5px;">
+          <span style="font-weight:bold;"> DOI: </span>
+          <span>{{experiment.doi}}</span>
         </div>
         <div style="padding:5px;" ng-if="getRelated('reportsList', experiment.uuid).length">
           <a href="#details-{{getRelated('reportsList', experiment.uuid)[0].uuid}}"
@@ -128,17 +140,17 @@
       <div style="border-bottom:1px solid lightgrey;">
       <!--
       <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">{{event.value.title}}</a>
-      --><a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">
+      --><a class="ds-text-red" ng-click="viewRelations()" href="#">
       Relations
       </a>
       </div>
       <div>
-      <a class="ds-text-blue" href="" ng-click="openPreviewTree()($event, event.value.modelConfigs[0])">
+      <a class="ds-text-blue" href="" ng-click="viewRelations(getRelated('modelConfigs', [experiment.uuid])[0].uuid)">
         {{getRelated('modelConfigs', [experiment.uuid])[0].value.title}}
       </a>
       </div>
       <div>
-      <a class="ds-text-green" href="" ng-click="openPreviewTree()($event, event.value.sensorLists[0])">
+      <a class="ds-text-green" href="" ng-click="viewRelations(getRelated('sensorLists', [experiment.uuid, getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid)">
         {{getRelated('sensorLists', [experiment.uuid, 
                 getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].value.title}}
       </a>
@@ -247,9 +259,10 @@
               <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
               <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
               <p style="overflow:hidden; display:block; height:20px;">
+              <span style="font-weight:bold;">DOI: </span>{{analysis.doi}}
               <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
                   <button class="btn btn-link btn-sm"
-                          ng-click="publicationCtrl.showText(analysis.value.description)">
+                          ng-click="showText(analysis.value.description)">
                     <i class="fa fa-external-link"></i> Show</button>
               </div>
             </div>
@@ -295,7 +308,7 @@
               <p style="overflow:hidden; display:block; height:20px;">
               <span style="font-weight:bold;">Description: </span>{{report.value.description}}</p>
                   <button class="btn btn-link btn-sm"
-                          ng-click="publicationCtrl.showText(analysis.value.description)">
+                          ng-click="showText(analysis.value.description)">
                     <i class="fa fa-external-link"></i> Show</button>
               </div>
             </div>
