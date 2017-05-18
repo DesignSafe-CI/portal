@@ -1571,6 +1571,23 @@
             }
           };
 
+          $scope.unrelateFile = function(file, entity){
+            entity.associationIds = _.difference(entity.associationIds, [file.uuid()]);
+            entity.value.files = _.difference(entity.value.files, [file.uuid()]);
+            $scope.ui.busy = true;
+            ProjectEntitiesService.update({data: {uuid: entity.uuid,
+                                                  entity: entity}
+                                          }).then(function(e){
+                                            var ent = currentState.project.getRelatedByUuid(e.uuid);
+                                            ent.update(e);
+                                            return e;
+                                           }).then(function(){
+                                               _setFileEntities();
+                                               _setEntities();
+                                               $scope.ui.busy = false;
+                                           });
+          };
+
           $scope.saveRelations = function(){
             var tasks = [];
             _.each($scope.data.projectTagsToUnrelate, function(entity){
