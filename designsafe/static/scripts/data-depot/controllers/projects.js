@@ -435,10 +435,14 @@
       }).then(function(){
         $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
           .then(function(resp){
-              $scope.browser.project.doi = resp.data.project.doi;
-              DataBrowserService.state().project.doi = resp.data.project.doi;
-              $scope.browser.project.publicationStatus = resp.data.status;
-              DataBrowserService.state().project.publicationStatus = resp.data.status;
+              if (resp.data.project && resp.data.project.doi){
+                  $scope.browser.project.doi = resp.data.project.doi;
+                  DataBrowserService.state().project.doi = resp.data.project.doi;
+              } 
+              if (resp.data.project && resp.data.project.status){
+                $scope.browser.project.publicationStatus = resp.data.status;
+                DataBrowserService.state().project.publicationStatus = resp.data.status;
+              }
               $scope.browser.busy = false;
               $scope.browser.busyListing = false;
           }, function(){
@@ -704,6 +708,12 @@
     };
 
     var _publicationCtrl = {
+
+      filterUsers: function(usernames, users){
+        return _.filter(users, function(usr){
+            return _.contains(usernames, usr);
+        });
+      },
 
       showText : function(text){
           $uibModal.open({
