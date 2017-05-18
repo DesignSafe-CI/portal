@@ -198,7 +198,7 @@
       return res;
     };
 
-    $scope.getUserDets = function(username){
+    $scope.getUserDets = function(username, noEmail){
       var users;
       if ($scope.browser.listing.projectId){
         users = $scope.browser.listing.users;
@@ -209,9 +209,19 @@
         return usr.username === username;
       });
       if (user){
-        return user.last_name + ', ' + user.first_name + ' <' + user.email + '>';
+        if (!noEmail){
+          return user.last_name + ', ' + user.first_name + ' <' + user.email + '>';
+        } else {
+          return user.last_name + ', ' + user.first_name;
+        }
       }
     };
+    
+    $scope.filterUsers = function(usernames, users){
+        return _.filter(users, function(usr){
+            return _.contains(usernames, usr);
+        });
+      };
 
     $scope.viewCollabs = function(){
       $uibModal.open({
@@ -342,34 +352,61 @@
 
     $scope.showCitation = function(ent){
       $uibModal.open({
-        templateUrl: '/static/scripts/data-depot/templates/view-citation.html',
-        controller: ['$uibModal', 'browser', function($uibModalInstance, browser){
+        templateUrl: '/static/scripts/data-depot/templates/view-citations.html',
+        controller: ['$sce', '$uibModalInstance', 'browser', function($sce, $uibModalInstance, browser){
           var $ctrl = this;
           $ctrl.data = {};
+          $ctrl.ui = {};
           $ctrl.data.ent = ent;
-          $ctrl.ui.style = 'BibTex';
+          $ctrl.ui.style = 'BibTeX';
           $ctrl.ui.styles = ['BibTeX', 'Endnote'];
           var authors = '';
+          var ieeeAuthors = '';
           if (browser.listing.project){
               $ctrl.data.publication = browser.listing;
           } else {
               $ctrl.data.publication = browser.publication;
           }
+          _.each($ctrl.data.publication.users, function(usr, index, list){
+            var str = $scope.getUserDets(usr, true);
+            if (index < list.length - 1){
+              authors +=  str + ' and ';
+            } else {
+              authors +=  str;
+            }
+            ieeeAuthors += str + '. ';
+          });
           $ctrl.getCitation = function(){
-            _.each($ctrl.data.publication.users, function(usr){
-            });
-            if ($ctrl.data.style === 'BibTex'){
+            if ($ctrl.ui.style === 'BibTeX'){
               $ctrl.data.citation = 
                 '@misc{dataset, \n' +
-                ' author = {' + $scope.model.metadata.Creator.value + '} \n' +
-                ' title = {' + $scope.model.metadata.Title.value + '} \n' +
-                ' publisher = {' + $scope.model.metadata.Publisher.value + '} \n' +
-                ' year = {' + $scope.model.metadata["Publication Year"].value + '} \n' +
-                ' note = {' + $scope.model.metadata.Description.value + '} \n' +
+                ' author = {' + authors + '} \n' +
+                ' title = {' + ent.value.title + '} \n' +
+                ' publisher = {DesignSafe-CI} \n' +
+                ' year = {2017} \n' +
+                ' note = {' + ent.value.description + '} \n' +
                 '}';
-        } else if ($ctrl.data.style === 'Endnote'){
+        } else if ($ctrl.ui.style === 'Endnote'){
+              $ctrl.data.citation =
+				'%0 Generic \n' +
+				'%A ' + authors + '\n' +
+				'%T ' + ent.value.title + '\n' +
+				'%I DesignSafe-CI\n' +
+				'%D 2017\n'; 
         }
       };
+		$ctrl.close = function(){
+            $uibModalInstance.dismiss('Close');
+        };
+        $ctrl.downloadCitation = function(){
+          var blob = new Blob([$ctrl.data.citation]);
+          var downloadLink = $('<a></a>');
+          downloadLink.attr('href', window.URL.createObjectURL(blob));
+          downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
+          downloadLink[0].click();
+        };
+      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', "' + ent.value.title + '" , 2017. ' + ent.doi);
+      $ctrl.getCitation();
     }],
     size: 'md',
     controllerAs: '$ctrl',
