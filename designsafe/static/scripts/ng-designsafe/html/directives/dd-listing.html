@@ -190,13 +190,13 @@
         <th>Last modified</th>
         <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
           <button class="btn btn-default"
-                  ng-if="!(browser.publication.filesSelected[experiment.uuid][event.uuid] 
+                  ng-if="!(browser.publication.filesSelected[experiment.uuid][event.uuid]
                          && browser.publication.filesSelected[experiment.uuid][event.uuid].length)"
                   ng-click="publicationCtrl.selectAllFiles(experiment, event)">
                   <i class="fa fa-check"></i> Select All
                   </button>
           <button class="btn btn-default"
-                  ng-if="browser.publication.filesSelected[experiment.uuid][event.uuid] 
+                  ng-if="browser.publication.filesSelected[experiment.uuid][event.uuid]
                          && browser.publication.filesSelected[experiment.uuid][event.uuid].length"
                   ng-click="publicationCtrl.deselectAllFiles(experiment, event)">
                   <i class="fa fa-times"></i> Deselect All</button>
@@ -305,7 +305,7 @@
       <div ng-repeat="analysis in browser.project.analysis_set | orderBy: 'value.title'"
            ng-if="browser.publishPipeline != 'meta' &&
                 browser.publishPipeline != 'agreement'">
-        <div class="entity-wrapper" 
+        <div class="entity-wrapper"
            ng-if="publicationCtrl.filterFiles(analysis, false, browser.listings[analysis.uuid]).length">
         <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
           <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
@@ -333,13 +333,13 @@
                 <th>Last modified</th>
                     <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                       <button class="btn btn-default"
-                              ng-if="! (browser.publication.filesSelected[analysis.uuid] 
+                              ng-if="! (browser.publication.filesSelected[analysis.uuid]
                                      && browser.publication.filesSelected[analysis.uuid].length)"
                               ng-click="publicationCtrl.selectAllFiles(analysis)">
                               <i class="fa fa-check"></i> Select All
                               </button>
                       <button class="btn btn-default"
-                              ng-if="browser.publication.filesSelected[analysis.uuid] 
+                              ng-if="browser.publication.filesSelected[analysis.uuid]
                                      && browser.publication.filesSelected[analysis.uuid].length"
                               ng-click="publicationCtrl.deselectAllFiles(analysis)">
                               <i class="fa fa-times"></i> Deselect All</button>
@@ -408,13 +408,13 @@
                 <th>Last modified</th>
                     <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                       <button class="btn btn-default"
-                              ng-if="! (browser.publication.filesSelected[report.uuid] 
+                              ng-if="! (browser.publication.filesSelected[report.uuid]
                                      && browser.publication.filesSelected[report.uuid].length)"
                               ng-click="publicationCtrl.selectAllFiles(analysis)">
                               <i class="fa fa-check"></i> Select All
                               </button>
                       <button class="btn btn-default"
-                              ng-if="browser.publication.filesSelected[report.uuid] 
+                              ng-if="browser.publication.filesSelected[report.uuid]
                                      && browser.publication.filesSelected[report.uuid].length"
                               ng-click="publicationCtrl.deselectAllFiles(report)">
                               <i class="fa fa-times"></i> Deselect All</button>
@@ -650,7 +650,7 @@
           <span>Authors</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-          <div ng-repeat="user in publicationCtrl.filterUsers(exp.value.authors, 
+          <div ng-repeat="user in publicationCtrl.filterUsers(exp.value.authors,
                           browser.publication.users) | orderBy: ['_ui.order', 'last_name']" >
           <span>
                 {{user.last_name}}, {{user.first_name}}
@@ -755,9 +755,9 @@
          style="background:#fff; min-height:500px; padding:10px;">
          <h2>Agreement</h2>
          <p>
-           I agree and understand that when I publish this data and receive a DOI that this will result in a locked, read-only publication that cannot be changed. If I have changes or revisions, this will result in a new DOI being created for the revised publication. I understand that my dataset meets the minimum metadata requirements per the <a href='rw/data-publication/' target="_blank"> Data Curation and Publication Guidelines</a>.
+           I agree and understand that when I publish this data and receive a DOI that this will result in a locked, read-only publication that cannot be changed. If I have changes or revisions, this will result in a new DOI being created for the revised publication. I understand that my dataset meets the minimum metadata requirements per the <a href='/rw/support/data-publication/' target="_blank"> Data Curation and Publication Guidelines</a>.
          </p>
-         <input type="checkbox" ng-click="publicationCtrl.togglePubAgreement()"> I agree 
+         <input type="checkbox" ng-click="publicationCtrl.togglePubAgreement()"> I agree
    </div>
 
    </div>
