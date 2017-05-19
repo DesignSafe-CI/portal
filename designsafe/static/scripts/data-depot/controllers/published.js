@@ -367,14 +367,23 @@
           } else {
               $ctrl.data.publication = browser.publication;
           }
-          _.each($ctrl.data.publication.users, function(usr, index, list){
-            var str = $scope.getUserDets(usr.username, true);
+          var publishers = _.filter($ctrl.data.publication.users, function(usr){
+              if (ent.name === 'designsafe.project' || ent.name === 'designsafe.project.analysis'){
+                return _.contains($ctrl.data.publication.project.value.coPis, usr.username) ||
+                                  usr.username === $ctrl.data.publication.project.value.pi;
+              } else {
+                return _.contains(ent.value.authors, usr.username);
+              }
+          });
+          _.each(publishers, function(usr, index, list){
+            var str = usr.last_name + ', ' + usr.first_name;
             if (index < list.length - 1){
               authors +=  str + ' and ';
+              ieeeAuthors += str + ', ';
             } else {
               authors +=  str;
+              ieeeAuthors += str;
             }
-            ieeeAuthors += str + '. ';
           });
           $ctrl.getCitation = function(){
             if ($ctrl.ui.style === 'BibTeX'){
@@ -405,7 +414,7 @@
           downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
           downloadLink[0].click();
         };
-      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', "' + ent.value.title + '" , 2017. ' + ent.doi);
+      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', 2017, "' + ent.value.title + '" , DesignSafe-CI [publisher] ' + ent.doi);
       $ctrl.getCitation();
     }],
     size: 'md',
