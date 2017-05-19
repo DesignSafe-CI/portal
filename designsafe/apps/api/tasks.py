@@ -768,15 +768,17 @@ def copy_publication_files_to_corral(self, project_id):
         try:
             base_obj.import_data(file_obj.system, file_obj.path)
         except Exception as err:
-            self.retry(exc=err)
-        try: 
-            image = BaseFileResource.\
-                      listing(system=proj_system,
-                              path='projectimage.jpg',
-                              agave_client=service)
-            base_dir.import_data(image.system, image.path)
-        except HTTPError as err:
-            logger.debug('No project image')
+            logger.debug('Error when copying data to published: %s', filepath)
+            #self.retry(exc=err)
+
+    try: 
+        image = BaseFileResource.\
+                  listing(system=proj_system,
+                          path='projectimage.jpg',
+                          agave_client=service)
+        base_dir.import_data(image.system, image.path)
+    except HTTPError as err:
+        logger.debug('No project image')
     save_to_fedora.apply_async(args=[project_id])
 
 @shared_task(bind=True)
