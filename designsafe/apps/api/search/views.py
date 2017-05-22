@@ -26,7 +26,7 @@ class SearchView(BaseApiView):
         if (limit > 500):
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', None)
-        logger.info(type_filter)
+
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
         es_query = Search(index="nees,cms")\
@@ -60,15 +60,24 @@ class SearchView(BaseApiView):
                     }
                 )
         elif type_filter == 'web':
-            es_query._index = 'cms'
-            es_query = es_query.query("query_string", query=q, default_operator="and", fields=["body"])
-            es_query = es_query.highlight('body',
-                    fragment_size=100,
-                    pre_tags=["<strong>"],
-                    post_tags=["</strong>"],
-                )\
-                .highlight_options(require_field_match=False)
-
+            es_query = Search(index="cms")\
+                .query("query_string", query=q, default_operator="and", fields=["body"])\
+                .highlight('body',
+                        fragment_size=100,
+                        pre_tags=["<strong>"],
+                        post_tags=["</strong>"],
+                    )\
+                .highlight_options(require_field_match=True)\
+                .extra(from_=offset, size=limit)\
+            # es_query._index = 'cms'
+            # es_query = es_query.query("query_string", query=q, default_operator="and", fields=["body"])
+            # es_query = es_query.highlight('body',
+            #         fragment_size=100,
+            #         pre_tags=["<strong>"],
+            #         post_tags=["</strong>"],
+            #     )\
+            #     .highlight_options(require_field_match=True)
+            # logger.info(es_query.to_dict())
         # logger.info(es_query.to_dict())
         res = es_query.execute()
 
