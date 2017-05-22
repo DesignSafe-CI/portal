@@ -379,7 +379,7 @@
             var str = usr.last_name + ', ' + usr.first_name;
             if (index < list.length - 1){
               authors +=  str + ' and ';
-              ieeeAuthors += str + ', ';
+              ieeeAuthors += str + '; ';
             } else {
               authors +=  str;
               ieeeAuthors += str;
@@ -414,7 +414,7 @@
           downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
           downloadLink[0].click();
         };
-      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', 2017, "' + ent.value.title + '" , DesignSafe-CI [publisher] ' + ent.doi);
+      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
       $ctrl.getCitation();
     }],
     size: 'md',
