@@ -4,6 +4,7 @@ import re
 import os
 import sys
 import json
+import urllib
 from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
@@ -768,7 +769,7 @@ def copy_publication_files_to_corral(self, project_id):
         try:
             base_obj.import_data(file_obj.system, file_obj.path)
         except Exception as err:
-            logger.debug('Error when copying data to published: %s', filepath)
+            logger.error('Error when copying data to published: %s', filepath, ' . %s', err)
             #self.retry(exc=err)
 
     try: 
@@ -814,7 +815,9 @@ def save_to_fedora(self, project_id):
             #files
             full_path = os.path.join(root, name)
             _path = full_path.replace(_root, '', 1)
-            url = ''.join([fedora_project_base, _path])
+            _path = _path.replace('[', '-')
+            _path = _path.replace(']', '-')
+            url = ''.join([fedora_project_base, urllib.quote(_path)])
             #logger.debug('uploading: %s', url)
             with open(os.path.join(root, name), 'rb') as _file:
                 requests.put(url, data=_file, headers=headers)
