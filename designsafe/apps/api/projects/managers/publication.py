@@ -363,7 +363,7 @@ def reserve_publication(publication):
     anl_dois = []
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
-    for exp in publication['experimentsList']:
+    for exp in publication.get('experimentsList', []):
         exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
                                     exp, publication['created'])
         add_related(exp_xml, [proj_doi])
@@ -371,7 +371,7 @@ def reserve_publication(publication):
         exp['doi'] = exp_doi
         xmls[exp_doi] = exp_xml
 
-    for anl in publication['analysisList']:
+    for anl in publication.get('analysisList', []):
         anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
                                     anl, publication['created'])
         add_related(anl_xml, [proj_doi])
