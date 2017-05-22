@@ -116,7 +116,8 @@
                ng-if="state.publishPipeline == 'agreement'">
             <button id="requestAndPublish" class="btn btn-danger"
                     ng-click="publishPipeline_publish()"
-                    ng-disabled="!state.publishAgreement">
+                    ng-disabled="!state.publishAgreement ||
+                                 state.project.publicationStatus === 'publishing'">
                 Request DOI & Publish <i class="fa fa-check"></i>
             </button>
           </div>
