@@ -782,14 +782,17 @@ def copy_publication_files_to_corral(self, project_id):
         logger.debug('No project image')
     save_to_fedora.apply_async(args=[project_id])
 
-@shared_task(bind=True)
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_publication(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
     from designsafe.apps.api.projects.managers import publication as PublicationManager
-    pub = Publication(project_id=project_id)
-    publication = PublicationManager.reserve_publication(pub.to_dict())
-    pub.update(**publication)
-    copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
+    try:
+        pub = Publication(project_id=project_id)
+        publication = PublicationManager.reserve_publication(pub.to_dict())
+        pub.update(**publication)
+        copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
+    except Exception as exc:
+        raise self.retry(exc=exc)
 
 @shared_task(bind=True)
 def save_to_fedora(self, project_id):
