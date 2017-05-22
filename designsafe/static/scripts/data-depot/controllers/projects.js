@@ -377,6 +377,9 @@
       $http.post('/api/projects/publication/', {publication: publication})
         .then(function(resp){
           $scope.state.publicationMsg = resp.data.message;
+          $scope.state.project.publicationStatus = 'publishing';
+          DataBrowserService.state().publicationMsg = resp.data.message;
+          DataBrowserService.state().project.publicationStatus = 'publishing';
         });
     };
 
@@ -439,7 +442,7 @@
                   $scope.browser.project.doi = resp.data.project.doi;
                   DataBrowserService.state().project.doi = resp.data.project.doi;
               } 
-              if (resp.data.project && resp.data.project.status){
+              if (resp.data.project && resp.data.status){
                 $scope.browser.project.publicationStatus = resp.data.status;
                 DataBrowserService.state().project.publicationStatus = resp.data.status;
               }
