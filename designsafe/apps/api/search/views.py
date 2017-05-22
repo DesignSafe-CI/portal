@@ -31,7 +31,7 @@ class SearchView(BaseApiView):
         # stuff too.
         es_query = Search(index="nees,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
-            .query("query_string", query=q, default_operator="and", fields=["body", 'name', 'title', 'description'])\
+            .query("query_string", query=q, default_operator="and", fields=[])\
             .query(~Q('match', type='dir'))\
             .highlight('body',
                 fragment_size=100,
