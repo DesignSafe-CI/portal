@@ -35,12 +35,13 @@
                             $scope.imageHref = data.postit;
                         });
                       });
-
+  $scope.browser.listing.permissions = 'READ';
   if ($scope.browser.listing.projectId){
     _.each($scope.browser.listing.eventsList, function(evt){
         evt.files = _.map(evt.fileObjs, function(f){
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
+            f.permissions = 'READ';
             return FileListing.init(f);
         });
     });
@@ -48,6 +49,7 @@
         mcf.files = _.map(mcf.fileObjs, function(f){
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
+            f.permissions = 'READ';
             return FileListing.init(f);
         });
     });
@@ -55,6 +57,7 @@
         slt.files = _.map(slt.fileObjs, function(f){
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
+            f.permissions = 'READ';
             return FileListing.init(f);
         });
     });
@@ -62,6 +65,7 @@
         anl.files = _.map(anl.fileObjs, function(f){
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
+            f.permissions = 'READ';
             return FileListing.init(f);
         });
     });
@@ -69,6 +73,7 @@
         rep.files = _.map(rep.fileObjs, function(f){
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
+            f.permissions = 'READ';
             return FileListing.init(f);
         });
     });
