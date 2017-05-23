@@ -1,6 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
-## v0.9.25
+## v0.9.27
+
+Fixes:
+- Published files preview.
+- CHANGELOG
+
+## v0.9.26
 
 Improvements:
 
@@ -18,6 +24,8 @@ Fixes:
 - Project human readable ID.
 - Setting permissions on home directories.
 - Site Header improvements.
+
+## v0.9.25
 
 Improvements:
 
