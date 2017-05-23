@@ -36,13 +36,17 @@
                         });
                       });
   $scope.browser.listing.permissions = 'READ';
+  var _apiParams = {
+      fileMgr: 'published',
+      baseUrl: '/api/public/files'
+  };
   if ($scope.browser.listing.projectId){
     _.each($scope.browser.listing.eventsList, function(evt){
         evt.files = _.map(evt.fileObjs, function(f){
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
             f.permissions = 'READ';
-            return FileListing.init(f);
+            return FileListing.init(f, _apiParams);
         });
     });
     _.each($scope.browser.listing.modelConfigs, function(mcf){
@@ -50,7 +54,7 @@
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
             f.permissions = 'READ';
-            return FileListing.init(f);
+            return FileListing.init(f, _apiParams);
         });
     });
     _.each($scope.browser.listing.sensorLists, function(slt){
@@ -58,7 +62,7 @@
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
             f.permissions = 'READ';
-            return FileListing.init(f);
+            return FileListing.init(f, _apiParams);
         });
     });
     _.each($scope.browser.listing.analysisList, function(anl){
@@ -66,7 +70,7 @@
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
             f.permissions = 'READ';
-            return FileListing.init(f);
+            return FileListing.init(f, _apiParams);
         });
     });
     _.each($scope.browser.listing.reportsList, function(rep){
@@ -74,7 +78,7 @@
             f.system = 'designsafe.storage.published';
             f.path = $scope.browser.listing.projectId + f.path;
             f.permissions = 'READ';
-            return FileListing.init(f);
+            return FileListing.init(f, _apiParams);
         });
     });
   }
@@ -208,7 +212,7 @@
       if ($scope.browser.listing.projectId){
         users = $scope.browser.listing.users;
       } else {
-        useres = $scope.browser.publication.users;
+        users = $scope.browser.publication.users;
       }
       var user = _.find(users, function(usr){
         return usr.username === username;
@@ -262,6 +266,7 @@
             } else {
                 $ctrl.data.publication = browser.publication;
             }
+            $ctrl.data.piDets = $scope.getUserDets($ctrl.data.publication.project.value.pi);
             $ctrl.close = function(){
                 $uibModalInstance.dismiss('close');
             };
