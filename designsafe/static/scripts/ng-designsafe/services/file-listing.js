@@ -550,8 +550,8 @@
       }
     }
 
-    function init(obj){
-        return new FileListing(obj);
+    function init(obj, apiParams){
+        return new FileListing(obj, apiParams);
     }
 
     /**

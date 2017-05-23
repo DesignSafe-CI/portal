@@ -91,9 +91,10 @@ class FileMediaView(View):
         logger.info(file_path)
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public' \
-            or file_mgr_name == 'community':
+            or file_mgr_name == 'community' \
+            or file_mgr_name == 'published':
             if not request.user.is_authenticated():
-                if file_mgr_name in ['public', 'community']:
+                if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
                     return HttpResponseForbidden('Log in required')
@@ -219,10 +220,11 @@ class FileMediaView(View):
 
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public' \
-            or file_mgr_name == 'community':
+            or file_mgr_name == 'community' \
+            or file_mgr_name == 'published':
 
             if not request.user.is_authenticated():
-                if file_mgr_name in ['public', 'community']:
+                if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
                     return HttpResponseForbidden('Log in required')
