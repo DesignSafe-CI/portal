@@ -1,12 +1,23 @@
 
 #dashboard {
   background: #fff;
+  margin-top: -20px;
+}
+
+.dashboard-top {
+  background-color: #ece8e8;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.dashboard-bottom {
+  padding-top: 20px;
 }
 
 .dashboard.panel-heading {
-  color: #1d9ba6;
-  padding: 15px;
-  background-color: #fff;
+  /*color: #1d9ba6;*/
+  /*padding: 15px;*/
+  /*background-color: #fff;*/
 }
 
 .ds-chart .bar {
@@ -31,13 +42,13 @@
 
 .dashboard-stat {
     display: block;
-    margin-bottom: 25px;
+    /*margin-bottom: 25px;*/
     overflow: hidden;
     /*padding: 10px;*/
 }
 .dashboard-stat .visual {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     display: block;
     float: left;
     padding-top: 10px;
@@ -97,7 +108,7 @@
     color: #FFFFFF;
     opacity: 1;
     filter: alpha(opacity=100);
-    font-family: monospace;
+    /*font-family: monospace;*/
 }
 .dashboard-stat .details .desc {
     text-align: right;
