@@ -383,3 +383,262 @@
 .modal-dialog.modal-md {
     width:800px;
 }
+
+tr.experiment-deleted {
+    text-decoration: line-through;
+}
+
+.ds-text-light-blue {
+    color: #5BC0DE;
+}
+
+.ds-text-blue {
+    color: #0567CC;
+}
+
+.ds-text-green {
+    color: #2EA89A;
+}
+
+.ds-text-red { 
+    color: #D04348;
+}
+
+span.label.tag-light-blue {
+    border: 2px solid #5BC0DE;
+    color: black;
+}
+
+span.label.tag-light-blue.selected {
+    border: 2px solid #5BC0DE;
+    background: #5BC0DE;
+    color: white;
+}
+
+span.label.tag-black {
+    border: 2px solid #000;
+    color: black;
+}
+
+span.label.tag-black.selected {
+    border: 2px solid #000;
+    background:#000;
+    color: white;
+}
+
+span.label.tag-blue {
+    border: 2px solid #0567CC;
+    color: black;
+}
+
+span.label.tag-blue.selected {
+    border: 2px solid #0567CC;
+    background:#0567CC;
+    color: white;
+}
+
+span.label.tag-green {
+    border: 2px solid #2EA89A;
+    color: black;
+}
+
+span.label.tag-green.selected {
+    border: 2px solid #2EA89A;
+    background:#2EA89A;
+    color: white;
+}
+
+span.label.tag-red {
+    border: 2px solid #D04348;
+    color: black;
+}
+
+span.label.tag-red.selected {
+    border: 2px solid #D04348;
+    background:#D04348;
+    color: white;
+}
+
+span.label {
+    float:left;
+}
+
+span.tag-title {
+    word-break: break-word;
+    white-space: normal;
+    text-align: left;
+}
+
+.data-model-tree ul, li {
+    list-style: none; margin: 0; padding: 0; 
+}
+
+.data-model-tree ul { 
+    padding-left: 1em; 
+}
+
+.data-model-tree li { 
+    padding-left: 1em;
+    border: 1px solid black;
+    border-width: 0 0 1px 1px; 
+}
+
+.data-model-tree li.tree-container { 
+    border-bottom: 0px; 
+}
+
+.data-model-tree li.empty { 
+    font-style: italic;
+    color: silver;
+    border-color: silver;
+}
+
+.data-model-tree li div.tree-el { 
+    margin: 0;
+    background: white;
+    position: relative;
+    top: 1em; 
+    padding:5px 2px;
+}
+
+.data-model-tree li ul { 
+    border-top: 1px solid black; 
+    margin-left: -1em;     
+    padding-left: 2em; 
+}
+.data-model-tree ul li ul {
+    /*border-left: 1px solid black;*/
+    margin-left: -15px;
+}
+
+.data-model-tree ul.event-ul {
+    border-left: 1px solid white;
+}
+
+.data-model-tree.data-model-preview-tree ul.model-config-ul li:last-child ul.sensor-list-ul {
+    border-left: 1px solid white;
+}
+
+.btn-xsm {
+  padding:1px 1.5px;
+}
+
+.preview-wrapper {
+    overflow:visible;
+}
+
+.folder-tick {
+	display: inline-block;
+    /* border: 1px solid lightgrey; */
+    height: 3em;
+    text-align: center;
+    /* vertical-align: bottom; */
+    border-bottom: 30px solid lightgrey;
+    border-right: 30px solid white;
+    border-left: 30px solid white;
+    padding-top: 10px;
+}
+
+.existing-experiments-listing {
+    margin-bottom:10px;
+}
+
+.add-extra-category {
+    margin-top:20px;
+}
+
+.simple-table tbody tr td,
+.simple-table tbody tr th{
+    padding:0px 5px;
+}
+
+.simple-table tbody tr td:first-child, 
+.simple-table tbody tr th:first-child {
+    padding-left:0px;
+}
+
+.simple-table tbody tr td:last-child, 
+.simple-table tbody tr th:last-child {
+    padding-right:0px;
+}
+
+.tooltip-inner {
+    max-width:350px !important;
+    color: black;
+    background-color: white;
+    border:1px solid black;
+}
+
+.grayed-out {
+    background-color:lightgray;
+}
+
+.wizard-steps .active {
+    font-weight:bold;
+}
+
+.meta-review {
+    width:100%;
+    background:white;
+    overflow:auto;
+}
+
+.meta-review .title {
+    text-align:center;
+    border-bottom:1px solid black;
+    padding:5px;
+}
+
+.meta-review .content {
+    padding:5px;
+}
+.meta-review .content-wrapper {
+    border-bottom:1px solid black;
+}
+
+.meta-review .content .meta-row {
+    width:100%;
+    overflow:auto;
+    margin:5px 0px;
+}
+
+.meta-review .content .meta-row .attr {
+    font-weight:bold;
+    display:inline-block;
+    width:45%;
+    text-align:right;
+}
+
+.meta-review .content .meta-row .value {
+    display:inline-block;
+    width:45%;
+    text-align:left;
+}
+
+.dropdown button.collapsed .dropdown-caret:before {
+    content: "\f078";
+}
+
+.dropdown button .dropdown-caret:before {
+    content: "\f077";
+}
+
+.entity-preview-header > button{
+    background: #e6e6e6;
+    border:1px solid black;
+    white-space:normal;
+}
+
+.modal-body .modal-row {
+    margin-bottom:10px;
+    overflow:auto;
+    text-align:center;
+}
+
+.modal-body .modal-row .det-label {
+    text-align:right;
+}
+
+.modal-body .modal-row .det-val {
+    text-align:left;
+}

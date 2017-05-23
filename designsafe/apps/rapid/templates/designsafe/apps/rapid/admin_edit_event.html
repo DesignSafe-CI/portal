@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load bootstrap3 sekizai_tags staticfiles %}
+{% load ds_filters %}
+
+
+
+{% block content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <ol class="breadcrumb">
+          <li> <a href="{% url 'designsafe_rapid:admin'%}"> Rapid Admin Home </a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Edit Rapid Natural Hazard Event </h2>
+
+        <form method="post" action="" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <div class="form-group">
+            <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Datasets </h2>
+        <table class="table">
+          <tr>
+            <th> DOI </th>
+            <th> Url </th>
+            <th> Description </th>
+          </tr>
+          {% for dataset in event.datasets %}
+           <tr>
+             <td> {{ dataset.doi }} </td>
+             <td> {{ dataset.url }} </td>
+             <td> {{ dataset.title }} </td>
+             <td> <a class="btn btn-info btn-sm" href="{% url 'designsafe_rapid:admin_event_edit_dataset' event|private:'_id' dataset.id %}"> Edit </a> </td>
+             <td>
+               <form method="POST" action="{% url 'designsafe_rapid:admin_event_delete_dataset' event|private:'_id' dataset.id %}">
+                 {% csrf_token %}
+                 <button class="btn btn-danger btn-sm"> Delete </button>
+               </form>
+             </td>
+           </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+{% addtoblock 'js' %}
+
+<script>
+  $(document).ready(function () {
+    $('#id_event_date').datepicker();
+  })
+</script>
+
+{% endaddtoblock %}
+
+
+{% endblock content %}

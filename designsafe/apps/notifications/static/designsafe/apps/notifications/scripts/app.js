@@ -11,7 +11,7 @@
   }
 
   var app = angular.module('designsafe');
-  app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr');
+  app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr', 'ui.bootstrap');
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 
@@ -19,9 +19,15 @@
       $scope.data = {};
       $scope.showRawMessage = false;
 
-      $scope.list = function(){
-        NotificationService.list({limit:10}).then(function(resp) {
-            $scope.data.notifications = resp;
+      $scope.list = function(page=0){
+        $scope.data.pagination = {'limit': 10}
+        var params = {'limit': $scope.data.pagination.limit, page: page}
+
+        NotificationService.list(params).then(function(resp) {
+            $scope.data.pagination.show = false;
+            $scope.data.pagination.page = resp.page;
+            $scope.data.pagination.total = resp.total;
+            $scope.data.notifications = resp.notifs;
 
             for (var i=0; i < $scope.data.notifications.length; i++){
               // $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
@@ -30,10 +36,26 @@
 
               if ($scope.data.notifications[i]['event_type'] == 'job') {
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': $scope.data.notifications[i]['pk']});
-              } else if ($scope.data.notifications[i]['event_type'] == 'data') {
+              } else if ($scope.data.notifications[i]['event_type'] == 'data_depot') {
                 $scope.data.notifications[i]['action_link']=djangoUrl.reverse('designsafe_api:process_notification', {'pk': $scope.data.notifications[i]['pk']});
               }
             }
+
+            if ($scope.data.pagination.total > 0) {
+                var offset = $scope.data.pagination.page * $scope.data.pagination.limit;
+                $scope.data.pagination.item_start = offset + 1;
+                if (offset + $scope.data.pagination.limit > $scope.data.pagination.total) {
+                    $scope.data.pagination.item_end = $scope.data.pagination.total;
+                } else {
+                    $scope.data.pagination.item_end = offset + $scope.data.pagination.limit;
+                }
+            }
+            if ($scope.data.pagination.total > $scope.data.pagination.limit) {
+                $scope.data.pagination.show = true;
+                $scope.data.pagination.current = $scope.data.pagination.page + 1;
+            }
+            console.log('$scope', $scope)
+
             $rootScope.$emit('notifications:read', 'all')
         });
       };
@@ -43,6 +65,20 @@
         NotificationService.delete(pk).then(function(resp) {
           $scope.list();
         });
+      };
+
+      $scope.pageChanged = function() {
+          var load_page = $scope.data.pagination.current - 1;
+          $scope.list(load_page)
+              // .then(function() {
+              //     /* scroll to top of listing */
+              //     $anchorScroll('directory-contents');
+
+              //      update $location
+              //     $location
+              //         .state(angular.copy($scope.model))
+              //         .search('page', load_page);
+              // });
       };
   }]);
 

@@ -57,5 +57,5 @@ class AccountMenu(CMSAttachMenu):
         return _menu_nodes_for_apps('account')
 
 
-menu_pool.register_menu(ResearchWorkbenchMenu)
-menu_pool.register_menu(AccountMenu)
+# menu_pool.register_menu(ResearchWorkbenchMenu)
+# menu_pool.register_menu(AccountMenu)

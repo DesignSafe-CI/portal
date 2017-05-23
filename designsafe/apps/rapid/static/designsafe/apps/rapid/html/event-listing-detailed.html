@@ -1,0 +1,31 @@
+<div class="event-listing">
+  <img ng-src="/uploads/RAPID/images/{{event.main_image_uuid}}" class="img-responsive" ng-if="event.main_image_uuid"></img>
+  <div class="earthquake event-title"> {{event.title}} </div>
+  <div class="event-location">
+    <span> {{event.location_description}} </span>
+  </div>
+  <div class="row">
+    <span class="event-date pull-left">
+      {{event.event_date | date: 'yyyy-MM-dd'}}
+    </span>
+    <span class="event-type pull-right"
+          ng-class="{'earthquake':event.event_type==='earthquake',
+               'flood':event.event_type==='flood',
+               'tsunami':event.event_type === 'tsunami',
+               'tornado':event.event_type === 'tornado',
+               'landslide':event.event_type === 'landslide',
+               'hurricane':event.event_type === 'hurricane',
+              }">
+      {{event.event_type}}
+    </span>
+  </div>
+  <div class="row">
+    <h5> Available datasets: </h5>
+    <div class="event-dataset" ng-repeat = "dataset in event.datasets">
+      <a href="{{dataset.url}}"> {{dataset.title}} </a>
+    </div>
+    <div ng-show="!event.datasets">
+      <span> No datasets available yet </span>
+    </div>
+  </div>
+</div>

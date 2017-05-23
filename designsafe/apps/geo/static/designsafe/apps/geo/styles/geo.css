@@ -1,0 +1,277 @@
+/*#geo_container .modal-dialog {
+  color: #000000
+}*/
+
+
+#geo_container {
+  display: flex;
+  min-height: 100vh;
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+}
+
+#geo_container h1, #geo_container h2 {
+  color: #fff;
+}
+
+#geo_container #navbar {
+  background-color: #272727;
+  flex: 0 0 40;
+  flex-direction: column;
+  border-right: 1px solid #6e6e6e;
+  color: #d2d2d2;
+  padding-top: 10px;
+}
+
+#geo_container #navbar .nav-icon {
+  margin-left:  5px;
+  padding: 5px 10px 10px 10px;
+  cursor: pointer;
+}
+#geo_container #navbar .nav-icon.active{
+  margin-left:  0px;
+  border-left: 5px solid #bd4cd9;
+  background-color: #404040;
+}
+#geo_container #navbar a {
+  color: #d2d2d2;
+}
+
+#geo_container .blue {
+  color: #0d63ff;
+}
+
+#geo_sidebar, #current_layer_details, #map_project_details {
+  /*padding-top: 10px;*/
+  width: 25%;
+  font-size: 13px;
+  letter-spacing: 0px;
+  float: left;
+  flex: 0 0 20%;
+  height: 100vh;
+  background: #313131;
+  border-right: 1px solid #6e6e6e;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#map_project_details {
+  padding: 5px;
+}
+
+#geo_container input,
+#geo_container textarea {
+  color: #fff;
+  background-color: #545454;
+}
+
+
+.strong {
+  font-family: 'Open Sans Bold',sans-serif;
+  font-weight: 700;
+}
+
+.map-title {
+  font-size: 1.35em;
+}
+
+
+
+#geo_sidebar .list-group-item > div {
+  float: left;
+}
+
+#geo_sidebar .list-group-item input[type=text] {
+  color: #FFF;
+  background-color: #545454;
+  width: 70%;
+}
+
+#geo_sidebar .list-group-item.menu, #current_layer_details .list-group-item.menu{
+  background-color: #313131;
+  border-bottom: 1px solid #707070;
+  border-left: 5px;
+  border-right: 0px;
+  border-top: 0px;
+  margin-top: 1px;
+  cursor: pointer;
+  padding: 3px;
+  padding-bottom: 3px;
+  padding-right: 3px;
+  line-height: 1.25em;
+}
+
+
+#geo_sidebar .list-group-item.menu.active {
+  border-left: 3px solid #de5b0f;
+  background-color: #444444;
+}
+#geo_sidebar .list-group-item.menu.lg-tools {
+  background-color: #29948a;
+}
+
+#geo_sidebar .list-group-item.menu.action {
+  background-color: #4575b0;
+}
+
+#geo_sidebar .list-group-item.subgroup {
+  margin-left: 0px;
+  padding-left: 10px;
+}
+#geo_sidebar .list-group-item.subgroup.active {
+  margin-left: 0px;
+  border-left: 0px;
+  padding-left: 10px;
+
+}
+
+#geo_sidebar .list-group-item.subgroup.active.highlight {
+  border: 1px solid #50dfbe;
+}
+
+
+#geo_sidebar .list-group-item.menu.title{
+  background-color: #404040;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+#geo_sidebar .lg-count {
+  font-size: 0.9em;
+  color: #fff;
+  margin-left: 5px;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: #524e90;
+}
+
+#right_panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: #fff;
+}
+
+#top_toolbar {
+  /*height: 2em;*/
+  /*border-bottom: 1px solid #d2d2d2;*/
+  background-color: #d2d2d2;
+}
+
+#geo_container .dropdown-menu {
+  padding: 0px;
+  background-color: #313131;
+  min-width: 200px;
+}
+
+#geo_container .dropdown-menu li {
+  border-bottom: 1px solid #aaa;
+  cursor: pointer;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+#geo_container .dropdown-menu li a {
+  color: #74a7f3;
+  padding: 0;
+}
+
+#geo_map {
+  /*width: 100%;*/
+  flex: 1;
+  background: grey;
+}
+
+#current_layer_details .tools{
+  padding-bottom: 5px;
+  border-bottom: 1px solid #707070;
+}
+
+#current_layer_details .list-group-item .left {
+  float: left;
+  width: 50%;
+}
+#current_layer_details .list-group-item .right {
+  float: right;
+  width: 50%;
+}
+
+#current_layer_details .list-group-item input[type=color] {
+  /*height: inherit;*/
+  padding: 0px;
+  line-height: 1.2em;
+  height:1.2em;
+}
+
+#mouse_coordinates {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #505050;
+    margin-top: 0px;
+    background-color: #f2f5dc;
+    /*padding: 5px;*/
+}
+
+.dropdown-menu {
+  background-color: #646464;
+}
+/* for drag and drop effects */
+
+.on-drag-hover {
+  border: 2px solid red;
+}
+
+/* photo markers*/
+.leaflet-marker-photo {
+	border: 2px solid #fff;
+	box-shadow: 3px 3px 10px #888;
+}
+
+.leaflet-marker-photo .image {
+    width: 100%;
+    height: 100%;
+    background-size: 100% 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+
+.leaflet-popup-photo img {
+  width: 400px;
+}
+
+.leaflet-control-measure {
+  color: #000;
+}
+
+#geo_sidebar::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+#geo_sidebar::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+
+#geo_sidebar::-webkit-scrollbar-thumb
+{
+	background-color: #838383;
+  border-radius: 4px;
+}
+
+#geo_container .modal-title h3 {
+  color: #000;
+}
+
+#geo_help {
+  background-color: #3e3e3e;
+  width: 100%;
+  padding: 10px;
+  color: #fff;
+}

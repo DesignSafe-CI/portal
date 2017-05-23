@@ -1,0 +1,58 @@
+{
+  "name": "leaflet-measure",
+  "authors": [
+    "Brandon Copeland <br@ndoncopeland.com>"
+  ],
+  "description": "Coordinate, linear, and area measure tool for Leaflet maps",
+  "main": [
+    "dist/leaflet-measure.min.js",
+    "dist/leaflet-measure.css"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ljagis/leaflet-measure.git"
+  },
+  "keywords": [
+    "leaflet",
+    "measure",
+    "measurement",
+    "control",
+    "coordinate",
+    "line",
+    "length",
+    "area",
+    "polygon",
+    "path"
+  ],
+  "license": "MIT",
+  "ignore": [
+    ".sass-cache",
+    ".DS_Store",
+    "node_modules",
+    "bower_components",
+    "examples",
+    "scss",
+    "src",
+    ".gitignore",
+    ".jscsrc",
+    ".jshintrc",
+    "Gruntfile.js",
+    "package.json",
+    "README.md"
+  ],
+  "devDependencies": {
+    "normalize.css": "~3.0.2"
+  },
+  "homepage": "https://github.com/ljagis/leaflet-measure",
+  "version": "2.1.7",
+  "_release": "2.1.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.1.7",
+    "commit": "ea5d37aba04961c2ab2d14abb55ce2edbc6b9e2e"
+  },
+  "_source": "https://github.com/ljagis/leaflet-measure.git",
+  "_target": "^2.1.7",
+  "_originalSource": "leaflet-measure",
+  "_direct": true
+}

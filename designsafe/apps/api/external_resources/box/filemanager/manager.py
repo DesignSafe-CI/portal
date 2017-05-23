@@ -31,8 +31,7 @@ class FileManager(object):
         try:
             self.box_api = user_obj.box_user_token.client
         except BoxUserToken.DoesNotExist:
-            message = 'You need to connect your Box.com account ' \
-                      'before you can access your Box.com files.'
+            message = 'Connect your Box account <a href="'+ reverse('box_integration:index') + '">here</a>'
             raise ApiException(status=400, message=message, extra={
                 'action_url': reverse('box_integration:index'),
                 'action_label': 'Connect Box.com Account'
@@ -220,7 +219,8 @@ class FileManager(object):
             reindex_agave.apply_async(kwargs={
                                       'username': user.username,
                                       'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
-                                      })
+                                      },
+                                      queue='indexing')
         except:
             logger.exception('Unexpected task failure: box_download', extra={
                 'username': username,

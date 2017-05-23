@@ -45,6 +45,10 @@ urlpatterns = patterns(
                                     namespace='designsafe_notifications')),
     url(r'^search/', include('designsafe.apps.search.urls',
                                     namespace='designsafe_search')),
+    url(r'^geo/', include('designsafe.apps.geo.urls',
+                                    namespace='designsafe_geo')),
+    url(r'^rapid/', include('designsafe.apps.rapid.urls',
+                                    namespace='designsafe_rapid')),
 
 
     # auth

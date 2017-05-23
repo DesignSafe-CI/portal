@@ -43,7 +43,7 @@
       //  $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
       //  $scope.data.loading = false;
       //});
-      
+
       DataBrowserService.apiParams.fileMgr = $scope.data.system.fileMgr;
       DataBrowserService.apiParams.baseUrl = $scope.data.system.baseUrl;
       DataBrowserService.browse({system: $scope.data.system.id, path: $scope.data.filePath})
@@ -68,7 +68,7 @@
     };
 
     $scope.browser = DataBrowserService.state();
-    
+
     $scope.scrollToBottom = function(){
       if ($scope.data.loadingMore || $scope.data.reachedEnd){
         return;

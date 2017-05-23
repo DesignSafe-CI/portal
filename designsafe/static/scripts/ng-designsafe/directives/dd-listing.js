@@ -18,6 +18,8 @@
         onDetail: '&',
         scrollToTop: '&',
         scrollToBottom: '&',
+        openPreviewTree: '&',
+        publicationCtrl: '='
       }
     };
   });

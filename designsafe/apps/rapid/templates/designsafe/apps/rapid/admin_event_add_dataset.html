@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load bootstrap3 sekizai_tags staticfiles %}
+{% load ds_filters %}
+
+
+
+{% block content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Add dataset to Rapid Hazard Event </h2>
+        <form method="post" action="">
+          {% csrf_token %}
+          {% bootstrap_form form %}
+          <div class="form-group">
+            <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+{% addtoblock 'js' %}
+
+{% endaddtoblock %}
+
+
+{% endblock content %}

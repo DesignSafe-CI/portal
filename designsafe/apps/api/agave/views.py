@@ -250,7 +250,8 @@ class FileMediaView(View):
                             'dest_resource': external,
                             'src_file_id': os.path.join(system_id, file_path.strip('/')),
                             'dest_file_id': body.get('path')
-                        })
+                        },
+                        queue='files')
                         event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This will take a few minutes.'
                         event_data[Notification.EXTRA] = {
                             'resource': external,
@@ -414,7 +415,8 @@ class FileMediaView(View):
                     if file_listing.previewable:
                         preview_url = reverse('designsafe_api:files_media',
                                               args=[file_mgr_name, system_id, file_path])
-                        return JsonResponse({'href': '{}?preview=true'.format(preview_url)})
+                        return JsonResponse({'href': '{}?preview=true'.format(preview_url),
+                                             'postit': file_listing.download_postit(force=False, lifetime=360)})
                     else:
                         return HttpResponseBadRequest('Preview not available for this item')
                 except HTTPError as e:
@@ -611,7 +613,7 @@ class FilePermissionsView(View):
                     Notification.OPERATION: 'data_depot_share',
                     Notification.STATUS: Notification.SUCCESS,
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: 'Permissions for a file/folder has been updated.',
+                    Notification.MESSAGE: 'Permissions for a file/folder is being updated.',
                     Notification.EXTRA: {'system': system_id,
                                          'path': file_path,
                                          'username': username,
@@ -629,7 +631,7 @@ class FilePermissionsView(View):
                     Notification.EXTRA: {'message': err.response.text}
                 }
                 Notification.objects.create(**event_data)
-                return HttpResponseBadRequest(e.response.text)
+                return HttpResponseBadRequest(err.response.text)
             return JsonResponse(pem, encoder=AgaveJSONEncoder, safe=False)
 
         return HttpResponseBadRequest("Unsupported operation")

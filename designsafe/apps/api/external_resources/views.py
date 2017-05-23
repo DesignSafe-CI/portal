@@ -22,7 +22,7 @@ from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
 
-class FilesListView(BaseApiView, SecureMixin):
+class FilesListView(SecureMixin, BaseApiView):
     """Listing view"""
 
     def get(self, request, file_mgr_name, file_id=None):
@@ -37,7 +37,7 @@ class FilesListView(BaseApiView, SecureMixin):
         listing = fmgr.listing(file_id)
         return JsonResponse(listing, safe=False)
 
-class FileMediaView(BaseApiView, SecureMixin):
+class FileMediaView(SecureMixin, BaseApiView):
     """File Media View"""
 
     def get(self, request, file_mgr_name, file_id):
@@ -91,7 +91,8 @@ class FileMediaView(BaseApiView, SecureMixin):
                     'file_mgr_name': file_mgr_name,
                     'username': request.user.username,
                     'src_file_id': file_id,
-                    'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))})
+                    'dest_file_id': os.path.join(body['system'], body['path'].strip('/'))},
+                    queue='files')
                 return JsonResponse({'status': 200, 'message': 'OK'})
             except HTTPError as e:
                 logger.exception('Unable to copy file')
@@ -110,6 +111,6 @@ class FileMediaView(BaseApiView, SecureMixin):
 
         return HttpResponseBadRequest("Operation not implemented.")
 
-class FilePermissionsView(BaseApiView, SecureMixin):
+class FilePermissionsView(SecureMixin, BaseApiView):
     """File Permissions View"""
     pass

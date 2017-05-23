@@ -228,9 +228,10 @@ class DataDepotView(BasePublicTemplate):
         return redirect_to_login(
             path, resolved_login_url)
 
+    @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         try:
-            return super(BasePublicTemplate, self).dispatch(request, *args, **kwargs)
+            return super(DataDepotView, self).dispatch(request, *args, **kwargs)
         except PermissionDenied:
             return DataDepotView.login_redirect(request)
 

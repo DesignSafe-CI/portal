@@ -12,6 +12,7 @@ import json
 import os
 import re
 import datetime
+import itertools
 from django.conf import settings
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, DocType
@@ -38,6 +39,120 @@ try:
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
+class PublicationIndexed(DocType):
+    class Meta:
+        index = 'published'
+        doc_type = 'publication'
+
+class Publication(object):
+    def __init__(self, wrap=None, project_id=None, *args, **kwargs):
+        if wrap is not None:
+            if isinstance(wrap, PublicationIndexed):
+                self._wrap = wrap
+            else:
+                s = PublicationIndexed.search()
+                s.query = Q({"term":
+                              {"projectId._exact": wrap['projectId']}
+                            })
+                try:
+                    res = s.execute()
+                except TransportError as e:
+                    if e.status_code != 404:
+                        res = s.execute()
+                
+                if res.hits.total:
+                    self._wrap = res[0]
+                    raise Exception('Initializing from existent publication '
+                                    'and a publication object was given. '
+                                    'Are you sure you want to do this? ')
+                else: 
+                    self._wrap = PublicationIndexed(**wrap)
+
+        elif project_id is not None:
+            s = PublicationIndexed.search()
+            s.query = Q({"term": {"projectId._exact": project_id }})
+            logger.debug('p serach query: {}'.format(s.to_dict()))
+            try:
+                res = s.execute()
+            except TransportError as e:
+                if e.status_code == 404:
+                    raise
+                res = s.execute()
+            
+            if res.hits.total:
+                self._wrap = res[0]
+            else:
+                self._wrap = PublicationIndexed(projectId=project_id)
+        else:
+            self._wrap = PublicationIndexed()
+
+    @classmethod
+    def listing(cls):
+        list_search = PublicSearchManager(cls,
+                                          PublicationIndexed.search(),
+                                          page_size=100)
+        list_search._search.query = Q({"match_all":{}})
+        list_search.sort({'projectId._exact': 'asc'})
+        #s = PublicationIndexed.search()
+        #s.query = Q({"match_all":{}})
+        #try:
+        #    res = s.execute()
+        #except TransportError as err:
+        #    if err.satus_code == 404:
+        #        raise
+        #    res = s.execute()
+
+        return list_search.results(0)
+
+    @property
+    def id(self):
+        return self._wrap.meta.id
+
+    def save(self, **kwargs):
+        self._wrap.save(**kwargs)
+        return self
+
+    def to_dict(self):
+        return self._wrap.to_dict()
+
+    def to_file(self):
+        dict_obj = {'agavePath': 'agave://designsafe.storage.published/{}'.\
+                                 format(self.project.value.projectId),
+                     'children': [],
+                     'deleted': False,
+                     'format': 'folder',
+                     'length': 24731027,
+                     'meta': {
+                         'title': self.project['value']['title']
+                     },
+                     'name': self.project.value.projectId,
+                     'path': '/{}'.format(self.project.value.projectId),
+                     'permissions': 'READ',
+                     'project': self.project.value.projectId,
+                     'system': 'designsafe.storage.published',
+                     'systemId': 'designsafe.storage.published',
+                     'type': 'dir'}
+        return dict_obj
+
+    def related_file_paths(self):
+        dict_obj = self._wrap.to_dict()
+        related_objs = dict_obj.get('modelConfigs', []) + \
+                       dict_obj.get('analysisList', []) + \
+                       dict_obj.get('sensorsList', []) + \
+                       dict_obj.get('eventsList', [])
+        file_paths = []
+        proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
+        for obj in related_objs:
+            file_paths += obj['_filePaths']
+
+        return file_paths
+
+    def __getattr__(self, name):
+        val = getattr(self._wrap, name, None)
+        if val:
+            return val
+        else:
+            raise AttributeError('\'Publication\' has no attribute \'{}\''.format(name))
 
 class CMSIndexed(DocType):
     class Meta:
@@ -307,7 +422,7 @@ class PublicObject(object):
         obj_dict = self._doc.to_dict()
         obj_dict['system'] = self.system
         obj_dict['path'] = self.path
-        obj_dict['children'] = [doc.to_dict() for doc in self.children]
+        obj_dict['children'] = [doc.to_dict() if not hasattr(doc, 'projectId') else doc.to_file() for doc in self.children]
         obj_dict['metadata'] = self.metadata()
         obj_dict['permissions'] = 'READ'
         obj_dict['trail'] = self.trail()
@@ -338,6 +453,23 @@ class PublicElasticFileManager(BaseFileManager):
     def listing(self, system, file_path, offset=0, limit=100):
         file_path = file_path or '/'
         listing = PublicObject.listing(system, file_path, offset, limit)
+        publications = Publication.listing()
+        #children = [{'agavePath': 'agave://designsafe.storage.published/{}'.format(pub.project.value.projectId),
+        #             'children': [],
+        #             'deleted': False,
+        #             'format': 'folder',
+        #             'length': 24731027,
+        #             'meta': {
+        #                 'title': pub.project['value']['title']
+        #             },
+        #             'name': pub.project.value.projectId,
+        #             'path': '/{}'.format(pub.project.value.projectId),
+        #             'permissions': 'READ',
+        #             'project': pub.project.value.projectId,
+        #             'system': 'designsafe.storage.published',
+        #             'systemId': 'designsafe.storage.published',
+        #             'type': 'dir'} for pub in publications]
+        listing.children = itertools.chain(publications, listing.children)
         return listing
 
     def search(self, system, query_string, 
@@ -442,3 +574,13 @@ class PublicElasticFileManager(BaseFileManager):
             'permissions': 'READ'
         }
         return result
+
+class PublicationManager(object):
+    def save_publication(self, publication):
+        publication['projectId'] = publication['project']['value']['projectId']
+        publication['created'] = datetime.datetime.now().isoformat()
+        publication['status'] = 'publishing'
+        pub = Publication(publication)
+        pub.save()
+        return pub
+

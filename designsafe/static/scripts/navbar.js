@@ -17,14 +17,13 @@
   $(document).on('scroll', window.throttle(fixer, 100));
   fixer();
 
-  if (window.location.pathname === '/search/') {
-    $('#sitewide_search').hide();
-  }
+  // if (window.location.pathname === '/search/') {
+  //   $('#sitewide_search').hide();
+  // }
 
   $('#sitewide_search').on('change', function (ev) {
-    console.log(ev.target.value);
     window.location = '/search?q=' + ev.target.value;
-  })
+  });
 
 
 

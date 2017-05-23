@@ -12,19 +12,8 @@
       </div>
     </div>
   </div>
-  <!-- <div class="col-sm-3">
-    <div class="dashboard-stat red">
-      <div class="visual">
-        <i class="fa fa-database"></i>
-      </div>
-      <div class="details">
-        <div class="number"> {{storage_count | bytes}} </div>
-        <div class="desc"> Data Stored </div>
-      </div>
-    </div>
-  </div> -->
   <div class="col-sm-4">
-    <div class="dashboard-stat cyan">
+    <div class="dashboard-stat green">
       <div class="visual">
         <i class="fa fa-cogs"></i>
       </div>
@@ -35,13 +24,13 @@
     </div>
   </div>
   <div class="col-sm-4">
-    <div class="dashboard-stat green">
+    <div class="dashboard-stat red">
       <div class="visual">
         <i class="fa fa-database"></i>
       </div>
       <div class="details">
         <div class="number"> {{usage.total_storage_bytes | bytes}} </div>
-        <div class="desc"> Total storage in Designsafe </div>
+        <div class="desc"> Data Stored </div>
       </div>
     </div>
   </div>
@@ -55,13 +44,16 @@
       </div>
       <ul class="list-group">
         <li class="list-group-item">
-          <a href="/account"> Account Profile </a>
+          <a href="/account"> Manage Account </a>
         </li>
         <li class="list-group-item">
           <a href="/data"> Data Depot </a>
         </li>
         <li class="list-group-item">
           <a href="/rw/discovery-workspace"> Workspace </a>
+        </li>
+        <li class="list-group-item">
+          <a href="/rapid"> Recon Portal </a>
         </li>
         <li class="list-group-item">
           <a href="/learning-center/overview"> Training </a>
@@ -75,7 +67,11 @@
       </div>
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="app in recent_apps">
-          <a href="/rw/workspace/#/{{app.appId}}"> {{app}} </a>
+          <a href="/rw/workspace/#/{{app}}"> {{app}} </a>
+        </li>
+        <li class="list-group-item" ng-show="!recent_apps.length">
+          Wow, no recent apps! You can submit jobs in the
+          <a href="/rw/workspace"> Workspace </a>
         </li>
       </ul>
     </div>
@@ -86,10 +82,16 @@
       <div class="panel-heading dashboard">
         <h3 class="panel-title">My Jobs</h3>
       </div>
-      <div ng-show="!jobs.length">
-        <h3> No recent jobs! </h3>
+      <div ng-show="!jobs.length" class="panel-body">
+        <h3 ng-show="!loading_jobs">
+          No recent jobs! You can submit jobs in the
+          <a href="/rw/workspace"> Workspace </a>
+        </h3>
+        <div class="text-center" ng-show="loading_jobs">
+          <i class="fa fa-spinner fa-pulse fa-2x fa-fw" ></i>
+        </div>
       </div>
-      <div id="ds_jobs_chart" class="ds-chart"></div>
+      <div id="ds_jobs_chart" class="ds-chart" ng-show="jobs.length"></div>
       <ul class="list-group" ng-show="display_job_details">
         <li class="list-group-item" ng-repeat="job in jobs_details">
           <div class="row">
@@ -132,7 +134,7 @@
     <div class="panel panel-default">
       <div class="panel-heading clearfix dashboard">
         <h3 class="panel-title pull-left">My Tickets</h3>
-        <a class="button btn-xs btn-primary pull-right" href="#"> Create New </a>
+        <a class="button btn-xs btn-primary pull-right" href="/help/tickets"> Create New </a>
       </div>
         <ul class="list-group">
           <li class="list-group-item" ng-repeat="ticket in my_tickets">

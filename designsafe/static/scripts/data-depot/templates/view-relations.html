@@ -1,0 +1,83 @@
+<div class="modal-header">
+  <h3>Relations</h3>
+</div>
+<div class="modal-body">
+  <div class="relations" style="overflow:auto;">
+    <div class="data-model-tree data-model-preview-tree">
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="experiment in $ctrl.data.publication.experimentsList | orderBy: value.title"
+            style="border:none;">
+          <div class="tree-el">
+          <span class="ul-title"> <strong>{{experiment.value.title}}</strong> </span>
+            <div style="margin-left:5px; display:inline-block;"
+                 ng-if="getRelated('reportsList', experiment.uuid).length">
+                <span class="label tag-black">Report</span>
+                <span class="tab-title">
+                {{getRelated('reportsList', experiment.uuid)[0].value.title}}
+                </span>
+                </button>
+            </div>
+          </div>
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="modelConfig in getRelated('modelConfigs', experiment.uuid)">
+              <div class="tree-el">
+              <span class="label tag-blue"
+                   ng-class="{'selected': isSelected(modelConfig.uuid)}">
+                   Model Config</span>
+              <span class="tag-title">{{modelConfig.value.title}}</span>
+              </div>
+              <ul class="sensor-list-ul">
+                <li class="tree-container"
+                    ng-repeat="sensorList in getRelated('sensorLists', [experiment.uuid, modelConfig.uuid])">
+                  <div class="tree-el">  
+                  <span class="label tag-green"
+                        ng-class="{'selected': isSelected(sensorList.uuid)}">
+                        Sensor</span>
+                  <span class="tag-title">{{sensorList.value.title}}</span>
+                  </div>
+                  <ul class="event-ul">
+                    <li ng-repeat="event in getRelated('eventsList', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
+                      <div class="tree-el">
+                      <span class="label tag-red tree-el"
+                            ng-class="{'selected': $ctrl.isSelected(event.uuid)}">
+                        Event</span>
+                      <span class="tag-title">{{event.value.title}}</span>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="data-model-tree data-model-preview-tree">
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in $ctrl.data.publication.analysisList"
+            style="border:none;">
+            <div class="tree-el">
+              <span class="label tag-light-blue">Analysis</span>
+              <span class="ul-title">{{analysis.value.title}}</span>
+            </div> 
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="event in getRelated('analysisList', analysis.uuid)">
+              <div class="tree-el">
+              <span class="label tag-red">Event</span>
+              <span class="tag-title">{{event.value.title}}</span>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+
+</div>
+<div class="modal-footer">
+  <button class="btn btn-info"
+          data-ng-click="$ctrl.close()">
+          Close
+  </button>             
+</div>

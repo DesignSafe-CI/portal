@@ -3,22 +3,25 @@ import logging
 import re
 import os
 import sys
-import subprocess
+import json
+import urllib
 from datetime import datetime
 from celery import shared_task
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from requests.exceptions import HTTPError
 
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
 
-@shared_task(bind=True)
-def reindex_agave(self, username, file_id, full_indexing = True,
-                  levels = 0, pems_indexing = True, index_full_path = True):
+@shared_task(bind=True, max_retries=None)
+def reindex_agave(self, username, file_id, full_indexing=True,
+                  levels=1, pems_indexing=True, index_full_path=True):
     user = get_user_model().objects.get(username=username)
+    levels=1
 
     from designsafe.apps.api.data import AgaveFileManager
     agave_fm = AgaveFileManager(user)
@@ -37,6 +40,10 @@ def reindex_agave(self, username, file_id, full_indexing = True,
                            pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
+    parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
+    agave_fm.indexer.index(system_id, parent_path, file_user,
+                           levels = 1)
+
 
 @shared_task(bind=True)
 def share_agave(self, username, file_id, permissions, recursive):
@@ -695,3 +702,141 @@ def check_project_meta_pems(self, metadata_uuid):
     service = get_service_account_client()
     bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)
     bfm.match_pems_to_project()
+
+@shared_task(bind=True)
+def set_project_id(self, project_uuid):
+    from designsafe.apps.api.projects.models import ExperimentalProject
+    logger.debug('Setting project ID')
+    service = get_service_account_client()
+    project = ExperimentalProject._meta.model_manager.get(service, project_uuid)
+    id_metas = service.meta.listMetadata(q='{"name": "designsafe.project.id"}')
+    logger.debug(json.dumps(id_metas, indent=4))
+    if not len(id_metas):
+        raise Exception('No project Id found')
+
+    id_meta = id_metas[0]
+    project_id = int(id_meta['value']['id'])
+    project_id = project_id + 1
+    for i in range(10):
+        _projs = service.meta.listMetadata(q='{{"name": "designsafe.project", "value.projectId": {} }}'.format(project_id))
+        if len(_projs):
+            project_id = project_id + 1
+    
+    project.project_id = 'PRJ-{}'.format(str(project_id))
+    project.save(service)
+    logger.debug('updated project id=%s', project.uuid)
+    id_meta['value']['id'] = project_id
+    service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
+    logger.debug('updated id record=%s', id_meta['uuid'])
+
+@shared_task(bind=True, max_retries=5)
+def copy_publication_files_to_corral(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication
+    from designsafe.apps.api.agave.models.files import BaseFileResource
+    publication = Publication(project_id=project_id)
+    filepaths = publication.related_file_paths()
+    base_path = ''.join(['/', publication.projectId])
+    service = get_service_account_client()
+    service.files.manage(systemId=settings.PUBLISHED_SYSTEM,
+                         filePath='/',
+                         body={'action': 'mkdir',
+                               'path': base_path})
+    base_dir = BaseFileResource.listing(system=settings.PUBLISHED_SYSTEM,
+                                        path=base_path,
+                                        agave_client=service)
+    proj_system = 'project-{}'.format(publication.project['uuid'])
+    for filepath in filepaths:
+        filepath = filepath.strip('/')
+        logger.info('Copying: {}'.format(filepath))
+        path_comps = filepath.split('/')
+        parent_path = os.path.join(*path_comps[:-1])
+        file_obj = BaseFileResource.\
+                      listing(system=proj_system,
+                                  path=filepath,
+                                  agave_client=service)
+        if file_obj.type == 'dir':
+            logger.info('path is a directory, ensuring path exists')
+            base_obj = BaseFileResource.\
+                         ensure_path(service,
+                                     settings.PUBLISHED_SYSTEM,
+                                     os.path.join(base_path, parent_path))
+        else:
+            logger.info('path is a file, ensuring parent path exists')
+            base_obj = BaseFileResource.\
+                         ensure_path(service,
+                                     settings.PUBLISHED_SYSTEM,
+                                     os.path.join(base_path, parent_path))
+        try:
+            base_obj.import_data(file_obj.system, file_obj.path)
+        except Exception as err:
+            logger.error('Error when copying data to published: %s. %s', filepath, err)
+            #self.retry(exc=err)
+
+    try: 
+        image = BaseFileResource.\
+                  listing(system=proj_system,
+                          path='projectimage.jpg',
+                          agave_client=service)
+        base_dir.import_data(image.system, image.path)
+    except HTTPError as err:
+        logger.debug('No project image')
+    save_to_fedora.apply_async(args=[project_id])
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def save_publication(self, project_id):
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
+    from designsafe.apps.api.projects.managers import publication as PublicationManager
+    try:
+        pub = Publication(project_id=project_id)
+        publication = PublicationManager.reserve_publication(pub.to_dict())
+        pub.update(**publication)
+        copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
+    except Exception as exc:
+        logger.error('Proj Id: %s. %s', project_id, exc)
+        raise self.retry(exc=exc)
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def save_to_fedora(self, project_id):
+    import requests
+    import magic
+    from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
+    try:
+        pub = Publication(project_id=project_id)
+        pub.update(status='published')
+        _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
+        fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
+        res = requests.get(fedora_base)
+        if res.status_code == 404 or res.status_code == 410:
+            requests.put(fedora_base)
+        
+        fedora_project_base = ''.join([fedora_base, '/', project_id])
+        res = requests.get(fedora_project_base)
+        if res.status_code == 404 or res.status_code == 410:
+            requests.put(fedora_project_base)
+
+        headers = {'Content-Type': 'text/plain'}
+        #logger.debug('walking: %s', _root)
+        for root, dirs, files in os.walk(_root):
+            for name in files:
+                mime = magic.Magic(mime=True)
+                headers['Content-Type'] = mime.from_file(os.path.join(root, name))
+                #files
+                full_path = os.path.join(root, name)
+                _path = full_path.replace(_root, '', 1)
+                _path = _path.replace('[', '-')
+                _path = _path.replace(']', '-')
+                url = ''.join([fedora_project_base, urllib.quote(_path)])
+                #logger.debug('uploading: %s', url)
+                with open(os.path.join(root, name), 'rb') as _file:
+                    requests.put(url, data=_file, headers=headers)
+
+            for name in dirs:
+                #dirs
+                full_path = os.path.join(root, name)
+                _path = full_path.replace(_root, '', 1)
+                url = ''.join([fedora_project_base, _path])
+                #logger.debug('creating: %s', _path)
+                requests.put(url)
+    except Exception as exc:
+        logger.error('Proj Id: %s. %s', project_id, exc)
+        raise self.retry(exc=exc)

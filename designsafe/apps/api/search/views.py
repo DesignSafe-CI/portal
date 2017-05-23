@@ -31,15 +31,16 @@ class SearchView(BaseApiView):
         # stuff too.
         es_query = Search(index="nees,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
-            .query("query_string", query=q, default_operator="and")\
+            .query("query_string", query=q, default_operator="and", fields=[])\
             .query(~Q('match', type='dir'))\
-            .highlight("body",
-                fragment_size=150,
+            .highlight('body',
+                fragment_size=100,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
-            .highlight_options(require_field_match=False)\
-            .extra(from_=offset, size=limit)
+            .highlight_options(require_field_match=True)\
+            .extra(from_=offset, size=limit)\
+
         if type_filter == 'files':
             es_query = es_query.query("match", type="file")\
                 .filter("term", _type="object")\
@@ -59,11 +60,24 @@ class SearchView(BaseApiView):
                     }
                 )
         elif type_filter == 'web':
-            es_query._index = 'cms'
-            es_query = es_query.query(~Q('match', body='\n'))\
-                            .filter("exists", field="body")
-            # es_query = es_query.query("_source", include=['body'])
-
+            es_query = Search(index="cms")\
+                .query("query_string", query=q, default_operator="and", fields=["body"])\
+                .highlight('body',
+                        fragment_size=100,
+                        pre_tags=["<strong>"],
+                        post_tags=["</strong>"],
+                    )\
+                .highlight_options(require_field_match=True)\
+                .extra(from_=offset, size=limit)\
+            # es_query._index = 'cms'
+            # es_query = es_query.query("query_string", query=q, default_operator="and", fields=["body"])
+            # es_query = es_query.highlight('body',
+            #         fragment_size=100,
+            #         pre_tags=["<strong>"],
+            #         post_tags=["</strong>"],
+            #     )\
+            #     .highlight_options(require_field_match=True)
+            # logger.info(es_query.to_dict())
         # logger.info(es_query.to_dict())
         res = es_query.execute()
 
@@ -71,13 +85,7 @@ class SearchView(BaseApiView):
 
         # for the sidebar with the different categories to refine by
         web_query = Search(index="cms")\
-            .query("query_string", query=q, default_operator="and")\
-            .highlight("body",
-                fragment_size=150,
-                pre_tags=["<strong>"],
-                post_tags=["</strong>"],
-            )\
-            .highlight_options(require_field_match=False)\
+            .query("query_string", query=q, default_operator="and", fields=['body'])\
             .extra(from_=offset, size=limit)\
             .execute()
         # web_query = web_query.execute()

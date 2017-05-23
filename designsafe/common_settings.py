@@ -14,6 +14,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+
+
 gettext = lambda s: s
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -97,6 +99,8 @@ INSTALLED_APPS = (
     'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
     'designsafe.apps.search',
+    'designsafe.apps.geo',
+    'designsafe.apps.rapid',
 
     #haystack integration
     'haystack'
@@ -197,11 +201,11 @@ else:
 
 
 # Haystack cms indexing settings
-if not (os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true'):
+if os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true':
     HAYSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
+            'URL': 'elasticsearch:9200/',
             'INDEX_NAME': 'cms',
         }
     }
@@ -209,7 +213,7 @@ else:
     HAYSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'elasticsearch:9200/',
+            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
             'INDEX_NAME': 'cms',
         }
     }
@@ -492,7 +496,9 @@ if os.environ.get('OPBEAT_ORGANIZATION_ID'):
 WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 WEBSOCKET_URL = '/ws/'
 WS4REDIS_CONNECTION = {
-    'host': 'redis',
+    'host': os.environ.get('WS_BACKEND_HOST'),
+    'port': os.environ.get('WS_BACKEND_PORT'),
+    'db': os.environ.get('WS_BACKEND_DB'),
 }
 WS4REDIS_EXPIRE = 0
 
@@ -513,6 +519,11 @@ AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+
+AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
+AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
+AGAVE_JWT_HEADER = os.environ.get('AGAVE_JWT_HEADER')
+AGAVE_JWT_USER_CLAIM_FIELD = os.environ.get('AGAVE_JWT_USER_CLAIM_FIELD')
 
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'id': 'project-{}',
@@ -537,6 +548,18 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
+
+PUBLISHED_SYSTEM = 'designsafe.storage.published'
+
+# RECAPTCHA SETTINGS FOR LESS SPAMMO
+DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
+DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+
+#FOR RAPID UPLOADS
+DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
+
+EZID_USER = os.environ.get('EZID_USER')
+EZID_PASS = os.environ.get('EZID_PASS')
 
 from celery_settings import *
 from external_resource_settings import *

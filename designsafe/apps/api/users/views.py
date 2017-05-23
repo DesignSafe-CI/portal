@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
 from django.views.generic.base import View
+from django.core.exceptions import ObjectDoesNotExist
+from pytas.http import TASClient
 
 from elasticsearch_dsl import Q, Search
 
@@ -54,8 +56,25 @@ class SearchView(SecureMixin, View):
         model = get_user_model()
         q = request.GET.get('username')
         if q:
-            user = model.objects.get(username=q)
-            return JsonResponse(model_to_dict(user, fields=resp_fields))
+            try:
+                user = model.objects.get(username=q)
+            except ObjectDoesNotExist as err:
+                return HttpResponseNotFound();
+            res_dict = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'username': user.username,
+            }
+            try:
+                user_tas = TASClient().get_user(username=q)
+                res_dict['profile'] = {
+                    'institution': user_tas['institution']
+                }
+            except Exception as err:
+                logger.info('No Profile.')
+
+            return JsonResponse(res_dict)
 
         q = request.GET.get('q')
 

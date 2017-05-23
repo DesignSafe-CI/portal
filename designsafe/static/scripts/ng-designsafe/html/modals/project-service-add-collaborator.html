@@ -17,16 +17,128 @@
         </p>
     </div>
     <div ng-if="! (data.busy || data.error)">
+
         <form>
-            <p>Remove current collaborator(s):</p>
+          <span style="display:inline-block; width:70%;"><h5> PI </h5> </span>
+          <span style="display:inline-block; width:25%;">Assign Authorship</span>
+          <div class="form-group">
+            <div style="width:85%; display:inline-block;">
+              <ds-user username="data.project.value.pi" format="name-email"></ds-user>
+            </div>
+            <div style="width:7%; text-align:center; display:inline-block;">
+              <button class="btn btn-sm btn-default"
+                      data-toggle="collapse"
+                      data-target="#{{data.project.value.pi}}-experiments">
+                      <i class="fa fa-caret-square-o-down"></i>
+              </button>
+            </div>
+            <div class="collapse" id="{{data.project.value.pi}}-experiments">
+             <ul style="list-style:none;">
+               <li ng-repeat="exp in data.experiments">
+                 <input type="checkbox" name="author-{{data.project.value.pi}}"
+                        ng-model="form.authors[exp.uuid][data.project.value.pi]"
+                        ng-change="toggleUserToExp(exp, data.project.value.pi)"/>
+                 <label for="author-{{data.project.value.pi}}">{{exp.value.title}}</label>
+               </li>
+             </ul>
+            </div>
+          </div>
+        </form>
+        <hr>
+        <form>
+          <span style="display:inline-block; width:10%;">Remove</span>
+          <span style="display:inline-block; width:60%;">Current Co-Pi(s):</span>
+          <span style="display:inline-block; width:25%;">Assign Authorship</span>
+            <div class="form-group" ng-repeat="cur in form.curCoPis">
+                <div class="checkbox"  style="width:85%; margin-right:0; display:inline-block;">
+                  <label>
+                    <input type="checkbox" ng-model="cur.remove" ng-disabled="! canManage(cur.user.username)">
+                    <div style="margin-left:40px;">
+                        <ds-user username="cur.user.username" format="name-email"></ds-user>
+                    </div>
+                  </label>
+                </div>
+                <div style="width:7%; text-align:center; display:inline-block;">
+                  <button class="btn btn-sm btn-default"
+                          data-toggle="collapse"
+                          ng-disabled="! canManage(cur.user.username)"
+                          data-target="#{{cur.user.username}}-experiments">
+                          <i class="fa fa-caret-square-o-down"></i>
+                  </button>
+                 </div>
+                   <div class="collapse" id="{{cur.user.username}}-experiments">
+                    <ul style="list-style:none;">
+                      <li ng-repeat="exp in data.experiments">
+                        <input type="checkbox" name="author-{{cur.user.username}}"
+                               ng-model="form.authors[exp.uuid][cur.user.username]"
+                               ng-change="toggleUserToExp(exp, cur.user.username)"/>
+                        <label for="author-{{cur.user.username}}">{{exp.value.title}}</label>
+                      </li>
+                    </ul>
+                   </div>
+            </div>
+
+            <div class="well well-sm">
+                <p>Add new Co-PI:</p>
+                <div class="form-group" ng-repeat="add in form.addCoPis">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" id="id_form_user" ng-model="add.user"
+                                   placeholder="Lookup user by name or email address"
+                                   autocomplete="off" uib-typeahead="user for user in searchUsers($viewValue)"
+                                   typeahead-loading="searching"
+                                   typeahead-no-results="noResults"
+                                   typeahead-input-formatter="formatSelection()"
+                                   typeahead-template-url="local/share_user_search_result.html"
+                            >
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="text-muted" ng-show="searching"><i class="fa fa-spinner fa-spin"></i> Searching for users...</span>
+                            <div ng-show="noResults">
+                                <i class="fa fa-remove"></i> No users found.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-info btn-sm" ng-click="addAnotherCoPi()">
+                    <i class="fa fa-plus"></i> Add another
+                </button>
+            </div>
+        </form>
+
+        <form>
+            <span style="display:inline-block; width:10%;">Remove</span>
+            <span style="display:inline-block; width:60%;">Current Team Member(s):</span>
+            <span style="display:inline-block; width:25%;">Assign Authorship</span>
             <div class="form-group" ng-repeat="cur in form.curUsers">
-                <div class="checkbox">
+                <div class="checkbox" style="width:85%; margin-right:0; display:inline-block;">
                     <label>
                         <input type="checkbox" ng-model="cur.remove" ng-disabled="! canManage(cur.user.username)">
-                        <ds-user username="cur.user.username" format="name-email"></ds-user>
+                        <div style="margin-left:40px;">
+                            <ds-user username="cur.user.username" format="name-email"></ds-user>
+                        </div>
                         <span class="label label-info" ng-if="data.project.value.pi === cur.user.username">PI</span>
                     </label>
                 </div>
+
+                <div style="width:7%; text-align:center; display:inline-block;">
+                <button class="btn btn-sm btn-default"
+                        data-toggle="collapse"
+                        ng-disabled="! canManage(cur.user.username)"
+                        data-target="#{{cur.user.username}}-experiments">
+                        <i class="fa fa-caret-square-o-down"></i>
+                  </button>
+                 </div>
+                   <div class="collapse" id="{{cur.user.username}}-experiments">
+                    <ul style="list-style:none;">
+                      <li ng-repeat="exp in data.experiments">
+                        <input type="checkbox" name="author-{{cur.user.username}}"
+                               ng-model="form.authors[exp.uuid][cur.user.username]"
+                               ng-change="toggleUserToExp(exp, cur.user.username)"/>
+                        <label for="author-{{cur.user.username}}">{{exp.value.title}}</label>
+                      </li>
+                    </ul>
+                   </div>
             </div>
 
             <div class="well well-sm">
@@ -63,7 +175,7 @@
         <button ng-disabled="data.busy || data.error" class="btn btn-primary" type="button" ng-click="saveCollaborators($event)">
             Save Collaborator Settings
         </button>
-        <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
     </div>
 </div>
 <script type="text/ng-template" id="local/share_user_search_result.html">

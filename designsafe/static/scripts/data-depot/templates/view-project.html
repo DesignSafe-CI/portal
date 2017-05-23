@@ -1,0 +1,94 @@
+<div class="modal-header">
+    <!--
+    <h3>Project: {{$ctrl.data.publication.project.value.projectId}}</h3>
+    -->
+    <h3>{{$ctrl.data.publication.project.value.title}}</h3>
+</div>
+<div class="modal-body">
+    <div class="modal-row">
+      <div class="col-sm-3 det-label">
+      <yamz-term term-id="h1551" data-toggle="tooltip">
+        <i class="fa fa-question-circle"></i>
+      </yamz-term>
+      <span style="font-weight:bold;">Project ID:</span>
+      </div>
+      <div class="col-sm-9 det-val">
+      <span>{{$ctrl.data.publication.project.value.projectId}}</span>
+      </div>
+    </div>
+    
+    <!--
+    <div class="modal-row">
+      <span style="font-weight:bold;">Project Identifier</span>
+    </div>
+    <div class="modal-row" style="margin-bottom:10px;">
+      <span>{{$ctrl.data.publication.project.value.projectId}}</span>
+    </div>
+    -->
+
+    <div class="modal-row">
+     <div class="col-sm-3 det-label">
+      <span style="font-weight:bold;">PI:</span>
+     </div>
+     <div class="col-sm-9 det-val">
+      <ds-user username="$ctrl.data.publication.project.value.pi" format="name-email">
+        {{$ctrl.data.publication.project.value.pi}}
+      </ds-user>
+      </div>
+    </div>
+
+    <div class="modal-row">
+     <div class="col-sm-3 det-label">
+      <yamz-term term-id="h1264" data-toggle="tooltip">
+        <i class="fa fa-question-circle"></i>
+      </yamz-term>
+      <span style="font-weight:bold;">Award Number:</span>
+     </div>
+     <div class="col-sm-9 det-val">
+      <span>{{$ctrl.data.publication.project.value.awardNumber}}</span>
+      </div>
+    </div>
+
+    <div class="modal-row">
+     <div class="col-sm-3 det-label">
+      <yamz-term term-id="h1550" data-toggle="tooltip">
+        <i class="fa fa-question-circle"></i>
+      </yamz-term>
+      <span style="font-weight:bold;">Project Type:</span>
+    </div>
+    <div class="col-sm-9 det-val">
+      <span style="text-transform:capitalize">
+        {{$ctrl.data.publication.project.value.projectType}}
+      </span>
+    </div>
+    </div>
+
+    <div class="modal-row">
+      <div class="col-sm-3 det-label">
+      <span style="font-weight:bold;">Keywords:</span>
+    </div>
+    <div class="col-sm-9 det-val">
+      <span>
+        {{$ctrl.data.publication.project.value.keywords}}
+      </span>
+    </div>
+    </div>
+
+    <div class="modal-row">
+     <div class="col-sm-3 det-label">
+      <yamz-term term-id="h1552" data-toggle="tooltip">
+        <i class="fa fa-question-circle"></i>
+      </yamz-term>
+      <span style="font-weight:bold;">Description:</span>
+    </div>
+    <div class="col-sm-9 det-val">
+      <p>
+        {{$ctrl.data.publication.project.value.description}}
+      </p>
+    </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-info"
+            ng-click="$ctrl.close()">Close</button>
+</div>

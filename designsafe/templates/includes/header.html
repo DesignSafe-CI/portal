@@ -12,7 +12,6 @@
     <div class="user-menu">
       {% if user.is_authenticated %}
         <span style="vertical-align:middle">
-          Welcome, {{ user.first_name }}!
           {% if not agave_ready %}
             &nbsp;
             <a class="text-danger" title="API Session Not Available. Click for details." href="{% url 'designsafe_auth:agave_session_error' %}"><i class="fa fa-exclamation-triangle"></i><span class="sr-only">API Session Not Available. Click for details.</span></a>
@@ -21,13 +20,15 @@
         <span ng-controller="NotificationBadgeCtrl" id="id_user_notify" ng-include="'{% static 'designsafe/apps/notifications/html/badge.html' %}'">
         </span>
         <div class="btn-group">
-          <a href="{% url 'designsafe_accounts:manage_profile' %}" class="btn btn-link-alt">Home</a>
+          <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>
           <button type="button" class="btn btn-link-alt dropdown-toggle"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
           </button>
           <ul class="dropdown-menu">
+            <li><a href="{% url 'designsafe_dashboard:index' %}">Dashboard</a></li>
+            <li><a href="{% url 'designsafe_notifications:index' %}">Notifications</a></li>
             <li><a href="{% url 'logout' %}">Log out</a></li>
             {% if user.is_impersonate %}
               <li><a href="{% url 'impersonate-stop' %}">Stop impersonating {{user}}</a></li>

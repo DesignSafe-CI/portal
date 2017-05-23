@@ -31,6 +31,7 @@ from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.filemanager.public_search_index import PublicElasticFileManager
 from designsafe.apps.api.agave.filemanager.community import CommunityFileManager
+from designsafe.apps.api.agave.filemanager.published import PublishedFileManager
 from designsafe.apps.api.agave.views import FileMediaView
 
 logger = logging.getLogger(__name__)
@@ -41,8 +42,9 @@ class PublicDataListView(BaseApiView):
             system_id=None, file_path=None):
         """GET handler."""
         logger.info('file_mgr_name: %s', file_mgr_name)
-        if file_mgr_name != PublicElasticFileManager.NAME \
-            and file_mgr_name != 'community':
+        if file_mgr_name not in [PublicElasticFileManager.NAME,
+                                 'community',
+                                 'published']:
             return HttpResponseBadRequest('Wrong Manager')
 
         if system_id is None:
@@ -53,11 +55,15 @@ class PublicDataListView(BaseApiView):
         elif file_mgr_name == 'community':
             ag = get_user_model().objects.get(username='envision').agave_oauth.client
             file_mgr = CommunityFileManager(ag)
+        elif file_mgr_name == 'published':
+            ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            file_mgr = PublishedFileManager(ag)
+            #listing = file_mgr.listing(system_id, file_path)
+            #return JsonResponse({'response': 'ok'})
 
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         listing = file_mgr.listing(system_id, file_path, offset, limit)
-
         return JsonResponse(listing.to_dict())
 
 class PublicMediaView(FileMediaView):
@@ -76,7 +82,7 @@ class PublicMediaView(FileMediaView):
             body = request.POST.copy()
 
         action = body.get('action', '')
-        if action in ['copy', 'mkdir', 'move', 'rename', 'trash']:
+        if action in ['mkdir', 'move', 'rename', 'trash']:
             return HttpResponseBadRequest('Invalid Action')
 
         return super(PublicMediaView, self).put(request, *args, **kwargs)
@@ -114,8 +120,9 @@ class PublicPemsView(BaseApiView):
     def get(self, request, file_mgr_name,
             system_id = None, file_path = None):
         """ GET handler """
-        if file_mgr_name != PublicElasticFileManager.NAME \
-            and file_mgr_name != 'community':
+        if file_mgr_name not in [PublicElasticFileManager.NAME,
+                                 'community',
+                                 'published']:
             return HttpResponseBadRequest()
 
         if system_id is None:

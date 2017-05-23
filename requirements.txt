@@ -1,7 +1,6 @@
 pip
 #agavepy>=0.3.11
--e git+https://github.com/mrhanlon/agavepy.git@listMetadata/privileged#egg=agavepy
-
+agavepy==0.4.0
 Django<1.9.0
 django-bootstrap3==6.1.0
 django-classy-tags==0.6.2
@@ -66,8 +65,15 @@ python-dateutil==2.4.2
 python-memcached
 
 django-haystack==2.6
-
+cryptography==1.7.2
+pyjwt==1.4.2
 chardet==2.3.0
+
+
+beautifulsoup4==4.5.3
+
+ipdb==0.9.4
+python-magic==0.4.13
 
 # pytas
 -e git+https://bitbucket.org/taccaci/pytas.git@v1.2.0#egg=pytas-1.2.0

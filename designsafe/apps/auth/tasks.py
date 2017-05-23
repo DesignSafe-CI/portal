@@ -26,6 +26,19 @@ def check_or_create_agave_home_dir(username):
             ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
                             filePath='', body=body)
 
+            ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+            job_body = {
+                'inputs': {
+                    'username': username,
+                    'directory': 'shared/{}'.format(username)
+                },
+                'name': 'setfacl',
+                'appId': 'setfacl_corral3-0.1'
+            }
+
+            response = ds_admin_client.jobs.submit(body=job_body)
+            logger.debug('setfacl response: {}'.format(response))
+
             # add dir to index
             fm = FileManager(agave_client=ag)
             fm.index(settings.AGAVE_STORAGE_SYSTEM, username, username, levels=1)

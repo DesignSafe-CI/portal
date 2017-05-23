@@ -1,0 +1,253 @@
+body {
+  /*background: #fff;*/
+  font-family: 'Open Sans', sans-serif;
+}
+
+.rapid-admin {
+  background-color: #fff;
+}
+
+#rapid {
+  margin-top: -20px;
+}
+
+#rapid .navbar {
+  margin-bottom: 0px;
+}
+#rapid_main {
+  /*display: flex;*/
+  /*flex-direction: row;*/
+  height: calc(100vh - 200px);
+  /*height: 750px;*/
+  position: relative;
+  margin-top: -20px;
+}
+
+.slide-down.ng-hide {
+  transform: translate(0, -100%);
+}
+
+.slide-down.ng-hide-add {
+  transition: 1.0s linear all;
+}
+
+
+/* Animations for the sidebar and details...*/
+.slide-in.ng-hide {
+  transform: translate(-100%, 0);
+}
+
+.slide-in.ng-hide-add,
+.slide-in.ng-hide-remove {
+  transition: 0.2s linear all;
+}
+
+.fade.ng-hide {
+  opacity: 0;
+}
+
+.fade.ng-hide-add {
+  transition: 0.0s linear all;
+}
+
+.fade.ng-hide-remove {
+  transition: 0.5s linear all;
+}
+
+.fade {
+  opacity:1;
+}
+
+#sidebar {
+  width: 25%;
+  position: absolute;
+  top: 0px;
+  /*height: calc(100vh - 50px);*/
+  /*height:100vh;*/
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  /*overflow-y: hidden;*/
+  /*overflow-x: visible;*/
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  z-index: 500;
+}
+#sidebar .sidebar-header {
+  border-bottom: 2px solid #d3d3d3;
+  padding: 10px;
+  /*background: #d3d3d3;*/
+}
+
+#sidebar .sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#sidebar .sidebar-content .sb-row {
+  flex: 0 1 auto;
+}
+
+#sidebar .event-results {
+  overflow-y: auto;
+}
+
+#sidebar .event-listing .event-title {
+  font-size: 1.25em;
+}
+
+#show_sidebar_handle {
+  position: absolute;
+  top: 8px;
+  color: #737373;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  height:3em;
+  z-index: 500;
+  /*box-shadow: 0px 1px 4px rgba(0,0,0,0.3);*/
+  border-left: 1px solid #D4D4D4;
+}
+
+#sidebar .sidebar-handle {
+  position: absolute;
+  top:8px;
+  left: 100%;
+  z-index: 502;
+  color: #737373;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  height:3em;
+  /*box-shadow: 0px 1px 4px rgba(0,0,0,0.3);*/
+  border-left: 1px solid #D4D4D4;
+
+  /*line-height: 2em;*/
+}
+
+#show_sidebar_handle i, .sidebar-handle i {
+  position: relative;
+  top: calc(22.5%);
+}
+
+
+
+#map {
+  height: 100%;
+}
+
+.event-search {
+  flex: 1 1 auto;
+  padding: 10px;
+  background: #4285F4;
+}
+
+.event-listing, .event-listing-detail {
+  border-bottom: 1px solid #d3d3d3;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+
+
+.search-container .event-listing {
+  cursor: pointer;
+}
+
+.search-container .event-listing:hover {
+  background-color: #d3d3d3;
+}
+
+.event-listing .event-title {
+  font-weight: bold;
+  color: #5e5e5e;
+}
+
+.event-listing.earthquake {
+  border-left: 5px solid #e46e28;
+}
+.event-listing.flood {
+  border-left: 5px solid #4285F4;
+}
+.event-listing.tsunami {
+  border-left: 5px solid #a765fe;
+}
+.event-listing.landslide {
+  border-left: 5px solid #62a241;
+}
+.event-listing.hurricane {
+  border-left: 5px solid #d34141;
+}
+.event-listing.tornado {
+  border-left: 5px solid #9100ff;
+}
+
+.event-listing .event-type.earthquake {
+  background-color: #e46e28;
+}
+.event-listing .event-type.flood {
+  background-color: #4285F4;
+}
+.event-listing  .event-type.tsunami {
+  background-color: #a765fe;
+}
+.event-listing  .event-type.landslide {
+  background-color: #62a241;
+}
+.event-listing  .event-type.hurricane {
+  background-color: #d34141;
+}
+.event-listing  .event-type.tornado {
+  background-color: #9100ff;
+}
+
+
+.event-listing .event-date, .event-listing .event-type {
+  background: #777777;
+  border-radius: 1px;
+  padding: 2px 2px 2px 2px;
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+.event-listing .row {
+  width: 100%;
+  margin: auto;
+}
+
+.event-listing .left {
+  width: 50%;
+  float: left;
+}
+
+.event-listing .right {
+  width: 50%;
+  float: left;
+}
+
+.event-listing .event-dataset {
+  /*border-bottom: 1px solid #d2d2d2;*/
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+
+.filter-options {
+  padding: 5px;
+}
+
+.filter-options-button {
+  font-size: 0.9em;
+  color: #6f6f6f;
+  cursor: pointer;
+}
+
+.rapid-popup {
+  background: #d3d3d3;
+  border-radius: 0px;
+}
+
+.rapid-popup .leaflet-popup-content-wrapper {
+  border-radius: 0px;
+}

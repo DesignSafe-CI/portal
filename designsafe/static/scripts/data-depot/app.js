@@ -8,7 +8,8 @@
     'ds.notifications',
     'ds.wsBus',
     'toastr',
-    'logging'
+    'logging',
+    'ui.customSelect'
   );
 
   function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
@@ -329,6 +330,35 @@
             return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q) {
+              return true;
+          },
+          userAuth: ['UserService', function (UserService) {
+            return UserService.authenticate().then(function (resp) {
+              return true;
+            }, function (err) {
+              return false;
+            });
+          }]
+        }
+      })
+      .state('publishedData', {
+        url: '/public/designsafe.storage.published/{filePath:any}',
+        controller: 'PublishedDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/published-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.published',
+          filePath: '',
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService){
+            var systemId = $stateParams.systemId || 'designsafe.storage.published';
+            var filePath = $stateParams.filePath;
+            DataBrowserService.apiParams.fileMgr = 'published';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            DataBrowserService.apiParams.searchState = undefined;
+            return DataBrowserService.browse({system: systemId, path: filePath});
+          }],
+          'auth': function($q){
               return true;
           },
           userAuth: ['UserService', function (UserService) {

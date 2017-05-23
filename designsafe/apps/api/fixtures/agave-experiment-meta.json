@@ -1,0 +1,26 @@
+{
+    "uuid" : "9620095064311852570-242ac11e-0001-012",
+    "schemaId" : null,
+    "internalUsername" : null,
+    "associationIds" : [ ],
+    "lastUpdated" : "2017-01-26T09:48:46.760-06:00",
+    "name" : "designsafe.project",
+    "value" : {
+      "title": "experiment title",
+      "experimentType": "other"
+    },
+    "created" : "2016-10-30T15:57:58.970-05:00",
+    "owner" : "ds_admin",
+    "_links" : {
+      "self" : {
+        "href" : "https://agave.designsafe-ci.org/meta/v2/data/8510095064311852570-242ac11e-0001-012"
+      },
+      "permissions" : {
+        "href" : "https://agave.designsafe-ci.org/meta/v2/data/8510095064311852570-242ac11e-0001-012/pems"
+      },
+      "owner" : {
+        "href" : "https://agave.designsafe-ci.org/profiles/v2/ds_admin"
+      },
+      "associationIds" : [ ]
+    }
+} 

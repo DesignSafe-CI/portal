@@ -16,7 +16,7 @@
             if (msg.event_type == 'job') {
               url=djangoUrl.reverse('designsafe_workspace:process_notification', {'pk': msg.pk});
               return url;
-            } else if (msg.event_type == 'data') {
+            } else if (msg.event_type == 'data_depot') {
               url=djangoUrl.reverse('designsafe_api:process_notification', {'pk': msg.pk});
               return url;
             }
@@ -47,8 +47,7 @@
 
         function list(opts) {
           return $http({url: djangoUrl.reverse('designsafe_api:index'), method:'GET', params:opts}).then(function (resp) {
-
-            resp.data.forEach(function (d) {
+            resp.data.notifs.forEach(function (d) {
               d.datetime = new Date(d.datetime *1000);
             })
             return resp.data;

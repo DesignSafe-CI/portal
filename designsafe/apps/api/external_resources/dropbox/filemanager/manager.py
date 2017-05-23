@@ -38,8 +38,7 @@ class FileManager(object):
             self.dropbox_api = Dropbox(dropbox_token.access_token)
 
         except DropboxUserToken.DoesNotExist:
-            message = 'You need to connect your Dropbox.com account ' \
-                      'before you can access your Dropbox.com files.'
+            message = 'Connect your Dropbox account <a href="'+ reverse('dropbox_integration:index') + '">here</a>'
             raise ApiException(status=400, message=message, extra={
                 'action_url': reverse('dropbox_integration:index'),
                 'action_label': 'Connect Dropbox.com Account'
@@ -95,7 +94,7 @@ class FileManager(object):
                 entries = dropbox_item.entries
 
                 while True:
-                    children.extend([DropboxFile(item, item.path_display, parent=dropbox_item).to_dict(default_pems=default_pems)
+                    children.extend([DropboxFile(item, item.path_display.encode('utf-8'), parent=dropbox_item).to_dict(default_pems=default_pems)
                                 for item in entries])
                     if has_more:
                         folder = self.dropbox_api.files_list_folder_continue(cursor)
@@ -202,7 +201,8 @@ class FileManager(object):
             reindex_agave.apply_async(kwargs={
                                       'username': user.username,
                                       'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
-                                      })
+                                      },
+                                      queue='indexing')
         except:
             logger.exception('Unexpected task failure: dropbox_download', extra={
                 'username': username,
