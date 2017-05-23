@@ -4,6 +4,23 @@
 
 Improvements:
 
+- HAZMAP Reconnaisance.
+- Data Curiation for Projects.
+- Publication pipeline.
+- Projects mounting on notebooks.
+
+Fixes:
+
+- Dropbox path encoding.
+- Site Menu improvements.
+- Site Search improvements.
+- External Resource enabling bug.
+- Project human readable ID.
+- Setting permissions on home directories.
+- Site Header improvements.
+
+Improvements:
+
 - Community Data available.
 
 Fixes:
