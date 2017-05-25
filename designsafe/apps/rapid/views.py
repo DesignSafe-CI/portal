@@ -26,7 +26,6 @@ def handle_uploaded_image(f, file_id):
     with open(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', file_id), 'wb+') as destination:
         destination.write(f.getvalue())
 
-@login_required
 def index(request):
     metrics_logger.info('Rapid Index',
                  extra = {
