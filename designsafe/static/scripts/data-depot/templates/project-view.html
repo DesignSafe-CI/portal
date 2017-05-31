@@ -127,6 +127,16 @@
              ng-if="data.project.publicationStatus == 'publishing'">
           <p>This project is currently in a publication process. Please do not modify any data or metadata in this project.</p>
         </div>
+        <div class="alert alert-info"
+             style="margin-top:20px;"
+             ng-if="data.project.publicationStatus == 'publishing' && ui.publicationMessages.length">
+          <ul>
+            <il ng-repeat="message in ui.publicationMessages">
+              Error in {{message.title}}: {{message.message}}
+            </il>
+          </ul>
+          <p>{{ui.publicationMessage}}</p>
+        </div>
     </div>
 
     <div ng-if="! data.project">
