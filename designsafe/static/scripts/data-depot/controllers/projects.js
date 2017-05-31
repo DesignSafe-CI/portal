@@ -72,6 +72,7 @@
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
+    $scope.ui = {};
 
     function setEntitiesRel(resp){
       $scope.data.project.setEntitiesRel(resp);
@@ -396,6 +397,10 @@
       publication.analysisList = analysisList;
       publication.reportsList = reportsList;
       publication.experimentsList = experimentsList;
+      if (publicationMessages.length){
+          $scope.ui.publicationMessages = publicationMessages;
+          return;
+      }
       $http.post('/api/projects/publication/', {publication: publication})
         .then(function(resp){
           $scope.state.publicationMsg = resp.data.message;
