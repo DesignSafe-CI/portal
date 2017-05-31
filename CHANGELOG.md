@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v0.9.28
+
+Improvements:
+
+- Dashboard layout.
+- Publication Messages.
+
 ## v0.9.27
 
 Fixes:
