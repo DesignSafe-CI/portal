@@ -1,7 +1,7 @@
 
 
-<div class="row">
-  <div class="col-sm-4">
+<div class="row dashboard-top">
+  <div class="col-sm-3">
     <div class="dashboard-stat blue">
       <div class="visual">
         <i class="fa fa-rocket"></i>
@@ -12,18 +12,18 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="dashboard-stat green">
       <div class="visual">
         <i class="fa fa-cogs"></i>
       </div>
       <div class="details">
         <div class="number"> {{apps.length}} </div>
-        <div class="desc"> Applications Available </div>
+        <div class="desc">Available Apps</div>
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="dashboard-stat red">
       <div class="visual">
         <i class="fa fa-database"></i>
@@ -34,50 +34,22 @@
       </div>
     </div>
   </div>
+
+  <div class="col-sm-3">
+      <div> <span> Quick Links </span> </div>
+      <div><a href="/account"> Manage Account </a> </div>
+      <div> <a href="/data"> Data Depot </a> </div>
+      <div>  <a href="/rw/discovery-workspace"> Workspace </a> </div>
+      <div> <a href="/rapid"> Recon Portal </a> </div>
+      <div>  <a href="/learning-center/overview"> Training </a> </div>
+  </div>
+
 </div>
 
-<div class="row">
-  <div class="col-sm-3">
-    <div class="panel panel-default">
-      <div class="panel-heading dashboard">
-        <h3 class="panel-title">Quick Links</h3>
-      </div>
-      <ul class="list-group">
-        <li class="list-group-item">
-          <a href="/account"> Manage Account </a>
-        </li>
-        <li class="list-group-item">
-          <a href="/data"> Data Depot </a>
-        </li>
-        <li class="list-group-item">
-          <a href="/rw/discovery-workspace"> Workspace </a>
-        </li>
-        <li class="list-group-item">
-          <a href="/rapid"> Recon Portal </a>
-        </li>
-        <li class="list-group-item">
-          <a href="/learning-center/overview"> Training </a>
-        </li>
-      </ul>
-    </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading dashboard">
-        <h3 class="panel-title">Recent Apps</h3>
-      </div>
-      <ul class="list-group">
-        <li class="list-group-item" ng-repeat="app in recent_apps">
-          <a href="/rw/workspace/#/{{app}}"> {{app}} </a>
-        </li>
-        <li class="list-group-item" ng-show="!recent_apps.length">
-          Wow, no recent apps! You can submit jobs in the
-          <a href="/rw/workspace"> Workspace </a>
-        </li>
-      </ul>
-    </div>
+<div class="row dashboard-bottom">
 
-  </div>
-  <div class="col-sm-6">
+  <div class="col-sm-9">
     <div class="panel panel-default">
       <div class="panel-heading dashboard">
         <h3 class="panel-title">My Jobs</h3>
@@ -109,11 +81,14 @@
       </ul>
     </div>
   </div>
+
+
   <div class="col-sm-3">
     <div class="panel panel-default">
-    <div class="panel-heading dashboard">
-      <h3 class="panel-title">Notifications</h3>
-    </div>
+      <div class="panel-heading dashboard">
+        <h3 class="panel-title">Notifications <span class="badge badge-danger"> {{notification_count}} </span></h3>
+
+      </div>
       <ul class="list-group">
         <li class="list-group-item" ng-show="!notifications.length">
           No new notifications!
@@ -145,6 +120,21 @@
         <div ng-show="loading_tickets" class="text-center">
           <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
         </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading dashboard">
+        <h3 class="panel-title">Recent Apps</h3>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="app in recent_apps">
+          <a href="/rw/workspace/#/{{app}}"> {{app}} </a>
+        </li>
+        <li class="list-group-item" ng-show="!recent_apps.length">
+          Wow, no recent apps! You can submit jobs in the
+          <a href="/rw/workspace"> Workspace </a>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
