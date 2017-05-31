@@ -129,11 +129,11 @@
         </div>
         <div class="alert alert-info"
              style="margin-top:20px;"
-             ng-if="data.project.publicationStatus == 'publishing' && ui.publicationMessages.length">
+             ng-if="ui.publicationMessages.length">
           <ul>
-            <il ng-repeat="message in ui.publicationMessages">
+            <li ng-repeat="message in ui.publicationMessages">
               Error in {{message.title}}: {{message.message}}
-            </il>
+            </li>
           </ul>
           <p>{{ui.publicationMessage}}</p>
         </div>
