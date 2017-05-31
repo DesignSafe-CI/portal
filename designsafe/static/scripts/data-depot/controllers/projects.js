@@ -216,6 +216,7 @@
 
     $scope.publishPipeline_exit = function(){
       $scope.state.publishPipeline = undefined;
+      $scope.ui.publicationMessages = [];
     };
 
     $scope.publishPipeline_prev = function(st){
