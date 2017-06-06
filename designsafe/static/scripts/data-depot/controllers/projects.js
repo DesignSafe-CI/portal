@@ -72,6 +72,7 @@
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
+    $scope.ui = {};
 
     function setEntitiesRel(resp){
       $scope.data.project.setEntitiesRel(resp);
@@ -215,6 +216,7 @@
 
     $scope.publishPipeline_exit = function(){
       $scope.state.publishPipeline = undefined;
+      $scope.ui.publicationMessages = [];
     };
 
     $scope.publishPipeline_prev = function(st){
@@ -267,6 +269,7 @@
       var reportsList = [];
       var modelConfigs = [];
       var sensorLists = [];
+      var publicationMessages = [];
       if (publication.experimentsList){
         experimentsList = _.map(publication.experimentsList, function(exp){
           exp.value.equipmentType = exp.getET(exp.value.experimentalFacility,
@@ -277,9 +280,14 @@
           exp.events = $scope.state.publication;
           delete exp._ui;
           delete exp.events;
+          if (!exp.value.authors.length){
+            publicationMessages.push({title: 'Experiment ' + exp.value.title,
+                                      message: 'Missing authors'}); 
+          }
           return exp;
         });
         delete publication.experimentsList;
+
       }
       if (publication.eventsList){
         var _eventsList = angular.copy(publication.eventsList);
@@ -304,6 +312,10 @@
                       'name': f.name
                   };
             });
+            if (!evt.fileObjs.length){
+                publicationMessages.push({title: 'Event ' + evt.value.title,
+                                          message: 'Missing files'});
+            }
         });
         _.each(mcfsUuids, function(mcf){
           var _mcf = angular.copy($scope.state.project.getRelatedByUuid(mcf));
@@ -316,6 +328,10 @@
                   'name': f.name
               };
           });
+          if (!_mcf.fileObjs.length){
+              publicationMessages.push({title: 'Model Config '+ _mcf.value.title,
+                                        message: 'Missing files.'});
+          }
           modelConfigs.push(_mcf);
         });
         _.each(slsUuids, function(slt){
@@ -329,6 +345,10 @@
                 'name': f.name
             };
           });
+          if (!_slt.fileObjs.length){
+              publicationMessages.push({title: 'Sensor Info ' + _slt.value.title,
+                                        message: 'Missing files.'});
+          }
           sensorLists.push(_slt);
         });
       }
@@ -343,6 +363,10 @@
                   'name': f.name
               };
           });
+          if (!ana.fileObjs.length){
+              publicationMessages.push({title: 'Analysis ' + ana.value.title,
+                                        message: 'Missing Files'});
+          }
           return ana;
         });
         delete publication.analysisList;
@@ -374,6 +398,10 @@
       publication.analysisList = analysisList;
       publication.reportsList = reportsList;
       publication.experimentsList = experimentsList;
+      if (publicationMessages.length){
+          $scope.ui.publicationMessages = publicationMessages;
+          return;
+      }
       $http.post('/api/projects/publication/', {publication: publication})
         .then(function(resp){
           $scope.state.publicationMsg = resp.data.message;

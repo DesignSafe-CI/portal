@@ -16,6 +16,8 @@ RUN apt-get update && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python && \
     pip install uwsgi
 
+RUN pip install --upgrade pip
+
 COPY requirements.txt /tmp/requirements.txt
 
 RUN pip install -r /tmp/requirements.txt
