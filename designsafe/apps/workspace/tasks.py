@@ -72,11 +72,11 @@ def submit_job(request, username, job_post):
 
 @shared_task(bind=True, max_retries=None)
 def watch_job_status(self, username, job_id, current_status=None):
+    logger.debug('******'*50)
     try:
         user = get_user_model().objects.get(username=username)
         ag = user.agave_oauth.client
         job = ag.jobs.get(jobId=job_id)
-
         logger.debug('job: {}'.format(job))
 
         try:
@@ -190,7 +190,8 @@ def watch_job_status(self, username, job_id, current_status=None):
             n.save()
             #generic_event.send_robust(None, event_type='job', event_data=event_data,
             #                          event_users=[username])
-            self.retry(countdown=10, kwargs={'current_status': job_status})
+            logger.debug("999999"  * 10 )
+            self.retry(countdown=10)
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 
