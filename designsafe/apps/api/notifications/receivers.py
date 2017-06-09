@@ -20,14 +20,17 @@ def send_notification_ws(sender, instance, created, **kwargs):
         return
     try:
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=[instance.user])
+        # logger.debug(instance.to_dict())
         instance_dict = json.dumps(instance.to_dict())
         msg = RedisMessage(instance_dict)
         rp.publish_message(msg)
-        logger.debug('WS socket msg sent: {}'.format(instance_dict))
+        # logger.debug('WS socket msg sent: {}'.format(instance_dict))
     except Exception as e:
-        logger.debug('Exception sending websocket message', 
-                     exc_info=True,
-                     extra = instance.to_dict())
+        # logger.debug('Exception sending websocket message',
+        #              exc_info=True,
+        #              extra = instance.to_dict())
+        logger.debug('Exception sending websocket message',
+                     exc_info=True)
     return
 
 @receiver(post_save, sender=Broadcast, dispatch_uid='broadcast_msg')
@@ -42,7 +45,7 @@ def send_broadcast_ws(sender, instance, created, **kwargs):
         rp.publish_message(msg)
         logger.debug('WS socket msg sent: {}'.format(instance_dict))
     except Exception as e:
-        logger.debug('Exception sending websocket message', 
+        logger.debug('Exception sending websocket message',
                      exc_info=True,
                      extra = instance.to_dict())
     return

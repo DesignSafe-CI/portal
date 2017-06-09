@@ -4,8 +4,6 @@ MAINTAINER Matthew R Hanlon <mrhanlon@tacc.utexas.edu>
 
 EXPOSE 8000
 
-CMD ["/usr/local/bin/uwsgi", "--ini", "/portal/conf/uwsgi.ini"]
-
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM xterm
 

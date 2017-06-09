@@ -1,24 +1,15 @@
 from __future__ import absolute_import
 
-from dateutil.tz import tzoffset
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.conf import settings
-from designsafe.apps.signals.signals import generic_event
-from designsafe.libs.elasticsearch.api import Object
-from dsapi.agave import utils as agave_utils
-from dsapi.agave.daos import AgaveFolderFile, FileManager
 from designsafe.apps.api.notifications.models import Notification
-from agavepy.agave import Agave, AgaveException
+from agavepy.agave import AgaveException
 from celery import shared_task
 from requests import ConnectionError, HTTPError
-
-import datetime
 import logging
 
 logger = logging.getLogger(__name__)
-
 
 class JobSubmitError(Exception):
 
@@ -74,10 +65,10 @@ def submit_job(request, username, job_post):
 def watch_job_status(self, username, job_id, current_status=None):
     logger.debug('******'*50)
     try:
+
         user = get_user_model().objects.get(username=username)
         ag = user.agave_oauth.client
         job = ag.jobs.get(jobId=job_id)
-        logger.debug('job: {}'.format(job))
 
         try:
         #job['submitTime'] is a datetime object
@@ -92,20 +83,14 @@ def watch_job_status(self, username, job_id, current_status=None):
             job_status = 'INDEXING'
 
         job_name = job['name']
-
+        logger.debug(current_status)
+        logger.debug(job_status)
         event_data = {
             Notification.EVENT_TYPE: 'job',
             Notification.STATUS: '',
             Notification.USER: username,
             Notification.MESSAGE: '',
             Notification.EXTRA: job
-            # Notification.EXTRA:{
-            #     'job_name': job_name,
-            #     'job_id': job['id'],
-            #     'job_owner': job['owner'],
-            #     'job_status': job_status,
-            #     'archive_path': job['archivePath'],
-            # }
         }
         archive_id = 'agave/%s/%s' % (job['archiveSystem'], job['archivePath'].split('/'))
 
@@ -117,8 +102,6 @@ def watch_job_status(self, username, job_id, current_status=None):
             event_data[Notification.OPERATION] = 'job_failed'
             n = Notification.objects.create(**event_data)
             n.save()
-            #generic_event.send_robust(None, event_type='job', event_data=event_data,
-            #                          event_users=[username])
 
         elif job_status == 'INDEXING':
             # end state, start indexing outputs
@@ -131,8 +114,6 @@ def watch_job_status(self, username, job_id, current_status=None):
             logger.debug('ws event_data: {}'.format(event_data))
             n = Notification.objects.create(**event_data)
             n.save()
-            #generic_event.send_robust(None, event_type='job', event_data=event_data,
-            #                          event_users=[username])
 
             try:
                 logger.debug('Preparing to Index Job Output job=%s' % job)
@@ -150,48 +131,30 @@ def watch_job_status(self, username, job_id, current_status=None):
 
                 n = Notification.objects.create(**event_data)
                 n.save()
-                #event_data['action_link'] = {
-                #    'label': 'View Output',
-                #    'value': '%s#%s' % (reverse('designsafe_data:my_data'), db_hash)
-                #}
-                #event_data['toast'] = {
-                #      'type': 'info',
-                #      'msg': job_name + ' job outputs are available.'
-                #}
 
                 logger.debug('Event data with action link %s' % event_data)
 
-                # notify
-                #generic_event.send_robust(None, event_type='job', event_data=event_data,
-                #                          event_users=[job['owner']])
             except Exception as e:
                 logger.exception('Error indexing job output; scheduling retry')
                 raise self.retry(exc=e, countdown=60)
 
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task
-            #watch_job_status.apply_async(args=[username, job_id],
-            #                             kwargs={'current_status': job_status},
-            #                             countdown=10)
-            self.retry(kwargs={'current_status': job_status})
+
+            self.retry(countdown=10, kwargs={'current_status': job_status})
         else:
             # queue another watch task
-            #watch_job_status.apply_async(args=[username, job_id],
-            #                             kwargs={'current_status': job_status},
-            #                             countdown=10)
 
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
             event_data[Notification.STATUS] = Notification.INFO
             event_data[Notification.MESSAGE] = 'Job "%s" status has been updated to %s.' % (job_name, job_status)
             event_data[Notification.OPERATION] = 'job_status_update'
-            logger.debug('job: {}'.format(job))
             n = Notification.objects.create(**event_data)
             n.save()
             #generic_event.send_robust(None, event_type='job', event_data=event_data,
             #                          event_users=[username])
-            logger.debug("999999"  * 10 )
-            self.retry(countdown=10)
+            self.retry(countdown=10, kwargs={'current_status': job_status})
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 

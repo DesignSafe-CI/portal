@@ -20,7 +20,6 @@ import urllib
 
 logger = logging.getLogger(__name__)
 
-
 @login_required
 def index(request):
     context = {
@@ -154,6 +153,7 @@ def call_api(request, service):
             except:
                 data = []
 
+        # TODO: Need auth on this DELETE business
         elif service == 'jobs':
             if request.method == 'DELETE':
                 job_id = request.GET.get('job_id')
@@ -262,7 +262,7 @@ def call_api(request, service):
                             status=400)
     except Exception as e:
         logger.error('Failed to execute {0} API call due to Exception={1}'.format(
-            service, e.message))
+            service, e))
         return HttpResponse(
             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
             content_type='application/json', status=400)
