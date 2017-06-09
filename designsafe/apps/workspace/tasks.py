@@ -63,7 +63,7 @@ def submit_job(request, username, job_post):
 
 @shared_task(bind=True, max_retries=None)
 def watch_job_status(self, username, job_id, current_status=None):
-    logger.debug('******'*50)
+
     try:
 
         user = get_user_model().objects.get(username=username)
@@ -143,8 +143,6 @@ def watch_job_status(self, username, job_id, current_status=None):
 
             self.retry(countdown=10, kwargs={'current_status': job_status})
         else:
-            # queue another watch task
-
             # notify
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
             event_data[Notification.STATUS] = Notification.INFO
@@ -152,9 +150,8 @@ def watch_job_status(self, username, job_id, current_status=None):
             event_data[Notification.OPERATION] = 'job_status_update'
             n = Notification.objects.create(**event_data)
             n.save()
-            #generic_event.send_robust(None, event_type='job', event_data=event_data,
-            #                          event_users=[username])
             self.retry(countdown=10, kwargs={'current_status': job_status})
+
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 

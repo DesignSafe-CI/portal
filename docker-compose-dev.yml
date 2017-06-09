@@ -170,7 +170,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: ./bin/run-celery-debug.sh
+    command: ./bin/run-celery-dev.sh
     depends_on:
       - rabbitmq
       - redis
