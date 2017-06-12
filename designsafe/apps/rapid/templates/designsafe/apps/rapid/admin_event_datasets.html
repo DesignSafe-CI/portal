@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+{% load ds_filters %}
+{% load bootstrap3 sekizai_tags staticfiles %}
+
+{% block content %}
+
+  <div class="container rapid-admin">
+    <div class="row">
+      <div class="col-md-12">
+        <h2> Datasets for event: "{{event.title}}" </h2>
+        <a class="btn btn-info" href="{% url 'designsafe_rapid:admin_create_event' %}">
+          <i class="fa fa-plus"> Create New Dataset </i>
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table table-hover">
+          <tr>
+            <th> DOI </th>
+            <th> URL </th>
+            <th> Description </th>
+          </tr>
+          {% for dataset in event.datasets %}
+            <tr>
+              <td> {{dataset.doi}} </td>
+              <td> {{dataset.url}} </td>
+              <td> {{dataset.description}} </td>
+              <td> <a class="btn btn-info btn-sm" href="{% url 'designsafe_rapid:admin_event_edit_dataset' event|private:'_id' dataset.id %}"> Edit </a> </td>
+              <td>
+                <form method="POST" action="{% url 'designsafe_rapid:admin_event_delete_dataset' event|private:'_id' dataset.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-danger btn-sm"> Delete </button>
+                </form>
+              </td>
+
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+  {% addtoblock "css" %}
+      <link rel="stylesheet" href="{% static 'designsafe/apps/rapid/styles/rapid.css' %}" />
+  {% endaddtoblock %}
+
+
+{% endblock content %}

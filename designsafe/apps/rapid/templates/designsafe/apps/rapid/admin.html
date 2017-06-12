@@ -25,6 +25,7 @@
             <th> Created </th>
             <th> </th>
             <th> </th>
+            <th> </th>
           </tr>
           {% for event in rapid_events %}
             <tr>
@@ -39,8 +40,8 @@
                 </a>
               </td>
               <td>
-                <a href="{% url 'designsafe_rapid:admin_event_add_dataset' event|private:'_id' %}" class="btn btn-sm btn-info">
-                  <i class="fa fa-plus"> </i> Add Dataset
+                <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}" class="btn btn-sm btn-info">
+                  <i class="fa fa-database"> </i> Datasets
                 </a>
               </td>
               <td>
