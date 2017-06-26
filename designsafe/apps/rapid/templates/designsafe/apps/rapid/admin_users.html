@@ -11,27 +11,31 @@
       <div class="col-md-12">
         <ol class="breadcrumb">
           <li> <a href="{% url 'designsafe_rapid:admin'%}"> Admin Home </a></li>
-          <li> <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}"> {{event.title}} </a></li>
         </ol>
       </div>
     </div>
 
     <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="input-group input-group-lg">
+          <input type="text" class="form-control" placeholder="Search for a user"> </input>
+        </div>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-md-12">
-        <h2> Add dataset to event: {{event.title}}</h2>
-        <form method="post" action="">
-          {% csrf_token %}
-          {% bootstrap_form form %}
-          <div class="form-group">
-            <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
-          </div>
-        </form>
+        <h2> Admin Users </h2>
+
       </div>
     </div>
   </div>
 
 
 {% addtoblock 'js' %}
+
+<script>
+
+</script>
 
 {% endaddtoblock %}
 

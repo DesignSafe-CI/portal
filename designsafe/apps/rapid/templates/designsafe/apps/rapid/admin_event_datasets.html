@@ -8,8 +8,15 @@
   <div class="container rapid-admin">
     <div class="row">
       <div class="col-md-12">
+        <ol class="breadcrumb">
+          <li> <a href="{% url 'designsafe_rapid:admin'%}"> Admin Home </a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
         <h2> Datasets for event: "{{event.title}}" </h2>
-        <a class="btn btn-info" href="{% url 'designsafe_rapid:admin_create_event' %}">
+        <a class="btn btn-success" href="{% url 'designsafe_rapid:admin_event_add_dataset' event|private:'_id' %}">
           <i class="fa fa-plus"> Create New Dataset </i>
         </a>
       </div>
@@ -21,6 +28,8 @@
             <th> DOI </th>
             <th> URL </th>
             <th> Description </th>
+            <th></th>
+            <th></th>
           </tr>
           {% for dataset in event.datasets %}
             <tr>

@@ -6,6 +6,7 @@ urlpatterns = patterns(
     url(r'^event-types/?$', 'get_event_types', name="get_event_types"),
     url(r'^events/?$', 'get_events', name="get_events"),
     url(r'^admin/?$', 'admin', name="admin"),
+    url(r'^admin/users/?$', 'admin_users', name="admin_users"),
     url(r'^admin/create-event', 'admin_create_event', name="admin_create_event"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/delete$', 'admin_delete_event', name="admin_delete_event"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/$', 'admin_edit_event', name="admin_edit_event"),

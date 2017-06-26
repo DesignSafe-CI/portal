@@ -6,6 +6,9 @@ from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model, models
+from django.db.models import Q
+
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
@@ -237,3 +240,11 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
         event.save(refresh=True)
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+
+
+@login_required
+def admin_users(request):
+    group = models.Group.objects.get(name='Rapid Admin')
+    users = group.user_set.all()
+    logger.info(users)
+    return render(request, 'designsafe/apps/rapid/admin_users.html')
