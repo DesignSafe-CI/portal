@@ -15,7 +15,8 @@ USER = settings.EZID_USER
 PASSWORD = settings.EZID_PASS
 CREDS = (USER, PASSWORD)
 BASE_URI = 'https://ezid.cdlib.org/'
-SHOULDER = 'doi:10.5072/FK2'
+SHOULDER = settings.EZID_SHOULDER or 'doi:10.5072/FK2'
+logger.debug('Using shoulder: %s', SHOULDER)
 
 def pretty_print(xml):
     """Return a pretty-printed XML string for the Element.
@@ -107,6 +108,12 @@ def _project_required_xml(publication):
             creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
         except um.DoesNotExist as err:
             logger.debug('User not found: %s', author)
+            users = filter(lambda x: x['username'] == author, publication['users'])
+            if len(users):
+                user = users[0]
+                creator = ET.SubElement(creators, 'creator')
+                creator_name = ET.SubElement(creator, 'creatorName')
+                creator_name.text = '{}, {}'.format(user['last_name'], user['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
