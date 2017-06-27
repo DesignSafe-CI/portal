@@ -561,6 +561,7 @@ DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 
 EZID_USER = os.environ.get('EZID_USER')
 EZID_PASS = os.environ.get('EZID_PASS')
+EZID_SHOULDER = os.environ.get('EZID_SHOULDER')
 
 from celery_settings import *
 from external_resource_settings import *

@@ -59,6 +59,12 @@ class RelatedQuery(object):
 
         return self._query
 
+    def to_python(self, value):
+        return list(set(self.uuids))
+
+    def serialize(self, value):
+        return self.to_python(value)
+
 def register_lazy_rel(cls, field_name, related_obj_name, multiple, rel_cls):
     reg_key = '{}.{}'.format(cls.model_name, cls.__name__)
     LAZY_OPS.append((reg_key,
@@ -352,16 +358,27 @@ class Model(object):
         for field in self._meta._fields:
             value = getattr(self, field.attname)
             attrname = spinal_to_camelcase(field.attname)
-            if isinstance(value, RelatedQuery):
-                value_dict[attrname] = list(set(value.uuids))
-            elif isinstance(value, Model):
-                value_dict[attrname] = value.to_body_dict()
-            elif isinstance(field, ListField) and field.list_cls is not None:
-                value_dict[attrname] = [o.to_body_dict() for o in set(value)]
-            elif isinstance(field, ListField):
-                value_dict[attrname] = list(set(value))
-            else:
-                value_dict[attrname] = value
+            try:
+                if isinstance(value, RelatedQuery):
+                    value_dict[attrname] = value.serialize(value.uuids)
+                else:
+                    value_dict[attrname] = field.serialize(value)
+            except AttributeError:
+                try:
+                    value_dict[attrname] = value.to_body_dict()
+                except AttributeError:
+                    value_dict[attrname] = value
+
+            #if isinstance(value, RelatedQuery):
+            #    value_dict[attrname] = list(set(value.uuids))
+            #elif isinstance(value, Model):
+            #    value_dict[attrname] = value.to_body_dict()
+            #elif isinstance(field, ListField) and field.list_cls is not None:
+            #    value_dict[attrname] = [o.to_body_dict() for o in set(value)]
+            #elif isinstance(field, ListField):
+            #    value_dict[attrname] = list(set(value))
+            #else:
+            #    value_dict[attrname] = value
         if not self._is_nested:
             dict_obj['value'] = value_dict
         else:

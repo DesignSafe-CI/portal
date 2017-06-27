@@ -69,6 +69,9 @@ class BaseField(object):
     def to_python(self, value):
         return value
 
+    def serialize(self, value):
+        return value
+
     def clean(self, value):
             return self.to_python(value)            
 
@@ -79,6 +82,9 @@ class CharField(BaseField):
 
     def to_python(self, value):
         return unicode(value)
+
+    def serialize(self, value):
+        return self.to_python(value)
 
 class UuidField(CharField):
     """ Uuid Field """
@@ -97,6 +103,10 @@ class DateTimeField(BaseField):
 
         return value
 
+    def serialize(self, value):
+        val = self.to_python(value)
+        return val.isoformat()
+
 class IntField(BaseField):
     """ Int Field """
     def __init__(self, *args, **kwargs):
@@ -105,6 +115,9 @@ class IntField(BaseField):
     def to_python(self, value):
         return int(value)
 
+    def serialize(self, value):
+        return self.to_python(value)
+
 class DecimalField(BaseField):
     """ Decimal Field """
     def __init__(self, *args, **kwargs):
@@ -112,6 +125,10 @@ class DecimalField(BaseField):
 
     def to_python(self, value):
         return Decimal(value)
+
+    def serialize(self, value):
+        val = self.to_python(value)
+        return str(val)
 
 class ListField(BaseField):
     """ List Field """
@@ -127,12 +144,41 @@ class ListField(BaseField):
 
         return list(value)
 
+    def serialize(self, value):
+        val = self.to_python(value)
+        if not len(val):
+            return val
+
+        try:
+            return list(set(val))
+        except TypeError:
+            #We cannot create a set out of this list.
+            pass
+        try:
+            val_list = [o.to_body_dict() for o in val]
+        except AttributeError:
+            #objects do not have `to_body_dict` attribute
+            val_list = val
+
+        seen = set()
+        resp = []
+        for obj in val_list:
+            _tuple = tuple(obj.items())
+            if _tuple not in seen:
+                seen.add(_tuple)
+                resp.append(obj)
+
+        return resp
+
 class NestedObjectField(BaseField):
     """ Nested Object Field """
     def __init__(self, nested_cls, *args, **kwargs):
         kwargs['nested_cls'] = nested_cls
         kwargs['default'] = kwargs.get('default', {})
         super(NestedObjectField, self).__init__(*args, **kwargs)
+
+    def serialize(self, value):
+        return value.to_body_dict()
 
 class RelatedObjectField(BaseField):
     """ Related Object Field """
