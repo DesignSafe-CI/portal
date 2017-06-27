@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li> <a href="/rapid/admin" target="_self"> Admin Home </a></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-5">
+      <h2> Current Rapid Admin Users </h2>
+      <div class="row" ng-show="!vm.admin_users.length">
+        <h3> No RAPID admin users! </h3>
+      </div>
+      <div class="row" ng-show="vm.admin_users.length > 0">
+        <table class="table table-condensed">
+          <tr>
+              <th> First name </th>
+              <th> Last name </th>
+              <th> Username </th>
+              <th> </th>
+          </tr>
+          <tr ng-repeat="user in vm.admin_users">
+            <td> {{user.first_name}} </td>
+            <td> {{user.last_name}} </td>
+            <td> {{user.username}} </td>
+            <td> <button class="btn btn-xs btn-danger" ng-click="vm.revoke_admin(user)"> Revoke Admin </button> </td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+    <div class="col-md-7">
+      <div class="row">
+        <h2> Add RAPID Admins </h2>
+        <div class="input-group input-group-lg">
+          <span class="input-group-addon"> <i class="fa fa-search"></i></span>
+          <input type="text"
+                 class="form-control"
+                 id="rapid_admin_user"
+                 placeholder="Search for a user"
+                 ng-model="vm.search_text"
+                 ng-change="vm.search_users(vm.search_text)"
+                 ng-model-options="{debounce: 400}"
+                 >
+          </input>
+        </div>
+      </div>
+      <div class="row" ng-show="vm.found_users.length > 0">
+        <table class="table table-condensed">
+          <tr>
+              <th> First name </th>
+              <th> Last name </th>
+              <th> Username </th>
+              <th> </th>
+          </tr>
+          <tr ng-repeat="user in vm.found_users">
+            <td> {{user.first_name}} </td>
+            <td> {{user.last_name}} </td>
+            <td> {{user.username}} </td>
+            <td> <button class="btn btn-xs btn-success" ng-click="vm.make_admin(user)"> Make Admin </button> </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

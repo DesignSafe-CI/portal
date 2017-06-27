@@ -1,5 +1,6 @@
 import uuid
 import os
+import json
 import StringIO
 from PIL import Image
 from django.core.urlresolvers import reverse
@@ -244,7 +245,38 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
 
 @login_required
 def admin_users(request):
-    group = models.Group.objects.get(name='Rapid Admin')
-    users = group.user_set.all()
-    logger.info(users)
-    return render(request, 'designsafe/apps/rapid/admin_users.html')
+    return render(request, 'designsafe/apps/rapid/index.html')
+
+
+@login_required
+def admin_user_permissions(request):
+    """
+        Request payload must be
+        {
+            username: 'bob'
+            action: 'grant' //or 'revoke'
+        }
+
+    """
+    if request.method=='POST':
+        payload = json.loads(request.body.decode("utf-8"))
+        logger.info(payload)
+        username = payload["username"]
+        action = payload["action"]
+
+        user = get_user_model().objects.get(username=username)
+        logger.info(user)
+        if not user:
+            return HttpResponseNotFound()
+        if action == "grant":
+            g = models.Group.objects.get(name='Rapid Admin')
+            user.groups.add(g)
+            user.save()
+            return JsonResponse("ok", safe=False)
+        elif action == "revoke":
+            g = models.Group.objects.get(name='Rapid Admin')
+            user.groups.remove(g)
+            user.save()
+            return JsonResponse("ok", safe=False)
+        else:
+            return HttpResponseBadRequest()
