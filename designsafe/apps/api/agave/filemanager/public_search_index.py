@@ -139,7 +139,8 @@ class Publication(object):
         related_objs = dict_obj.get('modelConfigs', []) + \
                        dict_obj.get('analysisList', []) + \
                        dict_obj.get('sensorsList', []) + \
-                       dict_obj.get('eventsList', [])
+                       dict_obj.get('eventsList', []) + \
+                       dict_obj.get('reportsList', [])
         file_paths = []
         proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
         for obj in related_objs:
