@@ -327,7 +327,7 @@
           </button>
           <div id="files-{{report.uuid}}" class="collapse in">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-              <div style= "width:50%; display:inline-block;">
+              <div style= "display:inline-block; width:100%;">
               <h3 style="margin-top:0;">{{report.value.title}}</h3>
               <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
               <p style="overflow:hidden; display:block; height:20px;">
@@ -337,14 +337,16 @@
                     <i class="fa fa-external-link"></i> Show</button>
               </div>
 
-              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
+              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; display:inline-block; float:right;">
               <p style="overflow:hidden; display:block; height:20px;">
+              <!--
               <span style="font-weight:bold;">DOI: </span>{{report.doi}}
               <div>
                   <button class="btn btn-info btn-sm"
                           ng-click="showCitation(report)">Citation
                   </button>
               </div>
+              -->
             </div>
 
             <table  class="table table-bordered table-striped"
@@ -355,7 +357,7 @@
                 <th>Last modified</th>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="file in reports.files | orderBy: ['type', 'path']">
+                  <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
                     <td><i class="fa {{file.icon()}}"></i>
                         <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
                         {{file.name}}
