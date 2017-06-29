@@ -96,7 +96,9 @@
     customRoot: {
       name: 'Published',
       href: $state.href('publicData', {systemId: 'nees.public',
-                                          filePath: 'public/'})
+                                          filePath: '/'}),
+      system: 'nees.public',
+      filePath: '/'
     }
   };
 
@@ -125,7 +127,11 @@
       if (file.type === 'file'){
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
-        $state.go('publishedData', {systemId: file.system, filePath: file.path});
+        if (file.system === 'nees.public'){
+          $state.go('publicData', {systemId: file.system, filePath: file.path});
+        } else {
+          $state.go('publishedData', {systemId: file.system, filePath: file.path});
+        }
       }
     };
 
