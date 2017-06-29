@@ -101,7 +101,8 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: ./bin/run-django.sh
+    command: /usr/local/bin/uwsgi --ini /portal/conf/uwsgi.ini
+    #command: ./bin/run-django.sh
 
   nginx:
     image: nginx
