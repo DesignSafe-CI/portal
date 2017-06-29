@@ -13,7 +13,7 @@ RUN apt-get update && \
     apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass uwsgi && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
 
-RUN pip install --upgrade pip && pip install uwsgi
+RUN pip install --upgrade pip && pip install uwsgi uwsgitop
 
 RUN mkdir -p /opt/uwsgi && \
     curl -SLk -o /opt/uwsgi/uwsgi-2.0.15.tar.gz https://projects.unbit.it/downloads/uwsgi-2.0.15.tar.gz && \
