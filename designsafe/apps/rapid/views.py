@@ -6,7 +6,7 @@ from PIL import Image
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, models
 from django.db.models import Q
 
@@ -26,9 +26,15 @@ def thumbnail_image(fobj, size=(400, 400)):
     im.save(file_buffer, format='JPEG')
     return file_buffer
 
+
 def handle_uploaded_image(f, file_id):
     with open(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', file_id), 'wb+') as destination:
         destination.write(f.getvalue())
+
+
+def rapid_admin_check(user):
+    return user.groups.filter(name="Rapid Admin").exists()
+
 
 def index(request):
     metrics_logger.info('Rapid Index',
@@ -39,11 +45,13 @@ def index(request):
                  })
     return render(request, 'designsafe/apps/rapid/index.html')
 
+
 def get_event_types(request):
     s = RapidNHEventType.search()
     results  = s.execute(ignore_cache=True)
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
+
 
 def get_events(request):
     s = RapidNHEvent.search()
@@ -52,6 +60,7 @@ def get_events(request):
     return JsonResponse(out, safe=False)
 
 
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin(request):
     s = RapidNHEvent.search()
@@ -60,6 +69,8 @@ def admin(request):
     context["rapid_events"] = results
     return render(request, 'designsafe/apps/rapid/admin.html', context)
 
+
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_create_event(request):
     form = rapid_forms.RapidNHEventForm(request.POST or None, request.FILES or None)
@@ -98,6 +109,8 @@ def admin_create_event(request):
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
 
+
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_edit_event(request, event_id):
     try:
@@ -148,6 +161,8 @@ def admin_edit_event(request, event_id):
         context["event"] = event
         return render(request, 'designsafe/apps/rapid/admin_edit_event.html', context)
 
+
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_delete_event(request, event_id):
     try:
@@ -163,6 +178,8 @@ def admin_delete_event(request, event_id):
         event.delete(refresh=True)
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
+
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_event_datasets(request, event_id):
     try:
@@ -176,8 +193,7 @@ def admin_event_datasets(request, event_id):
     return render(request, 'designsafe/apps/rapid/admin_event_datasets.html', context)
 
 
-
-
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_event_add_dataset(request, event_id):
     try:
@@ -201,6 +217,7 @@ def admin_event_add_dataset(request, event_id):
         return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
 
 
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_event_edit_dataset(request, event_id, dataset_id):
     try:
@@ -231,6 +248,8 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
         context["form"] = form
         return render(request, 'designsafe/apps/rapid/admin_event_edit_dataset.html', context)
 
+
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_event_delete_dataset(request, event_id, dataset_id):
     try:
@@ -243,11 +262,13 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
 
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_users(request):
     return render(request, 'designsafe/apps/rapid/index.html')
 
 
+@user_passes_test(rapid_admin_check)
 @login_required
 def admin_user_permissions(request):
     """
