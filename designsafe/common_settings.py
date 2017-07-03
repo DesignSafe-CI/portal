@@ -71,7 +71,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
-    'captcha',
+    'nocaptcha_recaptcha',
 
     #websockets
     'ws4redis',
@@ -555,6 +555,8 @@ PUBLISHED_SYSTEM = 'designsafe.storage.published'
 # RECAPTCHA SETTINGS FOR LESS SPAMMO
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+NORECAPTCHA_SITE_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
+NORECAPTCHA_SECRET_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'

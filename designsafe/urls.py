@@ -89,7 +89,6 @@ urlpatterns = patterns(
 
     # help
     url(r'^help/', include('designsafe.apps.djangoRT.urls', namespace='djangoRT')),
-    url(r'^captcha/', include('captcha.urls')),
 
     # webhooks
     url(r'^webhooks/', include('designsafe.webhooks')),
