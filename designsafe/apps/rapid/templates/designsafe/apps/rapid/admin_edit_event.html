@@ -27,32 +27,6 @@
         </form>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-12">
-        <h2> Datasets </h2>
-        <table class="table">
-          <tr>
-            <th> DOI </th>
-            <th> Url </th>
-            <th> Description </th>
-          </tr>
-          {% for dataset in event.datasets %}
-           <tr>
-             <td> {{ dataset.doi }} </td>
-             <td> {{ dataset.url }} </td>
-             <td> {{ dataset.title }} </td>
-             <td> <a class="btn btn-info btn-sm" href="{% url 'designsafe_rapid:admin_event_edit_dataset' event|private:'_id' dataset.id %}"> Edit </a> </td>
-             <td>
-               <form method="POST" action="{% url 'designsafe_rapid:admin_event_delete_dataset' event|private:'_id' dataset.id %}">
-                 {% csrf_token %}
-                 <button class="btn btn-danger btn-sm"> Delete </button>
-               </form>
-             </td>
-           </tr>
-          {% endfor %}
-        </table>
-      </div>
-    </div>
   </div>
 
 

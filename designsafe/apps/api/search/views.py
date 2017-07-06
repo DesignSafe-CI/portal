@@ -29,17 +29,23 @@ class SearchView(BaseApiView):
 
         # search everything that is not a directory. The django_id captures the cms
         # stuff too.
+        # .highlight('body',
+        #     fragment_size=100,
+        #     pre_tags=["<strong>"],
+        #     post_tags=["</strong>"],
+        # )\
+        # .highlight_options(require_field_match=True)\
         es_query = Search(index="nees,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
-            .query("query_string", query=q, default_operator="and", fields=[])\
+            .query("query_string", query=q, default_operator="and", fields=["body", "name"])\
             .query(~Q('match', type='dir'))\
             .highlight('body',
                 fragment_size=100,
                 pre_tags=["<strong>"],
                 post_tags=["</strong>"],
             )\
-            .highlight_options(require_field_match=True)\
-            .extra(from_=offset, size=limit)\
+            .highlight_options(require_field_match=False)\
+            .extra(from_=offset, size=limit)
 
         if type_filter == 'files':
             es_query = es_query.query("match", type="file")\
@@ -67,7 +73,7 @@ class SearchView(BaseApiView):
                         pre_tags=["<strong>"],
                         post_tags=["</strong>"],
                     )\
-                .highlight_options(require_field_match=True)\
+                .highlight_options(require_field_match=False)\
                 .extra(from_=offset, size=limit)\
             # es_query._index = 'cms'
             # es_query = es_query.query("query_string", query=q, default_operator="and", fields=["body"])

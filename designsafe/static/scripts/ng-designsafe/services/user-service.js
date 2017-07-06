@@ -23,7 +23,7 @@ angular.module('designsafe')
    * @returns {Promise}
    */
   this.search = function (options) {
-    return $http.get(djangoUrl.reverse('designsafe_api:user_search'), {params: {q: options.q}})
+    return $http.get(djangoUrl.reverse('designsafe_api:user_search'), {params: {q: options.q, role:options.role}})
       .then(function (resp) {
         return resp.data;
       });

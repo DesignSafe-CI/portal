@@ -77,11 +77,16 @@ var _rapidMainCtrl = __webpack_require__(3);
 
 var _rapidMainCtrl2 = _interopRequireDefault(_rapidMainCtrl);
 
+var _rapidAdminUsersCtrl = __webpack_require__(9);
+
+var _rapidAdminUsersCtrl2 = _interopRequireDefault(_rapidAdminUsersCtrl);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mod = angular.module('ds.rapid.controllers', []);
 
 mod.controller('RapidMainCtrl', _rapidMainCtrl2.default);
+mod.controller('RapidAdminUsersCtrl', _rapidAdminUsersCtrl2.default);
 
 /***/ }),
 /* 1 */
@@ -116,11 +121,16 @@ var _rapidDataService = __webpack_require__(6);
 
 var _rapidDataService2 = _interopRequireDefault(_rapidDataService);
 
+var _rapidAdminService = __webpack_require__(10);
+
+var _rapidAdminService2 = _interopRequireDefault(_rapidAdminService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mod = angular.module('ds.rapid.services', []);
 
 mod.service('RapidDataService', _rapidDataService2.default);
+mod.service('RapidAdminService', _rapidAdminService2.default);
 
 /***/ }),
 /* 3 */
@@ -152,6 +162,7 @@ var RapidMainCtrl = function () {
 
     _classCallCheck(this, RapidMainCtrl);
 
+    console.log("RapidMainCtrl");
     this.$scope = $scope;
     this.$compile = $compile;
     this.RapidDataService = RapidDataService;
@@ -394,7 +405,17 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
         return true;
       }
     }
+  }).state('rapid_admin', {
+    url: '/admin/users',
+    templateUrl: '/static/designsafe/apps/rapid/html/rapid-admin-users.html',
+    controller: 'RapidAdminUsersCtrl as vm',
+    resolve: {
+      auth: function auth() {
+        return true;
+      }
+    }
   });
+
   //config popups etc
   $uibTooltipProvider.options({ popupDelay: 1000 });
 }
@@ -402,6 +423,126 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RapidAdminUsersCtrl = function () {
+  RapidAdminUsersCtrl.$inject = ["UserService", "RapidAdminService"];
+  function RapidAdminUsersCtrl(UserService, RapidAdminService) {
+    'ngInject';
+
+    _classCallCheck(this, RapidAdminUsersCtrl);
+
+    this.UserService = UserService;
+    this.RapidAdminService = RapidAdminService;
+    this.list_admin_users();
+  }
+
+  _createClass(RapidAdminUsersCtrl, [{
+    key: 'list_admin_users',
+    value: function list_admin_users() {
+      var _this = this;
+
+      this.UserService.search({ q: '', role: 'Rapid Admin' }).then(function (resp) {
+        _this.admin_users = resp;
+      });
+    }
+  }, {
+    key: 'search_users',
+    value: function search_users(q) {
+      var _this2 = this;
+
+      if (q.length > 1) {
+        this.UserService.search({ q: q }).then(function (resp) {
+          console.log(resp);
+          _this2.found_users = resp;
+        });
+      } else {
+        this.found_users = [];
+      }
+    }
+  }, {
+    key: 'make_admin',
+    value: function make_admin(user) {
+      var _this3 = this;
+
+      this.RapidAdminService.update_permissions(user, 'grant').then(function (resp) {
+        _this3.list_admin_users();
+      });
+    }
+  }, {
+    key: 'revoke_admin',
+    value: function revoke_admin(user) {
+      var _this4 = this;
+
+      this.RapidAdminService.update_permissions(user, 'revoke').then(function (resp) {
+        _this4.list_admin_users();
+      });
+    }
+  }]);
+
+  return RapidAdminUsersCtrl;
+}();
+
+exports.default = RapidAdminUsersCtrl;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RapidAdminService = function () {
+  RapidAdminService.$inject = ["$http", "$q"];
+  function RapidAdminService($http, $q) {
+    'ngInject';
+
+    _classCallCheck(this, RapidAdminService);
+
+    this.$http = $http;
+    this.$q = $q;
+  }
+
+  _createClass(RapidAdminService, [{
+    key: 'update_permissions',
+    value: function update_permissions(user, action) {
+      var payload = {
+        username: user.username,
+        action: action
+      };
+
+      return this.$http.post('/rapid/admin/users/permissions', payload).then(function (resp) {
+        return resp.data;
+      });
+    }
+  }]);
+
+  return RapidAdminService;
+}();
+
+exports.default = RapidAdminService;
 
 /***/ })
 /******/ ]);

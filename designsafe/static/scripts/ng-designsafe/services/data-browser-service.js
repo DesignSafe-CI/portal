@@ -721,7 +721,7 @@
           };
           $scope.viewMetadata = function() {
             $scope.close();
-            viewMetadata(file);
+            viewMetadata([file]);
           };
           $scope.trash = function() {
             trash(file);
@@ -1841,15 +1841,6 @@
                 return f.getMeta();
               }
             });
-            $q.all(tasks).then(
-                function(resp){
-                  $scope.ui.busy = false;
-                  $scope.data.fileUuids = [];
-                  $scope.data.fileUuids = _.map(files, function(f){ return f.uuid(); });
-                },
-                function(err){
-                  $scope.error = err;
-                });
           }
           var _setFileEntities = function(){
             var entities = currentState.project.getAllRelatedObjects();
@@ -1868,7 +1859,6 @@
               }
             });
           };
-          _setEntities();
 
           $scope.isFileTagged = function(file, entity){
               var tags = entity.value.tags;
@@ -1925,8 +1915,6 @@
               $scope.ui.busy = false;
             });
             };
-
-          $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
 
 		  $scope.doSaveMetadata = function($event) {
 			$event.preventDefault();

@@ -17,7 +17,6 @@ django-pipeline==1.5.4
 django-reversion==1.8.7
 django-sekizai==0.8.2
 Django-Select2==4.3.1
-django-simple-captcha==0.4.5
 django-termsandconditions==1.1.2
 django-treebeard==3.0
 djangocms-admin-style==0.2.7
@@ -34,6 +33,7 @@ djangocms-style==1.5
 djangocms-teaser==0.1
 djangocms-text-ckeditor==2.5.3
 djangocms-video==0.1
+django-nocaptcha-recaptcha==0.0.19
 # Web socket redis
 django-websocket-redis
 django-redis-sessions

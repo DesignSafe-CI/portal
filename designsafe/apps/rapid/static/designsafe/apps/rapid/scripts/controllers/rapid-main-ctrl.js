@@ -3,6 +3,7 @@ import L from 'L';
 export default class RapidMainCtrl {
   constructor ($scope, $compile, RapidDataService) {
     'ngInject';
+    console.log("RapidMainCtrl")
     this.$scope = $scope;
     this.$compile = $compile;
     this.RapidDataService = RapidDataService;

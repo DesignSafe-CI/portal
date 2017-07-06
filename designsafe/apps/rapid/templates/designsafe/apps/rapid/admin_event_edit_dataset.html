@@ -12,6 +12,7 @@
         <ol class="breadcrumb">
           <li> <a href="{% url 'designsafe_rapid:admin'%}"> Admin Home </a></li>
           <li> <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}"> {{ event.title }} </a></li>
+          <li> <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}">  Datasets </a></li>
         </ol>
       </div>
     </div>

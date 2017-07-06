@@ -21,7 +21,18 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
         return true;
       }
     }
+  })
+  .state('rapid_admin', {
+    url: '/admin/users',
+    templateUrl: '/static/designsafe/apps/rapid/html/rapid-admin-users.html',
+    controller: 'RapidAdminUsersCtrl as vm',
+    resolve: {
+      auth: function () {
+        return true;
+      }
+    }
   });
+
   //config popups etc
   $uibTooltipProvider.options({popupDelay:1000});
 

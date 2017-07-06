@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core.validators import validate_email
-from captcha.fields import CaptchaField
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 
 class MultiEmailField(forms.Field):
@@ -59,7 +59,7 @@ class TicketGuestForm(BaseTicketForm):
     """
     Anonymous users ticket form. Adds a CAPTCHA to reduce spam submissions.
     """
-    captcha = CaptchaField()
+    captcha = NoReCaptchaField()
 
 class ReplyForm(forms.Form):
     """

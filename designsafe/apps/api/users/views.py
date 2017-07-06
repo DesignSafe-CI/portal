@@ -77,14 +77,19 @@ class SearchView(SecureMixin, View):
             return JsonResponse(res_dict)
 
         q = request.GET.get('q')
-
+        role = request.GET.get('role')
+        user_rs = model.objects.filter()
         if q:
             query = users_utils.q_to_model_queries(q)
             if query is None:
                 return JsonResponse({})
 
-            user_rs = model.objects.filter(query)
-            resp = [model_to_dict(u, fields=resp_fields) for u in user_rs]
+            user_rs = user_rs.filter(query)
+        if role:
+            logger.info(role)
+            user_rs = user_rs.filter(groups__name=role)
+        resp = [model_to_dict(u, fields=resp_fields) for u in user_rs]
+        if len(resp):
             return JsonResponse(resp, safe=False)
-
-        return HttpResponseNotFound()
+        else:
+            return HttpResponseNotFound()

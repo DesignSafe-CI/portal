@@ -139,7 +139,8 @@ class Publication(object):
         related_objs = dict_obj.get('modelConfigs', []) + \
                        dict_obj.get('analysisList', []) + \
                        dict_obj.get('sensorsList', []) + \
-                       dict_obj.get('eventsList', [])
+                       dict_obj.get('eventsList', []) + \
+                       dict_obj.get('reportsList', [])
         file_paths = []
         proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
         for obj in related_objs:
@@ -469,7 +470,9 @@ class PublicElasticFileManager(BaseFileManager):
         #             'system': 'designsafe.storage.published',
         #             'systemId': 'designsafe.storage.published',
         #             'type': 'dir'} for pub in publications]
-        listing.children = itertools.chain(publications, listing.children)
+        if file_path == '/':
+            listing.children = itertools.chain(publications, listing.children)
+
         return listing
 
     def search(self, system, query_string, 
