@@ -1,5 +1,26 @@
 # DesignSafe-CI Portal Release Notes
 
+## v1.0.1
+
+Fixes:
+
+- Using ReCaptcha for forms.
+- Elasticsearch queries configuration work better for site-wide search.
+- Breadcrumb links in published data.
+- Report file listing for a public project.
+- Better serialization for entities.
+- Correctly showing newly published projects in listings.
+- Using os library to copy published files in corral.
+- Using customized names when publishing project.
+- Celery Tasks retry fixes.
+
+## v1.0.0
+
+Note:
+
+This is a transition version.
+From now on versions will correctly be in semver format < mayor >.< minor >.< bug fix >
+
 ## v0.9.28
 
 Improvements:
