@@ -35,7 +35,6 @@ def _app_license_type(app_id):
 
 @login_required
 def call_api(request, service):
-    logger.info(service*1000)
     try:
         agave = request.user.agave_oauth.client
         if service == 'apps':

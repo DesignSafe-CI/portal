@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.text import get_valid_filename
 from celery import shared_task
-from dsapi.agave.daos import FileManager
+from designsafe.apps.api.data.agave.filemanager import FileManager
 from boxsdk.exception import BoxAPIException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from requests.exceptions import HTTPError
@@ -47,7 +47,7 @@ def copy_box_item(self, username, box_item_type, box_item_id, target_system_id,
         return
 
     agave_client = user.agave_oauth.client
-    fm = FileManager(agave_client=agave_client)
+    fm = FileManager(user)
 
     if box_item_type == 'file':
         try:
@@ -65,7 +65,7 @@ def copy_box_item(self, username, box_item_type, box_item_id, target_system_id,
             else:
                 file_path = '%s/%s' % (target_path, item.name)
                 logger.info('Indexing Box File Transfer %s' % file_path)
-                fm.index(settings.AGAVE_STORAGE_SYSTEM, file_path, username, levels=1)
+                fm.indexer.index(settings.AGAVE_STORAGE_SYSTEM, file_path, username, levels=1)
         except BoxAPIException as e:
             logger.error('Unable to get download link from Box')
             self.update_state(state='FAILURE', meta={'exc': e})
