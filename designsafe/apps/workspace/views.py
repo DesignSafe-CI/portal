@@ -9,7 +9,6 @@ from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from designsafe.apps.licenses.models import LICENSE_TYPES
-from dsapi.agave.daos import FileManager, shared_with_me
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -36,6 +35,7 @@ def _app_license_type(app_id):
 
 @login_required
 def call_api(request, service):
+    logger.info(service*1000)
     try:
         agave = request.user.agave_oauth.client
         if service == 'apps':
@@ -92,66 +92,6 @@ def call_api(request, service):
                 if meta_uuid:
                     data = agave.meta.deleteMetadata(uuid=meta_uuid)
 
-        elif service == 'files':
-            system_id = request.GET.get('system_id')
-            file_path = request.GET.get('file_path', '')
-            special_dir = None
-            if system_id == 'designsafe.storage.default':
-                if shared_with_me in file_path:
-                    special_dir = shared_with_me
-                    file_path = '/'.join(file_path.split('/')[2:])
-
-                elif file_path == '':
-                    file_path = request.user.username
-
-            file_path = file_path.strip('/')
-
-            if file_path == '':
-                file_path = '/'
-
-            logger.debug('Listing "agave://%s/%s"...' % (system_id, file_path))
-
-            # Agave Files call
-            # data = agave.files.list(systemId=system_id, filePath=file_path)
-
-            # ElasticSearch call
-            try:
-                fm = FileManager(agave)
-                listing = fm.list_path(system_id=system_id,
-                                       path=file_path,
-                                       username=request.user.username,
-                                       special_dir=special_dir,
-                                       is_public=system_id == 'nees.public'
-                                       )
-                data = [f.to_dict() for f in listing]
-
-                # filter out empty projects
-                if system_id == 'nees.public' and file_path == '/':
-                    data = [f for f in data if 'projecTitle' in f and
-                            not f['projecTitle'].startswith('EMPTY PROJECT')]
-
-                # TODO type of "Shared with me" should be "dir" not "folder"
-                for d in data:
-                    d.update((k, 'dir') for k, v in six.iteritems(d)
-                             if k == 'type' and v == 'folder')
-
-                if special_dir:
-                    data = [{
-                        'name': '.',
-                        'path': special_dir + file_path.strip('/'),
-                        'systemId': system_id,
-                        'type': 'dir',
-                    }] + data
-                elif file_path != request.user.username:
-                    data = [{
-                        'name': '.',
-                        'path': file_path,
-                        'systemId': system_id,
-                        'type': 'dir',
-                    }] + data
-
-            except:
-                data = []
 
         # TODO: Need auth on this DELETE business
         elif service == 'jobs':

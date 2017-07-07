@@ -1,7 +1,7 @@
 from agavepy.agave import AgaveException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from requests.exceptions import HTTPError
-from designsafe.libs.elasticsearch.api import Object, PublicObject, Experiment, Project
+# from designsafe.libs.elasticsearch.api import Object, PublicObject, Experiment, Project
 import utils as agave_utils
 import requests
 import copy
