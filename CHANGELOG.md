@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v1.0.2
+
+Fixes:
+
+- Category tags in files were breaking serialization of categories and entities.
+
+
 ## v1.0.1
 
 Fixes:
