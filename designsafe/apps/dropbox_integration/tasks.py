@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 # from django.utils.text import get_valid_filename
 # from celery import shared_task
-# from dsapi.agave.daos import FileManager
 # from boxsdk.exception import BoxAPIException
 # from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 # from requests.exceptions import HTTPError
