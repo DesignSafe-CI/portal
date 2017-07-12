@@ -139,8 +139,11 @@ class ListField(BaseField):
         super(ListField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        if self.list_cls is not None:
-            return [self.list_cls(**val) for val in value]
+        try:
+            if self.list_cls is not None:
+                return [val.to_body_dict() for val in value]
+        except AttributeError:
+            pass
 
         return list(value)
 
@@ -159,14 +162,17 @@ class ListField(BaseField):
         except AttributeError:
             #objects do not have `to_body_dict` attribute
             val_list = val
-
-        seen = set()
-        resp = []
-        for obj in val_list:
-            _tuple = tuple(obj.items())
-            if _tuple not in seen:
-                seen.add(_tuple)
-                resp.append(obj)
+        try:
+            seen = set()
+            resp = []
+            for obj in val_list:
+                _tuple = tuple(obj.items())
+                if _tuple not in seen:
+                    seen.add(_tuple)
+                    resp.append(obj)
+        except TypeError:
+            #dict is a bit more complicated, let's just return it.
+            resp = val_list
 
         return resp
 
