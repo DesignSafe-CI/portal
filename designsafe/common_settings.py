@@ -96,7 +96,6 @@ INSTALLED_APPS = (
     'designsafe.apps.djangoRT',
     'designsafe.apps.notifications',
     'designsafe.apps.workspace',
-    'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
     'designsafe.apps.search',
     'designsafe.apps.geo',
