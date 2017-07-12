@@ -251,3 +251,8 @@ body {
 .rapid-popup .leaflet-popup-content-wrapper {
   border-radius: 0px;
 }
+
+.form-group.required .control-label:after{
+  content:"*";
+  color:red;
+}
