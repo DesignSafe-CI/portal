@@ -1,8 +1,0 @@
-<div ng-show="!item.inprocess">
-    <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#details" ng-click="showPublicMetadata(item)" title="{{'details' | translate}}">
-        <i class="glyphicon glyphicon-modal-window"></i>
-    </button>
-</div>
-<div ng-show="item.inprocess">
-    <button class="btn btn-sm" style="visibility: hidden">&nbsp;</button><span class="label label-warning">{{"wait" | translate}} ...</span>
-</div>

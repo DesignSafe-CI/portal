@@ -67,10 +67,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'dsapi': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
         'celery': {
             'handlers': ['console'],
             'level': 'DEBUG',

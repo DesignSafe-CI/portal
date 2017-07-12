@@ -378,10 +378,6 @@ LOGGING = {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
-        'dsapi': {
-            'handlers': ['console', 'opbeat'],
-            'level': 'DEBUG',
-        },
         'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
