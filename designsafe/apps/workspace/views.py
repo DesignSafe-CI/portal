@@ -5,9 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
-from designsafe.apps.notifications.views import get_number_unread_notifications
 from designsafe.apps.licenses.models import LICENSE_TYPES
 from requests import HTTPError
 from urlparse import urlparse
@@ -22,7 +21,6 @@ logger = logging.getLogger(__name__)
 @login_required
 def index(request):
     context = {
-        'unreadNotifications': get_number_unread_notifications(request)
     }
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
