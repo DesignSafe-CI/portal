@@ -4,6 +4,8 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
+from nocaptcha_recaptcha.fields import NoReCaptchaField
+
 from .models import (DesignSafeProfile, NotificationPreferences,
     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
@@ -336,6 +338,8 @@ class UserRegistrationForm(forms.Form):
         label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
         error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
 
+    captcha = NoReCaptchaField()
+    
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
         self.fields['institutionId'].choices = get_institution_choices()
@@ -421,7 +425,7 @@ class ProfessionalProfileForm(forms.ModelForm):
     bio_placeholder = (
         'Please provide a brief summary of your professional profile, '
         'the natural hazards activities with which you are involved or '
-        'would like to be involved, and any other comments that would help ' 
+        'would like to be involved, and any other comments that would help '
         'identify your experience and interest within the community. '
     )
     nh_interests = forms.ModelMultipleChoiceField(

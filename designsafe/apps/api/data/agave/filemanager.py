@@ -1,4 +1,4 @@
-from agavepy.agave import Agave
+from agavepy.agave import Agave, load_resource
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.file import AgaveFile
 from designsafe.apps.api.tasks import reindex_agave, share_agave
@@ -25,6 +25,7 @@ FILESYSTEMS = {
     'default': getattr(settings, 'AGAVE_STORAGE_SYSTEM')
 }
 
+AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 class FileManager(AbstractFileManager, AgaveObject):
     resource = 'agave'
@@ -885,7 +886,8 @@ class AgaveIndexer(AgaveObject):
     def __init__(self, agave_client = None, *args, **kwargs):
         super(AgaveIndexer, self).__init__(**kwargs)
         self.agave_client = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                                  token=settings.AGAVE_SUPER_TOKEN)
+                                  token=settings.AGAVE_SUPER_TOKEN,
+                                  resources=AGAVE_RESOURCES)
 
         # user_model = get_user_model()
         # try:

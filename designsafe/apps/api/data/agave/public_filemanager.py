@@ -1,4 +1,4 @@
-from agavepy.agave import AgaveException, Agave
+from agavepy.agave import AgaveException, Agave, load_resource
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.agave_object import AgaveObject
@@ -11,6 +11,8 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
+
+AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 
 class FileManager(AgaveObject):
@@ -27,7 +29,8 @@ class FileManager(AgaveObject):
         else:
             site_token = getattr(settings, 'AGAVE_SUPER_TOKEN')
             self.agave_client = Agave(api_server=agave_url,
-                                      token=site_token)
+                                      token=site_token,
+                                      resources=AGAVE_RESOURCES)
         self.username = user_obj.username
         self._user = user_obj
 
@@ -80,11 +83,11 @@ class FileManager(AgaveObject):
         """Returns a "listing" dict constructed with the response from Elasticsearch.
 
         :param str system: system id
-        :param str username: username which is requesting the listing. 
+        :param str username: username which is requesting the listing.
                              This is to check the permissions in the ES docs.
         :param str file_path: path to list
 
-        :returns: A dict with information of the listed file and, when possible, 
+        :returns: A dict with information of the listed file and, when possible,
         a list of :class:`~designsafe.apps.api.data.agave.elasticsearch.documents.Object` objects
         dict in the key ``children``
         :rtype: dict
@@ -99,8 +102,8 @@ class FileManager(AgaveObject):
         res, listing  = PublicObject.listing(system, file_path, **kwargs)
 
         default_pems = [{'username': self.username,
-                         'permission': {'read': True, 
-                                        'write': False, 
+                         'permission': {'read': True,
+                                        'write': False,
                                         'execute': True},
                          'recursive': True}]
 
@@ -135,7 +138,7 @@ class FileManager(AgaveObject):
         :param str sytem: System id
         :param str file_path: Path to list
 
-        :returns: A dict with information of the listed file and, when possible, 
+        :returns: A dict with information of the listed file and, when possible,
         a list of :class:`~designsafe.apps.api.data.agave.files.AgaveFile` objects
         dict in the key ``children``
         :rtype: dict
@@ -146,7 +149,7 @@ class FileManager(AgaveObject):
             This should not be called directly. See py:meth:`listing(file_id)`
             for more information.
         """
-        listing = AgaveFile.listing(system, file_path, self.agave_client, 
+        listing = AgaveFile.listing(system, file_path, self.agave_client,
                                     source='public', **kwargs)
 
         root_file = filter(lambda x: x.full_path == file_path, listing)
@@ -163,19 +166,19 @@ class FileManager(AgaveObject):
 
     def is_search(self, file_id):
         """Checks if `file_id` is a search path
-        
-        For this file manager when a search is executed the path will always 
+
+        For this file manager when a search is executed the path will always
         end on **$SHARE**
-        
+
         :param str file_id: File identificator
-        
+
         :return: True if the path is a search path
-        
+
         :rtype: bool
         """
         if file_id is None:
             return False
-                 
+
         return  file_id.strip('/').split('/')[-1] == '$SEARCH'
 
     def listing(self, file_id=None, **kwargs):
@@ -241,8 +244,8 @@ class FileManager(AgaveObject):
             except IndexError:
                 listing = es_listing
 
-        return listing                                          
-        
+        return listing
+
     def copy(self, file_id, dest_resource, dest_file_id, **kwargs):
         """Copies a file
 
