@@ -1,12 +1,13 @@
 from django.db import models
 from django.conf import settings
 from agavepy.agave import Agave
+from agavepy import agave
 import logging
 import six
 import time
 import requests
 from requests import HTTPError
-from .signals import *
+# from .signals import *
 from designsafe.libs.common.decorators import deprecated
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 TOKEN_EXPIRY_THRESHOLD = 600
 
+AGAVE_RESOURCES = agave.load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 class AgaveOAuthToken(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='agave_oauth')
@@ -66,6 +68,7 @@ class AgaveOAuthToken(models.Model):
                      api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
                      api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
                      token=self.access_token,
+                     resources=AGAVE_RESOURCES,
                      refresh_token=self.refresh_token,
                      token_callback=self.update)
 
@@ -84,6 +87,7 @@ class AgaveOAuthToken(models.Model):
         ag = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'),
                    api_key=getattr(settings, 'AGAVE_CLIENT_KEY'),
                    api_secret=getattr(settings, 'AGAVE_CLIENT_SECRET'),
+                   resources=AGAVE_RESOURCES,
                    token=self.access_token,
                    refresh_token=self.refresh_token)
         current_time = time.time()
