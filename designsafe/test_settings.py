@@ -24,8 +24,8 @@ BROKER_BACKEND = 'memory'
 MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
                       'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
 
-STATIC_ROOT = os.path.join(BASE_DIR, '../static/')
-MEDIA_ROOT = os.path.join(BASE_DIR, '../media/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Agave
 AGAVE_TENANT_ID = 'example.com'
