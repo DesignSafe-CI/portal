@@ -48,6 +48,7 @@ def call_api(request, service):
                     data['license']['enabled'] = lic is not None
 
             else:
+
                 public_only = request.GET.get('publicOnly')
                 if public_only == 'true':
                     data = agave.apps.list(publicOnly='true')
