@@ -23,6 +23,7 @@ from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
                                                  Report)
 from designsafe.apps.api.agave.filemanager.public_search_index import PublicationManager, Publication
 from designsafe.apps.api import tasks
+import copy
 import logging
 import json
 
@@ -31,7 +32,7 @@ metrics = logging.getLogger('metrics')
 
 
 def template_project_storage_system(project):
-    system_template = settings.PROJECT_STORAGE_SYSTEM_TEMPLATE.copy()
+    system_template = copy.deepcopy(settings.PROJECT_STORAGE_SYSTEM_TEMPLATE)
     system_template['id'] = system_template['id'].format(project.uuid)
     system_template['name'] = system_template['name'].format(project.uuid)
     system_template['description'] = system_template['description'].format(project.title)

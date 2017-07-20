@@ -69,6 +69,7 @@ cryptography==1.7.2
 pyjwt==1.4.2
 chardet==2.3.0
 
+newrelic
 
 beautifulsoup4==4.5.3
 

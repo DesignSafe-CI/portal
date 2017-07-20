@@ -3,9 +3,10 @@
     ..todo:: These should not live in __init__.py
     we should create an agave.utils or agave.libs module for these to live in."""
 
-from agavepy.agave import Agave
+from agavepy.agave import Agave, load_resource
 from django.conf import settings
 
+AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 def get_service_account_client():
     """Return service account agave client.
@@ -19,7 +20,8 @@ def get_service_account_client():
              but it might be a bit safer."""
 
     return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                 token=settings.AGAVE_SUPER_TOKEN)
+                 token=settings.AGAVE_SUPER_TOKEN,
+                 resources=AGAVE_RESOURCES)
 
 
 def to_camel_case(snake_str):

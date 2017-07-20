@@ -1,18 +1,17 @@
 
-{% extends "base.html" %}
+{% extends "designsafe/apps/rapid/rapid_base.html" %}
 {% load ds_filters %}
-{% load bootstrap3 sekizai_tags staticfiles %}
 
-{% block content %}
+{% block main %}
 
   <div class="container rapid-admin">
     <div class="row">
       <div class="col-md-12">
         <h1> Rapid Admin </h1>
-        <a class="btn btn-success" href="{% url 'designsafe_rapid:admin_create_event' %}">
+        <a class="btn btn-success" href="{% url 'designsafe_rapid:admin_create_event' %}" target="_self">
           <i class="fa fa-plus"> Create New Rapid Event </i>
         </a>
-        <a class="btn btn-default pull-right" href="{% url 'designsafe_rapid:admin_users' %}"> Rapid User Admin </a>
+        <a class="btn btn-default pull-right" href="{% url 'designsafe_rapid:admin_users' %}" target="_self"> Rapid User Admin </a>
         <hr>
       </div>
     </div>
@@ -37,12 +36,12 @@
               <td> {{event.location_description}} </td>
               <td> {{event.created_date}} </td>
               <td>
-                <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}"class="btn btn-sm btn-info">
+                <a href="{% url 'designsafe_rapid:admin_edit_event' event|private:'_id' %}" class="btn btn-sm btn-info" target="_self">
                   <i class="fa fa-file"> </i> Edit
                 </a>
               </td>
               <td>
-                <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}" class="btn btn-sm btn-info">
+                <a href="{% url 'designsafe_rapid:admin_event_datasets' event|private:'_id' %}" class="btn btn-sm btn-info" target="_self">
                   <i class="fa fa-database"> </i> Datasets
                 </a>
               </td>
@@ -58,9 +57,5 @@
       </div>
     </div>
   </div>
-  {% addtoblock "css" %}
-      <link rel="stylesheet" href="{% static 'designsafe/apps/rapid/styles/rapid.css' %}" />
-  {% endaddtoblock %}
 
-
-{% endblock content %}
+{% endblock main %}
