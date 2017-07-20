@@ -1,5 +1,22 @@
 # DesignSafe-CI Portal Release Notes
 
+## v1.1.0
+
+Features:
+
+- Rapid Admin interface
+
+Improvements:
+
+- Deleting stale code
+- Change configuration of uWSGI to add more processes
+- Adding New Relic monitoring
+- Improving Agave client creation
+
+- Fixes:
+
+- Project metadata serialization
+
 ## v1.0.2
 
 Fixes:
