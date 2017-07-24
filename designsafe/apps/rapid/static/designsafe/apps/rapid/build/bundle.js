@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,11 +73,11 @@
 "use strict";
 
 
-var _rapidMainCtrl = __webpack_require__(3);
+var _rapidMainCtrl = __webpack_require__(4);
 
 var _rapidMainCtrl2 = _interopRequireDefault(_rapidMainCtrl);
 
-var _rapidAdminUsersCtrl = __webpack_require__(9);
+var _rapidAdminUsersCtrl = __webpack_require__(3);
 
 var _rapidAdminUsersCtrl2 = _interopRequireDefault(_rapidAdminUsersCtrl);
 
@@ -95,11 +95,11 @@ mod.controller('RapidAdminUsersCtrl', _rapidAdminUsersCtrl2.default);
 "use strict";
 
 
-var _eventListing = __webpack_require__(5);
+var _eventListing = __webpack_require__(6);
 
 var _eventListing2 = _interopRequireDefault(_eventListing);
 
-var _eventListingDetailed = __webpack_require__(4);
+var _eventListingDetailed = __webpack_require__(5);
 
 var _eventListingDetailed2 = _interopRequireDefault(_eventListingDetailed);
 
@@ -117,11 +117,11 @@ mod.directive('eventListingDetailed', _eventListingDetailed2.default);
 "use strict";
 
 
-var _rapidDataService = __webpack_require__(6);
+var _rapidDataService = __webpack_require__(8);
 
 var _rapidDataService2 = _interopRequireDefault(_rapidDataService);
 
-var _rapidAdminService = __webpack_require__(10);
+var _rapidAdminService = __webpack_require__(7);
 
 var _rapidAdminService2 = _interopRequireDefault(_rapidAdminService);
 
@@ -145,7 +145,82 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(7);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RapidAdminUsersCtrl = function () {
+  RapidAdminUsersCtrl.$inject = ["UserService", "RapidAdminService"];
+  function RapidAdminUsersCtrl(UserService, RapidAdminService) {
+    'ngInject';
+
+    _classCallCheck(this, RapidAdminUsersCtrl);
+
+    this.UserService = UserService;
+    this.RapidAdminService = RapidAdminService;
+    this.list_admin_users();
+  }
+
+  _createClass(RapidAdminUsersCtrl, [{
+    key: 'list_admin_users',
+    value: function list_admin_users() {
+      var _this = this;
+
+      this.UserService.search({ q: '', role: 'Rapid Admin' }).then(function (resp) {
+        _this.admin_users = resp;
+      });
+    }
+  }, {
+    key: 'search_users',
+    value: function search_users(q) {
+      var _this2 = this;
+
+      if (q.length > 1) {
+        this.UserService.search({ q: q }).then(function (resp) {
+          console.log(resp);
+          _this2.found_users = resp;
+        });
+      } else {
+        this.found_users = [];
+      }
+    }
+  }, {
+    key: 'make_admin',
+    value: function make_admin(user) {
+      var _this3 = this;
+
+      this.RapidAdminService.update_permissions(user, 'grant').then(function (resp) {
+        _this3.list_admin_users();
+      });
+    }
+  }, {
+    key: 'revoke_admin',
+    value: function revoke_admin(user) {
+      var _this4 = this;
+
+      this.RapidAdminService.update_permissions(user, 'revoke').then(function (resp) {
+        _this4.list_admin_users();
+      });
+    }
+  }]);
+
+  return RapidAdminUsersCtrl;
+}();
+
+exports.default = RapidAdminUsersCtrl;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _L = __webpack_require__(9);
 
 var _L2 = _interopRequireDefault(_L);
 
@@ -247,7 +322,7 @@ var RapidMainCtrl = function () {
 exports.default = RapidMainCtrl;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -267,7 +342,7 @@ function eventListingDetailed() {
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -287,7 +362,52 @@ function eventListing() {
 }
 
 /***/ }),
-/* 6 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RapidAdminService = function () {
+  RapidAdminService.$inject = ["$http", "$q"];
+  function RapidAdminService($http, $q) {
+    'ngInject';
+
+    _classCallCheck(this, RapidAdminService);
+
+    this.$http = $http;
+    this.$q = $q;
+  }
+
+  _createClass(RapidAdminService, [{
+    key: 'update_permissions',
+    value: function update_permissions(user, action) {
+      var payload = {
+        username: user.username,
+        action: action
+      };
+
+      return this.$http.post('/rapid/admin/users/permissions', payload).then(function (resp) {
+        return resp.data;
+      });
+    }
+  }]);
+
+  return RapidAdminService;
+}();
+
+exports.default = RapidAdminService;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -363,13 +483,13 @@ var RapidDataService = function () {
 exports.default = RapidDataService;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = L;
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -393,7 +513,8 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
   'ngInject';
 
   $locationProvider.html5Mode({
-    enabled: true
+    enabled: true,
+    rewriteLinks: false
   });
 
   $stateProvider.state('rapid', {
@@ -423,126 +544,6 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 mod.config(config);
 
 exports.default = mod;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var RapidAdminUsersCtrl = function () {
-  RapidAdminUsersCtrl.$inject = ["UserService", "RapidAdminService"];
-  function RapidAdminUsersCtrl(UserService, RapidAdminService) {
-    'ngInject';
-
-    _classCallCheck(this, RapidAdminUsersCtrl);
-
-    this.UserService = UserService;
-    this.RapidAdminService = RapidAdminService;
-    this.list_admin_users();
-  }
-
-  _createClass(RapidAdminUsersCtrl, [{
-    key: 'list_admin_users',
-    value: function list_admin_users() {
-      var _this = this;
-
-      this.UserService.search({ q: '', role: 'Rapid Admin' }).then(function (resp) {
-        _this.admin_users = resp;
-      });
-    }
-  }, {
-    key: 'search_users',
-    value: function search_users(q) {
-      var _this2 = this;
-
-      if (q.length > 1) {
-        this.UserService.search({ q: q }).then(function (resp) {
-          console.log(resp);
-          _this2.found_users = resp;
-        });
-      } else {
-        this.found_users = [];
-      }
-    }
-  }, {
-    key: 'make_admin',
-    value: function make_admin(user) {
-      var _this3 = this;
-
-      this.RapidAdminService.update_permissions(user, 'grant').then(function (resp) {
-        _this3.list_admin_users();
-      });
-    }
-  }, {
-    key: 'revoke_admin',
-    value: function revoke_admin(user) {
-      var _this4 = this;
-
-      this.RapidAdminService.update_permissions(user, 'revoke').then(function (resp) {
-        _this4.list_admin_users();
-      });
-    }
-  }]);
-
-  return RapidAdminUsersCtrl;
-}();
-
-exports.default = RapidAdminUsersCtrl;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var RapidAdminService = function () {
-  RapidAdminService.$inject = ["$http", "$q"];
-  function RapidAdminService($http, $q) {
-    'ngInject';
-
-    _classCallCheck(this, RapidAdminService);
-
-    this.$http = $http;
-    this.$q = $q;
-  }
-
-  _createClass(RapidAdminService, [{
-    key: 'update_permissions',
-    value: function update_permissions(user, action) {
-      var payload = {
-        username: user.username,
-        action: action
-      };
-
-      return this.$http.post('/rapid/admin/users/permissions', payload).then(function (resp) {
-        return resp.data;
-      });
-    }
-  }]);
-
-  return RapidAdminService;
-}();
-
-exports.default = RapidAdminService;
 
 /***/ })
 /******/ ]);
