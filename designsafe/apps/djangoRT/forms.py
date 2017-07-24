@@ -59,7 +59,8 @@ class TicketGuestForm(BaseTicketForm):
     """
     Anonymous users ticket form. Adds a CAPTCHA to reduce spam submissions.
     """
-    captcha = NoReCaptchaField()
+    # captcha = NoReCaptchaField()
+    pass
 
 class ReplyForm(forms.Form):
     """
