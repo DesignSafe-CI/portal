@@ -36,13 +36,12 @@ class AnonymousViewTests(TestCase):
 
     def test_create(self):
         resp = self.client.get(reverse('djangoRT:ticketcreate'))
-        self.assertContains(resp, 'Captcha')
+        self.assertEquals(resp.status_code, 200)
 
     def test_create_with_error_context(self):
         query = 'error_page=/page/that/failed&http_referer=https://www.google.com'
         resp = self.client.get(reverse('djangoRT:ticketcreate') + '?' + query)
 
-        self.assertContains(resp, 'Captcha')
         self.assertContains(resp, '<input id="id_error_page" name="error_page" '
                                   'type="hidden" value="/page/that/failed" />')
         self.assertContains(resp, '<input id="id_http_referer" name="http_referer" '
@@ -222,7 +221,3 @@ class AuthenticatedViewTests(TestCase):
     def test_attachment(self):
         # TODO
         pass
-
-
-
-
