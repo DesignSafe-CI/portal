@@ -338,7 +338,7 @@ class UserRegistrationForm(forms.Form):
         label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
         error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
 
-    captcha = NoReCaptchaField()
+    #captcha = NoReCaptchaField()
     
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
