@@ -211,7 +211,7 @@ class FileManager(object):
             })
             n = Notification(event_type='data',
                              status=Notification.ERROR,
-                             operation='box_download_error',
+                             operation='dropbox_download_error',
                              message='We were unable to get the specified file from dropbox. '
                                      'Please try again...',
                              user=username,
@@ -280,7 +280,6 @@ class FileManager(object):
         safe_filename = dropbox_file.name.encode(sys.getfilesystemencoding(), 'ignore')
         file_download_path = os.path.join(download_directory_path, safe_filename)
         logger.debug('Download file %s <= dropbox://file/%s', file_download_path, dropbox_file_path)
-
         self.dropbox_api.files_download_to_file(file_download_path,dropbox_file_path)
 
         return file_download_path

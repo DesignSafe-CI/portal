@@ -69,7 +69,7 @@ class DropboxFile(object):
     @property
     def last_modified(self):
         try:
-            return self._item.modified_at
+            return self._item.server_modified
         except AttributeError:
             return None
 

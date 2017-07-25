@@ -4,7 +4,7 @@
         <thead>
         <th>Project title</th>
         <th>PI</th>
-        <th>Created</th>
+        <th>Last modified</th>
         </thead>
 
         <tbody>
@@ -22,7 +22,7 @@
                 </ds-user>
             </td>
             <td>
-                {{ project.created|date:"short" }}
+                {{ project.lastUpdated|date:"short" }}
             </td>
         </tr>
         </tbody>
@@ -33,7 +33,7 @@
             <span>
               <i class="fa fa-spinner fa-spin"></i> Loading...
            </span>
-          </div>     
+          </div>
         </caption>
     </table>
 </div>
