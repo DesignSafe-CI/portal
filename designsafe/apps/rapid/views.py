@@ -2,6 +2,7 @@ import uuid
 import os
 import json
 import StringIO
+from datetime import datetime
 from PIL import Image
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
@@ -89,6 +90,7 @@ def admin_create_event(request):
             ev.event_date = form.cleaned_data["event_date"]
             ev.event_type = form.cleaned_data["event_type"]
             ev.title = form.cleaned_data["title"]
+            ev.created_date = datetime.utcnow()
             if request.FILES:
                 try:
                     image_uuid = str(uuid.uuid1())
@@ -128,7 +130,6 @@ def admin_edit_event(request, event_id):
     form.fields['lat'].initial = event.location["lat"]
     form.fields['lon'].initial = event.location["lon"]
     if request.method == 'POST':
-        logger.info(request.FILES)
         if form.is_valid():
             event.event_date = form.cleaned_data["event_date"]
             event.location = {
