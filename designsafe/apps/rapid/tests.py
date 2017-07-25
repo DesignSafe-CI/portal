@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model, models, signals
 from designsafe.apps.auth.signals import on_user_logged_in
+from designsafe.apps.rapid.models import RapidNHEvent
 from unittest import skip
 import mock
 import requests_mock
@@ -36,6 +37,11 @@ class RapidTests(TestCase):
         signals.user_logged_in.disconnect(on_user_logged_in)
 
 
+
+    def tearDown(self):
+        pass
+
+
     def test_index(self):
         """
 
@@ -44,4 +50,24 @@ class RapidTests(TestCase):
         self.client.login(username='ds_admin', password='admin/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Rapid")
+
+    def test_admin_index_admin(self):
+        url = reverse('designsafe_rapid:admin')
+        self.client.login(username='ds_admin', password='admin/password')
+        resp = self.client.get(url, follow=True)
+        self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Rapid Admin")
+
+    def test_admin_index_no_admin(self):
+        url = reverse('designsafe_rapid:admin')
+        self.client.login(username='ds_user', password='user/password')
+        resp = self.client.get(url, follow=True)
+        self.assertNotEqual(resp.status_code, 200)
+
+    def test_admin_create_event(self):
+        url = reverse('designsafe_rapid:admin_create_event')
+        self.client.login(username='ds_admin', password='admin/password')
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Create")
