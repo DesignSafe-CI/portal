@@ -149,7 +149,8 @@ def admin_edit_event(request, event_id):
                     event.main_image_uuid = image_uuid
                 except:
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
-                os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
+                if old_image_uuid:
+                    os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
             event.save(refresh=True)
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
