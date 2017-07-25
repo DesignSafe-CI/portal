@@ -33,5 +33,5 @@ class RapidNHEvent(DocType):
         })
 
     def save(self, **kwargs):
-        self.created_date = datetime.utcnow()
+        # self.created_date = datetime.utcnow()
         return super(RapidNHEvent, self).save(**kwargs)

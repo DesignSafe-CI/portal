@@ -32,7 +32,6 @@ class RapidTests(TestCase):
         user.set_password('user/password')
         user.save()
 
-
         # disconnect user_logged_in signal
         signals.user_logged_in.disconnect(on_user_logged_in)
 
