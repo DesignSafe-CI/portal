@@ -72,7 +72,7 @@ class BaseNotify(models.Model):
 
 class Notification(BaseNotify):
     # what are the agave length defaults?
-    user = models.CharField(max_length=20)
+    user = models.CharField(max_length=20, db_index=True)
     read = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
 

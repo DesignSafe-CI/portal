@@ -9,7 +9,8 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
   'ngInject';
 
   $locationProvider.html5Mode({
-    enabled: true
+    enabled: true,
+    rewriteLinks: false
   });
 
   $stateProvider.state('rapid', {

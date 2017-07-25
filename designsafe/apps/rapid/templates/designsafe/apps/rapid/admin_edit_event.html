@@ -1,16 +1,16 @@
-{% extends "base.html" %}
-{% load bootstrap3 sekizai_tags staticfiles %}
+{% extends "designsafe/apps/rapid/rapid_base.html" %}
 {% load ds_filters %}
+{% load bootstrap3 sekizai_tags staticfiles %}
 
 
 
-{% block content %}
+{% block main %}
 
   <div class="container">
     <div class="row">
       <div class="col-md-12">
         <ol class="breadcrumb">
-          <li> <a href="{% url 'designsafe_rapid:admin'%}"> Rapid Admin Home </a></li>
+          <li> <a href="{% url 'designsafe_rapid:admin'%}" target="_self"> Rapid Admin Home </a></li>
         </ol>
       </div>
     </div>
@@ -40,5 +40,4 @@
 
 {% endaddtoblock %}
 
-
-{% endblock content %}
+{% endblock main %}

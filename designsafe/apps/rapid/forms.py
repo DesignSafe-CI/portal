@@ -27,6 +27,6 @@ class RapidNHEventForm(forms.Form):
 
 
 class RapidNHEventDatasetForm(forms.Form):
-    doi = forms.CharField(label="DOI", required=False)
     url = forms.CharField(label="Link to Data Depot", required=True)
-    title = forms.CharField(label="Brief description", required=True)
+    title = forms.CharField(label="Brief description of dataset", required=True)
+    doi = forms.CharField(label="DOI", required=False)

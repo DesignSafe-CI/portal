@@ -7,9 +7,6 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFM
 from designsafe.apps.api.data.agave.public_filemanager import FileManager as AgavePublicFM
 from designsafe.apps.api.data.box.filemanager import FileManager as BoxFM
-from designsafe.apps.api.data.agave.file import AgaveFile
-from designsafe.apps.api.data.agave.elasticsearch.documents import Object
-from designsafe.apps.auth.models import AgaveOAuthToken
 
 from designsafe.apps.data.views.base import DataBrowserTestView
 
@@ -33,16 +30,16 @@ class DataBrowserBaseTestCase(TestCase):
         with open('designsafe/apps/api/fixtures/agave_home_listing.json') as f:
             home_listing_json = json.load(f)
         self.agave_listing_json = home_listing_json
-        
+
         with open('designsafe/apps/api/fixtures/object_listing_recursive.json') as f:
             listing_json = json.load(f)
         self.es_listing_json = listing_json
-    
+
     def view_to_test(self, view, request, *args, **kwargs):
 		"""Mimic as_view() returned callable, but returns view instance.
 
 		args and kwargs are the same you would pass to ``reverse()``
-        
+
         Shamelessly copied from: http://tech.novapost.fr/django-unit-test-your-views-en.html#mimic-as-view
         Follow ticket: https://code.djangoproject.com/ticket/20456
 
@@ -89,7 +86,7 @@ class DataBrowserViewTestCase(DataBrowserBaseTestCase):
             #Initi view
             test_view = DataBrowserTestView()
             #Setup view for testing
-            test_view = self.view_to_test(test_view, request, 
+            test_view = self.view_to_test(test_view, request,
                                 resource = resource, file_path = file_path)
             #We're just going to get the context data.
             context = test_view.get_context_data(**test_view.kwargs)
@@ -104,7 +101,7 @@ class DataBrowserViewTestCase(DataBrowserBaseTestCase):
             self.assertIsNotNone(angular_init['listing'])
             self.assertIsNotNone(angular_init['state'])
             self.assertIsNotNone(angular_init['state']['search'])
-            
+
             if len(url_components) <= 3:
                 mock_public_listing.assert_called_with(None)
             else:

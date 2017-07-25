@@ -1,7 +1,7 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('designsafe').controller('DataBrowserCtrl',
-    ['$scope', '$controller', '$rootScope', 'Systems', 'Files', 'logger', 'DataBrowserService', function($scope, $controller, $rootScope, Systems, Files, logger, DataBrowserService) {
+    ['$scope', '$controller', '$rootScope', 'Systems', 'logger', 'DataBrowserService', function($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
 
     $controller('WorkspacePanelCtrl', {$scope: $scope});
 
@@ -61,7 +61,7 @@
         });
     };
 
-    $scope.getFileIcon = Files.icon;
+    // $scope.getFileIcon = Files.icon;
 
     $scope.scrollToTop = function(){
       return;
@@ -147,19 +147,6 @@
     //  }
     //};
 
-    $scope.loadFiles = function loadFiles() {
-      $scope.data.filesListing = null;
-      $scope.data.loading = true;
-      Files.list({systemId: $scope.data.system.id, path: $scope.data.filePath})
-      .then(function(response) {
-        $scope.data.filesListing = response.data;
-        $scope.data.loading = false;
-      }, function(error) {
-        logger.log(error);
-        $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
-        $scope.data.loading = false;
-      });
-    };
 
     $scope.displayName = function displayName(file) {
       if (file.systemId === 'nees.public') {
@@ -194,12 +181,6 @@
         return file.metadata.experiments[0].title;
       }
       return file.name;
-    };
-
-    $scope.chooseFile = function(file) {
-      if ($scope.data.wants) {
-        Files.provideFile($scope.data.wants.requestKey, file);
-      }
     };
 
     $rootScope.$on('wants-file', function($event, wantArgs) {

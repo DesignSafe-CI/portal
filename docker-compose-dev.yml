@@ -1,5 +1,6 @@
 # This compose file is useful for debugging with ipdb
 
+
 version: "2"
 services:
   redis:

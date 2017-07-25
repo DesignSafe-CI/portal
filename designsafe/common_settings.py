@@ -96,7 +96,6 @@ INSTALLED_APPS = (
     'designsafe.apps.djangoRT',
     'designsafe.apps.notifications',
     'designsafe.apps.workspace',
-    'designsafe.apps.user_activity',
     'designsafe.apps.token_access',
     'designsafe.apps.search',
     'designsafe.apps.geo',
@@ -378,10 +377,6 @@ LOGGING = {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
         },
-        'dsapi': {
-            'handlers': ['console', 'opbeat'],
-            'level': 'DEBUG',
-        },
         'celery': {
             'handlers': ['console', 'opbeat'],
             'level': 'DEBUG',
@@ -512,7 +507,7 @@ GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', Fa
 #
 # Agave Tenant Configuration
 AGAVE_TENANT_ID = os.environ.get('AGAVE_TENANT_ID')
-AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL')
+AGAVE_TENANT_BASEURL = os.environ.get('AGAVE_TENANT_BASEURL', 'https://api.example.com')
 #
 # Agave Client Configuration
 AGAVE_CLIENT_KEY = os.environ.get('AGAVE_CLIENT_KEY')

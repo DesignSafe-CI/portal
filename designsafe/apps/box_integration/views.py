@@ -2,151 +2,16 @@ from boxsdk import OAuth2, Client
 from boxsdk.exception import BoxOAuthException, BoxException
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         Http404)
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
+from django.http import (HttpResponseRedirect, HttpResponseBadRequest)
 from django.shortcuts import render
 from designsafe.apps.box_integration.models import BoxUserToken
-from designsafe.apps.box_integration.tasks import check_connection, copy_box_item
-from designsafe.apps.box_integration.serializers import BoxObjectJsonSerializer
+from designsafe.apps.box_integration.tasks import check_connection
 import logging
-import json
 
 
 logger = logging.getLogger(__name__)
-
-
-class BoxAPIView(View):
-
-    def __init__(self, **kwargs):
-        self.box_api = None
-        super(BoxAPIView, self).__init__(**kwargs)
-
-    @method_decorator(csrf_exempt)
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        box_user_token = request.user.box_user_token
-        oauth = OAuth2(
-            client_id=settings.BOX_APP_CLIENT_ID,
-            client_secret=settings.BOX_APP_CLIENT_SECRET,
-            access_token=box_user_token.access_token,
-            refresh_token=box_user_token.refresh_token,
-            store_tokens=box_user_token.update_tokens
-        )
-        self.box_api = Client(oauth)
-        return super(BoxAPIView, self).dispatch(request, *args, **kwargs)
-
-
-class BoxFilesView(BoxAPIView):
-
-    def get(self, request, path=None):
-        """
-        Box doesn't support listing for a path, only by folder id; we have to start at
-        folder_id=0 and iterate through the folder's children looking for a folder named
-        after the next path component. On finding a folder for the next path component we
-        record it and then repeat for subsequent path components. If any path component
-        cannot be matched, an Http404 is raised.
-
-        Args:
-            request: The request
-            path: The path to initialize the view with.
-
-        Returns:
-            A HttpResponse
-
-        Raises:
-            Http404 if the path is not found
-
-        """
-        folder_id = 0
-        if path is not None:
-            path_c = path.split('/')
-            for c in path_c:
-                limit = 100
-                offset = 0
-                next_folder_id = None
-                while next_folder_id is None:
-                    children = self.box_api.folder(folder_id).get_items(limit=limit,
-                                                                        offset=offset)
-                    for child in children:
-                        if child.type == 'folder':
-                            if child.name == c:
-                                next_folder_id = child.object_id
-                                break
-                    if len(children) == limit:
-                        offset += limit
-                    elif next_folder_id is None:  # this can happen if path doesn't exist
-                        raise Http404('The Box path "%s" does not exist.' %
-                                      path)
-                folder_id = next_folder_id
-
-        folder = self.box_api.folder(folder_id).get()
-        context = {
-            'angular_init': json.dumps({'folder': folder}, cls=BoxObjectJsonSerializer),
-        }
-
-        return render(request, 'designsafe/apps/box_integration/files.html', context)
-
-
-class BoxFilesJsonView(BoxAPIView):
-
-    def get(self, request, item_type, item_id):
-        op = getattr(self.box_api, item_type)
-        item = op(item_id).get()
-
-        if item_type == 'file':
-            if request.GET.get('download'):
-                download_url = item.get_shared_link_download_url()
-                return HttpResponse(json.dumps({'download_url': download_url}),
-                                    content_type='application/json')
-            elif request.GET.get('embed'):
-                embed_item = op(item_id).get(fields=['expiring_embed_link'])
-                return HttpResponse(json.dumps(embed_item, cls=BoxObjectJsonSerializer),
-                                    content_type='application/json')
-
-        return HttpResponse(json.dumps(item, cls=BoxObjectJsonSerializer),
-                            content_type='application/json')
-
-    def put(self, request, item_type, item_id):
-
-        body_unicode = request.body.decode('utf-8')
-        body_data = json.loads(body_unicode)
-        logger.debug(body_data)
-        action = body_data.get('action', None)
-        resp_data = {}
-
-        if action == 'copy':
-            op = getattr(self.box_api, item_type)
-            item = op(item_id).get()
-
-            target_system = settings.AGAVE_STORAGE_SYSTEM
-            target_dir = '%s/%s' % (request.user.username, body_data.get('dir', ''))
-
-            task_args = (request.user.username, item.type, item.object_id, target_system,
-                         target_dir)
-            task = copy_box_item.apply_async(args=task_args, countdown=10, queue='files')
-
-            logger.debug('Scheduled Box Copy', extra={
-                'username': request.user.username,
-                'context': {
-                    'box_item_type': item_type,
-                    'box_item_id': item_id,
-                    'task_id': task.id
-                }
-            })
-            resp_data['result'] = {'task_id': task.id}
-            resp_data['message'] = 'Item copy scheduled.'
-            resp_status = 202
-        else:
-            resp_data['message'] = 'Unknown item action: {0}'.format(action)
-            resp_status = 400
-        return HttpResponse(json.dumps(resp_data), status=resp_status,
-                            content_type='application/json')
-
 
 @login_required
 def index(request):

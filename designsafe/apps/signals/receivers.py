@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.dispatch import receiver
 from designsafe.apps.signals.signals import ds_event
 from ws4redis.publisher import RedisPublisher
@@ -6,7 +5,6 @@ from ws4redis.redis_store import RedisMessage
 import json
 import logging
 import copy
-from designsafe.apps.data import tasks
 
 logger = logging.getLogger(__name__)
 
