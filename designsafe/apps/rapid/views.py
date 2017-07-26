@@ -64,6 +64,14 @@ def get_events(request):
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin(request):
+
+    metrics_logger.info('Rapid Admin index',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'rapid_admin_index_view'
+                 })
+
     s = RapidNHEvent.search()
     results = s.execute(ignore_cache=True)
     context = {}
@@ -79,6 +87,14 @@ def admin_create_event(request):
     event_types = q.execute(ignore_cache=True)
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
+
+    metrics_logger.info('Rapid Admin create event',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'rapid_admin_create_event'
+                 })
+
     if request.method == 'POST':
         if form.is_valid():
             ev = RapidNHEvent()
@@ -119,6 +135,14 @@ def admin_edit_event(request, event_id):
         event = RapidNHEvent.get(event_id)
     except:
         return HttpResponseNotFound()
+
+    metrics_logger.info('Rapid Admin edit event',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'rapid_admin_edit_event'
+                 })
+
     data = event.to_dict()
     data["lat"] = event.location.lat
     data["lon"] = event.location.lon
@@ -167,6 +191,14 @@ def admin_edit_event(request, event_id):
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin_delete_event(request, event_id):
+
+    metrics_logger.info('Rapid Admin delete event',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'rapid_admin_delete_event'
+                 })
+
     try:
         event = RapidNHEvent.get(event_id)
     except:
@@ -281,6 +313,13 @@ def admin_user_permissions(request):
         }
 
     """
+
+    metrics_logger.info('Rapid Admin user perms',
+                 extra = {
+                     'user': request.user.username,
+                     'sessionId': getattr(request.session, 'session_key', ''),
+                     'operation': 'rapid_admin_user_perms'
+                 })
     if request.method=='POST':
         payload = json.loads(request.body.decode("utf-8"))
         logger.info(payload)
