@@ -37,7 +37,7 @@ class SearchView(BaseApiView):
         # .highlight_options(require_field_match=True)\
         es_query = Search(index="nees,cms")\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
-            .query("query_string", query=q, default_operator="and", fields=["body", "name"])\
+            .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
             .query(~Q('match', type='dir'))\
             .highlight('body',
                 fragment_size=100,
@@ -120,14 +120,14 @@ class SearchView(BaseApiView):
 
         exp_query = Search(index="nees")\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q, default_operator="and")\
+            .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
             .filter("term", _type="experiment")\
             .extra(from_=offset, size=limit)\
             .execute()
 
         projects_query = Search(index="nees")\
             .query("match", systemId=system_id)\
-            .query("query_string", query=q, default_operator="and")\
+            .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
             .filter("term", _type="project")\
             .extra(from_=offset, size=limit)\
             .execute()
