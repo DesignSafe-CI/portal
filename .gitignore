@@ -49,4 +49,5 @@ coverage.xml
 *.pot
 *.log
 docs/_build/
+.docs/build
 target/
