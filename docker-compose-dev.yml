@@ -47,12 +47,12 @@ services:
       - WS_BACKEND_HOST=redis
       - WS_BACKEND_DB=0
       - WS_BACKEND_PORT=6379
-      - BROKER_URL_HOST=rabbitmq
-      - BROKER_URL_PORT=5672
-      - BROKER_URL_VHOST=
-      - BROKER_URL_USERNAME=guest
-      - BROKER_URL_PWD=guest
-      - BROKER_URL_PROTOCOL=amqp://
+      - CELERY_BROKER_URL_HOST=rabbitmq
+      - CELERY_BROKER_URL_PORT=5672
+      - CELERY_BROKER_URL_VHOST=
+      - CELERY_BROKER_URL_USERNAME=guest
+      - CELERY_BROKER_URL_PWD=guest
+      - CELERY_BROKER_URL_PROTOCOL=amqp://
       - CELERY_RESULT_BACKEND_HOST=redis
       - CELERY_RESULT_BACKEND_PORT=6379
     links:
@@ -78,12 +78,12 @@ services:
       - WS_BACKEND_HOST=redis
       - WS_BACKEND_DB=0
       - WS_BACKEND_PORT=6379
-      - BROKER_URL_HOST=rabbitmq
-      - BROKER_URL_PORT=5672
-      - BROKER_URL_VHOST=
-      - BROKER_URL_USERNAME=guest
-      - BROKER_URL_PWD=guest
-      - BROKER_URL_PROTOCOL=amqp://
+      - CELERY_BROKER_URL_HOST=rabbitmq
+      - CELERY_BROKER_URL_PORT=5672
+      - CELERY_BROKER_URL_VHOST=
+      - CELERY_BROKER_URL_USERNAME=guest
+      - CELERY_BROKER_URL_PWD=guest
+      - CELERY_BROKER_URL_PROTOCOL=amqp://
       - CELERY_RESULT_BACKEND_HOST=redis
       - CELERY_RESULT_BACKEND_PORT=6379
     links:
@@ -151,15 +151,16 @@ services:
       - DATABASE_USER=DS_DEV
       - DATABASE_PASSWORD=DS_DEV
       - DS_LOCAL_DEV=True
-      - BROKER_URL_HOST=rabbitmq
-      - BROKER_URL_PORT=5672
-      - BROKER_URL_VHOST=
-      - BROKER_URL_USERNAME=guest
-      - BROKER_URL_PWD=guest
       - WS_BACKEND_HOST=redis
       - WS_BACKEND_DB=0
       - WS_BACKEND_PORT=6379
       - BROKER_URL_PROTOCOL=amqp://
+      - CELERY_BROKER_URL_HOST=rabbitmq
+      - CELERY_BROKER_URL_PORT=5672
+      - CELERY_BROKER_URL_VHOST=
+      - CELERY_BROKER_URL_USERNAME=guest
+      - CELERY_BROKER_URL_PWD=guest
+      - CELERY_BROKER_URL_PROTOCOL=amqp://
       - CELERY_RESULT_BACKEND_HOST=redis
       - CELERY_RESULT_BACKEND_PORT=6379
     links:
