@@ -5,12 +5,13 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
+from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
@@ -495,6 +496,8 @@ def email_confirmation(request, code=None):
                 tas = TASClient()
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
+                    check_or_create_agave_home_dir.apply_async(args=(user["username"],))
+
                     messages.success(request,
                                      'Congratulations, your account has been activated! '
                                      'You can now log in to DesignSafe.')

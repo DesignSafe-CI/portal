@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.dispatch import receiver
 from designsafe.apps.accounts.models import DesignSafeProfile
 from pytas.http import TASClient
-from .tasks import check_or_create_agave_home_dir
 import logging
 import re
 import requests
@@ -85,7 +84,6 @@ class TASBackend(ModelBackend):
                         last_name=tas_user['lastName'],
                         email=tas_user['email']
                         )
-                    check_or_create_agave_home_dir.apply_async(args=(user.username,))
                 try:
                     profile = DesignSafeProfile.objects.get(user=user)
                 except DesignSafeProfile.DoesNotExist:
@@ -138,8 +136,6 @@ class AgaveOAuthBackend(ModelBackend):
                         last_name=agave_user['last_name'],
                         email=agave_user['email']
                         )
-
-                    check_or_create_agave_home_dir.apply_async(args=(user.username,))
 
                 try:
                     profile = DesignSafeProfile.objects.get(user=user)
