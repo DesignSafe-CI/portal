@@ -91,12 +91,8 @@
   </li>
 </div>
 
-
-
-
-
-
 </div> <!-- End of sidebar -->
+
 
 <div id="current_layer_details" ng-show="vm.current_layer">
   <div class="tools">
@@ -120,7 +116,11 @@
     </div>
 
   </li>
-  <li class="list-group-item menu clearfix">
+  <li class="list-group-item menu clearfix"
+      ng-hide="vm.current_layer &&
+                ((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+                  ||
+                 (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
     <div class="left"> Stroke: </div>
     <div class="right">
       <input type="color"
@@ -130,7 +130,11 @@
     </div>
 
   </li>
-  <li class="list-group-item menu clearfix">
+  <li class="list-group-item menu clearfix"
+      ng-hide="vm.current_layer &&
+            ((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+              ||
+             (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
     <div class="left"> Opacity: </div>
     <div class="right">
       <input type="number" min=0 max=1 step=0.01
@@ -140,15 +144,21 @@
     </div>
 
   </li>
-  <li class="list-group-item menu clearfix">
+  <li class="list-group-item menu clearfix" ng-show="vm.current_layer &&
+        ((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+          ||
+         (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
     <div class="left"> Lat: </div>
     <div class="right"> {{vm.current_layer.getLatLng().lat}} </div>
   </li>
-  <li class="list-group-item menu clearfix">
+  <li class="list-group-item menu clearfix" ng-show="vm.current_layer &&
+        ((vm.active_layer_group.get_feature_type(vm.current_layer) === 'Point')
+          ||
+         (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
     <div class="left"> Lon: </div>
     <div class="right"> {{vm.current_layer.getLatLng().lng}} </div>
   </li>
-</div>
+</div> <!-- End of current layer details -->
 
 
 <div id="map_project_details" ng-show="vm.edit_title">

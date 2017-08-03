@@ -275,3 +275,8 @@
   padding: 10px;
   color: #fff;
 }
+
+#geo_container .hm-marker {
+  font-size: 3em;
+  color: #ffffff;
+}

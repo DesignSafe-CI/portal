@@ -49,6 +49,13 @@ export default class MapSidebarCtrl {
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
+    // Overload the default icon creator
+
+    this.HazmapperDivIcon = L.divIcon({
+      className: 'hm-marker',
+      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
+    });
+
     // Load in a map project from the data service if one does exist, if not
     // create a new one from scratch
     if (this.GeoDataService.current_project()) {
@@ -87,6 +94,12 @@ export default class MapSidebarCtrl {
       object.options.fillColor = this.settings.default_fill_color;
       object.options.fillOpacity = this.settings.default_fill_opacity;
       this.active_layer_group.feature_group.addLayer(object);
+      if (object instanceof L.Marker) {
+        object.getElement().style.color = this.settings.default_marker_color;
+        object.options.fillColor = this.settings.default_marker_color;
+
+      }
+
       this.$scope.$apply();
     });
 
@@ -111,6 +124,9 @@ export default class MapSidebarCtrl {
       position: 'topright',
       draw: {
         circle: false,
+        marker: {
+          icon: this.HazmapperDivIcon
+        }
       },
       edit: {
        featureGroup: fg,
@@ -134,6 +150,12 @@ export default class MapSidebarCtrl {
       // this.map.addLayer(lg.feature_group);
       this.map.removeLayer(lg.feature_group);
       this.map.addLayer(lg.feature_group);
+      lg.feature_group.getLayers().forEach( (layer) => {
+        console.log(layer.feature)
+        if ( (layer instanceof L.Marker) && (!(layer.options.image_src)) ){
+          layer.getElement().style.color = layer.options.fillColor;
+        }
+      });
     });
     this.active_layer_group = this.project.layer_groups[0];
   }
@@ -189,9 +211,13 @@ export default class MapSidebarCtrl {
     lg.show = true;
   }
 
+
+
   select_feature(lg, feature) {
+    console.log("ASDASDASDASDA")
     this.active_layer_group = lg;
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
+    console.log(this.current_layer)
   }
 
   create_new_project () {
@@ -201,7 +227,7 @@ export default class MapSidebarCtrl {
     });
     modal.result.then( (s) => {
       this.map.eachLayer(function (layer) {
-        console.log(layer)
+        console.log(layer);
         // this.map.removeLayer(layer);
       });
       this.project.clear();
@@ -219,6 +245,7 @@ export default class MapSidebarCtrl {
        let markerBounds = L.latLngBounds(latLngs);
        try {
          this.map.fitBounds(markerBounds, {maxZoom: 16});
+        //  feature.getElement().style.border = '2px solid red';
        } catch (e) {
          console.log(e);
        }
@@ -244,7 +271,11 @@ export default class MapSidebarCtrl {
     // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
     let styles = {};
     styles[prop] = this.current_layer.options[prop];
-    this.current_layer.setStyle(styles);
+    if (tmp instanceof L.Marker) {
+        tmp.getElement().style.color = this.current_layer.options.fillColor;
+    } else {
+      this.current_layer.setStyle(styles);
+    }
   }
 
   drop_feature_success (ev, data, lg) {

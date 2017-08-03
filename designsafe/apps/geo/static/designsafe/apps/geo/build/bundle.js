@@ -589,6 +589,13 @@ var MapSidebarCtrl = function () {
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
+    // Overload the default icon creator
+
+    this.HazmapperDivIcon = L.divIcon({
+      className: 'hm-marker',
+      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
+    });
+
     // Load in a map project from the data service if one does exist, if not
     // create a new one from scratch
     if (this.GeoDataService.current_project()) {
@@ -628,6 +635,11 @@ var MapSidebarCtrl = function () {
       object.options.fillColor = _this.settings.default_fill_color;
       object.options.fillOpacity = _this.settings.default_fill_opacity;
       _this.active_layer_group.feature_group.addLayer(object);
+      if (object instanceof L.Marker) {
+        object.getElement().style.color = _this.settings.default_marker_color;
+        object.options.fillColor = _this.settings.default_marker_color;
+      }
+
       _this.$scope.$apply();
     });
 
@@ -652,7 +664,10 @@ var MapSidebarCtrl = function () {
       var dc = new L.Control.Draw({
         position: 'topright',
         draw: {
-          circle: false
+          circle: false,
+          marker: {
+            icon: this.HazmapperDivIcon
+          }
         },
         edit: {
           featureGroup: fg,
@@ -680,6 +695,12 @@ var MapSidebarCtrl = function () {
         // this.map.addLayer(lg.feature_group);
         _this2.map.removeLayer(lg.feature_group);
         _this2.map.addLayer(lg.feature_group);
+        lg.feature_group.getLayers().forEach(function (layer) {
+          console.log(layer.feature);
+          if (layer instanceof L.Marker && !layer.options.image_src) {
+            layer.getElement().style.color = layer.options.fillColor;
+          }
+        });
       });
       this.active_layer_group = this.project.layer_groups[0];
     }
@@ -747,8 +768,10 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'select_feature',
     value: function select_feature(lg, feature) {
+      console.log("ASDASDASDASDA");
       this.active_layer_group = lg;
       this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
+      console.log(this.current_layer);
     }
   }, {
     key: 'create_new_project',
@@ -780,6 +803,7 @@ var MapSidebarCtrl = function () {
         var markerBounds = L.latLngBounds(latLngs);
         try {
           this.map.fitBounds(markerBounds, { maxZoom: 16 });
+          //  feature.getElement().style.border = '2px solid red';
         } catch (e) {
           console.log(e);
         }
@@ -807,7 +831,11 @@ var MapSidebarCtrl = function () {
       // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
       var styles = {};
       styles[prop] = this.current_layer.options[prop];
-      this.current_layer.setStyle(styles);
+      if (tmp instanceof L.Marker) {
+        tmp.getElement().style.color = this.current_layer.options.fillColor;
+      } else {
+        this.current_layer.setStyle(styles);
+      }
     }
   }, {
     key: 'drop_feature_success',
@@ -1121,6 +1149,10 @@ var GeoDataService = function () {
     this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
     this.previous_project_state = null;
+    this.HazmapperDivIcon = L.divIcon({
+      className: 'hm-marker',
+      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
+    });
   }
 
   _createClass(GeoDataService, [{
@@ -1230,7 +1262,12 @@ var GeoDataService = function () {
         try {
           (function () {
             var features = [];
-            L.geoJSON(blob).getLayers().forEach(function (layer) {
+            var options = {
+              pointToLayer: function pointToLayer(feature, latlng) {
+                return L.marker(latlng, { icon: _this3.HazmapperDivIcon });
+              }
+            };
+            L.geoJSON(blob, options).getLayers().forEach(function (layer) {
               for (var key in layer.feature.properties) {
                 layer.options[key] = layer.feature.properties[key];
               }
@@ -1319,19 +1356,24 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         // if (json instanceof String) {
         var project = new _mapProject2.default();
+        var options = {
+          pointToLayer: function pointToLayer(feature, latlng) {
+            return L.marker(latlng, { icon: _this5.HazmapperDivIcon });
+          }
+        };
         project.name = json.name;
         project.description = json.description;
         json.layer_groups.forEach(function (name) {
           project.layer_groups.push(new _layer_group2.default(name, new L.FeatureGroup()));
         });
         json.features.forEach(function (d) {
-          var feature = L.geoJSON(d);
+          var feature = L.geoJSON(d, options);
           feature.eachLayer(function (layer) {
-
+            console.log(layer);
             // If there were no styles applied, it might be transparent???
             if (!layer.feature.properties.color) {
               layer.feature.properties.color = '#ff0000';
-            }
+            };
             if (!layer.feature.properties.fillColor) {
               layer.feature.properties.fillColor = '#ff0000';
             };
@@ -1362,6 +1404,9 @@ var GeoDataService = function () {
               // feat.options.image_src = feat.feature.properties.image_src;
               // feat.options.thumb_src = feat.feature.properties.thumb_src;
             }
+            // if ( (layer instanceof L.Marker) && (!(layer.feature.properties.image_src)) ) {
+            //   layer.getElement().style.color = layer.feature.properties.fillColor;
+            // }
             project.layer_groups[layer_group_index].feature_group.addLayer(layer);
             layer.options.label = d.properties.label;
           });
@@ -1545,6 +1590,7 @@ var GeoSettingsService = function GeoSettingsService() {
   _classCallCheck(this, GeoSettingsService);
 
   this.settings = {
+    default_marker_color: '#71c4ff',
     default_fill_color: '#ff0000',
     default_stroke_color: '#ff0000',
     default_fill_opacity: 0.5,
