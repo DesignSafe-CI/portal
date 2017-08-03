@@ -183,6 +183,12 @@
       return file.name;
     };
 
+    $scope.chooseFile = function(file) {
+       if ($scope.data.wants) {
+         $rootScope.$broadcast('provides-file', {requestKey: $scope.data.wants.requestKey, file: file});
+      }
+    };
+
     $rootScope.$on('wants-file', function($event, wantArgs) {
       $scope.data.wants = wantArgs;
       if ($scope.panel.collapsed) {
