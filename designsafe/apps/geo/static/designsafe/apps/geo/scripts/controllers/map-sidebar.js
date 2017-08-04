@@ -151,7 +151,6 @@ export default class MapSidebarCtrl {
       this.map.removeLayer(lg.feature_group);
       this.map.addLayer(lg.feature_group);
       lg.feature_group.getLayers().forEach( (layer) => {
-        console.log(layer.feature)
         if ( (layer instanceof L.Marker) && (!(layer.options.image_src)) ){
           layer.getElement().style.color = layer.options.fillColor;
         }
@@ -214,10 +213,8 @@ export default class MapSidebarCtrl {
 
 
   select_feature(lg, feature) {
-    console.log("ASDASDASDASDA")
     this.active_layer_group = lg;
     this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
-    console.log(this.current_layer)
   }
 
   create_new_project () {

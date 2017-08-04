@@ -696,7 +696,6 @@ var MapSidebarCtrl = function () {
         _this2.map.removeLayer(lg.feature_group);
         _this2.map.addLayer(lg.feature_group);
         lg.feature_group.getLayers().forEach(function (layer) {
-          console.log(layer.feature);
           if (layer instanceof L.Marker && !layer.options.image_src) {
             layer.getElement().style.color = layer.options.fillColor;
           }
@@ -768,10 +767,8 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'select_feature',
     value: function select_feature(lg, feature) {
-      console.log("ASDASDASDASDA");
       this.active_layer_group = lg;
       this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
-      console.log(this.current_layer);
     }
   }, {
     key: 'create_new_project',
