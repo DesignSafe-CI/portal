@@ -93,7 +93,7 @@
         var parts = fileId.split('/');
         systemId = parts[0];
         user = parts[1];
-        filePath = parts.slice(1).join('/')
+        filePath = parts.slice(1).join('/');
       } else {
         systemId = 'designsafe.storage.default';
         /* TODO get from django.context constants; */
