@@ -199,24 +199,6 @@ else:
     }
 
 
-# Haystack cms indexing settings
-if os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true':
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'elasticsearch:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-else:
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
