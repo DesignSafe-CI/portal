@@ -7,6 +7,6 @@ services:
         context: ../../.
         dockerfile: conf/docker/Dockerfile
       image: designsafeci/portal:local
-      env_file: designsafe.env
+      env_file: ../env_files/designsafe.env
       command: /bin/bash
       container_name: des_django
