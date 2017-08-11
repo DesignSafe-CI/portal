@@ -37,7 +37,7 @@ django-websocket-redis
 django-redis-sessions
 django-redis-cache
 # end wsr
-celery==3.1.20
+celery==4.0.2
 flower==0.9.1
 html5lib==0.999
 MySQL-python==1.2.5
