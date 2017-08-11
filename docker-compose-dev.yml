@@ -10,7 +10,7 @@ services:
     image: rabbitmq
 
   elasticsearch:
-    image: elasticsearch:2.3.2
+    image: elasticsearch:5.5.1
     volumes:
       - ./data/elasticsearch:/data
     ports:
