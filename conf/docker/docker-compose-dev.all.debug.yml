@@ -15,7 +15,15 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.6.10-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
+      - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
+    ports:
+      - 5672:5672
+      - 5673:5673
+      - 15673:15673
+      - 15672:15672
     container_name: des_rabbitmq
     hostname: des_rabbitmq
 
@@ -41,9 +49,12 @@ services:
 
   mysql:
     image: mysql:5.6
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    env_file: ../env_files/mysql.env
     ports:
       - 3306:3306
-    env_file: ../env_files/mysql.env
     container_name: des_mysql
     hostname: des_mysql
 
@@ -113,3 +124,4 @@ volumes:
   redis_data:
   mysql_data:
   es_data:
+  rabbitmq_data:

@@ -8,6 +8,8 @@
 designsafe.env
 mysql.env
 rabbitmq.env
+rabbitmq.conf
+mysql.cnf
 
 # local config files
 conf/elasticsearch/elasticsearch.yml
