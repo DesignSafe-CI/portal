@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from designsafe.apps.api.search.views import SearchView
 
 """
 """
-urlpatterns = patterns(
-    'designsafe.apps.api.search.views',
+urlpatterns = [
     url(r'^/?$', SearchView.as_view(), name='search'),
-)
+]

@@ -1,17 +1,18 @@
-from django.conf.urls import include, url, patterns
+from django.conf.urls import include, url
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from designsafe.apps.notifications import views
 
 
-urlpatterns = patterns('designsafe.apps.notifications.views',
-    url(r'^$', 'index', name='index'),
-    url(r'^notifications/$', 'notifications', name='notifications'),
+urlpatterns = [
+    url(r'^$', views.index, name='index'),
+    url(r'^notifications/$', views.notifications, name='notifications'),
 
     # url(r'^apps-list/$', 'apps_list', name='apps_list'),
     # url(r'^files-list/$', 'files_list', name='files_list'),
     # url(r'^jobs-list/$', 'jobs_list', name='jobs_list'),
     # url(r'^jobs-details/$', 'jobs_details', name='jobs_details'),
-)
+]
 
 
 def menu_items(**kwargs):

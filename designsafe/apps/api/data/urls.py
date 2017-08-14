@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from designsafe.apps.api.data.views import (SourcesView,
                                             DataView,
                                             DataSearchView,
@@ -17,8 +17,7 @@ operation: Can be any of these:
                                  More specific action should live in the body.
 
 """
-urlpatterns = patterns(
-    'designsafe.apps.api.data.views',
+urlpatterns = [
     url(r'^sources/$', SourcesView.as_view(), name='sources'),
 
     url(r'^sources/(?P<source_id>[\w.-]+)/$', SourcesView.as_view(), name='sources'),
@@ -37,4 +36,4 @@ urlpatterns = patterns(
     url(r'^search/(?P<resource>[\w.-]+)/?$', DataSearchView.as_view(), name='search'),
 
     url(r'^notification/process/(?P<pk>\d+)', ProcessNotificationView.as_view(), name='process_notification'),
-)
+]

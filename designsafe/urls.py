@@ -15,15 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf import settings
-from django.conf.urls import include, url, patterns
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
@@ -99,4 +98,4 @@ urlpatterns = patterns(
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),
 
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
