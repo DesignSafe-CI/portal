@@ -2,7 +2,6 @@ from django.dispatch import receiver
 from ws4redis.publisher import RedisPublisher
 from ws4redis.redis_store import RedisMessage
 from django.db.models.signals import post_save
-from designsafe.apps.api.notifications.signals import generic_event
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 import logging
 import json

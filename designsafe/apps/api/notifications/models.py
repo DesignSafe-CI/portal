@@ -1,5 +1,4 @@
 from django.db import models
-from designsafe.apps.signals.signals import generic_event
 from django.core.serializers.json import DjangoJSONEncoder
 import datetime
 import logging
