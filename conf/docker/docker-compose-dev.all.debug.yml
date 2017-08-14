@@ -95,7 +95,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: bin/run-django.sh
+    command: run-django.sh
     container_name: des_django
     hostname: des_django
 
@@ -116,7 +116,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: bin/run-celery-debug.sh
+    command: run-celery-debug.sh
     container_name: des_workers
     hostname: des_workers
 
