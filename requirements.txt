@@ -33,7 +33,7 @@ django-pipeline==1.5.4
 django-polymorphic==1.0.2
 django-redis-cache==1.7.1
 django-redis-sessions==0.5.6
-django-reversion==1.8.7
+django-reversion==1.10
 django-sekizai==0.10.0
 Django-Select2==4.3.1
 django-termsandconditions==1.1.2
