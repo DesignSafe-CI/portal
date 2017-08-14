@@ -67,6 +67,7 @@ INSTALLED_APPS = (
 
     'pipeline',
     'filer',
+    'easy_thumbnails',
     'reversion',
     'bootstrap3',
     'termsandconditions',
@@ -244,6 +245,16 @@ CMS_TEMPLATES = (
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
 )
+CMSPLUGIN_CASCADE = {
+    'alien_plugins': (
+        'TextPlugin',
+        'StylePlugin',
+        'FilerImagePlugin',
+        'FormPlugin',
+        'MeetingFormPlugin',
+        'ResponsiveEmbedPlugin',
+    )
+}
 CMSPLUGIN_CASCADE_PLUGINS = (
     'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
