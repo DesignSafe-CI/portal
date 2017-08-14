@@ -9,9 +9,6 @@ urlpatterns = [
     url(r'^notifications/(?P<event_type>\w+)/?$', ManageNotificationsView.as_view(), name='event_type_notifications'),
     url(r'^delete/(?P<pk>\w+)?$', ManageNotificationsView.as_view(),
                                         name='delete_notification'),
-]
-
-urlpatterns += [
     url(r'^wh/jobs/$', JobsWebhookView.as_view(), name='jobs_wh_handler'),
     url(r'^wh/files/$', FilesWebhookView.as_view(), name='files_wh_handler'),
 ]
