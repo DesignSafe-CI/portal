@@ -35,7 +35,7 @@ except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
 
 class ExecuteSearchMixin(object):
-    @staticmethod        
+    @staticmethod
     def _execute_search(s, **kwargs):
         """Method to try/except a search and retry if the response is something
             other than a 404 error.
@@ -104,13 +104,13 @@ def merge_file_paths(system, username, file_path, s):
             continue
 
         common_prefix = _common_prefix(val)
-        #If they don't have a common prefix or the level of the common_prefix is the same  
+        #If they don't have a common prefix or the level of the common_prefix is the same
         #as the file_path being listed then they're all on the same level
         #and are children of the listing
         if not common_prefix:
             listing += val
             continue
-        
+
         #Add the common_prefix document to the listing.
         #As long as it's valid.
         d = Object.from_file_path(system, common_prefix.split('/')[0], common_prefix)
@@ -121,33 +121,33 @@ def merge_file_paths(system, username, file_path, s):
 
 class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     """Class to wrap Elasticsearch (ES) documents.
-        
-    This class points specifically to the index `designsafe` and the 
+
+    This class points specifically to the index `designsafe` and the
     doc_type `objects`. This class implements most of the methods
     that the :class:`~designsafe.apps.api.data.agave.file.AgaveFile`
-    class implements. Also, this class implements methods that 
+    class implements. Also, this class implements methods that
     returns some predefined searches which makes talking to ES easier.
 
     The reason why we need this class is to keep the ES cache up-to-date
     every time we do a file operation. Meaning, that every time we do a
     file operation using the
     :class:`~designsafe.apps.api.data.agave.file.AgaveFile` we should call
-    the same method on an instance of this class. 
-    As we can see this class and the 
-    :class:`~designsafe.apps.api.data.agave.file.AgaveFile` class share a 
+    the same method on an instance of this class.
+    As we can see this class and the
+    :class:`~designsafe.apps.api.data.agave.file.AgaveFile` class share a
     close relation. This might beg the question if they should just live
     in the same module and maybe any method of an instance of this class
     should only be called from an instance of
     :class:`~designsafe.apps.api.data.agave.file.AgaveFile`.
-    The only reason I see for keeping these two classes  separated is 
-    because we don't know the future of ES in our implementation. 
+    The only reason I see for keeping these two classes  separated is
+    because we don't know the future of ES in our implementation.
 
     .. note:: every method in this class has a `username` parameter
         this is used to construct the permissions filter. Although
         this might seem a bit insecure it is ok for now. We should
         probably look into using Shield.
 
-    .. todo:: should this class' methods be called **only** from 
+    .. todo:: should this class' methods be called **only** from
         :class:`~designsafe.apps.api.data.agave.file.AgaveFile`?
     .. todo:: create a wrapper to try/except `Unable to sniff hosts` error.
     """
@@ -164,12 +164,10 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         :returns: list of :class:`Object`
         :rtype: list
         """
-        q = Q('filtered',
-              query = Q('bool',
-                        must = Q({'term': {'path._exact': file_path}})
-                        ),
+        q = Q('bool',
+              must = Q({'term': {'path._exact': file_path}}),
               filter = query_utils.files_access_filter(username, system)
-              )
+             )
         s = cls.search()
         s.query = q
         s = s.sort({'name._exact': 'asc'})
@@ -193,8 +191,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         """
         path, name = os.path.split(file_path)
         path = path or '/'
-        q = Q('filtered',
-             query = Q('bool',
+        q = Q('bool',
+             must = Q('bool',
                       must = [
                         Q({'term': {'path._exact': path}}),
                         Q({'term': {'name._exact': name}})
@@ -223,7 +221,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         a more fluent navigation.
 
         .. example::
-            **Reasoning behind combining the listing into common 
+            **Reasoning behind combining the listing into common
             denomintaros**.
 
             Say there are three folders ``a/b``, ``a/c`` and ``a/d``.
@@ -240,7 +238,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             - ``a/d/file``
             Thus making a more fluent navigation.
         .. note::
-            This function assumes than when listing the root path 
+            This function assumes than when listing the root path
             (``/`` or `` ``) then we are doing a listing of shared
             files.
         """
@@ -248,15 +246,15 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         #If we are listing something inside the requesting user's home dir.
         if username == owner or username == 'ds_admin':
             return cls._listing_recursive(system, username, file_path)
-        
+
         #Everything else should be something shared. If we are listing the
         #root path get everything.
         if file_path == '/' or file_path == '':
-            q = Q('filtered',
+            q = Q('bool',
                   filter = query_utils.files_access_filter(username, system)
                   )
             s = cls.search()
-            s = s.sort('path._path', 'name._exact')
+            s = s.sort('path._exact', 'name._exact')
             s.query = q
             logger.debug('Recursive Listing query: {}'.format(s.to_dict()))
             r, s = cls._execute_search(s)
@@ -273,8 +271,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     def _listing_recursive(cls, system, username, file_path):
         """Do a listing recursively
 
-        This method is an efficient way to recursively do a "listing" of a 
-        folder. This is because of the hierarcical tokenizer we have in 
+        This method is an efficient way to recursively do a "listing" of a
+        folder. This is because of the hierarcical tokenizer we have in
         `path._path`. The returning listing will be sorted by path and name
 
         :param str system: system id
@@ -303,8 +301,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
 
         """
         #logger.debug('Using username: {}'.format(username))
-        q = Q('filtered',
-              query = Q('bool',
+        q = Q('bool',
+              must = Q('bool',
                         must = [
                           Q({'term': {'path._path': file_path}})
                           ]
@@ -324,7 +322,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         object and retrieves the corresponding document from the ES index.
         If the document doesn't exists in the index then it is created.
         If the document exists then that document will be returned, if `auto_update`
-        is `True` the document will get upated with the 
+        is `True` the document will get upated with the
         :class:`~designsafe.apps.api.data.agave.file.AgaveFile` object data and returned.
         If `get_pems` is `True` then an agave call to `files.listPermissions`
         is done to retrieve the file's permissions and add them to the document.
@@ -343,8 +341,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         :rtype: :class:`Object`
 
         .. note:: this is the only getter classmethod that implements a "get or create"
-            behaviour. This is because we are getting the full 
-            :class:`~designsafe.apps.api.data.agave.file.AgaveFile` object which 
+            behaviour. This is because we are getting the full
+            :class:`~designsafe.apps.api.data.agave.file.AgaveFile` object which
             ensures that the document we are creating is a valid one.
         """
         o = cls.from_file_path(file_obj.system, username, file_obj.full_path)
@@ -409,7 +407,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     def search_query(cls, username, q, fields = [], sanitize = True, **kwargs):
         """Search the Elasticsearch index using a query string
 
-        Use a query string to search the ES index. This method will search 
+        Use a query string to search the ES index. This method will search
         on the fields **name**, and **keywords**
 
         :param str username: username making the request
@@ -429,8 +427,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         if fields:
             search_fields += fields
 
-        sq = Q('filtered',
-                query = query_utils.files_wildcard_query(q, search_fields),
+        sq = Q('bool',
+                must = query_utils.files_wildcard_query(q, search_fields),
                 filter = query_utils.files_access_filter(username)
                 )
         s = cls.search()
@@ -446,7 +444,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     def copy(self, username, target_file_path):
         """Copy a document.
 
-        Although creating a copy of a document using this class is farily 
+        Although creating a copy of a document using this class is farily
         straight forward (i.e. `o = Object(**doc); o.save()`, this method
         is necessary in order to account for recursive copying i.e. when
         a folder is copied.
@@ -462,7 +460,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         **Examples**:
             Copy a file and print the resulting copied file path
 
-            >>> origin_doc = Object.from_file_path('agave.system.id', 
+            >>> origin_doc = Object.from_file_path('agave.system.id',
             ...                 'username', 'username/path/file.txt')
             >>> doc_copy = origin_doc.copy('username', 'file_copy.txt')
             >>> print u'resulting file path: {}'.format(doc_copy.full_path)
@@ -478,8 +476,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
                 d = o.to_dict()
                 regex = r'^{}'.format(os.path.join(self.path, self.name))
                 logger.debug(u'd[path]: {}'.format(d['path']))
-                d['path'] = re.sub(regex, 
-                                os.path.join(target_path, target_name), 
+                d['path'] = re.sub(regex,
+                                os.path.join(target_path, target_name),
                                 d['path'], count = 1)
                 logger.debug(u'changed d[path]: {}'.format(d['path']))
                 d['agavePath'] = u'agave://{}/{}'.format(self.systemId, os.path.join(d['path'], d['name']))
@@ -498,7 +496,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         """Delete a file recursively.
 
         This method works with both files and folders.
-        If the document represents a folder then it will 
+        If the document represents a folder then it will
         recursively delete any childre documents.
 
         :returns: count of how many documents were deleted
@@ -561,10 +559,10 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 regex = ur'^{}'.format(os.path.join(self.path, self.name))
-                o.update(path = re.sub(regex, os.path.join(path, self.name), 
+                o.update(path = re.sub(regex, os.path.join(path, self.name),
                                 o.path, count = 1),
                          agavePath = u'agave://{}/{}'.format(self.systemId,
-                                os.path.join(self.path, self.name))) 
+                                os.path.join(self.path, self.name)))
                 o.save()
         tail, head = os.path.split(path)
         self.update(path = tail, agavePath = u'agave://{}/{}'.format(self.systemId,
@@ -588,17 +586,17 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         #check if we have something in tail.
         #If we don't then we got just the new file name in the path arg.
         if tail == '':
-            head = path       
+            head = path
         if self.type == 'dir':
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 regex = ur'^{}'.format(os.path.join(self.path, self.name))
                 target_path = re.sub(regex, os.path.join(self.path, head), o.path, count = 1)
-                o.update(path =  target_path, 
+                o.update(path =  target_path,
                          agavePath = u'agave://{}/{}'.format(self.systemId,
                                             os.path.join(target_path, o.name)))
                 o.save()
-        self.update(name = head, 
+        self.update(name = head,
                     agavePath = u'agave://{}/{}'.format(self.systemId,
                                       os.path.join(self.path, head)))
         self.save()
@@ -619,8 +617,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         """Update permissions on a document recursively.
 
         :param str username: username making the request
-        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
-            string representing the permission to set 
+        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission``
+            string representing the permission to set
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
         :param bool update_parent_path: if set it will update the permission on all the parent folders.
         :param bool recursive: if set it will update the permissions recursively.
@@ -629,8 +627,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
             res, s = self.__class__.listing_recursive(self.systemId, username, os.path.join(self.path, self.name))
             for o in s.scan():
                 o.update_pems(permissions)
-       
-        #Commenting out to try new pems model 
+
+        #Commenting out to try new pems model
         #if update_parent_path:
         #    self._update_pems_on_parent_path(permissions)
 
@@ -647,7 +645,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
 
         :param obj meta_obj: object with which the document will be updated
 
-        .. warning:: This method blindly replaces the data in the 
+        .. warning:: This method blindly replaces the data in the
             saved document. The only sanitization it does is to remove
             repeated elements.
         """
@@ -722,7 +720,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         pems_args = self._filter_revoke_pems_list(pems_args)
         if len(pems_args) == 0:
             return False
-        
+
         path_comps = self.parent_path.split('/')
         parents_pems_args = []
         for p in pems_args:
@@ -733,11 +731,11 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         for i in range(len(path_comps)):
             file_path = u'/'.join(path_comps)
             logger.debug('ES updating pems on parent: %s' % file_path)
-            doc = Object.from_file_path(self.systemId, self.parent_path.split('/')[0], 
+            doc = Object.from_file_path(self.systemId, self.parent_path.split('/')[0],
                                         file_path)
-            doc.share(self.parent_path.split('/')[0], 
-                      parents_pems_args, 
-                      update_parent_path = False, 
+            doc.share(self.parent_path.split('/')[0],
+                      parents_pems_args,
+                      update_parent_path = False,
                       recursive = False)
             path_comps.pop()
         return True
@@ -745,23 +743,23 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
     def update_pems(self, permissions, recursive = True):
         """Update permissions on a document.
 
-        When updating permissions in an ElasticSearch (ES) document, we have to create the 
-        list of objects necessary. This list is the same as the response from 
+        When updating permissions in an ElasticSearch (ES) document, we have to create the
+        list of objects necessary. This list is the same as the response from
         *agavepy*'s ``files.listPermissions``. We translate between the ``permissions``
-        list that this function gets as a parameter to the corresponding list with 
+        list that this function gets as a parameter to the corresponding list with
         `func:_pems_args_to_es_pems_list`. Once we have this list we have to overwrite (or remove)
         the corresponding list elements. We do this by filtering the pems list on the document
         with the translated pems list using the *username* as uniqueness. We then append the
-        translated pems to the document's pems list and upate the document. 
+        translated pems to the document's pems list and upate the document.
 
         **Removing Permissions**: When removing permissions we first need to check that the
         parent folder does not have the ``recursive`` flag set for that username. If it has
         the ``recursive`` flag set then we **can not** remove permissions for that username
-        on that specific file. 
+        on that specific file.
 
         :param str username_to_update: username with whom we are going to share this document
-        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission`` 
-            string representing the permission to set 
+        :param list permissions: A list of dicts with two keys ``user_to_share`` and ``permission``
+            string representing the permission to set
             [READ | WRITE | EXECUTE | READ_WRITE | READ_EXECUTE | WRITE_EXECUTE | ALL | NONE]
         """
         pems = getattr(self, 'permissions', [])
@@ -780,7 +778,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         self.update(permissions = pems_to_persist)
         self.save()
         return self
-        
+
     def to_file_dict(self):
         """Returns a dictionary correctly formatted
             as a data api response.
@@ -789,7 +787,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         a response from an agave call to `files.listing`. After this
         it instantiates a :class:`~designsafe.apps.api.agave.files.AgaveFile` object
         and returns the result of :meth:`~designsafe.apps.api.agave.files.AgaveFile.to_dict`.
-        We hand off the dict construction to the 
+        We hand off the dict construction to the
         :class:`~designsafe.apps.api.agave.files.AgaveFile` class so we don't have to
         implement it twice.
 
@@ -826,7 +824,7 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         extra = {
             'meta':
             {
-                'keywords': self.to_dict().get('keywords', list([])), 
+                'keywords': self.to_dict().get('keywords', list([])),
                 'systemTags': self.to_dict().get('systemTags', list([]))
             }
         }
@@ -883,7 +881,7 @@ class Project(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
     def projects_to_files(self, projects):
         for p in projects:
-            doc = PublicObject.from_file_path(p.systemId, 
+            doc = PublicObject.from_file_path(p.systemId,
                         u'/{}'.format(p.projectPath.strip('/')))
             if doc is not None:
                 yield doc
@@ -924,8 +922,8 @@ class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
             return res[0]
         else:
             return None
-   
-    @classmethod 
+
+    @classmethod
     def search_query(cls, system_id, username, qs, fields = None):
         query_fields = ["description",
                   "facility.country"
@@ -1017,11 +1015,11 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         files_offset = offset = int(kwargs.pop('offset', 0))
         page = offset / 100
         #logger.debug('offset: {}, limit: {}'.format(offset, limit))
-        projects_res, projects_s = Project.search_query(system_id, username, q, 
-                                        fields, limit = limit, offset = offset, 
+        projects_res, projects_s = Project.search_query(system_id, username, q,
+                                        fields, limit = limit, offset = offset,
                                         **kwargs)
 
-        #logger.debug('projs total: {}'.format(projects_res.hits.total)) 
+        #logger.debug('projs total: {}'.format(projects_res.hits.total))
         if projects_res.hits.total:
             if projects_res.hits.total - offset > limit:
                 return projects_res, projects_s
@@ -1030,24 +1028,24 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
                 files_offset = offset - projects_overflow
                 if files_offset < 0:
                     files_offset = 0
-                
-                files_limit = limit 
+
+                files_limit = limit
                 if (projects_res.hits.total / 100) >= page:
                     files_limit = limit - projects_overflow
 
         #logger.debug('files offset: {}, files limit: {}'.format(files_offset, files_limit))
         files_res, files_s = cls.search_query(system_id, username,
                                     q, fields, limit = files_limit, offset = files_offset, **kwargs)
-        #logger.debug('files total: {}'.format(files_res.hits.total)) 
+        #logger.debug('files total: {}'.format(files_res.hits.total))
         return files_res, itertools.chain(Project.projects_to_files(projects_s), files_s)
-    
+
     @classmethod
     def search_query(cls, system_id, username, q, fields = [], **kwargs):
         if isinstance(fields, basestring):
             fields = fields.split(',')
 
         query_fields = ["name", "name._exact"]
-        
+
         if fields is not None:
             query_fields += fields
 
@@ -1070,7 +1068,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
 
         p = Project.from_name(self.project)
         self.project_ = p
-        return self.project_ 
+        return self.project_
 
     @property
     def experiment_meta(self):
@@ -1094,7 +1092,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
             return self.all_experiments_
         except Exception as e:
             logger.error(e, exc_info=True)
-  
+
     @property
     def parent_path(self):
         return self.path
@@ -1129,7 +1127,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         except:
             logger.debug('Error', exc_info=True)
             raise
-    
+
     @property
     def ext(self):
         return os.path.splitext(self.name)[1]
@@ -1150,7 +1148,7 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
             'experiments': [doc.to_dict() for doc in experiments]
         }
         return d
-        
+
     def to_dict(self, get_id = False, def_pems = None, with_meta = True, *args, **kwargs):
         d = super(PublicObject, self).to_dict(*args, **kwargs)
         d['ext'] = self.ext
@@ -1178,5 +1176,3 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
     class Meta:
         index = 'nees'
         doc_type = 'object'
-
-

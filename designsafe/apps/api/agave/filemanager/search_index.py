@@ -81,7 +81,7 @@ def merge_file_paths(system, user_context, file_path, s):
         if d._wrap:
             listing.append(d)
 
-    return listing 
+    return listing
 
 class IndexedFile(DocType):
 
@@ -90,7 +90,7 @@ class IndexedFile(DocType):
         doc_type = 'objects'
 
 class Object(object):
-    def __init__(self, system_id = None, user_context = None, 
+    def __init__(self, system_id = None, user_context = None,
                  file_path = None, wrap = None, *args, **kwargs):
         if wrap is not None:
             self._wrap = wrap
@@ -98,13 +98,13 @@ class Object(object):
             s = IndexedFile.search()
             path, name = os.path.split(file_path)
             path = path.strip('/') or '/'
-            q = Q('filtered', 
-                query = Q('bool',
+            q = Q('bool',
+                must = Q('bool',
                         must = [
                           Q({'term': {'path._exact': path}}),
                           Q({'term': {'name._exact': name}})
                         ]),
-                filter = Q('bool', 
+                filter = Q('bool',
                     must = [
                         Q({'term': {'permissions.username': user_context}}),
                         Q({'term': {'deleted': False}}),
@@ -118,7 +118,7 @@ class Object(object):
                 if e.status_code == 404:
                     raise
                 res = s.execute()
-            
+
             if res.hits.total:
                 self._wrap = res[0]
             else:
@@ -127,7 +127,7 @@ class Object(object):
     def success(self):
         if self._wrap:
             return True
-        
+
         return False
 
     def update_metadata(self, meta_obj):
@@ -160,10 +160,10 @@ class Object(object):
         which results on an array of permissions for EVERY user that
         has any type of permission on that file. This function is in
         charge of doing that conversion.
-        
+
         ..example:: ES indexed permissions:
             ``{
-                'permissions: [ 
+                'permissions: [
                 { 'username': 'my_user',
                   'permission': {
                     'read': 'true',
@@ -179,7 +179,7 @@ class Object(object):
                 pem['username'] == user_context]
         if not pems:
             return 'NONE'
-        
+
         pem = pems[0]
         user_pem = ''
         if pem['permission']['read']:
@@ -199,12 +199,12 @@ class Object(object):
         file_dict = self._wrap.to_dict()
         if user_context:
             file_dict['permissions'] = self.user_pems(user_context)
-        
+
         file_dict['path'] = os.path.join(self._wrap.path, self._wrap.name)
         file_dict['system'] = self._wrap['systemId']
         return file_dict
-        
-    
+
+
 class ElasticFileManager(BaseFileManager):
     NAME = 'agave'
     DEFAULT_SYSTEM_ID = 'designsafe.storage.default'
@@ -217,16 +217,16 @@ class ElasticFileManager(BaseFileManager):
                              file_path=file_path)
         if file_object.success():
             return file_object
-        
+
         return None
-    
+
     @staticmethod
     def listing(system, file_path, user_context):
         file_path = file_path or '/'
         file_path = file_path.strip('/')
         if file_path.strip('/').split('/')[0] != user_context:
             q = Q('bool', must = Q({'term': {'path._path': file_path}}))
-        else:    
+        else:
             q = Q('bool', must = Q({'term': {'path._exact': file_path}}))
         filter_parts = [
             Q({'term': {'systemId': system}}),
@@ -238,13 +238,13 @@ class ElasticFileManager(BaseFileManager):
 
         if file_path == '$SHARE':
             file_path = '/'
-            query = Q('filtered', filter=f)
+            query = Q('bool', filter=f)
         else:
-            query = Q('filtered', query=q, filter=f)
-
+            query = Q('bool', query=q, filter=f)
+    
         search = IndexedFile.search()
         search.query = query
-        search = search.sort('path._path', 'name._exact')
+        search = search.sort('path._exact', 'name._exact')
 
         try:
             res = search.execute()
@@ -252,9 +252,9 @@ class ElasticFileManager(BaseFileManager):
             if e.status_code == 404:
                 raise
             res = search.execute()
-        
+
         listing = merge_file_paths(system, user_context, file_path, search)
-        
+
         if file_path == '/':
             result = {
                 'trail': [{'name': '$SHARE', 'path': '/$SHARE'}],
@@ -290,15 +290,15 @@ class ElasticFileManager(BaseFileManager):
 
     def search(self, system, username, query_string,
                file_path=None, offset=0, limit=100):
-        
+
         search = IndexedFile.search()
-        query = Q('filtered',
+        query = Q('bool',
                   filter=Q('bool',
                            must=[Q({'term': {'systemId': system}}),
                                  Q({'term': {'permissions.username': username}}),
                                  Q({'prefix': {'path._exact': username}})],
                            must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
-                   query=Q({'simple_query_string':{
+                   must=Q({'simple_query_string':{
                             'query': query_string,
                             'fields': ['name', 'name._exact', 'keywords']}}))
         search.query = query
@@ -320,15 +320,15 @@ class ElasticFileManager(BaseFileManager):
 
     def search_shared(self, system, username, query_string,
                file_path=None, offset=0, limit=100):
-        
+
         search = IndexedFile.search()
-        query = Q('filtered',
+        query = Q('bool',
                   filter=Q('bool',
                            must=[Q({'term': {'systemId': system}}),
                                  Q({'term': {'permissions.username': username}})],
                            must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}}),
                                      Q({'prefix': {'path._exact': username}})]),
-                   query=Q({'simple_query_string':{
+                   must=Q({'simple_query_string':{
                             'query': query_string,
                             'fields': ['name', 'name._exact', 'keywords']}}))
         search.query = query
