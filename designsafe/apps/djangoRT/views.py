@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core.exceptions import PermissionDenied
-from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from designsafe.apps.djangoRT import rtUtil, forms, rtModels
 from django.contrib.auth.decorators import login_required

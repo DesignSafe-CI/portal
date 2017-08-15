@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from designsafe.apps.accounts import views
 
 urlpatterns = [
-    url(r'^$', 'index', name='index'),
+    url(r'^$', views.index, name='index'),
     url(r'^profile/$', views.manage_profile, name='manage_profile'),
     url(r'^profile/edit/$', views.profile_edit, name='profile_edit'),
     url(r'^professional-profile/$', views.manage_pro_profile, name='manage_pro_profile'),
