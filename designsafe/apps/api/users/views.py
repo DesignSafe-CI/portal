@@ -29,7 +29,7 @@ class UsageView(SecureMixin, View):
 class AuthenticatedView(View):
 
     def get(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             u = request.user
 
             out = {

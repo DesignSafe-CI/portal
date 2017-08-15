@@ -24,7 +24,7 @@ class FileManager(AgaveObject):
     def __init__(self, user_obj, **kwargs):
         super(FileManager, self).__init__(**kwargs)
         agave_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        if user_obj.is_authenticated():
+        if user_obj.is_authenticated:
             self.agave_client = user_obj.agave_oauth.client
         else:
             site_token = getattr(settings, 'AGAVE_SUPER_TOKEN')

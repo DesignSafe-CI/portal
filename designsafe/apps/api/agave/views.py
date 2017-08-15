@@ -48,7 +48,7 @@ class FileListingView(View):
 
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
         if file_mgr_name == AgaveFileManager.NAME:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -93,7 +93,7 @@ class FileMediaView(View):
             or file_mgr_name == 'public' \
             or file_mgr_name == 'community' \
             or file_mgr_name == 'published':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
@@ -147,7 +147,7 @@ class FileMediaView(View):
     def post(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             agave_client = request.user.agave_oauth.client
@@ -223,7 +223,7 @@ class FileMediaView(View):
             or file_mgr_name == 'community' \
             or file_mgr_name == 'published':
 
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
@@ -503,7 +503,7 @@ class FileMediaView(View):
 
     def delete(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -573,7 +573,7 @@ class FilePermissionsView(View):
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             # List permissions as the portal user rather than logged in user.
@@ -593,7 +593,7 @@ class FilePermissionsView(View):
 
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -641,7 +641,7 @@ class FilePermissionsView(View):
 class FileMetaView(View):
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == ElasticFileManager.NAME:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -656,7 +656,7 @@ class FileMetaView(View):
         post_body = json.loads(request.body)
         metadata = post_body.get('metadata', {})
         if file_mgr_name == ElasticFileManager.NAME or not metadata:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -707,7 +707,7 @@ class SystemsView(View):
 
     def get(self, request, system_id=None):
         params = request.GET.copy()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             ag = request.user.agave_oauth.client
             if system_id is None:
                 systems = BaseSystemResource.list(ag, **params)

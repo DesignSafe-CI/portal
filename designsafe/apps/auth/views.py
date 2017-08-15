@@ -20,7 +20,7 @@ def logged_out(request):
 
 
 def login_options(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('/')
 

@@ -52,7 +52,7 @@ class DataDepotView(BasePublicTemplate):
         context = super(DataDepotView, self).get_context_data(**kwargs)
 
         context['angular_init'] = json.dumps({
-            'authenticated': self.request.user.is_authenticated(),
+            'authenticated': self.request.user.is_authenticated,
         })
 
         return context
@@ -80,7 +80,7 @@ class DataBrowserTestView(BasePublicTemplate):
 
         resource = kwargs.pop('resource', None)
         if resource is None:
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 resource = 'agave'
             else:
                 resource = 'public'

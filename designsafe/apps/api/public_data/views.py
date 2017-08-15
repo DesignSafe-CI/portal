@@ -133,7 +133,7 @@ class PublicPemsView(BaseApiView):
                 'permission': {'read': True,
                                'write': False,
                                'execute': False}}]
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             pems.append({'username': request.user.username, 
                          'permission': {'read': True,
                                         'write': False,

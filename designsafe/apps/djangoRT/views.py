@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('djangoRT:mytickets'))
     return HttpResponseRedirect(reverse('djangoRT:ticketcreate'))
 
@@ -59,7 +59,7 @@ def ticketdetail(request, ticketId):
 def ticketcreate(request):
 
     template_name = 'djangoRT/ticketCreate.html'
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         form_cls = forms.TicketForm
     else:
         form_cls = forms.TicketGuestForm
@@ -129,7 +129,7 @@ def ticketcreate(request):
             'error_page': request.GET.get('error_page'),
             'http_referer': request.GET.get('http_referer'),
         }
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             initial_data['email'] = request.user.email
             initial_data['first_name'] = request.user.first_name
             initial_data['last_name'] = request.user.last_name
