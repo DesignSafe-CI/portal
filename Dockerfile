@@ -35,6 +35,8 @@ WORKDIR /portal
 
 RUN npm install
 
-RUN python manage.py collectstatic --noinput
+RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.
+
+RUN python manage.py collectstatic -c --traceback --noinput
 
 RUN chown -R tg458981:G-816877 /var/www/designsafe-ci.org
