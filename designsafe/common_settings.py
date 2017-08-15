@@ -403,14 +403,17 @@ DEFAULT_TERMS_SLUG = 'terms'
 ###
 # Pipeline
 #
-PIPELINE_COMPILERS = (
+PIPELINE = {
+    'PIPELINE_ENABLED': True
+    }
+PIPELINE['COMPILERS'] = (
     'pipeline.compilers.sass.SASSCompiler',
 )
-PIPELINE_SASS_ARGUMENTS = '-C'
-PIPELINE_CSS_COMPRESSOR = None
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
-
-PIPELINE_CSS = {
+PIPELINE['SASS_ARGUMENTS'] = '-C'
+PIPELINE['CSS_COMPRESSOR'] = None
+PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.slimit.SlimItCompressor'
+PIPELINE['EMBED_PATH'] = r'[/]?fonts/'
+PIPELINE['STYLESHEETS'] = {
     'vendor': {
         'source_filenames': (
             'vendor/bootstrap-ds/css/bootstrap.css',
@@ -434,14 +437,14 @@ PIPELINE_CSS = {
     },
 }
 
-PIPELINE_JS = {
+PIPELINE['JAVASCRIPT'] = {
     'vendor': {
         'source_filenames': (
             'vendor/modernizr/modernizr.js',
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
-            'vender/d3/d3.min.js'
+            'vendor/d3/d3.min.js'
         ),
         'output_filename': 'js/vendor.js',
     },

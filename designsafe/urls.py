@@ -21,6 +21,9 @@ from django.contrib import admin
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from designsafe.apps.auth.views import login_options as des_login_options
+from django.contrib.auth.views import logout as des_logout
+from designsafe.views import project_version as des_version
 
 urlpatterns = [
 
@@ -82,8 +85,9 @@ urlpatterns = [
 
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
-    url(r'^login/$', 'designsafe.apps.auth.views.login_options', name='login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout',
+
+    url(r'^login/$', des_login_options, name='login'),
+    url(r'^logout/$', des_logout,
         {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # help
@@ -93,7 +97,7 @@ urlpatterns = [
     url(r'^webhooks/', include('designsafe.webhooks')),
 
     # version check
-    url(r'^version/', 'designsafe.views.project_version'),
+    url(r'^version/', des_version),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
