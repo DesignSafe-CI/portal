@@ -205,8 +205,8 @@ ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 from nees_settings import NEES_USER_DATABASE
-if NEES_USER_DATABASE['NAME']:
-    DATABASES['nees_users'] = NEES_USER_DATABASE
+#if NEES_USER_DATABASE['NAME']:
+#    DATABASES['nees_users'] = NEES_USER_DATABASE
 
 
 # Internationalization
@@ -229,7 +229,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'designsafe', 'static'),
 )
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -268,17 +269,29 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'ResponsiveEmbedPlugin',
 )
 
-MIGRATION_MODULES = {
-    'djangocms_flash': 'djangocms_flash.migrations_django',
-    'djangocms_file': 'djangocms_file.migrations_django',
-    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_link': 'djangocms_link.migrations_django',
-    'djangocms_picture': 'djangocms_picture.migrations_django',
-    'djangocms_teaser': 'djangocms_teaser.migrations_django',
-    'djangocms_video': 'djangocms_video.migrations_django',
-    'djangocms_style': 'djangocms_style.migrations_django',
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    #'easy_thumbnails.processors.scale_and_crop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
+
+CKEDITOR_SETTINGS = {
+    'allowedContent': True
 }
+
+#MIGRATION_MODULES = {
+#    'djangocms_flash': 'djangocms_flash.migrations_django',
+#    'djangocms_file': 'djangocms_file.migrations_django',
+#    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
+#    'djangocms_inherit': 'djangocms_inherit.migrations_django',
+#    'djangocms_link': 'djangocms_link.migrations_django',
+#    'djangocms_picture': 'djangocms_picture.migrations_django',
+#    'djangocms_teaser': 'djangocms_teaser.migrations_django',
+#    'djangocms_video': 'djangocms_video.migrations_django',
+#    'djangocms_style': 'djangocms_style.migrations_django',
+#}
 
 LOGIN_URL = '/login/'
 
@@ -404,7 +417,7 @@ DEFAULT_TERMS_SLUG = 'terms'
 # Pipeline
 #
 PIPELINE = {
-    'PIPELINE_ENABLED': True
+    'PIPELINE_ENABLED': False
     }
 PIPELINE['COMPILERS'] = (
     'pipeline.compilers.sass.SASSCompiler',
@@ -412,7 +425,6 @@ PIPELINE['COMPILERS'] = (
 PIPELINE['SASS_ARGUMENTS'] = '-C'
 PIPELINE['CSS_COMPRESSOR'] = None
 PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.slimit.SlimItCompressor'
-PIPELINE['EMBED_PATH'] = r'[/]?fonts/'
 PIPELINE['STYLESHEETS'] = {
     'vendor': {
         'source_filenames': (
