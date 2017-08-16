@@ -50,10 +50,15 @@ class DataDepotView(BasePublicTemplate):
 
     def get_context_data(self, **kwargs):
         context = super(DataDepotView, self).get_context_data(**kwargs)
-
-        context['angular_init'] = json.dumps({
-            'authenticated': self.request.user.is_authenticated,
-        })
+        
+        if self.request.user.is_authenticated:
+            context['angular_init'] = json.dumps({
+                'authenticated': True,
+            })
+        else:
+            context['angular_init'] = json.dumps({
+                'authenticated': False,
+            })
 
         return context
 
