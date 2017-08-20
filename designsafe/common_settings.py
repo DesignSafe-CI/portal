@@ -239,6 +239,9 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
 
+DJANGOCMS_PICTURE_TEMPLATES = [
+    ('responsive', 'Responsive Image'),
+]
 
 CMS_PERMISSION = True
 CMS_TEMPLATES = (
