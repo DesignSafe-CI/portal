@@ -10,21 +10,23 @@
 
     var efs = {
       'experimental': [
-        //{name: 'other', label: 'Other'},
         {name: 'atlss', label: 'Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University'},
          {name: 'cgm-ucdavis', label: 'Center for Geotechnical Modeling, UC Davis'},
          {name: 'eqss-utaustin', label: 'Field mobile shakers, UT Austin'},
          {name: 'pfsml-florida', label: 'Powell Family Structures and Materials Laboratory, University of Florida'},
          {name: 'wwhr-florida', label: 'Wall of Wind International Hurricane Research Center, Florida International University'},
          {name: 'lhpost-sandiego', label: 'Large High Performance Outdoor Shake Table, University of California San Diego'},
-         {name: 'ohhwrl-oregon', label:  'O.H. Hinsdale Wave Research Laboratory, Oregon State University'}
+         {name: 'ohhwrl-oregon', label:  'O.H. Hinsdale Wave Research Laboratory, Oregon State University'},
+        {name: 'other', label: 'Other'}
       ]
     };
 
     var equipmentTypes = {
-      'atlss': [{name: 'hybrid_simulation', label: 'Hybrid Simulation'}],
+      'atlss': [{name: 'hybrid_simulation', label: 'Hybrid Simulation'},
+                {name: 'other', label:'Other'}],
       'cgm-ucdavis': [{name: '9-m_radius_dynamic_geotechnical_centrifuge', label: '9m Radius Dynamic Geotechnical Centrifuge'},
-                      {name: '1-m_radius_dynamic_geotechnical_centrifuge', label: '1m Radius Dynamic Geotechnical Centrifuge'}],
+                      {name: '1-m_radius_dynamic_geotechnical_centrifuge', label: '1m Radius Dynamic Geotechnical Centrifuge'},
+                {name: 'other', label:'Other'}],
       'eqss-utaustin': [
         {name: 'liquidator',
          label: 'Low Frequency, Two Axis Shaker (Liquidator)'},
@@ -37,7 +39,8 @@
         {name: 'rattler',
          label: 'Single Axis Horizontal Shaker (Rattler)'},
         {name: 'thumper',
-         label: 'Urban, Three axis Shaker (Thumper)'}],
+         label: 'Urban, Three axis Shaker (Thumper)'},
+                {name: 'other', label:'Other'}],
       'pfsml-florida': [
         {name: 'blwt', label: 'Boundary Layer Wind Tunnel (BLWT)'},
         {name: 'abl', label: 'Atmospheric Boundary Layer Wind Tunnel Test (ABL)'},
@@ -45,26 +48,38 @@
         {name: 'wtdt', label: 'wind_tunnel_destructive_test'},
         {name: 'dfs', label: 'Dynamic Flow Simulator (DFS)'},
         {name: 'hapla', label: 'High Airflow Pressure Loading Actuator (HAPLA)'},
-        {name: 'spla', label: 'Spatiotemporal Pressure Loading Actuator (SPLA)'}
+        {name: 'spla', label: 'Spatiotemporal Pressure Loading Actuator (SPLA)'},
+                {name: 'other', label:'Other'}
       ],
       'wwhr-florida': [{name: 'pmtp', label: 'Physical_measurement_test_protocol'},
                        {name: 'fmtp', label: 'Failure Mode Test Protocol'},
-                       {name: 'wdrtp', label: 'Wind Driven Rain Test Protocol'}],
-      'lhpost-sandiego': [{name: 'lhpost', label: 'Large High Performance Outdoor Shake Table (LHPOST)'}],
+                       {name: 'wdrtp', label: 'Wind Driven Rain Test Protocol'},
+                {name: 'other', label:'Other'}],
+      'lhpost-sandiego': [{name: 'lhpost', label: 'Large High Performance Outdoor Shake Table (LHPOST)'},
+                {name: 'other', label:'Other'}],
       'ohhwrl-oregon': [{name: 'lwf', label: 'Large Wave Flume (LWF)'},
                         {name: 'dwb', label: 'Directional Wave Basin (DWB)'},
                         {name: 'mobs', label: 'Mobile Shaker'},
-                        {name: 'pla', label: 'pressure_loading_actuator'}]
+                        {name: 'pla', label: 'pressure_loading_actuator'},
+                {name: 'other', label:'Other'}],
+      'other': [{name: 'other', label: 'Other'}]
     };
 
     var experimentTypes = {
-      'atlss': [{name: 'hybrid_simulation', label:'Hybrid Simulation'}],
-      'cgm-ucdavis':[{name: 'centrifuge', label:'Centrifuge'}],
-      'eqss-utaustin':[{name: 'mobile_shaker', label:'Mobile Shaker'}],
-      'pfsml-florida': [{name:'wind', label:'Wind'}],
-      'wwhr-florida': [{name: 'wind', label:'Wind'}],
-      'lhpost-sandiego': [{name: 'shake', label: 'Shake'}],
-      'ohhwrl-oregon': [{name: 'wave', label:'Wave'}],
+      'atlss': [{name: 'hybrid_simulation', label:'Hybrid Simulation'},
+                {name: 'other', label:'Other'}],
+      'cgm-ucdavis':[{name: 'centrifuge', label:'Centrifuge'},
+                {name: 'other', label:'Other'}],
+      'eqss-utaustin':[{name: 'mobile_shaker', label:'Mobile Shaker'},
+                {name: 'other', label:'Other'}],
+      'pfsml-florida': [{name:'wind', label:'Wind'},
+                {name: 'other', label:'Other'}],
+      'wwhr-florida': [{name: 'wind', label:'Wind'},
+                {name: 'other', label:'Other'}],
+      'lhpost-sandiego': [{name: 'shake', label: 'Shake'},
+                {name: 'other', label:'Other'}],
+      'ohhwrl-oregon': [{name: 'wave', label:'Wave'},
+                {name: 'other', label:'Other'}],
       'other': [{name: 'other', label:'Other'}]
     };
 
@@ -683,7 +698,6 @@
               function (error) {
                 // $uibModalInstance.reject(error.data);
                 $scope.data.busy = true;
-                console.log(error)
                 $scope.initForm();
                 $scope.loadData();
               }
