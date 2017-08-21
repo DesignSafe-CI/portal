@@ -1,6 +1,15 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail">
         <h2>{{ data.project.value.title }}</h2>
+          <p><strong>Description</strong></p>
+          <p>
+          {{data.project.value.description}}
+          </p>
+          <!--
+          <button class="btn btn-link btn-sm"
+                  ng-click="showText(data.project.value.description)">
+            <i class="fa fa-external-link"></i> Show</button>
+            -->
         <div style="width:50%; display:inline-block;">
         <table class="table" style="margin-bottom:0;">
             <tbody>
@@ -9,8 +18,12 @@
               <td>{{data.project.value.projectId}}</td>
             </tr>
             <tr>
-                <th>PI</th>
-                <td><ds-user username="data.project.value.pi" format="name-username">{{ data.project.value.pi }}</ds-user></td>
+              <th>Date of Publication</th>
+              <td>(Appears here when published)</td>
+            </tr>
+            <tr>
+              <th>DOI</th>
+              <td>(Appears here when published)</td>
             </tr>
             <tr>
               <th>Created</th>
@@ -20,27 +33,21 @@
         </table>
         </div>
         <div style="width:49%; display:inline-block; vertical-align:top;">
-        <div class="btn-group" role="group" aria-label="Project Actions">
-            <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
-            <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
-            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
-        </div>
-            <div style="width:350px; height:100px; overflow:hidden;">
+          <table class="table" style="margin-bottom:0;">
+            <tbody>
+              <tr>
+                <th>PI</th>
+                <td><ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user></td>
+              </tr>
+            </tbody>
+          </table>
+            <!--<div style="width:350px; height:100px; overflow:hidden;">
                 <img width="350" ng-src="{{ previewHref }}"
                      ng-if="previewHref && state.showPreviewListing"/>
                 <div ng-if="!previewHref && state.showPreviewListing">
                   <i class="fa fa-spin fa-spinner"></i> Loading ...
                 </div>
-            </div>
-        </div>
-        <div class="project-desc" style="padding:5px; margin:5px 0px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc; max-height;115px;">
-          <p style="display:inline-block; width:135px;"><strong>Project Description</strong></p>
-          <p style="display:inline-block; max-height:40px; overflow:hidden;">
-          {{data.project.value.description}}
-          </p>
-          <button class="btn btn-link btn-sm"
-                  ng-click="showText(data.project.value.description)">
-            <i class="fa fa-external-link"></i> Show</button>
+            </div>-->
         </div>
 
         <div class="btn-group" role="group" aria-label="Listing views"
@@ -55,7 +62,15 @@
                   ng-click="showPreview()"
                   ng-class="{'grayed-out': !state.showPreviewListing}"
                   style="border-radius:10px;
-                box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);">Publication Preview</button>
+                box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);"
+                  ng-disabled="data.loadingEntities">Publication Preview</button>
+
+        <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;"
+             ng-if="state.showMainListing">
+            <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
+            <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
+        </div>
         </div>
 
         <div style="text-align:center;"

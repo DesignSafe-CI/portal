@@ -230,6 +230,9 @@
 
         UserService.get(scope.username).then(function (user) {
           switch (format) {
+            case 'lname':
+              element.text(user.last_name + ', ' + user.first_name + ';');
+              break;
             case 'name':
               element.text(user.first_name + ' ' + user.last_name);
               break;
