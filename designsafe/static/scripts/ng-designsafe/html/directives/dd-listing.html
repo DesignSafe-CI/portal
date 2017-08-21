@@ -772,6 +772,45 @@
   <div class="agreement-div"
          ng-if="browser.showPreviewListing && browser.publishPipeline === 'agreement'"
          style="background:#fff; min-height:500px; padding:10px;">
+         <h2>Choose licenses for your data</h2>
+         <p>Read the <a href='/rw/support/data-publication/' target='_blank'>Curation Guidelines</a> page to determine the proper license for you data. <br />
+           For your project type, we recommend: </p>
+         <div>
+           <input type="checkbox" name="odc_public" id="license-odc_public" />
+           <label for="license-odc_public">
+             <img src="/static/images/licenses/odc_public.png" width="64px" height="64px" style="margin-right:15px;">
+             <span style="display:inline-block; width:400px;"> ODC Public Domain Dedication and License </span> <a href="https://opendatacommons.org/licenses/pddl/1-0/">License Website</a>
+           </label>
+         </div>
+         <div>
+           <input type="checkbox" name="odc_attrib" id="license-odc_attrib" />
+           <label for="license-odc_attrib">
+             <img src="/static/images/licenses/odc_attrib.png" width="64px" height="64px" style="margin-right:15px;">
+             <span style="display:inline-block; width:400px;"> ODC Open Data Commons Attribution License </span> <a href="https://opendatacommons.org/licenses/by/">License Website</a>
+           </label>
+         </div>
+         <div>
+           <input type="checkbox" name="gnu" id="license-gnu" />
+           <label for="license-gnu">
+             <img src="/static/images/licenses/gnu.png" width="64px" height="64px" style="margin-right:15px;">
+             <span style="display:inline-block; width:400px;"> GNU General Public License </span> <a href="https://www.gnu.org/licenses/gpl.html">License Website</a>
+           </label>
+         </div>
+         <h5>Other Licenses: </h5>
+         <div>
+           <input type="checkbox" name="cc_attrib" id="license-cc_attrib" />
+           <label for="license-cc_attrib">
+             <img src="/static/images/licenses/cc_attrib.png" width="100px" style="margin-right:15px;">
+             <span style="display:inline-block; width:400px;"> Creative Commons Attribution License </span> <a href="https://creativecommons.org/publicdomain/zero/1.0/">License Website</a>
+           </label>
+         </div>
+         <div>
+           <input type="checkbox" name="cc_public" id="license-cc_public" />
+           <label for="license-cc_public">
+             <img src="/static/images/licenses/cc_public.png" width="100px" style="margin-right:15px;">
+             <span style="display:inline-block; width:400px;"> Creative Commons Public Domain Dedication License </span> <a href="https://creativecommons.org/licenses/by/4.0/">License Website</a>
+           </label>
+         </div>
          <h2>Agreement</h2>
          <p>
            I agree and understand that when I publish this data and receive a DOI that this will result in a locked, read-only publication that cannot be changed. If I have changes or revisions, this will result in a new DOI being created for the revised publication. I understand that my dataset meets the minimum metadata requirements per the <a href='/rw/support/data-publication/' target="_blank"> Data Curation and Publication Guidelines</a>.
