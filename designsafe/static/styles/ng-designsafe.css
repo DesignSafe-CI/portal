@@ -463,6 +463,13 @@ span.label {
     float:left;
 }
 
+.add-project-labels span.label {
+    width: 1em;
+    height: 1em;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
 span.tag-title {
     word-break: break-word;
     white-space: normal;

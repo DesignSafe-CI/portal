@@ -98,7 +98,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(modelConfig)">
                 <span ng-class="{'selected': isProjectTagSel(modelConfig)}"
-                      class="label tag-blue">Model Config</span>
+                      class="label tag-blue"> </span>
                 <span class="tag-title">{{modelConfig.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(modelConfig)}" class="fa"></i>
@@ -111,7 +111,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(sensor)">
                 <span ng-class="{'selected': isProjectTagSel(sensor)}"
-                      class="label tag-green">Sensor Info</span>
+                      class="label tag-green"> </span>
                 <span class="tag-title">{{sensor.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(sensor)}" class="fa"></i>
@@ -124,7 +124,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(event)">
                 <span ng-class="{'selected': isProjectTagSel(event)}" 
-                      class="label tag-red">Events</span>
+                      class="label tag-red"> </span>
                 <span class="tag-title">{{event.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(event)}" class="fa"></i>
@@ -137,7 +137,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(analysis)">
                 <span ng-class="{'selected': isProjectTagSel(analysis)}" 
-                      class="label tag-light-blue">Analysis</span>
+                      class="label tag-light-blue"> </span>
                 <span class="tag-title">{{analysis.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(analysis) }" class="fa"></i>
@@ -152,7 +152,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(report)">
                 <span ng-class="{'selected': isProjectTagSel(report)}" 
-                      class="label tag-black">Report</span>
+                      class="label tag-black"> </span>
                 <span class="tag-title">{{report.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(report) }" class="fa"></i>
@@ -166,13 +166,14 @@
                 ng-disabled = "(data.newFileProjectTags.length == 0 &&
                                data.projectTagsToUnrelate.length == 0)"
                 ng-click="saveRelations()">
-                <i class="fa fa-check"></i> Categorize
+                <i class="fa fa-check"></i> Assign to Files
         </button>
         <button class="btn btn-sm btn-danger"
                 ng-disabled="data.newFileProjectTags.length == 0"
                 ng-click="deleteCategory()">
                 <i class="fa fa-times"></i> Delete Category
         </button>
+        <span style="font-weight:bold;">Selected Category: </span>
         <span> {{data.newFileProjectTags[0]._displayName}} {{data.newFileProjectTags[0].value.title}}</span>
         <button class="btn btn-sm btn-link"
                 ng-if="data.newFileProjectTags.length > 0"
