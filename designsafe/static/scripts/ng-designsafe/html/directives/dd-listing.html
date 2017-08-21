@@ -102,31 +102,43 @@
 
 
     <div style="border:1px solid black; background:white; margin-bottom:15px;">
-      <div style= "width:50%; display:inline-block; padding:5px;">
-      <h3 style="margin-top:0">{{experiment.value.title}}</h3>
-      <div style="padding:5px; margin:5px 0px; height:80px; overflow:hidden; word-wrap:overflow;">
-      <p style="overflow:hidden; display:block; height:40px;">
-          <span style="font-weight:bold;"> Description: </span>{{experiment.value.description}}</p>
-          <button class="btn btn-link btn-sm"
+      <div style= "padding:5px;">
+        <h3 style="margin-top:0">{{experiment.value.title}}</h3>
+          <p style="font-weight:bold;">Description</p>
+          <p>{{experiment.value.description}}</p>
+          
+          <!--<button class="btn btn-link btn-sm"
                   ng-click="publicationCtrl.showText(experiment.value.description)">
-            <i class="fa fa-external-link"></i> Show</button>
-      </div>
+            <i class="fa fa-external-link"></i> Show</button>-->
       </div>
       <div style="width:49%; vertical-align:top; display:inline-block;">
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> Experimental Facility: </span>{{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
+        <div>
+          <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> (Appears when published)
         </div>
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> Experiment Type: </span>
+        <div>
+          <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> (Appears when published)
+        </div>
+        <div>
+          <span style="font-weight:bold; display:inline-block; width:150px;"> Experimental Facility: </span>{{experiment.getEF(browser.project.value.projectType, experiment.value.experimentalFacility).label}}
+        </div>
+        <div>
+          <span style="font-weight:bold; display:inline-block; width:150px;"> Experiment Type: </span>
           <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
         </div>
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> Equipment Type: </span>
+        <div>
+          <span style="font-weight:bold; display:inline-block; width:150px;"> Equipment Type: </span>
           <span style="text-transform:capitalize;">{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</span>
         </div>
-        <div style="padding:5px;" ng-if="browser.project.getRelated('report_set', experiment.uuid) && 
+      </div>
+      <div style="width:49%; vertical-aligh:top; display:inline-block;">
+        <div>
+          <span style="font-weight:bold; display:inline-block; width:100px;">Authors: </span>
+          <span ng-repeat="user in publicationCtrl.filterUsers(experiment.value.authors,
+                          browser.publication.users) | orderBy: ['_ui.order', 'last_name']" > {{user.last_name}}, {{user.first_name}};
+        </span>
+        <div ng-if="browser.project.getRelated('report_set', experiment.uuid) && 
                                          browser.publication.filesSelected[browser.project.getRelated('report_set', experiment.uuid)[0].uuid].length">
-          <span style="font-weight:bold;"> Experiment Report: </span>
+          <span style="font-weight:bold; display:inline-block; width:100px;">Report: </span>
           <a href="#details-{{browser.project.getRelated('report_set', experiment.uuid)[0].uuid}}"
              class="btn btn-link">
           <span style="font-weight:bold;">{{browser.project.getRelated('report_set', experiment.uuid)[0].value.title}}</span>
