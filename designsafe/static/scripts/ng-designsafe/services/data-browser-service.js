@@ -178,7 +178,8 @@
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
       tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData');
       tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
-      tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
+      //tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
+      tests.canViewCategories = true;
 
       var trashPath = _trashPath();
       tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
