@@ -589,7 +589,7 @@
 
     $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
-      DataBrowserService.showListing();
+      //DataBrowserService.showListing();
       if (file.type === 'file') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
