@@ -421,7 +421,7 @@
     $scope.browser.listings = {};
     $scope.browser.ui = {};
     $scope.browser.publication = {experimentsList: [], eventsList: [],
-                                  users: [], analysisList: [],
+                                  users: [], analysisList: [], reportsList: [],
                                   filesSelected: []};
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
@@ -713,7 +713,13 @@
                                    'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
                            '</div>' +
                          '</div>' +
+                           //'<div clss="del-btn">' + 
+                           //  '<button class="btn btn-sm btn-danger" ng-click="removeDataRecord($index)"><i class="fa fa-remove"></i> Delete </button>' + 
+                           //'</div>' + 
                        '</div>' +
+                       //'<div class="add-btn">' + 
+                       //'<button class="btn btn-sm btn-info" ng-click="addDataRecord()"><i class="fa fa-plus"></i> Add</button>' +
+                       //'</div>' + 
                      '</div>' +
                      '<div class="modal-footer">' +
                        '<button class="btn btn-default" ng-click="close()">Close</button>' +
@@ -724,10 +730,22 @@
                          classes: classes,
                          title: title,
                          form: {}};
-            $scope.data = {objArr: angular.copy(objArr)};
+            $scope.data = {objArr: objArr};
 
             $scope.close = function(){
                 $uibModalInstance.dismiss('Cancel');
+            };
+
+            $scope.addDataRecord = function(){
+                var nRecord = {};
+                fields.forEach(function(field){
+                    nRecord[field] = '';
+                });
+                $scope.data.objArr.push(nRecord);
+            };
+
+            $scope.removeDataRecord = function(index){
+                $scope.data.objArr.splice(index, 1);
             };
 
             $scope.save = function(){

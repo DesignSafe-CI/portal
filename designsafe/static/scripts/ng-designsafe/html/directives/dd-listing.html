@@ -124,7 +124,8 @@
           <span style="font-weight:bold;"> Equipment Type: </span>
           <span style="text-transform:capitalize;">{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</span>
         </div>
-        <div style="padding:5px;" ng-if="browser.project.getRelated('report_set', experiment.uuid).length">
+        <div style="padding:5px;" ng-if="browser.project.getRelated('report_set', experiment.uuid) && 
+                                         browser.publication.filesSelected[browser.project.getRelated('report_set', experiment.uuid)[0].uuid]">
           <span style="font-weight:bold;"> Experiment Report: </span>
           <a href="#details-{{browser.project.getRelated('report_set', experiment.uuid)[0].uuid}}"
              class="btn btn-link">
@@ -191,7 +192,8 @@
         <th>Last modified</th>
         <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
           <button class="btn btn-default"
-                  ng-if="!(browser.publication.filesSelected[experiment.uuid][event.uuid]
+                  ng-if="publicationCtrl.filterFiles(experiment, event, browser.listings[event.uuid]).length && 
+                         !(browser.publication.filesSelected[experiment.uuid][event.uuid]
                          && browser.publication.filesSelected[experiment.uuid][event.uuid].length)"
                   ng-click="publicationCtrl.selectAllFiles(experiment, event)">
                   <i class="fa fa-check"></i> Select All
@@ -334,7 +336,8 @@
                 <th>Last modified</th>
                     <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                       <button class="btn btn-default"
-                              ng-if="! (browser.publication.filesSelected[analysis.uuid]
+                              ng-if="publicationCtrl.filterFiles(analysis, false, browser.listings[analysis.uuid]) &&
+                                     !(browser.publication.filesSelected[analysis.uuid]
                                      && browser.publication.filesSelected[analysis.uuid].length)"
                               ng-click="publicationCtrl.selectAllFiles(analysis)">
                               <i class="fa fa-check"></i> Select All
@@ -409,7 +412,8 @@
                 <th>Last modified</th>
                     <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                       <button class="btn btn-default"
-                              ng-if="! (browser.publication.filesSelected[report.uuid]
+                              ng-if="publicationCtrl.filterFiles(report, false, browser.listings[report.uuid]) &&
+                                     !(browser.publication.filesSelected[report.uuid]
                                      && browser.publication.filesSelected[report.uuid].length)"
                               ng-click="publicationCtrl.selectAllFiles(report)">
                               <i class="fa fa-check"></i> Select All
