@@ -11,13 +11,20 @@
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title">{{experiment.value.title}}</span>
+            <div style="margin-left:5px; display:inline-block;"
+                 ng-if="data.project.getRelated('report_set', experiment.uuid).length">
+                <span class="label tag-black">Report</span>
+                <span class="tab-title">
+                {{data.project.getRelated('report_set', experiment.uuid)[0].value.title}}   
+                </span>
+            </div>
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
                 ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid)">
               <div class="tree-el">
               <span class="label tag-blue"
-                    ng-class="{'selected': data.entityUuid === modelConfig.uuid}">Model Config</span>
+                    ng-class="{'selected': data.entityUuid === modelConfig.uuid}">Model Config </span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
               </div>
               <ul class="sensor-list-ul">
@@ -25,7 +32,7 @@
                     ng-repeat="sensorList in data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid])">
                   <div class="tree-el">  
                   <span class="label tag-green"
-                    ng-class="{'selected': data.entityUuid === sensorList.uuid}">Sensor</span>
+                    ng-class="{'selected': data.entityUuid === sensorList.uuid}">Sensor </span>
                   <span class="tag-title">{{sensorList.value.title}}</span>
                   </div>
                   <ul class="event-ul">
@@ -33,7 +40,7 @@
                         ng-repeat="event in data.project.getRelated('event_set', [experiment.uuid, modelConfig.uuid, sensorList.uuid])">
                       <div class="tree-el">
                       <span class="label tag-red tree-el"
-                    ng-class="{'selected': data.entityUuid === event.uuid}">Event</span>
+                    ng-class="{'selected': data.entityUuid === event.uuid}">Event </span>
                       <span class="tag-title">{{event.value.title}}</span>
                       </div>
                     </li>
@@ -44,7 +51,30 @@
           </ul>
         </li>
       </ul>
+
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="label tag-light-blue">Analysis</span>
+          <span class="ul-title">{{analysis.value.title}}</span>
+          </div>
+
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="event in data.project.getRelated('event_set', analysis.uuid)">
+              <div class="tree-el">
+              <span class="label tag-red">Event</span>
+              <span class="tag-title">{{event.value.title}}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
     </div>
+
+
 </div>
 <div class="modal-footer">
   <button class="pull-right btn btn-sm btn-default" ng-click="cancel()">Close</button>

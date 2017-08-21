@@ -196,7 +196,7 @@
               <select
                       ng-options="report as report.value.title for report in data.project.report_set"
                       ng-model="form.updateExperiments[experiment.uuid].relProject">
-                      <option value="">Reports</option>
+                      <option value="">Add Reports</option>
               </select>
               <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateExperiments[experiment.uuid].relProject,
@@ -286,7 +286,7 @@
                       <select
                               ng-options="entity as entity.value.title for entity in data.project.event_set"
                               ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent">
-                              <option value="">Events</option>
+                              <option value="">Add Events</option>
                       </select>
                       <button class="btn btn-sm btn-link"
                               ng-click="saveRelEntity(form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent,
@@ -309,7 +309,7 @@
                   <select
                           ng-options="entity as entity.value.title for entity in data.project.sensorlist_set"
                           ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList">
-                          <option value="">Sensor Info</option>
+                          <option value="">Add Sensor Info</option>
                   </select>
                   <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList,
@@ -328,7 +328,7 @@
               <select 
                       ng-options="entity as entity.value.title for entity in data.project.modelconfiguration_set"
                       ng-model="form.updateExperiments[experiment.uuid].relModelConfig">
-                      <option value="">Model Config</option>
+                      <option value="">Add Model Config</option>
               </select>
               <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateExperiments[experiment.uuid].relModelConfig,
@@ -369,7 +369,7 @@
               <select
                       ng-options="entity as entity.value.title for entity in data.project.event_set"
                       ng-model="form.updateAnalysis[analysis.uuid].relEvent">
-                      <option value="">Events</option>
+                      <option value="">Add Events</option>
               </select>
               <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateAnalysis[analysis.uuid].relEvent,
