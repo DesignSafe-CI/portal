@@ -98,7 +98,8 @@
                   style="width:100%;">
             Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
           </button>
-          <div id="data-{{experiment.uuid}}" class="collapse in">
+          <div id="data-{{experiment.uuid}}" class="collapse"
+           ng-class="{'in': $index==0}">
 
 
     <div style="border:1px solid black; background:white; margin-bottom:15px;">
@@ -123,7 +124,7 @@
         </div>
         <div>
           <span style="font-weight:bold; display:inline-block; width:150px;"> Experiment Type: </span>
-          <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
+          <span style="text-transform:capitalize;">{{experiment.getExpType(experiment.value.experimentalFacility, experiment.value.experimentType).label}}</span>
         </div>
         <div>
           <span style="font-weight:bold; display:inline-block; width:150px;"> Equipment Type: </span>
@@ -247,6 +248,7 @@
     </div>
     </div>
 
+    </div>
     </div>
 
 </div>
