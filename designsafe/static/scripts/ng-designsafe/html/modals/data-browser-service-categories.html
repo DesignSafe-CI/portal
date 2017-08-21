@@ -3,14 +3,17 @@
 </div>
 <div class="modal-body">
     <h4 style="border:none;">Select from your inventory to assign a category</h4>
-    <p class="alert alert-info">
+    <p class="alert alert-info" ng-if="data.files.length">
     To delete a category, you must first remove it from all its assigned files.
+    </p>
+    <p class="alert alert-info" ng-if="!data.files.length">
+    You have no files selected!
     </p>
     <div ng-if="ui.busy">
         <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
             <i class="fa fa-spinner fa-spin"></i> Loading...
         </span>
-    </div>   
+    </div>  
     <div ng-if="!ui.busy">
 
       <div ng-repeat="entity in ui.parentEntities" class="col-xs-12"
@@ -93,7 +96,7 @@
        <h4>Inventory</h4>
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
-              <h5>Model Config</h5>
+              <h5 style="font-weight:normal;">Model Config</h5>
               <div ng-repeat="modelConfig in data.project.modelconfiguration_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -107,7 +110,7 @@
               </div>
           </div>
           <div class="col-xs-3">
-              <h5>Sensor Info</h5>
+              <h5 style="font-weight:normal;">Sensor Info</h5>
               <div ng-repeat="sensor in data.project.sensorlist_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -121,7 +124,7 @@
               </div>
           </div>
           <div class="col-xs-3">
-              <h5>Event</h5>
+              <h5 style="font-weight:normal;">Event</h5>
               <div ng-repeat="event in data.project.event_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -135,7 +138,7 @@
               </div>
           </div>
           <div class="col-xs-3">
-              <h5>Analysis</h5>
+              <h5 style="font-weight:normal;">Analysis</h5>
               <div ng-repeat="analysis in data.project.analysis_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -151,7 +154,7 @@
         </div>
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
-              <h5>Report</h5>
+              <h5 style="font-weight:normal;">Report</h5>
               <div ng-repeat="report in data.project.report_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -169,7 +172,8 @@
       <div>
         <button class="btn btn-sm btn-info"
                 ng-disabled = "(data.newFileProjectTags.length == 0 &&
-                               data.projectTagsToUnrelate.length == 0)"
+                               data.projectTagsToUnrelate.length == 0) ||
+                               !data.files.length"
                 ng-click="saveRelations()">
                 <i class="fa fa-check"></i> Assign to Files
         </button>
