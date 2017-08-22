@@ -14,7 +14,8 @@
                     ng-click="ops.viewCategories()"
                     ng-disabled="!tests.canViewCategories ||
                                   browser.project.publicationStatus === 'publishing'"
-                    ng-if="browser.listing.system.startsWith('project')">
+                    ng-if="browser.listing.system.startsWith('project') &&
+                           browser.project.value.projectType != 'other'">
                 <img src="/static/images/ds-icons/icon-categorize.svg" width="50px" height="16px"/>
                 <span style="display:block;">Categorize</span>
             </button>
