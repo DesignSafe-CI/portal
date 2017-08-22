@@ -240,6 +240,7 @@ MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
 
 DJANGOCMS_PICTURE_TEMPLATES = [
+    ('non_responsive', 'Non-Responsive Image'),
     ('responsive', 'Responsive Image'),
 ]
 
