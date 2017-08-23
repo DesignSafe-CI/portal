@@ -1,87 +1,81 @@
 <div class="table-responsive" ng-class="{'preview-wrapper': browser.showPreviewListing}">
+
   <div class="ds-table-display-wrapper" ds-infinite-scroll
-        data-scroll-bottom="scrollToBottom()()"
-        data-scroll-top="scrollToTop()()"
-        data-bottom-height="0"
-        ng-if="browser.showMainListing">
+   data-scroll-bottom="scrollToBottom()()"
+   data-scroll-top="scrollToTop()()"
+   data-bottom-height="0"
+   ng-if="browser.showMainListing || 
+          (browser.showPreviewListing &&
+          browser.project.value.projectType == 'other' &&
+          (!browser.publishPipeline ||
+          browser.publishPipeline == 'select' ||
+          browser.publishPipeline == 'review'))">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
-        <thead>
+      <thead>
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
-        <!--
-        <th>Details</th>
-        -->
-        </thead>
-
-        <tbody>
+      </thead>
+      <tbody>
         <tr ng-if="!browser.busyListing"
-            ng-repeat="item in browser.listing.children"
-            ng-click="onSelect()($event, item)"
-            ng-class="{'ds-data-selected': item._ui.selected}"
-        >
-            <td>
-                <i class="fa {{ item.icon() }}"></i>
-                <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
-                    {{ item.name }}
-                </a>
-
-                <span class="tag-item"
-                      ng-repeat="entityTag in item._entityTags">
-                  {{entityTag}}
-                </span>
-            <div style="width:100%;">
-            <span ng-if="browser.loadingEntities">
-            Loading <i class="fa fa-spinner fa-spin"></i>
+         ng-repeat="item in browser.listing.children"
+         ng-click="onSelect()($event, item)"
+         ng-class="{'ds-data-selected': item._ui.selected}">
+          <td>
+            <i class="fa {{ item.icon() }}"></i>
+            <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">
+              {{ item.name }}
+            </a>
+            <span class="tag-item"
+             ng-repeat="entityTag in item._entityTags">
+              {{entityTag}}
             </span>
-            <span class="label selected"
-              ng-repeat-start="entity in item._entities"
-              ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analysis', 'tag-black': entity.name === 'designsafe.project.report'}">{{ entity._displayName }}</span>
-            <span ng-repeat-end class="tag-title">{{entity.value.title}}</span>
+            <div style="width:100%;">
+              <span ng-if="browser.loadingEntities">
+                Loading <i class="fa fa-spinner fa-spin"></i>
+              </span>
+              <span class="label selected"
+               ng-repeat-start="entity in item._entities"
+               ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analysis', 'tag-black': entity.name === 'designsafe.project.report'}">
+                {{ entity._displayName }}
+              </span>
+              <span ng-repeat-end class="tag-title">
+                {{entity.value.title}}
+              </span>
             </div>
-            </td>
-            <td ng-if="item.format == 'folder'"> -- </td>
-            <td ng-if="item.format == 'raw'">{{ item.length|bytes }}</td>
-            <td>{{ item.lastModified|date:"short" }}</td>
-            <!--
-            <td>
-                <a class="btn btn-info btn-xs" ng-click="onDetail()($event, item)">
-                    <i class="fa fa-info-circle"></i><span style="display:block;">Details</span>
-                </a>
-            </td>
-            -->
+          </td>
+          <td ng-if="item.format == 'folder'"> -- </td>
+          <td ng-if="item.format == 'raw'">{{ item.length|bytes }}</td>
+          <td>{{ item.lastModified|date:"short" }}</td>
         </tr>
         <tr ng-if="browser.busyListingPage">
           <td>
-                <span class="bg-info text-info">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
-                </span>
+            <span class="bg-info text-info">
+              <i class="fa fa-spinner fa-spin"></i> Loading...
+            </span>
           </td>
         </tr>
-        </tbody>
-        <caption style="padding:0px;">
-
-            <div ng-if="browser.busy"
-                 style="padding:10px; font-size:large; with:100%;"
-                 class="bg-info">
-                <span>
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
-                </span>
-            </div>
-
-            <div ng-if="! browser.busy && browser.error" class="text-center">
-                <p class="alert alert-danger">
-                    {{ browser.error.message || browser.error }}
-                </p>
-            </div>
-
-            <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
-                <p class="lead">
-                    This folder is empty!
-                    <br><i class="fa fa-folder-open-o"></i>
-                </p>
-            </div>
-        </caption>
+      </tbody>
+      <caption style="padding:0px;">
+        <div ng-if="browser.busy"
+         style="padding:10px; font-size:large; with:100%;"
+         class="bg-info">
+          <span>
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+          </span>
+        </div>
+        <div ng-if="! browser.busy && browser.error" class="text-center">
+          <p class="alert alert-danger">
+            {{ browser.error.message || browser.error }}
+          </p>
+        </div>
+        <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
+          <p class="lead">
+            This folder is empty! <br>
+            <i class="fa fa-folder-open-o"></i>
+          </p>
+        </div>
+      </caption>
     </table>
   </div>
 
@@ -758,9 +752,155 @@
 </div> <!-- END EXPERIMENTAL PUBLISHING STEPS -->
 
 <div class="other-publishing-steps"
- ng-if="browser.project.value.projectType == 'other' ">
-
+ ng-if="browser.showPreviewListing &&
+        browser.project.value.projectType == 'other' ">
+  <div class="meta-review"
+   ng-if="browser.publishPipeline === 'meta'">  
+    <div class="title">
+      Project Information
+      <span class="pull-right"><a href="/help">Need Help?</a></span>
+    </div>
+    <div class="content">
+      <div class="content-wrapper">
+        <h3>Project Information</h3>
+        <div class="meta-row">
+          <span class="attr pull-left">Date of Publication</span>
+          <span class="value pull-right">{{browser.project.dateOfPublication()}}</span>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditProject()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Project Title </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span>{{browser.project.value.title}}</span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditProject()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Project Type </span><span class="text-danger" style="text-transform:capitalize">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span style="text-transform:capitalize">{{browser.project.value.projectType}}</span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.editInsts()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Participant Instiutions </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span ng-repeat="inst in browser.publication.institutions"
+                  style="display:block;">
+                  {{inst.label}}
+            </span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.editUsers()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Team Members </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
+              <button class="btn btn-sm btn-link pull-right"
+                      title="Move order Up"
+                      ng-click="publicationCtrl.moveOrderUp($index, user, browser.publication.users)"
+                      style="padding:0;">
+                <i class="fa fa-arrow-up"></i>
+              </button>
+              <button class="btn btn-sm btn-link pull-right"
+                      title="Move order Down"
+                      ng-click="publicationCtrl.moveOrderDown($index, user, browser.publication.users)"
+                      style="padding:0;">
+                 <i class="fa fa-arrow-down"></i>
+              </button>
+              <span>
+                {{user.last_name}}, {{user.first_name}}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditProject()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Project Description </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span>{{browser.project.value.description}}</span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditProject()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Funding Agency & Award Number</span>
+          </div>
+          <div class="value pull-right">
+            <span>{{browser.project.value.awardNumber}}</span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditProject()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Associated Projects</span>
+          </div>
+          <div class="value pull-right">
+            <span class="value pull-right"
+                  ng-repeat="asoc in browser.project.value.associatedProjects">
+                  {{asoc}}
+            </span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <span>Rights </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span>ODC-BY 1.0 [<a href="http://opendatacommons.org/licenses/by/1-0/"> http://opendatacommons.org/licenses/by/1-0/</a>]</span>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditProject()">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Keywords </span><span class="text-danger">(*)</span><br/>
+          </div>
+          <div class="value pull-right">
+            <span ng-repeat="keyword in browser.project.value.keywords.split(',')"
+                  style="display:block;">{{keyword}}</span><br/>
+          </div>
+        </div>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <span>Publisher </span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span>Designsafe-CI</span>
+          </div>
+        </div>
+        <div class="meta-row">
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
   <div class="agreement-div"
   ng-if="browser.showPreviewListing && browser.publishPipeline === 'agreement'"
   style="background:#fff; min-height:500px; padding:10px;">
