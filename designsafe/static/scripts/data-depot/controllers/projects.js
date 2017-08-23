@@ -835,7 +835,7 @@
       },
 
       openEditCategories: function(){
-        DataBrowserService.viewCategories();
+        DataBrowserService.viewCategories([]);
       },
 
       selectAllFiles : function(ent, evt){
