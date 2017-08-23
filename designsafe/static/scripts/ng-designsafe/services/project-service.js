@@ -373,11 +373,33 @@
                 //$uibModalInstance.close(results);
               },
               function (error) {
+                $scope.data.busy = false;
                 $scope.data.error = error;
                 //$uibModalInstance.reject(error.data);
               }
             );
 
+          };
+
+          $scope.removeAnalysis = function(uuid){
+            $scope.data.busy = true;
+            ProjectEntitiesService.delete({
+              data: {
+                uuid: uuid,
+              }
+            }).then(function(entity){
+                var entityAttr = $scope.data.project.getRelatedAttrName(entity.name);
+                var entitiesArray = $scope.data.project[entityAttr];
+                entitiesArray = _.filter(entitiesArray, function(e){
+                        return e.uuid !== entity.uuid;
+                    });
+                $scope.data.project[entityAttr] = entitiesArray;
+                $scope.data.busy = false;
+            },
+            function(error){
+                $scope.data.busy = false;
+              $scope.data.error = error;
+            });
           };
 
           $scope.delRelEntity = function(entity, rels){
