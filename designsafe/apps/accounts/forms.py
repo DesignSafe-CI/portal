@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
-from nocaptcha_recaptcha.fields import NoReCaptchaField
+from captcha.fields import ReCaptchaField
 
 from .models import (DesignSafeProfile, NotificationPreferences,
     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
@@ -338,7 +338,7 @@ class UserRegistrationForm(forms.Form):
         label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
         error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
 
-    # captcha = NoReCaptchaField()
+    captcha = ReCaptchaField()
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
