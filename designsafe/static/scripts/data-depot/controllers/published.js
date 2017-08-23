@@ -321,8 +321,8 @@
                 $ctrl.data.publication = browser.publication;
             }
             $ctrl.data.selectedUuid = uuid;
-            $ctrl.isSelected = function(uuid){
-                if (uuid ===$ctrl.data.selectedUuid){
+            $ctrl.isSelected = function(entityUuid){
+                if (entityUuid ===$ctrl.data.selectedUuid){
                     return true;
                 } else {
                     return false;

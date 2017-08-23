@@ -21,10 +21,10 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in getRelated('modelConfigs', experiment.uuid)">
+                ng-repeat="modelConfig in getRelated('modelConfigs', [experiment.uuid])">
               <div class="tree-el">
               <span class="label tag-blue"
-                   ng-class="{'selected': isSelected(modelConfig.uuid)}">
+                   ng-class="{'selected': modelConfig.uuid === $ctrl.data.selectedUuid}">
                    Model Config</span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
               </div>
@@ -33,7 +33,7 @@
                     ng-repeat="sensorList in getRelated('sensorLists', [experiment.uuid, modelConfig.uuid])">
                   <div class="tree-el">  
                   <span class="label tag-green"
-                        ng-class="{'selected': isSelected(sensorList.uuid)}">
+                        ng-class="{'selected': sensorList.uuid === $ctrl.data.selectedUuid}">
                         Sensor</span>
                   <span class="tag-title">{{sensorList.value.title}}</span>
                   </div>
@@ -41,7 +41,7 @@
                     <li ng-repeat="event in getRelated('eventsList', [experiment.uuid, modelConfig.uuid, sensorList.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el"
-                            ng-class="{'selected': $ctrl.isSelected(event.uuid)}">
+                            ng-class="{'selected': event.uuid === $ctrl.data.selectedUuid}">
                         Event</span>
                       <span class="tag-title">{{event.value.title}}</span>
                 </li>
