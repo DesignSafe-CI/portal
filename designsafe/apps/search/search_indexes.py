@@ -80,4 +80,3 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
 
         # self.prepared_data['language'] = self._language
         return self.prepared_data
-    

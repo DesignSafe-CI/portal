@@ -11,8 +11,8 @@ designsafe.env
 certs/
 
 # data directories
-data/mysql/*dump*
-data/elasticsearch/*dump*
+data/mysql/*
+data/elasticsearch/*
 
 # no node modules
 node_modules/
