@@ -858,6 +858,33 @@
         }
       },
 
+      selectFileForPublication : function(ent, evt, file){
+        if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
+          if (ent.name == 'designsafe.project.experiment'){
+            $scope.browser.publication.filesSelected[ent.uuid] = {};
+          } else {
+            $scope.browser.publication.filesSelected[ent.uuid] = [];
+          }
+        }
+        var files = [];
+        if (ent.name === 'designsafe.project.experiment'){
+          files = $scope.browser.publication.filesSelected[ent.uuid][evt.uuid];
+        } else {
+          files = $scope.browser.publication.filesSelected[ent.uuid];
+        }
+        if (typeof files == 'undefined' || !_.isArray(files)){
+          files = [];
+        }
+        files.push(file);
+        if (ent.name === 'designsafe.project.experiment'){
+          $scope.browser.publication.filesSelected[ent.uuid][evt.uuid] = files;
+          _addToLists(ent, evt);
+        } else {
+          $scope.browser.publication.filesSelected[ent.uuid] = files;
+          _addToLists(ent);
+        }
+      },
+
       deselectAllFiles : function(ent, evt){
         if (ent.name === 'designsafe.project.experiment'){
           $scope.browser.publication.filesSelected[ent.uuid][evt.uuid] = [];
@@ -877,7 +904,11 @@
 
       isFileSelectedForPublication : function(ent, evt, file){
         if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
-          $scope.browser.publication.filesSelected[ent.uuid] = {};
+          if (ent.name === 'designsafe.project.experiment'){
+            $scope.browser.publication.filesSelected[ent.uuid] = {};
+          } else {
+            $scope.browser.publication.filesSelected[ent.uuid] = [];
+          }
         }
         var files = [];
         if(ent.name === 'designsafe.project.experiment'){
@@ -916,28 +947,6 @@
             }
           }
         }
-      },
-
-      selectFileForPublication : function(ent, evt, file){
-        if (typeof $scope.browser.publication[ent.uuid] === 'undefined'){
-          $scope.browser.publication[ent.uuid] = {};
-        }
-        var files = [];
-        if (ent.name === 'designsafe.project.experiment'){
-          files = $scope.browser.publication[ent.uuid][evt.uuid];
-        } else {
-          files = $scope.browser.publication[ent.uuid];
-        }
-        if (typeof files == 'undefined'){
-          files = [];
-        }
-        files.push(file);
-        if (ent.name === 'designsafe.project.experiment'){
-          $scope.browser.publication[ent.uuid][evt.uuid] = files;
-        } else {
-          $scope.browser.publication[ent.uuid] = files;
-        }
-        _addToLists(ent, evt);
       },
 
       filterExperiments : function(experiments){
