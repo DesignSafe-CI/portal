@@ -499,10 +499,10 @@
             <a href="#" ng-click="publicationCtrl.editInsts()">
               <i class="fa fa-pencil-square-o"></i> Edit
             </a>
-            <span>Participant Instiutions </span><span class="text-danger">(*)</span>
+            <span>Participant Institutions </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-            <span ng-repeat="inst in browser.publication.institutions"
+            <span ng-repeat="inst in browser.publication.institutions | filter: {_ui: {deleted: false }}"
                   style="display:block;">
                   {{inst.label}}
             </span>
@@ -516,7 +516,7 @@
             <span>Team Members </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-            <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
+            <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name'] | filter: {_ui: {deleted: false }}" >
               <button class="btn btn-sm btn-link pull-right"
                       title="Move order Up"
                       ng-click="publicationCtrl.moveOrderUp($index, user, browser.publication.users)"
@@ -794,10 +794,10 @@
             <a href="#" ng-click="publicationCtrl.editInsts()">
               <i class="fa fa-pencil-square-o"></i> Edit
             </a>
-            <span>Participant Instiutions </span><span class="text-danger">(*)</span>
+            <span>Participant Institutions </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-            <span ng-repeat="inst in browser.publication.institutions"
+            <span ng-repeat="inst in browser.publication.institutions | filter: {_ui: {deleted: false }}"
                   style="display:block;">
                   {{inst.label}}
             </span>
@@ -811,7 +811,7 @@
             <span>Team Members </span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-            <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name']" >
+            <div ng-repeat="user in browser.publication.users | orderBy: ['_ui.order', 'last_name'] | filter: {_ui: {deleted: false }}" >
               <button class="btn btn-sm btn-link pull-right"
                       title="Move order Up"
                       ng-click="publicationCtrl.moveOrderUp($index, user, browser.publication.users)"
