@@ -715,7 +715,7 @@
         </div>
         <div class="meta-row">
           <div class="attr pull-left">
-            <a href="#" ng-click="publicationCtrl.openEditCategories()">
+            <a href="#" ng-click="publicationCtrl.openEditCategories([])">
               <i class="fa fa-pencil-square-o"></i> Edit
             </a>
             <span>Analysis Title</span><span class="text-danger">(*)</span>
@@ -726,7 +726,7 @@
         </div>
         <div class="meta-row">
           <div class="attr pull-left">
-            <a href="#" ng-click="publicationCtrl.openEditCategories()">
+            <a href="#" ng-click="publicationCtrl.openEditCategories([])">
               <i class="fa fa-pencil-square-o"></i> Edit
             </a>
             <span>Description</span><span class="text-danger">(*)</span>
@@ -744,6 +744,21 @@
                   style="display:block;">
                   [Event] {{event.value.title}}
             </span><br/>
+          </div>
+        </div>
+      </div>
+      <div class="content-wrapper"
+           ng-repeat="report in browser.publication.reportsList | orderBy: ['_ui.order', 'value.title']">
+        <h3>Report Information</h3>
+        <div class="meta-row">
+          <div class="attr pull-left">
+            <a href="#" ng-click="publicationCtrl.openEditCategories([])">
+              <i class="fa fa-pencil-square-o"></i> Edit
+            </a>
+            <span>Report Title</span><span class="text-danger">(*)</span>
+          </div>
+          <div class="value pull-right">
+            <span>{{report.value.title}}</span>
           </div>
         </div>
       </div>
