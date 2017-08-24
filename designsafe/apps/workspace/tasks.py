@@ -110,7 +110,7 @@ def watch_job_status(self, username, job_id, current_status=None):
 
 
             logger.debug('archivePath: {}'.format(job['archivePath']))
-            target_path = reverse('designsafe_data:data_browser')
+            target_path = reverse('designsafe_data:data_depot')
             os.path.join(target_path, 'agave', archive_id.strip('/'))
             event_data[Notification.STATUS] = Notification.SUCCESS
             event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
