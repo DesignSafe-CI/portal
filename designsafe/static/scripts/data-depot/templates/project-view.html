@@ -64,6 +64,14 @@
                   style="border-radius:10px;
                 box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);"
                   ng-disabled="data.loadingEntities">Publication Preview</button>
+          <div ng-if="state.showPreviewListing"
+               style="margin-left:15px; display:inline-block;">
+              <a class=""
+                 href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV&t=22"
+                 target="_blank">
+                <i class="fa fa-question-circle"></i> Learn More
+              </a>
+          </div>
 
         <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;"
              ng-if="state.showMainListing">
@@ -126,6 +134,12 @@
 
           <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
                ng-if="state.showPreviewListing && !state.publishPipeline">
+            <div>
+                <a href="https://www.youtube.com/watch?v=3uwZX2MB3g8&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV&t=22"
+                   target="_blank">
+                  <i class="fa fa-question-circle"></i> Learn More
+                </a>
+            </div>
             <button class="btn btn-danger"
                     ng-click="publishPipeline_start()">
                 Prepare to Publish <i class="fa fa-arrow-right"></i>

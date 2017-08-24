@@ -72,7 +72,12 @@
         <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
           <p class="lead">
             This folder is empty! <br>
-            <i class="fa fa-folder-open-o"></i>
+            <i class="fa fa-folder-open-o"></i><br/>
+            <a class="" ng-if="browser.listing.system.indexOf('project-') == 0"
+               href="https://www.youtube.com/watch?v=ISrPManDVCYi&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV&t=22"
+               target="_blank">
+               <i class="fa fa-question-circle"></i> Learn how to move files to a project
+            </a>
           </p>
         </div>
       </caption>
