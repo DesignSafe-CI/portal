@@ -243,13 +243,17 @@
             var o = {
                 label: exp.getEF($scope.state.project.value.projectType,
                 exp.value.experimentalFacility).institution,
-                name: exp.value.experimentalFacility
+                name: exp.value.experimentalFacility,
                 };
             institutions.push(o);
         });
         _.each($scope.state.publication.users, function(user){
             institutions.push({ label: user.profile.institution,
                                 name: user.username});
+        });
+        institutions = _.uniq(institutions, function(inst){ return inst.label;});
+        _.each(institutions, function(inst, indx){
+          inst._ui = {order: indx, deleted: false};
         });
         $scope.state.publication.institutions = _.uniq(institutions, function(inst){ return inst.label;});
         $scope.state.publishPipeline = 'meta';
@@ -536,7 +540,7 @@
         var calls = _.map(usernames, function(username){
           return UserService.get(username)
             .then(function(resp){
-                resp._ui = {order:userIndex};
+                resp._ui = {order:userIndex, deleted: false};
                 $scope.browser.publication.users.push(resp);
                 userIndex += 1;
             });
@@ -713,9 +717,12 @@
                                    'id="{{field.id}}-{{obj[field.uniq]}}" ng-model="obj[field.name]"/>' +
                            '</div>' +
                          '</div>' +
-                           //'<div clss="del-btn">' + 
-                           //  '<button class="btn btn-sm btn-danger" ng-click="removeDataRecord($index)"><i class="fa fa-remove"></i> Delete </button>' + 
-                           //'</div>' + 
+                           '<div clss="del-btn" ng-if="!obj._ui.deleted">' + 
+                             '<button class="btn btn-sm btn-danger" ng-click="delDataRecord($index)"><i class="fa fa-remove"></i> Delete </button>' + 
+                           '</div>' +
+                           '<div clss="del-btn" ng-if="obj._ui.deleted">' + 
+                             '<button class="btn btn-sm btn-warning" ng-click="undelDataRecord($index)"><i class="fa fa-remove"></i> Undelete </button>' + 
+                           '</div>' +  
                        '</div>' +
                        //'<div class="add-btn">' + 
                        //'<button class="btn btn-sm btn-info" ng-click="addDataRecord()"><i class="fa fa-plus"></i> Add</button>' +
@@ -723,7 +730,6 @@
                      '</div>' +
                      '<div class="modal-footer">' +
                        '<button class="btn btn-default" ng-click="close()">Close</button>' +
-                       '<button class="btn btn-info" ng-click="save()">Save</button>' +
                      '</div>',
          controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance){
             $scope.ui = {fields: fields,
@@ -744,8 +750,12 @@
                 $scope.data.objArr.push(nRecord);
             };
 
-            $scope.removeDataRecord = function(index){
-                $scope.data.objArr.splice(index, 1);
+            $scope.delDataRecord = function(index){
+              $scope.data.objArr[index]._ui.deleted = true;
+            };
+
+            $scope.undelDataRecord = function(index){
+              $scope.data.objArr[index]._ui.deleted = false;
             };
 
             $scope.save = function(){
@@ -825,7 +835,7 @@
       },
 
       openEditCategories: function(){
-        DataBrowserService.viewCategories();
+        DataBrowserService.viewCategories([]);
       },
 
       selectAllFiles : function(ent, evt){
@@ -844,6 +854,33 @@
           _addToLists(ent, evt);
         } else {
           $scope.browser.publication.filesSelected[ent.uuid] = listing;
+          _addToLists(ent);
+        }
+      },
+
+      selectFileForPublication : function(ent, evt, file){
+        if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
+          if (ent.name == 'designsafe.project.experiment'){
+            $scope.browser.publication.filesSelected[ent.uuid] = {};
+          } else {
+            $scope.browser.publication.filesSelected[ent.uuid] = [];
+          }
+        }
+        var files = [];
+        if (ent.name === 'designsafe.project.experiment'){
+          files = $scope.browser.publication.filesSelected[ent.uuid][evt.uuid];
+        } else {
+          files = $scope.browser.publication.filesSelected[ent.uuid];
+        }
+        if (typeof files == 'undefined' || !_.isArray(files)){
+          files = [];
+        }
+        files.push(file);
+        if (ent.name === 'designsafe.project.experiment'){
+          $scope.browser.publication.filesSelected[ent.uuid][evt.uuid] = files;
+          _addToLists(ent, evt);
+        } else {
+          $scope.browser.publication.filesSelected[ent.uuid] = files;
           _addToLists(ent);
         }
       },
@@ -867,7 +904,11 @@
 
       isFileSelectedForPublication : function(ent, evt, file){
         if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
-          $scope.browser.publication.filesSelected[ent.uuid] = {};
+          if (ent.name === 'designsafe.project.experiment'){
+            $scope.browser.publication.filesSelected[ent.uuid] = {};
+          } else {
+            $scope.browser.publication.filesSelected[ent.uuid] = [];
+          }
         }
         var files = [];
         if(ent.name === 'designsafe.project.experiment'){
@@ -906,28 +947,6 @@
             }
           }
         }
-      },
-
-      selectFileForPublication : function(ent, evt, file){
-        if (typeof $scope.browser.publication[ent.uuid] === 'undefined'){
-          $scope.browser.publication[ent.uuid] = {};
-        }
-        var files = [];
-        if (ent.name === 'designsafe.project.experiment'){
-          files = $scope.browser.publication[ent.uuid][evt.uuid];
-        } else {
-          files = $scope.browser.publication[ent.uuid];
-        }
-        if (typeof files == 'undefined'){
-          files = [];
-        }
-        files.push(file);
-        if (ent.name === 'designsafe.project.experiment'){
-          $scope.browser.publication[ent.uuid][evt.uuid] = files;
-        } else {
-          $scope.browser.publication[ent.uuid] = files;
-        }
-        _addToLists(ent, evt);
       },
 
       filterExperiments : function(experiments){

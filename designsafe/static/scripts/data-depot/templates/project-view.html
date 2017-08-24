@@ -69,7 +69,12 @@
              ng-if="state.showMainListing">
             <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
             <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
-            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> Manage Experiments</button>
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
+                    ng-click="manageExperiments($event)"
+                    ng-if="data.project.value.projectType != 'other'">
+                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
+                Manage Experiments
+            </button>
         </div>
         </div>
 
@@ -137,10 +142,10 @@
             </button>
           </div>
         </div>
-        <div class="alert alert-info"
+        <div class="alert alert-danger"
              style="margin-top:20px;"
              ng-if="data.project.publicationStatus == 'publishing'">
-          <p>This project is currently in a publication process. Please do not modify any data or metadata in this project.</p>
+          <p>This project is currently in a publication process that involves copying all selected files and metadata to the Published, read-only directory of the Data Depot.   Please do not modify any files, data, or metadata until you receive a notification that the publication process is complete.</p>
         </div>
         <div class="alert alert-info"
              style="margin-top:20px;"

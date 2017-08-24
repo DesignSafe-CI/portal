@@ -188,7 +188,7 @@
     </div>
     <div class="data-model-tree" style="border-top:1px solid lightgray;">
      <div style="text-alignt:center;">
-     <h4> Relate Categories to Experiments or Analysis </h4>
+     <h4 style="text-align:center;"> Relate Categories to Experiments or Analysis </h4>
      </div>
       <ul class="experiments-ul">
         <li class="tree-container"
@@ -361,11 +361,16 @@
             ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
             style="border:none;">
           <div class="tree-el">  
-          <span class="label tag-light-blue">Analysis</span>
+          <span class="label tag-light-blue">Analysis </span>
           <span class="ul-title">{{analysis.value.title}}</span>
+          <button class="btn btn-xsm btn-link"
+                  ng-click="removeAnalysis(analysis.uuid)">
+            <i class="fa fa-times-circle" style="color:black;"></i>
+            <span class="sr-only">Delete</span>
+          </button>
           </div>
 
-          <ul class="model-config-ul">
+          <!--<ul class="model-config-ul">
             <li class="tree-container"
                 ng-repeat="event in data.project.getRelated('event_set', analysis.uuid)">
               <div class="tree-el">
@@ -393,7 +398,7 @@
               </button>
               </div>
             </li>
-          </ul>
+          </ul>-->
         </li>
       </ul>
     </div>
