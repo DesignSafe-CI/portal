@@ -21,6 +21,7 @@ from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.tasks import external_resource_upload
+from designsafe.apps.api.views import BaseApiView
 from requests import HTTPError
 
 
@@ -43,7 +44,7 @@ class FileManagersView(View):
                 'public',
             ], safe=False)
 
-class FileListingView(View):
+class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
@@ -67,21 +68,13 @@ class FileListingView(View):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
-                try:
-                    offset = int(request.GET.get('offset', 0))
-                    limit = int(request.GET.get('limit', 100))
-                    listing = fm.listing(system=system_id, file_path=file_path,
-                                         offset=offset, limit=limit)
-                    return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
-                except HTTPError as e:
-                    logger.exception('Unable to list files')
-                    if e.response.status_code == 403:
-                        return HttpResponseForbidden(e.response.text)
-                    elif e.response.status_code >= 500:
-                        return HttpResponseServerError(e.response.text)
-                    elif e.response.status_code >= 400:
-                        return HttpResponseBadRequest(e.response.text)
-
+                offset = int(request.GET.get('offset', 0))
+                limit = int(request.GET.get('limit', 100))
+                listing = fm.listing(system=system_id, file_path=file_path,
+                                     offset=offset, limit=limit)
+                return JsonResponse(listing,
+                                    encoder=AgaveJSONEncoder,
+                                    safe=False)
         return HttpResponseBadRequest()
 
 
