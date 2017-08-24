@@ -10,6 +10,8 @@ from designsafe.apps.api.data.box.filemanager import FileManager as BoxFM
 
 from designsafe.apps.data.views.base import DataBrowserTestView
 
+from unittest import skip
+
 from agavepy.agave import Agave
 import mock
 import json
@@ -57,6 +59,7 @@ class DataBrowserBaseTestCase(TestCase):
         fm = FileManager(self.user)
         return fm
 
+@skip
 class DataBrowserViewTestCase(DataBrowserBaseTestCase):
     @mock.patch.object(AgavePublicFM, 'listing')
     def test_public_data_anonymous(self, mock_public_listing):
