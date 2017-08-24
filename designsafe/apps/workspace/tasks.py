@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import os
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -121,7 +122,8 @@ def watch_job_status(self, username, job_id, current_status=None):
                 logger.debug('Finished Indexing Job Output job=%s' % job)
 
                 logger.debug('archivePath: {}'.format(job['archivePath']))
-                target_path = reverse('designsafe_data:data_browser', args=['agave', archive_id])
+                target_path = reverse('designsafe_data:data_browser')
+                os.path.join(target_path, 'agave', archive_id.strip('/'))
 
                 event_data[Notification.STATUS] = Notification.SUCCESS
                 event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
