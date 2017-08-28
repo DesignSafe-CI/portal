@@ -18,67 +18,6 @@
     };
 
 
-    service.getIcon = function(type, ext) {
-      if ((type === 'folder') || (type === 'dir')) {
-        return 'fa-folder';
-      }
-
-      var icon;
-      switch (ext.slice(1).toLowerCase()) {
-        case 'zip':
-        case 'tar':
-        case 'gz':
-        case 'bz2':
-          icon = 'fa-file-archive-o';
-          break;
-        case 'png':
-        case 'jpg':
-        case 'jpeg':
-        case 'gif':
-        case 'tif':
-        case 'tiff':
-          icon = 'fa-file-image-o';
-          break;
-        case 'pdf':
-          icon = 'fa-file-pdf-o';
-          break;
-        case 'doc':
-        case 'docx':
-          icon = 'fa-file-word-o';
-          break;
-        case 'xls':
-        case 'xlsx':
-          icon = 'fa-file-excel-o';
-          break;
-        case 'ppt':
-        case 'pptx':
-          icon = 'fa-file-powerpoint-o';
-          break;
-        case 'mov':
-        case 'mp4':
-          icon = 'fa-file-video-o';
-          break;
-        case 'mp3':
-        case 'wav':
-          icon = 'fa-file-audio-o';
-          break;
-        case 'txt':
-        case 'out':
-        case 'err':
-          icon = 'fa-file-text-o';
-          break;
-        case 'tcl':
-        case 'sh':
-        case 'json':
-          icon = 'fa-file-code-o';
-          break;
-        default:
-          icon = 'fa-file-o';
-      }
-      return icon;
-    };
-
-
     /**
      * TODO right now this only supports agave systems!
      * @param fileId

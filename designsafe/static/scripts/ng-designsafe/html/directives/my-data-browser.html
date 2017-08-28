@@ -44,7 +44,7 @@
             ng-class="{'success': f.selected}">
             <td>
               <a ng-click="browseFile(f)" class="btn btn-xs btn-link">
-                <i class="fa {{getFileIcon(f.type, f.name.split('.').pop())}}"></i>
+                <i class="fa {{f.icon()}}"></i>
                 <span> {{ renderName(f) }} </span>
               </a>
             </td>

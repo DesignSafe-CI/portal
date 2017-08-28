@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <div class="ds-table-display-wrapper" ds-infinite-scroll 
+  <div class="ds-table-display-wrapper" ds-infinite-scroll
        data-scroll-bottom = "scrollToBottom()"
        data-scroll-top = "scrollToTop()"
        data-bottom-height = "0">
@@ -37,7 +37,7 @@
 					 class="path-wrap share-path"
                      ng-if="data.listing.shared">
 					 {{file.path|dsSharedFilePath:data.listing}}</div>
-                <a ng-attr-href="{{ file|dsFileUrl }}" 
+                <a ng-attr-href="{{ file|dsFileUrl }}"
                    ng-click="browseFile($event, file)">
 					 {{ file|dsFileDisplayName }}</a>
             </td>
@@ -47,7 +47,7 @@
             </td>
             <td ng-if="state.search">
               <i class="fa fa-fw fa-folder"></i>
-              <a ng-attr-href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}" 
+              <a ng-attr-href="{{ file._trail[file._trail.length - 1]|dsFileUrl }}"
                  ng-attr-title="{{ file._trail[file._trail.length - 1]|dsFileUrl }}"
                  ng-click = "browseFile($event, file._trail[file._trail.length - 1])">{{ file.path }}</a>
             </td>
