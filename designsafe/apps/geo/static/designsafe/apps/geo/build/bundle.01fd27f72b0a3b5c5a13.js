@@ -1366,7 +1366,6 @@ var GeoDataService = function () {
         json.features.forEach(function (d) {
           var feature = L.geoJSON(d, options);
           feature.eachLayer(function (layer) {
-            console.log(layer);
             // If there were no styles applied, it might be transparent???
             if (!layer.feature.properties.color) {
               layer.feature.properties.color = '#ff0000';
@@ -1688,4 +1687,4 @@ exports.default = mod;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=bundle.01fd27f72b0a3b5c5a13.js.map
