@@ -56,6 +56,26 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
           $scope.data.loading = false;
         });
       };
+
+
+      // If there was a previous listing, bring them back to that place...
+      if (DataBrowserService.state().listing) {
+        $scope.data.system = DataBrowserService.state().listing.system;
+        $scope.data.filePath = DataBrowserService.state().listing.path;
+        $scope.data.dirPath = $scope.data.filePath.split('/');
+        if ($scope.data.system.startsWith('project')) {
+          $scope.data.source = 'myprojects';
+          $scope.data.projectSelected = true;
+          var project_uuid = $scope.data.system.replace("project-", '');
+          ProjectService.get({uuid:project_uuid}).then(function (resp) {
+            $scope.data.selectedProject = resp;
+          });
+
+        } else {
+          $scope.data.source = 'mydata';
+        }
+      }
+
       $scope.browse();
 
       $scope.setSource = function (src) {

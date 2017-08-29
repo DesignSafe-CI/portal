@@ -209,7 +209,6 @@ export default class GeoDataService {
       json.features.forEach( (d)=> {
         let feature = L.geoJSON(d, options);
         feature.eachLayer( (layer)=> {
-          console.log(layer)
           // If there were no styles applied, it might be transparent???
           if (!(layer.feature.properties.color)) {
            layer.feature.properties.color = '#ff0000';
