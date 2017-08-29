@@ -9,6 +9,11 @@ designsafe.env
 mysql.env
 rabbitmq.env
 
+# local config files
+conf/elasticsearch/elasticsearch.yml
+conf/elasticsearch/logging.yml
+conf/redis.conf
+
 # don't commit certs
 certs/
 

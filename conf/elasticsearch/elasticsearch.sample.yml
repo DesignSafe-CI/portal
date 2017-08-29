@@ -1,0 +1,12 @@
+---
+#Use this to configure elasticsearch
+#More info: https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html
+#
+
+network.host: 0.0.0.0
+#network.publish_host: hostname
+cluster.name: es-dev
+node.name: es01
+discovery.zen.ping.unicast.hosts: ["es02"]
+#More info about memory_lock: https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html
+bootstrap.memory_lock: true

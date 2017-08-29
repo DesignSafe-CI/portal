@@ -1,6 +1,6 @@
 FROM buildpack-deps:trusty
 
-MAINTAINER Matthew R Hanlon <mrhanlon@tacc.utexas.edu>
+MAINTAINER DesignSafe-CI <designsafe-ci@tacc.utexas.edu>
 
 EXPOSE 8000
 
@@ -9,8 +9,8 @@ ENV TERM xterm
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
-    apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass uwsgi && \
+    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
+    apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
 
 RUN pip install --upgrade pip && pip install uwsgi uwsgitop
@@ -29,9 +29,9 @@ RUN pip install -r /tmp/requirements.txt
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 --groups staff -m --shell /bin/bash tg458981
 
-COPY . /portal
+COPY . /srv/www/designsafe
 
-WORKDIR /portal
+WORKDIR /srv/www/designsafe
 
 RUN npm install
 
@@ -40,3 +40,4 @@ RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/ve
 RUN python manage.py collectstatic -c --traceback --noinput
 
 RUN chown -R tg458981:G-816877 /var/www/designsafe-ci.org
+RUN chown -R tg458981:G-816877 /srv/www/designsafe
