@@ -33,12 +33,6 @@
     };
   }]);
 
-  mod.filter('dsFileIcon', ['DataService', function(DataService) {
-    return function(file) {
-      return DataService.getIcon(file.type, file.ext);
-    };
-  }]);
-
   mod.filter('dsFileDisplayName', [function() {
     return function(file){
       var displayName = file.name;
@@ -62,8 +56,8 @@
       }
       if (item.path  === '' || item.path === '/'){
         return item.metadata.project.title;
-      } else if (item.path.split('/').length == 1 && 
-                 typeof item.metadata.experiments !== 'undefined' && 
+      } else if (item.path.split('/').length == 1 &&
+                 typeof item.metadata.experiments !== 'undefined' &&
                  item.name.toLowerCase().startsWith('experiment')){
         var meta = _.findWhere(item.metadata.experiments, {name: item.name});
         var title = meta.title || item.name;
@@ -83,7 +77,7 @@
       if (item.path === '' || item.path == '/'){
         return item.project;
       } else if (pathComponents.length === 1){
-        var title = item.experiment || item.name;  
+        var title = item.experiment || item.name;
         return title;
       } else {
         return item.name;

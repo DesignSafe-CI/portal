@@ -324,6 +324,11 @@
         case 'json':
           icon = 'fa-file-code-o';
           break;
+        case 'geojson':
+        case 'kml':
+        case 'kmz':
+          icon = 'fa-map-o';
+          break;
         default:
           icon = 'fa-file-o';
       }

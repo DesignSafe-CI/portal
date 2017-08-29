@@ -1,5 +1,5 @@
-angular.module('designsafe').directive('myDataBrowser',  ['DataBrowserService', 'UserService', 'FileListing', 'DataService', 'ProjectService',
-function (DataBrowserService, UserService, FileListing, DataService, ProjectService) {
+angular.module('designsafe').directive('myDataBrowser',  ['DataBrowserService', 'UserService', 'FileListing', 'ProjectService',
+function (DataBrowserService, UserService, FileListing, ProjectService) {
   return {
     restrict: 'E',
     scope: {
@@ -52,7 +52,6 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
           $scope.data.loading = false;
           $scope.data.filePath = $scope.data.filesListing.path;
           $scope.data.dirPath = $scope.data.filePath.split('/');
-          console.log($scope.selected)
         }, function (err) {
           $scope.data.loading = false;
         });
@@ -93,9 +92,7 @@ function (DataBrowserService, UserService, FileListing, DataService, ProjectServ
           file.selected = true;
           $scope.selected = file;
         }
-        console.log($scope.selected)
       };
-      $scope.getFileIcon = DataService.getIcon;
 
       $scope.browseTrail = function($event, index){
         $event.stopPropagation();
