@@ -6,13 +6,19 @@
 
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env
+mysql.env
+rabbitmq.env
 
 # don't commit certs
 certs/
 
 # data directories
-data/mysql/*
-data/elasticsearch/*
+data/redis/
+data/mysql/
+data/elasticsearch/
+data/static/
+data/media/
+data/NEHRI/
 
 # no node modules
 node_modules/
