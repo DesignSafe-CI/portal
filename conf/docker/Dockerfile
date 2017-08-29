@@ -22,7 +22,7 @@ RUN mkdir -p /opt/uwsgi && \
     mkdir -p /usr/lib/uwsgi/plugins && \
     mv zabbix_plugin.so /usr/lib/uwsgi/plugins/.
 
-COPY requirements.txt /tmp/requirements.txt
+COPY ../../requirements.txt /tmp/requirements.txt
 
 RUN pip install -r /tmp/requirements.txt
 
@@ -39,7 +39,7 @@ RUN npm install
 
 RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.
 
-RUN python manage.py collectstatic -c --traceback --noinput
+RUN python ../../manage.py collectstatic -c --traceback --noinput
 
 RUN chown -R tg458981:G-816877 /var/www/designsafe-ci.org
 RUN chown -R tg458981:G-816877 /srv/www/designsafe
