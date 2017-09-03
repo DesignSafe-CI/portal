@@ -5,8 +5,9 @@ import * as GeoUtils from '../utils/geo-utils';
 
 export default class MapSidebarCtrl {
 
-  constructor ($scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService, GeoSettingsService) {
+  constructor ($rootScope, $scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService, GeoSettingsService) {
     'ngInject';
+    this.$rootScope = $rootScope;
     this.$scope = $scope;
     this.LGeo = $window.LGeo;
     this.$timeout = $timeout;
@@ -49,12 +50,8 @@ export default class MapSidebarCtrl {
     L.control.layers(basemaps).addTo(this.map);
     this.map.zoomControl.setPosition('bottomleft');
 
-    // Overload the default icon creator
-
-    this.HazmapperDivIcon = L.divIcon({
-      className: 'hm-marker',
-      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
-    });
+    // Overload the default marker icon
+    this.HazmapperDivIcon = GeoDataService.HazmapperDivIcon;
 
     // Load in a map project from the data service if one does exist, if not
     // create a new one from scratch
@@ -108,6 +105,15 @@ export default class MapSidebarCtrl {
       this.$scope.$apply();
     });
 
+    this.$scope.$on('image_popupopen', (e,d) => {
+      // console.log(e, d);
+      this.active_image_marker = d;
+      console.log(this.active_image_marker);
+    });
+    this.$scope.$on('image_popupclose', (e,d) => {
+      // console.log(e, d);
+      this.active_image_marker = null;
+    });
 
   } // end constructor
 
@@ -333,6 +339,18 @@ export default class MapSidebarCtrl {
       controller: "DBModalCtrl as vm",
       resolve: {
         filename: ()=> {return null;}
+      }
+    });
+    modal.result.then( (f, saveas) => {this.load_from_data_depot(f);});
+  }
+
+  open_image_preview_modal (href) {
+    let modal = this.$uibModal.open({
+      templateUrl: "/static/designsafe/apps/geo/html/image-preview-modal.html",
+      controller: "ImagePreviewModal as vm",
+      size: 'lg',
+      resolve: {
+        marker: ()=> {return this.active_image_marker;}
       }
     });
     modal.result.then( (f, saveas) => {this.load_from_data_depot(f);});

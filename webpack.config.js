@@ -11,7 +11,7 @@ module.exports = {
   entry: './designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js',
   output: {
     path: __dirname,
-    filename: "./designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.[hash].js"
+    filename: "./designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.js"
   },
   resolve: {
     extensions: ['.js'],

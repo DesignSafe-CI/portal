@@ -49,6 +49,7 @@
 
         $http.get(attrs.httpSrc, conf)
           .success(function(data) {
+            console.log(attrs)
             var arr = new Uint8Array(data);
 
             var raw = '';
@@ -59,8 +60,10 @@
             }
 
             var b64 = btoa(raw);
-
             attrs.$set('src', "data:image/jpeg;base64," + b64);
+          })
+          .error(function (error) {
+            console.log(error);
           });
       }
     };

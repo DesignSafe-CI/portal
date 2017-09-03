@@ -33,7 +33,7 @@ services:
 
   uwsgi:
     build: .
-    env_file: designsafe.env
+    env_file: ../../designsafe.env
     volumes:
       - .:/portal
     environment:
@@ -66,7 +66,7 @@ services:
     stdin_open: true
     tty: true
     build: .
-    env_file: designsafe.env
+    env_file: ../../designsafe.env
     environment:
       - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
       - DATABASE_HOST=mysql
@@ -142,7 +142,7 @@ services:
 
   worker:
     build: .
-    env_file: designsafe.env
+    env_file: ../../designsafe.env
     environment:
       - DJANGO_SETTINGS_MODULE=designsafe.http_debug_settings
       - DATABASE_HOST=mysql
