@@ -58,7 +58,7 @@ export default class MapProject {
           'description',
           'image_src',
           'thumb_src',
-          'original_src',
+          'href',
         ];
 
         // //add in any options
