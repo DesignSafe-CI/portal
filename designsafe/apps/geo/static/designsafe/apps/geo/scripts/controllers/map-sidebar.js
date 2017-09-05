@@ -108,7 +108,6 @@ export default class MapSidebarCtrl {
     this.$scope.$on('image_popupopen', (e,d) => {
       // console.log(e, d);
       this.active_image_marker = d;
-      console.log(this.active_image_marker);
     });
     this.$scope.$on('image_popupclose', (e,d) => {
       // console.log(e, d);

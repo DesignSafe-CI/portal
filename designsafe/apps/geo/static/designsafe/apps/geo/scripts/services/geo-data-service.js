@@ -157,7 +157,7 @@ export default class GeoDataService {
     });
 
     let tmpl = "<img src=" + preview + ">";
-  
+
     let marker = L.marker([lat, lon], {icon: icon})
           .bindPopup(tmpl,
               {
@@ -166,11 +166,9 @@ export default class GeoDataService {
                 // maxHeight: 400
               });
     marker.on('popupopen', (e)=> {
-      console.log(e);
       this.$rootScope.$broadcast("image_popupopen", marker);
     });
     marker.on('popupclose', (e)=> {
-      console.log(e);
       this.$rootScope.$broadcast("image_popupclose", marker);
     });
     marker.options.image_src = preview;
@@ -179,7 +177,7 @@ export default class GeoDataService {
     return marker;
   }
 
-  _from_image (file) {
+  _from_image (file, agave_file=null) {
     return this.$q( (res, rej) => {
       try {
         let exif = EXIF.readFromBinaryFile(file);
@@ -202,6 +200,10 @@ export default class GeoDataService {
         }).then( (resp)=>{
           preview = resp;
           let marker = this._make_image_marker(lat, lon, thumb, preview, null);
+          if (agave_file) {
+            console.log(agave_file);
+            marker.options.href = agave_file._links.self.href;
+          }
           res([marker]);
         });
       } catch (e) {
@@ -365,10 +367,10 @@ export default class GeoDataService {
           p = this._from_gpx(resp.data);
           break;
         case 'jpeg':
-          p = this._from_image(resp.data);
+          p = this._from_image(resp.data, f);
           break;
         case 'jpg':
-          p = this._from_image(resp.data);
+          p = this._from_image(resp.data, f);
           break;
         case 'dsmap':
           p = this._from_dsmap(resp.data);

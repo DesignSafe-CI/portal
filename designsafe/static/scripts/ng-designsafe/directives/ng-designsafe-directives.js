@@ -49,7 +49,6 @@
 
         $http.get(attrs.httpSrc, conf)
           .success(function(data) {
-            console.log(attrs)
             var arr = new Uint8Array(data);
 
             var raw = '';
