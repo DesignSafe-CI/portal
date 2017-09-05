@@ -239,7 +239,7 @@ var MapProject = function () {
           var json = feature.toGeoJSON();
           // These are all the keys in the options object that we need to
           // re-create the layers in the application after loading.
-          var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'original_src'];
+          var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'href'];
 
           // //add in any options
           // if (feature.options.image_src) {
