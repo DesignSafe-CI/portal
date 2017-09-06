@@ -61,11 +61,15 @@ services:
   nginx:
     image: nginx
     volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.debug.conf
+      - ../nginx/nginx.debug.conf:/etc/nginx/nginx.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
       - ../nginx/dummy.crt:/etc/ssl/dummy.crt
       - ../nginx/dummy.key:/etc/ssl/dummy.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
+      - ../../.:/srv/www/designsafe
+      - ../../data/NHERI:/corral-repl/tacc/NHERI
+      - ../../data/static:/var/www/designsafe-ci.org/static
+      - ../../data/media:/var/www/designsafe-ci.org/media
     links:
       - django:django
     ports:
@@ -95,7 +99,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: run-django.sh
+    command: /srv/www/designsafe/bin/run-django.sh
     container_name: des_django
     hostname: des_django
 
@@ -116,7 +120,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: run-celery-debug.sh
+    command: /srv/www/designsafe/bin/run-celery-debug.sh
     container_name: des_workers
     hostname: des_workers
 
