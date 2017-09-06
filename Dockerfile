@@ -31,7 +31,7 @@ RUN groupadd --gid 816877 G-816877 && \
 
 COPY . /srv/www/designsafe
 
-COPY bin/* /usr/local/bin/
+#COPY bin/* /usr/local/bin/
 
 WORKDIR /srv/www/designsafe
 
