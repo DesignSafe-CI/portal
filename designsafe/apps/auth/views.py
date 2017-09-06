@@ -68,12 +68,13 @@ def agave_oauth(request):
     if next_page:
         session['next'] = next_page
 
-    redirect_uri = reverse('designsafe_auth:agave_oauth_callback')
+    redirect_uri = 'htps://{}{}'.format(request.get_host(),
+                                        reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
             tenant_base_url,
             client_key,
-            request.build_absolute_uri(redirect_uri),
+            redirect_uri,
             session['auth_state'],
         )
     )
@@ -93,13 +94,13 @@ def agave_oauth_callback(request):
         return HttpResponseBadRequest('Authorization State Failed')
 
     if 'code' in request.GET:
-        # obtain a token for the user
+        # obtain a token for the user 
+        redirect_uri = 'htps://{}{}'.format(request.get_host(),
+                                            reverse('designsafe_auth:agave_oauth_callback'))
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
         client_sec = getattr(settings, 'AGAVE_CLIENT_SECRET')
-        redirect_uri = request.build_absolute_uri(
-            reverse('designsafe_auth:agave_oauth_callback'))
         body = {
             'grant_type': 'authorization_code',
             'code': code,
