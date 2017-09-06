@@ -26,7 +26,6 @@ from django.contrib.auth.views import logout as des_logout
 from designsafe.views import project_version as des_version
 
 urlpatterns = [
-
     # admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),

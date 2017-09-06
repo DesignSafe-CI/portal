@@ -68,7 +68,7 @@ def agave_oauth(request):
     if next_page:
         session['next'] = next_page
 
-    redirect_uri = 'htps://{}{}'.format(request.get_host(),
+    redirect_uri = 'https://{}{}'.format(request.get_host(),
                                         reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
@@ -95,7 +95,7 @@ def agave_oauth_callback(request):
 
     if 'code' in request.GET:
         # obtain a token for the user 
-        redirect_uri = 'htps://{}{}'.format(request.get_host(),
+        redirect_uri = 'https://{}{}'.format(request.get_host(),
                                             reverse('designsafe_auth:agave_oauth_callback'))
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
