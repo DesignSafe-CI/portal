@@ -61,7 +61,7 @@ services:
   nginx:
     image: nginx
     volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../nginx/nginx.conf:/etc/nginx/nginx.debug.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
       - ../nginx/dummy.crt:/etc/ssl/dummy.crt
       - ../nginx/dummy.key:/etc/ssl/dummy.key
