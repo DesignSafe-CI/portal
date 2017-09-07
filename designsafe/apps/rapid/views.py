@@ -56,7 +56,7 @@ def get_event_types(request):
 
 def get_events(request):
     s = RapidNHEvent.search()
-    results = s.execute(ignore_cache=True)
+    results = s.sort("-event_date").execute(ignore_cache=True)
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 

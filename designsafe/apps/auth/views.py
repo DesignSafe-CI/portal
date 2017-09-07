@@ -68,7 +68,12 @@ def agave_oauth(request):
     if next_page:
         session['next'] = next_page
 
-    redirect_uri = 'https://{}{}'.format(request.get_host(),
+    if request.is_secure():
+        protocol= 'https'
+    else:
+        protocol = 'http'
+    logger.info(request.__dict__)
+    redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
                                         reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
@@ -94,8 +99,12 @@ def agave_oauth_callback(request):
         return HttpResponseBadRequest('Authorization State Failed')
 
     if 'code' in request.GET:
-        # obtain a token for the user 
-        redirect_uri = 'https://{}{}'.format(request.get_host(),
+        # obtain a token for the user
+        if request.is_secure():
+            protocol= 'https'
+        else:
+            protocol = 'http'
+        redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
                                             reverse('designsafe_auth:agave_oauth_callback'))
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
@@ -111,6 +120,7 @@ def agave_oauth_callback(request):
                                  data=body,
                                  auth=(client_key, client_sec))
         token_data = response.json()
+        logger.info(token_data)
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
