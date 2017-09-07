@@ -30,10 +30,10 @@ services:
       memlock: -1
     environment:
       - ES_HEAP_SIZE:2g
-    volumes:
-      - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-      - es_data:/usr/share/elasticsearch/data
+    # volumes:
+    #   - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    #   - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+    #   - es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
     container_name: des_elasticsearch
