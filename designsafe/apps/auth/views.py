@@ -72,7 +72,7 @@ def agave_oauth(request):
         protocol= 'https'
     else:
         protocol = 'http'
-    logger.info(request.__dict__)
+
     redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
                                         reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
@@ -120,7 +120,6 @@ def agave_oauth_callback(request):
                                  data=body,
                                  auth=(client_key, client_sec))
         token_data = response.json()
-        logger.info(token_data)
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
