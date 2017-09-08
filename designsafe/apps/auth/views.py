@@ -73,9 +73,6 @@ def agave_oauth(request):
         protocol = 'https'
     else:
         protocol = 'http'
-    logger.debug('protocol: %s', protocol)
-    logger.debug('is_secure: %s', request.is_secure())
-    logger.debug('django_proxy: %s', django_proxy)
     redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
                                       reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
