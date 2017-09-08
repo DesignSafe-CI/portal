@@ -67,14 +67,17 @@ def agave_oauth(request):
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
-
-    if request.is_secure():
-        protocol= 'https'
+    # Check for HTTP_X_DJANGO_PROXY custom header
+    django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
+    if django_proxy or request.is_secure():
+        protocol = 'https'
     else:
         protocol = 'http'
-
+    logger.debug('protocol: %s', protocol)
+    logger.debug('is_secure: %s', request.is_secure())
+    logger.debug('django_proxy: %s', django_proxy)
     redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
-                                        reverse('designsafe_auth:agave_oauth_callback'))
+                                      reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
             tenant_base_url,
@@ -100,12 +103,14 @@ def agave_oauth_callback(request):
 
     if 'code' in request.GET:
         # obtain a token for the user
-        if request.is_secure():
-            protocol= 'https'
+        # Check for HTTP_X_DJANGO_PROXY custom header
+        django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
+        if django_proxy or request.is_secure():
+            protocol = 'https'
         else:
             protocol = 'http'
         redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
-                                            reverse('designsafe_auth:agave_oauth_callback'))
+                                          reverse('designsafe_auth:agave_oauth_callback'))
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
