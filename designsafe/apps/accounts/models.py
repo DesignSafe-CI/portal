@@ -65,7 +65,7 @@ class DesignSafeProfile(models.Model):
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
-    
+
     def send_mail(self, subject, body=None):
         send_mail(subject,
                   body,
@@ -78,7 +78,15 @@ class NotificationPreferences(models.Model):
                                 related_name='notification_preferences')
     announcements = models.BooleanField(
         default=True,
-        verbose_name=_('Receive occasional announcements from DesignSafe'))
+        verbose_name=_('Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc.'))
+
+    tutorials = models.BooleanField(
+        default=True,
+        verbose_name=_('Tutorials: to communicate DesignSafe training opportunities.'))
+
+    designsafe = models.BooleanField(
+        default=True,
+        verbose_name=_('DesignSafe: to communicate new features, planned outages.'))
 
     class Meta:
         permissions = (
