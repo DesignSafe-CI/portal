@@ -274,110 +274,59 @@
       var modelConfigs = [];
       var sensorLists = [];
       var publicationMessages = [];
-      if (publication.experimentsList){
-        experimentsList = _.map(publication.experimentsList, function(exp){
-          exp.value.equipmentType = exp.getET(exp.value.experimentalFacility,
-                                              exp.value.equipmentType).label;
-          exp.value.experimentalFacility = exp.getEF($scope.state.project
-                .value.projectType,
-                exp.value.experimentalFacility).label;
-          exp.events = $scope.state.publication;
-          delete exp._ui;
-          delete exp.events;
-          if (!exp.value.authors.length){
-            publicationMessages.push({title: 'Experiment ' + exp.value.title,
-                                      message: 'Missing authors'}); 
-          }
-          return exp;
-        });
-        delete publication.experimentsList;
-
-      }
-      if (publication.eventsList){
-        var _eventsList = angular.copy(publication.eventsList);
-        delete publication.eventsList;
-        var expsUuids = _.map(experimentsList, function(exp){
-                              return exp.uuid; });
-        eventsList = _.filter(_eventsList,
-                   function(evt){
-                     return _.intersection(evt.associationIds, expsUuids);
-                   });
-        var mcfsUuids = [];
-        var slsUuids = [];
-        _.each(eventsList, function(evt){
-            mcfsUuids = mcfsUuids.concat(evt.value.modelConfigs);
-            slsUuids = slsUuids.concat(evt.value.sensorLists);
-            delete evt.tagsAsOptions;
-            evt.fileObjs = _.map($scope.state.listings[evt.uuid], function(f){
-                  return {
-                      'path': f.path,
-                      'type': f.type,
-                      'length': f.length,
-                      'name': f.name
-                  };
-            });
-            if (!evt.fileObjs.length){
-                publicationMessages.push({title: 'Event ' + evt.value.title,
-                                          message: 'Missing files'});
+      
+      if ($scope.state.project.value.projectType == 'experimental'){
+        if (publication.experimentsList){
+          experimentsList = _.map(publication.experimentsList, function(exp){
+            exp.value.equipmentType = exp.getET(exp.value.experimentalFacility,
+                                                exp.value.equipmentType).label;
+            exp.value.experimentalFacility = exp.getEF($scope.state.project
+                  .value.projectType,
+                  exp.value.experimentalFacility).label;
+            exp.events = $scope.state.publication;
+            delete exp._ui;
+            delete exp.events;
+            if (!exp.value.authors.length){
+              publicationMessages.push({title: 'Experiment ' + exp.value.title,
+                                        message: 'Missing authors'}); 
             }
-        });
-        _.each(mcfsUuids, function(mcf){
-          var _mcf = angular.copy($scope.state.project.getRelatedByUuid(mcf));
-          delete _mcf.tagsAsOptions;
-          _mcf.fileObjs = _.map($scope.state.listings[_mcf.uuid], function(f){
-              return {
-                  'path': f.path,
-                  'type': f.type,
-                  'length': f.length,
-                  'name': f.name
-              };
+            return exp;
           });
-          if (!_mcf.fileObjs.length){
-              publicationMessages.push({title: 'Model Config '+ _mcf.value.title,
-                                        message: 'Missing files.'});
-          }
-          modelConfigs.push(_mcf);
-        });
-        _.each(slsUuids, function(slt){
-          var _slt = angular.copy($scope.state.project.getRelatedByUuid(slt));
-          delete _slt.tagsAsOptions;
-          _slt.fileObjs = _.map($scope.state.listings[_slt.uuid], function(f){
-            return {
-                'path': f.path,
-                'type': f.type,
-                'length': f.length,
-                'name': f.name
-            };
+          delete publication.experimentsList;
+
+        }
+        if (publication.eventsList){
+          var _eventsList = angular.copy(publication.eventsList);
+          delete publication.eventsList;
+          var expsUuids = _.map(experimentsList, function(exp){
+                                return exp.uuid; });
+          eventsList = _.filter(_eventsList,
+                     function(evt){
+                       return _.intersection(evt.associationIds, expsUuids);
+                     });
+          var mcfsUuids = [];
+          var slsUuids = [];
+          _.each(eventsList, function(evt){
+              mcfsUuids = mcfsUuids.concat(evt.value.modelConfigs);
+              slsUuids = slsUuids.concat(evt.value.sensorLists);
+              delete evt.tagsAsOptions;
+              evt.fileObjs = _.map($scope.state.listings[evt.uuid], function(f){
+                    return {
+                        'path': f.path,
+                        'type': f.type,
+                        'length': f.length,
+                        'name': f.name
+                    };
+              });
+              if (!evt.fileObjs.length){
+                  publicationMessages.push({title: 'Event ' + evt.value.title,
+                                            message: 'Missing files'});
+              }
           });
-          if (!_slt.fileObjs.length){
-              publicationMessages.push({title: 'Sensor Info ' + _slt.value.title,
-                                        message: 'Missing files.'});
-          }
-          sensorLists.push(_slt);
-        });
-      }
-      if (publication.analysisList){
-        analysisList = _.map(publication.analysisList, function(ana){
-          delete ana.tagsAsOptions;
-          ana.fileObjs = _.map($scope.state.listings[ana.uuid], function(f){
-              return {
-                  'path': f.path,
-                  'type': f.type,
-                  'length': f.length,
-                  'name': f.name
-              };
-          });
-          if (!ana.fileObjs.length){
-              publicationMessages.push({title: 'Analysis ' + ana.value.title,
-                                        message: 'Missing Files'});
-          }
-          return ana;
-        });
-        delete publication.analysisList;
-      }
-      if (publication.reportsList) {
-        reportsList = _.map(publication.reportsList, function(rep){
-            rep.fileObjs = _.map($scope.state.listings[rep.uuid], function(f){
+          _.each(mcfsUuids, function(mcf){
+            var _mcf = angular.copy($scope.state.project.getRelatedByUuid(mcf));
+            delete _mcf.tagsAsOptions;
+            _mcf.fileObjs = _.map($scope.state.listings[_mcf.uuid], function(f){
                 return {
                     'path': f.path,
                     'type': f.type,
@@ -385,27 +334,86 @@
                     'name': f.name
                 };
             });
-            return rep;
-        });
-        delete publication.reportsList;
+            if (!_mcf.fileObjs.length){
+                publicationMessages.push({title: 'Model Config '+ _mcf.value.title,
+                                          message: 'Missing files.'});
+            }
+            modelConfigs.push(_mcf);
+          });
+          _.each(slsUuids, function(slt){
+            var _slt = angular.copy($scope.state.project.getRelatedByUuid(slt));
+            delete _slt.tagsAsOptions;
+            _slt.fileObjs = _.map($scope.state.listings[_slt.uuid], function(f){
+              return {
+                  'path': f.path,
+                  'type': f.type,
+                  'length': f.length,
+                  'name': f.name
+              };
+            });
+            if (!_slt.fileObjs.length){
+                publicationMessages.push({title: 'Sensor Info ' + _slt.value.title,
+                                          message: 'Missing files.'});
+            }
+            sensorLists.push(_slt);
+          });
+        }
+        if (publication.analysisList){
+          analysisList = _.map(publication.analysisList, function(ana){
+            delete ana.tagsAsOptions;
+            ana.fileObjs = _.map($scope.state.listings[ana.uuid], function(f){
+                return {
+                    'path': f.path,
+                    'type': f.type,
+                    'length': f.length,
+                    'name': f.name
+                };
+            });
+            if (!ana.fileObjs.length){
+                publicationMessages.push({title: 'Analysis ' + ana.value.title,
+                                          message: 'Missing Files'});
+            }
+            return ana;
+          });
+          delete publication.analysisList;
+        }
+        if (publication.reportsList) {
+          reportsList = _.map(publication.reportsList, function(rep){
+              rep.fileObjs = _.map($scope.state.listings[rep.uuid], function(f){
+                  return {
+                      'path': f.path,
+                      'type': f.type,
+                      'length': f.length,
+                      'name': f.name
+                  };
+              });
+              return rep;
+          });
+          delete publication.reportsList;
+        }
       }
+
       var project = angular.copy($scope.state.project);
       delete project._allRelatedObjects;
       _.each(project._related, function(val, key){
         delete project[key];
       });
       delete publication.filesSelected;
+
       publication.project = project;
-      publication.eventsList = eventsList;
-      publication.modelConfigs = modelConfigs;
-      publication.sensorLists = sensorLists;
-      publication.analysisList = analysisList;
-      publication.reportsList = reportsList;
-      publication.experimentsList = experimentsList;
-      if (publicationMessages.length){
-          $scope.ui.publicationMessages = publicationMessages;
-          return;
+      if ($scope.state.project.value.projectType == 'experimental'){
+        publication.eventsList = _.uniq(eventsList, function(e){return e.uuid;});
+        publication.modelConfigs = _.uniq(modelConfigs, function(e){return e.uuid;});
+        publication.sensorLists = _.uniq(sensorLists, function(e){return e.uuid;});
+        publication.analysisList = _.uniq(analysisList, function(e){return e.uuid;});
+        publication.reportsList = _.uniq(reportsList, function(e){return e.uuid;});
+        publication.experimentsList = _.uniq(experimentsList, function(e){return e.uuid;});
+        if (publicationMessages.length){
+            $scope.ui.publicationMessages = publicationMessages;
+            return;
+        }
       }
+
       $http.post('/api/projects/publication/', {publication: publication})
         .then(function(resp){
           $scope.state.publicationMsg = resp.data.message;

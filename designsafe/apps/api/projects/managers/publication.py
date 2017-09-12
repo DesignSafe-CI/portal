@@ -99,21 +99,12 @@ def _project_required_xml(publication):
     identifier.attrib['identifierType'] = 'DOI'
     identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
-    um = get_user_model()
-    for author in [proj['pi']] + proj['coPis'] + proj['teamMembers']:
-        try:
-            user = um.objects.get(username=author)
-            creator = ET.SubElement(creators, 'creator')
-            creator_name = ET.SubElement(creator, 'creatorName')
-            creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
-        except um.DoesNotExist as err:
-            logger.debug('User not found: %s', author)
-            users = filter(lambda x: x['username'] == author, publication['users'])
-            if len(users):
-                user = users[0]
-                creator = ET.SubElement(creators, 'creator')
-                creator_name = ET.SubElement(creator, 'creatorName')
-                creator_name.text = '{}, {}'.format(user['last_name'], user['first_name'])
+    #um = get_user_model()
+    users = sorted(publication['users'], key=lambda x: x['_ui']['order'])
+    for author in users:
+        creator = ET.SubElement(creators, 'creator')
+        creator_name = ET.SubElement(creator, 'creatorName')
+        creator_name.text = '{}, {}'.format(author['last_name'], author['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
@@ -143,21 +134,18 @@ def _experiment_required_xml(users, experiment, created):
     identifier.attrib['identifierType'] = 'DOI'
     identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
-    um = get_user_model()
+    #um = get_user_model()
     authors = exp.get('authors')
-    authors = authors or users
+    #authors = authors or users
     for author in authors:
-        try:
-            if isinstance(author, basestring):
-                user = um.objects.get(username=author)
-            else:
-                user = um.objects.get(username=author['username'])
+        _userf = filter(lambda x: x['username'] == author, users)
+        if not len(_userf):
+            continue
 
-            creator = ET.SubElement(creators, 'creator')
-            creator_name = ET.SubElement(creator, 'creatorName')
-            creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
-        except um.DoesNotExist as err:
-            logger.debug('User not found: %s', author)
+        _user = _userf[0]
+        creator = ET.SubElement(creators, 'creator')
+        creator_name = ET.SubElement(creator, 'creatorName')
+        creator_name.text = '{}, {}'.format(_user['lat_name'], _user['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
@@ -187,18 +175,18 @@ def _analysis_required_xml(users, analysis, created):
     identifier.attrib['identifierType'] = 'DOI'
     identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
-    um = get_user_model()
-    for author in users:
-        try:
-            if isinstance(author, basestring):
-                user = um.objects.get(username=author)
-            else:
-                user = um.objects.get(username=author['username'])
-            creator = ET.SubElement(creators, 'creator')
-            creator_name = ET.SubElement(creator, 'creatorName')
-            creator_name.text = '{}, {}'.format(user.last_name, user.first_name)
-        except um.DoesNotExist as err:
-            logger.debug('User not found: %s', author)
+    #um = get_user_model()
+    users = sorted(users, key=lambda x: x['_ui']['order'])
+    authors = anl.get('authors', users)
+    for author in authors:
+        _userf = filter(lambda x: x['username'] == author, users)
+        if not len(_userf):
+            continue
+
+        _user = _userf[0]
+        creator = ET.SubElement(creators, 'creator')
+        creator_name = ET.SubElement(creator, 'creatorName')
+        creator_name.text = '{}, {}'.format(_user['lat_name'], _user['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
@@ -284,13 +272,12 @@ def project_reserve_xml(publication):
     project_body = publication['project']
     proj = project_body['value']
     xml_obj = _project_required_xml(publication)
-    logger.debug('required xml: %s', pretty_print(xml_obj))
     now = dateutil.parser.parse(publication['created'])
     reserve_resp = _reserve_doi(xml_obj)
     doi, ark = reserve_resp.split('|')
     doi = doi.strip()
     ark = ark.strip()
-    #logger.debug('doi: %s', doi)
+    logger.debug('doi: %s', doi)
     identifier = xml_obj.find('identifier')
     identifier.text = doi
 
@@ -366,28 +353,39 @@ def publish_project(doi, xml_obj):
 
 def reserve_publication(publication):
     proj_doi, proj_ark, proj_xml = project_reserve_xml(publication)
+    logger.debug('proj_doi: %s', proj_doi)
+    logger.debug('proj_ark: %s', proj_ark)
+    logger.debug('proj_xml: %s', proj_xml)
     exps_dois = []
     anl_dois = []
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
     for exp in publication.get('experimentsList', []):
         exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
-                                    exp, publication['created'])
+                                                           exp,
+                                                           publication['created'])
         add_related(exp_xml, [proj_doi])
         exps_dois.append(exp_doi)
         exp['doi'] = exp_doi
         xmls[exp_doi] = exp_xml
+        logger.debug('exp_doi: %s', exp_doi)
+        logger.debug('exp_ark: %s', exp_ark)
+        logger.debug('exp_xml: %s', exp_xml)
 
     for anl in publication.get('analysisList', []):
         anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
-                                    anl, publication['created'])
+                                                         anl,
+                                                         publication['created'])
         add_related(anl_xml, [proj_doi])
         anl_dois.append(anl_doi)
         anl['doi'] = anl_doi
         xmls[anl_doi] = anl_xml
+        logger.debug('anl_doi: %s', anl_doi)
+        logger.debug('anl_ark: %s', anl_ark)
+        logger.debug('anl_xml: %s', anl_xml)
 
     add_related(proj_xml, exps_dois + anl_dois)
     for _doi in [proj_doi] + exps_dois + anl_dois:
-        logger.debug(_doi)
+        logger.debug('Final project doi: %s', _doi)
         _update_doi(_doi, xmls[_doi], status='public')
     return publication
