@@ -73,7 +73,7 @@
   <hr>
 </div>
 
-<div ng-if="browser.listing.projectId">
+<div ng-if="(browser.listing.projectId && browser.listing.project.value.projectType == 'experimental')">
   <div class="project">
     <div class="preview-wrapper">
       <div ng-repeat="experiment in browser.listing.experimentsList | orderBy: 'value.title'"
@@ -360,7 +360,7 @@
 
 </div><!-- Cosing published View -->
 
-<div ng-if="!browser.listing.projectId"><!-- File Listing View -->
+<div ng-if="(!browser.listing.projectId) || (browser.listing.projectId && browser.listing.project.value.projectType == 'other')"><!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()"
         data-scroll-top="scrollToTop()"
