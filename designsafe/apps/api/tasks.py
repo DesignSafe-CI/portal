@@ -40,9 +40,11 @@ def reindex_agave(self, username, file_id, full_indexing=True,
                            pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
-    parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
-    agave_fm.indexer.index(system_id, parent_path, file_user,
-                           levels = 1)
+    parent_path_comps = file_path.strip('/').split('/')
+    if len(parent_path_comps) > 0:
+        parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
+        agave_fm.indexer.index(system_id, parent_path, file_user,
+                               levels = 1)
 
 
 @shared_task(bind=True)
@@ -53,7 +55,7 @@ def share_agave(self, username, file_id, permissions, recursive):
         #                  operation = 'share_initializing',
         #                  message = 'File sharing is initializing. Please wait...',
         #                  user = username,
-        #                  extra = {'target_path': reverse('designsafe_data:data_browser',
+        #                  extra = {'target_path': reverse('designsafe_data:data_depot',
         #                                                  args=['agave', file_id])})
         # n.save()
         user = get_user_model().objects.get(username=username)
@@ -138,7 +140,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                  src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
-        target_path = reverse('designsafe_data:data_browser',
+        target_path = reverse('designsafe_data:data_depot',
                               args=[src_resource, src_file_id])
         n = Notification(event_type='data',
                          status=Notification.INFO,
@@ -174,7 +176,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                                    pems_indexing=True, index_full_path=True,
                                    levels=levels)
 
-        target_path = reverse('designsafe_data:data_browser',
+        target_path = reverse('designsafe_data:data_depot',
                               args=[dest_resource, dest_file_id])
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
@@ -191,7 +193,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
             'to_resource': dest_resource,
             'dest_file_id': dest_file_id
         })
-        target_path = reverse('designsafe_data:data_browser',
+        target_path = reverse('designsafe_data:data_depot',
                               args=[src_resource, src_file_id])
         n = Notification(event_type='data',
                          status=Notification.ERROR,
@@ -287,7 +289,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          operation = 'box_upload_start',
                          message = 'Starting import file %s into box.' % src_file_id,
                          user = username,
-                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
                          extra={'id': src_file_id})
         n.save()
         user = get_user_model().objects.get(username=username)
@@ -330,7 +332,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                          message = 'File(s) %s succesfully uploaded into box!' % src_file_id,
                          user = username,
                          extra={'id': src_file_id})
-                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), dest_resource, dest_file_id)})
+                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), dest_resource, dest_file_id)})
         n.save()
     except:
         logger.exception('Unexpected task failure: box_upload', extra={
@@ -351,7 +353,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                                 'dest_resource': dest_resource,
                                 'dest_file_id': dest_file_id,
                             })
-                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_browser'), src_resource, src_file_id)})
+                         # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
         n.save()
 
 
@@ -413,7 +415,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                                 'system': dest_resource,
                                 'id': dest_file_id,
                             })
-                         # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), src_file_id)})
+                         # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), src_file_id)})
         n.save()
         notify_status = 'SUCCESS'
         from designsafe.apps.api.data import lookup_file_manager
@@ -448,7 +450,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                                 'system': dest_resource,
                                 'id': dest_file_id,
                             })
-                             # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_browser'), dest_file_id)})
+                             # extra = {'target_path': '%s%s' %(reverse('designsafe_data:data_depot'), dest_file_id)})
             n.save()
         else:
             logger.error('Unable to load file managers for both source=%s and destination=%s',

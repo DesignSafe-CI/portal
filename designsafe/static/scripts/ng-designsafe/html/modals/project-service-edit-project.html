@@ -1,8 +1,9 @@
 <div class="modal-header">
     <h3 class="modal-title">
-        <span ng-if="! form.uuid">Create a New Project</span>
+        <span ng-if="!form.uuid">Create a New Project</span>
         <span ng-if="form.uuid">Edit Project</span>
     </h3>
+    <a class="" href="https://youtu.be/0iR_mg71tx4?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV&t=22" target="_blank"><i class="fa fa-question-circle"></i> Learn More</a>
 </div>
 <div class="modal-body">
     <form>
@@ -47,6 +48,11 @@
         <div class="form-group required">
           <yamz-term term-id="h1550"><i class="fa fa-question-circle"></i></yamz-term>
           <label for="projecttype-id">Project Type:</label>
+          <p class="alert alert-info">
+            Only <strong>Experimental</strong> and <strong>Other</strong> project types can be published.<br />
+            We are working on implementing publication pipelines for the rest of the project types.<br/>
+            We can answer any questions through our <a href="/help">Ticketing system</a> or <a href="/community/slack-online-collaboration/"> Slack </a>.
+          </p>
           <select ng-options="projectType.label for projectType in projectTypes"
                   ng-model="form.projectType"
                   class="form-control"

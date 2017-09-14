@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import os
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -79,8 +80,8 @@ def watch_job_status(self, username, job_id, current_status=None):
 
 
         job_status = job['status']
-        if job_status == 'FINISHED':
-            job_status = 'INDEXING'
+        #if job_status == 'FINISHED':
+        #    job_status = 'INDEXING'
 
         job_name = job['name']
         logger.debug(current_status)
@@ -103,40 +104,32 @@ def watch_job_status(self, username, job_id, current_status=None):
             n = Notification.objects.create(**event_data)
             n.save()
 
-        elif job_status == 'INDEXING':
+        elif job_status == 'FINISHED':
             # end state, start indexing outputs
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
 
-            # notify
-            event_data[Notification.STATUS] = Notification.INFO
-            event_data[Notification.MESSAGE] = 'Job %s status has been updated to INDEXING' % (job_name, )
-            event_data[Notification.OPERATION] = 'job_status_update'
-            logger.debug('ws event_data: {}'.format(event_data))
+
+            logger.debug('archivePath: {}'.format(job['archivePath']))
+            target_path = reverse('designsafe_data:data_depot')
+            os.path.join(target_path, 'agave', archive_id.strip('/'))
+            event_data[Notification.STATUS] = Notification.SUCCESS
+            event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
+            event_data[Notification.EXTRA]['target_path'] = target_path
+            event_data[Notification.MESSAGE] = 'Job "%s" has finished!' % (job_name, )
+            event_data[Notification.OPERATION] = 'job_finished'
+
             n = Notification.objects.create(**event_data)
             n.save()
+            logger.debug('Event data with action link %s' % event_data)
 
             try:
-                logger.debug('Preparing to Index Job Output job=%s' % job)
+                logger.debug('Preparing to Index Job Output job=%s', job)
                 index_job_outputs(user, job)
-                logger.debug('Finished Indexing Job Output job=%s' % job)
-
-                logger.debug('archivePath: {}'.format(job['archivePath']))
-                target_path = reverse('designsafe_data:data_browser', args=['agave', archive_id])
-
-                event_data[Notification.STATUS] = Notification.SUCCESS
-                event_data[Notification.EXTRA]['job_status'] = 'FINISHED'
-                event_data[Notification.EXTRA]['target_path'] = target_path
-                event_data[Notification.MESSAGE] = 'Job "%s" has finished!' % (job_name, )
-                event_data[Notification.OPERATION] = 'job_finished'
-
-                n = Notification.objects.create(**event_data)
-                n.save()
-
-                logger.debug('Event data with action link %s' % event_data)
+                logger.debug('Finished Indexing Job Output job=%s', job)
 
             except Exception as e:
                 logger.exception('Error indexing job output; scheduling retry')
-                raise self.retry(exc=e, countdown=60)
+                #raise self.retry(exc=e, countdown=60)
 
         elif current_status and current_status == job_status:
             # DO NOT notify, but still queue another watch task

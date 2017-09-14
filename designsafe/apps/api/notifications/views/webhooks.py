@@ -116,7 +116,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                     logger.debug('Finished Indexing Job Output job=%s' % job)
 
                     logger.debug('archivePath: {}'.format(job['archivePath']))
-                    target_path = reverse('designsafe_data:data_browser', args=['agave', archive_id])
+                    target_path = reverse('designsafe_data:data_depot', args=['agave', archive_id])
 
                     event_data[Notification.STATUS] = Notification.SUCCESS
                     event_data[Notification.EXTRA]['status'] = 'FINISHED'

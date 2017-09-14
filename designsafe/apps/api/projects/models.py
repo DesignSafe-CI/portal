@@ -266,10 +266,13 @@ class DataTag(MetadataModel):
 class Experiment(RelatedEntity):
     model_name = 'designsafe.project.experiment'
     experiment_type = fields.CharField('Experiment Type', max_length=255, default='other')
+    experiment_type_other = fields.CharField('Experiment Type Other', max_length=255, default='')
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=1024)
     experimental_facility = fields.CharField('Experimental Facility', max_length=1024)
+    experimental_facility_other = fields.CharField('Experimental Facility Other', max_length=1024)
     equipment_type = fields.CharField('Equipment Type')
+    equipment_type_other = fields.CharField('Equipment Type Other')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(ExperimentalProject)
 

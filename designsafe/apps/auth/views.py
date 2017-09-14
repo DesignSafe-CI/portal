@@ -20,7 +20,7 @@ def logged_out(request):
 
 
 def login_options(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         messages.info(request, 'You are already logged in!')
         return HttpResponseRedirect('/')
 
@@ -67,13 +67,19 @@ def agave_oauth(request):
     next_page = request.GET.get('next')
     if next_page:
         session['next'] = next_page
-
-    redirect_uri = reverse('designsafe_auth:agave_oauth_callback')
+    # Check for HTTP_X_DJANGO_PROXY custom header
+    django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
+    if django_proxy or request.is_secure():
+        protocol = 'https'
+    else:
+        protocol = 'http'
+    redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
+                                      reverse('designsafe_auth:agave_oauth_callback'))
     authorization_url = (
         '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
             tenant_base_url,
             client_key,
-            request.build_absolute_uri(redirect_uri),
+            redirect_uri,
             session['auth_state'],
         )
     )
@@ -94,12 +100,18 @@ def agave_oauth_callback(request):
 
     if 'code' in request.GET:
         # obtain a token for the user
+        # Check for HTTP_X_DJANGO_PROXY custom header
+        django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
+        if django_proxy or request.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+        redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
+                                          reverse('designsafe_auth:agave_oauth_callback'))
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
         client_sec = getattr(settings, 'AGAVE_CLIENT_SECRET')
-        redirect_uri = request.build_absolute_uri(
-            reverse('designsafe_auth:agave_oauth_callback'))
         body = {
             'grant_type': 'authorization_code',
             'code': code,

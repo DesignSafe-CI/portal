@@ -10,7 +10,7 @@ operation: Can be any of these:
                                  More specific action should live in the body.
 
 """
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from designsafe.apps.api.projects.views import (ProjectListingView,
                                                 ProjectCollectionView,
                                                 ProjectDataView,

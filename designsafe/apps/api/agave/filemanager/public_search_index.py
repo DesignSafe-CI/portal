@@ -2,7 +2,7 @@
 
     This is a separate file manager because published data gets handled
     so much different than the rest of the data. Most of the time the requests
-    will look the same e.g. `listing` request, `metadata view` request. The 
+    will look the same e.g. `listing` request, `metadata view` request. The
     difference is in how the response is constructed. Most of the time published
     data has more metadata linked to it than private data. Also, published data
     might come from different external resources."""
@@ -59,13 +59,13 @@ class Publication(object):
                 except TransportError as e:
                     if e.status_code != 404:
                         res = s.execute()
-                
+
                 if res.hits.total:
                     self._wrap = res[0]
                     raise Exception('Initializing from existent publication '
                                     'and a publication object was given. '
                                     'Are you sure you want to do this? ')
-                else: 
+                else:
                     self._wrap = PublicationIndexed(**wrap)
 
         elif project_id is not None:
@@ -78,7 +78,7 @@ class Publication(object):
                 if e.status_code == 404:
                     raise
                 res = s.execute()
-            
+
             if res.hits.total:
                 self._wrap = res[0]
             else:
@@ -195,7 +195,7 @@ class PublicSearchManager(object):
 
     def count(self):
         return self._search.count()
-    
+
     def source(self, **kwargs):
         self._search = self._search.source(**kwargs)
         return self._search
@@ -341,7 +341,7 @@ class PublicObject(object):
         else:
             raise TransportError()
 
-        
+
         list_search._search.query = Q('bool',
                                       must=[Q({'term': {'path._exact': list_path}}),
                                             Q({'term': {'systemId': system}})])
@@ -390,7 +390,7 @@ class PublicObject(object):
 
     def metadata(self):
         if self._metadata is None:
-            self._metadata = {'project': self.project(), 
+            self._metadata = {'project': self.project(),
                               'experiments': self.experiments()}
         return self._metadata
 
@@ -475,7 +475,7 @@ class PublicElasticFileManager(BaseFileManager):
 
         return listing
 
-    def search(self, system, query_string, 
+    def search(self, system, query_string,
                file_path=None, offset=0, limit=100, sort=None):
         files_limit = limit
         files_offset = offset
@@ -483,11 +483,11 @@ class PublicElasticFileManager(BaseFileManager):
         projects_offset = offset
         projects_search = PublicProjectIndexed.search()
 
-        projects_query = Q('filtered',
+        projects_query = Q('bool',
                            filter=Q('bool',
                                     must=Q({'term': {'systemId': system}}),
                                     must_not=Q({'term': {'path._exact': '/'}})),
-                           query=Q({'simple_query_string':{
+                           must=Q({'simple_query_string':{
                                     'query': query_string,
                                     'fields': ["description",
                                                "endDate",
@@ -512,15 +512,15 @@ class PublicElasticFileManager(BaseFileManager):
         logger.debug(datetime.datetime.now() - t1)
         files_search = PublicObjectIndexed.search()
 
-        files_query = Q('filtered', 
-                        query=Q({'simple_query_string': {
+        files_query = Q('bool',
+                        must=Q({'simple_query_string': {
                                  'query': query_string,
                                  'fields': ['name']}}),
                         filter=Q('bool',
                                  must=Q({'term': {'systemId': system}}),
                                  must_not=Q({'term': {'path._exact': '/'}})))
         files_search.query = files_query
-        
+
         t1 = datetime.datetime.now()
         files_res = files_search.execute()
         logger.debug(datetime.datetime.now() - t1)
@@ -586,4 +586,3 @@ class PublicationManager(object):
         pub = Publication(publication)
         pub.save()
         return pub
-

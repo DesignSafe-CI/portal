@@ -2,6 +2,9 @@
     <h4 class="modal-title" style="borer:nonel">
         Manage Experiments
     </h4>
+    <a href="https://www.youtube.com/watch?v=74z5jdVvNfg&index=5&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-cricle"></i> Learn More
+    </a>
     <p class="alert alert-info">
         To delete an Experiment, you must first remove all entities related to it. After this, removing an experiment is safe.
     </p>
@@ -36,7 +39,8 @@
                   ng-class="{'experiment-deleted': ui.experiments[experiment.uuid].deleted}">
                 <td>{{experiment.value.title}}</td>
                 <td>{{experiment.getEF(data.project.value.projectType, experiment.value.experimentalFacility).label}}</td>
-                <td><span style="text-transform: capitalize">{{experiment.value.experimentType}}</span></td>
+                <td><span style="text-transform: capitalize">
+                    {{experiment.getExpType(experiment.value.experimentalFacility, experiment.value.experimentType).label}}</span></td>
                 <td>{{experiment.getET(experiment.value.experimentalFacility, experiment.value.equipmentType).label}}</td>
                 <td><button class="btn btn-sm btn-link"
                             ng-click="toggleDeleteExperiment(experiment.uuid)"
@@ -127,7 +131,7 @@
                 <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
                 <div class="form-group">
                   <label for="add-exp-title">Experiment Title</label>
-                  <input type="txt" class="form-control" id="add-exp-title"
+                  <input type="text" class="form-control" id="add-exp-title"
                          ng-model="form.addExperiments[0].title" />
                 </div>
                 <div class="form-group">
@@ -137,6 +141,10 @@
                               ng-model="form.addExperiments[0].experimentalFacility"
                               id="add-exp-facility">
                       </select>
+                      <input type="text" class="form-control" id="add-exp-facility-other"
+                            placeholder="Custom Experimental Facility"
+                            ng-model="form.addExperiments[0].experimentalFacilityOther"
+                            ng-if="form.addExperiments[0].experimentalFacility == 'other'"/>
                 </div>
                 <div class="form-group">
                   <label for="add-exp-type">Experiment Type</label>
@@ -145,6 +153,10 @@
                           ng-model="form.addExperiments[0].experimentType"
                           id="add-exp-type">
                   </select>
+                  <input type="text" class="form-control" id="add-exp-facility-other"
+                        placeholder="Custom Experiment Type"
+                        ng-model="form.addExperiments[0].experimentTypeOther"
+                        ng-if="form.addExperiments[0].experimentType == 'other'"/>
                 </div>
                 <div class="form-group">
                   <label for="add-equip-type">Equipment Type</label>
@@ -153,6 +165,10 @@
                          ng-model="form.addExperiments[0].equipmentType"
                          id="id-equipment-type">
                   </select>
+                  <input type="text" class="form-control" id="add-exp-facility-other"
+                        placeholder="Custom Equipment Type"
+                        ng-model="form.addExperiments[0].equipmentTypeOther"
+                        ng-if="form.addExperiments[0].equipmentType == 'other'"/>
                 </div>
                 <div class="form-group">
                   <label for="add-exp-desc">Description</label>
@@ -175,7 +191,10 @@
     </div>
     <div class="data-model-tree" style="border-top:1px solid lightgray;">
      <div style="text-alignt:center;">
-     <h4> Relate Categories to Experiments or Analysis </h4>
+     <h4 style="text-align:center;"> Relate Categories to Experiments or Analysis </h4>
+    <a href="https://www.youtube.com/watch?v=O3KDlgbz9jA&index=6&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-circle"></i> Learn More
+    </a>
      </div>
       <ul class="experiments-ul">
         <li class="tree-container"
@@ -196,7 +215,7 @@
               <select
                       ng-options="report as report.value.title for report in data.project.report_set"
                       ng-model="form.updateExperiments[experiment.uuid].relProject">
-                      <option value="">Reports</option>
+                      <option value="">Add Reports</option>
               </select>
               <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateExperiments[experiment.uuid].relProject,
@@ -286,7 +305,7 @@
                       <select
                               ng-options="entity as entity.value.title for entity in data.project.event_set"
                               ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent">
-                              <option value="">Events</option>
+                              <option value="">Add Events</option>
                       </select>
                       <button class="btn btn-sm btn-link"
                               ng-click="saveRelEntity(form.updateExperiments[experiment.uuid][modelConfig.uuid][sensorList.uuid].relEvent,
@@ -309,7 +328,7 @@
                   <select
                           ng-options="entity as entity.value.title for entity in data.project.sensorlist_set"
                           ng-model="form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList">
-                          <option value="">Sensor Info</option>
+                          <option value="">Add Sensor Info</option>
                   </select>
                   <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateExperiments[experiment.uuid][modelConfig.uuid].relSensorList,
@@ -328,7 +347,7 @@
               <select 
                       ng-options="entity as entity.value.title for entity in data.project.modelconfiguration_set"
                       ng-model="form.updateExperiments[experiment.uuid].relModelConfig">
-                      <option value="">Model Config</option>
+                      <option value="">Add Model Config</option>
               </select>
               <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateExperiments[experiment.uuid].relModelConfig,
@@ -348,11 +367,16 @@
             ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
             style="border:none;">
           <div class="tree-el">  
-          <span class="label tag-light-blue">Analysis</span>
+          <span class="label tag-light-blue">Analysis </span>
           <span class="ul-title">{{analysis.value.title}}</span>
+          <button class="btn btn-xsm btn-link"
+                  ng-click="removeAnalysis(analysis.uuid)">
+            <i class="fa fa-times-circle" style="color:black;"></i>
+            <span class="sr-only">Delete</span>
+          </button>
           </div>
 
-          <ul class="model-config-ul">
+          <!--<ul class="model-config-ul">
             <li class="tree-container"
                 ng-repeat="event in data.project.getRelated('event_set', analysis.uuid)">
               <div class="tree-el">
@@ -369,7 +393,7 @@
               <select
                       ng-options="entity as entity.value.title for entity in data.project.event_set"
                       ng-model="form.updateAnalysis[analysis.uuid].relEvent">
-                      <option value="">Events</option>
+                      <option value="">Add Events</option>
               </select>
               <button class="btn btn-sm btn-link"
                       ng-click="saveRelEntity(form.updateAnalysis[analysis.uuid].relEvent,
@@ -380,7 +404,7 @@
               </button>
               </div>
             </li>
-          </ul>
+          </ul>-->
         </li>
       </ul>
     </div>

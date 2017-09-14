@@ -67,11 +67,12 @@ INSTALLED_APPS = (
 
     'pipeline',
     'filer',
+    'easy_thumbnails',
     'reversion',
     'bootstrap3',
     'termsandconditions',
     'impersonate',
-    'nocaptcha_recaptcha',
+    'captcha',
 
     #websockets
     'ws4redis',
@@ -199,31 +200,13 @@ else:
     }
 
 
-# Haystack cms indexing settings
-if os.environ.get('DS_LOCAL_DEV', 'False').lower() == 'true':
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'elasticsearch:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-else:
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 from nees_settings import NEES_USER_DATABASE
-if NEES_USER_DATABASE['NAME']:
-    DATABASES['nees_users'] = NEES_USER_DATABASE
+#if NEES_USER_DATABASE['NAME']:
+#    DATABASES['nees_users'] = NEES_USER_DATABASE
 
 
 # Internationalization
@@ -246,7 +229,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'designsafe', 'static'),
 )
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+#STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -255,6 +239,10 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
 
+DJANGOCMS_PICTURE_TEMPLATES = [
+    ('non_responsive', 'Non-Responsive Image'),
+    ('responsive', 'Responsive Image'),
+]
 
 CMS_PERMISSION = True
 CMS_TEMPLATES = (
@@ -262,6 +250,16 @@ CMS_TEMPLATES = (
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
 )
+CMSPLUGIN_CASCADE = {
+    'alien_plugins': (
+        'TextPlugin',
+        'StylePlugin',
+        'FilerImagePlugin',
+        'FormPlugin',
+        'MeetingFormPlugin',
+        'ResponsiveEmbedPlugin',
+    )
+}
 CMSPLUGIN_CASCADE_PLUGINS = (
     'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
@@ -275,17 +273,29 @@ CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
     'ResponsiveEmbedPlugin',
 )
 
-MIGRATION_MODULES = {
-    'djangocms_flash': 'djangocms_flash.migrations_django',
-    'djangocms_file': 'djangocms_file.migrations_django',
-    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_link': 'djangocms_link.migrations_django',
-    'djangocms_picture': 'djangocms_picture.migrations_django',
-    'djangocms_teaser': 'djangocms_teaser.migrations_django',
-    'djangocms_video': 'djangocms_video.migrations_django',
-    'djangocms_style': 'djangocms_style.migrations_django',
+THUMBNAIL_PROCESSORS = (
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    #'easy_thumbnails.processors.scale_and_crop',
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+    'easy_thumbnails.processors.filters',
+)
+
+CKEDITOR_SETTINGS = {
+    'allowedContent': True
 }
+
+#MIGRATION_MODULES = {
+#    'djangocms_flash': 'djangocms_flash.migrations_django',
+#    'djangocms_file': 'djangocms_file.migrations_django',
+#    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
+#    'djangocms_inherit': 'djangocms_inherit.migrations_django',
+#    'djangocms_link': 'djangocms_link.migrations_django',
+#    'djangocms_picture': 'djangocms_picture.migrations_django',
+#    'djangocms_teaser': 'djangocms_teaser.migrations_django',
+#    'djangocms_video': 'djangocms_video.migrations_django',
+#    'djangocms_style': 'djangocms_style.migrations_django',
+#}
 
 LOGIN_URL = '/login/'
 
@@ -410,14 +420,16 @@ DEFAULT_TERMS_SLUG = 'terms'
 ###
 # Pipeline
 #
-PIPELINE_COMPILERS = (
+PIPELINE = {
+    'PIPELINE_ENABLED': False
+    }
+PIPELINE['COMPILERS'] = (
     'pipeline.compilers.sass.SASSCompiler',
 )
-PIPELINE_SASS_ARGUMENTS = '-C'
-PIPELINE_CSS_COMPRESSOR = None
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.slimit.SlimItCompressor'
-
-PIPELINE_CSS = {
+PIPELINE['SASS_ARGUMENTS'] = '-C'
+PIPELINE['CSS_COMPRESSOR'] = None
+PIPELINE['JS_COMPRESSOR'] = 'pipeline.compressors.slimit.SlimItCompressor'
+PIPELINE['STYLESHEETS'] = {
     'vendor': {
         'source_filenames': (
             'vendor/bootstrap-ds/css/bootstrap.css',
@@ -441,14 +453,14 @@ PIPELINE_CSS = {
     },
 }
 
-PIPELINE_JS = {
+PIPELINE['JAVASCRIPT'] = {
     'vendor': {
         'source_filenames': (
             'vendor/modernizr/modernizr.js',
             'vendor/jquery/dist/jquery.js',
             'vendor/bootstrap-ds/js/bootstrap.js',
             'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
-            'vender/d3/d3.min.js'
+            'vendor/d3/d3.min.js'
         ),
         'output_filename': 'js/vendor.js',
     },
@@ -549,8 +561,9 @@ PUBLISHED_SYSTEM = 'designsafe.storage.published'
 # RECAPTCHA SETTINGS FOR LESS SPAMMO
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
-NORECAPTCHA_SITE_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-NORECAPTCHA_SECRET_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+NOCAPTCHA = True
 
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'

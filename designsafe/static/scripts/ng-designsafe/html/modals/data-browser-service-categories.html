@@ -3,14 +3,20 @@
 </div>
 <div class="modal-body">
     <h4 style="border:none;">Select from your inventory to assign a category</h4>
-    <p class="alert alert-info">
+    <a href="https://www.youtube.com/watch?v=AZFwNNRj-MI&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-circle"></i> Learn More
+    </a>
+    <p class="alert alert-info" ng-if="data.files.length">
     To delete a category, you must first remove it from all its assigned files.
+    </p>
+    <p class="alert alert-info" ng-if="!data.files.length">
+    You have no files selected!
     </p>
     <div ng-if="ui.busy">
         <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
             <i class="fa fa-spinner fa-spin"></i> Loading...
         </span>
-    </div>   
+    </div>  
     <div ng-if="!ui.busy">
 
       <div ng-repeat="entity in ui.parentEntities" class="col-xs-12"
@@ -93,12 +99,13 @@
        <h4>Inventory</h4>
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Model Config</h5>
               <div ng-repeat="modelConfig in data.project.modelconfiguration_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(modelConfig)">
                 <span ng-class="{'selected': isProjectTagSel(modelConfig)}"
-                      class="label tag-blue">Model Config</span>
+                      class="label tag-blue"> </span>
                 <span class="tag-title">{{modelConfig.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(modelConfig)}" class="fa"></i>
@@ -106,12 +113,13 @@
               </div>
           </div>
           <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Sensor Info</h5>
               <div ng-repeat="sensor in data.project.sensorlist_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(sensor)">
                 <span ng-class="{'selected': isProjectTagSel(sensor)}"
-                      class="label tag-green">Sensor Info</span>
+                      class="label tag-green"> </span>
                 <span class="tag-title">{{sensor.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(sensor)}" class="fa"></i>
@@ -119,12 +127,13 @@
               </div>
           </div>
           <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Event</h5>
               <div ng-repeat="event in data.project.event_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(event)">
                 <span ng-class="{'selected': isProjectTagSel(event)}" 
-                      class="label tag-red">Events</span>
+                      class="label tag-red"> </span>
                 <span class="tag-title">{{event.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(event)}" class="fa"></i>
@@ -132,12 +141,13 @@
               </div>
           </div>
           <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Analysis</h5>
               <div ng-repeat="analysis in data.project.analysis_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(analysis)">
                 <span ng-class="{'selected': isProjectTagSel(analysis)}" 
-                      class="label tag-light-blue">Analysis</span>
+                      class="label tag-light-blue"> </span>
                 <span class="tag-title">{{analysis.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(analysis) }" class="fa"></i>
@@ -147,12 +157,13 @@
         </div>
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Report</h5>
               <div ng-repeat="report in data.project.report_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(report)">
                 <span ng-class="{'selected': isProjectTagSel(report)}" 
-                      class="label tag-black">Report</span>
+                      class="label tag-black"> </span>
                 <span class="tag-title">{{report.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(report) }" class="fa"></i>
@@ -164,15 +175,17 @@
       <div>
         <button class="btn btn-sm btn-info"
                 ng-disabled = "(data.newFileProjectTags.length == 0 &&
-                               data.projectTagsToUnrelate.length == 0)"
+                               data.projectTagsToUnrelate.length == 0) ||
+                               !data.files.length"
                 ng-click="saveRelations()">
-                <i class="fa fa-check"></i> Categorize
+                <i class="fa fa-check"></i> Assign to Files
         </button>
         <button class="btn btn-sm btn-danger"
                 ng-disabled="data.newFileProjectTags.length == 0"
                 ng-click="deleteCategory()">
                 <i class="fa fa-times"></i> Delete Category
         </button>
+        <span style="font-weight:bold;">Selected Category: </span>
         <span> {{data.newFileProjectTags[0]._displayName}} {{data.newFileProjectTags[0].value.title}}</span>
         <button class="btn btn-sm btn-link"
                 ng-if="data.newFileProjectTags.length > 0"
@@ -269,6 +282,9 @@
             ng-if="!ui.showAddCategory">
             <i class="fa fa-plus"></i>Add Category
     </button>
+    <a href="https://www.youtube.com/watch?v=LmsEjlP7u20&index=3&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-circle"></i> Learn More
+    </a>
     </div>
 
     <div class="manage-project-labels well well-sm"

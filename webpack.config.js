@@ -4,13 +4,14 @@ const webpack = require('webpack');
 const path = require('path');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
-  entry: './designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js',
+  entry: './designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js',
   output: {
     path: __dirname,
-    filename: "./designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.js"
+    filename: "./designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.[hash].js"
   },
   resolve: {
     extensions: ['.js'],
@@ -33,7 +34,7 @@ module.exports = {
   plugins: [
     new ngAnnotatePlugin({add:true}),
 
-    new LiveReloadPlugin()
+    new LiveReloadPlugin(),
 
   ],
 

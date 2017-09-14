@@ -13,6 +13,10 @@ export default class GeoDataService {
     this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
     this.previous_project_state = null;
+    this.HazmapperDivIcon = L.divIcon({
+      className: 'hm-marker',
+      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
+    });
   }
 
   current_project(project) {
@@ -105,7 +109,12 @@ export default class GeoDataService {
 
       try {
         let features = [];
-        L.geoJSON(blob).getLayers().forEach( (layer) => {
+        let options = {
+          pointToLayer: (feature, latlng)=> {
+              return L.marker(latlng, {icon: this.HazmapperDivIcon});
+          }
+        };
+        L.geoJSON(blob, options).getLayers().forEach( (layer) => {
           for (let key in layer.feature.properties) {
             layer.options[key] = layer.feature.properties[key];
           }
@@ -187,19 +196,23 @@ export default class GeoDataService {
     return this.$q( (res, rej) => {
       // if (json instanceof String) {
       let project = new MapProject();
+      let options = {
+        pointToLayer: (feature, latlng)=> {
+            return L.marker(latlng, {icon: this.HazmapperDivIcon});
+        }
+      };
       project.name = json.name;
       project.description = json.description;
       json.layer_groups.forEach( (name) => {
         project.layer_groups.push(new LayerGroup(name, new L.FeatureGroup()));
       });
       json.features.forEach( (d)=> {
-        let feature = L.geoJSON(d);
+        let feature = L.geoJSON(d, options);
         feature.eachLayer( (layer)=> {
-
           // If there were no styles applied, it might be transparent???
           if (!(layer.feature.properties.color)) {
            layer.feature.properties.color = '#ff0000';
-          }
+          };
           if (!(layer.feature.properties.fillColor)) {
             layer.feature.properties.fillColor = '#ff0000';
           };
@@ -230,6 +243,9 @@ export default class GeoDataService {
             // feat.options.image_src = feat.feature.properties.image_src;
             // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }
+          // if ( (layer instanceof L.Marker) && (!(layer.feature.properties.image_src)) ) {
+          //   layer.getElement().style.color = layer.feature.properties.fillColor;
+          // }
           project.layer_groups[layer_group_index].feature_group.addLayer(layer);
           layer.options.label = d.properties.label;
         });

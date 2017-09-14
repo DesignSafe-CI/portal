@@ -21,6 +21,12 @@
         <form method="post" action="" enctype="multipart/form-data">
           {% csrf_token %}
           {% bootstrap_form form %}
+          {% if event.main_image_uuid %}
+            <div class="form-group">
+              <label> Current banner image </label>
+              <img ng-src="/uploads/RAPID/images/{{event.main_image_uuid}}" class="img-responsive"></img>
+            </div>
+          {% endif %}
           <div class="form-group">
             <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
           </div>
@@ -34,7 +40,7 @@
 
 <script>
   $(document).ready(function () {
-    $('#id_event_date').datepicker();
+    $('#id_event_date').datepicker({format: 'yyyy-mm-dd'});
   })
 </script>
 

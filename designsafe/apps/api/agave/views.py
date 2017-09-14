@@ -21,6 +21,7 @@ from designsafe.apps.api.agave.models.files import BaseFileResource
 from designsafe.apps.api.agave.models.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.tasks import external_resource_upload
+from designsafe.apps.api.views import BaseApiView
 from requests import HTTPError
 
 
@@ -43,12 +44,12 @@ class FileManagersView(View):
                 'public',
             ], safe=False)
 
-class FileListingView(View):
+class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
         if file_mgr_name == AgaveFileManager.NAME:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -67,21 +68,13 @@ class FileListingView(View):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
-                try:
-                    offset = int(request.GET.get('offset', 0))
-                    limit = int(request.GET.get('limit', 100))
-                    listing = fm.listing(system=system_id, file_path=file_path,
-                                         offset=offset, limit=limit)
-                    return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
-                except HTTPError as e:
-                    logger.exception('Unable to list files')
-                    if e.response.status_code == 403:
-                        return HttpResponseForbidden(e.response.text)
-                    elif e.response.status_code >= 500:
-                        return HttpResponseServerError(e.response.text)
-                    elif e.response.status_code >= 400:
-                        return HttpResponseBadRequest(e.response.text)
-
+                offset = int(request.GET.get('offset', 0))
+                limit = int(request.GET.get('limit', 100))
+                listing = fm.listing(system=system_id, file_path=file_path,
+                                     offset=offset, limit=limit)
+                return JsonResponse(listing,
+                                    encoder=AgaveJSONEncoder,
+                                    safe=False)
         return HttpResponseBadRequest()
 
 
@@ -93,7 +86,7 @@ class FileMediaView(View):
             or file_mgr_name == 'public' \
             or file_mgr_name == 'community' \
             or file_mgr_name == 'published':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
@@ -147,7 +140,7 @@ class FileMediaView(View):
     def post(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             agave_client = request.user.agave_oauth.client
@@ -223,7 +216,7 @@ class FileMediaView(View):
             or file_mgr_name == 'community' \
             or file_mgr_name == 'published':
 
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
@@ -503,7 +496,7 @@ class FileMediaView(View):
 
     def delete(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -573,7 +566,7 @@ class FilePermissionsView(View):
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             # List permissions as the portal user rather than logged in user.
@@ -593,7 +586,7 @@ class FilePermissionsView(View):
 
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -641,7 +634,7 @@ class FilePermissionsView(View):
 class FileMetaView(View):
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == ElasticFileManager.NAME:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -656,7 +649,7 @@ class FileMetaView(View):
         post_body = json.loads(request.body)
         metadata = post_body.get('metadata', {})
         if file_mgr_name == ElasticFileManager.NAME or not metadata:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseForbidden('Log in required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
@@ -707,7 +700,7 @@ class SystemsView(View):
 
     def get(self, request, system_id=None):
         params = request.GET.copy()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             ag = request.user.agave_oauth.client
             if system_id is None:
                 systems = BaseSystemResource.list(ag, **params)

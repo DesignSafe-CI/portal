@@ -11,7 +11,7 @@
             <p class="alert alert-warning">
                 Preview not available for this item.
             </p>
-            <i class="fa {{ data.file|dsFileIcon }}" style="font-size: 150px"></i>
+            <i class="fa {{ data.file.icon() }}" style="font-size: 150px"></i>
         </div>
 
         <div ng-if="! data.previewUrl.loading && data.previewUrl.href" class="embed-responsive embed-responsive-4by3">
@@ -22,11 +22,11 @@
             <h4>{{ data.file | dsFileDisplayName }}</h4>
             <p class="preview-info">
               <span class="preview-file-size">
-                {{ data.file.size|bytes }} - 
+                {{ data.file.size|bytes }} -
               </span>
-              <span class="preview-children-length" 
+              <span class="preview-children-length"
                   ng-if="data.file.type === 'folder' && data.file.children">
-                  {{ data.file.children.length }} items - 
+                  {{ data.file.children.length }} items -
               </span>
               <span class="preview-created-on">
                 Created on {{ data.file.lastModified|date:'short' }}
@@ -34,7 +34,7 @@
             </p>
             <div class="tags-wrapper">
               <ul class="tags-list">
-                 <li ng-repeat="tag in data.file.meta.keywords" 
+                 <li ng-repeat="tag in data.file.meta.keywords"
                      class="tag-item">
                    <span>{{tag}}</span>
                  </li>

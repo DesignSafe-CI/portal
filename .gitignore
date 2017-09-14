@@ -6,13 +6,26 @@
 
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env
+mysql.env
+rabbitmq.env
+rabbitmq.conf
+mysql.cnf
+
+# local config files
+conf/elasticsearch/elasticsearch.yml
+conf/elasticsearch/logging.yml
+conf/redis.conf
 
 # don't commit certs
 certs/
 
 # data directories
-data/mysql/*dump*
-data/elasticsearch/*dump*
+data/redis/
+data/mysql/
+data/elasticsearch/
+data/static/
+data/media/
+data/NEHRI/
 
 # no node modules
 node_modules/
@@ -49,4 +62,5 @@ coverage.xml
 *.pot
 *.log
 docs/_build/
+.docs/build
 target/

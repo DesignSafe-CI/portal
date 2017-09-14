@@ -1,15 +1,15 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from designsafe.apps.auth import views
 
-urlpatterns = patterns(
-    'designsafe.apps.auth.views',
-    url(r'^$', 'login_options', name='login'),
-    url(r'^logged-out/$', 'logged_out', name='logout'),
-    url(r'^agave/$', 'agave_oauth', name='agave_oauth'),
-    url(r'^agave/callback/$', 'agave_oauth_callback', name='agave_oauth_callback'),
-    url(r'^agave/session-error/$', 'agave_session_error', name='agave_session_error'),
-)
+urlpatterns = [
+    url(r'^$', views.login_options, name='login'),
+    url(r'^logged-out/$', views.logged_out, name='logout'),
+    url(r'^agave/$', views.agave_oauth, name='agave_oauth'),
+    url(r'^agave/callback/$', views.agave_oauth_callback, name='agave_oauth_callback'),
+    url(r'^agave/session-error/$', views.agave_session_error, name='agave_session_error'),
+]
 
 
 def menu_items(**kwargs):

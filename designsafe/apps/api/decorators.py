@@ -61,7 +61,7 @@ def agave_jwt_login(func):
     #pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return func(request, *args, **kwargs)
 
         payload = _get_jwt_payload(request)

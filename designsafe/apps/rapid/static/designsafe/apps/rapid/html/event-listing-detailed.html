@@ -9,21 +9,25 @@
       {{event.event_date | date: 'yyyy-MM-dd'}}
     </span>
     <span class="event-type pull-right"
-          ng-class="{'earthquake':event.event_type==='earthquake',
-               'flood':event.event_type==='flood',
-               'tsunami':event.event_type === 'tsunami',
-               'tornado':event.event_type === 'tornado',
-               'landslide':event.event_type === 'landslide',
-               'hurricane':event.event_type === 'hurricane',
-              }">
+          ng-class="{
+                     'earthquake':event.event_type==='earthquake',
+                     'flood':event.event_type==='flood',
+                     'tsunami':event.event_type === 'tsunami',
+                     'tornado':event.event_type === 'tornado',
+                     'landslide':event.event_type === 'landslide',
+                     'hurricane':event.event_type === 'hurricane',
+                    }"
+    >
       {{event.event_type}}
     </span>
   </div>
   <div class="row">
     <h5> Available datasets: </h5>
-    <div class="event-dataset" ng-repeat = "dataset in event.datasets">
-      <a href="{{dataset.url}}"> {{dataset.title}} </a>
-    </div>
+    <ul>
+      <li class="event-dataset" ng-repeat = "dataset in event.datasets">
+        <a href="{{dataset.url}}"> {{dataset.title}} </a>
+      </li>
+    </ul>
     <div ng-show="!event.datasets">
       <span> No datasets available yet </span>
     </div>

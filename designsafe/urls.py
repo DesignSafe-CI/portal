@@ -15,16 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf import settings
-from django.conf.urls import include, url, patterns
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from designsafe.apps.auth.views import login_options as des_login_options
+from django.contrib.auth.views import logout as des_logout
+from designsafe.views import project_version as des_version
 
-urlpatterns = patterns(
-    '',
-
+urlpatterns = [
     # admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
@@ -35,6 +36,7 @@ urlpatterns = patterns(
     url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
 
     # api urls, just for the samples.
+
     url(r'^applications/', include('designsafe.apps.applications.urls',
                                 namespace='designsafe_applications')),
     url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),
@@ -82,8 +84,9 @@ urlpatterns = patterns(
 
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
-    url(r'^login/$', 'designsafe.apps.auth.views.login_options', name='login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout',
+
+    url(r'^login/$', des_login_options, name='login'),
+    url(r'^logout/$', des_logout,
         {'next_page': '/auth/logged-out/'}, name='logout'),
 
     # help
@@ -93,10 +96,10 @@ urlpatterns = patterns(
     url(r'^webhooks/', include('designsafe.webhooks')),
 
     # version check
-    url(r'^version/', 'designsafe.views.project_version'),
+    url(r'^version/', des_version),
 
     # cms handles everything else
     url(r'^', include('djangocms_forms.urls')),
     url(r'^', include('cms.urls')),
 
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

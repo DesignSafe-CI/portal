@@ -1,388 +1,80 @@
 <dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
 <!-- Published View -->
 <div class="project">
-    <div class="project-detail">
-        <h2>{{ project.value.title }}</h2>
-        <div style="width:50%; display:inline-block;">
-        <table class="table" style="margin-bottom:0;">
-            <tbody>
-            <tr>
-              <th>ID</th>
-              <td>{{project.value.projectId}}</td>
-            </tr>
-            <tr>
-                <th>PI</th>
-                <td>
-                <span>{{getUserDets(project.value.pi, true)}}</span>
-                <!--
-                <ds-user username="project.value.pi" format="name-username">{{ project.value.pi }}</ds-user></td>
-                -->
-            </tr>
-            <tr>
-              <th>Created</th>
-              <td>{{project.created}}</td>
-            </tr>
-            <tr>
-              <th>DOI</th>
-              <td>{{project.doi}}</td>
-            </tr>
-            <tr>
-              <th><button class="btn btn-info btn-sm"
-                          ng-click="showCitation(project)">Citation
-                  </button>
-              <th>
-              <td></td>
-            </tr>
-            </tbody>
-        </table>
-        </div>
-        <div style="width:49%; display:inline-block; vertical-align:top;">
-        <div class="btn-group" role="group" aria-label="Project Actions">
-            <button class="btn btn-sm btn-default" ng-click="viewProject($event)">View Project</button>
-            <button class="btn btn-sm btn-default" ng-click="viewCollabs($event)">View Team Members</button>
-            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="viewExperiments($event)"><img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments</button>
-        </div>
-            <div style="width:350px; height:100px; overflow:hidden;">
-                <img width="350" ng-src="{{ imageHref }}"
-                     ng-if="imageHref && state.showPreviewListing"/>
-                <div ng-if="!imageHref && state.showPreviewListing">
-                  <i class="fa fa-spin fa-spinner"></i> Loading ...
-                </div>
-            </div>
-        </div>
-        <div class="project-desc" style="padding:5px; margin:5px 0px; overflow:hidden; word-break:break-all; word-wrap:break-word; border-top:1px solid #ccc; max-height;115px;">
-          <p style="display:inline-block; width:115px;"><strong>Description</strong></p>
-          <p style="display:inline-block; max-height:40px; overflow:hidden;">
-          {{project.value.description}}
-          </p>
-          <button class="btn btn-link btn-sm"
-                  ng-click="showText(project.value.description)">
-            <i class="fa fa-external-link"></i> Show</button>
-        </div>
-    </div>
-    <hr>
-</div>
-<div ng-if="browser.listing.projectId">
-<div class="project">
-<div class="preview-wrapper">
-<div ng-repeat="experiment in browser.listing.experimentsList | orderBy: 'value.title'"
-         style="background:#fff;">
-
-        <div class="dropdown entity-preview-header" id="details-{{experiment.uuid}}">
-          <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
-                  style="width:100%;">
-            Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
-          </button>
-          <div id="data-{{experiment.uuid}}" class="collapse in">
-
-
-    <div style="border:1px solid black; background:white; margin-bottom:15px;">
-      <div style= "width:50%; display:inline-block; padding:5px;">
-      <h3 style="margin-top:0">{{experiment.value.title}}</h3>
-      <div style="padding:5px; margin:5px 0px; height:80px; overflow:hidden; word-wrap:overflow;">
-      <p style="overflow:hidden; display:block; height:40px;">
-          <span style="font-weight:bold;"> Description: </span>{{experiment.value.description}}</p>
-          <button class="btn btn-link btn-sm"
-                  ng-click="showText(experiment.value.description)">
-            <i class="fa fa-external-link"></i> Show</button>
-      </div>
-      </div>
-      <div style="width:49%; vertical-align:top; display:inline-block;">
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> Experimental Facility: </span>{{experiment.value.experimentalFacility}}
-        </div>
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> Experiment Type: </span>
-          <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
-        </div>
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> Equipment Type: </span>
-          <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
-        </div>
-        <div style="padding:5px;">
-          <span style="font-weight:bold;"> DOI: </span>
-          <span>{{experiment.doi}}</span>
-        </div>
-        <div style="padding:5px;">
-          <span style="font-weight:bold;">Authors : </span>
-          <div ng-repeat="user in filterUsers(experiment.value.authors, browser.listing.users)">
-            <span>{{user.last_name}}, {{user.first_name}}</span>
-          </div>
-        </div>
-        <div style="padding:5px;"><button class="btn btn-info btn-sm"
-                          ng-click="showCitation(experiment)">Citation
-                  </button>
-        </div>
-        </div>
-        <div style="padding:5px;" ng-if="getRelated('reportsList', experiment.uuid).length">
-          <a href="#details-{{getRelated('reportsList', experiment.uuid)[0].uuid}}"
-             class="btn btn-link">
-          <span style="font-weight:bold;">Report</span>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div ng-if="!getRelated('eventsList', experiment.uuid).length"
-        class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
-        This Experiment has no Events.
-    </div>
-    <div ng-repeat="event in all_events = getRelated('eventsList', experiment.uuid) | orderBy: ['_ui.order', 'value.title']"
-        style="margin-bottom:10px;">
-    <div style="padding:3px;">
-      <span class="ds-text-red folder-tick">Event Data: {{event.value.title}} </span>
-      <span style="color:light-gray">Link to: </span>
-      <a class="ds-text-blue" href="#details-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}"
-      data-toggle="collapse" data-target="#files-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}">
-      Model Configuration
-      </a>
-      <a class="ds-text-green" href="#details-{{getRelated('sensorLists', [experiment.uuid, 
-                                                    getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}"
-         data-toggle="collapse" data-target="#files-{{getRelated('sensorLists', [experiment.uuid, 
-                                                    getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}">
-      Sensor List
-      </a>
-      <!--
-      <div class="pull-right">
-        <button class="btn btn-sm btn-link"
-                title="Move order Up"
-                ng-click="publicationCtrl.moveOrderUp(event, all_events.length)" >
-        <i class="fa fa-arrow-up"></i></button>
-        <button class="btn btn-sm btn-link"
-                title="Move order Down"
-           ng-click="publicationCtrl.moveOrderDown(event, all_events.length)">
-        <i class="fa fa-arrow-down"></i></button>
-      </div>
-      -->
-    </div>
-    <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
-      <div style="border-bottom:1px solid lightgrey;">
-      <!--
-      <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">{{event.value.title}}</a>
-      --><a class="ds-text-red" ng-click="viewRelations()" href="#">
-      Relations
-      </a>
-      </div>
-      <div>
-      <a class="ds-text-blue" href="" ng-click="viewRelations(getRelated('modelConfigs', [experiment.uuid])[0].uuid)">
-        {{getRelated('modelConfigs', [experiment.uuid])[0].value.title}}
-      </a>
-      </div>
-      <div>
-      <a class="ds-text-green" href="" ng-click="viewRelations(getRelated('sensorLists', [experiment.uuid, getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid)">
-        {{getRelated('sensorLists', [experiment.uuid, 
-                getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].value.title}}
-      </a>
-      </div>
-    </div>
-    <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; max-height:300px; overflow:scroll;">
-    <table  class="table table-bordered table-striped"
-            style="background-color: #fff;">
-        <thead>
-        <th>Name</th>
-        <th>Size</th>
-        <th>Last modified</th>
-        </thead>
+  <div class="project-detail">
+    <h2>{{ project.value.title }}</h2>
+    <p><strong>Description</strong></p>
+    <p>
+      {{project.value.description}}
+    </p>
+    <div style="width:50%; display:inline-block;">
+      <table class="table" style="margin-bottom:0;">
         <tbody>
-          <tr ng-repeat="file in event.files | orderBy: ['type', 'path']">
-            <td><i class="fa {{file.icon()}}"></i>
-                <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
-                {{file.name}}
-                </a>
-            </td>
-            <td>{{file.length|bytes}}</td>
-            <td>{{file.lastModified|date:"short"}}</td>
+          <tr>
+            <th>ID</th>
+            <td>{{project.value.projectId}}</td>
+          </tr>
+          <tr>
+            <th>Date of Publication</th>
+            <td>{{browser.listing.project.lastUpdated}}</td>
+          </tr>
+          <tr>
+            <th>DOI</th>
+            <td>{{project.doi}}</td>
+          </tr>
+          <tr>
+            <th>Created</th>
+            <td>{{project.created}}</td>
           </tr>
         </tbody>
-    </table>
+      </table>
     </div>
-    </div>
+    <div style="width:49%; display:inline-block; vertical-align:top;">
+      <table class="table" style="margin-bottom:0;">
+        <tbody>
+          <tr>
+            <th>PI</th>
+            <td>
+              <ds-user username="project.value.pi" format="lname">
+              {{ project.value.pi }}</ds-user>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <button class="btn btn-info btn-sm"
+                      ng-click="showCitation(project)">Citation
+              </button>
+            <th>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    </div>
 
-</div>
-    <div class="project-preview-entities-details">
-
-      <div ng-repeat="modelConfig in browser.listing.modelConfigs | orderBy: 'value.title'">
-        <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
-          <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
-                  style="width:100%;">
-            Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
-          </button>
-          <div id="files-{{modelConfig.uuid}}" class="collapse">
-            <table  class="table table-bordered table-striped"
-                    style="background-color: #fff;">
-                <thead>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Last modified</th>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="file in modelConfig.files | orderBy: ['type', 'path']">
-                    <td><i class="fa {{file.icon()}}"></i>
-                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
-                        {{file.name}}
-                        </a>
-                    </td>
-                    <td>{{file.length}}</td>
-                    <td>{{file.lastModified|date:"short"}}</td>
-                  </tr>
-                </tbody>
-            </table>
-          </div>
+    <div style="vertical-align:top;">
+      <div class="btn-group" role="group" aria-label="Project Actions">
+        <button class="btn btn-sm btn-default" ng-click="viewProject($event)">View Project</button>
+        <button class="btn btn-sm btn-default" ng-click="viewCollabs($event)">View Team Members</button>
+        <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
+         ng-click="viewExperiments($event)">
+          <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments
+        </button>
+      </div>
+      <div style="width:350px; height:100px; overflow:hidden;">
+        <img width="350" ng-src="{{ imageHref }}"
+             ng-if="imageHref && state.showPreviewListing"/>
+        <div ng-if="!imageHref && state.showPreviewListing">
+          <i class="fa fa-spin fa-spinner"></i> Loading ...
         </div>
       </div>
-
-      <div ng-repeat="sensorList in browser.listing.sensorLists | orderBy: 'value.title'">
-        <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
-          <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
-                  style="width:100%;">
-            Sensor Info {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
-          </button>
-          <div id="files-{{sensorList.uuid}}" class="collapse">
-            <table  class="table table-bordered table-striped"
-                    style="background-color: #fff;">
-                <thead>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Last modified</th>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="file in sensorList.files | orderBy: ['type', 'path']">
-                    <td><i class="fa {{file.icon()}}"></i>
-                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
-                        {{file.name}}
-                        </a>
-                    </td>
-                    <td>{{file.length}}</td>
-                    <td>{{file.lastModified|date:"short"}}</td>
-                  </tr>
-                </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div ng-repeat="analysis in browser.listing.analysisList | orderBy: 'value.title'">
-        <div class="entity-wrapper" 
-           ng-if="analysis.files.length">
-        <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
-          <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
-                  style="width:100%;">
-            Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
-          </button>
-          <div id="files-{{analysis.uuid}}" class="collapse in">
-            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-              <div style= "width:50%; display:inline-block;">
-              <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
-
-              <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
-                  <button class="btn btn-link btn-sm"
-                          ng-click="showText(analysis.value.description)">
-                    <i class="fa fa-external-link"></i> Show</button>
-              </div>
-
-              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
-              <p style="overflow:hidden; display:block; height:20px;">
-              <span style="font-weight:bold;">DOI: </span>{{analysis.doi}}
-              <div>
-                  <button class="btn btn-info btn-sm"
-                          ng-click="showCitation(analysis)">Citation
-                  </button>
-              </div>
-            </div>
-
-            <table  class="table table-bordered table-striped"
-                    style="background-color: #fff;">
-                <thead>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Last modified</th>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
-                    <td><i class="fa {{file.icon()}}"></i>
-                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
-                        {{file.name}}
-                        </a>
-                    </td>
-                    <td>{{file.length}}</td>
-                    <td>{{file.lastModified|date:"short"}}</td>
-                  </tr>
-                </tbody>
-            </table>
-          </div>
-        </div>
-       </div>
-       </div>
-      </div>
-
-      <div ng-repeat="report in browser.listing.reportsList | orderBy: 'value.title'">
-      <div class="entity-wrapper"
-           ng-if="report.files.length">
-        <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
-          <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#files-{{report.uuid}}"
-                  style="width:100%;">
-            Report {{report.value.title}}  <i class="fa dropdown-caret"></i>
-          </button>
-          <div id="files-{{report.uuid}}" class="collapse in">
-            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-              <div style= "display:inline-block; width:100%;">
-              <h3 style="margin-top:0;">{{report.value.title}}</h3>
-              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
-              <p style="overflow:hidden; display:block; height:20px;">
-              <span style="font-weight:bold;">Description: </span>{{report.value.description}}</p>
-                  <button class="btn btn-link btn-sm"
-                          ng-click="showText(analysis.value.description)">
-                    <i class="fa fa-external-link"></i> Show</button>
-              </div>
-
-              <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; display:inline-block; float:right;">
-              <p style="overflow:hidden; display:block; height:20px;">
-              <!--
-              <span style="font-weight:bold;">DOI: </span>{{report.doi}}
-              <div>
-                  <button class="btn btn-info btn-sm"
-                          ng-click="showCitation(report)">Citation
-                  </button>
-              </div>
-              -->
-            </div>
-
-            <table  class="table table-bordered table-striped"
-                    style="background-color: #fff;">
-                <thead>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Last modified</th>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
-                    <td><i class="fa {{file.icon()}}"></i>
-                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
-                        {{file.name}}
-                        </a>
-                    </td>
-                    <td>{{file.length}}</td>
-                    <td>{{file.lastModified|date:"short"}}</td>
-                  </tr>
-                </tbody>
-            </table>
-          </div>
-        </div>
-        </div>
-      </div>
-
     </div>
-    </div>
-
-    </div>
-
-</div>
+  </div>
+  <hr>
 </div>
 
-</div><!-- Cosing published View -->
-<div ng-if="!browser.listing.projectId"><!-- File Listing View -->
+
+<div ng-if="!browser.listing.projectId || browser.listing.project.value.projectType != 'experimental'"><!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()"
         data-scroll-top="scrollToTop()"
@@ -468,3 +160,290 @@
   </div>
 
 </div><!-- Closing file listing view -->
+
+<div ng-if="browser.listing.projectId && browser.listing.project.value.projectType == 'experimental'">
+  <div class="project">
+    <div class="preview-wrapper">
+      <div ng-repeat="experiment in browser.listing.experimentsList | orderBy: 'value.title'"
+           style="background:#fff;">
+        <div class="dropdown entity-preview-header" id="details-{{experiment.uuid}}">
+          <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
+                  style="width:100%;">
+            Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="data-{{experiment.uuid}}" class="collapse"
+               ng-class="{'in': $index == 0}">
+            <div style="border:1px solid black; background:white; margin-bottom:15px;">
+              <div style= "padding:5px;">
+                <h3 style="margin-top:0">{{experiment.value.title}}</h3>
+                <p style="font-weight:bold;">Description</p>
+                <p>{{experiment.value.description}}</p>
+              </div>
+              <div style="width:49%; vertical-align:top; display:inline-block;">
+                <div>
+                  <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> {{experiment.lastUpdated}}
+                </div>
+                <div>
+                  <span style="font-weight:bold;"> DOI: </span>
+                  <span>{{experiment.doi}}</span>
+                </div>
+                <div>
+                  <span style="font-weight:bold;"> Experimental Facility: </span>{{experiment.value.experimentalFacility}}
+                </div>
+                <div>
+                  <span style="font-weight:bold;"> Experiment Type: </span>
+                  <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
+                </div>
+                <div>
+                  <span style="font-weight:bold;"> Equipment Type: </span>
+                  <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
+                </div>
+              </div>
+              <div style="width:49%; vertical-aligh:top; display:inline-block;">
+                <div>
+                  <span style="font-weight:bold; display:inline-block; width:100px;">Authors : </span>
+                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.listing.users)">
+                  {{user.last_name}}, {{user.first_name}};
+                  </span>
+                </div>
+                <div>
+                  <button class="btn btn-info btn-sm"
+                          ng-click="showCitation(experiment)">Citation
+                  </button>
+                <a href="#details-{{getRelated('reportsList', experiment.uuid)[0].uuid}}"
+                   class="btn btn-link">
+                  <span style="font-weight:bold;">Report</span>
+                </a>
+                </div>
+            </div>
+            <div ng-if="!getRelated('eventsList', experiment.uuid).length"
+                 class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
+              This Experiment has no Events.
+            </div>
+            <div ng-repeat="event in all_events = getRelated('eventsList', experiment.uuid) | orderBy: ['_ui.order', 'value.title']"
+                 style="margin-bottom:10px;">
+              <div style="padding:3px;">
+                <span class="ds-text-red folder-tick">Event Data: {{event.value.title}} </span>
+                <span style="color:light-gray">Link to: </span>
+                <a class="ds-text-blue" href="#details-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}"
+                   data-toggle="collapse" data-target="#files-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}">
+                  Model Configuration
+                </a>
+                <a class="ds-text-green" href="#details-{{getRelated('sensorLists', [experiment.uuid, 
+                                               getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}"
+                   data-toggle="collapse" data-target="#files-{{getRelated('sensorLists', [experiment.uuid, 
+                                                       getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}">
+                  Sensor List
+                </a>
+              </div>
+            <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
+              <div style="border-bottom:1px solid lightgrey;">
+                <a class="ds-text-red" ng-click="viewRelations(event.uuid)" href="#">
+                  Relations
+                </a>
+              </div>
+              <div>
+                <a class="ds-text-blue" href="" ng-click="viewRelations(getRelated('modelConfigs', [experiment.uuid])[0].uuid)">
+                  {{getRelated('modelConfigs', [experiment.uuid])[0].value.title}}
+                </a>
+              </div>
+              <div>
+                <a class="ds-text-green" href="" ng-click="viewRelations(getRelated('sensorLists', [experiment.uuid, getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid)">
+                  {{getRelated('sensorLists', [experiment.uuid, 
+                  getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].value.title}}
+                </a>
+              </div>
+            </div>
+            <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; max-height:300px; overflow:scroll;">
+              <table  class="table table-bordered table-striped"
+                      style="background-color: #fff;">
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in event.files | orderBy: ['type', 'path']">
+                    <td>
+                      <i class="fa {{file.icon()}}"></i>
+                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                        {{file.name}}
+                      </a>
+                    </td>
+                    <td>{{file.length|bytes}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-preview-entities-details">
+    <div ng-repeat="modelConfig in browser.listing.modelConfigs | orderBy: 'value.title'">
+      <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
+        <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
+                style="width:100%;">
+          Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
+        </button>
+        <div id="files-{{modelConfig.uuid}}" class="collapse">
+          <table  class="table table-bordered table-striped"
+                  style="background-color: #fff;">
+            <thead>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Last modified</th>
+            </thead>
+            <tbody>
+              <tr ng-repeat="file in modelConfig.files | orderBy: ['type', 'path']">
+                <td>
+                  <i class="fa {{file.icon()}}"></i>
+                  <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                    {{file.name}}
+                  </a>
+                </td>
+                <td>{{file.length}}</td>
+                <td>{{file.lastModified|date:"short"}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div ng-repeat="sensorList in browser.listing.sensorLists | orderBy: 'value.title'">
+      <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
+        <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
+                style="width:100%;">
+          Sensor Info {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
+        </button>
+        <div id="files-{{sensorList.uuid}}" class="collapse">
+          <table  class="table table-bordered table-striped"
+                  style="background-color: #fff;">
+            <thead>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Last modified</th>
+            </thead>
+            <tbody>
+              <tr ng-repeat="file in sensorList.files | orderBy: ['type', 'path']">
+                <td>
+                  <i class="fa {{file.icon()}}"></i>
+                  <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                    {{file.name}}
+                  </a>
+                </td>
+                <td>{{file.length}}</td>
+                <td>{{file.lastModified|date:"short"}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div ng-repeat="analysis in browser.listing.analysisList | orderBy: 'value.title'">
+      <div class="entity-wrapper" 
+           ng-if="analysis.files.length">
+        <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
+          <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                  style="width:100%;">
+            Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="files-{{analysis.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <div style= "width:50%; display:inline-block;">
+              <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
+              <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
+              <button class="btn btn-link btn-sm"
+                      ng-click="showText(analysis.value.description)">
+                <i class="fa fa-external-link"></i> Show
+              </button>
+            </div>
+            <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
+              <p style="overflow:hidden; display:block; height:20px;">
+                <span style="font-weight:bold;">DOI: </span>{{analysis.doi}}
+              </p>
+              <div>
+                <button class="btn btn-info btn-sm"
+                        ng-click="showCitation(analysis)">Citation
+                </button>
+              </div>
+            </div>
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+              <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
+                  <td>
+                    <i class="fa {{file.icon()}}"></i>
+                    <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                      {{file.name}}
+                    </a>
+                  </td>
+                  <td>{{file.length}}</td>
+                  <td>{{file.lastModified|date:"short"}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-repeat="report in browser.listing.reportsList | orderBy: 'value.title'">
+      <div class="entity-wrapper"
+           ng-if="report.files.length">
+        <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
+          <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                  style="width:100%;">
+            Report {{report.value.title}}  <i class="fa dropdown-caret"></i>
+          </button>
+          <div id="files-{{report.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <div style= "display:inline-block; width:100%;">
+                <h3 style="margin-top:0;">{{report.value.title}}</h3>
+                <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow;">
+                <p style="overflow:hidden; display:block; height:20px;">
+                  <span style="font-weight:bold;">Description: </span>{{report.value.description}}
+                </p>
+                <button class="btn btn-link btn-sm"
+                        ng-click="showText(analysis.value.description)">
+                  <i class="fa fa-external-link"></i> Show
+                </button>
+              </div>
+            <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; display:inline-block; float:right;">
+              <p style="overflow:hidden; display:block; height:20px;">
+            </div>
+            <table  class="table table-bordered table-striped"
+                    style="background-color: #fff;">
+              <thead>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last modified</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
+                  <td>
+                    <i class="fa {{file.icon()}}"></i>
+                    <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                      {{file.name}}
+                    </a>
+                  </td>
+                  <td>{{file.length}}</td>
+                  <td>{{file.lastModified|date:"short"}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- Cosing published View -->

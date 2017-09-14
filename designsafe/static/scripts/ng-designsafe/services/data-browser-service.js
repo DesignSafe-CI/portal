@@ -17,10 +17,10 @@
     return nbv;
   });
 
-  module.factory('DataBrowserService', ['$rootScope', '$http', '$q', 
+  module.factory('DataBrowserService', ['$rootScope', '$http', '$q',
                                         '$uibModal', '$state', 'Django',
                                         'FileListing', 'Logging', 'SystemsService', 'nbv',
-                                        'ProjectEntitiesService', 
+                                        'ProjectEntitiesService',
                                         function($rootScope, $http, $q, $uibModal,
                                                  $state, Django, FileListing, Logging,
                                                  SystemsService, nbv, ProjectEntitiesService) {
@@ -144,6 +144,21 @@
 
 
     /**
+      Checks to see if there is a folder in the selected listings. If so, download
+      is not available.
+
+      @param {FileListing|FileListing[]} files Files to test
+      @return {boolean}
+    */
+    function containsFolder(files) {
+      for (var i=0; i<files.length; i++) {
+        if (files[i].format === 'folder') return true;
+      }
+      return false;
+    }
+
+
+    /**
      * Tests for the DataBrowser actions allowed on the given file(s) from the current listing.
      *
      * @param {FileListing|FileListing[]} files Files to test
@@ -155,7 +170,7 @@
       }
 
       var tests = {};
-      tests.canDownload = files.length >= 1 && hasPermission('READ', files);
+      tests.canDownload = files.length >= 1 && hasPermission('READ', files) && (!(containsFolder(files)));
       tests.canPreview = files.length === 1 && hasPermission('READ', files);
       tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files);
       tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
@@ -163,7 +178,8 @@
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
       tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData');
       tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
-      tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
+      //tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
+      tests.canViewCategories = true;
 
       var trashPath = _trashPath();
       tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
@@ -1161,7 +1177,7 @@
             // reset file control since we want to allow multiple selection events
             $('#id-choose-files').val(null);
           });
-            
+
           $scope.tagFiles = function(){
             $uibModalInstance.close();
             var files = _.filter(currentState.listing.children, function(child){
@@ -1436,7 +1452,7 @@
                 }
                 if (typeof entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] !== 'undefined' &&
                     _.isArray(entity.value.tags[sts[fuuid].tagType][sts[fuuid].name])){
-                  
+
                   if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
                     entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
                         {file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]});
@@ -1492,7 +1508,7 @@
           $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
           };
-          
+
           $scope.ui.addingTag = false;
           $scope.ui.tagTypes = [
               {label: 'Model Config',
@@ -1543,7 +1559,7 @@
 
           $scope.toggleProjectTag = function(entity){
             if (_.findWhere($scope.ui.parentEntities, {uuid: entity.uuid}) &&
-                $scope.isProjectTagSel(entity) && 
+                $scope.isProjectTagSel(entity) &&
                 !$scope.isProjectTagDirectlyRelated(entity)){
               return;
             }
@@ -1681,7 +1697,7 @@
                   $scope.data.newFileProjectTags = [];
               });
           };
-          
+
           $scope.addProjectTag = function(){
             var newTag = $scope.data.form.projectTagToAdd;
             var nameComps = newTag.tagType.split('.');
@@ -1940,7 +1956,7 @@
           $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
           };
-          
+
           $scope.ui.addingTag = false;
           $scope.ui.tagTypes = [
               {label: 'Model Config',
@@ -2032,7 +2048,7 @@
              }
            );
           };
-          
+
           $scope.addProjectTag = function(){
             var newTag = $scope.data.form.projectTagToAdd;
             var nameComps = newTag.tagType.split('.');

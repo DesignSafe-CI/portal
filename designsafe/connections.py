@@ -11,6 +11,7 @@ connections.configure(
         'sniff_on_start': True,
         'sniff_on_connection_fail': True,
         'sniffer_timeout': 60,
+        'sniff_timeout': 10,
         'retry_on_timeout': True,
         'timeout:': 20,
     }
