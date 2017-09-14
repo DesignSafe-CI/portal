@@ -600,7 +600,6 @@ var MapSidebarCtrl = function () {
     this.GeoDataService = GeoDataService;
     this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
-
     this.settings = this.GeoSettingsService.settings;
 
     //method binding for callback, sigh...
@@ -1261,7 +1260,7 @@ var GeoDataService = function () {
           canvas.width = img.width * ratio;
           canvas.height = img.height * ratio;
           ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
-          res(canvas.toDataURL());
+          res(canvas.toDataURL('image/jpeg', 0.8));
         };
       });
     }
@@ -1419,12 +1418,11 @@ var GeoDataService = function () {
             _this5._resize_image(file, 100, 100).then(function (resp) {
               thumb = resp;
             }).then(function () {
-              return _this5._resize_image(file, 400, 400);
+              return _this5._resize_image(file, 300, 300);
             }).then(function (resp) {
               preview = resp;
               var marker = _this5._make_image_marker(lat, lon, thumb, preview, null);
               if (agave_file) {
-                console.log(agave_file);
                 marker.options.href = agave_file._links.self.href;
               }
               res([marker]);
@@ -1779,4 +1777,4 @@ exports.default = mod;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=bundle.48b5ea7861006b0a83cc.js.map

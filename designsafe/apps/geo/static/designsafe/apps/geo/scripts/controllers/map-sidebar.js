@@ -20,9 +20,8 @@ export default class MapSidebarCtrl {
     this.GeoDataService = GeoDataService;
     this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
-
     this.settings = this.GeoSettingsService.settings;
-
+    
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
     // this.open_db_modal = this.open_db_modal.bind(this);

@@ -26,7 +26,7 @@ export default class GeoDataService {
     }
     this.active_project = project;
   }
-
+  
   _resize_image (blob, max_width=400, max_height=400) {
     return this.$q( (res, rej) => {
       let base64 = this._arrayBufferToBase64(blob);
@@ -56,7 +56,7 @@ export default class GeoDataService {
         canvas.width = img.width * ratio;
         canvas.height = img.height * ratio;
         ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
-        res(canvas.toDataURL());
+        res(canvas.toDataURL('image/jpeg', 0.8));
       };
     });
   }
@@ -196,12 +196,11 @@ export default class GeoDataService {
         this._resize_image(file, 100, 100).then( (resp)=>{
           thumb = resp;
         }).then( ()=>{
-          return this._resize_image(file, 400, 400);
+          return this._resize_image(file, 300, 300);
         }).then( (resp)=>{
           preview = resp;
           let marker = this._make_image_marker(lat, lon, thumb, preview, null);
           if (agave_file) {
-            console.log(agave_file);
             marker.options.href = agave_file._links.self.href;
           }
           res([marker]);

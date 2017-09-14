@@ -94,7 +94,7 @@ services:
       - worker:worker
       - rabbitmq:rabbitmq
     volumes:
-      - .:/portal
+      - ../../.:/srv/www/designsafe
       - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - /var/www/designsafe-ci.org/static
       - /var/www/designsafe-ci.org/media
@@ -170,7 +170,7 @@ services:
       - mysql:mysql
       - rabbitmq:rabbitmq
     volumes:
-      - .:/portal
+      - ../../.:/srv/www/designsafe
       - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     dns:
       - 8.8.8.8
