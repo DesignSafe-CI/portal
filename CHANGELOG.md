@@ -1,5 +1,34 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.0.0
+
+Updates:
+
+- Django == 1.10
+- Django-cms == 3.3
+- Elasticsearch == 5.x
+- Celery == 4.x
+
+Improvements:
+
+- First version of API REST end point to manage projects
+- HazMapper metrics
+- Rapid admin interface
+- QGIS
+- "Other" selections for experiments
+- "Other" data model for projects
+- Re-organizing config files and docker-compose files
+
+Fixes:
+
+- Folder download button disabled
+- Using correct EZID shoulder
+- Re-organizing projects view
+- Re-organizing published view
+- Updating Elasticsearch filtered queries
+- Fix various task errors
+- Rapid admin links
+
 ## v1.1.0
 
 Features:
@@ -13,7 +42,7 @@ Improvements:
 - Adding New Relic monitoring
 - Improving Agave client creation
 
-- Fixes:
+Fixes:
 
 - Project metadata serialization
 
