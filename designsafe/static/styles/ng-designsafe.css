@@ -297,6 +297,7 @@
   margin: 0 10px 10px 0;
   text-decoration: none;
   -webkit-transition: color 0.2s;
+  transition: color 0.2s;
 }
 
 .tag-item.deleted {
@@ -379,9 +380,10 @@
 	right:10%;
 }
 
-@media (min-width: 768px)
-.modal-dialog.modal-md {
-    width:800px;
+@media (min-width: 768px) {
+    .modal-dialog.modal-md {
+        width:800px;
+    }
 }
 
 tr.experiment-deleted {
@@ -648,4 +650,8 @@ span.tag-title {
 
 .modal-body .modal-row .det-val {
     text-align:left;
+}
+
+a[ng-click]:hover {
+    cursor: pointer;
 }
