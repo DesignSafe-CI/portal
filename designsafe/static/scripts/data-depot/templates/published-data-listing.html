@@ -16,7 +16,7 @@
           </tr>
           <tr>
             <th>Date of Publication</th>
-            <td>{{browser.listing.project.lastUpdated}}</td>
+            <td>{{project.lastUpdated}}</td>
           </tr>
           <tr>
             <th>DOI</th>
@@ -34,9 +34,7 @@
         <tbody>
           <tr>
             <th>PI</th>
-            <td>
-              <ds-user username="project.value.pi" format="lname">
-              {{ project.value.pi }}</ds-user>
+            <td>{{project.piLabel}}
             </td>
           </tr>
           <tr>
@@ -74,7 +72,7 @@
 </div>
 
 
-<div ng-if="!browser.listing.projectId || browser.listing.project.value.projectType != 'experimental'"><!-- File Listing View -->
+<div ng-if="project.value.projectType != 'experimental' || filePathComps.length > 1"><!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()"
         data-scroll-top="scrollToTop()"
@@ -161,10 +159,10 @@
 
 </div><!-- Closing file listing view -->
 
-<div ng-if="browser.listing.projectId && browser.listing.project.value.projectType == 'experimental'">
+<div ng-if="project.value.projectType == 'experimental' && filePathComps.length <= 1">
   <div class="project">
     <div class="preview-wrapper">
-      <div ng-repeat="experiment in browser.listing.experimentsList | orderBy: 'value.title'"
+      <div ng-repeat="experiment in browser.publication.experimentsList | orderBy: 'value.title'"
            style="background:#fff;">
         <div class="dropdown entity-preview-header" id="details-{{experiment.uuid}}">
           <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
@@ -202,7 +200,7 @@
               <div style="width:49%; vertical-aligh:top; display:inline-block;">
                 <div>
                   <span style="font-weight:bold; display:inline-block; width:100px;">Authors : </span>
-                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.listing.users)">
+                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users)">
                   {{user.last_name}}, {{user.first_name}};
                   </span>
                 </div>
@@ -283,7 +281,7 @@
   </div>
 
   <div class="project-preview-entities-details">
-    <div ng-repeat="modelConfig in browser.listing.modelConfigs | orderBy: 'value.title'">
+    <div ng-repeat="modelConfig in browser.publication.modelConfigs | orderBy: 'value.title'">
       <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
         <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                 style="width:100%;">
@@ -313,7 +311,7 @@
         </div>
       </div>
     </div>
-    <div ng-repeat="sensorList in browser.listing.sensorLists | orderBy: 'value.title'">
+    <div ng-repeat="sensorList in browser.publication.sensorLists | orderBy: 'value.title'">
       <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
         <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                 style="width:100%;">
@@ -343,7 +341,7 @@
         </div>
       </div>
     </div>
-    <div ng-repeat="analysis in browser.listing.analysisList | orderBy: 'value.title'">
+    <div ng-repeat="analysis in browser.publication.analysisList | orderBy: 'value.title'">
       <div class="entity-wrapper" 
            ng-if="analysis.files.length">
         <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
@@ -395,7 +393,7 @@
         </div>
       </div>
     </div>
-    <div ng-repeat="report in browser.listing.reportsList | orderBy: 'value.title'">
+    <div ng-repeat="report in browser.publication.reportsList | orderBy: 'value.title'">
       <div class="entity-wrapper"
            ng-if="report.files.length">
         <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
