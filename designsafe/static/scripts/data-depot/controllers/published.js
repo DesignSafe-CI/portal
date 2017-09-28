@@ -382,6 +382,9 @@
                 return _.contains(ent.value.authors, usr.username);
               }
           });
+          publishers = _.sortBy(publishers, function(p){
+                         return p._ui.order;
+                       });
           _.each(publishers, function(usr, index, list){
             var str = usr.last_name + ', ' + usr.first_name;
             if (index < list.length - 1){
