@@ -200,7 +200,7 @@
               <div style="width:49%; vertical-aligh:top; display:inline-block;">
                 <div>
                   <span style="font-weight:bold; display:inline-block; width:100px;">Authors : </span>
-                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users)">
+                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users) | orderBy: ['_ui.order']">
                   {{user.last_name}}, {{user.first_name}};
                   </span>
                 </div>
