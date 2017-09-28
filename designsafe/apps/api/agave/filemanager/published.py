@@ -22,10 +22,10 @@ class PublishedFileManager(AgaveFileManager):
         path_comps = file_path.strip('/').split('/')
         if len(path_comps) < 1:
             raise ApiException(messsage='Invalid Action', status=400)
-        elif len(path_comps) == 1:
-            project_id = path_comps[0]
-            publication = Publication(project_id=project_id)
-            return publication
+        #elif len(path_comps) == 1:
+        #    project_id = path_comps[0]
+        #    publication = Publication(project_id=project_id)
+        #    return publication
         else:
             return super(PublishedFileManager, self).\
                         listing(system, file_path, offset, limit)
