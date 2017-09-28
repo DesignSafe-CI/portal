@@ -4,84 +4,83 @@
 
   app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django',
                                      'DataBrowserService', 'FileListing',
-                                     '$uibModal','$http',
+                                     '$uibModal','$http', '$stateParams',
                  function ($scope, $state, Django, DataBrowserService,
-                           FileListing, $uibModal, $http) {
-
+                           FileListing, $uibModal, $http, $stateParams) {
+  $scope.filePathComps = _.compact($stateParams.filePath.split('/'));
   $scope.browser = DataBrowserService.state();
   $scope.state = {
         loadingMore : false,
         reachedEnd : false,
         page : 0
       };
-  var projId = '';
-  if ($scope.browser.listing.projectId){
-      projId = $scope.browser.listing.projectId;
-      $scope.project = $scope.browser.listing.project;
-  } else {
-      projId = $scope.browser.listing.path.split('/')[1];
-      if (projId){
-        $http.get('/api/projects/publication/' + projId)
-          .then(function(resp){
-              $scope.browser.publication = resp.data;
-              $scope.project = resp.data.project;
-        });
-      }
-  }
-      FileListing.get({'system': 'designsafe.storage.published',
-                       'name': 'projectimage.jpg',
-                       'path': '/' + projId + '/projectimage.jpg'}).then(function(list){
-                        list.preview().then(function(data){
-                            $scope.imageHref = data.postit;
-                        });
-                      });
-  $scope.browser.listing.permissions = 'READ';
-  var _apiParams = {
-      fileMgr: 'published',
-      baseUrl: '/api/public/files'
-  };
-  if ($scope.browser.listing.projectId){
-    _.each($scope.browser.listing.eventsList, function(evt){
-        evt.files = _.map(evt.fileObjs, function(f){
-            f.system = 'designsafe.storage.published';
-            f.path = $scope.browser.listing.projectId + f.path;
-            f.permissions = 'READ';
-            return FileListing.init(f, _apiParams);
-        });
-    });
-    _.each($scope.browser.listing.modelConfigs, function(mcf){
-        mcf.files = _.map(mcf.fileObjs, function(f){
-            f.system = 'designsafe.storage.published';
-            f.path = $scope.browser.listing.projectId + f.path;
-            f.permissions = 'READ';
-            return FileListing.init(f, _apiParams);
-        });
-    });
-    _.each($scope.browser.listing.sensorLists, function(slt){
-        slt.files = _.map(slt.fileObjs, function(f){
-            f.system = 'designsafe.storage.published';
-            f.path = $scope.browser.listing.projectId + f.path;
-            f.permissions = 'READ';
-            return FileListing.init(f, _apiParams);
-        });
-    });
-    _.each($scope.browser.listing.analysisList, function(anl){
-        anl.files = _.map(anl.fileObjs, function(f){
-            f.system = 'designsafe.storage.published';
-            f.path = $scope.browser.listing.projectId + f.path;
-            f.permissions = 'READ';
-            return FileListing.init(f, _apiParams);
-        });
-    });
-    _.each($scope.browser.listing.reportsList, function(rep){
-        rep.files = _.map(rep.fileObjs, function(f){
-            f.system = 'designsafe.storage.published';
-            f.path = $scope.browser.listing.projectId + f.path;
-            f.permissions = 'READ';
-            return FileListing.init(f, _apiParams);
-        });
+  var projId = $scope.browser.listing.path.split('/')[1];
+  if (projId){
+    $http.get('/api/projects/publication/' + projId)
+      .then(function(resp){
+          $scope.browser.publication = resp.data;
+          $scope.project = resp.data.project;
+          var pi = _.find($scope.browser.publication.users, function(usr){
+            return usr.username === $scope.project.value.pi;
+          });
+          $scope.project.piLabel = pi.last_name + ', ' + pi.first_name;
+          var _apiParams = {
+            fileMgr: 'published',
+            baseUrl: '/api/public/files'
+          };
+          _.each($scope.browser.publication.eventsList, function(evt){
+              evt.files = _.map(evt.fileObjs, function(f){
+                  f.system = 'designsafe.storage.published';
+                  f.path = $scope.browser.publication.projectId + f.path;
+                  f.permissions = 'READ';
+                  return FileListing.init(f, _apiParams);
+              });
+          });
+          _.each($scope.browser.publication.modelConfigs, function(mcf){
+              mcf.files = _.map(mcf.fileObjs, function(f){
+                  f.system = 'designsafe.storage.published';
+                  f.path = $scope.browser.publication.projectId + f.path;
+                  f.permissions = 'READ';
+                  return FileListing.init(f, _apiParams);
+              });
+          });
+          _.each($scope.browser.publication.sensorLists, function(slt){
+              slt.files = _.map(slt.fileObjs, function(f){
+                  f.system = 'designsafe.storage.published';
+                  f.path = $scope.browser.publication.projectId + f.path;
+                  f.permissions = 'READ';
+                  return FileListing.init(f, _apiParams);
+              });
+          });
+          _.each($scope.browser.publication.analysisList, function(anl){
+              anl.files = _.map(anl.fileObjs, function(f){
+                  f.system = 'designsafe.storage.published';
+                  f.path = $scope.browser.publication.projectId + f.path;
+                  f.permissions = 'READ';
+                  return FileListing.init(f, _apiParams);
+              });
+          });
+          _.each($scope.browser.publication.reportsList, function(rep){
+              rep.files = _.map(rep.fileObjs, function(f){
+                  f.system = 'designsafe.storage.published';
+                  f.path = $scope.browser.publication.projectId + f.path;
+                  f.permissions = 'READ';
+                  return FileListing.init(f, _apiParams);
+              });
+          });
     });
   }
+ 
+  FileListing.get({'system': 'designsafe.storage.published',
+                   'name': 'projectimage.jpg',
+                   'path': '/' + projId + '/projectimage.jpg'}).then(function(list){
+                    list.preview().then(function(data){
+                        $scope.imageHref = data.postit;
+                    });
+                  });
+  //$scope.browser.listing.permissions = 'READ';
+
+  
   if (! $scope.browser.error){
     $scope.browser.listing.href = $state.href('publishedData', {
       system: $scope.browser.listing.system,
@@ -130,7 +129,7 @@
         if (file.system === 'nees.public'){
           $state.go('publicData', {systemId: file.system, filePath: file.path});
         } else {
-          $state.go('publishedData', {systemId: file.system, filePath: file.path});
+          $state.go('publishedData', {systemId: file.system, filePath: file.path, listing:true});
         }
       }
     };
@@ -200,11 +199,7 @@
           uuids = [uuids];
       }
       var ents = [];
-      if ($scope.browser.listing.projectId){
-          ents = $scope.browser.listing[attrib];
-      } else {
-          ents = $scope.browser.publication[attrib];
-      }
+      ents = $scope.browser.publication[attrib];
       var res = _.filter(ents, function(ent){
           if (_.intersection(uuids, ent.associationIds).length === uuids.length){
               return ent;
@@ -215,11 +210,7 @@
 
     $scope.getUserDets = function(username, noEmail){
       var users;
-      if ($scope.browser.listing.projectId){
-        users = $scope.browser.listing.users;
-      } else {
-        users = $scope.browser.publication.users;
-      }
+      users = $scope.browser.publication.users;
       var user = _.find(users, function(usr){
         return usr.username === username;
       });
