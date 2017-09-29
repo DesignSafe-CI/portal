@@ -352,12 +352,13 @@
           <div id="files-{{analysis.uuid}}" class="collapse in">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
               <div style= "width:50%; display:inline-block;">
-              <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
-              <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
-              <button class="btn btn-link btn-sm"
-                      ng-click="showText(analysis.value.description)">
-                <i class="fa fa-external-link"></i> Show
-              </button>
+                <h3 style="margin-top:0;">{{analysis.value.title}}</h3>
+                <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
+                <button class="btn btn-link btn-sm"
+                        ng-click="showText(analysis.value.description)">
+                  <i class="fa fa-external-link"></i> Show
+                </button>
+              </div>
             </div>
             <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; width:50%; display:inline-block; float:right;">
               <p style="overflow:hidden; display:block; height:20px;">
@@ -393,6 +394,7 @@
         </div>
       </div>
     </div>
+
     <div ng-repeat="report in browser.publication.reportsList | orderBy: 'value.title'">
       <div class="entity-wrapper"
            ng-if="report.files.length">
