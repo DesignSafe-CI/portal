@@ -539,10 +539,11 @@ def departments_json(request):
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def mailing_list_subscription(request, list_name):
     subscribers = ['"Name","Email"']
-    if list_name == 'announcements':
+    try:
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
-            Q(notification_preferences__announcements=True))
+            Q(**{"notification_preferences__{}".format(list_name): True}))
         subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'), u.email.encode('utf-8')) for u in su)
-
+    except TypeError as e:
+        logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')

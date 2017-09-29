@@ -2,11 +2,11 @@
     <div class="jumbotron">
         <h1>Select an app</h1>
         <p>Select an application from the tray above.</p>
-        <p>
-            This initial version of the <em>Discovery Workspace</em> allows users to
-            perform simulations and analyze data using popular open source simulation
-            codes OpenSees, ADCIRC, and OpenFOAM, as well as commercial tools such as
-            MATLAB (software license verification required).</p>
+        <p> The <em>Discovery Workspace</em> allows users to perform simulations and analyze 
+            data using popular simulation codes including OpenSees, ADCIRC, and OpenFOAM, 
+            as well as data analysis and visualization tools including Jupyter, MATLAB, 
+            Paraview and VisIt.
+        </p>
     </div>
 </div>
 <div ng-if="data.type === 'html' && data.app">
@@ -16,7 +16,7 @@
     <div class="lead alert alert-warning" ng-if="data.needsLicense">
         <h2>Software License Required</h2>
         <p>
-            The use of this application required that your have a {{data.app.license.type}}
+            The use of this application requires that you have a {{data.app.license.type}}
             license enabled for your account. Please visit the
             <a href="/account/licenses/" target="_blank">manage software licenses</a>
             section on the My Account page for details on how to enable this license.
