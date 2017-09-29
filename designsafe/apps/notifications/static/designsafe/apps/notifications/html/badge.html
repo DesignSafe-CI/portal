@@ -1,8 +1,49 @@
-<a href="{{data.notificationsurl}}" class="btn btn-link">
-    <span class="sr-only">Notifications</span>
+<div id="notification-container" class="dropdown btn btn-link">
+  <a id="dLabel" role="button" data-toggle="dropdown">
+    <i id="notification_bell" class="fa fa-bell fa-2x"></i>
     <span id="notification_badge" class="label label-as-badge"
     ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
-
       {{data.unread}}
     </span>
-</a>
+  </a>
+  <div class="arrow-up"></div>
+  <ul class="dropdown-menu notifications" role="menu" aria-labelledby="dLabel">
+    <div class="notification-heading">
+      <h3 class="menu-title">Notifications</h3>
+      <a href="{{data.notificationsurl}}">
+        <h3 class="menu-title pull-right">
+          View all
+          <i class="glyphicon glyphicon-circle-arrow-right"></i>
+        </h3>
+      </a>
+    </div>
+    <li class="divider"></li>
+    <div class="notifications-wrapper">
+      <li ng-repeat="x in data.notifications">
+          <div class="notification-item">
+            <a class="content" href="{{x.action_link}}">
+              <dl class="dl-horizontal">
+                <dt>{{x.datetime| date:'yyyy-MM-dd'}}</dt>
+                <dt>{{x.datetime| date:'HH:mm:ss Z'}}</dt>
+                <dd class="item-info">{{x.message}}</dd>
+              </dl>
+            </a>
+            <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+      </li>
+    </div>
+    <!-- <li class="divider"></li>
+    <div class="notification-footer"></div> -->
+  </ul>
+</div>
+
+<!-- <a href="{{data.notificationsurl}}" class="btn btn-link">
+    <span class="sr-only">Notifications</span>
+    <i id="notification_bell" class="fa fa-bell fa-2x"></i>
+    <span id="notification_badge" class="label label-as-badge"
+    ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
+      {{data.unread}}
+    </span>
+</a> -->
