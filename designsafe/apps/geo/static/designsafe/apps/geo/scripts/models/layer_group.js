@@ -13,7 +13,7 @@ export default class LayerGroup {
 
   get_feature_type (f) {
     // debugger
-    if (f.options.image_src) {
+    if (f.options.thumb_src) {
       return 'Image';
     } else if (f instanceof L.Marker) {
       return 'Point';
