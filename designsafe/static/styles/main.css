@@ -668,6 +668,8 @@ table td {
   margin-top:0px;
   border-radius:1px;
   border-bottom: 1px solid #c3c3c3;
+  display: flex;
+  justify-content: space-between;
 }
 
 .notification-item:hover {
@@ -680,6 +682,14 @@ table td {
   max-width: 31em;
 }
 
+.notif-close-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .notif-close {
-  display: inline-block;
+  display: block;
+  flex-shrink: 1;
+  margin: 0 auto;
 }

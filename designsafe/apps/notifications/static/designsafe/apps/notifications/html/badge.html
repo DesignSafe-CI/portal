@@ -28,9 +28,11 @@
                 <dd class="item-info">{{x.message}}</dd>
               </dl>
             </a>
-            <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <div class="notif-close-wrapper">
+              <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
           </div>
       </li>
     </div>
