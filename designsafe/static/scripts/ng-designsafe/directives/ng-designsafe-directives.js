@@ -59,8 +59,10 @@
             }
 
             var b64 = btoa(raw);
-
             attrs.$set('src', "data:image/jpeg;base64," + b64);
+          })
+          .error(function (error) {
+            console.log(error);
           });
       }
     };

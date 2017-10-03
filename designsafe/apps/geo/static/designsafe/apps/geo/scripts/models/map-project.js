@@ -58,16 +58,9 @@ export default class MapProject {
           'description',
           'image_src',
           'thumb_src',
-          'original_src',
+          'href',
         ];
 
-        // //add in any options
-        // if (feature.options.image_src) {
-        //   json.properties.image_src = feature.options.image_src;
-        // }
-        // if (feature.options.thumb_src) {
-        //   json.properties.thumb_src = feature.options.thumb_src;
-        // }
         for (let key in feature.options) {
           if (opt_keys.indexOf(key) !== -1) {
             json.properties[key] = feature.options[key];

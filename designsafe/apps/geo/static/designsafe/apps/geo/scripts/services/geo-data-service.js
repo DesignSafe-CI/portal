@@ -5,10 +5,11 @@ import MapProject from '../models/map-project';
 
 export default class GeoDataService {
 
-  constructor ($http, $q, UserService, GeoSettingsService) {
+  constructor ($http, $q, $rootScope, UserService, GeoSettingsService) {
     'ngInject';
     this.$http = $http;
     this.$q = $q;
+    this.$rootScope = $rootScope;
     this.UserService = UserService;
     this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
@@ -25,7 +26,7 @@ export default class GeoDataService {
     }
     this.active_project = project;
   }
-
+  
   _resize_image (blob, max_width=400, max_height=400) {
     return this.$q( (res, rej) => {
       let base64 = this._arrayBufferToBase64(blob);
@@ -55,7 +56,7 @@ export default class GeoDataService {
         canvas.width = img.width * ratio;
         canvas.height = img.height * ratio;
         ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, canvas.width, canvas.height);
-        res(canvas.toDataURL());
+        res(canvas.toDataURL('image/jpeg', 0.8));
       };
     });
   }
@@ -106,18 +107,27 @@ export default class GeoDataService {
   _from_json (blob) {
     return this.$q( (res, rej) => {
       if (blob.ds_map) return res(this._from_dsmap(blob));
-
       try {
         let features = [];
         let options = {
           pointToLayer: (feature, latlng)=> {
-              return L.marker(latlng, {icon: this.HazmapperDivIcon});
+            return L.marker(latlng, {icon: this.HazmapperDivIcon});
           }
         };
         L.geoJSON(blob, options).getLayers().forEach( (layer) => {
-          for (let key in layer.feature.properties) {
-            layer.options[key] = layer.feature.properties[key];
+
+
+          let props = layer.feature.properties;
+          if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
+            let latlng = layer.getLatLng();
+            layer = this._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
+            // feat.options.image_src = feat.feature.properties.image_src;
+            // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }
+          for (let key in props) {
+            layer.options[key] = props[key];
+          }
+
           features.push(layer);
         });
         res(features);
@@ -139,27 +149,35 @@ export default class GeoDataService {
     });
   }
 
-  _make_image_marker (lat, lon, thumb, preview, original) {
+  _make_image_marker (lat, lon, thumb, preview, href=null) {
     let icon = L.divIcon({
       iconSize: [40, 40],
-      html: "<div class='image' style='background:url(" + original + ");background-size: 100% 100%'></div>",
+      html: "<div class='image' style='background:url(" + thumb + ");background-size: 100% 100%'></div>",
       className: 'leaflet-marker-photo'
     });
 
+    let tmpl = "<img src=" + preview + ">";
+
     let marker = L.marker([lat, lon], {icon: icon})
-          .bindPopup("<img src=" + preview + "><a target=blank onclick='window.open(this.href)' href=" + original + ">full res</a>",
+          .bindPopup(tmpl,
               {
                 className: 'leaflet-popup-photo',
                 maxWidth: "auto",
                 // maxHeight: 400
               });
+    marker.on('popupopen', (e)=> {
+      this.$rootScope.$broadcast("image_popupopen", marker);
+    });
+    marker.on('popupclose', (e)=> {
+      this.$rootScope.$broadcast("image_popupclose", marker);
+    });
     marker.options.image_src = preview;
     marker.options.thumb_src = thumb;
-    marker.options.original_src = original;
+    marker.options.href = href;
     return marker;
   }
 
-  _from_image (file) {
+  _from_image (file, agave_file=null) {
     return this.$q( (res, rej) => {
       try {
         let exif = EXIF.readFromBinaryFile(file);
@@ -173,16 +191,18 @@ export default class GeoDataService {
         if ((lat > 90) || (lat < -90) || (lon > 360) || (lon < -360)) {
           rej('Bad EXIF GPS data');
         }
-        let encoded = this._arrayBufferToBase64(file);
         let thumb = null;
         let preview = null;
         this._resize_image(file, 100, 100).then( (resp)=>{
           thumb = resp;
         }).then( ()=>{
-          return this._resize_image(file, 400, 400);
+          return this._resize_image(file, 300, 300);
         }).then( (resp)=>{
           preview = resp;
-          let marker = this._make_image_marker(lat, lon, thumb, preview, encoded);
+          let marker = this._make_image_marker(lat, lon, thumb, preview, null);
+          if (agave_file) {
+            marker.options.href = agave_file._links.self.href;
+          }
           res([marker]);
         });
       } catch (e) {
@@ -220,9 +240,8 @@ export default class GeoDataService {
             layer.feature.properties.opacity = 1.0;
           };
 
-          for (let key in layer.feature.properties) {
-            layer.options[key] = layer.feature.properties[key];
-          }
+          let props = layer.feature.properties;
+
           try {
             let styles = {
               fillColor: layer.feature.properties.fillColor,
@@ -243,11 +262,14 @@ export default class GeoDataService {
             // feat.options.image_src = feat.feature.properties.image_src;
             // feat.options.thumb_src = feat.feature.properties.thumb_src;
           }
-          // if ( (layer instanceof L.Marker) && (!(layer.feature.properties.image_src)) ) {
-          //   layer.getElement().style.color = layer.feature.properties.fillColor;
-          // }
+
+          // Add in the properties that were on the feature
+          for (let key in props) {
+            layer.options[key] = props[key];
+          }
+
           project.layer_groups[layer_group_index].feature_group.addLayer(layer);
-          layer.options.label = d.properties.label;
+          // layer.options.label = d.properties.label;
         });
 
       });
@@ -344,10 +366,10 @@ export default class GeoDataService {
           p = this._from_gpx(resp.data);
           break;
         case 'jpeg':
-          p = this._from_image(resp.data);
+          p = this._from_image(resp.data, f);
           break;
         case 'jpg':
-          p = this._from_image(resp.data);
+          p = this._from_image(resp.data, f);
           break;
         case 'dsmap':
           p = this._from_dsmap(resp.data);
