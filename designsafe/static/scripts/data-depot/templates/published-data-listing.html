@@ -200,7 +200,7 @@
               <div style="width:49%; vertical-aligh:top; display:inline-block;">
                 <div>
                   <span style="font-weight:bold; display:inline-block; width:100px;">Authors : </span>
-                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users) | orderBy: ['_ui.order']">
+                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users) | orderBy: sortUsers(experiment)">
                   {{user.last_name}}, {{user.first_name}};
                   </span>
                 </div>
@@ -208,29 +208,29 @@
                   <button class="btn btn-info btn-sm"
                           ng-click="showCitation(experiment)">Citation
                   </button>
-                <a href="#details-{{getRelated('reportsList', experiment.uuid)[0].uuid}}"
+                <a href="#details-{{getRelated('reportsList', false, experiment.uuid)[0].uuid}}"
                    class="btn btn-link">
                   <span style="font-weight:bold;">Report</span>
                 </a>
                 </div>
             </div>
-            <div ng-if="!getRelated('eventsList', experiment.uuid).length"
+            <div ng-if="!getRelated('eventsList', false, experiment.uuid).length"
                  class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
               This Experiment has no Events.
             </div>
-            <div ng-repeat="event in all_events = getRelated('eventsList', experiment.uuid) | orderBy: ['_ui.order', 'value.title']"
+            <div ng-repeat="event in all_events = getRelated('eventsList', false, experiment.uuid) | orderBy: ['_ui.order', 'value.title']"
                  style="margin-bottom:10px;">
               <div style="padding:3px;">
                 <span class="ds-text-red folder-tick">Event Data: {{event.value.title}} </span>
                 <span style="color:light-gray">Link to: </span>
-                <a class="ds-text-blue" href="#details-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}"
-                   data-toggle="collapse" data-target="#files-{{getRelated('modelConfigs', [experiment.uuid])[0].uuid}}">
+                <a class="ds-text-blue" href="#details-{{getRelated('modelConfigs', event, [experiment.uuid])[0].uuid}}"
+                   data-toggle="collapse" data-target="#files-{{getRelated('modelConfigs', event, [experiment.uuid])[0].uuid}}">
                   Model Configuration
                 </a>
-                <a class="ds-text-green" href="#details-{{getRelated('sensorLists', [experiment.uuid, 
-                                               getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}"
-                   data-toggle="collapse" data-target="#files-{{getRelated('sensorLists', [experiment.uuid, 
-                                                       getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid}}">
+                <a class="ds-text-green" href="#details-{{getRelated('sensorLists', event, [experiment.uuid, 
+                                               getRelated('modelConfigs', event, [experiment.uuid])[0].uuid])[0].uuid}}"
+                   data-toggle="collapse" data-target="#files-{{getRelated('sensorLists', event, [experiment.uuid, 
+                                                       getRelated('modelConfigs', event, [experiment.uuid, event.uuid])[0].uuid])[0].uuid}}">
                   Sensor List
                 </a>
               </div>
@@ -241,14 +241,14 @@
                 </a>
               </div>
               <div>
-                <a class="ds-text-blue" href="" ng-click="viewRelations(getRelated('modelConfigs', [experiment.uuid])[0].uuid)">
-                  {{getRelated('modelConfigs', [experiment.uuid])[0].value.title}}
+                <a class="ds-text-blue" href="" ng-click="viewRelations(getRelated('modelConfigs', event, [experiment.uuid])[0].uuid)">
+                  {{getRelated('modelConfigs', event, [experiment.uuid])[0].value.title}}
                 </a>
               </div>
               <div>
-                <a class="ds-text-green" href="" ng-click="viewRelations(getRelated('sensorLists', [experiment.uuid, getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].uuid)">
-                  {{getRelated('sensorLists', [experiment.uuid, 
-                  getRelated('modelConfigs', [experiment.uuid])[0].uuid])[0].value.title}}
+                <a class="ds-text-green" href="" ng-click="viewRelations(getRelated('sensorLists', event, [experiment.uuid, getRelated('modelConfigs', event, [experiment.uuid])[0].uuid])[0].uuid)">
+                  {{getRelated('sensorLists', event, [experiment.uuid, 
+                  getRelated('modelConfigs', event, [experiment.uuid])[0].uuid])[0].value.title}}
                 </a>
               </div>
             </div>

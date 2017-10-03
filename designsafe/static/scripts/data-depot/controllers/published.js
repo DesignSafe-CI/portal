@@ -194,7 +194,7 @@
       return file.name;
     };
 
-    $scope.getRelated = function(attrib, uuids){
+    $scope.getRelated = function(attrib, entity, uuids){
       if (_.isString(uuids)){
           uuids = [uuids];
       }
@@ -205,6 +205,15 @@
               return ent;
           }
       });
+      if (entity !== false && typeof entity !== 'undefined'){
+          var _ents = entity.value[attrib];
+          var _res = _.filter(res, function(ent){
+              if (_.contains(_ents, ent.uuid)){
+                  return ent;
+              }
+          });
+          return _res;
+      }
       return res;
     };
 
@@ -228,6 +237,16 @@
             return _.contains(usernames, usr.username);
         });
       };
+
+    $scope.sortUsers = function(entity){
+        return function(user){
+            if (typeof user._ui[entity.uuid] !== 'undefined'){
+                return user._ui[entity.uuid];
+            } else {
+                return user._ui.order;
+            }
+        };
+    };
 
     $scope.viewCollabs = function(){
       $uibModal.open({
@@ -383,7 +402,11 @@
               }
           });
           publishers = _.sortBy(publishers, function(p){
-                         return p._ui.order;
+                         if (typeof p._ui[ent.uuid] !== 'undefined'){
+                             return p._ui[ent.uuid];
+                         }else {
+                             return p.ui.order;
+                         }
                        });
           _.each(publishers, function(usr, index, list){
             var str = usr.last_name + ', ' + usr.first_name;
