@@ -50,15 +50,24 @@
 
       NotificationService.processors.notifs = {
         'process': function notifyProcessor(msg){
-          $scope.data.unread++;
+          if (angular.element('#notification-container').hasClass('open')) {
+            $scope.list();
+          } else {
+            $scope.data.unread++;
+          }
           $scope.$apply();
           return;
         },
       };
 
+      $scope.initNotifications = function() {
+        $scope.list();
+      }
+
       $scope.list = function() {
         NotificationService.list().then(function(resp) {
           $scope.data.notifications = resp.notifs;
+          $scope.data.unread = 0;
 
           for (var i=0; i < $scope.data.notifications.length; i++){
             if ($scope.data.notifications[i]['event_type'] == 'job') {
@@ -88,7 +97,6 @@
       };
 
       $scope.count();
-      $scope.list();
 
       $scope.init = function() {
           $rootScope.$on('notifications:read', $scope.count());

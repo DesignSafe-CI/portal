@@ -1,5 +1,5 @@
-<div id="notification-container" class="dropdown btn btn-link">
-  <a id="dLabel" role="button" data-toggle="dropdown">
+<div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
+  <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle ng-click="::initNotifications()">
     <i id="notification_bell" class="fa fa-bell fa-2x"></i>
     <span id="notification_badge" class="label label-as-badge"
     ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
@@ -7,45 +7,41 @@
     </span>
   </a>
   <div class="arrow-up"></div>
-  <ul class="dropdown-menu notifications" role="menu" aria-labelledby="dLabel">
+  <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel">
     <div class="notification-heading">
-      <h3 class="menu-title">Notifications</h3>
-      <a href="{{data.notificationsurl}}">
+        <h3 class="menu-title">Notifications</h3>
+        <a href="{{data.notificationsurl}}">
         <h3 class="menu-title pull-right">
-          View all
-          <i class="glyphicon glyphicon-circle-arrow-right"></i>
+            View all
+            <i class="glyphicon glyphicon-circle-arrow-right"></i>
         </h3>
-      </a>
+        </a>
     </div>
     <li class="divider"></li>
     <div class="notifications-wrapper">
-      <li ng-repeat="x in data.notifications">
-          <div class="notification-item">
+        <li ng-repeat="x in data.notifications">
+            <div class="notification-item">
             <a class="content" href="{{x.action_link}}">
-              <dl class="dl-horizontal">
+                <dl class="dl-horizontal">
                 <dt>{{x.datetime| date:'yyyy-MM-dd'}}</dt>
                 <dt>{{x.datetime| date:'HH:mm:ss Z'}}</dt>
                 <dd class="item-info">{{x.message}}</dd>
-              </dl>
+                </dl>
             </a>
             <div class="notif-close-wrapper">
-              <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
+                <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
                 <span aria-hidden="true">&times;</span>
-              </button>
+                </button>
             </div>
-          </div>
-      </li>
+            </div>
+        </li>
+    </div>
+    <div ng-if="data.notifications.length == 0">
+        <li>
+        <div class="notification-item">You have no notifications.</div>
+        </li>
     </div>
     <!-- <li class="divider"></li>
     <div class="notification-footer"></div> -->
   </ul>
 </div>
-
-<!-- <a href="{{data.notificationsurl}}" class="btn btn-link">
-    <span class="sr-only">Notifications</span>
-    <i id="notification_bell" class="fa fa-bell fa-2x"></i>
-    <span id="notification_badge" class="label label-as-badge"
-    ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
-      {{data.unread}}
-    </span>
-</a> -->
