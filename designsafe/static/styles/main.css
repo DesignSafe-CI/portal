@@ -682,6 +682,24 @@ table td {
   max-width: 31em;
 }
 
+.notification-item .dl-horizontal dd {
+  margin: 0 0 0 9em;
+}
+
+.notification-item .dl-horizontal p {
+  color: #909090;
+  direction: rtl;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+  margin: 0;
+}
+
+.notification-item .dl-horizontal dt {
+  width: 7em;
+}
+
 .notif-close-wrapper {
   display: flex;
   flex-direction: column;

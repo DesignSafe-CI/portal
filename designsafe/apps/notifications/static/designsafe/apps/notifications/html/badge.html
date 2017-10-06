@@ -1,8 +1,7 @@
 <div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
   <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle ng-click="::initNotifications()">
     <i id="notification_bell" class="fa fa-bell fa-2x"></i>
-    <span id="notification_badge" class="label label-as-badge"
-    ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
+    <span id="notification_badge" class="label label-as-badge"ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
       {{data.unread}}
     </span>
   </a>
@@ -11,35 +10,43 @@
     <div class="notification-heading">
         <h3 class="menu-title">Notifications</h3>
         <a href="{{data.notificationsurl}}">
-        <h3 class="menu-title pull-right">
+          <h3 class="menu-title pull-right">
             View all
             <i class="glyphicon glyphicon-circle-arrow-right"></i>
-        </h3>
+          </h3>
         </a>
     </div>
     <li class="divider"></li>
     <div class="notifications-wrapper">
-        <li ng-repeat="x in data.notifications">
-            <div class="notification-item">
-            <a class="content" href="{{x.action_link}}">
-                <dl class="dl-horizontal">
+      <li ng-repeat="x in data.notifications">
+        <div class="notification-item">
+          <a class="content" href="{{x.action_link}}">
+              <dl class="dl-horizontal">
                 <dt>{{x.datetime| date:'MMM dd, yyyy'}}</dt>
                 <dt>{{x.datetime| date:'h:mm a'}}</dt>
-                <dd class="item-info">{{x.message}}</dd>
-                </dl>
-            </a>
-            <div class="notif-close-wrapper">
-                <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            </div>
-        </li>
+                <dd class="item-info">
+                  <span>{{x.message}}</span>
+                  <div ng-if="x.extra.path">
+                    <p uib-tooltip="{{x.extra.path}}">{{x.extra.path}}</p>
+                  </div>
+                </dd>
+                <!-- <div ng-if="x.extra.path">
+                  <dd class="item-info">{{x.extra.path}}</dd>
+                </div> -->
+              </dl>
+          </a>
+          <div class="notif-close-wrapper">
+            <button type="button" class="notif-close close" aria-label="Close" ng-click="delete(x.pk)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+      </li>
     </div>
     <div ng-if="data.notifications.length == 0">
-        <li>
+      <li>
         <div class="notification-item">You have no notifications.</div>
-        </li>
+      </li>
     </div>
     <!-- <li class="divider"></li>
     <div class="notification-footer"></div> -->
