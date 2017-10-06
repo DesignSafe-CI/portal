@@ -222,10 +222,10 @@ body.navbar-fixed {
 }
 
 @media (max-width: 767px) {
-    .global-nav {
-        background-color: #eee;
-        border-top: 2px solid #ddd;
-    }
+  .global-nav {
+    background-color: #eee;
+    border-top: 2px solid #ddd;
+  }
 }
 
 hr {
@@ -679,14 +679,14 @@ table td {
 .notification-item .dl-horizontal {
   margin:0;
   display: inline-block;
-  max-width: 31em;
+  width: 31em;
 }
 
 .notification-item .dl-horizontal dd {
   margin: 0 0 0 9em;
 }
 
-.notification-item .dl-horizontal p {
+#notif-path {
   color: #909090;
   direction: rtl;
   overflow: hidden;
@@ -710,4 +710,20 @@ table td {
   display: block;
   flex-shrink: 1;
   margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .notifications {
+    left: -6.5em;
+    width: 28.5em;
+  }
+  .notification-item .dl-horizontal {
+    width: 25.5em;
+  }
+  .notification-item .dl-horizontal div {
+    display: none;
+  }
+  .notification-item .dl-horizontal dt {
+    float: left;
+  }
 }

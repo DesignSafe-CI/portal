@@ -22,17 +22,17 @@
         <div class="notification-item">
           <a class="content" href="{{x.action_link}}">
               <dl class="dl-horizontal">
-                <dt>{{x.datetime| date:'MMM dd, yyyy'}}</dt>
-                <dt>{{x.datetime| date:'h:mm a'}}</dt>
+                <dt>{{x.datetime| date:'MMM dd, yyyy'}}<br>
+                    {{x.datetime| date:'h:mm a'}}
+                </dt>
                 <dd class="item-info">
                   <span>{{x.message}}</span>
-                  <div ng-if="x.extra.path">
-                    <p uib-tooltip="{{x.extra.path}}">{{x.extra.path}}</p>
+                  <div ng-if="x.extra.path" uib-tooltip="{{x.extra.path}}">
+                    <div id="notif-path">
+                      <bdi>{{x.extra.path}}</bdi>
+                    </div>
                   </div>
                 </dd>
-                <!-- <div ng-if="x.extra.path">
-                  <dd class="item-info">{{x.extra.path}}</dd>
-                </div> -->
               </dl>
           </a>
           <div class="notif-close-wrapper">
@@ -48,7 +48,5 @@
         <div class="notification-item">You have no notifications.</div>
       </li>
     </div>
-    <!-- <li class="divider"></li>
-    <div class="notification-footer"></div> -->
   </ul>
 </div>
