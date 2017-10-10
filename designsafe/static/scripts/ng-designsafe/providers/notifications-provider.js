@@ -92,8 +92,10 @@
         if (typeof toastViewLink !== 'undefined'){
           // toastMessage += '<a href="' + toastViewLink + '" target="_blank">View</a>';
           toast.action('View');
-          $mdToast.show(toast).then(function() {
-            window.location.href = toastViewLink;
+          $mdToast.show(toast).then(function(response) {
+            if (response == 'ok') {
+              window.location.href = toastViewLink;
+            }
           });
         } else {
           $mdToast.show(toast);
