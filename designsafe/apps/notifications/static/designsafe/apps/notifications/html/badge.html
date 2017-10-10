@@ -1,7 +1,7 @@
 <div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
   <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle ng-click="list()">
     <i id="notification_bell" class="fa fa-bell fa-2x"></i>
-    <span id="notification_badge" class="label label-as-badge"ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
+    <span id="notification_badge" class="label label-as-badge" ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
       {{data.unread}}
     </span>
   </a>
@@ -27,7 +27,7 @@
                 </dt>
                 <dd class="item-info">
                   <span>{{x.message}}</span>
-                  <div ng-if="x.extra.path" uib-tooltip="{{x.extra.path}}">
+                  <div ng-if="x.extra.path" uib-tooltip="{{x.extra.path}}" tooltip-trigger="{{{true: 'mouseenter', false: 'never'}[x.extra.path.length > 44]}}">
                     <div id="notif-path">
                       <bdi>{{x.extra.path}}</bdi>
                     </div>
