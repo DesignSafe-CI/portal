@@ -60,10 +60,6 @@
         },
       };
 
-      $scope.initNotifications = function() {
-        $scope.list();
-      };
-
       $scope.list = function() {
         NotificationService.list().then(function(resp) {
           $scope.data.notifications = resp.notifs;
@@ -102,8 +98,8 @@
 
       $scope.init = function() {
           $rootScope.$on('notifications:read', $scope.count());
-          $rootScope.$on('notifications:delete', $scope.list());
-      };
+          $rootScope.$on('notifications:delete', function() { $scope.list(); });
+        };
       $scope.init();
     }]);
 
