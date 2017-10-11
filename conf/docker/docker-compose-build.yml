@@ -1,0 +1,20 @@
+# This compose file should be used to build the next release
+# wether it's a prod or dev release, we should use this file to biuld the image.
+#
+# Rationale:
+# The Dockerfile does not lives in the root directory, hence it is easier to set
+# the correct context with docker-compose.
+# Also, this is a non-obtrusive way to keep track of the last release made either to dev/qa or prod..
+# We are tagging dev/qa releases and prod releases. In order to navigate the release
+# history, one should look at the tags in the repository.
+---
+version: "3"
+services:
+    django:
+      build:
+        context: ../../.
+        dockerfile: conf/docker/Dockerfile
+      image: designsafeci/portal:20171003
+      env_file: ../env_files/designsafe.env
+      command: /bin/bash
+      container_name: des_django_edge
