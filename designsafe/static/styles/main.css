@@ -726,4 +726,38 @@ table td {
   .notification-item .dl-horizontal dt {
     float: left;
   }
+#toast-container {
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  overflow: visible !important;
+}
+
+md-toast {
+  padding: 0 !important;
+  margin: 8px;
+}
+
+md-toast.ng-leave {
+  visibility: hidden;
+}
+
+md-toast.error .md-toast-content {
+  background: #f44336;
+  color: white;
+}
+
+md-toast.success .md-toast-content {
+  background: #4caf50;
+  color: white;
+}
+
+md-toast.warning .md-toast-content {
+  background: #EEAB2B;
+  color: white;
+}
+
+md-toast.info .md-toast-content {
+  /* background: #4caf50; */
+  color: white;
 }

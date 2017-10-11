@@ -226,9 +226,10 @@ LANGUAGES = [
 STATIC_URL = '/static/'
 STATIC_ROOT = '/var/www/designsafe-ci.org/static/'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'designsafe', 'static'),
-)
+    ('vendor', os.path.join(BASE_DIR, 'node_modules'))
+]
 #STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 STATICFILES_FINDERS = (

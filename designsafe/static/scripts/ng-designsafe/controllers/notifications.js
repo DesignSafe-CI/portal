@@ -13,7 +13,8 @@
     'django.context',
     'toastr',
     'ds.wsBus',
-    'logging'
+    'logging',
+    'ngMaterial'
   );
 
   app.config(['WSBusServiceProvider', '$httpProvider', 'toastrConfig',
@@ -99,7 +100,7 @@
       $scope.init = function() {
           $rootScope.$on('notifications:read', $scope.count());
           $rootScope.$on('notifications:delete', function() { $scope.list(); });
-        };
+      };
       $scope.init();
     }]);
 
