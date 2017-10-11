@@ -41,7 +41,6 @@ class PublicDataListView(BaseApiView):
     def get(self, request, file_mgr_name,
             system_id=None, file_path=None):
         """GET handler."""
-        logger.info('file_mgr_name: %s', file_mgr_name)
         if file_mgr_name not in [PublicElasticFileManager.NAME,
                                  'community',
                                  'published']:

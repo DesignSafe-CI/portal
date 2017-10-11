@@ -114,6 +114,11 @@
         );
     });
 
+    $http.get('/api/projects/publication/' + projectId)
+      .then(function(resp){
+          $scope.data.publication = resp.data;
+      });
+
     $scope.showText = function(text){
         $uibModal.open({
             template: '<div class="modal-header">' +
