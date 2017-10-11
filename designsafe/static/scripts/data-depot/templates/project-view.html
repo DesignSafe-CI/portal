@@ -10,7 +10,7 @@
                   ng-click="showText(data.project.value.description)">
             <i class="fa fa-external-link"></i> Show</button>
             -->
-        <div style="width:50%; display:inline-block;">
+        <div style="width:50%;">
         <table class="table" style="margin-bottom:0;">
             <tbody>
             <tr>
@@ -18,20 +18,31 @@
               <td>{{data.project.value.projectId}}</td>
             </tr>
             <tr>
+              <th>PI</th>
+              <td><ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user></td>
+            <td>
+              <button class="btn btn-sm btn-default"
+                      ng-click="manageCollabs($event)">Manage Team Members</button>
+            </td>
+            </tr>
+            <tr>
               <th>Date of Publication</th>
-              <td>(Appears here when published)</td>
+              <td ng-if="!data.publication.created">(Appears here when published)</td>
+              <td ng-if="data.publication.created">{{data.publication.created|date:'yyyy/MMM/d'}}</td>
             </tr>
             <tr>
               <th>DOI</th>
-              <td>(Appears here when published)</td>
+              <td ng-if="!data.publication.project.doi">(Appears here when published)</td>
+              <td ng-if="data.publication.project.doi">{{data.publication.project.doi}}</td>
             </tr>
             <tr>
               <th>Created</th>
-              <td>{{data.project.created}}</td>
+              <td>{{data.project.created| date: 'yyyy/MMM/d' }}</td>
             </tr>
             </tbody>
         </table>
         </div>
+        <!--
         <div style="width:49%; display:inline-block; vertical-align:top;">
           <table class="table" style="margin-bottom:0;">
             <tbody>
@@ -41,6 +52,7 @@
               </tr>
             </tbody>
           </table>
+          -->
             <!--<div style="width:350px; height:100px; overflow:hidden;">
                 <img width="350" ng-src="{{ previewHref }}"
                      ng-if="previewHref && state.showPreviewListing"/>
@@ -48,7 +60,7 @@
                   <i class="fa fa-spin fa-spinner"></i> Loading ...
                 </div>
             </div>-->
-        </div>
+        <!--</div>-->
 
         <div class="btn-group" role="group" aria-label="Listing views"
              ng-if="!state.publishPipeline">
@@ -76,7 +88,9 @@
         <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;"
              ng-if="state.showMainListing">
             <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
+            <!--
             <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
+            -->
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
                     ng-click="manageExperiments($event)"
                     ng-if="data.project.value.projectType != 'other'">
@@ -84,6 +98,7 @@
                 Manage Experiments
             </button>
         </div>
+
         </div>
 
         <div style="text-align:center;"

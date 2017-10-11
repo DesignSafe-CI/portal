@@ -112,12 +112,14 @@
             });
         }
         );
+    })
+    .then(function(){
+      $http.get('/api/projects/publication/' + $scope.data.project.value.projectId)
+        .then(function(resp){
+            $scope.data.publication = resp.data;
+        });
     });
 
-    $http.get('/api/projects/publication/' + projectId)
-      .then(function(resp){
-          $scope.data.publication = resp.data;
-      });
 
     $scope.showText = function(text){
         $uibModal.open({
