@@ -726,6 +726,7 @@ table td {
   .notification-item .dl-horizontal dt {
     float: left;
   }
+}
 #toast-container {
   position: fixed;
   bottom: 0;
