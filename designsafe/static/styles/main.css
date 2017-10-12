@@ -762,3 +762,7 @@ md-toast.info .md-toast-content {
   /* background: #4caf50; */
   color: white;
 }
+
+li .popover.right {
+  width: 185px;
+}
