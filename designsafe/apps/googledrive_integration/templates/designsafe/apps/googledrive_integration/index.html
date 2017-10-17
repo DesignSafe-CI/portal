@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Google Drive Integration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="headline headline-research">Google Drive Integration</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel {% if googledrive_enabled and googledrive_connection %}panel-success{% elif googledrive_enabled %}panel-warning{% else %}panel-default{% endif %}">
+                {% if googledrive_enabled %}
+                    <div class="panel-heading">Google Drive Enabled</div>
+                {% else %}
+                    <div class="panel-heading">Google Drive NOT Enabled</div>
+                {% endif %}
+                <div class="panel-body">
+                {% if googledrive_enabled %}
+                    {% if googledrive_connection %}
+                        <p>
+                            Google Drive integration is enabled. DesignSafe can connect to
+                            Google Drive as <em>{{googledrive_connection.displayName}} ({{googledrive_connection.emailAddress}})</em>.
+                        </p>
+                    {% else %}
+                        <p class="text-warning">
+                            While you have previously authorized DesignSafe to connect
+                            to your Google Drive account, the connection test failed for some
+                            reason. You may have revoked access from your Google Drive Account
+                            Security page. To fix this, first disconnect Google Drive integration
+                            and then re-enable.
+                        </p>
+                    {% endif %}
+                    <a href="{% url 'googledrive_integration:disconnect' %}" class="btn btn-default">Disconnect Google Drive</a>
+                {% else %}
+                    <p>
+                        Google Drive integration is not enabled for your account. Click below
+                        to configure DesignSafe/Google Drive integration.
+                    </p>
+                    <a href="{% url 'googledrive_integration:initialize_token' %}" class="btn btn-default">Setup Google Drive</a>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <p class="lead">
+                <em class="label label-success">New!</em>
+                By connecting your Google Drive account with DesignSafe, you can access your
+                Google Drive files in the DesignSafe Data Depot. You can select files and
+                folders to copy to DesignSafe where you can operate on those files in the
+                Discovery Workspace. You can also send files from DesignSafe back to Google Drive.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

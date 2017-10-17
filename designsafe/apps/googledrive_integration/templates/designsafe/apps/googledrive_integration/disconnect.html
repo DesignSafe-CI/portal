@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Google Drive Integration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Disconnect Google Drive</h1>
+
+    <p class="lead">
+        By disconnecting your Google Drive account from DesignSafe, you will no longer be able
+        to browse files from Google Drive on DesignSafe. This <strong>will not</strong>
+        delete any files from either DesignSafe or Google Drive. What <strong>will</strong> happen
+        is that you will be removing the authorization you granted DesignSafe to manage files
+        and folders in your Google Drive account.
+    </p>
+    <p class="alert alert-info">
+        To reiterate, this will not delete any files. If you wish to delete the files from either
+        your Google Drive storage or your DesignSafe storage you will need to do that manually.
+    </p>
+    <p class="alert alert-warning">
+        You will still see DesignSafe on your Google Drive Account Security page. Be assured that
+        by disconnecting your account here DesignSafe will no longer be able to act on your
+        Google Drive account. If you wish, click "Forget App" on the Google Drive Account Security page
+        to ensure access has been revoked.
+    </p>
+    <hr>
+    <p class="lead">
+        If you would like to disconnect your Google Drive account from DesignSafe, you can
+        do so by clicking the button below.
+    </p>
+    <form action="{% url 'googledrive_integration:disconnect' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-lg btn-danger">Disconnect Google Drive</button>
+            <a href="{% url 'googledrive_integration:index' %}" class="btn btn-lg btn-default">Cancel</a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
