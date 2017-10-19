@@ -48,7 +48,7 @@ urlpatterns = [
                                     namespace='designsafe_search')),
     url(r'^geo/', include('designsafe.apps.geo.urls',
                                     namespace='designsafe_geo')),
-    url(r'^rapid/', include('designsafe.apps.rapid.urls',
+    url(r'^recon-portal/', include('designsafe.apps.rapid.urls',
                                     namespace='designsafe_rapid')),
 
 
