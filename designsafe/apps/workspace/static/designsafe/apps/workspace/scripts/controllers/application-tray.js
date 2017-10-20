@@ -1,8 +1,8 @@
 (function(window, angular, $, _) {
   "use strict";
   angular.module('designsafe').controller('ApplicationTrayCtrl',
-    ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', 'toastr', function(
-      $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, toastr) {
+    ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', 'toastr', '$mdToast', function(
+      $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, toastr, $mdToast) {
 
       $scope.tabs = [];
 
@@ -72,16 +72,28 @@
                   if (response.data[0].value.definition.available){
                     $scope.launchApp(response.data[0]);
                   } else {
-                    toastr.warning($translate.instant('error_app_disabled'));
+                    $mdToast.show($mdToast.simple()
+                    .content($translate.instant('error_app_disabled'))
+                    .toastClass('warning')
+                    .parent($("#toast-container")));
+                    // toastr.warning($translate.instant('error_app_disabled'));
                   }
                 } else {
-                  toastr.warning($translate.instant('error_app_run'));
+                  $mdToast.show($mdToast.simple()
+                  .content($translate.instant('error_app_run'))
+                  .toastClass('warning')
+                  .parent($("#toast-container")));
+                  // toastr.warning($translate.instant('error_app_run'));
                 }
               },
               function(response){
-                toastr.warning($translate.instant('error_app_run'));
+                $mdToast.show($mdToast.simple()
+                .content($translate.instant('error_app_run'))
+                .toastClass('warning')
+                .parent($("#toast-container")));
+                // toastr.warning($translate.instant('error_app_run'));
               }
-            )
+            );
         }
 
         $scope.addDefaultTabs({'name': $translate.instant('apps_metadata_name')})

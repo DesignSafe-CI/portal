@@ -54,9 +54,9 @@
                 $scope.data.pagination.show = true;
                 $scope.data.pagination.current = $scope.data.pagination.page + 1;
             }
-            console.log('$scope', $scope)
+            console.log('$scope', $scope);
 
-            $rootScope.$emit('notifications:read', 'all')
+            $rootScope.$emit('notifications:read', 'all');
         });
       };
       $scope.list();
@@ -64,6 +64,7 @@
       $scope.delete = function(pk){
         NotificationService.delete(pk).then(function(resp) {
           $scope.list();
+          $rootScope.$emit('notifications:delete');
         });
       };
 

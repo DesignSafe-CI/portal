@@ -59,8 +59,10 @@
             }
 
             var b64 = btoa(raw);
-
             attrs.$set('src', "data:image/jpeg;base64," + b64);
+          })
+          .error(function (error) {
+            console.log(error);
           });
       }
     };
@@ -267,10 +269,10 @@
         var navbar = $('.navbar-ds');
 		var offsetTop = 0;
         $win.on('scroll', function (e) {
-            offsetTop = $('.site-banner').height() + (navbar.height() / 2);
-           if ($win.scrollTop() >= offsetTop) {
+            offsetTop = $('.site-banner').outerHeight() + parseInt(navbar.css('margin-bottom'));
+           if ($win.scrollTop() > offsetTop) {
             element.addClass(topClass);
-			element.css({top: navbar.position().top + navbar.height()});
+			element.css({top: navbar.position().top + navbar.outerHeight()});
           } else {
             element.removeClass(topClass);
           }

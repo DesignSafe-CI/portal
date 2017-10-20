@@ -92,7 +92,7 @@ class Publication(object):
                                           PublicationIndexed.search(),
                                           page_size=100)
         list_search._search.query = Q({"match_all":{}})
-        list_search.sort({'projectId._exact': 'asc'})
+        list_search.sort({'created': {'order': 'asc'}})
         #s = PublicationIndexed.search()
         #s.query = Q({"match_all":{}})
         #try:
@@ -455,21 +455,6 @@ class PublicElasticFileManager(BaseFileManager):
         file_path = file_path or '/'
         listing = PublicObject.listing(system, file_path, offset, limit)
         publications = Publication.listing()
-        #children = [{'agavePath': 'agave://designsafe.storage.published/{}'.format(pub.project.value.projectId),
-        #             'children': [],
-        #             'deleted': False,
-        #             'format': 'folder',
-        #             'length': 24731027,
-        #             'meta': {
-        #                 'title': pub.project['value']['title']
-        #             },
-        #             'name': pub.project.value.projectId,
-        #             'path': '/{}'.format(pub.project.value.projectId),
-        #             'permissions': 'READ',
-        #             'project': pub.project.value.projectId,
-        #             'system': 'designsafe.storage.published',
-        #             'systemId': 'designsafe.storage.published',
-        #             'type': 'dir'} for pub in publications]
         if file_path == '/':
             listing.children = itertools.chain(publications, listing.children)
 

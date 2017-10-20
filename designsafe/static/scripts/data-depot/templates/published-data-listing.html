@@ -1,7 +1,7 @@
 <dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
 <!-- Published View -->
 <div class="project">
-  <div class="project-detail">
+  <div class="project-detail" style="background:white;">
     <h2>{{ project.value.title }}</h2>
     <p><strong>Description</strong></p>
     <p>
@@ -15,20 +15,34 @@
             <td>{{project.value.projectId}}</td>
           </tr>
           <tr>
+            <th>PI</th>
+            <td>{{project.piLabel}}
+            </td>
+            <td>
+              <button class="btn btn-sm btn-default"
+                      ng-click="viewCollabs($event)">View Team Members</button>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <button class="btn btn-info btn-sm"
+                      ng-click="showCitation(project)">Citation
+              </button>
+            <th>
+            <td></td>
+          </tr>
+          <tr>
             <th>Date of Publication</th>
-            <td>{{project.lastUpdated}}</td>
+            <td>{{browser.publication.created| date: 'yyyy/MMM/d'}}</td>
           </tr>
           <tr>
             <th>DOI</th>
             <td>{{project.doi}}</td>
           </tr>
-          <tr>
-            <th>Created</th>
-            <td>{{project.created}}</td>
-          </tr>
         </tbody>
       </table>
     </div>
+    <!--
     <div style="width:49%; display:inline-block; vertical-align:top;">
       <table class="table" style="margin-bottom:0;">
         <tbody>
@@ -48,17 +62,21 @@
         </tbody>
       </table>
     </div>
+    -->
 
 
     <div style="vertical-align:top;">
       <div class="btn-group" role="group" aria-label="Project Actions">
         <button class="btn btn-sm btn-default" ng-click="viewProject($event)">View Project</button>
+        <!--
         <button class="btn btn-sm btn-default" ng-click="viewCollabs($event)">View Team Members</button>
+        -->
         <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
          ng-click="viewExperiments($event)">
           <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments
         </button>
       </div>
+      <!--
       <div style="width:350px; height:100px; overflow:hidden;">
         <img width="350" ng-src="{{ imageHref }}"
              ng-if="imageHref && state.showPreviewListing"/>
@@ -66,6 +84,7 @@
           <i class="fa fa-spin fa-spinner"></i> Loading ...
         </div>
       </div>
+      -->
     </div>
   </div>
   <hr>

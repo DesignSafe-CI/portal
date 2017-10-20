@@ -50,7 +50,7 @@ class FileListingView(BaseApiView):
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             logger.info(request.user.agave_oauth)
@@ -90,7 +90,7 @@ class FileMediaView(View):
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
-                    return HttpResponseForbidden('Log in required')
+                    return HttpResponseForbidden('Login required')
             else:
                 ag = request.user.agave_oauth.client
 
@@ -116,7 +116,7 @@ class FileMediaView(View):
                                                     'system_id': system_id,
                                                     'file_path': file_path})
                             encoded = u'Sorry! We were unable to preview this file due ' \
-                                      u'to a unrecognized content encoding. Please ' \
+                                      u'to an unrecognized content encoding. Please ' \
                                       u'download the file to view its contents.'
                     context['text_preview'] = encoded
                 elif f.ext in BaseFileResource.SUPPORTED_OBJECT_PREVIEW_EXTS:
@@ -141,7 +141,7 @@ class FileMediaView(View):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             agave_client = request.user.agave_oauth.client
             fm = AgaveFileManager(agave_client=agave_client)
@@ -184,7 +184,7 @@ class FileMediaView(View):
                         Notification.OPERATION: 'data_depot_file_upload',
                         Notification.STATUS: Notification.SUCCESS,
                         Notification.USER: request.user.username,
-                        Notification.MESSAGE: 'File Upload is succesfull.',
+                        Notification.MESSAGE: 'File Upload was successful.',
                         Notification.EXTRA: result_file.to_dict()
                     }
                     Notification.objects.create(**event_data)
@@ -196,7 +196,7 @@ class FileMediaView(View):
                         Notification.STATUS: Notification.ERROR,
                         Notification.USER: request.user.username,
                         Notification.MESSAGE: 'There was an error uploading one or more file(s).',
-                        Notification.EXTRA: {'system': system_id, 'path': file_path}
+                        Notification.EXTRA: {'system': system_id, 'file_path': file_path}
                     }
                     Notification.objects.create(**event_data)
                     return HttpResponseBadRequest(e.response.text)
@@ -220,7 +220,7 @@ class FileMediaView(View):
                 if file_mgr_name in ['public', 'community', 'published']:
                     ag = get_user_model().objects.get(username='envision').agave_oauth.client
                 else:
-                    return HttpResponseForbidden('Log in required')
+                    return HttpResponseForbidden('Login required')
             else:
                 ag = request.user.agave_oauth.client
 
@@ -239,7 +239,7 @@ class FileMediaView(View):
                     if body.get('system') is None:
                         external = body.get('resource')
                         if external not in ['box', 'dropbox']:
-                            return HttpResponseBadRequest("External resource nos available.")
+                            return HttpResponseBadRequest("External resource not available.")
                         external_resource_upload.apply_async(kwargs={
                             'username': request.user.username,
                             'dest_resource': external,
@@ -247,7 +247,7 @@ class FileMediaView(View):
                             'dest_file_id': body.get('path')
                         },
                         queue='files')
-                        event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This will take a few minutes.'
+                        event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This may take a few minutes.'
                         event_data[Notification.EXTRA] = {
                             'resource': external,
                             'dest_file_id': body.get('path'),
@@ -413,7 +413,7 @@ class FileMediaView(View):
                         return JsonResponse({'href': '{}?preview=true'.format(preview_url),
                                              'postit': file_listing.download_postit(force=False, lifetime=360)})
                     else:
-                        return HttpResponseBadRequest('Preview not available for this item')
+                        return HttpResponseBadRequest('Preview not available for this item.')
                 except HTTPError as e:
                     logger.exception('Unable to preview file: {file_path}'.format(file=file))
                     return HttpResponseBadRequest(e.response.text)
@@ -497,7 +497,7 @@ class FileMediaView(View):
     def delete(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             try:
@@ -567,7 +567,7 @@ class FilePermissionsView(View):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             # List permissions as the portal user rather than logged in user.
             # This also works around the issue where pems on private systems are
@@ -576,7 +576,7 @@ class FilePermissionsView(View):
             pems = fm.list_permissions(system_id, file_path)
             return JsonResponse(pems, encoder=AgaveJSONEncoder, safe=False)
 
-        return HttpResponseBadRequest("Unsupported operation")
+        return HttpResponseBadRequest("Unsupported operation.")
 
     def post(self, request, file_mgr_name, system_id, file_path):
         if request.is_ajax():
@@ -587,7 +587,7 @@ class FilePermissionsView(View):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             username = body.get('username')
@@ -608,9 +608,9 @@ class FilePermissionsView(View):
                     Notification.OPERATION: 'data_depot_share',
                     Notification.STATUS: Notification.SUCCESS,
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: 'Permissions for a file/folder is being updated.',
+                    Notification.MESSAGE: '{} permissions have been granted to {}.'.format(permission, username),
                     Notification.EXTRA: {'system': system_id,
-                                         'path': file_path,
+                                         'file_path': file_path,
                                          'username': username,
                                          'permission': permission}
                 }
@@ -635,7 +635,7 @@ class FileMetaView(View):
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == ElasticFileManager.NAME:
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             file_obj = fmgr.listing(system_id, file_path)
@@ -650,7 +650,7 @@ class FileMetaView(View):
         metadata = post_body.get('metadata', {})
         if file_mgr_name == ElasticFileManager.NAME or not metadata:
             if not request.user.is_authenticated:
-                return HttpResponseForbidden('Log in required')
+                return HttpResponseForbidden('Login required')
 
             fmgr = AgaveFileManager(agave_client=request.user.agave_oauth.client)
             try:

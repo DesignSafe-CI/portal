@@ -1,8 +1,8 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('designsafe').controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'toastr', 'Apps', 'Jobs', 'Systems',
-    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, toastr, Apps, Jobs, Systems) {
+    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'toastr', 'Apps', 'Jobs', 'Systems', '$mdToast',
+    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, toastr, Apps, Jobs, Systems, $mdToast) {
 
       $localStorage.systemChecks = {};
 
@@ -38,10 +38,18 @@
                           var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
 
                           if (diff > response.data[0].frequency){
-                            toastr.warning($translate.instant('error_system_monitor'));
+                            $mdToast.show($mdToast.simple()
+                            .content($translate.instant('error_system_monitor'))
+                            .toastClass('warning')
+                            .parent($("#toast-container")));
+                            // toastr.warning($translate.instant('error_system_monitor'));
                           }
                         } else {
-                          toastr.warning($translate.instant('error_system_monitor'));
+                          $mdToast.show($mdToast.simple()
+                          .content($translate.instant('error_system_monitor'))
+                          .toastClass('warning')
+                          .parent($("#toast-container")));
+                          // toastr.warning($translate.instant('error_system_monitor'));
                         }
                     }
                   }

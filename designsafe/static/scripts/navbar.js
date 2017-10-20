@@ -4,7 +4,7 @@
   var isCSS1Compat = ((document.compatMode || "") === "CSS1Compat");
 
   var fixer = function(e) {
-    var h = $('.site-banner').height();
+    var h = $('.site-banner').outerHeight();
     var y = supportPageOffset ? window.pageYOffset : isCSS1Compat ? document.documentElement.scrollTop : document.body.scrollTop;
     if (y > h) {
       $('.navbar-ds').addClass('navbar-fixed-top');

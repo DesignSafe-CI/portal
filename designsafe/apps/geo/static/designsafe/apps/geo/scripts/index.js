@@ -43,6 +43,4 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 
 mod.config(config);
 
-
-
 export default mod;

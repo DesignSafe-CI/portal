@@ -2,7 +2,7 @@
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
-  app.controller('DataDepotNewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', function($scope, $state, Django, ProjectService, DataBrowserService) {
+  app.controller('DataDepotNewCtrl', ['$scope', '$state', '$sce', 'Django', 'ProjectService', 'DataBrowserService', function($scope, $state, $sce, Django, ProjectService, DataBrowserService) {
 
     $scope.test = {
       enabled: Django.context.authenticated,
@@ -58,6 +58,12 @@
         $event.stopPropagation();
       }
     };
+
+    var popoverHTML = `
+    <span>Our recommended method for bulk data transfer is <a href='https://www.designsafe-ci.org/rw/user-guides/globus-data-transfer-guide/'>using Globus.</a></span>
+    `;
+    
+    $scope.popoverHTML = $sce.trustAsHtml(popoverHTML);
 
   }]);
 
