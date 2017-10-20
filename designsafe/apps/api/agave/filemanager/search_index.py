@@ -240,7 +240,7 @@ class ElasticFileManager(BaseFileManager):
             file_path = '/'
             query = Q('bool', filter=f)
         else:
-            query = Q('bool', query=q, filter=f)
+            query = Q('bool', must=q, filter=f)
     
         search = IndexedFile.search()
         search.query = query

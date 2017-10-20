@@ -405,7 +405,7 @@
                          if (typeof p._ui[ent.uuid] !== 'undefined'){
                              return p._ui[ent.uuid];
                          }else {
-                             return p.ui.order;
+                             return p._ui.order;
                          }
                        });
           _.each(publishers, function(usr, index, list){
