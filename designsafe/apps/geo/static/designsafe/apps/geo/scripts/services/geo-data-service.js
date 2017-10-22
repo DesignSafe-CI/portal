@@ -26,7 +26,7 @@ export default class GeoDataService {
     }
     this.active_project = project;
   }
-  
+
   _resize_image (blob, max_width=400, max_height=400) {
     return this.$q( (res, rej) => {
       let base64 = this._arrayBufferToBase64(blob);
@@ -177,7 +177,7 @@ export default class GeoDataService {
     return marker;
   }
 
-  _from_image (file, agave_file=null) {
+  _from_image (file, fname, agave_file=null) {
     return this.$q( (res, rej) => {
       try {
         let exif = EXIF.readFromBinaryFile(file);
@@ -202,6 +202,9 @@ export default class GeoDataService {
           let marker = this._make_image_marker(lat, lon, thumb, preview, null);
           if (agave_file) {
             marker.options.href = agave_file._links.self.href;
+            marker.options.label = agave_file.name;
+          } else {
+            marker.options.label = fname;
           }
           res([marker]);
         });
@@ -322,10 +325,10 @@ export default class GeoDataService {
             p = this._from_gpx(e.target.result);
             break;
           case 'jpeg':
-            p = this._from_image(e.target.result);
+            p = this._from_image(e.target.result, file.name);
             break;
           case 'jpg':
-            p = this._from_image(e.target.result);
+            p = this._from_image(e.target.result, file.name);
             break;
           case 'dsmap':
             p = this._from_dsmap(JSON.parse(e.target.result));
@@ -366,10 +369,10 @@ export default class GeoDataService {
           p = this._from_gpx(resp.data);
           break;
         case 'jpeg':
-          p = this._from_image(resp.data, f);
+          p = this._from_image(resp.data, f.name, f);
           break;
         case 'jpg':
-          p = this._from_image(resp.data, f);
+          p = this._from_image(resp.data, f.name, f);
           break;
         case 'dsmap':
           p = this._from_dsmap(resp.data);
@@ -395,6 +398,7 @@ export default class GeoDataService {
     document.body.removeChild(a);
   }
 
+  //TODO Fix that hard coded URL?
   save_to_depot (project, path) {
     let form = new FormData();
     let gjson = project.to_json();

@@ -21,7 +21,7 @@ export default class MapSidebarCtrl {
     this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
     this.settings = this.GeoSettingsService.settings;
-    
+
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
     // this.open_db_modal = this.open_db_modal.bind(this);
@@ -278,6 +278,28 @@ export default class MapSidebarCtrl {
       this.current_layer.setStyle(styles);
     }
   }
+
+  update_feature(layer){
+    layer.update();
+  }
+
+  metadata_save(k, v, layer) {
+    if (!(layer.options.metadata)) {
+      layer.options.metadata = [];
+    }
+    layer.options.metadata.push({
+      'key':k,
+      'value':v
+    });
+    this.adding_metadata = false;
+    this.metadata_key = null;
+    this.metadata_value = null;
+  }
+
+  metadata_delete(idx, layer) {
+    layer.options.metadata.splice(idx, 1);
+  }
+
 
   drop_feature_success (ev, data, lg) {
     console.log("drag_feature_success", ev, data, lg);

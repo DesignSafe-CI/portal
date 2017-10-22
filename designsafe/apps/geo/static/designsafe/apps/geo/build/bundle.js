@@ -179,6 +179,16 @@ var _L = __webpack_require__(17);
 
 var _L2 = _interopRequireDefault(_L);
 
+var _geoUtils = __webpack_require__(3);
+
+var GeoUtils = _interopRequireWildcard(_geoUtils);
+
+var _angular = __webpack_require__(19);
+
+var _angular2 = _interopRequireDefault(_angular);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -193,14 +203,14 @@ var MapProject = function () {
   }
 
   _createClass(MapProject, [{
-    key: "clear",
+    key: 'clear',
     value: function clear() {
       this.layer_groups.forEach(function (lg) {
         lg.feature_group.clearLayers();
       });
     }
   }, {
-    key: "get_bounds",
+    key: 'get_bounds',
     value: function get_bounds() {
       var bounds = [];
       this.layer_groups.forEach(function (lg) {
@@ -209,7 +219,7 @@ var MapProject = function () {
       return bounds;
     }
   }, {
-    key: "num_features",
+    key: 'num_features',
     value: function num_features() {
       total = 0;
       this.layer_groups.forEach(function (lg) {
@@ -217,7 +227,7 @@ var MapProject = function () {
       });
     }
   }, {
-    key: "to_json",
+    key: 'to_json',
     value: function to_json() {
       var out = {
         "type": "FeatureCollection",
@@ -239,10 +249,10 @@ var MapProject = function () {
           var json = feature.toGeoJSON();
           // These are all the keys in the options object that we need to
           // re-create the layers in the application after loading.
-          var opt_keys = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'href'];
+
 
           for (var key in feature.options) {
-            if (opt_keys.indexOf(key) !== -1) {
+            if (GeoUtils.RESERVED_KEYS.indexOf(key) !== -1) {
               json.properties[key] = feature.options[key];
             }
           };
@@ -269,10 +279,14 @@ exports.default = MapProject;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.get_file_extension = get_file_extension;
 function get_file_extension(fname) {
   return fname.split('.').pop().toLowerCase();
 }
+
+var RESERVED_KEYS = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'href', 'metadata'];
+
+exports.RESERVED_KEYS = RESERVED_KEYS;
+exports.get_file_extension = get_file_extension;
 
 /***/ }),
 /* 4 */
@@ -879,6 +893,30 @@ var MapSidebarCtrl = function () {
       }
     }
   }, {
+    key: 'update_feature',
+    value: function update_feature(layer) {
+      layer.update();
+    }
+  }, {
+    key: 'metadata_save',
+    value: function metadata_save(k, v, layer) {
+      if (!layer.options.metadata) {
+        layer.options.metadata = [];
+      }
+      layer.options.metadata.push({
+        'key': k,
+        'value': v
+      });
+      this.adding_metadata = false;
+      this.metadata_key = null;
+      this.metadata_value = null;
+    }
+  }, {
+    key: 'metadata_delete',
+    value: function metadata_delete(idx, layer) {
+      layer.options.metadata.splice(idx, 1);
+    }
+  }, {
     key: 'drop_feature_success',
     value: function drop_feature_success(ev, data, lg) {
       console.log("drag_feature_success", ev, data, lg);
@@ -1394,10 +1432,10 @@ var GeoDataService = function () {
     }
   }, {
     key: '_from_image',
-    value: function _from_image(file) {
+    value: function _from_image(file, fname) {
       var _this5 = this;
 
-      var agave_file = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var agave_file = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
       return this.$q(function (res, rej) {
         try {
@@ -1424,6 +1462,9 @@ var GeoDataService = function () {
               var marker = _this5._make_image_marker(lat, lon, thumb, preview, null);
               if (agave_file) {
                 marker.options.href = agave_file._links.self.href;
+                marker.options.label = agave_file.name;
+              } else {
+                marker.options.label = fname;
               }
               res([marker]);
             });
@@ -1552,10 +1593,10 @@ var GeoDataService = function () {
               p = _this7._from_gpx(e.target.result);
               break;
             case 'jpeg':
-              p = _this7._from_image(e.target.result);
+              p = _this7._from_image(e.target.result, file.name);
               break;
             case 'jpg':
-              p = _this7._from_image(e.target.result);
+              p = _this7._from_image(e.target.result, file.name);
               break;
             case 'dsmap':
               p = _this7._from_dsmap(JSON.parse(e.target.result));
@@ -1601,10 +1642,10 @@ var GeoDataService = function () {
             p = _this8._from_gpx(resp.data);
             break;
           case 'jpeg':
-            p = _this8._from_image(resp.data, f);
+            p = _this8._from_image(resp.data, f.name, f);
             break;
           case 'jpg':
-            p = _this8._from_image(resp.data, f);
+            p = _this8._from_image(resp.data, f.name, f);
             break;
           case 'dsmap':
             p = _this8._from_dsmap(resp.data);
@@ -1630,6 +1671,9 @@ var GeoDataService = function () {
       a.click();
       document.body.removeChild(a);
     }
+
+    //TODO Fix that hard coded URL?
+
   }, {
     key: 'save_to_depot',
     value: function save_to_depot(project, path) {
@@ -1775,6 +1819,12 @@ mod.config(config);
 
 exports.default = mod;
 
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = angular;
+
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.48b5ea7861006b0a83cc.js.map
+//# sourceMappingURL=bundle.js.map
