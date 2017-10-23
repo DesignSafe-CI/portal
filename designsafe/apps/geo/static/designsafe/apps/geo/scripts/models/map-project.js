@@ -60,6 +60,9 @@ export default class MapProject {
           }
         };
         json.layer_group_index = lg_idx;
+
+        //this strips out all the $$angular cruft
+        json = JSON.parse(angular.toJson(json));
         out.features.push(json);
       });
     });

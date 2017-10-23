@@ -121,13 +121,23 @@ export default class GeoDataService {
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();
             layer = this._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
-            // feat.options.image_src = feat.feature.properties.image_src;
-            // feat.options.thumb_src = feat.feature.properties.thumb_src;
-          }
-          for (let key in props) {
-            layer.options[key] = props[key];
           }
 
+          //add in the optional metadata / reserved props
+          layer.options.metadata = [];
+          for (let key in props) {
+
+            // if the key is not reserved for hazmapper, put it in
+            // the metadata
+            if (GeoUtils.RESERVED_KEYS.indexOf(key) === -1) {
+              layer.options.metadata.push( {
+                "key": key,
+                "value": props[key]
+              });
+            } else {
+              layer.options[key] = props[key];
+            }
+          }
           features.push(layer);
         });
         res(features);
@@ -196,7 +206,7 @@ export default class GeoDataService {
         this._resize_image(file, 100, 100).then( (resp)=>{
           thumb = resp;
         }).then( ()=>{
-          return this._resize_image(file, 300, 300);
+          return this._resize_image(file, 400, 400);
         }).then( (resp)=>{
           preview = resp;
           let marker = this._make_image_marker(lat, lon, thumb, preview, null);

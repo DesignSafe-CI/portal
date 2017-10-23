@@ -63,11 +63,30 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function get_file_extension(fname) {
+  return fname.split('.').pop().toLowerCase();
+}
+
+var RESERVED_KEYS = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'href', 'metadata'];
+
+exports.RESERVED_KEYS = RESERVED_KEYS;
+exports.get_file_extension = get_file_extension;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -112,7 +131,7 @@ var DBModalCtrl = function () {
 exports.default = DBModalCtrl;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -163,7 +182,7 @@ var LayerGroup = function () {
 exports.default = LayerGroup;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -179,11 +198,11 @@ var _L = __webpack_require__(17);
 
 var _L2 = _interopRequireDefault(_L);
 
-var _geoUtils = __webpack_require__(3);
+var _geoUtils = __webpack_require__(0);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _angular = __webpack_require__(19);
+var _angular = __webpack_require__(18);
 
 var _angular2 = _interopRequireDefault(_angular);
 
@@ -257,6 +276,9 @@ var MapProject = function () {
             }
           };
           json.layer_group_index = lg_idx;
+
+          //this strips out all the $$angular cruft
+          json = JSON.parse(_angular2.default.toJson(json));
           out.features.push(json);
         });
       });
@@ -268,25 +290,6 @@ var MapProject = function () {
 }();
 
 exports.default = MapProject;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-function get_file_extension(fname) {
-  return fname.split('.').pop().toLowerCase();
-}
-
-var RESERVED_KEYS = ['label', 'color', 'fillColor', 'fillOpacity', 'description', 'image_src', 'thumb_src', 'href', 'metadata'];
-
-exports.RESERVED_KEYS = RESERVED_KEYS;
-exports.get_file_extension = get_file_extension;
 
 /***/ }),
 /* 4 */
@@ -303,7 +306,7 @@ var _mapSidebar = __webpack_require__(11);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
-var _dbModal = __webpack_require__(0);
+var _dbModal = __webpack_require__(1);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
@@ -570,19 +573,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _layer_group = __webpack_require__(1);
+var _layer_group = __webpack_require__(2);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(2);
+var _mapProject = __webpack_require__(3);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
-var _dbModal = __webpack_require__(0);
+var _dbModal = __webpack_require__(1);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _geoUtils = __webpack_require__(3);
+var _geoUtils = __webpack_require__(0);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
@@ -618,6 +621,7 @@ var MapSidebarCtrl = function () {
 
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
+    this.feature_click = this.feature_click.bind(this);
     // this.open_db_modal = this.open_db_modal.bind(this);
 
     var streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -688,7 +692,7 @@ var MapSidebarCtrl = function () {
         object.getElement().style.color = _this.settings.default_marker_color;
         object.options.fillColor = _this.settings.default_marker_color;
       }
-
+      _this._init_map_layers();
       _this.$scope.$apply();
     });
 
@@ -737,8 +741,19 @@ var MapSidebarCtrl = function () {
     }
   }, {
     key: 'feature_click',
-    value: function feature_click(layer) {
-      console.log(layer);
+    value: function feature_click(e) {
+      var layer = e.target;
+      this.current_layer = null;
+      this.project.layer_groups.forEach(function (lg) {
+        lg.feature_group.getLayers().forEach(function (l) {
+          if (l == layer) {
+            l.active = true;
+          } else {
+            l.active = false;
+          }
+        });
+      });
+      this.$scope.$apply();
     }
   }, {
     key: '_init_map_layers',
@@ -757,31 +772,14 @@ var MapSidebarCtrl = function () {
           if (layer instanceof L.Marker && !layer.options.image_src) {
             layer.getElement().style.color = layer.options.fillColor;
           }
-        });
-      });
-      this.active_layer_group = this.project.layer_groups[0];
-    }
-
-    // Adds click handlers to map elements. This does NOT feel
-    // right to me...
-
-  }, {
-    key: '_add_click_handlers',
-    value: function _add_click_handlers() {
-      var _this3 = this;
-
-      this.project.layer_groups.forEach(function (lg) {
-        lg.feature_group.on('click', function (ev) {
-          _this3.project.layer_groups.forEach(function (lg) {
-            lg.feature_group.getLayers().forEach(function (layer) {
-              layer.active = false;
-              if (layer == ev.layer) {
-                layer.active = true;
-              }
-            });
+          layer.on({
+            click: _this2.feature_click
           });
         });
       });
+      if (!this.active_layer_group) {
+        this.active_layer_group = this.project.layer_groups[0];
+      }
     }
   }, {
     key: 'create_layer_group',
@@ -823,31 +821,47 @@ var MapSidebarCtrl = function () {
       lg.show = true;
     }
   }, {
+    key: '_deactivate_all_features',
+    value: function _deactivate_all_features() {
+      this.project.layer_groups.forEach(function (lg) {
+        lg.feature_group.getLayers().forEach(function (layer) {
+          layer.active = false;
+        });
+      });
+    }
+  }, {
     key: 'select_feature',
     value: function select_feature(lg, feature) {
+      this._deactivate_all_features();
       this.active_layer_group = lg;
-      this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
+      if (this.current_layer == feature) {
+        feature.active = false;
+        this.current_layer = null;
+      } else {
+        this.current_layer = feature;
+        feature.active = true;
+      }
     }
   }, {
     key: 'create_new_project',
     value: function create_new_project() {
-      var _this4 = this;
+      var _this3 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/confirm-new-modal.html",
         controller: "ConfirmClearModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this4.map.eachLayer(function (layer) {
+        _this3.map.eachLayer(function (layer) {
           console.log(layer);
           // this.map.removeLayer(layer);
         });
-        _this4.project.clear();
+        _this3.project.clear();
         var p = new _mapProject2.default('New Map');
         p.layer_groups = [new _layer_group2.default('New Group', new L.FeatureGroup())];
-        _this4.project = p;
-        _this4.active_layer_group = _this4.project.layer_groups[0];
-        _this4.map.addLayer(_this4.active_layer_group.feature_group);
+        _this3.project = p;
+        _this3.active_layer_group = _this3.project.layer_groups[0];
+        _this3.map.addLayer(_this3.active_layer_group.feature_group);
       });
     }
   }, {
@@ -877,13 +891,12 @@ var MapSidebarCtrl = function () {
       var feature = src_lg.feature_group.getLayers()[data.idx];
       src_lg.feature_group.removeLayer(feature);
       lg.feature_group.addLayer(feature);
+      this._init_map_layers();
     }
   }, {
     key: 'update_layer_style',
     value: function update_layer_style(prop) {
       var tmp = this.current_layer;
-      // debugger;
-      // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
       var styles = {};
       styles[prop] = this.current_layer.options[prop];
       if (tmp instanceof L.Marker) {
@@ -918,19 +931,17 @@ var MapSidebarCtrl = function () {
     }
   }, {
     key: 'drop_feature_success',
-    value: function drop_feature_success(ev, data, lg) {
-      console.log("drag_feature_success", ev, data, lg);
-    }
+    value: function drop_feature_success(ev, data, lg) {}
   }, {
     key: '_load_data_success',
     value: function _load_data_success(retval) {
-      var _this5 = this;
+      var _this4 = this;
 
       if (this.open_existing) {
         if (retval instanceof _mapProject2.default) {
           //clear off all the layers from the map
           this.project.layer_groups.forEach(function (lg) {
-            _this5.map.removeLayer(lg.feature_group);
+            _this4.map.removeLayer(lg.feature_group);
           });
 
           // set the project to be the return value
@@ -943,8 +954,8 @@ var MapSidebarCtrl = function () {
         this.open_existing = false;
       } else if (retval instanceof _mapProject2.default) {
         retval.layer_groups.forEach(function (lg) {
-          _this5.project.layer_groups.push(lg);
-          _this5.map.addLayer(lg.feature_group);
+          _this4.project.layer_groups.push(lg);
+          _this4.map.addLayer(lg.feature_group);
         });
         this.active_layer_group = this.project.layer_groups[0];
         this.fit_map_to_project();
@@ -957,9 +968,10 @@ var MapSidebarCtrl = function () {
         }
         //it will be an array of features...
         retval.forEach(function (f) {
-          _this5.active_layer_group.feature_group.addLayer(f);
+          _this4.active_layer_group.feature_group.addLayer(f);
         });
         this.fit_map_to_project();
+        this._init_map_layers();
       }
     }
   }, {
@@ -977,7 +989,7 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'open_db_modal',
     value: function open_db_modal() {
-      var _this6 = this;
+      var _this5 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
@@ -989,13 +1001,13 @@ var MapSidebarCtrl = function () {
         }
       });
       modal.result.then(function (f, saveas) {
-        _this6.load_from_data_depot(f);
+        _this5.load_from_data_depot(f);
       });
     }
   }, {
     key: 'open_image_preview_modal',
     value: function open_image_preview_modal(href) {
-      var _this7 = this;
+      var _this6 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/image-preview-modal.html",
@@ -1003,31 +1015,31 @@ var MapSidebarCtrl = function () {
         size: 'lg',
         resolve: {
           marker: function marker() {
-            return _this7.active_image_marker;
+            return _this6.active_image_marker;
           }
         }
       });
       modal.result.then(function (f, saveas) {
-        _this7.load_from_data_depot(f);
+        _this6.load_from_data_depot(f);
       });
     }
   }, {
     key: 'open_settings_modal',
     value: function open_settings_modal() {
-      var _this8 = this;
+      var _this7 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/settings-modal.html",
         controller: "SettingsModalCtrl as vm"
       });
       modal.result.then(function (s) {
-        _this8.settings = _this8.GeoSettingsService.settings;
+        _this7.settings = _this7.GeoSettingsService.settings;
       });
     }
   }, {
     key: 'open_image_overlay_modal',
     value: function open_image_overlay_modal() {
-      var _this9 = this;
+      var _this8 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/image-overlay-modal.html",
@@ -1037,11 +1049,11 @@ var MapSidebarCtrl = function () {
         var bounds = void 0;
         bounds = [[res.min_lat, res.min_lon], [res.max_lat, res.max_lon]];
         if (res.file) {
-          _this9.GeoDataService.read_file_as_data_url(res.file).then(function (data) {
+          _this8.GeoDataService.read_file_as_data_url(res.file).then(function (data) {
             console.log(data);
           });
         }
-        var overlay = L.imageOverlay(res.url, bounds).addTo(_this9.map);
+        var overlay = L.imageOverlay(res.url, bounds).addTo(_this8.map);
         console.log(overlay);
       });
     }
@@ -1055,22 +1067,22 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'load_from_data_depot',
     value: function load_from_data_depot(f) {
-      var _this10 = this;
+      var _this9 = this;
 
       this.loading = true;
       this.GeoDataService.load_from_data_depot(f.selected).then(function (retval) {
-        _this10._load_data_success(retval);
-        _this10.loading = false;
+        _this9._load_data_success(retval);
+        _this9.loading = false;
       }, function (err) {
-        _this10.toastr.error('Load failed!');
-        _this10.loading = false;
-        _this10.open_existing = false;
+        _this9.toastr.error('Load failed!');
+        _this9.loading = false;
+        _this9.open_existing = false;
       });
     }
   }, {
     key: 'local_file_selected',
     value: function local_file_selected(ev) {
-      var _this11 = this;
+      var _this10 = this;
 
       this.loading = true;
       var reqs = [];
@@ -1078,19 +1090,19 @@ var MapSidebarCtrl = function () {
         // debugger
         var file = ev.target.files[i];
         var prom = this.GeoDataService.load_from_local_file(file).then(function (retval) {
-          return _this11._load_data_success(retval);
+          return _this10._load_data_success(retval);
         });
         reqs.push(prom);
         // this.loading = false;
       };
       this.$q.all(reqs).then(function () {
-        _this11.loading = false;
+        _this10.loading = false;
         //reset the picker
         $('#file_picker').val('');
-        _this11.toastr.success('Imported file');
+        _this10.toastr.success('Imported file');
       }, function (rej) {
-        _this11.loading = false;
-        _this11.toastr.error('Load failed!');
+        _this10.loading = false;
+        _this10.toastr.error('Load failed!');
       }).then(function () {});
     }
   }, {
@@ -1101,31 +1113,31 @@ var MapSidebarCtrl = function () {
   }, {
     key: 'save_to_depot',
     value: function save_to_depot() {
-      var _this12 = this;
+      var _this11 = this;
 
       var modal = this.$uibModal.open({
         templateUrl: "/static/designsafe/apps/geo/html/db-modal.html",
         controller: "DBModalCtrl as vm",
         resolve: {
           filename: function filename() {
-            return _this12.project.name + '.geojson';
+            return _this11.project.name + '.geojson';
           }
         }
       });
       modal.result.then(function (res) {
         var newname = res.saveas;
-        _this12.project.name = newname.split('.')[0];
+        _this11.project.name = newname.split('.')[0];
         res.selected.name = res.saveas;
-        _this12.loading = true;
-        _this12.GeoDataService.save_to_depot(_this12.project, res.selected).then(function (resp) {
-          _this12.loading = false;
-          _this12.toastr.success('Saved to data depot');
+        _this11.loading = true;
+        _this11.GeoDataService.save_to_depot(_this11.project, res.selected).then(function (resp) {
+          _this11.loading = false;
+          _this11.toastr.success('Saved to data depot');
         }, function (err) {
-          _this12.toastr.error('Save failed!');
-          _this12.loading = false;
+          _this11.toastr.error('Save failed!');
+          _this11.loading = false;
         });
       }, function (rej) {
-        _this12.loading = false;
+        _this11.loading = false;
       });
     }
   }]);
@@ -1216,15 +1228,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _geoUtils = __webpack_require__(3);
+var _geoUtils = __webpack_require__(0);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _layer_group = __webpack_require__(1);
+var _layer_group = __webpack_require__(2);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(2);
+var _mapProject = __webpack_require__(3);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
@@ -1371,13 +1383,23 @@ var GeoDataService = function () {
               if (layer instanceof L.Marker && layer.feature.properties.image_src) {
                 var latlng = layer.getLatLng();
                 layer = _this3._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
-                // feat.options.image_src = feat.feature.properties.image_src;
-                // feat.options.thumb_src = feat.feature.properties.thumb_src;
-              }
-              for (var key in props) {
-                layer.options[key] = props[key];
               }
 
+              //add in the optional metadata / reserved props
+              layer.options.metadata = [];
+              for (var key in props) {
+
+                // if the key is not reserved for hazmapper, put it in
+                // the metadata
+                if (GeoUtils.RESERVED_KEYS.indexOf(key) === -1) {
+                  layer.options.metadata.push({
+                    "key": key,
+                    "value": props[key]
+                  });
+                } else {
+                  layer.options[key] = props[key];
+                }
+              }
               features.push(layer);
             });
             res(features);
@@ -1456,7 +1478,7 @@ var GeoDataService = function () {
             _this5._resize_image(file, 100, 100).then(function (resp) {
               thumb = resp;
             }).then(function () {
-              return _this5._resize_image(file, 300, 300);
+              return _this5._resize_image(file, 400, 400);
             }).then(function (resp) {
               preview = resp;
               var marker = _this5._make_image_marker(lat, lon, thumb, preview, null);
@@ -1761,6 +1783,12 @@ module.exports = L;
 
 /***/ }),
 /* 18 */
+/***/ (function(module, exports) {
+
+module.exports = angular;
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1819,12 +1847,6 @@ mod.config(config);
 
 exports.default = mod;
 
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-module.exports = angular;
-
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=bundle.eac4eef59ff570241bac.js.map
