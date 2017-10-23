@@ -2,6 +2,17 @@
   color: #000000
 }*/
 
+.site-banner {
+  display: none;
+}
+
+.navbar {
+  display: none;
+}
+
+footer {
+  display: none;
+}
 
 #geo_container {
   display: flex;
@@ -65,6 +76,10 @@
   background-color: #545454;
 }
 
+#geo_container .kv-textarea {
+  height: 30px;
+}
+
 
 .strong {
   font-family: 'Open Sans Bold',sans-serif;
@@ -101,6 +116,9 @@
   line-height: 1.25em;
 }
 
+#current_layer_details .list-group-item.menu.bg-green {
+  background-color: #479692;
+}
 
 #geo_sidebar .list-group-item.menu.active {
   border-left: 3px solid #de5b0f;
@@ -125,7 +143,7 @@
 
 }
 
-#geo_sidebar .list-group-item.subgroup.active.highlight {
+#geo_sidebar .list-group-item.subgroup.highlight {
   border: 1px solid #50dfbe;
 }
 
@@ -199,6 +217,19 @@
   width: 50%;
 }
 
+#current_layer_details .list-group-item .kv-right {
+  float: left;
+  width: 45%;
+}
+#current_layer_details .list-group-item .kv-left {
+  float: left;
+  width: 45%;
+}
+#current_layer_details .list-group-item .kv-buttons {
+  float: right;
+  width: 10%;
+}
+
 #current_layer_details .list-group-item input[type=color] {
   /*height: inherit;*/
   padding: 0px;
@@ -264,6 +295,28 @@
 	background-color: #838383;
   border-radius: 4px;
 }
+
+
+
+#current_layer_details::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+#current_layer_details::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+
+#current_layer_details::-webkit-scrollbar-thumb
+{
+	background-color: #838383;
+  border-radius: 4px;
+}
+
+
 
 #geo_container .modal-title h3 {
   color: #000;

@@ -1,4 +1,6 @@
 import L from 'L';
+import * as GeoUtils from '../utils/geo-utils';
+import angular from 'angular';
 
 export default class MapProject {
 
@@ -50,23 +52,17 @@ export default class MapProject {
         let json = feature.toGeoJSON();
         // These are all the keys in the options object that we need to
         // re-create the layers in the application after loading.
-        let opt_keys = [
-          'label',
-          'color',
-          'fillColor',
-          'fillOpacity',
-          'description',
-          'image_src',
-          'thumb_src',
-          'href',
-        ];
+
 
         for (let key in feature.options) {
-          if (opt_keys.indexOf(key) !== -1) {
+          if (GeoUtils.RESERVED_KEYS.indexOf(key) !== -1) {
             json.properties[key] = feature.options[key];
           }
         };
         json.layer_group_index = lg_idx;
+
+        //this strips out all the $$angular cruft
+        json = JSON.parse(angular.toJson(json));
         out.features.push(json);
       });
     });

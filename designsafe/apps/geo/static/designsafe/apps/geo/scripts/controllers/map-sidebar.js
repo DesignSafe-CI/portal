@@ -21,9 +21,10 @@ export default class MapSidebarCtrl {
     this.GeoSettingsService = GeoSettingsService;
     this.toastr = toastr;
     this.settings = this.GeoSettingsService.settings;
-    
+
     //method binding for callback, sigh...
     this.local_file_selected = this.local_file_selected.bind(this);
+    this.feature_click = this.feature_click.bind(this);
     // this.open_db_modal = this.open_db_modal.bind(this);
 
     let streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -95,7 +96,7 @@ export default class MapSidebarCtrl {
         object.options.fillColor = this.settings.default_marker_color;
 
       }
-
+      this._init_map_layers();
       this.$scope.$apply();
     });
 
@@ -141,8 +142,19 @@ export default class MapSidebarCtrl {
     this.drawControl = dc;
   }
 
-  feature_click (layer) {
-    console.log(layer);
+  feature_click (e) {
+    let layer = e.target;
+    this.current_layer = null;
+    this.project.layer_groups.forEach( (lg)=>{
+      lg.feature_group.getLayers().forEach( (l)=> {
+          if (l == layer) {
+            l.active = true;
+          } else {
+            l.active = false;
+          }
+      });
+    });
+    this.$scope.$apply();
   }
 
   _init_map_layers() {
@@ -158,26 +170,14 @@ export default class MapSidebarCtrl {
         if ( (layer instanceof L.Marker) && (!(layer.options.image_src)) ){
           layer.getElement().style.color = layer.options.fillColor;
         }
-      });
-    });
-    this.active_layer_group = this.project.layer_groups[0];
-  }
-
-  // Adds click handlers to map elements. This does NOT feel
-  // right to me...
-  _add_click_handlers () {
-    this.project.layer_groups.forEach( (lg) => {
-      lg.feature_group.on('click', (ev)=> {
-        this.project.layer_groups.forEach( (lg) => {
-          lg.feature_group.getLayers().forEach( (layer)=>{
-            layer.active = false;
-            if (layer == ev.layer) {
-              layer.active = true;
-            }
-          });
+        layer.on({
+          click: this.feature_click
         });
       });
     });
+    if (!(this.active_layer_group)) {
+      this.active_layer_group = this.project.layer_groups[0];
+    }
   }
 
   create_layer_group () {
@@ -214,11 +214,24 @@ export default class MapSidebarCtrl {
     lg.show = true;
   }
 
-
+  _deactivate_all_features() {
+    this.project.layer_groups.forEach( (lg)=>{
+      lg.feature_group.getLayers().forEach( (layer) => {
+        layer.active = false;
+      });
+    });
+  }
 
   select_feature(lg, feature) {
+    this._deactivate_all_features();
     this.active_layer_group = lg;
-    this.current_layer == feature ? this.current_layer = null : this.current_layer = feature;
+    if (this.current_layer == feature) {
+      feature.active = false;
+      this.current_layer = null;
+    } else {
+      this.current_layer = feature;
+      feature.active = true;
+    }
   }
 
   create_new_project () {
@@ -264,12 +277,11 @@ export default class MapSidebarCtrl {
     let feature = src_lg.feature_group.getLayers()[data.idx];
     src_lg.feature_group.removeLayer(feature);
     lg.feature_group.addLayer(feature);
+    this._init_map_layers();
   }
 
   update_layer_style (prop) {
     let tmp = this.current_layer;
-    // debugger;
-    // this.current_layer.setStyle({prop: this.current_layer.options[prop]});
     let styles = {};
     styles[prop] = this.current_layer.options[prop];
     if (tmp instanceof L.Marker) {
@@ -279,8 +291,29 @@ export default class MapSidebarCtrl {
     }
   }
 
+  update_feature(layer){
+    layer.update();
+  }
+
+  metadata_save(k, v, layer) {
+    if (!(layer.options.metadata)) {
+      layer.options.metadata = [];
+    }
+    layer.options.metadata.push({
+      'key':k,
+      'value':v
+    });
+    this.adding_metadata = false;
+    this.metadata_key = null;
+    this.metadata_value = null;
+  }
+
+  metadata_delete(idx, layer) {
+    layer.options.metadata.splice(idx, 1);
+  }
+
   drop_feature_success (ev, data, lg) {
-    console.log("drag_feature_success", ev, data, lg);
+
   }
 
   _load_data_success (retval) {
@@ -318,6 +351,7 @@ export default class MapSidebarCtrl {
         this.active_layer_group.feature_group.addLayer(f);
       });
       this.fit_map_to_project();
+      this._init_map_layers();
     }
   }
 

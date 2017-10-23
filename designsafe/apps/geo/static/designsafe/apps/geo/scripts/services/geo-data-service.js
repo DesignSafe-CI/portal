@@ -26,7 +26,7 @@ export default class GeoDataService {
     }
     this.active_project = project;
   }
-  
+
   _resize_image (blob, max_width=400, max_height=400) {
     return this.$q( (res, rej) => {
       let base64 = this._arrayBufferToBase64(blob);
@@ -121,13 +121,23 @@ export default class GeoDataService {
           if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
             let latlng = layer.getLatLng();
             layer = this._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
-            // feat.options.image_src = feat.feature.properties.image_src;
-            // feat.options.thumb_src = feat.feature.properties.thumb_src;
-          }
-          for (let key in props) {
-            layer.options[key] = props[key];
           }
 
+          //add in the optional metadata / reserved props
+          layer.options.metadata = [];
+          for (let key in props) {
+
+            // if the key is not reserved for hazmapper, put it in
+            // the metadata
+            if (GeoUtils.RESERVED_KEYS.indexOf(key) === -1) {
+              layer.options.metadata.push( {
+                "key": key,
+                "value": props[key]
+              });
+            } else {
+              layer.options[key] = props[key];
+            }
+          }
           features.push(layer);
         });
         res(features);
@@ -177,7 +187,7 @@ export default class GeoDataService {
     return marker;
   }
 
-  _from_image (file, agave_file=null) {
+  _from_image (file, fname, agave_file=null) {
     return this.$q( (res, rej) => {
       try {
         let exif = EXIF.readFromBinaryFile(file);
@@ -196,12 +206,15 @@ export default class GeoDataService {
         this._resize_image(file, 100, 100).then( (resp)=>{
           thumb = resp;
         }).then( ()=>{
-          return this._resize_image(file, 300, 300);
+          return this._resize_image(file, 400, 400);
         }).then( (resp)=>{
           preview = resp;
           let marker = this._make_image_marker(lat, lon, thumb, preview, null);
           if (agave_file) {
             marker.options.href = agave_file._links.self.href;
+            marker.options.label = agave_file.name;
+          } else {
+            marker.options.label = fname;
           }
           res([marker]);
         });
@@ -322,10 +335,10 @@ export default class GeoDataService {
             p = this._from_gpx(e.target.result);
             break;
           case 'jpeg':
-            p = this._from_image(e.target.result);
+            p = this._from_image(e.target.result, file.name);
             break;
           case 'jpg':
-            p = this._from_image(e.target.result);
+            p = this._from_image(e.target.result, file.name);
             break;
           case 'dsmap':
             p = this._from_dsmap(JSON.parse(e.target.result));
@@ -366,10 +379,10 @@ export default class GeoDataService {
           p = this._from_gpx(resp.data);
           break;
         case 'jpeg':
-          p = this._from_image(resp.data, f);
+          p = this._from_image(resp.data, f.name, f);
           break;
         case 'jpg':
-          p = this._from_image(resp.data, f);
+          p = this._from_image(resp.data, f.name, f);
           break;
         case 'dsmap':
           p = this._from_dsmap(resp.data);
@@ -395,6 +408,7 @@ export default class GeoDataService {
     document.body.removeChild(a);
   }
 
+  //TODO Fix that hard coded URL?
   save_to_depot (project, path) {
     let form = new FormData();
     let gjson = project.to_json();

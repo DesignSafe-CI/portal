@@ -33,9 +33,7 @@ module.exports = {
   },
   plugins: [
     new ngAnnotatePlugin({add:true}),
-
     new LiveReloadPlugin(),
-
   ],
 
   externals: {
