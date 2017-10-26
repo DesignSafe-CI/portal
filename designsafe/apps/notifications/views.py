@@ -71,7 +71,6 @@ def generic_webhook_handler(request):
                 'value': event_data,
                 'associationIds': [job_uuid],
             }
-            logger.info(job_owner)
             user = get_user_model().objects.get(username=job_owner)
             agave = user.agave_oauth.client
             agave.meta.addMetadata(body=json.dumps(agave_job_meta))
