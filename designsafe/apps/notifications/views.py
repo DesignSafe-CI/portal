@@ -35,12 +35,18 @@ def generic_webhook_handler(request):
         password = request.POST.get('password', '')
         address = request.POST.get('address', '')
         job_uuid = password
+
         if(host == 'designsafe-exec-01.tacc.utexas.edu'):
             target_uri = 'https://' + address + '&port=%s&autoconnect=true' % (port)
         else:
+            # target_uri = \
+            #     'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
+            #     'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
             target_uri = \
-                'https://vis.tacc.utexas.edu/no-vnc/vnc.html?' \
-                'hostname=%s&port=%s&autoconnect=true&password=%s' % (host, port, password)
+                'https://{host}/no-vnc/vnc.html?'\
+                'hostname={host}&port={port}&autoconnect=true&password={pw}' \
+                .format(host=host, port=port, pw=password)
+            logger.info(target_uri)
         event_data = {
             Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
@@ -66,6 +72,7 @@ def generic_webhook_handler(request):
                 'value': event_data,
                 'associationIds': [job_uuid],
             }
+            logger.info(job_owner)
             user = get_user_model().objects.get(username=job_owner)
             agave = user.agave_oauth.client
             agave.meta.addMetadata(body=json.dumps(agave_job_meta))
