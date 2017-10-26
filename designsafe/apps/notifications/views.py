@@ -46,7 +46,6 @@ def generic_webhook_handler(request):
                 'https://{host}/no-vnc/vnc.html?'\
                 'hostname={host}&port={port}&autoconnect=true&password={pw}' \
                 .format(host=host, port=port, pw=password)
-            logger.info(target_uri)
         event_data = {
             Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
