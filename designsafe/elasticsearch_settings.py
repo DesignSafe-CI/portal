@@ -42,7 +42,7 @@ else:
     ELASTIC_SEARCH = {
         'cluster': {
             'hosts': [
-                'elasticsearch',
+                'des_elasticsearch',
             ]
         },
         'default_index': 'designsafe',
@@ -51,7 +51,7 @@ else:
     HAYSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'elasticsearch:9200/',
+            'URL': 'des_elasticsearch:9200/',
             'INDEX_NAME': 'cms',
         }
     }

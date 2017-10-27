@@ -436,7 +436,7 @@ var RapidDataService = function () {
     key: 'get_events',
     value: function get_events(opts) {
       console.log(opts);
-      return this.$http.get('/rapid/events', opts).then(function (resp) {
+      return this.$http.get('/recon-portal/events', opts).then(function (resp) {
         resp.data.forEach(function (d) {
           d.created_date = new Date(d.created_date);
           d.event_date = new Date(d.event_date);
@@ -447,7 +447,7 @@ var RapidDataService = function () {
   }, {
     key: 'get_event_types',
     value: function get_event_types() {
-      return this.$http.get('/rapid/event-types').then(function (resp) {
+      return this.$http.get('/recon-portal/event-types').then(function (resp) {
         return resp.data;
       });
     }
@@ -461,7 +461,7 @@ var RapidDataService = function () {
         }
         var f2 = true;
         if (filter_options.search_text) {
-          f2 = item.title.substring(0, filter_options.search_text.length).toLowerCase() === filter_options.search_text.toLowerCase();
+          f2 = item.title.toLowerCase().indexOf(filter_options.search_text.toLowerCase()) !== -1;
         }
         var f3 = true;
         if (filter_options.start_date) {
@@ -547,4 +547,4 @@ exports.default = mod;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=bundle.9658dc11a576a697925d.js.map
