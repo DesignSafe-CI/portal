@@ -82,6 +82,10 @@ urlpatterns = [
     url(r'^account/applications/dropbox/', include('designsafe.apps.dropbox_integration.urls',
         namespace='dropbox_integration')),
 
+    # googledrive
+    url(r'^account/applications/googledrive/', include('designsafe.apps.googledrive_integration.urls',
+        namespace='googledrive_integration')),
+
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),
 
