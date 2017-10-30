@@ -6,18 +6,19 @@ from django.contrib.auth import get_user_model
 # from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 # from requests.exceptions import HTTPError
 import logging
+import inspect
 
 logger = logging.getLogger(__name__)
 
 
 def check_connection(username):
     """
-    Checks if the user's Dropbox.com connection is working.
+    Checks if the user's Google Drive connection is working.
     Args:
         username: The username of the User to connection test
 
     Returns:
-        The remote Box.com user record as a dict
+        The remote Google Drive user record as a dict
 
     Raises:
         BoxOAuthException: if authentication failed or if token failed to refresh
@@ -25,6 +26,8 @@ def check_connection(username):
         BoxUserToken.DoesNotExist: if token does not exist for user
     """
     user = get_user_model().objects.get(username=username)
-    client = user.box_user_token.client
-    box_user = client.user(user_id=u'me').get()
-    return box_user
+    drive = user.googledrive_user_token.client
+    request = drive.about().get(fields='user')
+    response = request.execute()
+    googledrive_user = response['user']
+    return googledrive_user

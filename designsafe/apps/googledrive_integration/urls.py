@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from designsafe.apps.dropbox_integration import views
+from designsafe.apps.googledrive_integration import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),

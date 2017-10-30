@@ -13,13 +13,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='DropboxUserToken',
+            name='GoogleDriveUserToken',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('dropbox_user_id', models.CharField(max_length=48)),
-                ('access_token', models.CharField(max_length=255)),
+                ('token', models.CharField(max_length=255)),
                 ('refresh_token', models.CharField(max_length=255)),
-                ('user', models.OneToOneField(related_name='dropbox_user_token', to=settings.AUTH_USER_MODEL)),
+                ('token_uri', models.CharField(max_length=255)),
+                ('scopes', models.CharField(max_length=255)),
+                ('user', models.OneToOneField(related_name='googledrive_user_token', to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
