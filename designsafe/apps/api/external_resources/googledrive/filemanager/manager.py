@@ -39,6 +39,7 @@ class FileManager(object):
 
     def parse_file_id(self, file_id):
         if file_id is not None:
+            file_id = file_id.strip('/')
             try:
                 file_type, file_id = GoogleDriveFile.parse_file_id(file_id)
             except AssertionError:
@@ -81,7 +82,6 @@ class FileManager(object):
             googledrive_item = self.googledrive_api.files().get(fileId=file_id, fields=fields).execute()
             
             child_results = self.googledrive_api.files().list(q="'{}' in parents and trashed=False".format(file_id), fields="files({})".format(fields)).execute()
-
             if file_type == 'folder':
 
                 children = [GoogleDriveFile(item, parent=googledrive_item, drive=self.googledrive_api).to_dict(default_pems=default_pems)
@@ -100,9 +100,8 @@ class FileManager(object):
             return list_data
 
         except AssertionError:
-            raise ApiException(status=404,
-                               message='The file you requested does not exist.')
-        # except BoxOAuthException:
+            raise ApiException(status=404, message='The file you requested does not exist.')
+        # except:
         #     # user needs to reconnect with Google Drive
         #     message = 'While you previously granted this application access to Google Drive, ' \
         #               'that grant appears to be no longer valid. Please ' \
@@ -367,7 +366,7 @@ class FileManager(object):
             if dest_folder_id == '':
                 dest_folder_id = 'root'
 
-            file_type, folder_id = self.parse_file_id(file_id=dest_folder_id)
+            file_type, folder_id = self.parse_file_id(file_id=dest_folder_id.strip('/'))
             if os.path.isfile(src_real_path):
                 self.upload_file(folder_id, src_real_path)
             elif os.path.isdir(src_real_path):

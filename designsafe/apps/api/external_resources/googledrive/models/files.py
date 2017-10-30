@@ -38,7 +38,7 @@ class GoogleDriveFile(object):
         self._item = googledrive_item
         self._driveapi = drive
         if parent:
-            self._parent = GoogleDriveFile(parent)
+            self._parent = GoogleDriveFile(parent, drive=drive)
         else:
             self._parent = None
 
@@ -63,13 +63,13 @@ class GoogleDriveFile(object):
             while True:
                 try:
                     parent = self._driveapi.files().get(fileId=parent['parents'][0], fields="parents, name").execute()
-                    path = "{}/{}".format(parent['name'], path)
+                    parent_name = '' if parent['name'] == 'My Drive' else parent['name']
+                    path = "{}/{}".format(parent_name, path)
                 except (AttributeError, KeyError) as e:
                     logger.debug(e)
                     break
         else:
             path = ''
-
         return path
 
     @property
