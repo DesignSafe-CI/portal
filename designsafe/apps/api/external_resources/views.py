@@ -17,6 +17,8 @@ from designsafe.apps.api.external_resources.box.filemanager.manager \
     import FileManager as BoxFileManager
 from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
     import FileManager as DropboxFileManager
+from designsafe.apps.api.external_resources.googledrive.filemanager.manager \
+    import FileManager as GoogleDriveFileManager
 from designsafe.apps.api.external_resources.box.models.files import BoxFile
 from designsafe.apps.api import tasks
 
@@ -26,13 +28,15 @@ class FilesListView(SecureMixin, BaseApiView):
     """Listing view"""
 
     def get(self, request, file_mgr_name, file_id=None):
-        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME]:
+        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME, GoogleDriveFileManager.NAME]:
             return HttpResponseBadRequest('Incorrect file manager.')
 
         if file_mgr_name == 'box':
             fmgr = BoxFileManager(request.user)
         elif file_mgr_name == 'dropbox':
             fmgr = DropboxFileManager(request.user)
+        elif file_mgr_name == 'googledrive':
+            fmgr = GoogleDriveFileManager(request.user)
 
         listing = fmgr.listing(file_id)
         return JsonResponse(listing, safe=False)
@@ -41,13 +45,15 @@ class FileMediaView(SecureMixin, BaseApiView):
     """File Media View"""
 
     def get(self, request, file_mgr_name, file_id):
-        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME]:
+        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME, GoogleDriveFileManager.NAME]:
             return HttpResponseBadRequest("Incorrect file manager.")
 
         if file_mgr_name == 'box':
             fmgr = BoxFileManager(request.user)
         elif file_mgr_name == 'dropbox':
             fmgr = DropboxFileManager(request.user)
+        elif file_mgr_name == 'googledrive':
+            fmgr = GoogleDriveFileManager(request.user)
 
         f = fmgr.listing(file_id)
         if request.GET.get('preview', False):
@@ -70,13 +76,15 @@ class FileMediaView(SecureMixin, BaseApiView):
 
         action = body.get('action')
 
-        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME] or action is None:
+        if file_mgr_name not in [BoxFileManager.NAME, DropboxFileManager.NAME, GoogleDriveFileManager.NAME] or action is None:
             return HttpResponseBadRequest("Bad Request.")
 
         if file_mgr_name == 'box':
             fmgr = BoxFileManager(request.user)
         elif file_mgr_name == 'dropbox':
             fmgr = DropboxFileManager(request.user)
+        elif file_mgr_name == 'googledrive':
+            fmgr = GoogleDriveFileManager(request.user)
 
         if action == 'preview':
             try:
@@ -106,7 +114,7 @@ class FileMediaView(SecureMixin, BaseApiView):
 
                 return JsonResponse(download_dict)
             except HTTPError as err:
-                logger.exception('Unable to download box file')
+                logger.exception('Unable to download {} file'.format(file_mgr_name))
                 return HttpResponseBadRequest(err.response.text)
 
         return HttpResponseBadRequest("Operation not implemented.")

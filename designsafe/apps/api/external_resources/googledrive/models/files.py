@@ -1,12 +1,11 @@
-from dropbox.files import ListFolderResult, FileMetadata, FolderMetadata
 import logging
 import os
 
 logger = logging.getLogger(__name__)
 
 
-class DropboxFile(object):
-    """Represents a Dropbox file"""
+class GoogleDriveFile(object):
+    """Represents a google drive file"""
 
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
       '.ai', '.bmp', '.gif', '.eps', '.jpeg', '.jpg', '.png', '.ps', '.psd', '.svg', '.tif', '.tiff',
@@ -35,71 +34,90 @@ class DropboxFile(object):
                                     SUPPORTED_TEXT_PREVIEWS +
                                     SUPPORTED_OBJECT_PREVIEW_EXTS)
 
-    def __init__(self, dropbox_item, path=None, parent=None):
-        self._item = dropbox_item
-        self.path = path
-
+    def __init__(self, googledrive_item, parent=None, drive=None):
+        self._item = googledrive_item
+        self._driveapi = drive
         if parent:
-            self._parent = DropboxFile(parent)
+            self._parent = GoogleDriveFile(parent)
         else:
             self._parent = None
 
     @property
     def id(self):
-        return '{}{}'.format(self.type, self.path)
+        return '{}/{}'.format(self.type, self._item['id'])
 
     @property
     def name(self):
-        try:
-            return self._item.name
-        except AttributeError:
-            return self.trail[-1]['name']
+        return self._item['name']
 
-    # @property
-    # def path(self):
-    #     return self._item.path_display
+    @property
+    def path(self):
+        if self._parent:
+            if self._parent.name == 'My Drive':
+                path = '/{}'.format(self.name)
+            else:
+                path = '/'.join([self._parent.path, self.name])
+        elif 'parents' in self._item:
+            parent = self._item
+            path = '{}'.format(self.name)
+            while True:
+                try:
+                    parent = self._driveapi.files().get(fileId=parent['parents'][0], fields="parents, name").execute()
+                    path = "{}/{}".format(parent['name'], path)
+                except (AttributeError, KeyError) as e:
+                    logger.debug(e)
+                    break
+        else:
+            path = ''
+
+        return path
 
     @property
     def size(self):
         try:
-            return self._item.size
-        except AttributeError:
+            return self._item['size']
+        except KeyError:
             return None
 
     @property
     def last_modified(self):
         try:
-            return self._item.server_modified
-        except AttributeError:
+            return self._item['modifiedTime']
+        except KeyError:
             return None
 
     @property
     def type(self):
-        if type(self._item) in [FolderMetadata, ListFolderResult]:
+        if self._item['mimeType'] == 'application/vnd.google-apps.folder':
             return 'folder'
-        elif type(self._item) == FileMetadata:
+        else:
             return 'file'
 
     @property
     def ext(self):
-        return os.path.splitext(self.name)[1]
+        # return os.path.splitext(self.name)[1]
+        try:
+            return '.{}'.format(self._item['fileExtension'])
+        except KeyError:
+            return None
 
     @property
     def trail(self):
         path_comps = self.path.split('/')
 
-        # the first item in path_comps is '', which represents '/'
         trail_comps = [{'name': path_comps[i] or '/',
-                        'system': None,
-                        'resource': 'dropbox',
-                        'path': '/'.join(path_comps[0:i+1]) or '/',
-                        } for i in range(0, len(path_comps))]
+                    'system': None,
+                    'resource': 'googledrive',
+                    'path': '/'.join(path_comps[0:i+1]) or '/',
+                    } for i in range(0, len(path_comps))]
 
-        # trail = [DropboxFile(File(None, e['id'], e)).to_dict()
-        #         for e in self._item.path_collection['entries']]
-        # trail.append(self.to_dict(trail=False))
-
-        # return trail
+        # try:
+        #     trail = [GoogleDriveFile(File(None, e['id'], e)).to_dict()
+        #             for e in self._item.path_collection['entries']]
+        #     trail.append(self.to_dict(trail=False))
+        #     return trail
+        # except AttributeError as e:
+        #     return []
 
         return trail_comps
 
@@ -110,25 +128,25 @@ class DropboxFile(object):
     @staticmethod
     def parse_file_id(file_id):
         """
-        Parses out the file_id that the Data Browser uses. For Box objects, this is in
-        the format {type}/{path}, where {type} is in ['folder', 'file'] and {path} is the
-        path of the Box object.
+        Parses out the file_id that the Data Browser uses. For Google Drive objects, this is in
+        the format {type}/{id}, where {type} is in ['folder', 'file'] and {id} is the
+        numeric id of the Google Drive object.
 
         Args:
-            file_id: The file_id in the format {type}/{path}
+            file_id: The file_id in the format {type}/{id}
 
         Returns:
-            Tuple of ({type}, {path})
+            Tuple of ({type}, {id})
 
         Raises:
             AssertionError
         """
-        parts = file_id.split('/', 1)
+        parts = file_id.split('/')
 
-        assert len(parts) == 2, 'The file path should be in the format {type}/{path}'
+        assert len(parts) == 2, 'The file path should be in the format {type}/{id}'
         assert parts[0] in ['folder', 'file'], '{type} must be one of ["folder", "file"]'
 
-        return parts[0], '/'+parts[1]
+        return parts[0], parts[1]
 
     def to_dict(self, trail=True, **kwargs):
         pems = kwargs.get('default_pems', [])
@@ -143,7 +161,7 @@ class DropboxFile(object):
             'lastModified': self.last_modified,
             '_actions': [],
             'permissions': pems,
-            'resource': 'dropbox'
+            'resource': 'googledrive'
         }
         if trail:
             obj_dict['trail'] = self.trail
