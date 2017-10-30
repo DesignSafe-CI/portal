@@ -66,6 +66,10 @@ flower==0.9.2
 funcsigs==0.4
 futures==3.1.1
 gevent==1.2.2
+google-api-python-client==1.6.4
+google-auth==1.1.1
+google-auth-httplib2==0.0.2
+google-auth-oauthlib==0.1.1
 greenlet==0.4.12
 hashids==1.2.0
 html5lib==0.999
