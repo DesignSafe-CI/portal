@@ -67,7 +67,7 @@ services:
       - ../nginx/dummy.key:/etc/ssl/dummy.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../.:/srv/www/designsafe
-      - ../../data/NHERI:/corral-repl/tacc/NHERI
+      - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
     links:
@@ -89,7 +89,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
-      - ../../data/NHERI:/corral-repl/tacc/NHERI
+      - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
     ports:
@@ -114,7 +114,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
-      - ../../data/NHERI:/corral-repl/tacc/NHERI
+      - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
     dns:
