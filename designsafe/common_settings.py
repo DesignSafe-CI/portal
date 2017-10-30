@@ -18,6 +18,7 @@ import json
 
 gettext = lambda s: s
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -30,7 +31,7 @@ SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
 # SESSION_ENGINE = 'redis_sessions.session'
 # SESSION_REDIS_HOST = 'redis'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
@@ -85,6 +86,7 @@ INSTALLED_APPS = (
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
     'designsafe.apps.dropbox_integration',
+    'designsafe.apps.googledrive_integration',
     'designsafe.apps.licenses',
     'designsafe.apps.dashboard',
 
