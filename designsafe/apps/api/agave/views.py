@@ -238,13 +238,18 @@ class FileMediaView(View):
                     }
                     if body.get('system') is None:
                         external = body.get('resource')
-                        if external not in ['box', 'dropbox']:
+                        if external not in ['box', 'dropbox', 'googledrive']:
                             return HttpResponseBadRequest("External resource not available.")
+                        logger.debug(body)
+                        if external == 'googledrive':
+                            dest_file_id = body.get('id')
+                        else:
+                            dest_file_id = body.get('path')
                         external_resource_upload.apply_async(kwargs={
                             'username': request.user.username,
                             'dest_resource': external,
                             'src_file_id': os.path.join(system_id, file_path.strip('/')),
-                            'dest_file_id': body.get('path')
+                            'dest_file_id': dest_file_id
                         },
                         queue='files')
                         event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This may take a few minutes.'
@@ -253,6 +258,7 @@ class FileMediaView(View):
                             'dest_file_id': body.get('path'),
                             'src_file_id': os.path.join(system_id, file_path.strip('/'))
                         }
+                        return
                     elif body.get('system') != system_id:
                         copied = fm.import_data(body.get('system'), body.get('path'),
                                                 system_id, file_path)

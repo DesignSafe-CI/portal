@@ -81,7 +81,18 @@ class SourcesApi(object):
                 "_extra": {
                     "icon": "fa-square"
                 },
-            }
+            },
+            {
+                "id": "googledrive",
+                "resource": "googledrive",
+                "defaultPath": None,
+                "name": "Google Drive",
+                "_visible": True,
+                "_indexed": False,
+                "_extra": {
+                    "icon": "fa-square"
+                },
+            },
         ]
 
     def list(self):

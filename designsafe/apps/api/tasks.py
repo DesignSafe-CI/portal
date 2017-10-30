@@ -500,6 +500,8 @@ def external_resource_upload(self, username, dest_resource, src_file_id, dest_fi
             import FileManager as BoxFileManager
     from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
             import FileManager as DropboxFileManager
+    from designsafe.apps.api.external_resources.googledrive.filemanager.manager \
+            import FileManager as GoogleDriveFileManager
 
     user = get_user_model().objects.get(username=username)
 
@@ -507,6 +509,8 @@ def external_resource_upload(self, username, dest_resource, src_file_id, dest_fi
         fmgr = BoxFileManager(user)
     elif dest_resource == 'dropbox':
         fmgr = DropboxFileManager(user)
+    elif dest_resource == 'googledrive':
+        fmgr = GoogleDriveFileManager(user)
 
     logger.debug('fmgr.upload( %s, %s, %s)', username, src_file_id, dest_file_id)
     fmgr.upload(username, src_file_id, dest_file_id)
@@ -593,6 +597,8 @@ def external_resource_download(self, file_mgr_name, username, src_file_id, dest_
             import FileManager as BoxFileManager
     from designsafe.apps.api.external_resources.dropbox.filemanager.manager \
             import FileManager as DropboxFileManager
+    from designsafe.apps.api.external_resources.googledrive.filemanager.manager \
+            import FileManager as GoogleDriveFileManager
 
     user = get_user_model().objects.get(username=username)
 
@@ -600,6 +606,8 @@ def external_resource_download(self, file_mgr_name, username, src_file_id, dest_
         fmgr = BoxFileManager(user)
     elif file_mgr_name == 'dropbox':
         fmgr = DropboxFileManager(user)
+    elif file_mgr_name == 'googledrive':
+        fmgr = GoogleDriveFileManager(user)
 
     fmgr.copy(username, src_file_id, dest_file_id)
 
