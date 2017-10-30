@@ -65,6 +65,12 @@
             collapsible: false,
             state: 'dropboxData',
             description: 'Access to my Dropbox for copying'
+          },
+          {
+            name: 'Google Drive',
+            collapsible: false,
+            state: 'googledriveData',
+            description: 'Access to my Google Drive for copying'
           }
       );
 

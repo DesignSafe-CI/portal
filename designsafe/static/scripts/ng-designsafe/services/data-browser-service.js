@@ -176,7 +176,7 @@
       tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-      tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData');
+      tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && ($state.current.name !== 'dropboxData' && $state.current.name !== 'boxData' && $state.current.name !== 'googledriveData');
       tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files));
       //tests.canViewCategories = files.length >=1 && hasPermission('WRITE', files);
       tests.canViewCategories = true;
@@ -299,7 +299,10 @@
              apiParams: {fileMgr: 'box', baseUrl: '/api/external-resources/files'}},
             {label: 'Dropbox',
              conf: {path: '/'},
-             apiParams: {fileMgr: 'dropbox', baseUrl: '/api/external-resources/files'}}
+             apiParams: {fileMgr: 'dropbox', baseUrl: '/api/external-resources/files'}},
+            {label: 'Google Drive',
+             conf: {path: '/'},
+             apiParams: {fileMgr: 'googledrive', baseUrl: '/api/external-resources/files'}}
           ];
 
           $scope.currentOption = null;
@@ -384,7 +387,7 @@
           currentState.busy = true;
           var copyPromises = _.map(files, function (f) {
             var system = result.system || f.system;
-            return f.copy({system: result.system, path: result.path, resource: result.resource}).then(function (result) {
+            return f.copy({system: result.system, path: result.path, resource: result.resource, id: result.id}).then(function (result) {
               //notify(FileEvents.FILE_COPIED, FileEventsMsg.FILE_COPIED, f);
               return result;
             });

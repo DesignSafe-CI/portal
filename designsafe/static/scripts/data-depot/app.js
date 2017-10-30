@@ -254,6 +254,35 @@
           }
         }
       })
+      .state('googledriveData', {
+        url: '/googledrive/{filePath:any}',
+        controller: 'ExternalDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/googledrive-data-listing.html',
+        params: {
+          filePath: '',
+          name: 'Google Drive',
+          customRootFilePath: 'googledrive/'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var filePath = $stateParams.filePath || '/';
+            DataBrowserService.apiParams.fileMgr = 'googledrive';
+            DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
+            DataBrowserService.apiParams.searchState = undefined;
+            return DataBrowserService.browse({path: filePath});
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
+        }
+      })
 
       /* Public */
       .state('publicDataSearch',{

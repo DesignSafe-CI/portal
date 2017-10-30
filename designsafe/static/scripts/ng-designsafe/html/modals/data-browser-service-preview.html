@@ -28,7 +28,8 @@
                 </tr>
                 <tr>
                     <th>File size</th>
-                    <td>{{ file.length|bytes }}</td>
+                    <td ng-if='file.length'>{{ file.length|bytes }}</td>
+                    <td ng-if='file.size'>{{ file.size|bytes }}</td>
                 </tr>
                 <tr>
                     <th>Last modified</th>

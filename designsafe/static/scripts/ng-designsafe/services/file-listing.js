@@ -199,14 +199,15 @@
      * @returns {*}
      */
     FileListing.prototype.copy = function (options) {
-      var body = {
-        "action": "copy",
-        "system": options.system,
-        "path": options.path,
-        "name": options.name,
-        "resource": options.resource || ""
-      };
-      return $http.put(this.mediaUrl(), body).then(function (resp) {
+      options.action = "copy";
+      // var body = {
+      //   "action": "copy",
+      //   "system": options.system,
+      //   "path": options.path,
+      //   "name": options.name,
+      //   "resource": options.resource || ""
+      // };
+      return $http.put(this.mediaUrl(), options).then(function (resp) {
         return new FileListing(resp.data);
       });
     };
