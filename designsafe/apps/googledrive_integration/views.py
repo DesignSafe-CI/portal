@@ -119,43 +119,36 @@ def disconnect(request):
         logger.info('Disconnect Google Drive requested by user...')
         try:
             googledrive_user_token = GoogleDriveUserToken.objects.get(user=request.user)
-            credentials = google.oauth2.credentials.Credentials({
-                'token': googledrive_user_token.token,
-                'refresh_token': googledrive_user_token.refresh_token,
-                'token_uri': googledrive_user_token.token_uri,
-                'client_id': settings.GOOGLE_APP_CLIENT_ID,
-                'client_secret': settings.GOOGLE_APP_SECRET,
-                'scopes': [googledrive_user_token.scopes]
-            })
+
             revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
-                params={'token': credentials.token},
+                params={'token': googledrive_user_token.token},
                 headers = {'content-type': 'application/x-www-form-urlencoded'})
             
             status_code = getattr(revoke, 'status_code')
 
-            googledrive_user_token = request.user.googledrive_user_token
             googledrive_user_token.delete()
 
             if status_code == 200:
-                return render(request, 'designsafe/apps/googledrive_integration/disconnect.html')
+                messages.success(request,'Your Google Drive account has been disconnected from DesignSafe.')
+                return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
             else:
-                logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
+                logger.error('Disconnect Google Drive; google drive account revoke error.',
                          extra={'user': request.user})
-                messages.success(request,'Your Google Drive account has been disconnected from DesignSafe.')
+                logger.debug('status code:{}'.format(status_code))
 
                 return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
-        # except DropboxUserToken.DoesNotExist:
-        #     logger.warn('Disconnect Dropbox; DropboxUserToken does not exist.',
-        #                 extra={'user': request.user})
+        except GoogleDriveUserToken.DoesNotExist:
+            logger.warn('Disconnect Google Drive; GoogleDriveUserToken does not exist.',
+                        extra={'user': request.user})
+
         except Exception as e:
             logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
                          extra={'user': request.user})
             logger.exception('google drive delete error: {}'.format(e))
-        messages.success(
-            request,
-            'Your Google Drive account has been disconnected from DesignSafe.')
+            
+        messages.success(request, 'Your Google Drive account has been disconnected from DesignSafe.')
 
         return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
