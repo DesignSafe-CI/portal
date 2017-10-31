@@ -234,7 +234,7 @@ class FileMediaView(View):
                         Notification.OPERATION: 'data_depot_copy',
                         Notification.STATUS: Notification.SUCCESS,
                         Notification.USER: request.user.username,
-                        Notification.MESSAGE: 'Data has been copied.',
+                        Notification.MESSAGE: 'Data was copied.',
                     }
                     if body.get('system') is None:
                         external = body.get('resource')
@@ -252,7 +252,7 @@ class FileMediaView(View):
                             'dest_file_id': dest_file_id
                         },
                         queue='files')
-                        event_data[Notification.MESSAGE] = 'Data copy has been scheduled. This may take a few minutes.'
+                        event_data[Notification.MESSAGE] = 'Data copy was scheduled. This may take a few minutes.'
                         event_data[Notification.EXTRA] = {
                             'resource': external,
                             'dest_file_id': body.get('path'),
@@ -441,7 +441,7 @@ class FileMediaView(View):
                         Notification.EVENT_TYPE: 'data_depot_rename',
                         Notification.STATUS: Notification.SUCCESS,
                         Notification.USER: request.user.username,
-                        Notification.MESSAGE: 'File/folder has been renamed.',
+                        Notification.MESSAGE: 'File/folder was renamed.',
                         Notification.EXTRA: renamed.to_dict()
                     }
                     Notification.objects.create(**event_data)
@@ -522,7 +522,7 @@ class FileMediaView(View):
                     Notification.OPERATION: 'data_depot_delete',
                     Notification.STATUS: Notification.SUCCESS,
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: 'File/folder has been deleted.',
+                    Notification.MESSAGE: 'File/folder was deleted.',
                     Notification.EXTRA: {'message': 'ok'}
                 }
                 Notification.objects.create(**event_data)
@@ -614,7 +614,7 @@ class FilePermissionsView(View):
                     Notification.OPERATION: 'data_depot_share',
                     Notification.STATUS: Notification.SUCCESS,
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: '{} permissions have been granted to {}.'.format(permission, username),
+                    Notification.MESSAGE: '{} permissions were granted to {}.'.format(permission, username),
                     Notification.EXTRA: {'system': system_id,
                                          'file_path': file_path,
                                          'username': username,
@@ -679,7 +679,7 @@ class FileMetaView(View):
                     Notification.OPERATION: 'data_depot_metadata_update',
                     Notification.STATUS: Notification.SUCCESS,
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: 'Metadata has been updated successfully.',
+                    Notification.MESSAGE: 'Metadata was updated successfully.',
                     Notification.EXTRA: {'systemId': system_id,
                                          'filePath': file_path,
                                          'metadata': metadata}
@@ -692,7 +692,7 @@ class FileMetaView(View):
                     Notification.STATUS: Notification.ERROR,
                     Notification.OPERATION: 'data_depot_metadata_update',
                     Notification.USER: request.user.username,
-                    Notification.MESSAGE: 'Metadata has been updated successfully.',
+                    Notification.MESSAGE: 'Metadata was updated successfully.',
                     Notification.EXTRA: {'systemId': system_id,
                                          'filePath': file_path,
                                          'metadata': metadata}

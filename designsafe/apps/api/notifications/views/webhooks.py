@@ -93,7 +93,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                 # end state, no additional tasks; notify
                 logger.debug('JOB FAILED: id=%s status=%s' % (job_id, job_status))
                 event_data[Notification.STATUS] = Notification.ERROR
-                event_data[Notification.MESSAGE] = 'Job "%s" Failed. Please try again...' % (job_name, )
+                event_data[Notification.MESSAGE] = "Job '%s' Failed. Please try again..." % (job_name, )
                 event_data[Notification.OPERATION] = 'job_failed'
                 n = Notification.objects.create(**event_data)
                 n.save()
@@ -104,7 +104,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
 
                 # notify
                 event_data[Notification.STATUS] = Notification.INFO
-                event_data[Notification.MESSAGE] = 'Job %s status has been updated to INDEXING' % (job_name, )
+                event_data[Notification.MESSAGE] = "Job '%s' updated to INDEXING" % (job_name, )
                 event_data[Notification.OPERATION] = 'job_status_update'
                 logger.debug('ws event_data: {}'.format(event_data))
                 n = Notification.objects.create(**event_data)
@@ -121,7 +121,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                     event_data[Notification.STATUS] = Notification.SUCCESS
                     event_data[Notification.EXTRA]['status'] = 'FINISHED'
                     event_data[Notification.EXTRA]['target_path'] = target_path
-                    event_data[Notification.MESSAGE] = 'Job "%s" has finished!' % (job_name, )
+                    event_data[Notification.MESSAGE] = "Job '%s' finished!" % (job_name, )
                     event_data[Notification.OPERATION] = 'job_finished'
 
                     n = Notification.objects.create(**event_data)
@@ -136,7 +136,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
                 # notify
                 logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
                 event_data[Notification.STATUS] = Notification.INFO
-                event_data[Notification.MESSAGE] = 'Job "%s" status has been updated to %s.' % (job_name, job_status)
+                event_data[Notification.MESSAGE] = "Job '%s' updated to %s." % (job_name, job_status)
                 event_data[Notification.OPERATION] = 'job_status_update'
                 n = Notification.objects.create(**event_data)
                 n.save()

@@ -145,7 +145,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
         n = Notification(event_type='data',
                          status=Notification.INFO,
                          operation='box_download_start',
-                         message='Starting download file %s from box.' % (src_file_id,),
+                         message='Starting download of file %s from box.' % (src_file_id,),
                          user=username,
                          # extra={'target_path': target_path})
                          extra={'id': dest_file_id}
@@ -181,7 +181,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
                          operation='box_download_end',
-                         message='File %s has been copied from box successfully!' % (src_file_id, ),
+                         message='File %s was copied from box successfully!' % (src_file_id, ),
                          user=username,
                          extra={'id': dest_file_id}
                          )
@@ -287,7 +287,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
         n = Notification(event_type = 'data',
                          status = Notification.INFO,
                          operation = 'box_upload_start',
-                         message = 'Starting import file %s into box.' % src_file_id,
+                         message = 'Starting import of file %s into box.' % src_file_id,
                          user = username,
                          # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
                          extra={'id': src_file_id})
@@ -444,7 +444,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
             n = Notification(event_type = 'data',
                              status = notify_status,
                              operation = 'copy_public_to_mydata_end',
-                             message = 'Files have been copied to your private data.',
+                             message = 'Files were copied to your private data.',
                              user = username,
                              extra={
                                 'system': dest_resource,
