@@ -240,7 +240,6 @@ class FileMediaView(View):
                         external = body.get('resource')
                         if external not in ['box', 'dropbox', 'googledrive']:
                             return HttpResponseBadRequest("External resource not available.")
-                        logger.debug(body)
                         if external == 'googledrive':
                             dest_file_id = body.get('id')
                         else:
@@ -258,7 +257,6 @@ class FileMediaView(View):
                             'dest_file_id': body.get('path'),
                             'src_file_id': os.path.join(system_id, file_path.strip('/'))
                         }
-                        return
                     elif body.get('system') != system_id:
                         copied = fm.import_data(body.get('system'), body.get('path'),
                                                 system_id, file_path)

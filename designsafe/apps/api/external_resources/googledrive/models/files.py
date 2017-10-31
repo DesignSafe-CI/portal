@@ -74,17 +74,11 @@ class GoogleDriveFile(object):
 
     @property
     def size(self):
-        try:
-            return self._item['size']
-        except KeyError:
-            return None
+        return self._item.get('size')
 
     @property
     def last_modified(self):
-        try:
-            return self._item['modifiedTime']
-        except KeyError:
-            return None
+        return self._item.get('modifiedTime')
 
     @property
     def type(self):
@@ -95,7 +89,6 @@ class GoogleDriveFile(object):
 
     @property
     def ext(self):
-        # return os.path.splitext(self.name)[1]
         try:
             return '.{}'.format(self._item['fileExtension'])
         except KeyError:
@@ -110,14 +103,6 @@ class GoogleDriveFile(object):
                     'resource': 'googledrive',
                     'path': '/'.join(path_comps[0:i+1]) or '/',
                     } for i in range(0, len(path_comps))]
-
-        # try:
-        #     trail = [GoogleDriveFile(File(None, e['id'], e)).to_dict()
-        #             for e in self._item.path_collection['entries']]
-        #     trail.append(self.to_dict(trail=False))
-        #     return trail
-        # except AttributeError as e:
-        #     return []
 
         return trail_comps
 
