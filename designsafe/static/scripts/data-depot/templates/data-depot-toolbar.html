@@ -46,7 +46,7 @@
                                   browser.project.publicationStatus === 'publishing'">
                 <i class="fa fa-binoculars"></i><span style="display:block;">Preview</span>
             </button>
-            <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!UserService.userAuthenticated()">
+            <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!tests.canPreviewImages">
                 <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
             </button>
          </div>
