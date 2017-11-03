@@ -101,14 +101,15 @@ class FileManager(object):
 
         except AssertionError:
             raise ApiException(status=404, message='The file you requested does not exist.')
-        # except:
-        #     # user needs to reconnect with Google Drive
-        #     message = 'While you previously granted this application access to Google Drive, ' \
-        #               'that grant appears to be no longer valid. Please ' \
-        #               '<a href="%s">disconnect and reconnect your Google Drive account</a> ' \
-        #               'to continue using Google Drive data.' % reverse('googledrive_integration:index')
-        #     raise ApiException(status=403, message=message)
+
         except Exception as e:
+            if 'invalid_grant: Token has been expired or revoked.' in e:
+                message = 'While you previously granted this application access to Google Drive, ' \
+                      'that grant appears to be no longer valid. Please ' \
+                      '<a href="%s">disconnect and reconnect your Google Drive account</a> ' \
+                      'to continue using Google Drive data.' % reverse('googledrive_integration:index')
+                raise ApiException(status=403, message=message)
+
             message = 'Unable to communicate with Google Drive: %s' % e
             raise ApiException(status=500, message=message)
 
