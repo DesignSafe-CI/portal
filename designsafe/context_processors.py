@@ -45,3 +45,10 @@ def debug(request):
             'debug': True
         }
     return context
+
+def site_verification(request):
+    context = {}
+    google_verification_id = getattr(settings, 'GOOGLE_SITE_VERIFICATION_ID', False)
+    if google_verification_id:
+        context['GOOGLE_SITE_VERIFICATION_ID'] = google_verification_id
+    return context

@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from designsafe.apps.auth.views import login_options as des_login_options
@@ -85,6 +85,9 @@ urlpatterns = [
     # googledrive
     url(r'^account/applications/googledrive/', include('designsafe.apps.googledrive_integration.urls',
         namespace='googledrive_integration')),
+
+    # google site verification
+    url(r'{}.html$'.format(settings.GOOGLE_SITE_VERIFICATION_ID), TemplateView.as_view(template_name='google_verification.html')),
 
     # auth
     url(r'^auth/', include('designsafe.apps.auth.urls', namespace='designsafe_auth')),

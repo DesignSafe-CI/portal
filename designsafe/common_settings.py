@@ -166,6 +166,7 @@ TEMPLATES = [
                 'cms.context_processors.cms_settings',
                 'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
+                'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
                 'designsafe.apps.auth.context_processors.auth',
@@ -516,6 +517,9 @@ WS4REDIS_EXPIRE = 0
 #
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
 
+# Google Site Verification
+#
+GOOGLE_SITE_VERIFICATION_ID = os.environ.get('GOOGLE_SITE_VERIFICATION_ID', False)
 ###
 # Agave Integration
 #
