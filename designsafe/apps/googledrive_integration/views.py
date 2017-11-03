@@ -3,7 +3,7 @@ import google.oauth2.credentials
 import requests
 import os
 from googleapiclient import discovery
-
+from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -102,9 +102,17 @@ def oauth2_callback(request):
         
         token.save()
 
-    # except BadStateException as e:
-    #     # Start the auth flow again.
-    #     HttpResponseRedirect(reverse('googledrive_integration:initialize_token'))
+    except IntegrityError as e:
+        # Auth flow completed previously, and no refresh_token granted. Need to disconnect to get
+        # another refresh_token.
+
+        logger.debug('GoogleDriveUserToken refresh_token cannot be null, revoking previous access and restart flow.')
+        revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
+                params={'token': credentials.token},
+                headers = {'content-type': 'application/x-www-form-urlencoded'})
+
+        HttpResponseRedirect(reverse('googledrive_integration:initialize_token'))
+
     except Exception as e:
         logger.exception('Unable to complete Google Drive integration setup: %s' % e)
         messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
