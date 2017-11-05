@@ -11,8 +11,19 @@
       <table class="table" style="margin-bottom:0;">
         <tbody>
           <tr>
+            <th>Project Type</th>
+            <td>{{project.value.projectType}}</td>
+            <td></td>
+          </tr>
+          <tr>
             <th>ID</th>
             <td>{{project.value.projectId}}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Award Number:</th>
+            <td>{{project.value.awardNumber}}</td>
+            <td></td>
           </tr>
           <tr>
             <th>PI</th>
@@ -24,20 +35,23 @@
             </td>
           </tr>
           <tr>
-            <th>
-              <button class="btn btn-info btn-sm"
-                      ng-click="showCitation(project)">Citation
-              </button>
-            <th>
-            <td></td>
-          </tr>
-          <tr>
             <th>Date of Publication</th>
             <td>{{browser.publication.created| date: 'yyyy/MMM/d'}}</td>
+            <td></td>
           </tr>
           <tr>
             <th>DOI</th>
             <td>{{project.doi}}</td>
+            <td>
+              <button class="btn btn-info btn-sm"
+                      ng-click="showCitation(project)">Citation
+              </button>
+            <td>
+          </tr>
+          <tr>
+            <th>keywords</th>
+            <td>{{project.value.keywords}}</td>
+            <td></td>
           </tr>
         </tbody>
       </table>
@@ -64,28 +78,17 @@
     </div>
     -->
 
-
+    <!--
     <div style="vertical-align:top;">
       <div class="btn-group" role="group" aria-label="Project Actions">
         <button class="btn btn-sm btn-default" ng-click="viewProject($event)">View Project</button>
-        <!--
-        <button class="btn btn-sm btn-default" ng-click="viewCollabs($event)">View Team Members</button>
-        -->
         <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
          ng-click="viewExperiments($event)">
           <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments
         </button>
       </div>
-      <!--
-      <div style="width:350px; height:100px; overflow:hidden;">
-        <img width="350" ng-src="{{ imageHref }}"
-             ng-if="imageHref && state.showPreviewListing"/>
-        <div ng-if="!imageHref && state.showPreviewListing">
-          <i class="fa fa-spin fa-spinner"></i> Loading ...
-        </div>
-      </div>
-      -->
     </div>
+    -->
   </div>
   <hr>
 </div>
@@ -198,7 +201,7 @@
               </div>
               <div style="width:49%; vertical-align:top; display:inline-block;">
                 <div>
-                  <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> {{experiment.lastUpdated}}
+                  <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> {{experiment.lastUpdated| date: 'yyyy/MMM/d'}}
                 </div>
                 <div>
                   <span style="font-weight:bold;"> DOI: </span>
