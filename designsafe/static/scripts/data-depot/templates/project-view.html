@@ -5,17 +5,20 @@
           <p>
           {{data.project.value.description}}
           </p>
-          <!--
-          <button class="btn btn-link btn-sm"
-                  ng-click="showText(data.project.value.description)">
-            <i class="fa fa-external-link"></i> Show</button>
-            -->
         <div style="width:50%;">
         <table class="table" style="margin-bottom:0;">
             <tbody>
             <tr>
+              <th>Projet Type:</th>
+              <td>{{data.project.value.projectType}}</td>
+            </tr>
+            <tr>
               <th>ID</th>
               <td>{{data.project.value.projectId}}</td>
+            </tr>
+            <tr>
+              <th>Award Number:</th>
+              <td>{{data.project.value.awardNumber}}</td>
             </tr>
             <tr>
               <th>PI</th>
@@ -38,6 +41,10 @@
             <tr>
               <th>Created</th>
               <td>{{data.project.created| date: 'yyyy/MMM/d' }}</td>
+            </tr>
+            <tr>
+              <th>keywords</th>
+              <td>{{data.project.value.keywords}}</td>
             </tr>
             </tbody>
         </table>
