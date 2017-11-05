@@ -135,7 +135,8 @@
             <span ng-repeat-end class="tag-title">{{entity.value.title}}</span>
             </div>
             </td>
-            <td>{{ item.length|bytes }}</td>
+            <td ng-if="item.type == 'dir'">--</td>
+            <td ng-if="item.type == 'file'">{{ item.length|bytes }}</td>
             <td>{{ item.lastModified|date:"short" }}</td>
             <!--
             <td>
@@ -290,7 +291,8 @@
                         {{file.name}}
                       </a>
                     </td>
-                    <td>{{file.length|bytes}}</td>
+                    <td ng-if="item.type == 'dir'">--</td>
+                    <td ng-if="file.type == 'file'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                   </tr>
                 </tbody>
@@ -325,7 +327,8 @@
                     {{file.name}}
                   </a>
                 </td>
-                <td>{{file.length}}</td>
+                    <td ng-if="item.type == 'dir'">--</td>
+                <td ng-if="file.type=='file'">{{file.length|bytes}}</td>
                 <td>{{file.lastModified|date:"short"}}</td>
               </tr>
             </tbody>
@@ -355,7 +358,8 @@
                     {{file.name}}
                   </a>
                 </td>
-                <td>{{file.length}}</td>
+                    <td ng-if="item.type == 'dir'">--</td>
+                <td ng-if="file.type == 'file'">{{file.length|bytes}}</td>
                 <td>{{file.lastModified|date:"short"}}</td>
               </tr>
             </tbody>
@@ -407,7 +411,8 @@
                       {{file.name}}
                     </a>
                   </td>
-                  <td>{{file.length}}</td>
+                    <td ng-if="item.type == 'dir'">--</td>
+                  <td ng-if="file.type=='file'">{{file.length|bytes}}</td>
                   <td>{{file.lastModified|date:"short"}}</td>
                 </tr>
               </tbody>
@@ -456,7 +461,8 @@
                       {{file.name}}
                     </a>
                   </td>
-                  <td>{{file.length}}</td>
+                    <td ng-if="item.type == 'dir'">--</td>
+                  <td ng-if="file.type=='file'">{{file.length|bytes}}</td>
                   <td>{{file.lastModified|date:"short"}}</td>
                 </tr>
               </tbody>
