@@ -92,7 +92,7 @@ class Publication(object):
                                           PublicationIndexed.search(),
                                           page_size=100)
         list_search._search.query = Q({"match_all":{}})
-        list_search.sort({'created': {'order': 'asc'}})
+        list_search.sort({'created': {'order': 'desc'}})
         #s = PublicationIndexed.search()
         #s.query = Q({"match_all":{}})
         #try:
