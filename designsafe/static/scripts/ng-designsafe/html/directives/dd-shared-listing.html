@@ -5,7 +5,6 @@
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
-        <th>Details</th>
         </thead>
 
         <tbody>
@@ -25,13 +24,9 @@
                     {{ item.name }}
                 </a>
             </td>
-            <td>{{ item.length|bytes }}</td>
+            <td ng-if="item.format == 'folder'"> -- </td>
+            <td ng-if="item.format == 'raw'">{{ item.length|bytes }}</td>
             <td>{{ item.lastModified|date:"short" }}</td>
-            <td>
-                <a class="btn btn-info btn-xs" ng-click="onDetail()($event, item)">
-                    <i class="fa fa-info-circle"></i><span class="sr-only">Details</span>
-                </a>
-            </td>
         </tr>
         </tbody>
         <caption style="padding:0px;">

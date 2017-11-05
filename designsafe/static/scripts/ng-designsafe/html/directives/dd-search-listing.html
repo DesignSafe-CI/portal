@@ -21,7 +21,8 @@
                 </a>
             </td>
             <td>{{ item.path }}</td>
-            <td>{{ item.length|bytes }}</td>
+            <td ng-if="item.format == 'folder'"> -- </td>
+            <td ng-if="item.format == 'raw'">{{ item.length|bytes }}</td>
             <td>
                 <a class="btn btn-info btn-xs" ng-click="onDetail()($event, item)">
                     <i class="fa fa-info-circle"></i><span class="sr-only">Details</span>
