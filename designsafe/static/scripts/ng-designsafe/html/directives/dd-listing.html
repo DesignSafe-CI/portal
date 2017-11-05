@@ -265,7 +265,8 @@
                     {{file.name}}
                   </a>
                 </td>
-                <td>{{file.length}}</td>
+                <td ng-if="item.format == 'folder'"> -- </td>
+                <td ng-if="item.format == 'raw'">{{file.length|bytes}}</td>
                 <td>{{file.lastModified|date:"short"}}</td>
               </tr>
             </tbody>
@@ -298,7 +299,8 @@
                     {{file.name}}
                   </a>
                 </td>
-                <td>{{file.length}}</td>
+                  <td ng-if="item.format == 'folder'"> -- </td>
+                <td ng-if="item.format == 'raw'">{{file.length|bytes}}</td>
                 <td>{{file.lastModified|date:"short"}}</td>
               </tr>
             </tbody>
@@ -361,7 +363,8 @@
                         {{file.name}}
                       </a>
                     </td>
-                    <td>{{file.length}}</td>
+                  <td ng-if="item.format == 'folder'"> -- </td>
+                    <td ng-if="item.format == 'folder'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
@@ -438,7 +441,8 @@
                         {{file.name}}
                       </a>
                     </td>
-                    <td>{{file.length}}</td>
+                  <td ng-if="item.format == 'folder'"> -- </td>
+                    <td ng-if="item.format == 'raw'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
