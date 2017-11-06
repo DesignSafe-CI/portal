@@ -223,8 +223,8 @@ class FileManager(object):
         try:
             file_type, file_id = self.parse_file_id(file_id)
             fields = "mimeType, name, id, modifiedTime, fileExtension, size, parents"
-            googledrive_file = GoogleDriveFile(self.googledrive_api.files().get(fileId=file_id, fields=fields).execute(), drive=self.googledrive_api)
-            if googledrive_file: #.previewable:
+            # googledrive_file = GoogleDriveFile(self.googledrive_api.files().get(fileId=file_id, fields=fields).execute(), drive=self.googledrive_api)
+            if file_type == 'file':  # googledrive_file.previewable:
                 preview_url = reverse('designsafe_api:box_files_media',
                                     args=[file_mgr_name, file_id.strip('/')])
                 return JsonResponse({'href':
