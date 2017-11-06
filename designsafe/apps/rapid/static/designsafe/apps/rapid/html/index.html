@@ -1,7 +1,7 @@
 <div id="rapid_main">
   <div id="show_sidebar_handle" ng-show="!vm.show_sidebar" ng-click="vm.show_sidebar = !vm.show_sidebar">
     <div class="sidebar-handle"
-         tooltip="Expand sidebar"
+         uib-tooltip="Expand sidebar"
          tooltip-placement="right">
       <i class="fa fa-chevron-right"> </i>
     </div>
@@ -9,7 +9,7 @@
   <div id="sidebar" ng-show="vm.show_sidebar" class="slide-in">
     <div class="sidebar-handle"
          ng-click="vm.show_sidebar = !vm.show_sidebar"
-         tooltip="Collapse sidebar"
+         uib-tooltip="Collapse sidebar"
          tooltip-placement="right">
       <i class="fa fa-chevron-left"> </i>
     </div>
