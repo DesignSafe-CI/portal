@@ -37,6 +37,7 @@ class GoogleDriveFile(object):
     def __init__(self, googledrive_item, parent=None, drive=None):
         self._item = googledrive_item
         self._driveapi = drive
+        self._path_collection = []
         if parent:
             self._parent = GoogleDriveFile(parent, drive=drive)
         else:
@@ -62,11 +63,11 @@ class GoogleDriveFile(object):
             path = '{}'.format(self.name)
             while True:
                 try:
-                    parent = self._driveapi.files().get(fileId=parent['parents'][0], fields="parents, name").execute()
+                    self._path_collection.insert(0, {'id': parent['id'], 'name': '' if parent['name'] == 'My Drive' else parent['name']})
+                    parent = self._driveapi.files().get(fileId=parent['parents'][0], fields="parents, name, id").execute()
                     parent_name = '' if parent['name'] == 'My Drive' else parent['name']
                     path = "{}/{}".format(parent_name, path)
-                except (AttributeError, KeyError) as e:
-                    logger.debug(e)
+                except (AttributeError, KeyError):
                     break
         else:
             path = ''
@@ -96,15 +97,14 @@ class GoogleDriveFile(object):
 
     @property
     def trail(self):
-        path_comps = self.path.split('/')
-
-        trail_comps = [{'name': path_comps[i] or '/',
+        trail = [{'name': self._path_collection[i]['name'] or '/',
                     'system': None,
                     'resource': 'googledrive',
-                    'path': '/'.join(path_comps[0:i+1]) or '/',
-                    } for i in range(0, len(path_comps))]
+                    'id': self._path_collection[i]['id'],
+                    'path': '/'.join(j['name'] for j in self._path_collection[0:i + 1]) or '/',
+                  } for i in range(0, len(self._path_collection))]
 
-        return trail_comps
+        return trail
 
     @property
     def previewable(self):
