@@ -172,7 +172,7 @@ class FileManager(object):
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,
                              operation='googledrive_download_end',
-                             message='{} {} has been copied from Google Drive successfully!'.format(file_type.capitalize(), googledrive_item['name']),
+                             message='{} "{}" was copied from Google Drive successfully!'.format(file_type.capitalize(), googledrive_item['name']),
                              user=username,
                              extra={})
             n.save()
@@ -200,7 +200,7 @@ class FileManager(object):
                              message='We were unable to get the specified file from Google Drive. '
                                      'Please try again...',
                              user=username,
-                             extra={})
+                             extra={'path': googledrive_item['name']})
             n.save()
             raise
 
@@ -259,9 +259,10 @@ class FileManager(object):
                 n = Notification(event_type='data',
                                  status=Notification.ERROR,
                                  operation='googledrive_download_error',
-                                 message='Downloading files of this type are currently unsupported. Try converting the file.',
+                                 message='Downloading Google-type files is currently unsupported. Convert the file to'
+                                 ' a standard format and try again.',
                                  user=kwargs['username'],
-                                 extra={'path': "{}".format(googledrive_file['name'])})  # show mimeType in Notification
+                                 extra={'path': googledrive_file['name']})  # show file in Notification
                 n.save()
                 return None
 
@@ -295,7 +296,8 @@ class FileManager(object):
             n = Notification(event_type='data',
                                 status=Notification.ERROR,
                                 operation='googledrive_download_error',
-                                message='Copying files of this type are currently unsupported. Try converting the file.',
+                                message='Copying Google-type files is currently unsupported. Convert the file to'
+                                ' a standard format and try again.',
                                 user=username,
                                 # show mimeType in Notification
                                 extra={'path': "{}".format(googledrive_file['name'])})
@@ -405,7 +407,7 @@ class FileManager(object):
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,
                              operation='googledrive_upload_end',
-                             message='File %s has been copied to Google Drive successfully!' % (src_file_id, ),
+                             message='File "%s" was copied to Google Drive successfully!' % (src_file_id, ),
                              user=username,
                              extra={})
             n.save()
