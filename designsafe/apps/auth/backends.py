@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import ValidationError
 from django.dispatch import receiver
-from designsafe.apps.accounts.models import DesignSafeProfile
+from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
 from pytas.http import TASClient
 import logging
 import re
@@ -90,6 +90,12 @@ class TASBackend(ModelBackend):
                     profile = DesignSafeProfile(user=user)
                     profile.save()
 
+                try:
+                    prefs = NotificationPreferences.objects.get(user=user)
+                except NotificationPreferences.DoesNotExist:
+                    prefs = NotificationPreferences(user=user)
+                    prefs.save()
+
         return user
 
 
@@ -142,6 +148,12 @@ class AgaveOAuthBackend(ModelBackend):
                 except DesignSafeProfile.DoesNotExist:
                     profile = DesignSafeProfile(user=user)
                     profile.save()
+
+                try:
+                    prefs = NotificationPreferences.objects.get(user=user)
+                except NotificationPreferences.DoesNotExist:
+                    prefs = NotificationPreferences(user=user)
+                    prefs.save()
 
                 self.logger.info('Login successful for user "%s"' % username)
             else:
