@@ -23,7 +23,7 @@
         },
         {
           id: 'nees.public',
-          name: 'Public Data',
+          name: 'Published Data',
           storage: {
             homeDir: '/',
             rootDir: '/corral-repl/tacc/NHERI/public/projects'
