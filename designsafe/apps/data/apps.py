@@ -1,10 +1,26 @@
+import logging
 from django.apps import AppConfig
 from designsafe.apps.signals.signals import ds_event, generic_event
 
+#pylint: disable=invalid-name
+logger = logging.getLogger(__name__)
+#pylint: enable=invalid-name
 
 class DataConfig(AppConfig):
     name = 'designsafe.apps.data'
     verbose_name = 'Designsafe Data'
+
+    def ready(self):
+        from elasticsearch_dsl.connections import connections
+        from django.conf import settings
+        try:
+            connections.configure(
+                default={'hosts': settings.ES_CONNECTIONS[settings.DJANGO_ENVIRONMENT]['hosts']}
+            )
+        except AttributeError as exc:
+            logger.error('Missing ElasticSearch config. %s', exc)
+            raise
+        super(DataConfig, self).ready()
 
 '''
     Sender class for events
