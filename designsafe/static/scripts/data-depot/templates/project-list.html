@@ -9,8 +9,11 @@
 
         <tbody>
         <tr ng-repeat="project in data.projects"
-            ng-if="data.projects">
-            <td ng-click="onBrowse($event, project)">
+            ng-if="data.projects"
+            ng-click="onSelect($event, project);"
+            ng-class="{'ds-data-selected': project.selected}"
+        >
+            <td>
                 <i class="fa fa-briefcase"></i>
                 <a ng-href="{{ project.href }}">
                     {{ project.value.title }}
