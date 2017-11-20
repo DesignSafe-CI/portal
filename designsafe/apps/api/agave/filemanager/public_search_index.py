@@ -22,27 +22,10 @@ from .base import BaseFileManager
 
 logger = logging.getLogger(__name__)
 
-try:
-    es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
-    published_index = es_settings['published_index']
-    cluster = es_settings['cluster']
-    hosts = cluster['hosts']
-    connections.configure(
-        default={
-            'hosts': hosts,
-            'sniff_on_start': True,
-            'sniff_on_connection_fail': True,
-            'sniffer_timeout': 60,
-            'retry_on_timeout': True,
-            'timeout:': 20,
-        })
-except KeyError as e:
-    logger.exception('ELASTIC_SEARCH missing %s' % e)
-
 class PublicationIndexed(DocType):
     class Meta:
-        index = 'published'
-        doc_type = 'publication'
+        index = settings.ES_INDICES['publications']['name']
+        doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
 
 class Publication(object):
     def __init__(self, wrap=None, project_id=None, *args, **kwargs):
@@ -154,32 +137,6 @@ class Publication(object):
             return val
         else:
             raise AttributeError('\'Publication\' has no attribute \'{}\''.format(name))
-
-class CMSIndexed(DocType):
-    class Meta:
-        index = 'cms'
-
-class PublicFullIndexed(DocType):
-    class Meta:
-        index = published_index
-        doc_type = '_all'
-
-class PublicProjectIndexed(DocType):
-    class Meta:
-        index = published_index
-        doc_type = 'project'
-
-
-class PublicExperimentIndexed(DocType):
-    class Meta:
-        index = published_index
-        doc_type = 'experiment'
-
-
-class PublicObjectIndexed(DocType):
-    class Meta:
-        index = published_index
-        doc_type = 'object'
 
 
 class PublicSearchManager(object):

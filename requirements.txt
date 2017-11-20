@@ -65,6 +65,7 @@ et-xmlfile==1.0.1
 flower==0.9.2
 funcsigs==0.4
 futures==3.1.1
+future==0.16.0
 gevent==1.2.2
 google-api-python-client==1.6.4
 google-auth==1.1.1

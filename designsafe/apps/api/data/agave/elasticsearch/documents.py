@@ -17,6 +17,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
+"""
 try:
     es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
     default_index = es_settings['default_index']
@@ -33,6 +34,7 @@ try:
         })
 except KeyError as e:
     logger.exception('ELASTIC_SEARCH missing %s' % e)
+"""
 
 class ExecuteSearchMixin(object):
     @staticmethod
@@ -831,8 +833,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         return f.to_dict(extra = extra)
 
     class Meta:
-        index = default_index
-        doc_type = 'objects'
+        index = settings.ES_INDICES['files']['name']
+        doc_type = settings.ES_INDICES['files']['documents'][0]['name']
 
 class Project(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
@@ -889,8 +891,8 @@ class Project(ExecuteSearchMixin, PaginationMixin, DocType):
                 logger.warning(u'No file found for {}'.format(p.projectPath))
 
     class Meta:
-        index = 'nees'
-        doc_type = 'project'
+        index = settings.ES_INDICES['publications_legacy']['name']
+        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
 
 class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
@@ -951,8 +953,8 @@ class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
         return res, s[offset:limit]
 
     class Meta:
-        index = 'nees'
-        doc_type = 'experiment'
+        index = settings.ES_INDICES['publications_legacy']['name']
+        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
 
 class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
     def __init__(self, *args, **kwargs):
@@ -1174,5 +1176,5 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         return d
 
     class Meta:
-        index = 'nees'
-        doc_type = 'object'
+        index = settings.ES_INDICES['publications_legacy']['name']
+        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']

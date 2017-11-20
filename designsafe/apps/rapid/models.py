@@ -3,7 +3,7 @@ from datetime import datetime
 from elasticsearch_dsl import (DocType, String, Date, Nested,
                                Boolean, GeoPoint, MetaField, Text,
                                Keyword)
-from designsafe.connections import connections
+#from designsafe.connections import connections
 
 class RapidNHEventType(DocType):
     class Meta:

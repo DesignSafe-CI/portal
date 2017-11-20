@@ -12,23 +12,6 @@ from .base import BaseFileManager
 
 logger = logging.getLogger(__name__)
 
-try:
-    es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
-    default_index = es_settings['default_index']
-    cluster = es_settings['cluster']
-    hosts = cluster['hosts']
-    connections.configure(
-        default={
-            'hosts': hosts,
-            'sniff_on_start': True,
-            'sniff_on_connection_fail': True,
-            'sniffer_timeout': 60,
-            'retry_on_timeout': True,
-            'timeout:': 20,
-        })
-except KeyError as e:
-    logger.exception('ELASTIC_SEARCH missing %s' % e)
-
 def merge_file_paths(system, user_context, file_path, s):
     def _names_equal(name):
         return all(n == name[0] for n in name[1:])
@@ -86,8 +69,8 @@ def merge_file_paths(system, user_context, file_path, s):
 class IndexedFile(DocType):
 
     class Meta:
-        index = default_index
-        doc_type = 'objects'
+        index = settings.ES_INDICES['files']['name']
+        doc_type = settings.ES_INDICES['files']['documents'][0]['name']
 
 class Object(object):
     def __init__(self, system_id = None, user_context = None,

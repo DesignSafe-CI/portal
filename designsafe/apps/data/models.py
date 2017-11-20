@@ -11,7 +11,7 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                GeoPoint, String, MetaField)
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
-from designsafe.lib.elasticsearch.analyzers import path_analyzer
+from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
