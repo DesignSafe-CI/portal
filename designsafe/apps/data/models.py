@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 @python_2_unicode_compatible
-class File(DocType):
+class IndexedFile(DocType):
     name = Keyword(fields={
         '_exact': Keyword()
     })
@@ -44,7 +44,7 @@ class File(DocType):
         dynamic = MetaField('false')
 
 @python_2_unicode_compatible
-class Publication(DocType):
+class IndexedPublication(DocType):
     analysisList = Nested(properties={
         'associationIds' : String(multi=True, fields={'_exact':Keyword()}),
         'created': Date(),
@@ -223,7 +223,7 @@ class Publication(DocType):
     })
 
 @python_2_unicode_compatible
-class CMSRecord(DocType):
+class IndexedCMSPage(DocType):
     body = Text(analyzer='english')
     description = Text(analyzer='english')
     django_id = String(fields={'_exact': Keyword()})
@@ -237,7 +237,7 @@ class CMSRecord(DocType):
     url = String(fields={'_exact': Keyword()})
 
 @python_2_unicode_compatible
-class NEESProject(DocType):
+class IndexedPublicationLegacy(DocType):
     description = Text(analyzer='english')
     endDate = Date()
     equipment = Nested()
