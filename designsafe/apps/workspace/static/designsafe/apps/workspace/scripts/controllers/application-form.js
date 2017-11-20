@@ -95,7 +95,7 @@
           type: 'fieldset',
           readonly: $scope.data.needsLicense,
           title: 'Job details',
-          items: ['requestedTime','name', 'archivePath']
+          items: ['requestedTime', 'name', 'nodeCount', 'archivePath']
         });
 
         /* buttons */

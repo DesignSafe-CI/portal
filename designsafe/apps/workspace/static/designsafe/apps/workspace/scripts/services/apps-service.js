@@ -151,6 +151,18 @@
         type: 'string',
         required: true
       };
+
+      schema.properties.nodeCount = {
+        title: 'Node Count (optional)',
+        description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}. If the application is not of executionType PARALLEL, this should be 1.`,
+        type: 'integer',
+        "minimum": 1,
+        "maximum": 10000,
+        "format": "int64",
+        "validationMessage": "Must be an integer in the range 1 to 10000.",
+        'x-schema-form': {placeholder: app.defaultNodeCount}
+      };
+
       schema.properties.archivePath = {
         title: 'Job output archive location (optional)',
         description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
