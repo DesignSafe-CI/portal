@@ -697,7 +697,7 @@ def external_resource_download(self, file_mgr_name, username, src_file_id, dest_
 
 @shared_task(bind=True)
 def check_project_files_meta_pems(self, project_uuid):
-    from designsafe.apps.api.agave.models.files import BaseFileMetadata
+    from designsafe.apps.data.models.agave.files import BaseFileMetadata
     logger.debug('Checking metadata pems linked to a project')
     service = get_service_account_client()
     metas = BaseFileMetadata.search(service, {'associationIds': project_uuid,
@@ -707,7 +707,7 @@ def check_project_files_meta_pems(self, project_uuid):
 
 @shared_task(bind=True)
 def check_project_meta_pems(self, metadata_uuid):
-    from designsafe.apps.api.agave.models.files import BaseFileMetadata
+    from designsafe.apps.data.models.agave.files import BaseFileMetadata
     logger.debug('Checking single metadata pems linked to a project %s', metadata_uuid)
     service = get_service_account_client()
     bfm = BaseFileMetadata.from_uuid(service, metadata_uuid)

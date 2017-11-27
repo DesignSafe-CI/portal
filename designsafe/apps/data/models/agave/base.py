@@ -339,7 +339,7 @@ class Model(object):
         return dict_obj
     
     def to_body_dict(self):
-        from designsafe.apps.api.agave.models.fields import ListField
+        from designsafe.apps.data.models.agave.fields import ListField
         dict_obj = {}
 
         if not self._is_nested:

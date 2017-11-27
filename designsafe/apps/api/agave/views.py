@@ -16,9 +16,9 @@ from django.contrib.auth import get_user_model
 from designsafe.apps.api.agave.filemanager.agave import AgaveFileManager
 from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
 from designsafe.apps.api.agave import get_service_account_client
-from designsafe.apps.api.agave.models.util import AgaveJSONEncoder
-from designsafe.apps.api.agave.models.files import BaseFileResource
-from designsafe.apps.api.agave.models.systems import BaseSystemResource
+from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
+from designsafe.apps.data.models.agave.files import BaseFileResource
+from designsafe.apps.data.models.agave.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.tasks import external_resource_upload
 from designsafe.apps.api.views import BaseApiView

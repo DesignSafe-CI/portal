@@ -7,8 +7,8 @@ import urllib
 import urlparse
 from requests.exceptions import HTTPError
 from . import BaseAgaveResource
-from designsafe.apps.api.agave.models.metadata import BaseMetadataResource, BaseMetadataPermissionResource
-from designsafe.apps.api.agave.models.systems import roles as system_roles_list
+from designsafe.apps.data.models.agave.metadata import BaseMetadataResource, BaseMetadataPermissionResource
+from designsafe.apps.data.models.agave.systems import roles as system_roles_list
 from agavepy.agave import AgaveException
 from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api import tasks
@@ -65,12 +65,12 @@ class BaseFileMetadata(BaseMetadataResource):
             :param list system_roles: A list of :class:`dict` representing the user roles of a system.
              This should be the response from :func:`~agavepy.agave.Agave.systems.listRoles`.
             :param list meta_pems: A list of
-             :class:`~designsafe.apps.api.agave.models.metadata.BaseMetadataPermissionResource`.
+             :class:`~designsafe.apps.data.models.agave.metadata.BaseMetadataPermissionResource`.
              This should be the response from
-             :func:`~designsafe.apps.api.agave.models.metadata.BaseMetadataPermissionResource.list_permissions`
+             :func:`~designsafe.apps.data.models.agave.metadata.BaseMetadataPermissionResource.list_permissions`
 
             :returns: A :class:`dict` where the keys are the usernames who do not have a role set on the system and the value
-             of each key is the :class:`~designsafe.apps.api.agave.models.metadata.BaseMetadataPermissionResource` object.
+             of each key is the :class:`~designsafe.apps.data.models.agave.metadata.BaseMetadataPermissionResource` object.
             :rtype: dict
         """
         meta_pems_users = {pem.username: pem for pem in meta_pems}
