@@ -40,28 +40,28 @@
         </div>
     </div>
     <div class="actions text-center">
+        <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
+            <i class="fa fa-tags"></i>Tag
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canRename" ng-click="rename()">
+            <i class="fa fa-pencil"></i> Rename
+        </button>
+        
+        <button class="btn btn-sm btn-default" ng-if="tests.canMove" ng-click="move()">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+        
+        <button class="btn btn-sm btn-default" ng-if="tests.canCopy" ng-click="copy()">
+            <i class="fa fa-copy"></i> Copy
+        </button>
+
         <button class="btn btn-sm btn-default" ng-if="tests.canDownload" ng-click="download()">
             <i class="fa fa-cloud-download"></i> Download
         </button>
 
         <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
             <i class="fa fa-send"></i> Share
-        </button>
-
-        <button class="btn btn-sm btn-default" ng-if="tests.canCopy" ng-click="copy()">
-            <i class="fa fa-copy"></i> Copy
-        </button>
-
-        <button class="btn btn-sm btn-default" ng-if="tests.canMove" ng-click="move()">
-            <i class="fa fa-arrows"></i> Move
-        </button>
-
-        <button class="btn btn-sm btn-default" ng-if="tests.canRename" ng-click="rename()">
-            <i class="fa fa-pencil"></i> Rename
-        </button>
-
-        <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
-            <i class="fa fa-book"></i>View / Edit Metadata
         </button>
 
         <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
