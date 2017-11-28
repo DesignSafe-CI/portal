@@ -41,7 +41,8 @@ class IndexedFile(DocType):
 
     class Meta:
         index = settings.ES_INDICES['files']['name']
-        dynamic = MetaField('false')
+        doc_type = settings.ES_INDICES['files']['documents'][0]['name']
+        dynamic = MetaField('strict')
 
 @python_2_unicode_compatible
 class IndexedPublication(DocType):
@@ -222,6 +223,11 @@ class IndexedPublication(DocType):
         'username': String(fields={'_exact': Keyword()}),
     })
 
+    class Meta:
+        index = settings.ES_INDICES['publications']['name']
+        doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
+        dynamic = MetaField('strict')
+
 @python_2_unicode_compatible
 class IndexedCMSPage(DocType):
     body = Text(analyzer='english')
@@ -235,6 +241,11 @@ class IndexedCMSPage(DocType):
     text = Text(analyser='english')
     title = String(analyzer='english', fields={'_exact': Keyword()})
     url = String(fields={'_exact': Keyword()})
+
+    class Meta:
+        index = settings.ES_INDICES['web_content']['name']
+        doc_type = settings.ES_INDICES['web_content']['documents'][0]['name']
+        dynamic = MetaField('strict')
 
 @python_2_unicode_compatible
 class IndexedPublicationLegacy(DocType):
@@ -314,3 +325,8 @@ class IndexedPublicationLegacy(DocType):
                 }),
             'name': Text(analyzer='english')
         })
+
+    class Meta:
+        index = settings.ES_INDICES['publications_legacy']['name']
+        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
+        dynamic = MetaField('strict')
