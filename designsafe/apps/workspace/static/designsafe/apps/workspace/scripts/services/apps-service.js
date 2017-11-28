@@ -154,12 +154,12 @@
 
       schema.properties.nodeCount = {
         title: 'Node Count (optional)',
-        description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}. If the application is not of executionType PARALLEL, this should be 1.`,
+        description: "Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.",
         type: 'integer',
         "minimum": 1,
-        "maximum": 10000,
+        "maximum": 12,
         "format": "int64",
-        "validationMessage": "Must be an integer in the range 1 to 10000.",
+        "validationMessage": "Must be an integer in the range 1 to 12.",
         'x-schema-form': {placeholder: app.defaultNodeCount}
       };
 

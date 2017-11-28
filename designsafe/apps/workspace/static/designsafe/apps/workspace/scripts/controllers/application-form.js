@@ -91,11 +91,16 @@
         });
 
         /* job details */
+        items = [];
+        items.push('maxRunTime', 'name', 'archivePath');
+        if ($scope.data.app.parallelism == "PARALLEL") {
+          items.push('nodeCount');
+        }
         $scope.form.form.push({
           type: 'fieldset',
           readonly: $scope.data.needsLicense,
           title: 'Job details',
-          items: ['maxRunTime', 'name', 'nodeCount', 'archivePath']
+          items: items
         });
 
         /* buttons */
