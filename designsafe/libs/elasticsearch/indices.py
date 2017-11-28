@@ -13,16 +13,14 @@ from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Index)
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
-from designsafe.lib.elasticsearch.analyzers import path_analyzer
+from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
 try:
-    DEFAULT_INDEX = settings.ES_DEFAULT_INDEX
-    HOSTS = settings.ES_HOSTS
-    FILES_DOC_TYPE = settings.ES_FILES_DOC_TYPE
+    HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
     connections.configure(
         default={'hosts': HOSTS}
     )
@@ -41,14 +39,19 @@ def _init_index(index_config, force):
     index.aliases(**aliases)
     if force:
         index.delete(ignore=404)
-    
-    index.create()
+    try:
+        index.create()
+    except TransportError as err:
+        if err.status_code == 404:
+            logger.debug('Index already exists, initializing document')
+    index.close()
     for document_config in index_config['documents']:
         module_str, class_str = document_config['class'].rsplit('.', 1)
         module = import_module(module_str)
         cls = getattr(module, class_str)
         index.doc_type(cls)
         cls.init()
+    index.open()
 
     return index
 

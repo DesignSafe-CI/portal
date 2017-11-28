@@ -38,25 +38,25 @@ ES_INDICES = {
         'name': 'des-files_a',
         'alias': ['des-files'],
         'documents': [{'name': 'file',
-                       'class': 'designsafe.apps.data.models.IndexedFile'}]
+                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedFile'}]
     },
     'publications': {
         'name': 'des-publications_a',
         'alias': ['des-publications'],
         'documents': [{'name': 'publication',
-                       'class': 'designsafe.apps.data.models.IndexedPublication'}]
+                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedPublication'}]
     },
     'web_content': {
         'name': 'des-web_content_a',
         'alias': ['des-web_content'],
         'documents': [{'name': 'page',
-                       'class': 'designsafe.apps.data.models.IndexedCMSPage'}]
+                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedCMSPage'}]
     },
     'publications_legacy': {
-        'name': 'publications_legacy_a',
+        'name': 'des-publications_legacy_a',
         'alias': ['des-publications_legacy'],
         'documents': [{'name': 'publication',
-                       'class': 'designsafe.apps.data.models.IndexedPublicationLegacy'}]
+                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedPublicationLegacy'}]
     },
     'rapid': {
         'name': 'des-rapid_nh_a',
@@ -70,25 +70,25 @@ ES_INDICES = {
         'name': 'des-projects_a',
         'alias': ['des-projects'],
         'documents': [{'name': 'project',
-                       'class': 'designsafe.apps.projects.models.IndexedProject'}]
+                       'class': 'designsafe.apps.projects.models.elasticsearch.IndexedProject'}]
     },
     'project_entities': {
         'name': 'des-project_entities_a',
         'alias': ['des-projects_entities'],
         'documents': [{'name': 'entity',
-                       'class': 'designsafe.apps.projects.models.IndexedEntity'}]
+                       'class': 'designsafe.apps.projects.models.elasticsearch.IndexedEntity'}]
     },
     'apps': {
         'name': 'des-apps_a',
         'alias': ['des-apps'],
         'documents': [{'name': 'app',
-                       'class': 'designsafe.apps.workspace.models.IndexedApp'}]
+                       'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedApp'}]
     },
     'jobs': {
         'name': 'des-jobs_a',
         'alias': ['des-jobs'],
         'documents': [{'name': 'job',
-                       'class': 'designsafe.apps.workspace.models.IndexedJob'}]
+                       'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
     }
 }
 
