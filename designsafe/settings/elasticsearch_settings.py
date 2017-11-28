@@ -78,18 +78,18 @@ ES_INDICES = {
         'documents': [{'name': 'entity',
                        'class': 'designsafe.apps.projects.models.elasticsearch.IndexedEntity'}]
     },
-    'apps': {
-        'name': 'des-apps_a',
-        'alias': ['des-apps'],
-        'documents': [{'name': 'app',
-                       'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedApp'}]
-    },
-    'jobs': {
-        'name': 'des-jobs_a',
-        'alias': ['des-jobs'],
-        'documents': [{'name': 'job',
-                       'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
-    }
+    #'apps': {
+    #    'name': 'des-apps_a',
+    #    'alias': ['des-apps'],
+    #    'documents': [{'name': 'app',
+    #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedApp'}]
+    #},
+    #'jobs': {
+    #    'name': 'des-jobs_a',
+    #    'alias': ['des-jobs'],
+    #    'documents': [{'name': 'job',
+    #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
+    #}
 }
 
 """
