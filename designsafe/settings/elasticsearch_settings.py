@@ -23,7 +23,7 @@ ES_CONNECTIONS = {
     },
     'dev': {
         'hosts': [
-            'es_designsafe'
+            'elasticsearch'
         ]
     },
     'localhost': {
