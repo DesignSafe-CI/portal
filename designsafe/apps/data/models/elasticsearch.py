@@ -238,19 +238,79 @@ class IndexedCMSPage(DocType):
 
 @python_2_unicode_compatible
 class IndexedPublicationLegacy(DocType):
-    description = Text(analyzer='english')
+    startDate = Date()
     endDate = Date()
-    equipment = Nested()
-    facility = Nested()
+    description = Text(analyzer='english')
+    facility = Nested(
+        properties={
+            'country': Text(analyzer='english'),
+            'name': Text(analyzer='english'),
+            'state': Text(analyzer='english')
+        })
+    deleted = Boolean()
+    path = String(fields={'_exact':Keyword(), '_path':String(analyzer=path_analyzer)})
+    title = String(analyzer='english', fields={'_exact':Keyword()})
+    name = String(fields={'_exact': Keyword()})
+    equipment = Nested(
+        properties={
+            'component': Text(analyzer='english'),
+            'equipment': Text(analyzer='english'),
+            'equipmentClass': Text(analyzer='english'),
+            'facility': Text(analyzer='english')
+        })
+    system = String(fields={'_exact':Keyword()})
+    organization = Nested(
+        properties={
+            'country': Text(analyzer='english'),
+            'name': String(analyzer='english'),
+            'state': String(analyzer='english')
+        })
+    pis = Nested(
+        properties={
+            'lastName': String(analyzer='english'),
+            'firstName': String(analyzer='english')
+        })
+    project = String(fields={'_exact':Keyword()})
+    sponsor = Nested(
+        properties={
+            'name': String(analyzer='english'),
+            'url': String()
+        })
     fundorg = String(analyzer='english', fields={'_exact': Keyword()})
     fundorgprojid = String(fields={'_exact': Keyword()})
-    name = String(fields={'_exact': Keyword()})
-    organization = Nested()
-    pis = Nested()
-    project = String(fields={'_exact':Keyword()})
-    projectPath = String(fields={'_exact':Keyword(), '_path':String(analyzer=path_analyzer)})
-    publications = Nested()
-    sponsor = Nested()
-    startDate = Date()
-    systemId = String(fields={'_exact':Keyword()})
-    title = String(analyzer='english', fields={'_exact':Keyword()})
+    publications = Nested(
+        properties={
+            'authors': String(analyzer='english', multi=True),
+            'title': Text(analyzer='english')
+        })
+    experiments = Nested(
+        properties={
+            'startDate': Date(),
+            'endDate': Date(),
+            'description': Text(analyzer='english'),
+            'facility': Nested(properties={
+                'country': Text(analyzer='english'),
+                'state': Text(analyzer='english'),
+                'name': Text(analyzer='english'),
+                }),
+            'deleted': Boolean(),
+            'path': String(fields={'_exact': Keyword(), '_path':String(analyzer=path_analyzer)}),
+            'material': Nested(properties={
+                'materials': String(analyzer='english', multi=True),
+                'component': String(analyzer='english')
+                }),
+            'equipment': Nested(properties={
+                'component': Text(analyzer='english'),
+                'equipment': Text(analyzer='english'),
+                'equipmentClass': Text(analyzer='english'),
+                'facility': Text(analyzer='english')
+            }),
+            'title': Text(analyzer='english'),
+            'sensors': String(analyzer='english', multi=True),
+            'type': Text(analyzer='english'),
+            'specimenType': Nested(properties={
+                'name': Text(analyzer='english'),
+                'description': Text(analyzer='english')
+                }),
+            'name': Text(analyzer='english')
+        })
