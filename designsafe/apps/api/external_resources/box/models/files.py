@@ -85,7 +85,7 @@ class BoxFile(object):
 
     @property
     def ext(self):
-        return os.path.splitext(self.name)[1]
+        return os.path.splitext(self.name)[1].lower()
 
     @property
     def trail(self):
