@@ -2,29 +2,10 @@
 <!-- Published View -->
 <div class="project">
   <div class="project-detail" style="background:white;">
-    <h2>{{ project.value.title }}</h2>
-    <p><strong>Description</strong></p>
-    <p>
-      {{project.value.description}}
-    </p>
+    <h2>{{project.value.projectId}}: {{ project.value.title }}</h2>
     <div style="width:50%; display:inline-block;">
       <table class="table" style="margin-bottom:0;">
         <tbody>
-          <tr>
-            <th>Project Type</th>
-            <td>{{project.value.projectType}}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th>ID</th>
-            <td>{{project.value.projectId}}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th>Award Number:</th>
-            <td>{{project.value.awardNumber}}</td>
-            <td></td>
-          </tr>
           <tr>
             <th>PI</th>
             <td>{{project.piLabel}}
@@ -36,9 +17,20 @@
           </tr>
           <tr>
             <th>Date of Publication</th>
-            <td>{{browser.publication.created| date: 'yyyy/MMM/d'}}</td>
+            <td>{{browser.publication.created| date: 'MMM/d/yyyy'}}</td>
             <td></td>
           </tr>
+          <tr>
+            <th>Project Type</th>
+            <td><span style="text-transform:capitalize">{{project.value.projectType}}</span></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="width:49%; display:inline-block; vertical-align:top;">
+      <table class="table" style="margin-bottom:0;">
+        <tbody>
           <tr>
             <th>DOI</th>
             <td>{{project.doi}}</td>
@@ -48,6 +40,11 @@
               </button>
             <td>
           </tr>
+          <tr ng-if="project.value.awardNumber">
+            <th>Award Number</th>
+            <td>{{project.value.awardNumber}}</td>
+            <td></td>
+          </tr>
           <tr>
             <th>keywords</th>
             <td>{{project.value.keywords}}</td>
@@ -56,27 +53,12 @@
         </tbody>
       </table>
     </div>
-    <!--
-    <div style="width:49%; display:inline-block; vertical-align:top;">
-      <table class="table" style="margin-bottom:0;">
-        <tbody>
-          <tr>
-            <th>PI</th>
-            <td>{{project.piLabel}}
-            </td>
-          </tr>
-          <tr>
-            <th>
-              <button class="btn btn-info btn-sm"
-                      ng-click="showCitation(project)">Citation
-              </button>
-            <th>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+    <div style="width:100%;">
+      <p><strong>Description</strong></p>
+      <p>
+        {{project.value.description}}
+      </p>
     </div>
-    -->
 
     <!--
     <div style="vertical-align:top;">
@@ -197,36 +179,42 @@
             <div style="border:1px solid black; background:white; margin-bottom:15px;">
               <div style= "padding:5px;">
                 <h3 style="margin-top:0">{{experiment.value.title}}</h3>
-                <p style="font-weight:bold;">Description</p>
-                <p>{{experiment.value.description}}</p>
               </div>
-              <div style="width:49%; vertical-align:top; display:inline-block;">
+              <div style="width:49%; vertical-align:top; display:inline-block; padding-left:10px;">
                 <div>
-                  <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> {{experiment.lastUpdated| date: 'yyyy/MMM/d'}}
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> DOI: </span>
-                  <span>{{experiment.doi}}</span>
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> Experimental Facility: </span>{{experiment.value.experimentalFacility}}
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> Experiment Type: </span>
-                  <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> Equipment Type: </span>
-                  <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
-                </div>
-              </div>
-              <div style="width:49%; vertical-aligh:top; display:inline-block;">
-                <div>
-                  <span style="font-weight:bold; display:inline-block; width:100px;">Authors : </span>
+                  <span style="font-weight:bold; display:inline-block; width:100px;">Authors</span>
                   <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users) | orderBy: sortUsers(experiment)">
                   {{user.last_name}}, {{user.first_name}};
                   </span>
                 </div>
+                <div>
+                  <span style="font-weight:bold;"> Experimental Facility </span>{{experiment.value.experimentalFacility}}
+                </div>
+                <div>
+                  <span style="font-weight:bold;"> Experiment Type </span>
+                  <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
+                </div>
+                <div>
+                  <span style="font-weight:bold;"> Equipment Type </span>
+                  <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
+                </div>
+
+                <div>
+                  <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication </span> {{experiment.lastUpdated| date: 'MMM/d/yyyy'}}
+                </div>
+              </div>
+              <!-- right hand -->
+              <div style="width:49%; vertical-aligh:top; display:inline-block;">
+                <div>
+                  <span style="font-weight:bold;"> DOI: </span>
+                  <span>{{experiment.doi}}</span>
+                </div>
+              </div>
+              <div style="width:100%; padding-left:10px;" ng-if="experiment.value.description">
+                <p style="font-weight:bold;">Description</p>
+                <p>{{experiment.value.description}}</p>
+              </div>
+              <div style="width:100%; paddin-left:10px;">
                 <div>
                   <button class="btn btn-info btn-sm"
                           ng-click="showCitation(experiment)">Citation
@@ -236,6 +224,7 @@
                   <span style="font-weight:bold;">Report</span>
                 </a>
                 </div>
+              </div>
             </div>
             <div ng-if="!getRelated('eventsList', false, experiment.uuid).length"
                  class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
