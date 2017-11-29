@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 
 class PublicationIndexed(DocType):
     class Meta:
-        index = settings.ES_INDICES['publications']['name']
-        doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
+        index = 'published'
+        doc_type = 'publication'
 
 class Publication(object):
     def __init__(self, wrap=None, project_id=None, *args, **kwargs):
@@ -106,8 +106,12 @@ class Publication(object):
                      'format': 'folder',
                      'length': 24731027,
                      'meta': {
-                         'title': self.project['value']['title']
-                     },
+                         'title': self.project['value']['title'],
+                         'pi': self.project['value']['pi'],
+                         'dateOfPublication': self.created,
+                         'type': self.project['value']['projectType'],
+                         'projectId': self.project['value']['projectId']
+                         },
                      'name': self.project.value.projectId,
                      'path': '/{}'.format(self.project.value.projectId),
                      'permissions': 'READ',
