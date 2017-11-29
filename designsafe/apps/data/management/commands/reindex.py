@@ -1,3 +1,4 @@
+import six
 import json
 import logging
 from django.core.management.base import BaseCommand, CommandError
@@ -78,8 +79,13 @@ class Command(BaseCommand):
                 index_settings['index'].pop('creation_date')
                 index_settings['index'].pop('version')
                 try:
-                    index_mapping['objects']['properties']['name']['fields']['_exact'].pop('fielddata', None)
-                    index_mapping['objects']['properties']['path']['fields']['_exact'].pop('fielddata', None)
+                    for key, value in six.iteritems(index_mapping):
+                        properties = value['properties']
+                        for prop_name, prop_val in six.iteritems(properties):
+                            if 'fields' in prop_val:
+                                for field_name, field_val in six.iteritems(prop_val['fields']):
+                                    print field_val
+                                    field_val.pop('fielddata', None)
                 except:
                     pass
                 local_index = es_local.indices.create(
