@@ -7,7 +7,7 @@ from elasticsearch_dsl import (DocType, String, Date, Nested,
 
 class RapidNHEventType(DocType):
     class Meta:
-        index = settings.ES_INDICES['rapid']['name']
+        index = 'designsafe'
         dynamic = MetaField('false')
 
     display_name = String(fields={
@@ -20,7 +20,7 @@ class RapidNHEventType(DocType):
 
 class RapidNHEvent(DocType):
     class Meta:
-        index = settings.ES_INDICES['rapid']['name']
+        index = 'designsafe'
         dynamic = MetaField('false')
 
     event_date = Date()
