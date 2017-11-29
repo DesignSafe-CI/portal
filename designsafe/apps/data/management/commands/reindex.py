@@ -26,6 +26,20 @@ class Command(BaseCommand):
                             "key (e.g. 'default' or 'staging')")
         parser.add_argument('--timeout', help="Reindexing request timeout", type=int)
 
+    def remove_fielddata(self, dict_obj, lvl=1):
+        for key, val in six.iteritems(dict_obj):
+            self.stdout.write('-' * lvl + key)
+            if 'fielddata' in val:
+                val.pop('fielddata')
+            if 'fields' in val:
+                for fields_key, fields_val in six.iteritems(val['fields']):
+                    self.stdout.write('-' * (lvl + 1) + fields_key)
+                    if 'fielddata' in fields_val:
+                        fields_val.pop('fielddata')
+            if 'properties' in val:
+                lvl += 1
+                self.remove_fielddata(val['properties'], lvl)
+
     def handle(self, *args, **options):
         from_index = options.get('from_index')
         to_index = options.get('to_index')
@@ -72,22 +86,14 @@ class Command(BaseCommand):
             if err.status_code == 404:
                 self.stdout.write('Creating index: %s' % to_index)
                 index_mapping = remote_index[from_index]['mappings']
-                self.stdout.write('Using mapping: %s' % json.dumps(index_mapping))
                 index_settings = remote_index[from_index]['settings']
                 self.stdout.write('Using Settings: %s' % json.dumps(index_settings))
                 index_settings['index'].pop('uuid', None)
                 index_settings['index'].pop('creation_date')
                 index_settings['index'].pop('version')
-                try:
-                    for key, value in six.iteritems(index_mapping):
-                        properties = value['properties']
-                        for prop_name, prop_val in six.iteritems(properties):
-                            if 'fields' in prop_val:
-                                for field_name, field_val in six.iteritems(prop_val['fields']):
-                                    print field_val
-                                    field_val.pop('fielddata', None)
-                except:
-                    pass
+                index_settings['index'].pop('provided_name', None)
+                self.remove_fielddata(index_mapping)
+                self.stdout.write('Using mapping: %s' % json.dumps(index_mapping))
                 local_index = es_local.indices.create(
                     to_index,
                     body={
