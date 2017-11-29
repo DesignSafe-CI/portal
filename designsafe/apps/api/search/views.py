@@ -15,6 +15,8 @@ from designsafe.apps.api.agave.filemanager.public_search_index import (
 
 logger = logging.getLogger(__name__)
 
+
+
 class SearchView(BaseApiView):
     """Main view to handle sitewise search requests"""
     def get(self, request):
@@ -26,16 +28,13 @@ class SearchView(BaseApiView):
         if (limit > 500):
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', None)
+        #search everything
+        if request.user.is_authenticated:
+            es_query = Search(index="designsafe,published,nees,cms")
+        else:
+            es_query = Search(index="published,nees,cms")
 
-        # search everything that is not a directory. The django_id captures the cms
-        # stuff too.
-        # .highlight('body',
-        #     fragment_size=100,
-        #     pre_tags=["<strong>"],
-        #     post_tags=["</strong>"],
-        # )\
-        # .highlight_options(require_field_match=True)\
-        es_query = Search(index="nees,cms")\
+        es_query = es_query\
             .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
             .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
             .query(~Q('match', type='dir'))\
