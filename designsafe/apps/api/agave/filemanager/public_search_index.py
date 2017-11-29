@@ -138,6 +138,30 @@ class Publication(object):
         else:
             raise AttributeError('\'Publication\' has no attribute \'{}\''.format(name))
 
+class CMSIndexed(DocType):
+    class Meta:
+        index = 'cms'
+
+class PublicFullIndexed(DocType):
+    class Meta:
+        index = 'nees'
+        doc_type = '_all'
+
+class PublicProjectIndexed(DocType):
+    class Meta:
+        index = 'nees'
+        doc_type = 'project'
+
+class PublicExperimentIndexed(DocType):
+    class Meta:
+        index = 'nees'
+        doc_type = 'experiment'
+
+class PublicObjectIndexed(DocType):
+    class Meta:
+        index = 'nees'
+        doc_type = 'object'
+
 
 class PublicSearchManager(object):
     """ Wraps elastic search result object

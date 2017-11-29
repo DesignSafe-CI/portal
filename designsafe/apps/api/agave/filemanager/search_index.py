@@ -69,8 +69,8 @@ def merge_file_paths(system, user_context, file_path, s):
 class IndexedFile(DocType):
 
     class Meta:
-        index = settings.ES_INDICES['files']['name']
-        doc_type = settings.ES_INDICES['files']['documents'][0]['name']
+        index = 'designsafe'
+        doc_type = 'objects'
 
 class Object(object):
     def __init__(self, system_id = None, user_context = None,
