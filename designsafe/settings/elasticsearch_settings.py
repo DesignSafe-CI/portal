@@ -16,7 +16,7 @@ ES_CONNECTIONS = {
             'designsafe-es02.tacc.utexas.edu',
         ],
     },
-    'stagig': { #dev/qa
+    'staging': { #dev/qa
         'hosts':  [
             'designsafe-es01-dev.tacc.utexas.edu',
         ]
