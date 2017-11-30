@@ -72,6 +72,13 @@
                 });
             })(jQuery);
         </script>
+    {% elif video_preview %}
+      <div>
+        <video controls>
+          <source src="{{video_preview}}" type="{{mimetype}}">
+          Your browser is not capable of previewing this video. Please try downloading the file.
+        </video>
+      </div>
     {% else %}
         <p class="alert alert-warning">
             Preview for this item is not supported.

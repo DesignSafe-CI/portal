@@ -153,6 +153,16 @@ class BaseFileResource(BaseAgaveResource):
         '.pdf',
     ]
 
+    SUPPORTED_VIDEO_EXTS = [
+        '.webm', '.ogg', '.mp4'
+    ]
+
+    SUPPORTED_VIDEO_MIMETYPES = {
+        '.webm' : 'video/webm',
+        '.ogg' : 'video/ogg',
+        '.mp4' : 'video/mp4'
+    }
+
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                     SUPPORTED_TEXT_PREVIEW_EXTS +
                                     SUPPORTED_OBJECT_PREVIEW_EXTS + 
