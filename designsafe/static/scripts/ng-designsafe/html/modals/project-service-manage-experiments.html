@@ -244,7 +244,7 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid)">
+                ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid) | orderBy: modelConfig.value.title">
               <div class="tree-el">
               <span class="label tag-blue">Model Config</span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
@@ -257,7 +257,7 @@
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="sensorList in data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid])">
+                    ng-repeat="sensorList in data.project.getRelated('sensorlist_set', [experiment.uuid, modelConfig.uuid]) | orderBy: sensorList.value.title">
                   <div class="tree-el">  
                   <span class="label tag-green">Sensor</span>
                   <span class="tag-title">{{sensorList.value.title}}</span>
