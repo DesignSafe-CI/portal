@@ -3,53 +3,113 @@
 <div class="project">
   <div class="project-detail" style="background:white;">
     <h2>{{project.value.projectId}}: {{ project.value.title }}</h2>
-    <div style="width:50%; display:inline-block;">
+    <div class="table-responsive">
       <table class="table" style="margin-bottom:0;">
+        <thead>
+          <tr>
+            <th style="width:50%; border-top:none; padding:0px;"></th>
+            <th style="width:50%; border-top:none; padding:0px;"></th>
+          </tr>
+        </thead>
         <tbody>
           <tr>
-            <th>PI</th>
-            <td>{{project.piLabel}}
+            <td ng-if="project.value.projectType !== 'other'" style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:33%">PI</th>
+                    <td style="border-top:none; width:33%">{{project.piLabel}}</td>
+                    <td style="border-top:none; width:33%">
+                      <button class="btn btn-sm btn-default"
+                              ng-click="viewCollabs($event)">View Team Members</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </td>
-            <td>
-              <button class="btn btn-sm btn-default"
-                      ng-click="viewCollabs($event)">View Team Members</button>
+            <td ng-if="project.value.projectType === 'other'" style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:33%">Authors</th>
+                    <td style="border-top:none; width:33%">
+                      <span><ds-user username="project.value.pi[0]" format="lname"></ds-user>;</span>
+                      <span ng-repeat="username in project.value.coPis"><ds-user username="username" format="lname"></ds-user>;</span>
+                      <span ng-repeat="username in project.value.teamMembers"><ds-user username="username" format="lname"></ds-user>;</span>
+                    </td>
+                    <td style="border-top:none; width:33%">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none;">DOI</th>
+                    <td style="border-top:none;">{{project.doi}}</td>
+                    <td style="border-top:none;">
+                      <button class="btn btn-info btn-sm"
+                              ng-click="showCitation(project)">Citation
+                      </button>
+                    <td>
+                  </tr>
+                </tbody>
+              </table>
             </td>
           </tr>
+
           <tr>
-            <th>Date of Publication</th>
-            <td>{{browser.publication.created| date: 'MMM/d/yyyy'}}</td>
-            <td></td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:33%">Date of Publication</th>
+                    <td style="border-top:none; width:33%">{{browser.publication.created| date: 'MMM/d/yyyy'}}</td>
+                    <td style="border-top:none; width:33%"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none;">Award</th>
+                    <td style="border-top:none;">{{project.value.awardNumber}}</td>
+                    <td style="border-top:none;" ></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
           </tr>
+
           <tr>
-            <th>Project Type</th>
-            <td><span style="text-transform:capitalize">{{project.value.projectType}}</span></td>
-            <td></td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:33%">Project Type</th>
+                    <td style="border-top:none; width:33%"><span style="text-transform:capitalize">{{project.value.projectType}}</span></td>
+                    <td style="border-top:none; width:33%"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none;">Keywords</th>
+                    <td style="border-top:none;">{{project.value.keywords}}</td>
+                    <td style="border-top:none;"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
           </tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="width:49%; display:inline-block; vertical-align:top;">
-      <table class="table" style="margin-bottom:0;">
-        <tbody>
-          <tr>
-            <th>DOI</th>
-            <td>{{project.doi}}</td>
-            <td>
-              <button class="btn btn-info btn-sm"
-                      ng-click="showCitation(project)">Citation
-              </button>
-            <td>
-          </tr>
-          <tr ng-if="project.value.awardNumber">
-            <th>Award Number</th>
-            <td>{{project.value.awardNumber}}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <th>keywords</th>
-            <td>{{project.value.keywords}}</td>
-            <td></td>
-          </tr>
+
         </tbody>
       </table>
     </div>
@@ -59,18 +119,6 @@
         {{project.value.description}}
       </p>
     </div>
-
-    <!--
-    <div style="vertical-align:top;">
-      <div class="btn-group" role="group" aria-label="Project Actions">
-        <button class="btn btn-sm btn-default" ng-click="viewProject($event)">View Project</button>
-        <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
-         ng-click="viewExperiments($event)">
-          <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> View Experiments
-        </button>
-      </div>
-    </div>
-    -->
   </div>
   <hr>
 </div>
@@ -180,49 +228,164 @@
               <div style= "padding:5px;">
                 <h3 style="margin-top:0">{{experiment.value.title}}</h3>
               </div>
-              <div style="width:49%; vertical-align:top; display:inline-block; padding-left:10px;">
-                <div>
-                  <span style="font-weight:bold; display:inline-block; width:100px;">Authors</span>
-                  <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users) | orderBy: sortUsers(experiment)">
-                  {{user.last_name}}, {{user.first_name}};
-                  </span>
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> Experimental Facility </span>{{experiment.value.experimentalFacility}}
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> Experiment Type </span>
-                  <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
-                </div>
-                <div>
-                  <span style="font-weight:bold;"> Equipment Type </span>
-                  <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
-                </div>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th style="width:50%; border-top:none; padding:0;"></th>
+                      <th style="width:50%; border-top:none; padding:0;"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
 
-                <div>
-                  <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication </span> {{experiment.lastUpdated| date: 'MMM/d/yyyy'}}
-                </div>
+                    <tr>
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                Authors
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                <span ng-repeat="user in filterUsers(experiment.value.authors, browser.publication.users) | orderBy: sortUsers(experiment)">
+                                {{user.last_name}}, {{user.first_name}};
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                DOI
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                <span>{{experiment.doi}}</span>
+                              </td>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                <button class="btn btn-info btn-sm"
+                                        ng-click="showCitation(experiment)">Citation
+                                </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                Experimental Facility
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
+                                {{experiment.value.experimentalFacility}}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style="padding:0; border-top:none;">
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px; padding-right:0px; width:30%;">
+                                Experiment Type
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px; width:70%; text-align:left;">
+                               <span style="text-transform:capitalize;">{{experiment.value.experimentType}}</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style="padding:0; border-top:none;">
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px; padding-right:0px; width:30%">
+                                Equipment Type
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px; width:70%; text-align:left;">
+                                <span style="text-transform:capitalize;">{{experiment.value.equipmentType}}</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style="padding:0; border-top:none;">
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px; padding-right:0px; width:30%">
+                                Date of Publication
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px; width:70%; text-align:left;">
+                                {{browser.publication.created| date: 'MMM/d/yyyy'}}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style="padding:0; border-top:none;">
+                      </td>
+                    </tr>
+
+                    <tr ng-if="getRelated('reportsList', false, experiment.uuid).length">
+                      <td style="padding:0; border-top:none;">
+                        <table class="table" style="margin-bottom:0px;">
+                          <tbody>
+                            <tr>
+                              <th style="border-top:none; padding-top:0px; padding-bottom:5px; padding-right:0px; width:30%;">
+                                Experiment Report
+                              </th>
+                              <td style="border-top:none; padding-top:0px; padding-bottom:5px; width:70%; text-align:left;">
+                                <a href="#details-{{getRelated('reportsList', false, experiment.uuid)[0].uuid}}"
+                                   class="btn btn-link">
+                                  <span style="font-weight:bold;">
+                                    {{getRelated('reportsList', false, experiment.uuid)[0].value.title}}
+                                  </span>
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td style="padding:0; border-top:none;">
+                      </td>
+                    </tr>
+
+
+                  </tbody>
+                </table>
               </div>
-              <!-- right hand -->
-              <div style="width:49%; vertical-aligh:top; display:inline-block;">
-                <div>
-                  <span style="font-weight:bold;"> DOI: </span>
-                  <span>{{experiment.doi}}</span>
-                </div>
-              </div>
+
               <div style="width:100%; padding-left:10px;" ng-if="experiment.value.description">
                 <p style="font-weight:bold;">Description</p>
                 <p>{{experiment.value.description}}</p>
               </div>
               <div style="width:100%; paddin-left:10px;">
                 <div>
-                  <button class="btn btn-info btn-sm"
-                          ng-click="showCitation(experiment)">Citation
-                  </button>
-                <a href="#details-{{getRelated('reportsList', false, experiment.uuid)[0].uuid}}"
-                   class="btn btn-link">
-                  <span style="font-weight:bold;">Report</span>
-                </a>
                 </div>
               </div>
             </div>
