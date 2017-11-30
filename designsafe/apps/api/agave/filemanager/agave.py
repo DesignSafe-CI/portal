@@ -2,7 +2,7 @@ import re
 import os
 from datetime import datetime
 from designsafe.apps.api.agave.filemanager.base import BaseFileManager
-from designsafe.apps.api.agave.models.files import (BaseFileResource,
+from designsafe.apps.data.models.agave.files import (BaseFileResource,
                                                     BaseFilePermissionResource,
                                                     BaseAgaveFileHistoryRecord)
 from designsafe.apps.api.tasks import reindex_agave

@@ -4,7 +4,7 @@ import datetime
 import dateutil.parser
 import collections
 from decimal import Decimal
-from designsafe.apps.api.agave.models.base import register_lazy_rel
+from designsafe.apps.data.models.agave.base import register_lazy_rel
 
 import logging
 

@@ -108,7 +108,7 @@ class FileMediaView(SecureMixin, BaseApiView):
 
         elif action == 'download':
             try:
-                download_dict = fmgr.get_download_url(file_id)
+                download_dict = fmgr.get_download_url(file_id, username=request.user.username)
                 if not download_dict:
                     HttpResponseBadRequest('Operation not permitted')
 

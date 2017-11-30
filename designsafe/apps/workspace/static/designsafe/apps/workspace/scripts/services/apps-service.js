@@ -135,7 +135,7 @@
         });
       }
 
-      schema.properties.requestedTime = {
+      schema.properties.maxRunTime = {
         title: 'Maximum job runtime',
         description: 'In HH:MM:SS format. The maximum time you expect this job to run for. After this amount of time your job will be killed by the job scheduler. Shorter run times result in shorter queue wait times. Maximum possible time is 48:00:00 (48 hours).',
         type: 'string',
@@ -151,6 +151,18 @@
         type: 'string',
         required: true
       };
+
+      schema.properties.nodeCount = {
+        title: 'Node Count (optional)',
+        description: "Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.",
+        type: 'integer',
+        "minimum": 1,
+        "maximum": 12,
+        "format": "int64",
+        "validationMessage": "Must be an integer in the range 1 to 12.",
+        'x-schema-form': {placeholder: app.defaultNodeCount}
+      };
+
       schema.properties.archivePath = {
         title: 'Job output archive location (optional)',
         description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',

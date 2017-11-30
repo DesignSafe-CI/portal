@@ -6,14 +6,17 @@
 """
 import logging
 from elasticsearch_dsl import Q, Search
+from elasticsearch import TransportError
 from django.http import (HttpResponseBadRequest,
                          JsonResponse)
 
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.agave.filemanager.public_search_index import (
     PublicElasticFileManager)
+from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
 
 logger = logging.getLogger(__name__)
+
 
 class SearchView(BaseApiView):
     """Main view to handle sitewise search requests"""
@@ -25,112 +28,21 @@ class SearchView(BaseApiView):
         limit = int(request.GET.get('limit', 10))
         if (limit > 500):
             return HttpResponseBadRequest("limit must not exceed 500")
-        type_filter = request.GET.get('type_filter', None)
+        type_filter = request.GET.get('type_filter', 'cms')
 
-        # search everything that is not a directory. The django_id captures the cms
-        # stuff too.
-        # .highlight('body',
-        #     fragment_size=100,
-        #     pre_tags=["<strong>"],
-        #     post_tags=["</strong>"],
-        # )\
-        # .highlight_options(require_field_match=True)\
-        es_query = Search(index="nees,cms")\
-            .query(Q("match", systemId=system_id) | Q("exists", field="django_id"))\
-            .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
-            .query(~Q('match', type='dir'))\
-            .highlight('body',
-                fragment_size=100,
-                pre_tags=["<strong>"],
-                post_tags=["</strong>"],
-            )\
-            .highlight_options(require_field_match=False)\
-            .extra(from_=offset, size=limit)
+        if type_filter == 'public_files':
+            es_query = self.search_public_files(q, offset, limit)
+        elif type_filter == 'published':
+            es_query = self.search_nees_projects(q, offset, limit)
+        elif type_filter == 'cms':
+            es_query = self.search_cms_content(q, offset, limit)
+        elif type_filter == 'private_files':
+            es_query = self.search_my_data(self.request.user.username, q, offset, limit)
 
-        if type_filter == 'files':
-            es_query = es_query.query("match", type="file")\
-                .filter("term", _type="object")\
-                .query("query_string", query=q, default_operator="and", fields=['name'])
-        elif type_filter == 'projects':
-            es_query = es_query.filter("term", _type="project")
-        elif type_filter == 'experiments':
-            es_query = es_query.filter("term", _type="experiment")
-        elif type_filter == "publications":
-            es_query = es_query.filter("term", _type="project")\
-                .query("nested", **{'path':"publications",
-                    "inner_hits":{},
-                    "query": Q('query_string',
-                        fields=["publications.title", "publications.authors"],
-                        query=q,
-                        default_operator="and")
-                    }
-                )
-        elif type_filter == 'web':
-            es_query = Search(index="cms")\
-                .query("query_string", query=q, default_operator="and", fields=["body"])\
-                .highlight('body',
-                        fragment_size=100,
-                        pre_tags=["<strong>"],
-                        post_tags=["</strong>"],
-                    )\
-                .highlight_options(require_field_match=False)\
-                .extra(from_=offset, size=limit)\
-            # es_query._index = 'cms'
-            # es_query = es_query.query("query_string", query=q, default_operator="and", fields=["body"])
-            # es_query = es_query.highlight('body',
-            #         fragment_size=100,
-            #         pre_tags=["<strong>"],
-            #         post_tags=["</strong>"],
-            #     )\
-            #     .highlight_options(require_field_match=True)
-            # logger.info(es_query.to_dict())
-        # logger.info(es_query.to_dict())
-        res = es_query.execute()
-
-        # these get the counts of the total hits for each category. This is
-
-        # for the sidebar with the different categories to refine by
-        web_query = Search(index="cms")\
-            .query("query_string", query=q, default_operator="and", fields=['body'])\
-            .extra(from_=offset, size=limit)\
-            .execute()
-        # web_query = web_query.execute()
-        files_query = Search(index="nees")\
-            .query("match", systemId=system_id)\
-            .query("query_string", query=q, default_operator="and")\
-            .query("match", type="file")\
-            .query("query_string", query=q, default_operator="and", fields=['name'])\
-            .filter("term", _type="object")\
-            .extra(from_=offset, size=limit)\
-            .execute()
-
-        pubs_query = Search(index="nees")\
-            .query("match", systemId=system_id)\
-            .filter("term", _type="project")\
-            .query("nested", **{'path':"publications",
-                "inner_hits":{},
-                "query": Q('query_string',
-                    fields=["publications.title", "publications.authors"],
-                    query=q,
-                    default_operator="and")
-                }
-            )\
-            .extra(from_=offset, size=limit)\
-            .execute()
-
-        exp_query = Search(index="nees")\
-            .query("match", systemId=system_id)\
-            .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
-            .filter("term", _type="experiment")\
-            .extra(from_=offset, size=limit)\
-            .execute()
-
-        projects_query = Search(index="nees")\
-            .query("match", systemId=system_id)\
-            .query("query_string", query=q, default_operator="and", fields=["body", "name", "description", "title"])\
-            .filter("term", _type="project")\
-            .extra(from_=offset, size=limit)\
-            .execute()
+        try:
+            res = es_query.execute()
+        except TransportError as err:
+            res = es_query.execute()
 
         results = [r for r in res]
         out = {}
@@ -144,21 +56,124 @@ class SearchView(BaseApiView):
                     d["highlight"] = highlight
                 hits.append(d)
 
-        pubs = []
-        for r in pubs_query:
-            for p in r.meta.inner_hits['publications']:
-                 d = p.to_dict()
-                 d["doc_type"] = "publication"
-                 d["project"] = r.to_dict()
-                 pubs.append(d)
-        if ((type_filter is None) or (type_filter == 'publications')):
-            hits.extend(pubs)
         out['total_hits'] = res.hits.total
         out['hits'] = hits
-        out['files_total'] = files_query.hits.total
-        out['projects_total'] = projects_query.hits.total
-        out['experiments_total'] = exp_query.hits.total
-        out['cms_total'] = web_query.hits.total
-        out['publications_total'] = pubs_query.hits.total
+        out['public_files_total'] = self.search_public_files(q, offset, limit).count()
+        out['nees_total'] = self.search_nees_projects(q, offset, limit).count()
+        out['cms_total'] = self.search_cms_content(q, offset, limit).count()
+        #out['published_total'] = self.search_public_projects(q, offset, limit).count()
+        out['private_files_total'] = 0
+        if request.user.is_authenticated:
+            out['private_files_total'] = self.search_my_data(self.request.user.username, q, offset, limit).count()
 
         return JsonResponse(out, safe=False)
+
+    def search_cms_content(self, q, offset, limit):
+        """search cms content """
+        search = Search(index="cms").query(
+            "query_string",
+            query=q,
+            default_operator="and",
+            fields=['title', 'body']).extra(
+                from_=offset,
+                size=limit).highlight(
+                    'body',
+                    fragment_size=100).highlight_options(
+                        require_field_match=False)
+        return search
+
+    def search_public_files(self, q, offset, limit):
+        search = Search(index="nees", doc_type='object')\
+            .query("match", systemId='nees.public')\
+            .query("query_string", query=q, default_operator="and")\
+            .query("match", type="file")\
+            .query("query_string", query=q, default_operator="and", fields=['name'])\
+            .filter("term", _type="object")\
+            .extra(from_=offset, size=limit)
+        return search
+
+    def search_public_projects(self, q, offset, limit):
+        query = Q(
+            'bool',
+            should=[
+                Q('nested',
+                  path=['users'],
+                  query=Q('bool',
+                      must=Q(
+                          'query_string',
+                          query=q,
+                          default_operator='and',
+                          fields=['users.last_name', 'users.first_name', 'users.email'])
+                      )
+                  ),
+                Q('nested',
+                  path=['institutions'],
+                  query=Q(
+                      'bool',
+                      must=Q(
+                          'query_string',
+                          query=q,
+                          default_operator='and',
+                          fields=['institutions.label'])
+                     )
+                  ),
+               Q('nested',
+                 path=['project'],
+                 query=Q(
+                     'nested',
+                     path=['project.value'],
+                     query=Q(
+                       'bool',
+                       must=Q(
+                             'query_string',
+                             query=q,
+                             default_operator='and',
+                             fields=['project.value.projectType',
+                                     'project.value.description',
+                                     'project.value.title',
+                                     'project.value.projectId',
+                                     'project.value.ef',
+                                     'project.value.keywords',
+                                     'project.value.awardNumber'])
+                         )
+                    )
+                 ),
+            ])
+        search = Search(index="published")\
+            .filter(Q("bool", must=[
+                {"term": {'_type': "publication"}}
+            ]))\
+            .extra(from_=offset, size=limit)
+        search.query = query
+        return search
+
+    def search_nees_projects(self, q, offset, limit):
+        query = Q(
+            'bool',
+            should=[
+                Q('query_string',
+                  query=q,
+                  default_operator='and',
+                  fields=['body', 'name', 'description', 'title'])
+            ])
+        search = Search(index="nees", doc_type='project')\
+            .filter(Q("bool", must=[
+                {"term": {'_type': "project"}},
+            ]))\
+            .extra(from_=offset, size=limit)
+        search.query = query
+        return search
+
+    def search_my_data(self, username, q, offset, limit):
+        search = Search(index='designsafe')
+        query = Q('bool',
+                  filter=Q('bool',
+                           must=[Q({'term': {'systemId': 'designsafe.storage.default'}}),
+                                 Q({'term': {'permissions.username': username}}),
+                                 Q({'prefix': {'path._exact': username}})],
+                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
+                   must=Q({'simple_query_string':{
+                            'query': q,
+                            'fields': ['name', 'name._exact', 'keywords']}}))
+        search.query = query
+        return search

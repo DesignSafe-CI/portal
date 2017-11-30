@@ -13,7 +13,7 @@ def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'research_workbench':
         return [
             {
-                'label': _('Public Data'),
+                'label': _('Published Data'),
                 'url': reverse('designsafe_data:public_data'),
                 'children': []
             },

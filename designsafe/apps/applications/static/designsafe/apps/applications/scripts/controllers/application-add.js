@@ -1435,7 +1435,7 @@
         "templatePath": "wrapper.sh",
         "testPath": "test/test.sh",
         "tags": [
-          "excute", "awesome", "demo"
+          "execute", "awesome", "demo"
         ],
         "modules": [],
         "inputs": [],

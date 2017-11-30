@@ -1,4 +1,4 @@
-from .. import to_camel_case
+from designsafe.apps.api.agave import to_camel_case
 from datetime import datetime
 
 

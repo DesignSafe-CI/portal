@@ -1,9 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from designsafe.apps.signals.signals import generic_event
-from designsafe.apps.notifications.apps import Event
 from designsafe.apps.notifications.models import Notification
-from django.http import HttpResponse
 from ws4redis.publisher import RedisPublisher
 from ws4redis.redis_store import RedisMessage
 
@@ -23,10 +21,11 @@ def _interactive_job_callback(sender, **kwargs):
         WEBSOCKETS_FACILITY = 'websockets'
         users = [event_data.get('job_owner')]
 
-        logger.info('Event received from {0}'.format(sender))
-        logger.info('Sending {}'.format(event_data))
+        logger.info('Event received from %s', sender)
+        logger.info('Sending %s', event_data)
 
-        notification = Notification(event_type=event_type, user=job_owner, body=json.dumps(event_data))
+        notification = Notification(
+            event_type=event_type, user=job_owner, body=json.dumps(event_data))
         notification.save()
 
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)

@@ -19,7 +19,7 @@
 </li>
 
 <li class="list-group-item menu clearfix action" ng-click="vm.create_layer_group()">
-  <div tooltip="Create a new Layer Group">
+  <div uib-tooltip="Create a new Layer Group">
     <i class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
   </div>
 </li>
@@ -48,14 +48,14 @@
     <div class="pull-right">
       <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
       <input type="checkbox" ng-model="lg.show" ng-change="vm.show_hide_layer_group(lg)"></input>
-      <i class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
+      <i class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" uib-tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
     </div>
   </li>
   <li class="list-group-item menu lg-tools clearfix" ng-show="lg.show_tools">
     <div>
       <span> Tools: </span>
-      <i class="fa fa-trash" ng-click="vm.delete_layer_group(lg, $index)" tooltip="Delete this layer group" > </i>
-      <i class="fa fa-crosshairs" ng-click="vm.zoom_to(lg.feature_group)" tooltip="Zoom to group"></i>
+      <i class="fa fa-trash" ng-click="vm.delete_layer_group(lg, $index)" uib-tooltip="Delete this layer group" > </i>
+      <i class="fa fa-crosshairs" ng-click="vm.zoom_to(lg.feature_group)" uib-tooltip="Zoom to group"></i>
     </div>
   </li>
   <li class="list-group-item menu clearfix subgroup"

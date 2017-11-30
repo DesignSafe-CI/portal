@@ -22,23 +22,6 @@ from .base import BaseFileManager
 
 logger = logging.getLogger(__name__)
 
-try:
-    es_settings = getattr(settings, 'ELASTIC_SEARCH', {})
-    published_index = es_settings['published_index']
-    cluster = es_settings['cluster']
-    hosts = cluster['hosts']
-    connections.configure(
-        default={
-            'hosts': hosts,
-            'sniff_on_start': True,
-            'sniff_on_connection_fail': True,
-            'sniffer_timeout': 60,
-            'retry_on_timeout': True,
-            'timeout:': 20,
-        })
-except KeyError as e:
-    logger.exception('ELASTIC_SEARCH missing %s' % e)
-
 class PublicationIndexed(DocType):
     class Meta:
         index = 'published'
@@ -123,8 +106,12 @@ class Publication(object):
                      'format': 'folder',
                      'length': 24731027,
                      'meta': {
-                         'title': self.project['value']['title']
-                     },
+                         'title': self.project['value']['title'],
+                         'pi': self.project['value']['pi'],
+                         'dateOfPublication': self.created,
+                         'type': self.project['value']['projectType'],
+                         'projectId': self.project['value']['projectId']
+                         },
                      'name': self.project.value.projectId,
                      'path': '/{}'.format(self.project.value.projectId),
                      'permissions': 'READ',
@@ -161,24 +148,22 @@ class CMSIndexed(DocType):
 
 class PublicFullIndexed(DocType):
     class Meta:
-        index = published_index
+        index = 'nees'
         doc_type = '_all'
 
 class PublicProjectIndexed(DocType):
     class Meta:
-        index = published_index
+        index = 'nees'
         doc_type = 'project'
-
 
 class PublicExperimentIndexed(DocType):
     class Meta:
-        index = published_index
+        index = 'nees'
         doc_type = 'experiment'
-
 
 class PublicObjectIndexed(DocType):
     class Meta:
-        index = published_index
+        index = 'nees'
         doc_type = 'object'
 
 

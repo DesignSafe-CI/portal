@@ -130,7 +130,7 @@ class FileManager(object):
             n = Notification(event_type='data',
                              status=Notification.INFO,
                              operation='googledrive_download_start',
-                             message='Starting download of file %s from Google Drive.' % (googledrive_item['name']),
+                             message='Starting copy of {} {} from Google Drive.'.format(file_type, googledrive_item['name']),
                              user=username,
                              extra={})
             n.save()
@@ -162,14 +162,17 @@ class FileManager(object):
 
             downloaded_file_path = None
             if file_type == 'file':
-                downloaded_file_path = self.download_file(file_id, dest_real_path)
+                downloaded_file_path = self.download_file(file_id, dest_real_path, username)
+                if downloaded_file_path is None:
+                    return None
+
             elif file_type == 'folder':
-                downloaded_file_path = self.download_folder(file_id, dest_real_path)
+                downloaded_file_path = self.download_folder(file_id, dest_real_path, username)
 
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,
                              operation='googledrive_download_end',
-                             message='File %s has been copied from Google Drive successfully!' % (googledrive_item['name']),
+                             message='{} "{}" was copied from Google Drive successfully!'.format(file_type.capitalize(), googledrive_item['name']),
                              user=username,
                              extra={})
             n.save()
@@ -197,7 +200,7 @@ class FileManager(object):
                              message='We were unable to get the specified file from Google Drive. '
                                      'Please try again...',
                              user=username,
-                             extra={})
+                             extra={'path': googledrive_item['name']})
             n.save()
             raise
 
@@ -210,6 +213,8 @@ class FileManager(object):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
             googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="webViewLink, ownedByMe").execute()
+
+            # if user owns file, make file viewable by anyone with link to allow designsafe to preview the file
             if googledrive_file['ownedByMe']:
                 file_pems = self.googledrive_api.permissions().list(fileId=file_id).execute()['permissions']
                 if 'anyoneWithLink' not in [pem['id'] for pem in file_pems]:
@@ -223,8 +228,8 @@ class FileManager(object):
         try:
             file_type, file_id = self.parse_file_id(file_id)
             fields = "mimeType, name, id, modifiedTime, fileExtension, size, parents"
-            googledrive_file = GoogleDriveFile(self.googledrive_api.files().get(fileId=file_id, fields=fields).execute(), drive=self.googledrive_api)
-            if googledrive_file: #.previewable:
+            # googledrive_file = GoogleDriveFile(self.googledrive_api.files().get(fileId=file_id, fields=fields).execute(), drive=self.googledrive_api)
+            if file_type == 'file':  # googledrive_file.previewable:
                 preview_url = reverse('designsafe_api:box_files_media',
                                     args=[file_mgr_name, file_id.strip('/')])
                 return JsonResponse({'href':
@@ -238,32 +243,32 @@ class FileManager(object):
     def get_download_url(self, file_id, **kwargs):
         file_type, file_id = self.parse_file_id(file_id)
         if file_type == 'file':
-            googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="webContentLink, ownedByMe, mimeType").execute()
+            googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="webContentLink, ownedByMe, mimeType, name").execute()
+
+            # if user owns file, make file viewable by anyone with link to allow user to download the file
             if googledrive_file['ownedByMe']:
                 file_pems = self.googledrive_api.permissions().list(fileId=file_id).execute()['permissions']
                 if 'anyoneWithLink' not in [pem['id'] for pem in file_pems]:
                     body = {'role': 'reader',
                             'type': 'anyone'}
                     update_pems = self.googledrive_api.permissions().create(fileId=file_id, body=body).execute()
-            # request = self.googledrive_api.files().get_media(fileId=file_id)
-            # logger.debug('request:{}'.format(request.to_json()))
-            # return {'href': request.to_json()}
+
             if 'webContentLink' in googledrive_file:
                 return {'href': googledrive_file['webContentLink']}
             else:
-                # if googledrive_file['mimeType'] == 'application/vnd.google-apps.spreadsheet':
-                #     mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                # elif googledrive_file['mimeType'] == 'application/vnd.google-apps.document':
-                #     mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                # elif googledrive_file['mimeType'] == 'application/vnd.google-apps.presentation':
-                #     mimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-                # else:
-                #     return None
-                # self.googledrive_api.files().export(fileId=file_id, mimeType=mimeType).execute()
+                n = Notification(event_type='data',
+                                 status=Notification.ERROR,
+                                 operation='googledrive_download_error',
+                                 message='Downloading Google-type files is currently unsupported. Convert the file to'
+                                 ' a standard format and try again.',
+                                 user=kwargs['username'],
+                                 extra={'path': googledrive_file['name']})  # show file in Notification
+                n.save()
                 return None
+
         return None
 
-    def download_file(self, file_id, download_directory_path):
+    def download_file(self, file_id, download_directory_path, username):
         """
         Downloads the file for file_id to the given download_path.
 
@@ -271,14 +276,38 @@ class FileManager(object):
         :param download_directory_path:
         :return: the full path to the downloaded file
         """
-        googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="name").execute()
+        googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="name, webContentLink, mimeType").execute()
+
         # convert utf-8 chars
         safe_filename = googledrive_file['name'].encode(sys.getfilesystemencoding(), 'ignore')
         file_download_path = os.path.join(download_directory_path, safe_filename)
         logger.debug('Download file %s <= googledrive://file/%s', file_download_path, file_id)
 
-        # with open(file_download_path, 'wb') as download_file:
-        request = self.googledrive_api.files().get_media(fileId=file_id)
+        if 'webContentLink' in googledrive_file:
+            request = self.googledrive_api.files().get_media(fileId=file_id)
+        else:
+            # if googledrive_file['mimeType'] == 'application/vnd.google-apps.spreadsheet':
+            #     mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            # elif googledrive_file['mimeType'] == 'application/vnd.google-apps.document':
+            #     mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            # elif googledrive_file['mimeType'] == 'application/vnd.google-apps.presentation':
+            #     mimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            # else:
+            n = Notification(event_type='data',
+                                status=Notification.ERROR,
+                                operation='googledrive_download_error',
+                                message='Copying Google-type files is currently unsupported. Convert the file to'
+                                ' a standard format and try again.',
+                                user=username,
+                                # show mimeType in Notification
+                                extra={'path': "{}".format(googledrive_file['name'])})
+            n.save()
+            return None
+
+            # # NEED TO CHECK FILE SIZE <= 10MB
+            # request = self.googledrive_api.files().export_media(fileId=file_id, mimeType=mimeType)
+
+        # Incremental Partial Download
         fh = io.FileIO(file_download_path, 'wb')
         downloader = MediaIoBaseDownload(fh, request)
         done = False
@@ -287,11 +316,10 @@ class FileManager(object):
         logger.debug('status:{}'.format(status))
         logger.debug('done:{}'.format(done))
         fh.close()
-            # download_file.write(fh)
 
         return file_download_path
 
-    def download_folder(self, folder_id, download_path):
+    def download_folder(self, folder_id, download_path, username):
         """
         Recursively download the folder for folder_id, and all of its contents, to the given
         download_path.
@@ -320,9 +348,9 @@ class FileManager(object):
         items = self.googledrive_api.files().list(q="'{}' in parents and trashed=False".format(folder_id)).execute()
         for item in items['files']:
             if item['mimeType'] == 'application/vnd.google-apps.folder':
-                self.download_folder(item['id'], directory_path)
+                self.download_folder(item['id'], directory_path, username)
             else:
-                self.download_file(item['id'], directory_path)
+                self.download_file(item['id'], directory_path, username)
             # if len(items) == limit:
             #     offset += limit
             # else:
@@ -379,7 +407,7 @@ class FileManager(object):
             n = Notification(event_type='data',
                              status=Notification.SUCCESS,
                              operation='googledrive_upload_end',
-                             message='File %s has been copied to Google Drive successfully!' % (src_file_id, ),
+                             message='File "%s" was copied to Google Drive successfully!' % (src_file_id, ),
                              user=username,
                              extra={})
             n.save()

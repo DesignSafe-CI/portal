@@ -2191,6 +2191,60 @@
         });
     }
 
+        
+  /**
+   *
+   * @param {Array} projects Array of project objects that will be set as selected
+   */
+
+  function selectProjects(projects, reset) {
+    if (!Array.isArray(projects)) {
+      projects = [projects];
+    }
+    if (reset) {
+      deselectProjects(currentState.selectedProjects || [], false);
+    }
+    _.each(projects, function(project) {
+      project.selected = true;
+    });
+    currentState.selectedProjects = _.union(currentState.selectedProjects || [], projects);
+  }
+
+  /**
+   *
+   * @param {Array} projects Array of project objects that will be removed from selected list
+   */
+  function deselectProjects(projects, reset) {
+    if (!Array.isArray(projects)) {
+      projects = [projects];
+    }
+    if (reset) {
+      deselectProjects(currentState.selectedProjects || [], false);
+    }
+    _.each(projects, function(project) {
+      project.selected = false;
+    });
+    currentState.selectedProjects = _.difference(currentState.selectedProjects || [], projects);
+  }
+
+  /**
+   *
+   * @param {Array} projects Array of project objects that will have their selected status toggled
+   */
+  function toggleProjects(projects, reset) {
+    if (!Array.isArray(projects)) {
+      projects = [projects];
+    }
+    _.each(projects, function(project) {
+      if (project.selected) {
+        deselectProjects(project, reset);
+      }
+      else {
+        selectProjects(project, reset);
+      }
+    });
+  }
+
     return {
       /* properties */
       FileEvents: FileEvents,
@@ -2230,7 +2284,12 @@
       apiParams: apiParams,
       showListing: showListing,
       showPreview: showPreview,
-      openPreviewTree: openPreviewTree
+      openPreviewTree: openPreviewTree,
+
+      /* projects */
+      selectProjects: selectProjects,
+      deselectProjects: deselectProjects,
+      toggleProjects: toggleProjects,
     };
 
   }]);
