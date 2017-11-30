@@ -27,8 +27,9 @@ data/static/
 data/media/
 data/NEHRI/
 
-# no node modules
+# no node modules or package-lock
 node_modules/
+package-lock.json
 
 # in case you leave that here
 datadump.json
