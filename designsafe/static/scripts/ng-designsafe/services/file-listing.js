@@ -307,7 +307,8 @@
         case 'pptx':
           icon = 'fa-file-powerpoint-o';
           break;
-        case 'mov':
+        case 'ogg':
+        case 'webm':
         case 'mp4':
           icon = 'fa-file-video-o';
           break;

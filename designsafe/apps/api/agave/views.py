@@ -81,7 +81,6 @@ class FileListingView(BaseApiView):
 class FileMediaView(View):
 
     def get(self, request, file_mgr_name, system_id, file_path):
-        logger.info(file_path)
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public' \
             or file_mgr_name == 'community' \
@@ -125,6 +124,9 @@ class FileMediaView(View):
                 elif f.ext in BaseFileResource.SUPPORTED_MS_OFFICE:
                     context['iframe_preview'] = 'https://view.officeapps.live.com/op/view.aspx?src={}'\
                                                 .format(f.download_postit(force=False, lifetime=360))
+                elif f.ext in BaseFileResource.SUPPORTED_VIDEO_EXTS:
+                    context['video_preview'] = f.download_postit(force=False, lifetime=360)
+                    context['mimetype'] = BaseFileResource.SUPPORTED_VIDEO_MIMETYPES[f.ext]
 
                 return render(request, 'designsafe/apps/api/agave/preview.html', context)
             else:
