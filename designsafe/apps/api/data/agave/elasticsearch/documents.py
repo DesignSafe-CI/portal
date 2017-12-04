@@ -833,8 +833,8 @@ class Object(ExecuteSearchMixin, PaginationMixin, DocType):
         return f.to_dict(extra = extra)
 
     class Meta:
-        index = settings.ES_INDICES['files']['name']
-        doc_type = settings.ES_INDICES['files']['documents'][0]['name']
+        index = 'designsafe'
+        doc_type = 'objects'
 
 class Project(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
@@ -891,8 +891,8 @@ class Project(ExecuteSearchMixin, PaginationMixin, DocType):
                 logger.warning(u'No file found for {}'.format(p.projectPath))
 
     class Meta:
-        index = settings.ES_INDICES['publications_legacy']['name']
-        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
+        index = 'nees'
+        doc_type = 'project'
 
 class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
     @classmethod
@@ -953,8 +953,8 @@ class Experiment(ExecuteSearchMixin, PaginationMixin, DocType):
         return res, s[offset:limit]
 
     class Meta:
-        index = settings.ES_INDICES['publications_legacy']['name']
-        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
+        index = 'nees'
+        doc_type = 'experiment'
 
 class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
     def __init__(self, *args, **kwargs):
@@ -1176,5 +1176,5 @@ class PublicObject(ExecuteSearchMixin, PaginationMixin, DocType):
         return d
 
     class Meta:
-        index = settings.ES_INDICES['publications_legacy']['name']
-        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name']
+        index = 'nees'
+        doc_type = 'object'
