@@ -119,6 +119,12 @@ class Publication(object):
                      'system': 'designsafe.storage.published',
                      'systemId': 'designsafe.storage.published',
                      'type': 'dir'}
+        pi = self.project['value']['pi']
+        pi_user = filter(lambda x: x['username'] == pi, self.users)
+        if pi_user:
+            pi_user = pi_user[0]
+            dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                last_name=pi_user['last_name'], first_name=pi_user['first_name'])
         return dict_obj
 
     def related_file_paths(self):
