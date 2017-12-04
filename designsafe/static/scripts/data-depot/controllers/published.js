@@ -14,8 +14,10 @@
         reachedEnd : false,
         page : 0
       };
+  $scope.ui = {loadingProjectMeta: false};
   var projId = $scope.browser.listing.path.split('/')[1];
   if (projId){
+    $scope.ui.loadingProjectMeta = true;
     $http.get('/api/projects/publication/' + projId)
       .then(function(resp){
           $scope.browser.publication = resp.data;
@@ -68,6 +70,7 @@
                   return FileListing.init(f, _apiParams);
               });
           });
+        $scope.ui.loadingProjectMeta = false;
     });
   }
  

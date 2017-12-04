@@ -24,8 +24,8 @@
                     {{ renderName()(item) }}
                 </a>
             </td>
-            <td ng-if="item.meta.pi">
-              <ds-user username="item.meta.pi" format="lname"></ds-user>
+            <td ng-if="item.meta.piLabel">
+                {{item.meta.piLabel}}
             </td>
             <td ng-if="!item.meta.pi">
               N/A

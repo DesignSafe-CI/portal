@@ -1,7 +1,7 @@
 <dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
 <!-- Published View -->
 <div class="project">
-  <div class="project-detail" style="background:white;">
+  <div class="project-detail" style="background:white;" ng-if="!ui.loadingProjectMeta">
     <h2>{{project.value.projectId}}: {{ project.value.title }}</h2>
     <div class="table-responsive">
       <table class="table" style="margin-bottom:0;">
@@ -13,7 +13,7 @@
         </thead>
         <tbody>
           <tr>
-            <td ng-if="project.value.projectType !== 'other'" style="padding:0px;">
+            <td style="padding:0px;">
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
@@ -22,22 +22,6 @@
                     <td style="border-top:none; width:33%">
                       <button class="btn btn-sm btn-default"
                               ng-click="viewCollabs($event)">View Team Members</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td ng-if="project.value.projectType === 'other'" style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:33%">Authors</th>
-                    <td style="border-top:none; width:33%">
-                      <span><ds-user username="project.value.pi[0]" format="lname"></ds-user>;</span>
-                      <span ng-repeat="username in project.value.coPis"><ds-user username="username" format="lname"></ds-user>;</span>
-                      <span ng-repeat="username in project.value.teamMembers"><ds-user username="username" format="lname"></ds-user>;</span>
-                    </td>
-                    <td style="border-top:none; width:33%">
                     </td>
                   </tr>
                 </tbody>
@@ -119,6 +103,9 @@
         {{project.value.description}}
       </p>
     </div>
+  </div>
+  <div ng-if="ui.loadingProjectMeta">
+    Loading... <i class="fa fa-spinner fa-spin"></i>
   </div>
   <hr>
 </div>
