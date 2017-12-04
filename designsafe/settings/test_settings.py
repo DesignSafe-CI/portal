@@ -1,7 +1,7 @@
 import os
 from common_settings import *
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SITE_ID = 1
 
@@ -24,8 +24,8 @@ BROKER_BACKEND = 'memory'
 MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
                       'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+STATIC_ROOT = os.path.join(BASE_DIR, '../static/')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media/')
 
 # Agave
 AGAVE_TENANT_ID = 'example.com'
