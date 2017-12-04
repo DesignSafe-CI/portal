@@ -15,7 +15,8 @@ class DataConfig(AppConfig):
         from django.conf import settings
         try:
             connections.configure(
-                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']}
+                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']},
+                request_timeout=60
             )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
