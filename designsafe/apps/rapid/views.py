@@ -4,6 +4,7 @@ import json
 import StringIO
 from datetime import datetime
 from PIL import Image
+from elasticsearch import TransportError, ConnectionTimeout
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
@@ -49,14 +50,26 @@ def index(request):
 
 def get_event_types(request):
     s = RapidNHEventType.search()
-    results  = s.execute(ignore_cache=True)
+    try:
+        results  = s.execute(ignore_cache=True)
+    except (TransportError, ConnectionTimeout) as err:
+        if getattr(err, 'status_code', 500) == 404:
+            raise
+        results  = s.execute(ignore_cache=True)
+
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 
 
 def get_events(request):
     s = RapidNHEvent.search()
-    results = s.sort("-event_date").execute(ignore_cache=True)
+    try:
+        results = s.sort("-event_date").execute(ignore_cache=True)
+    except (TransportError, ConnectionTimeout) as err:
+        if getattr(err, 'status_code', 500) == 404:
+            raise
+        results = s.sort("-event_date").execute(ignore_cache=True)
+
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
 
@@ -73,7 +86,16 @@ def admin(request):
                  })
 
     s = RapidNHEvent.search()
-    results = s.execute(ignore_cache=True)
+    try:
+        results = s.execute(ignore_cache=True)
+    except (TransportError, ConnectionTimeout) as err:
+        if getattr(err, 'status_code', 500) == 404:
+            raise
+        results = s.execute(ignore_cache=True)
+
+
+
+
     context = {}
     context["rapid_events"] = results
     return render(request, 'designsafe/apps/rapid/admin.html', context)
@@ -84,7 +106,13 @@ def admin(request):
 def admin_create_event(request):
     form = rapid_forms.RapidNHEventForm(request.POST or None, request.FILES or None)
     q = RapidNHEventType.search()
-    event_types = q.execute(ignore_cache=True)
+    try:
+        event_types = q.execute(ignore_cache=True)
+    except (TransportError, ConnectionTimeout) as err:
+        if getattr(err, 'status_code', 500) == 404:
+            raise
+        event_types = q.execute(ignore_cache=True)
+
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
 
@@ -116,7 +144,13 @@ def admin_create_event(request):
                     ev.main_image_uuid = image_uuid
                 except:
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
-            ev.save(refresh=True)
+            try:
+                ev.save(refresh=True)
+            except (TransportError, ConnectionTimeout) as err:
+                if getattr(err, 'status_code', 500) == 404:
+                    raise
+                ev.save(refresh=True)
+
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
             context = {}
@@ -148,7 +182,13 @@ def admin_edit_event(request, event_id):
     data["lon"] = event.location.lon
     form = rapid_forms.RapidNHEventForm(request.POST or data, request.FILES or None)
     q = RapidNHEventType.search()
-    event_types = q.execute()
+    try:
+        event_types = q.execute()
+    except (TransportError, ConnectionTimeout) as err:
+        if getattr(err, 'status_code', 500) == 404:
+            raise
+        event_types = q.execute(ignore_cache=True)
+
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
     form.fields['lat'].initial = event.location["lat"]
@@ -175,7 +215,13 @@ def admin_edit_event(request, event_id):
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
                 if old_image_uuid:
                     os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
-            event.save(refresh=True)
+            try:
+                event.save(refresh=True)
+            except (TransportError, ConnectionTimeout) as err:
+                if getattr(err, 'status_code', 500) == 404:
+                    raise
+                event.save(refresh=True)
+
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
         else:
             context = {}
@@ -242,7 +288,13 @@ def admin_event_add_dataset(request, event_id):
             data = form.cleaned_data
             data["id"] = str(uuid.uuid1())
             event.datasets.append(data)
-            event.save(refresh=True)
+            try:
+                event.save(refresh=True)
+            except (TransportError, ConnectionTimeout) as err:
+                if getattr(err, 'status_code', 500) == 404:
+                    raise
+                event.save(refresh=True)
+
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
     else:
         context = {}
@@ -273,7 +325,13 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
 
             event.datasets = [d for d in event.datasets if d["id"] != dataset["id"]]
             event.datasets.append(dataset)
-            event.save(refresh=True)
+            try:
+                event.save(refresh=True)
+            except (TransportError, ConnectionTimeout) as err:
+                if getattr(err, 'status_code', 500) == 404:
+                    raise
+                event.save(refresh=True)
+
             return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
     else:
@@ -292,7 +350,13 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
         return HttpResponseNotFound()
     if request.method == 'POST':
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
-        event.save(refresh=True)
+        try:
+            event.save(refresh=True)
+        except (TransportError, ConnectionTimeout) as err:
+            if getattr(err, 'status_code', 500) == 404:
+                raise
+            event.save(refresh=True)
+
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
 
