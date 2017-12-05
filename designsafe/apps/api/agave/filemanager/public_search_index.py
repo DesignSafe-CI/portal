@@ -14,7 +14,7 @@ import re
 import datetime
 import itertools
 from django.conf import settings
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
@@ -39,9 +39,10 @@ class Publication(object):
                             })
                 try:
                     res = s.execute()
-                except TransportError as e:
-                    if e.status_code != 404:
-                        res = s.execute()
+                except (TransportError, ConnectionTimeout) as e:
+                    if getattr(e, 'status_code', 500) == 404:
+                        raise
+                    res = s.execute()
 
                 if res.hits.total:
                     self._wrap = res[0]
@@ -57,8 +58,8 @@ class Publication(object):
             logger.debug('p serach query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
-            except TransportError as e:
-                if e.status_code == 404:
+            except (TransportError, ConnectionTimeout) as e:
+                if getattr(e, 'status_code', 500) == 404:
                     raise
                 res = s.execute()
 
@@ -76,14 +77,6 @@ class Publication(object):
                                           page_size=100)
         list_search._search.query = Q({"match_all":{}})
         list_search.sort({'created': {'order': 'desc'}})
-        #s = PublicationIndexed.search()
-        #s.query = Q({"match_all":{}})
-        #try:
-        #    res = s.execute()
-        #except TransportError as err:
-        #    if err.satus_code == 404:
-        #        raise
-        #    res = s.execute()
 
         return list_search.results(0)
 
@@ -202,8 +195,8 @@ class PublicSearchManager(object):
     def execute(self):
         try:
             res = self._search.execute()
-        except TransportError as err:
-            if err.status_code == 404:
+        except (TransportError, ConnectionTimeout) as err:
+            if getattr(err, 'status_code', 500) == 404:
                 raise
             res = self._search.execute()
 

@@ -12,7 +12,7 @@ from django.conf import settings
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Index)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name

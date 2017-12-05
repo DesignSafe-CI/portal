@@ -1,6 +1,6 @@
 from django.conf import settings
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.connections import connections
 from designsafe.apps.api.data.agave.file import AgaveFile
@@ -49,8 +49,8 @@ class ExecuteSearchMixin(object):
         #logger.debug('es query: {}'.format(s.to_dict()))
         try:
             res = s.execute()
-        except TransportError as e:
-            if e.status_code == 404:
+        except (TransportError, ConnectionTimeout) as e:
+            if getattr(e, 'status_code', 500) == 404:
                 raise
             res = s.execute()
         return res, s

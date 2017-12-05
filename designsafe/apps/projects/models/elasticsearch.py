@@ -10,7 +10,7 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                InnerObjectWrapper, Boolean, Keyword,
                                GeoPoint, String, MetaField)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name

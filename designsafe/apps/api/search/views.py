@@ -6,7 +6,7 @@
 """
 import logging
 from elasticsearch_dsl import Q, Search
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from django.http import (HttpResponseBadRequest,
                          JsonResponse)
 
@@ -41,7 +41,9 @@ class SearchView(BaseApiView):
 
         try:
             res = es_query.execute()
-        except TransportError as err:
+        except (TransportError, ConnectionTimeout) as err:
+            if getattr(err, 'status_code', 500) == 404:
+                raise
             res = es_query.execute()
 
         results = [r for r in res]
