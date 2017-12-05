@@ -17,10 +17,9 @@
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
-                    <th style="border-top:none; width:33%">PI</th>
-                    <td style="border-top:none; width:33%">{{project.piLabel}}</td>
-                    <td style="border-top:none; width:33%">
-                      <button class="btn btn-sm btn-default"
+                    <th style="border-top:none; width:25%">PI</th>
+                    <td style="border-top:none; width:75%">{{project.piLabel}}
+                      <button class="btn btn-sm btn-default pull-right"
                               ng-click="viewCollabs($event)">View Team Members</button>
                     </td>
                   </tr>
@@ -31,10 +30,9 @@
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
-                    <th style="border-top:none;">DOI</th>
-                    <td style="border-top:none;">{{project.doi}}</td>
-                    <td style="border-top:none;">
-                      <button class="btn btn-info btn-sm"
+                    <th style="border-top:none; width:25%;">DOI</th>
+                    <td style="border-top:none; width:75%;">{{project.doi}}
+                      <button class="btn btn-info btn-sm pull-right"
                               ng-click="showCitation(project)">Citation
                       </button>
                     <td>
@@ -49,9 +47,8 @@
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
-                    <th style="border-top:none; width:33%">Date of Publication</th>
-                    <td style="border-top:none; width:33%">{{browser.publication.created| date: 'MMM/d/yyyy'}}</td>
-                    <td style="border-top:none; width:33%"></td>
+                    <th style="border-top:none; width:25%">Date of Publication</th>
+                    <td style="border-top:none; width:75%">{{browser.publication.created| date: 'MMM/d/yyyy'}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -60,9 +57,8 @@
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
-                    <th style="border-top:none;">Award</th>
-                    <td style="border-top:none;">{{project.value.awardNumber}}</td>
-                    <td style="border-top:none;" ></td>
+                    <th style="border-top:none; width:25%">Award</th>
+                    <td style="border-top:none; width:75%">{{project.value.awardNumber}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -74,9 +70,8 @@
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
-                    <th style="border-top:none; width:33%">Project Type</th>
-                    <td style="border-top:none; width:33%"><span style="text-transform:capitalize">{{project.value.projectType}}</span></td>
-                    <td style="border-top:none; width:33%"></td>
+                    <th style="border-top:none; width:25%">Project Type</th>
+                    <td style="border-top:none; width:75%"><span style="text-transform:capitalize">{{project.value.projectType}}</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -85,9 +80,8 @@
               <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
-                    <th style="border-top:none;">Keywords</th>
-                    <td style="border-top:none;">{{project.value.keywords}}</td>
-                    <td style="border-top:none;"></td>
+                    <th style="border-top:none; width:25%">Keywords</th>
+                    <td style="border-top:none; width:75%">{{project.value.keywords}}</td>
                   </tr>
                 </tbody>
               </table>
