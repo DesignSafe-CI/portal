@@ -1,1 +1,182 @@
-.workspace-panel-container {    display: -webkit-box;    display: -moz-box;    display: -ms-flexbox;    display: -webkit-flex;    display: flex;    -webkit-flex-direction: row;    -moz-flex-direction: row;    -ms-flex-direction: row;    flex-direction: row;    align-content: flex-start;    -webkit-flex: 0;    -moz-flex: 0;    -ms-flex: 0;    flex: 0;}.workspace-panel {    position: relative;    border: 1px solid #ddd;    background-color: #eee;    padding: 9px;    margin-bottom: 30px;}.workspace-panel-main {    -webkit-flex: 1;    -moz-flex: 1;    -ms-flex: 1;    flex: 1;    min-height: 600px;}.workspace-panel-sidebar {    -webkit-flex: 0 0 auto;    -moz-flex: 0 0 auto;    -ms-flex: 0 0 auto;    flex: 0 0 auto;    max-width: 310px;}.workspace-panel-toggle {    width: 1.5em;    position: absolute;    top: 0;}.workspace-panel-sidebar-left .workspace-panel-toggle {    right: 0;}.workspace-panel-sidebar-right .workspace-panel-toggle {    left: 0;}.workspace-panel-collapsed {    background-color: #999;    border-color: #777;    color: white;}.workspace-panel-collapsed .workspace-panel-toggle {    width: 100%;}.workspace-panel-collapsed .workspace-panel-content {    display: none;}.workspace-panel-title {    display: none;    position: absolute;    top: 2em;    transform: rotate(90deg);    transform-origin: 0;    white-space: nowrap;}.workspace-panel-collapsed .workspace-panel-title {    display: block;}.apps-tray {    display: -webkit-box;    display: -moz-box;    display: -ms-flexbox;    display: -webkit-flex;    display: flex;    overflow-x: auto;    overflow-y: hidden;    -webkit-flex-direction: row;    -moz-flex-direction: row;    -ms-flex-direction: row;    flex-direction: row;    align-items: center;}.app-wrapper {    display: -webkit-box;    display: -moz-box;    display: -ms-flexbox;    display: -webkit-flex;    display: flex;    -webkit-flex-direction: column;    -moz-flex-direction: column;    -ms-flex-direction: column;    flex-direction: column;    -webkit-flex: 0 0 auto;    -moz-flex: 0 0 auto;    -ms-flex: 0 0 auto;    flex: 0 0 auto;    align-items: center;    cursor: pointer;    border: 1px solid #ddd;    background-color: #fff;    margin-right: 5px;    box-shadow: 1px 1px 2px rgba(192,192,192,0.1);    white-space: nowrap;    overflow: hidden;}.app {  padding: 5px;}.app-version {  font-size: 0.7em;}.app-active {  background-color: #337AB7;  color: #fff;}.app-form-wrapper {  border: 1px solid #eee;  padding: 0.5em;  background-color: #fff;}.jobs-list-wrapper {  overflow-y: auto;}.jobs-list-wrapper li h4 {  white-space: nowrap;  overflow: hidden;  text-overflow: ellipsis;}.agave-file-picker.wants {    background-color: #fcf8e3;}.dnd-list ul[dnd-list] {    min-height: 42px;}.dnd-list ul[dnd-list] .dndPlaceholder {    background-color: #ddd;    min-height: 70px;}.dnd-list ul[dnd-list] li.selected {    background-color: #337AB7;    color: #fff;}.dnd-list ul[dnd-list] li.selected {    background-color: #337AB7;    color: #fff;}.top-buffer { margin-top:10px; }.btn-tab {  margin-top:3.4px;}
+.workspace-panel-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    align-content: flex-start;
+    -webkit-flex: 0;
+    -moz-flex: 0;
+    -ms-flex: 0;
+    flex: 0;
+}
+
+.workspace-panel {
+    position: relative;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    padding: 9px;
+    margin-bottom: 30px;
+}
+
+.workspace-panel-main {
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    min-height: 600px;
+}
+
+.workspace-panel-sidebar {
+    -webkit-flex: 0 0 auto;
+    -moz-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    max-width: 310px;
+}
+
+.workspace-panel-toggle {
+    width: 1.5em;
+    position: absolute;
+    top: 0;
+}
+
+.workspace-panel-sidebar-left .workspace-panel-toggle {
+    right: 0;
+}
+
+.workspace-panel-sidebar-right .workspace-panel-toggle {
+    left: 0;
+}
+
+.workspace-panel-collapsed {
+    background-color: #999;
+    border-color: #777;
+    color: white;
+}
+
+.workspace-panel-collapsed .workspace-panel-toggle {
+    width: 100%;
+}
+
+.workspace-panel-collapsed .workspace-panel-content {
+    display: none;
+}
+
+.workspace-panel-title {
+    display: none;
+    position: absolute;
+    top: 2em;
+    transform: rotate(90deg);
+    transform-origin: 0;
+    white-space: nowrap;
+}
+
+.workspace-panel-collapsed .workspace-panel-title {
+    display: block;
+}
+
+.apps-tray {
+    position: absolute;
+    z-index: 1;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    align-items: center;
+}
+
+.app-wrapper {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex: 0 0 auto;
+    -moz-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    margin-right: 5px;
+    box-shadow: 1px 1px 2px rgba(192,192,192,0.1);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.app {
+  padding: 5px;
+}
+
+.app-version {
+  font-size: 0.7em;
+}
+
+.app-active {
+  background-color: #337AB7;
+  color: #fff;
+}
+
+.app-form-wrapper {
+  border: 1px solid #eee;
+  padding: 0.5em;
+  background-color: #fff;
+}
+
+.jobs-list-wrapper {
+  overflow-y: auto;
+}
+
+.jobs-list-wrapper li h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agave-file-picker.wants {
+    background-color: #fcf8e3;
+}
+
+
+.dnd-list ul[dnd-list] {
+    min-height: 42px;
+}
+
+
+.dnd-list ul[dnd-list] .dndPlaceholder {
+    background-color: #ddd;
+    min-height: 70px;
+}
+
+.dnd-list ul[dnd-list] li.selected {
+    background-color: #337AB7;
+    color: #fff;
+}
+
+.dnd-list ul[dnd-list] li.selected {
+    background-color: #337AB7;
+    color: #fff;
+}
+
+.top-buffer { margin-top:10px; }
+
+.btn-tab {
+  margin-top:3.4px;
+}
