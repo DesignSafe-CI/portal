@@ -1,16 +1,18 @@
 <div>
     <p ng-show="error" class="alert alert-danger">{{error}}</p>
-    <div class="app-wrapper" ng-show="!data.apps">
-        <div class="app text-center" ng-show="requesting">
+    <div class="app-wrapper" ng-if="requesting">
+        <div class="app text-center">
             <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
             <div class="app-title">Loading...</div>
             <div class="app-version">&nbsp;</div>
         </div>
     </div>
-    <uib-tabset ng-show="!requesting">
-      <uib-tab ng-repeat="tab in tabs|orderBy: '-title'" active="tab.active">
+    <uib-tabset id="workspace-tabs" ng-show="!requesting">
+      <uib-tab class="workspace-tab" ng-repeat="tab in tabs|orderBy: '-title'" active="tab.active" ng-init="tab.active=false" focusout="showApps($event, tab)">
         <uib-tab-heading>
-          <div ng-switch="tab.title">
+          <!-- <span class="workspace-tab">{{tab.title}} [{{tab.count}}]</span> -->
+          <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
+          <!-- <div ng-switch="tab.title">
             <div ng-switch-when="Public">
               <span>{{tab.title}} </span>
             </div>
@@ -20,12 +22,12 @@
             <div ng-switch-default>
               <span>{{tab.title}} <i class="fa fa-times" aria-hidden="true" ng-click="removeTab($event, $index, tab)"></i></span>
             </div>
-          </div>
+          </div> -->
         </uib-tab-heading>
 
-        <div ng-show="!tab.edit" class="apps-tray top-buffer">
+        <div ng-show="!tab.edit" class="apps-tray">
             <div ng-repeat="app in tab.content | orderBy: 'label'"
-                 ng-click="launchApp(app)"
+                 ng-click="launchApp(app, tab)"
                  class="app-wrapper"
                  ng-class="{'app-active': data.activeApp.value.definition.id==app.value.definition.id}">
               <div class="app text-center">

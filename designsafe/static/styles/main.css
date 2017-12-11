@@ -766,3 +766,103 @@ md-toast.info .md-toast-content {
 li .popover.right {
   width: 185px;
 }
+
+.workspace-tab-title {
+  /* font: futura-pt; */
+  margin-top: 12px;
+}
+
+/* .nav-tabs > li > a {
+	border-bottom: 50px solid #303030;
+	border-right: 50px solid transparent;
+	height: 0;
+    width: 220px;
+    border-radius: 10px 10px 0 0;
+}
+
+.nav-tabs > li.active > a {
+	border-bottom: 50px solid #E3E2E2;
+	border-right: 50px solid transparent;
+	height: 0;
+    width: 220px;
+    border-radius: 10px 10px 0 0;
+} */
+
+#workspace-tabs a h3 {
+    color: #FFFFFF;
+}
+
+/* #workspace-tabs > .nav-tabs > li.active h3, */
+#workspace-tabs a:hover h3,
+#workspace-tabs a:focus h3 {
+    color: #000000;
+}
+
+#workspace-tabs {
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#workspace-tabs li {
+  float: left;
+  margin: 0 1.7em 0 0;
+}
+
+#workspace-tabs a {
+  position: relative;
+  background: #303030;
+  /* background-image: linear-gradient(to bottom, #303030, #303030);   */
+  padding: .7em 3.5em;
+  /* color: white; */
+  float: left;
+  text-decoration: none;
+  /* text-shadow: 0 1px 0 rgba(255,255,255,.8); */
+  border-radius: 5px 5px 0 0;
+  /* box-shadow: 0 2px 2px rgba(0,0,0,.4); */
+  border: #303030 1px;
+  border-style: solid none none solid;
+}
+
+#workspace-tabs a:hover,
+#workspace-tabs a:hover::after,
+#workspace-tabs a:focus,
+#workspace-tabs a:focus::after
+/* #workspace-tabs > .nav-tabs > li.active > a,
+#workspace-tabs > .nav-tabs > li.active > a::after  */
+{
+  background: #E3E2E2;
+}
+
+#workspace-tabs a:focus {
+  outline: 0;
+}
+
+#workspace-tabs a::after {
+  content:'';
+  position:absolute;
+  z-index: 1;
+  top: -.1em;
+  right: -1em;  
+  bottom: 0;
+  width: 3em;
+  background: #303030;
+  /* background-image: linear-gradient(to bottom, #303030, #303030);   */
+  /* box-shadow: 2px 2px 2px rgba(0,0,0,.4); */
+  transform: skew(20deg);
+  border-radius: 0 5px 0 0;
+  border: #303030 1px;
+  border-style: solid solid none none;
+}
+
+/* #workspace-tabs #current a,
+#workspace-tabs #current a::after {
+  background: #fff;
+  z-index: 3;
+} */
+
+#workspace-tabs .nav-tabs {
+  border-bottom: none;
+}

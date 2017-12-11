@@ -1,9 +1,25 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('designsafe').controller('ApplicationTrayCtrl',
+  angular.module('designsafe')
+  
+  .directive('focusout', ['$parse', function($parse) {
+    return {
+      compile: function($element, attr) {
+        var fn = $parse(attr.focusout);
+        return function handler(scope, element) {
+          element.on('focusout', function(event) {
+            scope.$apply(function() {
+              fn(scope, {$event:event});
+            });
+          });
+        };
+      }
+    };
+  }])
+  
+  .controller('ApplicationTrayCtrl',
     ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', 'toastr', '$mdToast', function(
       $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, toastr, $mdToast) {
-
       $scope.tabs = [];
 
       $scope.simpleList = new SimpleList();
@@ -37,7 +53,7 @@
           .catch(function(response){
             $scope.error = $translate.instant('error_tab_get') + response.data;
             deferred.reject(response);
-          });;
+          });
 
         return deferred.promise;
       };
@@ -108,19 +124,17 @@
             return deferred.promise;
           })
           .then(function(response){
-            $scope.tabs.push(
-              {
-                title: 'Private',
-                content: $scope.simpleList.lists['Private']
-              }
-            );
-
-            $scope.tabs.push(
-              {
-                title: 'Public',
-                content: $scope.simpleList.lists['Public']
-              }
-            );
+            // const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'];
+            var tabs = ['Public', 'Private'];
+            tabs.forEach(function(element) {
+              $scope.tabs.push(
+                {
+                  title: element,
+                  content: $scope.simpleList.lists[element],
+                  count: $scope.simpleList.lists[element].length
+                }
+              );
+            }, this);
 
             angular.forEach($scope.simpleList.lists, function(list, key){
               if (key !== 'Public' && key !== 'Private') {
@@ -137,7 +151,7 @@
 
       $scope.refreshApps();
 
-      $scope.launchApp = function(app) {
+      $scope.launchApp = function(app, tab) {
         $state.go(
           'tray',
           {appId: app.value.definition.id},
@@ -148,7 +162,34 @@
           $scope.data.activeApp = app;
           $rootScope.$broadcast('launch-app', app);
         }
+      tab.active = false;
       };
+
+      // Want all tabs to be inactive on start, and whenever user clicks outside the tab-tray.
+      var outsideClick = false;
+      var tabClick = false;
+      $scope.showApps = function($event, tab) {
+        if (outsideClick) {
+          tab.active = false;
+        } else if (!tabClick) {
+          $event.target.focus();
+        }
+      };
+
+      $(document).mousedown(function(event) {
+        var element = $(event.target);
+        if (element.closest("div .apps-tray").length > 0 || element.closest(".workspace-tab").length > 0) {
+          outsideClick = false;
+          if (element.closest(".workspace-tab").length > 0) {
+            tabClick = true;
+          } else {
+            tabClick = false;
+          }
+        } else {
+          outsideClick = true;
+        }
+      });
+
     }]);
 
 })(window, angular, jQuery, _);
