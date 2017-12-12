@@ -39,7 +39,8 @@
     'dndLists',
     'xeditable',
     'pascalprecht.translate',
-    'ngStorage'
+    'ngStorage', 
+    'ngMaterial'
   );
   angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$urlRouterProvider', '$stateProvider', 'toastrConfig', config]);
 

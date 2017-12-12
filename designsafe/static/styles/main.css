@@ -833,7 +833,7 @@ li .popover.right {
 /* #workspace-tabs > .nav-tabs > li.active > a,
 #workspace-tabs > .nav-tabs > li.active > a::after  */
 {
-  background: #E3E2E2;
+  background: #fff;
 }
 
 #workspace-tabs a:focus {
