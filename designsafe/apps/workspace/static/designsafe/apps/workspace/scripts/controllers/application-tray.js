@@ -162,17 +162,14 @@
           $scope.data.activeApp = app;
           $rootScope.$broadcast('launch-app', app);
         }
-      tab.active = false;
+        tab.active = false;
       };
 
       // Want all tabs to be inactive on start, and whenever user clicks outside the tab-tray.
       var outsideClick = false;
-      var tabClick = false;
       $scope.showApps = function($event, tab) {
         if (outsideClick) {
           tab.active = false;
-        } else if (!tabClick) {
-          $event.target.focus();
         }
       };
 
@@ -180,11 +177,6 @@
         var element = $(event.target);
         if (element.closest("div .apps-tray").length > 0 || element.closest(".workspace-tab").length > 0) {
           outsideClick = false;
-          if (element.closest(".workspace-tab").length > 0) {
-            tabClick = true;
-          } else {
-            tabClick = false;
-          }
         } else {
           outsideClick = true;
         }
