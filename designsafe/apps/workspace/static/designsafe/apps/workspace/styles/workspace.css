@@ -213,7 +213,10 @@ md-grid-tile:active {
 @media (max-width: 992px) {
     .app-version {
         display: none;
-    }
+    }    
+  #workspace-tabs a h3 {
+      font-size: 2vw;
+  }
 }
 
 @media (min-width: 768px) { 
@@ -223,6 +226,9 @@ md-grid-tile:active {
   .app-title {
       font-size: 11px;
   }
+  #workspace-tabs a h3 {
+      font-size: 1.1em;
+  }
 }
 @media (min-width: 992px) { 
   .apps-tray {
@@ -231,6 +237,9 @@ md-grid-tile:active {
   .app-title {
       font-size: 14px;
   }
+  #workspace-tabs a h3 {
+      font-size: 1.2em;
+  }
 }
 @media (min-width: 1200px) { 
   .apps-tray {
@@ -238,5 +247,8 @@ md-grid-tile:active {
   }
   .app-title {
       font-size: 17px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 19px;
   }
 }

@@ -125,15 +125,28 @@
           })
           .then(function(response){
             // const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'];
-            var tabs = ['Public', 'Private'];
-            tabs.forEach(function(element) {
-              $scope.tabs.push(
-                {
-                  title: element,
-                  content: $scope.simpleList.lists[element],
-                  count: $scope.simpleList.lists[element].length
-                }
-              );
+            const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Public', 'Private'];
+            // var tabs = ['Public', 'Private'];
+
+            // TODO REMOVE TRY CATCH
+            tabs.forEach(function (element) {
+              try {
+                $scope.tabs.push(
+                  {
+                    title: element,
+                    content: $scope.simpleList.lists[element],
+                    count: $scope.simpleList.lists[element].length
+                  }
+                );
+              } catch(e) {
+                $scope.tabs.push(
+                  {
+                    title: element,
+                    content: [],
+                    count: 0
+                  }
+                );
+              }
             }, this);
 
             angular.forEach($scope.simpleList.lists, function(list, key){
