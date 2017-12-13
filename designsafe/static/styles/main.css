@@ -772,6 +772,10 @@ li .popover.right {
   margin-top: 12px;
 }
 
+.workspace-tab {
+  width: calc((100% - 20px)/5);
+}
+
 /* .nav-tabs > li > a {
 	border-bottom: 50px solid #303030;
 	border-right: 50px solid transparent;
@@ -790,6 +794,10 @@ li .popover.right {
 
 #workspace-tabs a h3 {
     color: #FFFFFF;
+    display: inline-block;
+    margin: auto;
+    vertical-align: middle;
+    line-height: normal;
 }
 
 /* #workspace-tabs > .nav-tabs > li.active h3, */
@@ -807,23 +815,21 @@ li .popover.right {
 }
 
 #workspace-tabs li {
-  float: left;
-  margin: 0 1.7em 0 0;
+  z-index: 1;
 }
 
 #workspace-tabs a {
-  position: relative;
   background: #303030;
-  /* background-image: linear-gradient(to bottom, #303030, #303030);   */
-  padding: .7em 3.5em;
+  padding: 0 0 0 1em;
   /* color: white; */
-  float: left;
-  text-decoration: none;
-  /* text-shadow: 0 1px 0 rgba(255,255,255,.8); */
+  text-align: center;
   border-radius: 5px 5px 0 0;
   /* box-shadow: 0 2px 2px rgba(0,0,0,.4); */
   border: #303030 1px;
   border-style: solid none none solid;
+  width: calc(100% - 1.65em);
+  height: 4em;
+  line-height: 4em;
 }
 
 #workspace-tabs a:hover,
@@ -849,12 +855,12 @@ li .popover.right {
   bottom: 0;
   width: 3em;
   background: #303030;
-  /* background-image: linear-gradient(to bottom, #303030, #303030);   */
   /* box-shadow: 2px 2px 2px rgba(0,0,0,.4); */
   transform: skew(20deg);
   border-radius: 0 5px 0 0;
   border: #303030 1px;
   border-style: solid solid none none;
+  z-index: -1;
 }
 
 /* #workspace-tabs #current a,
