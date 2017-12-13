@@ -2,7 +2,7 @@
   var module = angular.module('designsafe');
   module.requires.push(
     'ui.router',
-    'djng.urls',
+    'djng.urls', //TODO: djng
     'ui.bootstrap',
     'django.context',
     'ds.notifications',

@@ -11,7 +11,7 @@
   }
 
   var app = angular.module('designsafe');
-  app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr', 'ui.bootstrap');
+  app.requires.push('djng.urls','ds.wsBus', 'ds.notifications', 'logging', 'toastr', 'ui.bootstrap');   //TODO: djng
 
   app.config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', config]);
 

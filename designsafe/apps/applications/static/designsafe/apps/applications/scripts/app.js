@@ -43,7 +43,7 @@
   var app = angular.module('designsafe');
   app.requires.push( 
     'django.context',
-    'djng.urls',
+    'djng.urls',    //TODO: djng
     'dndLists',
     'ds.wsBus',
     'ds.notifications',
