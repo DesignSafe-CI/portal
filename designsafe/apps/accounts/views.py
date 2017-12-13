@@ -17,6 +17,7 @@ from pytas.models import User as TASUser
 import logging
 import json
 import re
+from termsandconditions.models import TermsAndConditions
 
 logger = logging.getLogger(__name__)
 
@@ -547,3 +548,11 @@ def mailing_list_subscription(request, list_name):
     except TypeError as e:
         logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
+
+def termsandconditions(request):
+    context = {
+        'title': 'Terms and Conditions',
+        'terms': TermsAndConditions.get_active(),
+    }
+    #context['terms'] = TermsAndConditions.get_active()
+    return render(request, 'designsafe/apps/accounts/termsandconditions.html', context)
