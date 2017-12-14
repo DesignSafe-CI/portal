@@ -127,7 +127,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         metrics.info('projects',
                      extra={'user' : request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
-                            'operation': 'metadata_create',
+                            'operation': 'project_create',
                             'info': {'postData': post_data} })
         p = Project(ag)
         p.save()
