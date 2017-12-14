@@ -747,6 +747,7 @@ def copy_publication_files_to_corral(self, project_id):
     publication = Publication(project_id=project_id)
     filepaths = publication.related_file_paths()
     filepaths = list(set(filepaths))
+    filepaths = sorted(filepaths)
     base_path = ''.join(['/', publication.projectId])
     #service = get_service_account_client()
     #service.files.manage(systemId=settings.PUBLISHED_SYSTEM,
