@@ -1,6 +1,5 @@
-import os
-
 """Elastic search connection configuration"""
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
@@ -56,7 +55,8 @@ ES_INDICES = {
         'name': 'des-publications_legacy_a',
         'alias': ['des-publications_legacy'],
         'documents': [{'name': 'publication',
-                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedPublicationLegacy'}]
+                       'class': 'designsafe.apps.data.models.elasticsearch.IndexedPublicationLegacy'
+                      }]
     },
     'rapid': {
         'name': 'des-rapid_nh_a',
@@ -91,51 +91,3 @@ ES_INDICES = {
     #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
     #}
 }
-
-"""
-if (os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower() == 'prod'):
-    ELASTIC_SEARCH = {
-        'cluster': {
-            'hosts': [
-                'designsafe-es01.tacc.utexas.edu',
-                'designsafe-es02.tacc.utexas.edu',
-            ]
-        },
-        'default_index': 'designsafe',
-        'published_index': 'nees'
-    }
-
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'designsafe-es01.tacc.utexas.edu:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-elif (os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower() == 'staging'):
-    ELASTIC_SEARCH = {
-        'cluster': {
-            'hosts': [
-                'designsafe-es01-dev.tacc.utexas.edu',
-            ]
-        },
-        'default_index': 'designsafe',
-        'published_index': 'nees'
-    }
-
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'designsafe-es01-dev.tacc.utexas.edu:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-else:
-    HAYSTACK_CONNECTIONS = {
-        'default': {
-            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': 'des_elasticsearch:9200/',
-            'INDEX_NAME': 'cms',
-        }
-    }
-"""
