@@ -17,10 +17,9 @@ from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from requests.exceptions import HTTPError
-from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
-                                                 Experiment, ModelConfiguration,
-                                                 Event, Analysis, SensorList,
-                                                 Report)
+from designsafe.apps.projects.models.agave.experimental import (
+    ExperimentalProject, Experiment, ModelConfiguration,
+    Event, Analysis, SensorList, Report)
 from designsafe.apps.api.agave.filemanager.public_search_index import PublicationManager, Publication
 from designsafe.apps.api import tasks
 import copy
