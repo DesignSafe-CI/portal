@@ -27,7 +27,7 @@
 
   angular.module('designsafe').requires.push(
     'ngCookies',
-    'djng.urls',
+    'djng.urls',  //TODO: djng
     'ui.bootstrap',
     'ui.router',
     'schemaForm',

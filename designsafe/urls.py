@@ -1,18 +1,27 @@
 """
 DesignSafe-CI URL Configuration
+===============================
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.8/topics/http/urls/
+
 Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
+---------
+
+**Function views**
+
+#. Add an import:  from my_app import views
+#. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+
+**Class-based views**
+
+#. Add an import:  from other_app.views import Home
+#. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+    
+**Including another URLconf**
+
+#. Add an import:  from blog import urls as blog_urls
+#. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf import settings
 from django.conf.urls import include, url
@@ -25,10 +34,31 @@ from designsafe.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import logout as des_logout
 from designsafe.views import project_version as des_version
 
+# sitemap - classes must be imported and added to sitemap dictionary
+from django.contrib.sitemaps.views import sitemap
+from cms.sitemaps import CMSSitemap
+from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap
+from designsafe import views
+
+# cms preferences
+CMSSitemap.priority = 0.7
+CMSSitemap.changefreq = 'weekly'
+
+sitemaps = {
+    'home': HomeSitemap,
+    'static': StaticViewSitemap,
+    'dynamic': DynamicViewSitemap,
+    'projects': ProjectSitemap,
+    'cmspages': CMSSitemap,
+}
+
 urlpatterns = [
     # admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/impersonate/', include('impersonate.urls')),
+
+    # sitemap
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
     # terms-and-conditions
     url(r'^terms/', include('termsandconditions.urls')),
@@ -36,7 +66,6 @@ urlpatterns = [
     url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
 
     # api urls, just for the samples.
-
     url(r'^applications/', include('designsafe.apps.applications.urls',
                                 namespace='designsafe_applications')),
     url(r'^data/', include('designsafe.apps.data.urls', namespace='designsafe_data')),

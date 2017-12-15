@@ -7,7 +7,7 @@
   var app = angular.module('designsafe');
   app.requires.push(
     'ngCookies',
-    'djng.urls',
+    'djng.urls',  //TODO: djng
     'ui.bootstrap',
     'ds.notifications',
     'django.context',
