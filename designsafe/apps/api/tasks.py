@@ -700,9 +700,9 @@ def check_project_files_meta_pems(self, project_uuid):
     from designsafe.apps.data.models.agave.files import BaseFileMetadata
     logger.debug('Checking metadata pems linked to a project')
     service = get_service_account_client()
-    metas = BaseFileMetadata.search(service, {'associationIds': project_uuid,
-                                              'name': BaseFileMetadata.NAME})
+    metas = BaseFileMetadata.search(service, {'associationIds': project_uuid})
     for meta in metas:
+        logger.debug('checking %s:%s', meta.uuid, meta.name)
         meta.match_pems_to_project(project_uuid)
 
 @shared_task(bind=True)
