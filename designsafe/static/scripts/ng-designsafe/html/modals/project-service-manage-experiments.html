@@ -244,7 +244,7 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid) | orderBy: modelConfig.value.title">
+                ng-repeat="modelConfig in data.project.getRelated('modelconfig_set', experiment.uuid) | orderBy: modelConfig.value.title">
               <div class="tree-el">
               <span class="label tag-blue">Model Config</span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
@@ -345,7 +345,7 @@
             <li>
               <div class="tree-el">
               <select 
-                      ng-options="entity as entity.value.title for entity in data.project.modelconfiguration_set"
+                      ng-options="entity as entity.value.title for entity in data.project.modelconfig_set"
                       ng-model="form.updateExperiments[experiment.uuid].relModelConfig">
                       <option value="">Add Model Config</option>
               </select>

@@ -241,7 +241,7 @@
           browser.publishPipeline == 'review')"
   style="background:#fff;">
 
-    <div ng-repeat="modelConfig in browser.project.modelconfiguration_set | orderBy: 'value.title'"
+    <div ng-repeat="modelConfig in browser.project.modelconfig_set | orderBy: 'value.title'"
          ng-if="!browser.publishPipeline ||
                browser.publishPipeline === 'select'">
       <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
@@ -676,7 +676,7 @@
             <span>Model Configurations</span><span class="text-danger">(*)</span>
           </div>
           <div class="value pull-right">
-            <span ng-repeat="model_config in browser.project.getRelated('modelconfiguration_set', exp.uuid)"
+            <span ng-repeat="model_config in browser.project.getRelated('modelconfig_set', exp.uuid)"
                   style="display:block;">
               {{model_config.value.title}}
             </span><br/>

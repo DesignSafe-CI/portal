@@ -21,7 +21,7 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('modelconfiguration_set', experiment.uuid)">
+                ng-repeat="modelConfig in data.project.getRelated('modelconfig_set', experiment.uuid)">
               <div class="tree-el">
               <span class="label tag-blue"
                     ng-class="{'selected': data.entityUuid === modelConfig.uuid}">Model Config </span>
