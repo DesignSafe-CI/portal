@@ -439,6 +439,7 @@
       return $http.put(this.mediaUrl(), body).then(function (resp) {
         /* update self */
         angular.extend(self, resp.data);
+        return self;
       });
     };
 

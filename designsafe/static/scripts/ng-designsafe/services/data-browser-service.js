@@ -880,7 +880,7 @@
         currentState.busy = true;
         return result.file.rename({name: result.renameTo})
           .then(
-            function (result) {
+            function (res) {
               currentState.busy = false;
             },
             function (err) {
