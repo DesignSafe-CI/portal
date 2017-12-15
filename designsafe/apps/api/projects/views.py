@@ -190,7 +190,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
         prj.add_team_members([request.user.username])
         if prj.pi and prj.pi != request.user.username:
-            prj.add_collaborator(prj.pi)
+            prj.add_team_members([prj.pi])
             collab_users = get_user_model().objects.filter(username=prj.pi)
             if collab_users:
                 collab_user = collab_users[0]
@@ -209,7 +209,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                         settings.DEFAULT_FROM_EMAIL,
                         [collab_user.email],
                         html_message=body)
-
+        prj.add_admin('prjadmin')
         tasks.set_project_id.apply_async(args=[prj.uuid],queue="api")
         return JsonResponse(prj.to_body_dict(), safe=False)
 
@@ -294,15 +294,19 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
         ag = get_service_account_client()
         project = BaseProject.manager().get(ag, uuid=project_id)
-
+        project.manager().set_client(ag)
         username = post_data.get('username')
 
         member_type = post_data.get('memberType', 'teamMember')
         project.add_team_members([username])
         if member_type == 'teamMember':
-            project.team_members.append(username)
+            team_members = project.team_members
+            team_members.apend(username)
+            project.team_members = team_members
         elif member_type == 'coPis':
-            project.co_pis.append(username)
+            co_pis = project.co_pis
+            co_pis.append(username)
+            project.co_pis = co_pis
         project.save(ag)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         collab_users = get_user_model().objects.filter(username=username)
@@ -326,7 +330,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
                     html_message=body)
                 #logger.exception(err)
 
-        return JsonResponse(project.team_members())
+        return JsonResponse(project.collaborators)
 
     def delete(self, request, project_id):
         if request.is_ajax():
