@@ -23,6 +23,8 @@ urlpatterns = [
 
     url(r'^mailing-list/(?P<list_name>.*)/$', views.mailing_list_subscription,
         name='mailing_list_subscription'),
+
+    url(r'^terms-conditions/$', views.termsandconditions, name="terms_conditions"),
 ]
 
 
@@ -30,7 +32,7 @@ def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'account':
         return [
             {
-                'label': _('Manage Account'),
+                'label': _('Account Profile'),
                 'url': reverse('designsafe_accounts:index'),
                 'children': [],
             },
