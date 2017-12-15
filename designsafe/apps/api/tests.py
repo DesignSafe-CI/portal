@@ -2,7 +2,7 @@ from django.test import TestCase, RequestFactory
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from designsafe.apps.api.projects.models import ExperimentalProject, ModelConfiguration, FileModel
+from designsafe.apps.api.projects.models import ExperimentalProject, ModelConfig, FileModel
 
 from agavepy.agave import Agave
 import mock
@@ -53,7 +53,7 @@ class InitModelConfigurationModel(ProjectDataModelsTestCase):
         """
         #logger.debug('model_config_meta: %s',
         #             json.dumps(self.model_config_meta, indent=4))
-        model_config = ModelConfiguration(**self.model_config_meta)
+        model_config = ModelConfig(**self.model_config_meta)
         #logger.debug('model_config dict: %s',
         #             json.dumps(model_config.to_body_dict(), indent=4))
 

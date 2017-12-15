@@ -161,8 +161,6 @@ class Options(object):
         cls._meta = self
         self._model = cls
 
-
-
 class BaseModel(type):
     """
     Metaclass for metadata models

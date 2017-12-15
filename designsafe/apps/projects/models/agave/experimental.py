@@ -8,7 +8,18 @@ from designsafe.apps.projects.models.agave.base import RelatedEntity, Project
 logger = logging.getLogger(__name__)
 
 class ExperimentalProject(Project):
-    pass
+    model_name = 'designsafe.project'
+    team_members = fields.ListField('Team Members')
+    co_pis = fields.ListField('Co PIs')
+    project_type = fields.CharField('Project Type', max_length=255, default='other')
+    project_id = fields.CharField('Project Id')
+    description = fields.CharField('Description', max_length=1024, default='')
+    title = fields.CharField('Title', max_length=255, default='')
+    pi = fields.CharField('PI', max_length=255)
+    award_number = fields.CharField('Award Number', max_length=255)
+    associated_projects = fields.ListField('Associated Project')
+    ef = fields.CharField('Experimental Facility', max_length=512)
+    keywords = fields.CharField('Keywords')
 
 class FileModel(MetadataModel):
     model_name = 'designsafe.file'
@@ -132,7 +143,7 @@ class ModelConfigTag(MetadataModel):
     wave = fields.NestedObjectField(ModelConfigTagWave)
     wind = fields.NestedObjectField(ModelConfigTagWind)
 
-class ModelConfiguration(RelatedEntity):
+class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.model_config'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
@@ -218,7 +229,7 @@ class SensorList(RelatedEntity):
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
     #events = fields.RelatedObjectField(Event)
-    model_configs = fields.RelatedObjectField(ModelConfiguration)
+    model_configs = fields.RelatedObjectField(ModelConfig)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class EventTagCentrifuge(MetadataModel):
@@ -306,7 +317,7 @@ class Event(RelatedEntity):
     analysis = fields.RelatedObjectField(Analysis)
     project = fields.RelatedObjectField(ExperimentalProject)
     experiments = fields.RelatedObjectField(Experiment)
-    model_configs = fields.RelatedObjectField(ModelConfiguration)
+    model_configs = fields.RelatedObjectField(ModelConfig)
     sensor_lists = fields.RelatedObjectField(SensorList)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 

@@ -28,7 +28,7 @@ class DataConfig(AppConfig):
             logger.error('Missing ElasticSearch config. %s', exc)
             raise
         from designsafe.apps.data.models.agave.base import set_lazy_rels
-        from designsafe.apps.api.projects.models import *
+        from designsafe.apps.projects.models.agave.experimental import *
         set_lazy_rels()
         super(DataConfig, self).ready()
 
