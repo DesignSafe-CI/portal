@@ -21,9 +21,10 @@ from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionRes
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
+from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 #from requests.exceptions import HTTPError
 from designsafe.apps.projects.models.agave.experimental import (
-    ExperimentalProject, Experiment, ModelConfiguration,
+    ExperimentalProject, Experiment, ModelConfig,
     Event, Analysis, SensorList, Report)
 from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
                                                                        Publication)
@@ -226,7 +227,7 @@ class ProjectMetaLookupMixin(object):
         elif name == 'designsafe.project.sensor_list':
             return SensorList
         elif name == 'designsafe.project.model_config':
-            return ModelConfiguration
+            return ModelConfig
         elif name == 'designsafe.project.report':
             return Report
         else:
@@ -244,8 +245,8 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         #project = Project.from_uuid(agave_client=ag, uuid=project_id)
         meta_obj = ag.meta.getMetadata(uuid=project_id)
         #model_cls = self._lookup_model(meta_obj['name'])
-        project = BaseProject(**meta_obj)
-        logger.info(project.__dict__)
+        cls = project_lookup_model(meta_obj)
+        project = cls(**meta_obj)
         return JsonResponse(project.to_body_dict(), safe=False)
 
     def post(self, request, project_id):
