@@ -53,9 +53,16 @@ class Project(MetadataModel):
         return body_dict
 
     def add_team_members(self, usernames):
+        agave_client = self.manager().agave_client
         for username in usernames:
             self.set_pem(username, 'ALL')
-            self.manager().agave_client.systems.updateRole(
+            agave_client.systems.updateRole(
                 systemId=self.system,
                 body={'username': username, 'role': 'USER'})
         return self
+
+    def add_admin(self, username):
+        self.set_pem(username, 'ALL')
+        self.manager().agave_client.systems.updateRole(
+            systemId=self.system,
+            body={'username': username, 'role': 'USER'})

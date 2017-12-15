@@ -113,6 +113,7 @@ class Manager(object):
 
     def get(self, agave_client, uuid):
         meta = agave_client.meta.getMetadata(uuid=uuid)
+        self.set_client(agave_client)
         return self.model_cls(**meta)
 
     def list(self, agave_client, association_id=None):
