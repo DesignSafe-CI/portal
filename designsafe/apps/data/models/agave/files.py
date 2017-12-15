@@ -6,7 +6,7 @@ import six
 import urllib
 import urlparse
 from requests.exceptions import HTTPError
-from . import BaseAgaveResource
+from designsafe.apps.data.models.agave.base import BaseAgaveResource
 from designsafe.apps.data.models.agave.metadata import BaseMetadataResource, BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles_list
 from agavepy.agave import AgaveException
