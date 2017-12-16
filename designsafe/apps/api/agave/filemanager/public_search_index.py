@@ -71,11 +71,16 @@ class Publication(object):
             self._wrap = PublicationIndexed()
 
     @classmethod
-    def listing(cls):
+    def listing(cls, status='published'):
         list_search = PublicSearchManager(cls,
                                           PublicationIndexed.search(),
                                           page_size=100)
-        list_search._search.query = Q({"match_all":{}})
+        list_search._search.query = Q(
+            "bool",
+            must=[
+                Q({'term': {'status': status}})
+            ]
+            )
         list_search.sort({'created': {'order': 'desc'}})
 
         return list_search.results(0)
@@ -435,10 +440,11 @@ class PublicElasticFileManager(BaseFileManager):
     def __init__(self):
         super(PublicElasticFileManager, self).__init__()
 
-    def listing(self, system, file_path, offset=0, limit=100):
+    def listing(self, system, file_path, offset=0, limit=100, status='published'):
         file_path = file_path or '/'
-        listing = PublicObject.listing(system, file_path, offset, limit)
-        publications = Publication.listing()
+        listing = PublicObject.listing(system, file_path,
+                                       offset=offset, limit=limit)
+        publications = Publication.listing(status)
         if file_path == '/':
             listing.children = itertools.chain(publications, listing.children)
 
@@ -548,10 +554,10 @@ class PublicElasticFileManager(BaseFileManager):
         return result
 
 class PublicationManager(object):
-    def save_publication(self, publication):
+    def save_publication(self, publication, status='publishing'):
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
-        publication['status'] = 'publishing'
+        publication['status'] = status
         pub = Publication(publication)
         pub.save()
         return pub

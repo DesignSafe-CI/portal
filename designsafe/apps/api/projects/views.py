@@ -14,6 +14,7 @@ from designsafe.apps.api.decorators import agave_jwt_login
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.api.agave import get_service_account_client
@@ -44,7 +45,7 @@ def template_project_storage_system(project):
 class PublicationView(BaseApiView):
     def get(self, request, project_id):
         pub = Publication(project_id=project_id)
-        if pub is not None:
+        if pub is not None and hasattr(pub, 'project'):
             return JsonResponse(pub.to_dict())
         else:
             return JsonResponse({'status': 404,
@@ -61,11 +62,16 @@ class PublicationView(BaseApiView):
             data = request.POST
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
-        pub = PublicationManager().save_publication(data['publication'])
-        tasks.save_publication.apply_async(args=[pub.projectId],queue='files')
+        status = data.get('status', 'saved')
+        pub = PublicationManager().save_publication(
+            data['publication'], status)
+        #if data.get('action', 'save') == 'publish':
+        #    tasks.save_publication.apply_async(args=[pub.projectId],queue='files')
         return JsonResponse({'status': 200,
-                             'message': 'Your publication has been '
-                                        'schedule for publication'},
+                             'response': {
+                                 'message': 'Your publication has been '
+                                            'schedule for publication',
+                                 'status': status}},
                             status=200)
 
 class ProjectListingView(SecureMixin, BaseApiView):
