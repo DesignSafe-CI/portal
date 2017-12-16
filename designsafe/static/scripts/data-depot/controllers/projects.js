@@ -91,7 +91,7 @@
 
   }]);
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', '$http', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http) {
+  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', '$http', '$interval', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
@@ -232,12 +232,26 @@
                       });
     };
 
+    function savePublication(){
+      var publication = angular.copy($scope.state.publication);
+      publication.project = $scope.state.project;
+      $scope.ui.savingPublication = true;
+      $http.post('/api/projects/publication/' +  projectId,
+        {publication: publication, status: 'saved'})
+        .then(function(resp){
+          $scope.ui.savingPublication = false;
+        });
+    }
+
     $scope.publishPipeline_start = function(){
       $scope.state.publishPipeline = 'select';
     };
 
     $scope.publishPipeline_review = function(){
       $scope.state.publishPipeline = 'review';
+      if (typeof $scope.saveInterval === 'undefined'){
+        $scope.saveInterval = $interval(savePublication, 1000);
+      }
     };
 
     $scope.publishPipeline_meta = function(){
@@ -286,6 +300,9 @@
           inst._ui = {order: indx, deleted: false};
         });
         $scope.state.publication.institutions = _.uniq(institutions, function(inst){ return inst.label;});
+        if (typeof $scope.saveInterval === 'undefined'){
+          $scope.saveInterval = $interval($scope.publishPipeline_publish('saved'), 1000);
+        }
         $scope.state.publishPipeline = 'meta';
       }
       else if (st == 'meta'){
@@ -295,7 +312,12 @@
       }
     };
 
-    $scope.publishPipeline_publish = function(){
+    $scope.publishPipeline_publish = function(status){
+      if (typeof status !== 'undefined' && status != 'saved'){
+          $interval.cancel($scope.saveInterval);
+      } else if (typeof status === 'undefined'){
+        status = 'published';
+      }
       var publication = angular.copy($scope.state.publication);
       var experimentsList = [];
       var eventsList = [];
@@ -428,7 +450,9 @@
       _.each(project._related, function(val, key){
         delete project[key];
       });
-      delete publication.filesSelected;
+      if (status == 'published'){
+        delete publication.filesSelected;
+      }
 
       publication.project = project;
       if ($scope.state.project.value.projectType == 'experimental'){
@@ -444,12 +468,19 @@
         }
       }
 
-      $http.post('/api/projects/publication/', {publication: publication})
+      if (typeof status === 'undefined' || status === null){
+        status = 'publishing';
+      }
+
+      $http.post('/api/projects/publication/', {publication: publication,
+                                                status: status})
         .then(function(resp){
-          $scope.state.publicationMsg = resp.data.message;
-          $scope.state.project.publicationStatus = 'publishing';
-          DataBrowserService.state().publicationMsg = resp.data.message;
-          DataBrowserService.state().project.publicationStatus = 'publishing';
+          if (resp.data.response.status == 'published'){
+              $scope.state.publicationMsg = resp.data.message;
+              DataBrowserService.state().publicationMsg = resp.data.message;
+          }
+          $scope.state.project.publicationStatus = resp.data.response.status;
+          DataBrowserService.state().project.publicationStatus = resp.data.response.status;
         });
     };
 
@@ -618,7 +649,13 @@
           allFilePaths = allFilePaths.concat(entity._filePaths);
         });
         $scope.data.rootPaths = allFilePaths;
-        setFilesDetails(allFilePaths)
+        $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
+          .then(function(resp){
+              $scope.browser.publication = resp.data;
+          }, function(err){
+            //no publication saved?
+          })
+        .then(function(){setFilesDetails(allFilePaths);})
         .then(function(){
             users = [$scope.browser.project.value.pi]
                       .concat($scope.browser.project.value.coPis)
@@ -631,7 +668,7 @@
 
     $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
-      //DataBrowserService.showListing();
+      DataBrowserService.showListing();
       if (file.type === 'file') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
