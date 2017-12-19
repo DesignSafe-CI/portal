@@ -768,7 +768,6 @@ li .popover.right {
 }
 
 .workspace-tab-title {
-  /* font: futura-pt; */
   margin-top: 12px;
 }
 
@@ -776,31 +775,16 @@ li .popover.right {
   width: calc((100% - 20px)/5);
 }
 
-/* .nav-tabs > li > a {
-	border-bottom: 50px solid #303030;
-	border-right: 50px solid transparent;
-	height: 0;
-    width: 220px;
-    border-radius: 10px 10px 0 0;
-}
-
-.nav-tabs > li.active > a {
-	border-bottom: 50px solid #E3E2E2;
-	border-right: 50px solid transparent;
-	height: 0;
-    width: 220px;
-    border-radius: 10px 10px 0 0;
-} */
-
 #workspace-tabs a h3 {
     color: #FFFFFF;
     display: inline-block;
     margin: auto;
     vertical-align: middle;
     line-height: normal;
+    font-size: 2vw;
 }
 
-/* #workspace-tabs > .nav-tabs > li.active h3, */
+#workspace-tabs > .nav-tabs > li.active h3,
 #workspace-tabs a:hover h3,
 #workspace-tabs a:focus h3 {
     color: #000000;
@@ -821,13 +805,11 @@ li .popover.right {
 #workspace-tabs a {
   background: #303030;
   padding: 0 0 0 1em;
-  /* color: white; */
   text-align: center;
   border-radius: 5px 5px 0 0;
-  /* box-shadow: 0 2px 2px rgba(0,0,0,.4); */
-  border: #303030 1px;
+  border: 1px solid rgba(8,8,8,0.6);
   border-style: solid none none solid;
-  width: calc(100% - 1.65em);
+  width: calc(100% - 1.35em);
   height: 4em;
   line-height: 4em;
 }
@@ -835,9 +817,9 @@ li .popover.right {
 #workspace-tabs a:hover,
 #workspace-tabs a:hover::after,
 #workspace-tabs a:focus,
-#workspace-tabs a:focus::after
-/* #workspace-tabs > .nav-tabs > li.active > a,
-#workspace-tabs > .nav-tabs > li.active > a::after  */
+#workspace-tabs a:focus::after,
+#workspace-tabs > .nav-tabs > li.active > a,
+#workspace-tabs > .nav-tabs > li.active > a::after 
 {
   background: #fff;
 }
@@ -851,23 +833,16 @@ li .popover.right {
   position:absolute;
   z-index: 1;
   top: -.1em;
-  right: -1em;  
+  right: -.7em;  
   bottom: 0;
   width: 3em;
   background: #303030;
-  /* box-shadow: 2px 2px 2px rgba(0,0,0,.4); */
   transform: skew(20deg);
   border-radius: 0 5px 0 0;
-  border: #303030 1px;
+  border: 1px solid rgba(8,8,8,0.5);
   border-style: solid solid none none;
   z-index: -1;
 }
-
-/* #workspace-tabs #current a,
-#workspace-tabs #current a::after {
-  background: #fff;
-  z-index: 3;
-} */
 
 #workspace-tabs .nav-tabs {
   border-bottom: none;
