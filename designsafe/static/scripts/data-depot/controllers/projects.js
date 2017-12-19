@@ -234,6 +234,7 @@
 
     function savePublication(){
       var publication = angular.copy($scope.state.publication);
+      publication.filesSelected = $scope.state.publication.filesSelected;
       publication.project = $scope.state.project;
       $scope.ui.savingPublication = true;
       $http.post('/api/projects/publication/' +  projectId,
@@ -319,6 +320,7 @@
         status = 'published';
       }
       var publication = angular.copy($scope.state.publication);
+      publication.filesSelected = $scope.state.publication.filesSelected;
       var experimentsList = [];
       var eventsList = [];
       var analysisList = [];
@@ -452,6 +454,8 @@
       });
       if (status == 'published'){
         delete publication.filesSelected;
+      } else {
+        publication.filesSelected = $scope.state.publication.filesSelected;
       }
 
       publication.project = project;
@@ -495,7 +499,7 @@
     $scope.browser.ui = {};
     $scope.browser.publication = {experimentsList: [], eventsList: [],
                                   users: [], analysisList: [], reportsList: [],
-                                  filesSelected: []};
+                                  filesSelected: {}};
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
