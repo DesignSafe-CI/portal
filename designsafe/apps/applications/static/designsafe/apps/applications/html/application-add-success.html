@@ -22,6 +22,10 @@
               <td>Label</td>
               <td>{{appMeta.definition.label}}</td>
             </tr>
+            <tr ng-if="appMeta.definition.appCategory">
+              <td>Category</td>
+              <td>{{appMeta.definition.appCategory}}</td>
+            </tr>
             <tr>
               <td>Public</td>
               <td>{{appMeta.definition.isPublic}}</td>
