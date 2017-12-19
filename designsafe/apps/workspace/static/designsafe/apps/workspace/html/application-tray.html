@@ -8,17 +8,10 @@
         </div>
     </div>
     <uib-tabset id="workspace-tabs" ng-show="!requesting">
-      <uib-tab class="workspace-tab" ng-repeat="tab in tabs|orderBy: '-title'" active="tab.active" ng-init="tab.active=false" focusout="showApps($event, tab)">
+      <uib-tab class="workspace-tab" ng-repeat="tab in tabs" active="tab.active" ng-init="tab.active=false" focusout="showApps($event, tab)">
         <uib-tab-heading>
-          <!-- <span class="workspace-tab">{{tab.title}} [{{tab.count}}]</span> -->
           <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
           <!-- <div ng-switch="tab.title">
-            <div ng-switch-when="Public">
-              <span>{{tab.title}} </span>
-            </div>
-            <div ng-switch-when="Private">
-              <span>{{tab.title}} </span>
-            </div>
             <div ng-switch-default>
               <span>{{tab.title}} <i class="fa fa-times" aria-hidden="true" ng-click="removeTab($event, $index, tab)"></i></span>
             </div>
@@ -31,16 +24,19 @@
                  ng-click="launchApp(app, tab)"
                  ng-class="{'app-active': data.activeApp.value.definition.id==app.value.definition.id}">
               <div class="app text-center">
-                <!-- <md-grid-tile-header class="app-title"> -->
+                <md-grid-tile-header class="app-header">
                   <h5 class="app-title">{{app.value.definition.label}}</h5>
-                <!-- </md-grid-tile-header> -->
-                <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>
-                <div class="app-version">{{app.value.definition.version}}</div>
+                </md-grid-tile-header>
+                <div class="app-icon">
+                  <i ng-if="app.value.definition.icon" class="icon-{{app.value.definition.icon}}"></i>
+                  <span ng-if="!app.value.definition.icon" class="icon-letter">{{app.value.definition.label[0].toUpperCase()}}</span>
+                </div>
+                <!-- <div class="app-version">{{app.value.definition.version}}</div> -->
               </div>
             </md-grid-tile>
           </md-grid-list>
         </div>
-        <div ng-show="tab.edit" class="dnd-list">
+        <!-- <div ng-show="tab.edit" class="dnd-list">
           <div class="page-header">
             <h3>Customize your apps tray</h3>
             <p>
@@ -96,7 +92,7 @@
         </div>
         <div class="text-center">
           <button ng-show="tab.title !== 'Public' && tab.title !== 'Private' && !tab.edit" class="btn btn-default" ng-click="editTab(tab); tab.edit = !tab.edit">Edit</button>
-        </div>
+        </div> -->
       </uib-tab>
       <!-- <button class="btn btn-default btn-tab" ng-click="addTab()" ><i class="fa fa-plus"></i></button> -->
     </uib-tabset>
