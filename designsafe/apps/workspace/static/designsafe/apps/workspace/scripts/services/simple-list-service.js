@@ -17,16 +17,34 @@
         params: {'q': query}
       }).then(
         function(response){
-          self.lists['Private'] = [];
-          self.lists['Public'] = [];
+          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'], function(tab) {
+            self.lists[tab] = [];
+          });
+
+          // Current list of apps with an Icon
+          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees'];
 
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
             if (appMeta.value.definition.isPublic){
               if (appMeta.value.definition.available){
-                self.lists['Public'].push(
-                  appMeta
-                );
+                appMeta.value.definition.icon = null;
+                icons.some(function(icon) {
+                  if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
+                    appMeta.value.definition.icon = icon;
+                    return true;
+                  }
+                });
+                // If App has no category, place in Simulation tab
+                try {
+                  self.lists[appMeta.value.definition.appCategory].push(
+                    appMeta
+                  );
+                } catch (error) {
+                  self.lists['Simulation'].push(
+                    appMeta
+                  );
+                }
               }
             } else {
               if (appMeta.value.definition.available){
@@ -42,7 +60,7 @@
         function(apps){
           deferred.reject();
         }
-      )
+      );
       return deferred.promise;
     };
 
