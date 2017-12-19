@@ -154,7 +154,7 @@
 
       schema.properties.nodeCount = {
         title: 'Node Count (optional)',
-        description: "Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.",
+        description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
         type: 'integer',
         "minimum": 1,
         "maximum": 12,
