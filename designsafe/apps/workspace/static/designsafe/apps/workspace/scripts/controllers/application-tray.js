@@ -124,39 +124,26 @@
             return deferred.promise;
           })
           .then(function(response){
-            // const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'];
-            const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Public', 'Private'];
-            // var tabs = ['Public', 'Private'];
+            const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'];
 
-            // TODO REMOVE TRY CATCH
             tabs.forEach(function (element) {
-              try {
                 $scope.tabs.push(
                   {
                     title: element,
                     content: $scope.simpleList.lists[element],
                     count: $scope.simpleList.lists[element].length
                   }
-                );
-              } catch(e) {
-                $scope.tabs.push(
-                  {
-                    title: element,
-                    content: [],
-                    count: 0
-                  }
-                );
-              }
+                );            
             }, this);
 
-            angular.forEach($scope.simpleList.lists, function(list, key){
-              if (key !== 'Public' && key !== 'Private') {
-                $scope.tabs.push({
-                  title: key,
-                  content: list
-                });
-              }
-            });
+            // angular.forEach($scope.simpleList.lists, function(list, key){
+            //   if (key !== 'Public' && key !== 'Private') {
+            //     $scope.tabs.push({
+            //       title: key,
+            //       content: list
+            //     });
+            //   }
+            // });
 
             $scope.requesting = false;
           });
