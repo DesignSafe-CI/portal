@@ -235,7 +235,6 @@ class IndexedPublication(DocType):
     class Meta:
         index = settings.ES_INDICES['publications']['name']
         doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
-        dynamic = MetaField('strict')
 
 @python_2_unicode_compatible
 class IndexedCMSPage(DocType):
