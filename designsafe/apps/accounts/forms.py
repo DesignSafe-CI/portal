@@ -337,6 +337,10 @@ class UserRegistrationForm(forms.Form):
     agree_to_terms = forms.BooleanField(
         label='I Agree to the <a href="/terms/" target="_blank">Terms of Use</a>',
         error_messages={'required': 'Please Accept the DesignSafe Terms of Use.'})
+    agree_to_account_limit = forms.BooleanField(
+        label='One account per user. I hereby verify that this is my only DesignSafe/TACC account'
+              ' and I understand that having multiple accounts will result in suspension.',
+        error_messages={'required': 'Please Agree to the DesignSafe Account Limit.'})
 
     captcha = ReCaptchaField()
 
