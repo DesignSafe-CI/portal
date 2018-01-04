@@ -6,6 +6,7 @@
   module.factory('FileListing', ['$http', '$q', 'Logging', function($http, $q, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.FileListing');
+    var stopper = $q.defer(); // defer to prevent overlapping requests
 
     function FileListing(json, apiParams) {
       angular.extend(this, json);
@@ -238,7 +239,11 @@
 
     FileListing.prototype.fetch = function (params) {
       var self = this;
-      return $http.get(this.listingUrl(), {params: params}).then(function (resp) {
+      // resolve any running request and reinitalize the stopper
+      stopper.resolve();
+      stopper = $q.defer();
+
+      return $http.get(this.listingUrl(), {params: params, timeout: stopper.promise}).then(function (resp) {
         angular.extend(self, resp.data);
 
         // wrap children as FileListing instances
