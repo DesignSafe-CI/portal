@@ -180,6 +180,15 @@
         } else {
           outsideClick = true;
         }
+
+        // If user clicks on same tab, close tab.
+        if (element.closest(".workspace-tab").length == 1) {
+          $scope.tabs.forEach(function (tab) {
+            if (tab.active && element.closest(".workspace-tab-title").context.innerText.includes(tab.title)) {
+              tab.active = false;
+            }
+          });
+        }
       });
 
     }]);

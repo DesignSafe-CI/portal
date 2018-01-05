@@ -785,8 +785,7 @@ li .popover.right {
 }
 
 #workspace-tabs > .nav-tabs > li.active h3,
-#workspace-tabs a:hover h3,
-#workspace-tabs a:focus h3 {
+#workspace-tabs a:hover h3 {
     color: #000000;
 }
 
@@ -816,8 +815,6 @@ li .popover.right {
 
 #workspace-tabs a:hover,
 #workspace-tabs a:hover::after,
-#workspace-tabs a:focus,
-#workspace-tabs a:focus::after,
 #workspace-tabs > .nav-tabs > li.active > a,
 #workspace-tabs > .nav-tabs > li.active > a::after 
 {
