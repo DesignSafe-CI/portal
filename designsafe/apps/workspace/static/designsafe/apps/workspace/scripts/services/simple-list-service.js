@@ -17,7 +17,7 @@
         params: {'q': query}
       }).then(
         function(response){
-          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'], function(tab) {
+          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'My Apps'], function(tab) {
             self.lists[tab] = [];
           });
 
@@ -48,7 +48,7 @@
               }
             } else {
               if (appMeta.value.definition.available){
-                self.lists['Private'].push(
+                self.lists['My Apps'].push(
                   appMeta
                 );
               }
