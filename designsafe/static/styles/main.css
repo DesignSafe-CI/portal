@@ -498,12 +498,13 @@ label.required:after,
   height: 1.8em;
   width: 1.8em;
   line-height: 1.6em;
-  top: -6px;
+  top: -5px;
   padding: 0;
+  position: absolute;
 }
 
 .label-as-badge {
-  left: 2.9em;
+  left: 1.8em;
   border-radius: 30%;
   border: 1px solid white;
 }
