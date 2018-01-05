@@ -271,7 +271,7 @@ font-family: 'designsafe-workspace';
 .icon-qgis:before {
     content: "\e907";
 }
-.icon-ls-dyna:before {
+i[class^="icon-ls"][class$="dyna"]:before {
     content: "\e908";
 }
 .icon-visit:before {
