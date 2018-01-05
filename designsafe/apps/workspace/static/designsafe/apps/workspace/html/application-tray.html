@@ -19,7 +19,7 @@
         </uib-tab-heading>
 
         <div ng-show="!tab.edit" class="apps-tray">
-          <md-grid-list md-cols="6" md-row-height="3:2">
+          <md-grid-list md-cols="6" md-row-height="3:2" md-gutter="0px">
             <md-grid-tile ng-repeat="app in tab.content | orderBy: 'label'"
                  ng-click="launchApp(app, tab)"
                  ng-class="{'app-active': data.activeApp.value.definition.id==app.value.definition.id}">
