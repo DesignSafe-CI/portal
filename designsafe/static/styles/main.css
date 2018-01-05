@@ -783,6 +783,7 @@ li .popover.right {
     vertical-align: middle;
     line-height: normal;
     font-size: 2vw;
+    font-weight: normal;
 }
 
 #workspace-tabs > .nav-tabs > li.active h3,
@@ -809,9 +810,9 @@ li .popover.right {
   border-radius: 5px 5px 0 0;
   border: 1px solid rgba(8,8,8,0.6);
   border-style: solid none none solid;
-  width: calc(100% - 1.35em);
-  height: 4em;
-  line-height: 4em;
+  width: calc(100% - 1.1em);
+  height: 3em;
+  line-height: 2.5em;
 }
 
 #workspace-tabs a:hover,
@@ -831,7 +832,7 @@ li .popover.right {
   position:absolute;
   z-index: 1;
   top: -.1em;
-  right: -.7em;  
+  right: -.5em;  
   bottom: 0;
   width: 3em;
   background: #303030;

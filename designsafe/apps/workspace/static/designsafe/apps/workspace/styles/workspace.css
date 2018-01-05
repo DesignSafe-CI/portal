@@ -126,7 +126,11 @@
 
 .app-active {
   background-color: #337AB7;
-  color: #fff;
+  color: #fff !important;
+}
+
+.app-active .app-title {
+  color: #fff !important;
 }
 
 .app-form-wrapper {
@@ -183,7 +187,13 @@ md-grid-tile {
 md-grid-tile:hover {
     cursor: pointer;
     box-shadow: 0px 0px 10px 1px grey;
+    color: #337AB7; 
 }
+
+md-grid-tile:hover .app-title {
+    color: #337AB7;
+}
+
 md-grid-tile:active {
     /* cursor: pointer; */
     box-shadow: inset 0px 0px 10px 1px grey;
@@ -330,7 +340,7 @@ font-family: 'designsafe-workspace';
       font-size: 17px;
   }
   #workspace-tabs a h3 {
-      font-size: 19px;
+      font-size: 20px;
   }
   [class^="icon-"]:before,
   [class*=" icon-"]:before {
