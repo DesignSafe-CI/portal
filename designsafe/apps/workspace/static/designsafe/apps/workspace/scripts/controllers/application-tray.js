@@ -158,10 +158,9 @@
           {notify: false}
         );
 
-        if (!$scope.data.activeApp || $scope.data.activeApp.value.definition.id !== app.value.definition.id) {
-          $scope.data.activeApp = app;
-          $rootScope.$broadcast('launch-app', app);
-        }
+        $scope.data.activeApp = app;
+        $rootScope.$broadcast('launch-app', app);
+
         tab.active = false;
       };
 
