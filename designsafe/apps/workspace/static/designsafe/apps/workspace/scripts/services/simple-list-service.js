@@ -27,11 +27,12 @@
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
             if (appMeta.value.definition.available) {
-              // Apply app icon if available
+              // Apply app icon if available, and apply label for ordering
+              appMeta.value.definition.orderBy = appMeta.value.definition.label;
               appMeta.value.definition.icon = null;
               icons.some(function (icon) {
                 if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
-                  appMeta.value.definition.icon = icon;
+                  appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
                   return true;
                 }
               });
