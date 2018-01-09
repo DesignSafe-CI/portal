@@ -396,6 +396,7 @@ class UserRegistrationForm(forms.Form):
                 first_name=tas_user['firstName'],
                 last_name=tas_user['lastName'],
                 email=tas_user['email'],
+                agree_to_account_limit=data['agree_to_account_limit']
                 )
 
         # extended profile information
