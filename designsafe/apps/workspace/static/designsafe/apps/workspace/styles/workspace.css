@@ -153,11 +153,9 @@
     background-color: #fcf8e3;
 }
 
-
 .dnd-list ul[dnd-list] {
     min-height: 42px;
 }
-
 
 .dnd-list ul[dnd-list] .dndPlaceholder {
     background-color: #ddd;
@@ -178,6 +176,10 @@
 
 .btn-tab {
   margin-top:3.4px;
+}
+
+.version-label {
+    text-transform: none;
 }
 
 md-grid-tile {
