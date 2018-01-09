@@ -6,9 +6,9 @@
         <h2>Software Licenses</h2>
 
         <p class="lead">
-            DesignSafe makes available to users a number of codes, some of which are
+            DesignSafe makes available to users a number of software programs, some of which are
             commercial and require licenses to use. Below you can review and find details
-            on how to obtain and/or activate your license to use licensed codes.
+            on how to obtain and/or activate your license to use licensed software.
         </p>
 
         {% for license in licenses %}
@@ -17,9 +17,9 @@
                 <h3>
                     {{license.license_type}}
                     {% if license.current_user_license %}
-                        <span class="label label-success"><i class="fa fa-check-circle"></i> ACTIVE</span>
+                        <span class="label label-success"><i class="fa fa-check-circle"></i> ACTIVE </span>
                     {% else %}
-                        <span class="label label-danger">NOT ACTIVE</span>
+                        <span class="label label-danger"> NOT ACTIVE </span>
                     {% endif %}
                 </h3>
                 {% include license.details_html %}
@@ -30,7 +30,7 @@
                     </p>
                     <p>
                         <a class="btn btn-lg btn-default"
-                           href="{% url 'djangoRT:ticketcreate' %}?category=OTHER&subject=MATLAB+license+activation+request"
+                           href="{% url 'djangoRT:ticketcreate' %}?category=OTHER&subject={{license.license_type}}+license+activation+request{% if license.license_type == 'LS-DYNA' %}&problem_description=Department+Name%3A%0DInstitution+Name%3A{% endif %}"
                            target="_blank"
                         >
                             Request Activation
