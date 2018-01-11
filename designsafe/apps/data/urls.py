@@ -10,17 +10,23 @@ urlpatterns = [
         FileMediaView.as_view(), name='files_media'),
 ]
 
+# Seems to be unused
 def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'research_workbench':
         return [
             {
-                'label': _('Published Data'),
+                'label': _('Published'),
                 'url': reverse('designsafe_data:public_data'),
                 'children': []
             },
             {
                 'label': _('My Data'),
                 'url': reverse('designsafe_data:my_data'),
+                'children': []
+            },
+            {
+                'label': _('My Projects'),
+                'url': reverse('designsafe_data:my_projects'),
                 'children': []
             }
         ]
