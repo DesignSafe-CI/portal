@@ -70,6 +70,7 @@
       });
 
       $scope.resetForm = function() {
+        console.log($scope.data.app);
         $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
         $scope.form = {model: {}, readonly: $scope.data.needsLicense};
         $scope.form.schema = Apps.formSchema($scope.data.app);
@@ -92,7 +93,11 @@
 
         /* job details */
         items = [];
-        items.push('maxRunTime', 'name', 'archivePath');
+        if ($scope.data.app.tags.includes('Interactive')) {
+          items.push('name');
+        } else {
+          items.push('maxRunTime', 'name', 'archivePath');
+        }
         // if ($scope.data.app.parallelism == "PARALLEL") {
         //   items.push('nodeCount');
         // }
@@ -106,7 +111,7 @@
         /* buttons */
         items = [];
         if (! $scope.data.needsLicense) {
-          items.push({type: 'submit', title: 'Run', style: 'btn-primary'});
+          items.push({type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary'});
         }
         items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
         $scope.form.form.push({
