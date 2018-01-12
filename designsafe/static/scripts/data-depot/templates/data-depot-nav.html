@@ -2,7 +2,8 @@
 
     <div class="list-group collapse"
          ng-class="{'in': !routerItem.collapse}"
-         ng-repeat="childItem in routerItems">
+         ng-repeat="childItem in routerItems"
+         ng-click="stateReload(childItem.state)">
 
         <a uib-tooltip="{{ childItem.description }}" class="list-group-item"
            ui-sref="{{ childItem.state }}"

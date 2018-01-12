@@ -239,11 +239,10 @@
 
     FileListing.prototype.fetch = function (params) {
       var self = this;
-      // resolve any running request and reinitalize the stopper
-      stopper.resolve();
+      // recreate a deferred timeout for the promise
       stopper = $q.defer();
 
-      return $http.get(this.listingUrl(), {params: params, timeout: stopper.promise}).then(function (resp) {
+      var req = $http.get(this.listingUrl(), {params: params, timeout: stopper.promise}).then(function (resp) {
         angular.extend(self, resp.data);
 
         // wrap children as FileListing instances
@@ -257,6 +256,9 @@
 
         return self;
       });
+      // return request with timeout
+      req.stopper = stopper;
+      return req;
     };
 
     FileListing.prototype.getMeta = function() {
