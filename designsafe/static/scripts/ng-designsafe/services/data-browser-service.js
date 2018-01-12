@@ -197,7 +197,7 @@
       currentState.showPreviewListing = true;
     }
 
-
+    var req;
     /**
      *
      * @param options
@@ -205,6 +205,12 @@
      * @param options.path
      */
     function browse (options) {
+      // resolve any ongoing requests
+      if(req){
+        req.stopper.resolve();
+        req = null;
+      };
+      
       currentState.busy = true;
       currentState.busyListing = true;
       currentState.error = null;
@@ -212,7 +218,10 @@
       currentState.reachedEnd = false;
       currentState.busyListingPage = false;
       currentState.page = 0;
-      return FileListing.get(options, apiParams).then(function (listing) {
+
+      req = FileListing.get(options, apiParams); // stopper is returned here...
+
+      var currentReq = req.then(function (listing) {
         select([], true);
         currentState.busy = false;
         currentState.busyListing = false;
@@ -221,13 +230,22 @@
         currentState.listing = listing;
         return listing;
       }, function (err) {
-        currentState.busy = false;
+
+        // keep spinning if user navigates from original selection
+        // or stop spinning after displaying error message
+        if(err.data) {
+          currentState.busy = false;
+        } else {
+          currentState.busy = true;
+        }
         currentState.busyListing = false;
         currentState.listing = null;
         currentState.error = err.data;
         currentState.loadingMore = false;
         currentState.reachedEnd = false;
       });
+
+      return currentReq;
     }
 
     /**
