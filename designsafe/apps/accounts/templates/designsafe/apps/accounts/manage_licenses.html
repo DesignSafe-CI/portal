@@ -25,10 +25,6 @@
                 {% include license.details_html %}
                 {% if not license.current_user_license %}
                     <p>
-                        To request activation, please open a support ticket and DesignSafe support will
-                        enable {{license.license_type}} for your account.
-                    </p>
-                    <p>
                         <a class="btn btn-lg btn-default"
                            href="{% url 'djangoRT:ticketcreate' %}?category=OTHER&subject={{license.license_type}}+license+activation+request{% if license.license_type == 'LS-DYNA' %}&problem_description=Department+Name%3A%0DInstitution+Name%3A{% endif %}"
                            target="_blank"
