@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 LICENSE_TYPES = (
     ('MATLAB', 'MATLAB'),
+    ('LS-DYNA', 'LS-DYNA')
 )
 
 
@@ -15,6 +16,11 @@ def get_license_info():
             'license_type': 'MATLAB',
             'class': 'designsafe.apps.licenses.MATLABLicense',
             'details_html': 'designsafe/apps/licenses/matlab_details.html',
+        },
+        {
+            'license_type': 'LS-DYNA',
+            'class': 'designsafe.apps.licenses.LSDYNALicense',
+            'details_html': 'designsafe/apps/licenses/ls-dyna_details.html'
         }
     ]
 

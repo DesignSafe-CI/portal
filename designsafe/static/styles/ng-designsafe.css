@@ -461,7 +461,7 @@ span.label.tag-red.selected {
     color: white;
 }
 
-span.label {
+.modal-body span.label {
     float:left;
 }
 
