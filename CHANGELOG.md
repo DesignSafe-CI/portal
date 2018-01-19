@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180103
+
+Improvements:
+
+- Configuring Webhooks correctly to work with Potree
+
+## v2.3.1
+
+Fixes:
+
+- Correct defaults on node and processes for job sumission
+
 ## v2.3.0
 
 Fixes:
