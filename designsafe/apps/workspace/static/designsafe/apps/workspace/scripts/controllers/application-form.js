@@ -26,34 +26,34 @@
           Apps.get(app.value.definition.id).then(
             function(resp) {
             // check app execution system
-            Systems.getMonitor(resp.data.executionSystem)
-              .then(
-                function(response){
-                  if (response.data.length > 0){
-                      // perform check only when monitor is active
-                      if (response.data[0].active){
-                        if (response.data[0].lastSuccess !== null){
-                          var currentDate = new Date();
-                          var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
-                          var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
+            // Systems.getMonitor(resp.data.executionSystem)
+            //   .then(
+            //     function(response){
+            //       if (response.data.length > 0){
+            //           // perform check only when monitor is active
+            //           if (response.data[0].active){
+            //             if (response.data[0].lastSuccess !== null){
+            //               var currentDate = new Date();
+            //               var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
+            //               var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
 
-                          if (diff > response.data[0].frequency){
-                            $mdToast.show($mdToast.simple()
-                            .content($translate.instant('error_system_monitor'))
-                            .toastClass('warning')
-                            .parent($("#toast-container")));
-                            // toastr.warning($translate.instant('error_system_monitor'));
-                          }
-                        } else {
-                          $mdToast.show($mdToast.simple()
-                          .content($translate.instant('error_system_monitor'))
-                          .toastClass('warning')
-                          .parent($("#toast-container")));
-                          // toastr.warning($translate.instant('error_system_monitor'));
-                        }
-                    }
-                  }
-                });
+            //               if (diff > response.data[0].frequency){
+            //                 $mdToast.show($mdToast.simple()
+            //                 .content($translate.instant('error_system_monitor'))
+            //                 .toastClass('warning')
+            //                 .parent($("#toast-container")));
+            //                 // toastr.warning($translate.instant('error_system_monitor'));
+            //               }
+            //             } else {
+            //               $mdToast.show($mdToast.simple()
+            //               .content($translate.instant('error_system_monitor'))
+            //               .toastClass('warning')
+            //               .parent($("#toast-container")));
+            //               // toastr.warning($translate.instant('error_system_monitor'));
+            //             }
+            //         }
+            //       }
+            //     });
 
             $scope.data.app = resp.data;
             $scope.resetForm();
