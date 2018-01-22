@@ -498,12 +498,13 @@ label.required:after,
   height: 1.8em;
   width: 1.8em;
   line-height: 1.6em;
-  top: -6px;
+  top: -5px;
   padding: 0;
+  position: absolute;
 }
 
 .label-as-badge {
-  left: 2.9em;
+  left: 1.8em;
   border-radius: 30%;
   border: 1px solid white;
 }
@@ -765,4 +766,84 @@ md-toast.info .md-toast-content {
 
 li .popover.right {
   width: 185px;
+}
+
+.workspace-tab-title {
+  margin-top: 12px;
+}
+
+.workspace-tab {
+  width: calc((100% - 20px)/5);
+}
+
+#workspace-tabs a h3 {
+    color: #FFFFFF;
+    display: inline-block;
+    margin: auto;
+    vertical-align: middle;
+    line-height: normal;
+    font-size: 2vw;
+    font-weight: normal;
+}
+
+#workspace-tabs > .nav-tabs > li.active h3 {
+    color: #000000;
+}
+
+#workspace-tabs {
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#workspace-tabs li {
+  z-index: 1;
+}
+
+#workspace-tabs a {
+  background: #303030;
+  padding: 0 0 0 1em;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  border: 1px solid rgba(8,8,8,0.6);
+  border-style: solid none none solid;
+  width: calc(100% - 1.1em);
+  height: 3em;
+  line-height: 2.5em;
+}
+
+#workspace-tabs a:hover,
+#workspace-tabs a:hover::after {
+  background: #525252;
+}
+
+#workspace-tabs > .nav-tabs > li.active > a,
+#workspace-tabs > .nav-tabs > li.active > a::after {
+  background: #fff;
+}
+
+#workspace-tabs a:focus {
+  outline: 0;
+}
+
+#workspace-tabs a::after {
+  content:'';
+  position:absolute;
+  z-index: 1;
+  top: -.1em;
+  right: -.5em;  
+  bottom: 0;
+  width: 3em;
+  background: #303030;
+  transform: skew(20deg);
+  border-radius: 0 5px 0 0;
+  border: 1px solid rgba(8,8,8,0.5);
+  border-style: solid solid none none;
+  z-index: -1;
+}
+
+#workspace-tabs .nav-tabs {
+  border-bottom: none;
 }

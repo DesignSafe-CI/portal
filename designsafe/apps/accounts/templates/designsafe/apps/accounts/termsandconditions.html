@@ -1,0 +1,18 @@
+{% extends "designsafe/apps/accounts/base.html" %}
+
+{% block title %}Terms and Conditions{% endblock %}
+
+{% block panel_content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+    <!-- <div class="container"> -->
+        <section title="Terms and Conditions" data-role="content">
+            <h1>{{ terms.name|safe }}</h1>
+
+            <div>
+                {{ terms.text|safe }}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

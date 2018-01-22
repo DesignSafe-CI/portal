@@ -13,6 +13,8 @@ RUN apt-get update && \
     apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
 
+RUN npm install -g bower
+
 RUN pip install --upgrade pip && pip install uwsgi uwsgitop
 
 RUN mkdir -p /opt/uwsgi && \
@@ -34,6 +36,8 @@ COPY . /srv/www/designsafe
 #COPY bin/* /usr/local/bin/
 
 WORKDIR /srv/www/designsafe
+
+RUN su tg458981 -c "bower install"
 
 RUN npm install
 

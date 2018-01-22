@@ -50,6 +50,7 @@ class PublicDataListView(BaseApiView):
             system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
         
         if file_mgr_name == PublicElasticFileManager.NAME:
+
             file_mgr = PublicElasticFileManager()
         elif file_mgr_name == 'community':
             ag = get_user_model().objects.get(username='envision').agave_oauth.client
@@ -62,7 +63,9 @@ class PublicDataListView(BaseApiView):
 
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
-        listing = file_mgr.listing(system_id, file_path, offset, limit)
+        status = request.GET.get('status', 'published')
+        listing = file_mgr.listing(system_id, file_path,
+                                   offset=offset, limit=limit, status=status)
         return JsonResponse(listing.to_dict())
 
 class PublicMediaView(FileMediaView):

@@ -1,1 +1,363 @@
-.workspace-panel-container {    display: -webkit-box;    display: -moz-box;    display: -ms-flexbox;    display: -webkit-flex;    display: flex;    -webkit-flex-direction: row;    -moz-flex-direction: row;    -ms-flex-direction: row;    flex-direction: row;    align-content: flex-start;    -webkit-flex: 0;    -moz-flex: 0;    -ms-flex: 0;    flex: 0;}.workspace-panel {    position: relative;    border: 1px solid #ddd;    background-color: #eee;    padding: 9px;    margin-bottom: 30px;}.workspace-panel-main {    -webkit-flex: 1;    -moz-flex: 1;    -ms-flex: 1;    flex: 1;    min-height: 600px;}.workspace-panel-sidebar {    -webkit-flex: 0 0 auto;    -moz-flex: 0 0 auto;    -ms-flex: 0 0 auto;    flex: 0 0 auto;    max-width: 310px;}.workspace-panel-toggle {    width: 1.5em;    position: absolute;    top: 0;}.workspace-panel-sidebar-left .workspace-panel-toggle {    right: 0;}.workspace-panel-sidebar-right .workspace-panel-toggle {    left: 0;}.workspace-panel-collapsed {    background-color: #999;    border-color: #777;    color: white;}.workspace-panel-collapsed .workspace-panel-toggle {    width: 100%;}.workspace-panel-collapsed .workspace-panel-content {    display: none;}.workspace-panel-title {    display: none;    position: absolute;    top: 2em;    transform: rotate(90deg);    transform-origin: 0;    white-space: nowrap;}.workspace-panel-collapsed .workspace-panel-title {    display: block;}.apps-tray {    display: -webkit-box;    display: -moz-box;    display: -ms-flexbox;    display: -webkit-flex;    display: flex;    overflow-x: auto;    overflow-y: hidden;    -webkit-flex-direction: row;    -moz-flex-direction: row;    -ms-flex-direction: row;    flex-direction: row;    align-items: center;}.app-wrapper {    display: -webkit-box;    display: -moz-box;    display: -ms-flexbox;    display: -webkit-flex;    display: flex;    -webkit-flex-direction: column;    -moz-flex-direction: column;    -ms-flex-direction: column;    flex-direction: column;    -webkit-flex: 0 0 auto;    -moz-flex: 0 0 auto;    -ms-flex: 0 0 auto;    flex: 0 0 auto;    align-items: center;    cursor: pointer;    border: 1px solid #ddd;    background-color: #fff;    margin-right: 5px;    box-shadow: 1px 1px 2px rgba(192,192,192,0.1);    white-space: nowrap;    overflow: hidden;}.app {  padding: 5px;}.app-version {  font-size: 0.7em;}.app-active {  background-color: #337AB7;  color: #fff;}.app-form-wrapper {  border: 1px solid #eee;  padding: 0.5em;  background-color: #fff;}.jobs-list-wrapper {  overflow-y: auto;}.jobs-list-wrapper li h4 {  white-space: nowrap;  overflow: hidden;  text-overflow: ellipsis;}.agave-file-picker.wants {    background-color: #fcf8e3;}.dnd-list ul[dnd-list] {    min-height: 42px;}.dnd-list ul[dnd-list] .dndPlaceholder {    background-color: #ddd;    min-height: 70px;}.dnd-list ul[dnd-list] li.selected {    background-color: #337AB7;    color: #fff;}.dnd-list ul[dnd-list] li.selected {    background-color: #337AB7;    color: #fff;}.top-buffer { margin-top:10px; }.btn-tab {  margin-top:3.4px;}
+.workspace-panel-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    align-content: flex-start;
+    -webkit-flex: 0;
+    -moz-flex: 0;
+    -ms-flex: 0;
+    flex: 0;
+}
+
+.workspace-panel {
+    position: relative;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    padding: 9px;
+    margin-bottom: 30px;
+}
+
+.workspace-panel-main {
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    min-height: 600px;
+}
+
+.workspace-panel-sidebar {
+    -webkit-flex: 0 0 auto;
+    -moz-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    max-width: 310px;
+}
+
+.workspace-panel-toggle {
+    width: 1.5em;
+    position: absolute;
+    top: 0;
+}
+
+.workspace-panel-sidebar-left .workspace-panel-toggle {
+    right: 0;
+}
+
+.workspace-panel-sidebar-right .workspace-panel-toggle {
+    left: 0;
+}
+
+.workspace-panel-collapsed {
+    background-color: #999;
+    border-color: #777;
+    color: white;
+}
+
+.workspace-panel-collapsed .workspace-panel-toggle {
+    width: 100%;
+}
+
+.workspace-panel-collapsed .workspace-panel-content {
+    display: none;
+}
+
+.workspace-panel-title {
+    display: none;
+    position: absolute;
+    top: 2em;
+    transform: rotate(90deg);
+    transform-origin: 0;
+    white-space: nowrap;
+}
+
+.workspace-panel-collapsed .workspace-panel-title {
+    display: block;
+}
+
+.apps-tray {
+    padding-top: 10px;
+    position: absolute;
+    background: #fff;
+    z-index: 3;
+    border: 1px solid rgba(8, 8, 8, 0.6);
+    border-top: none;
+    box-shadow: 0px 5px 3px -3px grey;
+    width: calc(100% - 50px);
+}
+
+.app-wrapper {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex: 0 0 auto;
+    -moz-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    margin-right: 5px;
+    box-shadow: 1px 1px 2px rgba(192,192,192,0.1);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.app {
+  padding: 0px;
+  line-height: 1.2;
+}
+
+.app-version {
+  font-size: 0.7em;
+}
+
+.app-active {
+  background-color: #337AB7;
+  color: #fff !important;
+}
+
+.app-active .app-title {
+  color: #fff !important;
+}
+
+.app-form-wrapper {
+  border: 1px solid #eee;
+  padding: 0.5em;
+  background-color: #fff;
+}
+
+.jobs-list-wrapper {
+  overflow-y: auto;
+}
+
+.jobs-list-wrapper li h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agave-file-picker.wants {
+    background-color: #fcf8e3;
+}
+
+.dnd-list ul[dnd-list] {
+    min-height: 42px;
+}
+
+.dnd-list ul[dnd-list] .dndPlaceholder {
+    background-color: #ddd;
+    min-height: 70px;
+}
+
+.dnd-list ul[dnd-list] li.selected {
+    background-color: #337AB7;
+    color: #fff;
+}
+
+.dnd-list ul[dnd-list] li.selected {
+    background-color: #337AB7;
+    color: #fff;
+}
+
+.top-buffer { margin-top:10px; }
+
+.btn-tab {
+  margin-top:3.4px;
+}
+
+.version-label {
+    text-transform: none;
+}
+
+md-grid-tile {
+    box-shadow: 1px 1px 0px rgba(8, 8, 8, 0.30);
+}
+
+md-grid-tile:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 10px 1px grey;
+    color: #337AB7; 
+}
+
+md-grid-tile:hover .app-title {
+    color: #337AB7;
+}
+
+md-grid-tile:active {
+    /* cursor: pointer; */
+    box-shadow: inset 0px 0px 10px 1px grey;
+    outline: 0;
+}
+
+.app-header {
+    background: none;
+    height: 5vw;
+}
+
+.app-header figcaption {
+    width: 100%;
+    height: 100%;
+}
+
+.app-title {
+    font-size: 1.3vw;
+    /* margin: -5px 3px 0 3px; */
+    margin-top: 5px;
+    color: #303030;
+}
+
+.app-icon {
+    margin-top: 1em;
+}
+
+@font-face {
+font-family: 'designsafe-workspace';
+    src: url('../fonts/WorkSpaceIcons.ttf') format('truetype');        
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon-letter {
+    font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 6vw;
+    line-height: 1.2;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+    font-family: 'designsafe-workspace';
+    font-style: normal;
+    font-size: 5vw;
+    speak: none;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+            font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.icon-compress:before {
+    content: "\e909";
+}
+.icon-extract:before {
+    content: "\e90a";
+}
+.icon-matlab:before {
+    content: "\e90b";
+}
+.icon-paraview:before {
+    content: "\e903";
+}
+.icon-hazmapper:before {
+    content: "\e904";
+}
+.icon-jupyter:before {
+    content: "\e905";
+}
+.icon-adcirc:before {
+    content: "\e906";
+    font-size: 4vw;
+}
+.icon-qgis:before {
+    content: "\e907";
+}
+i[class^="icon-ls"][class$="dyna"]:before {
+    content: "\e908";
+}
+.icon-visit:before {
+    content: "\e902";
+}
+.icon-openfoam:before {
+    content: "\e900";
+}
+.icon-opensees:before {
+    content: "\e901";
+}
+
+@media (max-width: 992px) {
+    .app-version {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) { 
+  .apps-tray {
+    width: 701px;
+  }
+  .app-title {
+      font-size: 10px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 1.1em;
+  }
+  [class^="icon-"]:before,
+  [class*=" icon-"]:before {
+      font-size: 2.7em;
+  }
+  .icon-adcirc:before {
+    font-size: 2.3em;
+  }
+  .icon-opensees:before {
+    font-size: 2em;
+  }
+}
+@media (min-width: 992px) { 
+  .apps-tray {
+    width: 921px;
+  }
+  .app-title {
+      font-size: 14px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 1.2em;
+  }
+  [class^="icon-"]:before,
+  [class*=" icon-"]:before {
+      font-size: 4em;
+  }
+  .icon-adcirc:before {
+    font-size: 3em;
+  }
+  .icon-opensees:before {
+    font-size: 3em;
+  }
+}
+@media (min-width: 1200px) {
+  .apps-tray {
+    width: 1121px;
+  }
+  .app-title {
+      font-size: 17px;
+  }
+  #workspace-tabs a h3 {
+      font-size: 20px;
+  }
+  [class^="icon-"]:before,
+  [class*=" icon-"]:before {
+      font-size: 5em;
+  }
+  .icon-adcirc:before {
+    font-size: 3.5em;
+  }
+  .fa-icon-letter {
+      font-size: 5em;
+  }
+  .icon-opensees:before {
+    font-size: 4em;
+  }
+  .app-header {
+    height: 4em;
+  }
+}

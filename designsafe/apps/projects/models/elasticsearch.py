@@ -10,7 +10,7 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                InnerObjectWrapper, Boolean, Keyword,
                                GeoPoint, String, MetaField)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name
@@ -50,7 +50,7 @@ class IndexedProject(DocType):
         dynamic = MetaField('strict')
 
 @python_2_unicode_compatible
-class IndexedProjectEntity(DocType):
+class IndexedEntity(DocType):
     uuid = String(fields={'_exact': Keyword()})
     schemaId = String(fields={'_exact': Keyword()})
     internalUsername = String(fields={'_exact': Keyword()})
@@ -62,12 +62,12 @@ class IndexedProjectEntity(DocType):
     value = Nested(
         properties={
             'relations': Nested(properties={
-                'type': Text(fields={'_exact'}),
-                'uuids': Text(fields={'_exact'}, multi=True)
+                'type': Text(fields={'_exact': Keyword()}),
+                'uuids': Text(fields={'_exact': Keyword()}, multi=True)
             }),
             'tags': Nested(properties={
-                'name': Text(fields={'_exact'}),
-                'value': Text(fields={'_exact'}, multi=True)
+                'name': Text(fields={'_exact': Keyword()}),
+                'value': Text(fields={'_exact': Keyword()}, multi=True)
             }),
             'title': Text(analyzer='english'),
             'description': Text(analyzer='english')

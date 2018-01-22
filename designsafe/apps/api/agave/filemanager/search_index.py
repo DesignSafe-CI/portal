@@ -3,7 +3,7 @@ import os
 import six
 from itertools import takewhile
 from django.conf import settings
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.connections import connections
@@ -97,8 +97,8 @@ class Object(object):
             logger.debug('serach query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
-            except TransportError as e:
-                if e.status_code == 404:
+            except (TransportError, ConnectionTimeout) as e:
+                if getattr(e, 'status_code', 500) == 404:
                     raise
                 res = s.execute()
 
@@ -231,8 +231,8 @@ class ElasticFileManager(BaseFileManager):
 
         try:
             res = search.execute()
-        except TransportError as e:
-            if e.status_code == 404:
+        except (TransportError, ConnectionTimeout) as e:
+            if getattr(e, 'status_code', 500) == 404:
                 raise
             res = search.execute()
 

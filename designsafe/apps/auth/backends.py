@@ -10,6 +10,7 @@ from pytas.http import TASClient
 import logging
 import re
 import requests
+from requests.auth import HTTPBasicAuth
 
 
 @receiver(user_logged_out)
@@ -26,6 +27,11 @@ def on_user_logged_out(sender, request, user, **kwargs):
         login_provider = 'TACC'
     else:
         login_provider = 'your authentication provider'
+
+    logger = logging.getLogger(__name__)
+    logger.debug("attempting call to revoke agave token function: %s", user.agave_oauth.token)
+    a = AgaveOAuthBackend()
+    AgaveOAuthBackend.revoke(a,user.agave_oauth)
 
     logout_message = '<h4>You are Logged Out!</h4>' \
                      'You are now logged out of DesignSafe! However, you may still ' \
@@ -159,3 +165,11 @@ class AgaveOAuthBackend(ModelBackend):
             else:
                 self.logger.info('Agave Authentication failed: %s' % json_result)
         return user
+
+    def revoke(self, user):
+        base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
+        self.logger.info("attempting to revoke agave token %s" % user.masked_token)
+        response = requests.post('{base_url}/revoke'.format(base_url = base_url),
+            auth=HTTPBasicAuth(settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET),
+            data={'token': user.access_token})
+        self.logger.info("revoke response is %s" % response)

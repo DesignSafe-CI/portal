@@ -40,9 +40,10 @@
   <!-- Publications -->
   <div ng-if="data.doc_type === 'publication'">
     <span class="label label-success"> Publication </span>
-    <h4><a ng-href="/data/browser/public/{{data.project.systemId}}/{{data.project.projectPath}}"  target="_self"> {{data.title}} </a> </h4>
-    <strong> Authors: </strong>
-    <span ng-repeat="author in data.authors"> {{author}}{{$last ? '' : ','}} </span>
+    <h4><a ng-href="/data/browser/public/designsafe.storage.published/{{data.projectId}}"  target="_self"> {{data.projectId}}: {{data.project.value.title}} </a> </h4>
+    <strong> Project Type: </strong> {{data.project.value.projectType}}
+    <p> {{data.project.value.description}} </p>
+    <span class="label label-primary"> {{data.created | date:'short'}} </span>
     <hr>
   </div>
 

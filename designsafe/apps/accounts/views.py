@@ -17,6 +17,7 @@ from pytas.models import User as TASUser
 import logging
 import json
 import re
+from termsandconditions.models import TermsAndConditions
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ def manage_profile(request):
         logger.info('exception e:{} {}'.format(type(e), e))
 
     context = {
-        'title': 'Manage Profile',
+        'title': 'Account Profile',
         'profile': user_profile,
         'demographics': demographics
     }
@@ -57,7 +58,7 @@ def manage_pro_profile(request):
         logout(request)
         return HttpResponseRedirect(reverse('designsafe_auth:login'))
     context = {
-        'title': 'Manage Professional Profile',
+        'title': 'Professional Profile',
         'user': user,
         'profile': ds_profile
     }
@@ -89,7 +90,7 @@ def manage_authentication(request):
         form = forms.ChangePasswordForm(username=request.user.username)
 
     context = {
-        'title': 'Authentication Settings',
+        'title': 'Authentication',
         'form': form
     }
     return render(request, 'designsafe/apps/accounts/manage_auth.html', context)
@@ -98,7 +99,7 @@ def manage_authentication(request):
 @login_required
 def manage_identities(request):
     context = {
-        'title': 'Manage Identities',
+        'title': 'Identities',
     }
     return render(request, 'designsafe/apps/accounts/manage_identities.html', context)
 
@@ -135,7 +136,7 @@ def manage_licenses(request):
             l['current_user_license'] = True
 
     context = {
-        'title': 'Manage Software Licenses',
+        'title': 'Software Licenses',
         'licenses': licenses
     }
     return render(request, 'designsafe/apps/accounts/manage_licenses.html', context)
@@ -144,7 +145,7 @@ def manage_licenses(request):
 @login_required
 def manage_applications(request):
     context = {
-        'title': 'Manage Applications',
+        'title': '3rd Party Applications',
         'integrations': integrations.get_integrations()
     }
     return render(request, 'designsafe/apps/accounts/manage_applications.html', context)
@@ -384,7 +385,7 @@ def profile_edit(request):
         form = forms.UserProfileForm(initial=tas_user)
 
     context = {
-        'title': 'Manage Profile',
+        'title': 'Account Profile',
         'form': form,
     }
     return render(request, 'designsafe/apps/accounts/profile_edit.html', context)
@@ -547,3 +548,11 @@ def mailing_list_subscription(request, list_name):
     except TypeError as e:
         logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
+
+def termsandconditions(request):
+    context = {
+        'title': 'Terms and Conditions',
+        'terms': TermsAndConditions.get_active(),
+    }
+    #context['terms'] = TermsAndConditions.get_active()
+    return render(request, 'designsafe/apps/accounts/termsandconditions.html', context)

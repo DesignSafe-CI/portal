@@ -10,7 +10,7 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                InnerObjectWrapper, Boolean, Keyword,
                                GeoPoint, String, MetaField)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @python_2_unicode_compatible
 class IndexedFile(DocType):
-    name = Keyword(fields={
+    name = Text(fields={
         '_exact': Keyword()
     })
     path = Text(fields={
@@ -36,8 +36,17 @@ class IndexedFile(DocType):
         '_exact': Keyword()
     })
     systemId = String()
-    lastUpdated = Date()
     dsMeta = Nested()
+    permissions = Nested(properties={
+        'username': Keyword(),
+        'recursive': Boolean(),
+        'permission': Nested(properties={
+            'read': Boolean(),
+            'write': Boolean(),
+            'execute': Boolean()
+        })
+    })
+    uuid = Keyword()
 
     class Meta:
         index = settings.ES_INDICES['files']['name']
@@ -226,7 +235,6 @@ class IndexedPublication(DocType):
     class Meta:
         index = settings.ES_INDICES['publications']['name']
         doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
-        dynamic = MetaField('strict')
 
 @python_2_unicode_compatible
 class IndexedCMSPage(DocType):
@@ -238,7 +246,7 @@ class IndexedCMSPage(DocType):
     pub_date = Date()
     site_id = Long()
     slug = String(analyzer='english', fields={'_exact': Keyword()})
-    text = Text(analyser='english')
+    text = Text(analyzer='english')
     title = String(analyzer='english', fields={'_exact': Keyword()})
     url = String(fields={'_exact': Keyword()})
 
@@ -298,6 +306,7 @@ class IndexedPublicationLegacy(DocType):
         properties={
             'startDate': Date(),
             'endDate': Date(),
+            'doi': Keyword(),
             'description': Text(analyzer='english'),
             'facility': Nested(properties={
                 'country': Text(analyzer='english'),
@@ -323,7 +332,11 @@ class IndexedPublicationLegacy(DocType):
                 'name': Text(analyzer='english'),
                 'description': Text(analyzer='english')
                 }),
-            'name': Text(analyzer='english')
+            'name': Text(analyzer='english'),
+            'creators': Nested(properties={
+                'lastName': Text(analyzer='english'),
+                'firstName': Text(analyzer='english')
+            })
         })
 
     class Meta:

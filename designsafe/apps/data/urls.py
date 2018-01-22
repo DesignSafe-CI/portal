@@ -1,12 +1,13 @@
 from django.conf.urls import url
-from designsafe.apps.data.views.base import DataDepotView
+from designsafe.apps.data.views.base import DataDepotView, FileMediaView
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 urlpatterns = [
     url(r'^browser/', DataDepotView.as_view(template_name='data/data_depot.html'),
-        name='data_depot')
-
+        name='data_depot'),
+    url(r'^browser/files/media/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.-]+)/(?P<file_path>[ \S]+)$',
+        FileMediaView.as_view(), name='files_media'),
 ]
 
 def menu_items(**kwargs):

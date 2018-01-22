@@ -103,7 +103,7 @@ class AgaveFileManager(BaseFileManager):
     # def index(self):
     #     pass
 
-    def listing(self, system, file_path, offset=0, limit=100):
+    def listing(self, system, file_path, offset=0, limit=100, **kwargs):
         return BaseFileResource.listing(self._ag, system, file_path, offset, limit)
 
     def list_permissions(self, system, file_path):

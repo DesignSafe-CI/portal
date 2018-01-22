@@ -6,7 +6,7 @@
 """
 import logging
 from elasticsearch_dsl import Q, Search
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from django.http import (HttpResponseBadRequest,
                          JsonResponse)
 
@@ -41,7 +41,9 @@ class SearchView(BaseApiView):
 
         try:
             res = es_query.execute()
-        except TransportError as err:
+        except (TransportError, ConnectionTimeout) as err:
+            if getattr(err, 'status_code', 500) == 404:
+                raise
             res = es_query.execute()
 
         results = [r for r in res]
@@ -150,16 +152,31 @@ class SearchView(BaseApiView):
     def search_nees_projects(self, q, offset, limit):
         query = Q(
             'bool',
-            should=[
-                Q('query_string',
+            must=[
+                Q('simple_query_string',
                   query=q,
-                  default_operator='and',
-                  fields=['body', 'name', 'description', 'title'])
+                  fields=["description",
+                          "endDate",
+                          "equipment.component",
+                          "equipment.equipmentClass",
+                          "equipment.facility",
+                          "fundorg"
+                          "fundorgprojid",
+                          "name",
+                          "organization.name",
+                          "pis.firstName",
+                          "pis.lastName",
+                          "title",
+                          "users.last_name", "users.first_name", "users.email",
+                          "institutions.label", "project.value.projectType",
+                          "project.value.description",
+                          "project.value.title",
+                          "project.value.projectId",
+                          "project.value.ef",
+                          "project.value.keywords",
+                          "project.value.awardNumber"])
             ])
-        search = Search(index="nees", doc_type='project')\
-            .filter(Q("bool", must=[
-                {"term": {'_type': "project"}},
-            ]))\
+        search = Search(index="nees,published", doc_type='project,publication')\
             .extra(from_=offset, size=limit)
         search.query = query
         return search

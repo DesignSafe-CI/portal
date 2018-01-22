@@ -19,7 +19,8 @@
         renderPath: '&',
         renderName: '&',
         scrollToBottom: '&',
-        scrollToTop: '&'
+        scrollToTop: '&',
+        onMetadata: '&',
       }
     };
   });

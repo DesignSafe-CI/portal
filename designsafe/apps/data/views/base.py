@@ -8,10 +8,10 @@ from designsafe.apps.notifications.views import get_number_unread_notifications
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 logger = logging.getLogger(__name__)
@@ -141,3 +141,34 @@ class DataBrowserTestView(BasePublicTemplate):
             }
         })
         return context
+
+class FileMediaView(View):
+    systems_mappings = {
+        'designsafe.storage.default': 'shared',
+        'designsafe.storage.published': 'published',
+        'designsafe.storage.community': 'community',
+        'nees.public': 'public/projects'
+    }
+    corral = '/corral-repl/tacc/NHERI/'
+
+    def get_system_dirname(self, system_id):
+        dirname = self.systems_mappings.get(system_id)
+        if dirname is None and system_id.startswith('project-'):
+            prjuuid = system_id.replace('project-', '')
+            dirname = 'projects/{prjuuid}'.format(prjuuid=prjuuid)
+
+        return dirname
+
+    def get(self, request, file_mgr_name, system_id, file_path):
+        if file_mgr_name not in ['public', 'community'] and \
+            not request.user.is_authenticated:
+            raise Http404('Resource not Found')
+        
+        filename = file_path.rsplit('/', 1)[1]
+        filepath = '{corral}/{sys_dirname}/{file_path}'.format(
+            corral=self.corral, sys_dirname=self.get_system_dirname(system_id),
+            file_path=file_path)
+        response = HttpResponse()
+        response['Content-Disposition'] = 'attachment; filename={filename}'.format(filename=filename)
+        response['X-Accel-Redirect'] = '/internal-resource/{filepath}'.format(filepath=filepath)
+        return response

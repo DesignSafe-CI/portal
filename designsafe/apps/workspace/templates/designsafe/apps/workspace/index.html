@@ -5,17 +5,17 @@
 
 <div class="container">
     <h1 class="headline headline-research">
-        <span class="hl hl-research">Discovery Workspace</span>
+        <span class="hl hl-research">Workspace</span>
     </h1>
+    <div>
+        <a href="{% url 'pages-details-by-slug' slug='rw/user-guide' %}"><i class="fa fa-question-circle"></i> Learn About the <b>Workspace.</b></a>
+    </div>
 </div>
 
 <div class="container" role="main" id="workspace">
   <div ng-controller="ApplicationTrayCtrl"
        ng-include="'{% static "designsafe/apps/workspace/html/application-tray.html" %}'"
-       class="workspace-panel workspace-panel-fixed"></div>
-       <div>
-            <a href="{% url 'pages-details-by-slug' slug='rw/user-guide' %}"><i class="fa fa-question-circle"></i> Learn About "Discovery Workspace"</a>
-       </div>
+       class="workspace-panel-tabs"></div>
   <div class="workspace-panel-container">
     <div ng-controller="DataBrowserCtrl"
          ng-include="'{% static "designsafe/apps/workspace/html/data-browser.html" %}'"

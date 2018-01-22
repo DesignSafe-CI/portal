@@ -93,9 +93,9 @@
         /* job details */
         items = [];
         items.push('maxRunTime', 'name', 'archivePath');
-        if ($scope.data.app.parallelism == "PARALLEL") {
-          items.push('nodeCount');
-        }
+        // if ($scope.data.app.parallelism == "PARALLEL") {
+        //   items.push('nodeCount');
+        // }
         $scope.form.form.push({
           type: 'fieldset',
           readonly: $scope.data.needsLicense,

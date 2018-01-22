@@ -6,7 +6,7 @@ class AbstractFileManager:
     Abstract Class to implement a data File Manager for different resources.
     A FileManager class should subclass this class.
     Notes: 
-        - This is suported by python 2.6+ and in 3.2+ we can also 
+        - This is supported by python 2.6+ and in 3.2+ we can also 
           use @abstractclassmethod
         - Arguments are not enforced by abstract classes.
         - Subclasses of this class are called from the main class based data 

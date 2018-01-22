@@ -18,7 +18,7 @@ class PublishedFileManager(AgaveFileManager):
     NAME = 'community'
     DEFAULT_SYSTEM_ID = 'designsafe.storage.published'
     
-    def listing(self, system, file_path, offset=0, limit=100):
+    def listing(self, system, file_path, offset=0, limit=100, **kwargs):
         path_comps = file_path.strip('/').split('/')
         if len(path_comps) < 1:
             raise ApiException(messsage='Invalid Action', status=400)

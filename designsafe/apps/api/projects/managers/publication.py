@@ -16,6 +16,8 @@ PASSWORD = settings.EZID_PASS
 CREDS = (USER, PASSWORD)
 BASE_URI = 'https://ezid.cdlib.org/'
 SHOULDER = settings.EZID_SHOULDER or 'doi:10.5072/FK2'
+TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}'
+ENTITY_TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}/#details-{entity_uuid}'
 logger.debug('Using shoulder: %s', SHOULDER)
 
 def pretty_print(xml):
@@ -59,9 +61,9 @@ def format_req(metadata):
         anvl.append("%s: %s" % (key, value))
     return "\n".join(anvl)
 
-def _reserve_doi(xml_obj):
+def _reserve_doi(xml_obj, target):
     xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
-    metadata = {'_status': 'reserved', 'datacite': xml_str}
+    metadata = {'_status': 'reserved', 'datacite': xml_str, '_target': target}
     response = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
                              data=format_req(metadata),
                              auth=CREDS,
@@ -145,7 +147,7 @@ def _experiment_required_xml(users, experiment, created):
         _user = _userf[0]
         creator = ET.SubElement(creators, 'creator')
         creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(_user['lat_name'], _user['first_name'])
+        creator_name.text = '{}, {}'.format(_user['last_name'], _user['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
@@ -186,7 +188,7 @@ def _analysis_required_xml(users, analysis, created):
         _user = _userf[0]
         creator = ET.SubElement(creators, 'creator')
         creator_name = ET.SubElement(creator, 'creatorName')
-        creator_name.text = '{}, {}'.format(_user['lat_name'], _user['first_name'])
+        creator_name.text = '{}, {}'.format(_user['last_name'], _user['first_name'])
 
     titles = ET.SubElement(resource, 'titles')
     title = ET.SubElement(titles, 'title')
@@ -212,7 +214,8 @@ def analysis_reserve_xml(publication, analysis, created):
     xml_obj = _analysis_required_xml(publication['users'], analysis,
                                      created)
     now = dateutil.parser.parse(created)
-    reserve_res = _reserve_doi(xml_obj)
+    reserve_res = _reserve_doi(xml_obj, ENTITY_TARGET_BASE.format(
+        project_id=publication['project']['value']['projectId'], entity_uuid=analysis['uuid']))
     doi, ark = reserve_res.split('|')
     doi = doi.strip()
     ark = ark.strip()
@@ -227,7 +230,8 @@ def experiment_reserve_xml(publication, experiment, created):
     xml_obj = _experiment_required_xml(publication['users'], experiment,
                                        created)
     now = dateutil.parser.parse(created)
-    reserve_res = _reserve_doi(xml_obj)
+    reserve_res = _reserve_doi(xml_obj, ENTITY_TARGET_BASE.format(
+        project_id=publication['project']['value']['projectId'], entity_uuid=experiment['uuid']))
     doi, ark = reserve_res.split('|')
     doi = doi.strip()
     ark = ark.strip()
@@ -273,7 +277,7 @@ def project_reserve_xml(publication):
     proj = project_body['value']
     xml_obj = _project_required_xml(publication)
     now = dateutil.parser.parse(publication['created'])
-    reserve_resp = _reserve_doi(xml_obj)
+    reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=proj['projectId']))
     doi, ark = reserve_resp.split('|')
     doi = doi.strip()
     ark = ark.strip()
@@ -351,7 +355,7 @@ def publish_project(doi, xml_obj):
         logger.exception(res['error'])
         raise Exception(res['error'])
 
-def reserve_publication(publication):
+def reserve_publication(publication, analysis_doi=False):
     proj_doi, proj_ark, proj_xml = project_reserve_xml(publication)
     logger.debug('proj_doi: %s', proj_doi)
     logger.debug('proj_ark: %s', proj_ark)
@@ -372,17 +376,18 @@ def reserve_publication(publication):
         logger.debug('exp_ark: %s', exp_ark)
         logger.debug('exp_xml: %s', exp_xml)
 
-    for anl in publication.get('analysisList', []):
-        anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
-                                                         anl,
-                                                         publication['created'])
-        add_related(anl_xml, [proj_doi])
-        anl_dois.append(anl_doi)
-        anl['doi'] = anl_doi
-        xmls[anl_doi] = anl_xml
-        logger.debug('anl_doi: %s', anl_doi)
-        logger.debug('anl_ark: %s', anl_ark)
-        logger.debug('anl_xml: %s', anl_xml)
+    if analysis_doi:
+        for anl in publication.get('analysisList', []):
+            anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
+                                                             anl,
+                                                             publication['created'])
+            add_related(anl_xml, [proj_doi])
+            anl_dois.append(anl_doi)
+            anl['doi'] = anl_doi
+            xmls[anl_doi] = anl_xml
+            logger.debug('anl_doi: %s', anl_doi)
+            logger.debug('anl_ark: %s', anl_ark)
+            logger.debug('anl_xml: %s', anl_xml)
 
     add_related(proj_xml, exps_dois + anl_dois)
     for _doi in [proj_doi] + exps_dois + anl_dois:

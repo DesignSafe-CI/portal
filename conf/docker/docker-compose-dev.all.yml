@@ -15,7 +15,15 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.6.10-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
+      - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
+    ports:
+      - 5672:5672
+      - 5673:5673
+      - 15673:15673
+      - 15672:15672
     container_name: des_rabbitmq
     hostname: des_rabbitmq
 
@@ -32,8 +40,8 @@ services:
       - ES_HEAP_SIZE:2g
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    #   - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-    #   - es_data:/usr/share/elasticsearch/data
+      - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      - es_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
     container_name: des_elasticsearch
@@ -41,9 +49,12 @@ services:
 
   mysql:
     image: mysql:5.6
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    env_file: ../env_files/mysql.env
     ports:
       - 3306:3306
-    env_file: ../env_files/mysql.env
     container_name: des_mysql
     hostname: des_mysql
 
@@ -55,6 +66,10 @@ services:
       - ../nginx/dummy.crt:/etc/ssl/dummy.crt
       - ../nginx/dummy.key:/etc/ssl/dummy.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
+      - ../../.:/srv/www/designsafe
+      - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+      - ../../data/static:/var/www/designsafe-ci.org/static
+      - ../../data/media:/var/www/designsafe-ci.org/media
     links:
       - django:django
     ports:
@@ -74,7 +89,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
-      - ../../data/NHERI:/corral-repl/tacc/NHERI
+      - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
     ports:
@@ -84,7 +99,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: bin/run-django.sh
+    command: /srv/www/designsafe/bin/run-django.sh
     container_name: des_django
     hostname: des_django
 
@@ -99,13 +114,13 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
-      - ../../data/NHERI:/corral-repl/tacc/NHERI
+      - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - ../../data/static:/var/www/designsafe-ci.org/static
       - ../../data/media:/var/www/designsafe-ci.org/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: bin/run-celery-debug.sh
+    command: /srv/www/designsafe/bin/run-celery-debug.sh
     container_name: des_workers
     hostname: des_workers
 
@@ -113,3 +128,4 @@ volumes:
   redis_data:
   mysql_data:
   es_data:
+  rabbitmq_data:

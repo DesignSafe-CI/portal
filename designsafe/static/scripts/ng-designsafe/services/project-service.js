@@ -136,7 +136,12 @@
      * @returns {Promise}
      */
     service.getCollaborators = function(options) {
-      return collabResource.get({params: options});
+      return collabResource.get({params: options}).then(function(resp){
+        if (typeof resp.data.teamMembers !== 'undefined'){
+          resp.data.teamMembers = _.without(resp.data.teamMembers, 'ds_admin', 'prjadmin');
+        }
+        return resp;
+      });
     };
 
     /**

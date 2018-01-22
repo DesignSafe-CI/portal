@@ -1,54 +1,103 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail" style="background:white;">
-        <h2>{{ data.project.value.title }}</h2>
-          <p><strong>Description</strong></p>
-          <p>
-          {{data.project.value.description}}
-          </p>
-        <div style="width:50%;">
-        <table class="table" style="margin-bottom:0;">
-            <tbody>
-            <tr>
-              <th>Projet Type:</th>
-              <td>{{data.project.value.projectType}}</td>
-            </tr>
-            <tr>
-              <th>ID</th>
-              <td>{{data.project.value.projectId}}</td>
-            </tr>
-            <tr>
-              <th>Award Number:</th>
-              <td>{{data.project.value.awardNumber}}</td>
-            </tr>
-            <tr>
-              <th>PI</th>
-              <td><ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user></td>
-            <td>
-              <button class="btn btn-sm btn-default"
-                      ng-click="manageCollabs($event)">Manage Team Members</button>
+        <h2>{{data.project.value.projectId}}: {{ data.project.value.title }}</h2>
+      <div class="table-responsive">
+      <table class="table" style="margin-bottom:0;">
+        <thead>
+          <tr>
+            <th style="width:50%; border-top:none; padding:0px;"></th>
+            <th style="width:50%; border-top:none; padding:0px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">PI</th>
+                    <td style="border-top:none; width:75%">
+                      <ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
+                      <button class="btn btn-sm btn-default pull-right"
+                              ng-click="manageCollabs($event)">Manage Team Members</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </td>
-            </tr>
-            <tr>
-              <th>Date of Publication</th>
-              <td ng-if="!data.publication.created">(Appears here when published)</td>
-              <td ng-if="data.publication.created">{{data.publication.created|date:'yyyy/MMM/d'}}</td>
-            </tr>
-            <tr>
-              <th>DOI</th>
-              <td ng-if="!data.publication.project.doi">(Appears here when published)</td>
-              <td ng-if="data.publication.project.doi">{{data.publication.project.doi}}</td>
-            </tr>
-            <tr>
-              <th>Created</th>
-              <td>{{data.project.created| date: 'yyyy/MMM/d' }}</td>
-            </tr>
-            <tr>
-              <th>keywords</th>
-              <td>{{data.project.value.keywords}}</td>
-            </tr>
-            </tbody>
-        </table>
-        </div>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%;">DOI</th>
+                    <td style="border-top:none; width:75%;">(Appears here when published)
+                    <!--
+                      <button class="btn btn-info btn-sm pull-right"
+                              ng-click="showCitation(project)">Citation
+                      </button>
+                    -->
+                    <td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Date of Publication</th>
+                    <td style="border-top:none; width:75%">(Appears here when published)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Award</th>
+                    <td style="border-top:none; width:75%">{{data.project.value.awardNumber}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Project Type</th>
+                    <td style="border-top:none; width:75%"><span style="text-transform:capitalize">{{data.project.value.projectType}}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Keywords</th>
+                    <td style="border-top:none; width:75%">{{data.project.value.keywords}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+    <div style="width:100%;">
+      <p><strong>Description</strong></p>
+      <p>
+        {{data.project.value.description}}
+      </p>
+    </div>
         <!--
         <div style="width:49%; display:inline-block; vertical-align:top;">
           <table class="table" style="margin-bottom:0;">

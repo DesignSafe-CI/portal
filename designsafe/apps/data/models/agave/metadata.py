@@ -1,6 +1,6 @@
 import json
 import logging
-from . import BaseAgaveResource
+from designsafe.apps.data.models.agave.base import BaseAgaveResource
 
 logger = logging.getLogger(__name__)
 

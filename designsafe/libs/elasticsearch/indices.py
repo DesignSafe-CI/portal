@@ -12,7 +12,7 @@ from django.conf import settings
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import (Index)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
 
 #pylint: disable=invalid-name
@@ -45,6 +45,7 @@ def _init_index(index_config, force):
         if err.status_code == 404:
             logger.debug('Index already exists, initializing document')
     index.close()
+
     for document_config in index_config['documents']:
         module_str, class_str = document_config['class'].rsplit('.', 1)
         module = import_module(module_str)
@@ -61,4 +62,5 @@ def init(name='all', force=False):
         _init_index(index_config, force)
     else:
         for index_name, index_config in six.iteritems(settings.ES_INDICES):
+            logger.debug('initializing index: %s', index_name)
             _init_index(index_config, force)

@@ -109,9 +109,11 @@ class Manager(object):
     def set_client(self, agave_client):
         self.agave_client = agave_client
         setattr(self.model_cls._meta, 'agave_client', agave_client)
+        return self
 
     def get(self, agave_client, uuid):
         meta = agave_client.meta.getMetadata(uuid=uuid)
+        self.set_client(agave_client)
         return self.model_cls(**meta)
 
     def list(self, agave_client, association_id=None):
@@ -159,11 +161,9 @@ class Options(object):
         cls._meta = self
         self._model = cls
 
-
-
 class BaseModel(type):
     """
-    Metaclass for models
+    Metaclass for metadata models
     """
     def __new__(cls, name, bases, attrs):
         super_new = super(BaseModel, cls).__new__
@@ -224,6 +224,7 @@ class BaseModel(type):
 
 
 class Model(object):
+    """Metadata model"""
     __metaclass__ = BaseModel
 
     def __init__(self, **kwargs):
@@ -237,13 +238,19 @@ class Model(object):
 
         self._uuid = None
         self._association_ids = []
+        self._permissions = None
         self.name = None
         self.parent = None
         #logger.debug('kwargs: %s', json.dumps(kwargs, indent=4))
         cls = self.__class__
         opts = self._meta
-        _setattr = setattr
         #logger.debug('_is_nested: %s', self._is_nested) 
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        cls = self.__class__
+        opts = self._meta
+        _setattr = setattr
         if self._is_nested:
             obj_value = kwargs
         else:
@@ -321,6 +328,40 @@ class Model(object):
         else:
             self._association_ids = val
 
+    @property
+    def permissions(self):
+        if not self._permissions:
+            self._permissions = self.manager()\
+                .agave_client.meta.listMetadataPermissions(uuid=self.uuid)
+        return self._permissions
+
+    @permissions.setter
+    def permissions(self, val):
+        pems = self.permissions
+        if not val['permission'].get('read', False) and \
+            not val['permission'].get('write', False) and \
+            not val['permission'].get('execute', False):
+            pems = filter(pems, lambda x: x['username'] == val['username'])
+        
+        else:
+            pems.append(val)
+
+        self._permissions = pems
+
+    def permission(self, username):
+        pems = self.permission
+        pem = filter(pems, lambda x: x['username'] == username)
+        if len(pem):
+            return pem[0]['permission']
+        else:
+            return None
+    
+    def set_pem(self, username, pem):
+        pem = self.manager().agave_client.meta.updateMetadataPermissions(
+            uuid=self.uuid, body={'username': username, 'permission': pem})
+        self.permissions = pem
+        return self
+
     def to_dict(self):
         dict_obj = {}
         for attrname, value in six.iteritems(self._meta.__dict__):
@@ -328,7 +369,7 @@ class Model(object):
                 dict_obj[attrname] = value
 
         dict_obj['_links'] = {}
-        for attrname, value in six.iteritems(self._meta._links.__dict__):
+        for attrname, value in six.iteritems(self._links.__dict__):
             dict_obj['_links'][attrname] = value
 
         dict_obj['value'] = {}
@@ -368,17 +409,6 @@ class Model(object):
                     value_dict[attrname] = value.to_body_dict()
                 except AttributeError:
                     value_dict[attrname] = value
-
-            #if isinstance(value, RelatedQuery):
-            #    value_dict[attrname] = list(set(value.uuids))
-            #elif isinstance(value, Model):
-            #    value_dict[attrname] = value.to_body_dict()
-            #elif isinstance(field, ListField) and field.list_cls is not None:
-            #    value_dict[attrname] = [o.to_body_dict() for o in set(value)]
-            #elif isinstance(field, ListField):
-            #    value_dict[attrname] = list(set(value))
-            #else:
-            #    value_dict[attrname] = value
         if not self._is_nested:
             dict_obj['value'] = value_dict
         else:
@@ -406,6 +436,7 @@ class Model(object):
         else:
             logger.debug('Updating Metadata: %s, with: %s', self.uuid, body)
             ret = agave_client.meta.updateMetadata(uuid=self.uuid, body=body)
+        self.update(**ret)
         return ret
 
     def associate(self, value):
@@ -418,6 +449,41 @@ class Model(object):
         self.association_ids = list(set(_aids))
         return self.association_ids
 
-    @property
-    def manager(self):
-        return self._meta.model_manager
+    @classmethod
+    def manager(cls):
+        return cls._meta.model_manager
+
+class BaseAgaveResource(object):
+    """
+    Base Class that all Agave API Resource objects inherit from.
+    """
+
+    def __init__(self, agave_client, **kwargs):
+        """
+        :param agave_client: agavepy.Agave instance this model will use
+        """
+        self._agave = agave_client
+        self._wrapped = kwargs
+
+    def to_dict(self):
+        ret = self._wrapped
+        if 'lastModified' in ret and isinstance(ret['lastModified'], datetime.datetime):
+            ret['lastModified'] = ret['lastModified'].isoformat()
+        return ret
+
+    def __getattr__(self, name):
+        # return name from _wrapped; _wrapped expects camelCased keys
+        camel_name = spinal_to_camelcase(name)
+        if camel_name in self._wrapped:
+            return self._wrapped.get(camel_name)
+
+        raise AttributeError('\'{0}\' has no attribute \'{1}\''.format(self.__class__.__name__, name))
+
+    def __setattr__(self, name, value):
+        if name != '_wrapped' and name != '_agave':
+            camel_name = spinal_to_camelcase(name)
+            if camel_name in self._wrapped:
+                self._wrapped[camel_name] = value
+                return
+
+        super(BaseAgaveResource, self).__setattr__(name, value)

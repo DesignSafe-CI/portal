@@ -1,7 +1,8 @@
 """ Agave models util module."""
 import logging
 from django.core.serializers.json import DjangoJSONEncoder
-from . import BaseAgaveResource
+from designsafe.apps.data.models.agave.base import BaseAgaveResource
+from designsafe.apps.data.models.agave.base import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class AgaveJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
         """Serializer function"""
 
-        if isinstance(o, BaseAgaveResource):
+        if isinstance(o, BaseAgaveResource) or isinstance(o, BaseModel):
             return o.to_dict()
 
         return super(AgaveJSONEncoder, self).default(o)

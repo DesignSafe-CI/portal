@@ -2,7 +2,7 @@
     <div class="jumbotron">
         <h1>Select an app</h1>
         <p>Select an application from the tray above.</p>
-        <p> The <em>Discovery Workspace</em> allows users to perform simulations and analyze 
+        <p> The <em>Workspace</em> allows users to perform simulations and analyze 
             data using popular simulation codes including OpenSees, ADCIRC, and OpenFOAM, 
             as well as data analysis and visualization tools including Jupyter, MATLAB, 
             Paraview and VisIt.
@@ -28,7 +28,7 @@
             <p ng-bind-html="message.body"></p>
         </div>
     </div>
-    <h2>Run <em>{{data.app.label}}</em></h2>
+    <h2>Run <em>{{data.app.label}} <small class="version-label">ver. {{data.app.version}}</small></em></h2>
     <p>{{data.app.longDescription}}</p>
     <p ng-if="data.app.helpURI">
         <a href="{{data.app.helpURI}}" target="_blank">

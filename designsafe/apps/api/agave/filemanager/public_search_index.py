@@ -14,7 +14,7 @@ import re
 import datetime
 import itertools
 from django.conf import settings
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
@@ -39,9 +39,10 @@ class Publication(object):
                             })
                 try:
                     res = s.execute()
-                except TransportError as e:
-                    if e.status_code != 404:
-                        res = s.execute()
+                except (TransportError, ConnectionTimeout) as e:
+                    if getattr(e, 'status_code', 500) == 404:
+                        raise
+                    res = s.execute()
 
                 if res.hits.total:
                     self._wrap = res[0]
@@ -57,8 +58,8 @@ class Publication(object):
             logger.debug('p serach query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
-            except TransportError as e:
-                if e.status_code == 404:
+            except (TransportError, ConnectionTimeout) as e:
+                if getattr(e, 'status_code', 500) == 404:
                     raise
                 res = s.execute()
 
@@ -70,20 +71,17 @@ class Publication(object):
             self._wrap = PublicationIndexed()
 
     @classmethod
-    def listing(cls):
+    def listing(cls, status='published'):
         list_search = PublicSearchManager(cls,
                                           PublicationIndexed.search(),
                                           page_size=100)
-        list_search._search.query = Q({"match_all":{}})
+        list_search._search.query = Q(
+            "bool",
+            must=[
+                Q({'term': {'status': status}})
+            ]
+            )
         list_search.sort({'created': {'order': 'desc'}})
-        #s = PublicationIndexed.search()
-        #s.query = Q({"match_all":{}})
-        #try:
-        #    res = s.execute()
-        #except TransportError as err:
-        #    if err.satus_code == 404:
-        #        raise
-        #    res = s.execute()
 
         return list_search.results(0)
 
@@ -119,6 +117,12 @@ class Publication(object):
                      'system': 'designsafe.storage.published',
                      'systemId': 'designsafe.storage.published',
                      'type': 'dir'}
+        pi = self.project['value']['pi']
+        pi_user = filter(lambda x: x['username'] == pi, self.users)
+        if pi_user:
+            pi_user = pi_user[0]
+            dict_obj['meta']['piLabel'] = '{last_name}, {first_name}'.format(
+                last_name=pi_user['last_name'], first_name=pi_user['first_name'])
         return dict_obj
 
     def related_file_paths(self):
@@ -196,8 +200,8 @@ class PublicSearchManager(object):
     def execute(self):
         try:
             res = self._search.execute()
-        except TransportError as err:
-            if err.status_code == 404:
+        except (TransportError, ConnectionTimeout) as err:
+            if getattr(err, 'status_code', 500) == 404:
                 raise
             res = self._search.execute()
 
@@ -436,10 +440,11 @@ class PublicElasticFileManager(BaseFileManager):
     def __init__(self):
         super(PublicElasticFileManager, self).__init__()
 
-    def listing(self, system, file_path, offset=0, limit=100):
+    def listing(self, system, file_path, offset=0, limit=100, status='published'):
         file_path = file_path or '/'
-        listing = PublicObject.listing(system, file_path, offset, limit)
-        publications = Publication.listing()
+        listing = PublicObject.listing(system, file_path,
+                                       offset=offset, limit=limit)
+        publications = Publication.listing(status)
         if file_path == '/':
             listing.children = itertools.chain(publications, listing.children)
 
@@ -549,10 +554,10 @@ class PublicElasticFileManager(BaseFileManager):
         return result
 
 class PublicationManager(object):
-    def save_publication(self, publication):
+    def save_publication(self, publication, status='publishing'):
         publication['projectId'] = publication['project']['value']['projectId']
         publication['created'] = datetime.datetime.now().isoformat()
-        publication['status'] = 'publishing'
+        publication['status'] = status
         pub = Publication(publication)
         pub.save()
         return pub

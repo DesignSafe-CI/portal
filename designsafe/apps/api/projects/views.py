@@ -1,3 +1,7 @@
+"""Views"""
+import copy
+import logging
+import json
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
@@ -10,25 +14,23 @@ from designsafe.apps.api.decorators import agave_jwt_login
 from designsafe.apps.api import tasks
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import SecureMixin
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.projects.models import Project
+from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
-from requests.exceptions import HTTPError
-from designsafe.apps.api.projects.models import (ExperimentalProject, FileModel,
-                                                 Experiment, ModelConfiguration,
-                                                 Event, Analysis, SensorList,
-                                                 Report)
-from designsafe.apps.api.agave.filemanager.public_search_index import PublicationManager, Publication
-from designsafe.apps.api import tasks
-import copy
-import logging
-import json
-
+from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
+#from requests.exceptions import HTTPError
+from designsafe.apps.projects.models.agave.experimental import (
+    ExperimentalProject, Experiment, ModelConfig,
+    Event, Analysis, SensorList, Report)
+from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
+                                                                       Publication)
 logger = logging.getLogger(__name__)
-metrics = logging.getLogger('metrics')
+metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
 
 def template_project_storage_system(project):
@@ -43,7 +45,7 @@ def template_project_storage_system(project):
 class PublicationView(BaseApiView):
     def get(self, request, project_id):
         pub = Publication(project_id=project_id)
-        if pub is not None:
+        if pub is not None and hasattr(pub, 'project'):
             return JsonResponse(pub.to_dict())
         else:
             return JsonResponse({'status': 404,
@@ -60,11 +62,16 @@ class PublicationView(BaseApiView):
             data = request.POST
 
         #logger.debug('publication: %s', json.dumps(data, indent=2))
-        pub = PublicationManager().save_publication(data['publication'])
-        tasks.save_publication.apply_async(args=[pub.projectId],queue='files')
+        status = data.get('status', 'saved')
+        pub = PublicationManager().save_publication(
+            data['publication'], status)
+        #if data.get('action', 'save') == 'publish':
+        #    tasks.save_publication.apply_async(args=[pub.projectId],queue='files')
         return JsonResponse({'status': 200,
-                             'message': 'Your publication has been '
-                                        'schedule for publication'},
+                             'response': {
+                                 'message': 'Your publication has been '
+                                            'schedule for publication',
+                                 'status': status}},
                             status=200)
 
 class ProjectListingView(SecureMixin, BaseApiView):
@@ -128,28 +135,21 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         metrics.info('projects',
                      extra={'user' : request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
-                            'operation': 'metadata_create',
+                            'operation': 'project_create',
                             'info': {'postData': post_data} })
-        p = Project(ag)
-        p.save()
-        project_uuid = p.uuid
-        title = post_data.get('title')
-        award_number = post_data.get('awardNumber', '')
-        project_type = post_data.get('projectType', 'other')
-        associated_projects = post_data.get('associatedProjects', {})
-        description = post_data.get('description', '')
-        new_pi = post_data.get('pi')
-        keywords = post_data.get('keywords', '')
-        project_id = post_data.get('projectId', '')
-        p.update(title=title,
-                 award_number=award_number,
-                 project_type=project_type,
-                 associated_projects=associated_projects,
-                 description=description,
-                 keywords=keywords,
-                 projectId=project_id)
-        p.pi = new_pi
-        p.save()
+        prj = BaseProject()
+        prj.manager().set_client(ag)
+        prj.save(ag)
+        project_uuid = prj.uuid
+        prj.title = post_data.get('title')
+        prj.award_number = post_data.get('awardNumber', '')
+        prj.project_type = post_data.get('projectType', 'other')
+        prj.associated_projects = post_data.get('associatedProjects', {})
+        prj.description = post_data.get('description', '')
+        prj.pi = post_data.get('pi')
+        prj.keywords = post_data.get('keywords', '')
+        prj.project_id = post_data.get('projectId', '')
+        prj.save(ag)
 
         # create Project Directory on Managed system
         metrics.info('projects',
@@ -158,13 +158,13 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'operation': 'base_directory_create',
                             'info': {
                                 'systemId': Project.STORAGE_SYSTEM_ID,
-                                'uuid': p.uuid
+                                'uuid': prj.uuid
                             }})
         project_storage_root = BaseFileResource(ag, Project.STORAGE_SYSTEM_ID, '/')
-        project_storage_root.mkdir(p.uuid)
+        project_storage_root.mkdir(prj.uuid)
 
         # Wrap Project Directory as private system for project
-        project_system_tmpl = template_project_storage_system(p)
+        project_system_tmpl = template_project_storage_system(prj)
         project_system_tmpl['storage']['rootDir'] = \
             project_system_tmpl['storage']['rootDir'].format(project_uuid)
         metrics.info('projects',
@@ -190,36 +190,35 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         ag.systems.add(body=project_system_tmpl)
 
         # grant initial permissions for creating user and PI, if exists
-        project_system_tmpl = template_project_storage_system(p)
         metrics.info('projects',
                      extra={'user' : request.user.username,
                             'sessionId': getattr(request.session, 'session_key', ''),
                             'operation': 'initial_pems_create',
-                            'info': {'collab': request.user.username, 'pi': p.pi} })
-        p.add_collaborator(request.user.username)
-        if p.pi and p.pi != request.user.username:
-            p.add_collaborator(p.pi)
-            collab_users = get_user_model().objects.filter(username=p.pi)
+                            'info': {'collab': request.user.username, 'pi': prj.pi} })
+        prj.add_team_members([request.user.username])
+        if prj.pi and prj.pi != request.user.username:
+            prj.add_team_members([prj.pi])
+            collab_users = get_user_model().objects.filter(username=prj.pi)
             if collab_users:
                 collab_user = collab_users[0]
                 try:
                     collab_user.profile.send_mail(
                         "[Designsafe-CI] You have been added to a project!",
-                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title,
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,))))
+                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=prj.title,
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (prj.uuid,))))
                 except DesignSafeProfile.DoesNotExist as err:
                     logger.info("Could not send email to user %s", collab_user)
-                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=p.title,
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (p.uuid,)))
+                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=prj.title,
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (prj.uuid,)))
                     send_mail(
                         "[Designsafe-CI] You have been added to a project!",
                         body,
                         settings.DEFAULT_FROM_EMAIL,
                         [collab_user.email],
                         html_message=body)
-
-        tasks.set_project_id.apply_async(args=[p.uuid],queue="api")
-        return JsonResponse(p, encoder=AgaveJSONEncoder, safe=False)
+        prj.add_admin('prjadmin')
+        tasks.set_project_id.apply_async(args=[prj.uuid],queue="api")
+        return JsonResponse(prj.to_body_dict(), safe=False)
 
 class ProjectMetaLookupMixin(object):
     def _lookup_model(self, name):
@@ -234,7 +233,7 @@ class ProjectMetaLookupMixin(object):
         elif name == 'designsafe.project.sensor_list':
             return SensorList
         elif name == 'designsafe.project.model_config':
-            return ModelConfiguration
+            return ModelConfig
         elif name == 'designsafe.project.report':
             return Report
         else:
@@ -251,9 +250,9 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         ag = request.user.agave_oauth.client
         #project = Project.from_uuid(agave_client=ag, uuid=project_id)
         meta_obj = ag.meta.getMetadata(uuid=project_id)
-        model_cls = self._lookup_model(meta_obj['name'])
-        project = model_cls(**meta_obj)
-        logger.info(project.__dict__)
+        #model_cls = self._lookup_model(meta_obj['name'])
+        cls = project_lookup_model(meta_obj)
+        project = cls(**meta_obj)
         return JsonResponse(project.to_body_dict(), safe=False)
 
     def post(self, request, project_id):
@@ -270,39 +269,29 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
             post_data = request.POST.copy()
 
         # save Project (metadata)
-        p = Project.from_uuid(ag, project_id)
-        title = post_data.get('title')
-        award_number = post_data.get('awardNumber', '')
-        project_type = post_data.get('projectType', 'other')
-        associated_projects = post_data.get('associatedProjects', {})
-        description = post_data.get('description', '')
-        team_members = post_data.get('teamMembers', [])
-        keywords = post_data.get('keywords', '')
+        p = BaseProject.manager().get(ag, uuid=project_id)
+        p.title = post_data.get('title')
+        p.award_number = post_data.get('awardNumber', p.award_number)
+        p.project_type = post_data.get('projectType', p.project_type)
+        p.associated_projects = post_data.get('associatedProjects', p.associated_projects)
+        p.description = post_data.get('description', p.description)
+        p.team_members = post_data.get('teamMembers', p.team_members)
+        p.keywords = post_data.get('keywords', p.keywords)
         new_pi = post_data.get('pi')
-        project_id = post_data.get('projectId', '')
+        p.project_id = post_data.get('projectId', p.project_id)
         if new_pi and  new_pi != 'null' and p.pi != new_pi:
             p.pi = new_pi
-            p.add_collaborator(new_pi)
-        p.update(title=title,
-                 award_number=award_number,
-                 project_type=project_type,
-                 associated_projects=associated_projects,
-                 description=description,
-                 team_members=team_members,
-                 keywords=keywords,
-                 projectId=project_id)
-        p.save()
-        project = ExperimentalProject(**p.to_dict())
-        return JsonResponse(project.to_body_dict())
+            p.add_team_members([new_pi])
+        p.save(ag)
+        return JsonResponse(p.to_body_dict())
 
 
 class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
     def get(self, request, project_id):
         ag = request.user.agave_oauth.client
-        project = Project.from_uuid(agave_client=ag, uuid=project_id)
-        return JsonResponse(project.team_members())
-        #return JsonResponse(project.collaborators, encoder=AgaveJSONEncoder, safe=False)
+        project = BaseProject.manager().get(ag, uuid=project_id)
+        return JsonResponse(project.collaborators)
 
     def post(self, request, project_id):
         if request.is_ajax():
@@ -311,22 +300,21 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
             post_data = request.POST.copy()
 
         ag = get_service_account_client()
-        project = Project.from_uuid(agave_client=ag, uuid=project_id)
-
+        project = BaseProject.manager().get(ag, uuid=project_id)
+        project.manager().set_client(ag)
         username = post_data.get('username')
 
         member_type = post_data.get('memberType', 'teamMember')
-        logger.info('member Type: %s', member_type)
+        project.add_team_members([username])
         if member_type == 'teamMember':
-            project.add_collaborator(username)
+            team_members = project.team_members
+            team_members.apend(username)
+            project.team_members = team_members
         elif member_type == 'coPis':
-            project.add_co_pi(username)
-        # members_list = project.value.get(member_type, [])
-        # members_list.append(username)
-        # _kwargs = {member_type: members_list}
-        # project.update(**_kwargs)
-        project.save()
-        logger.info(project.value)
+            co_pis = project.co_pis
+            co_pis.append(username)
+            project.co_pis = co_pis
+        project.save(ag)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
         collab_users = get_user_model().objects.filter(username=username)
         collab_users = []
@@ -349,7 +337,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
                     html_message=body)
                 #logger.exception(err)
 
-        return JsonResponse(project.team_members())
+        return JsonResponse(project.collaborators)
 
     def delete(self, request, project_id):
         if request.is_ajax():

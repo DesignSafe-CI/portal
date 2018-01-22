@@ -14,8 +14,10 @@
         reachedEnd : false,
         page : 0
       };
+  $scope.ui = {loadingProjectMeta: false};
   var projId = $scope.browser.listing.path.split('/')[1];
   if (projId){
+    $scope.ui.loadingProjectMeta = true;
     $http.get('/api/projects/publication/' + projId)
       .then(function(resp){
           $scope.browser.publication = resp.data;
@@ -68,6 +70,7 @@
                   return FileListing.init(f, _apiParams);
               });
           });
+        $scope.ui.loadingProjectMeta = false;
     });
   }
  
@@ -401,6 +404,9 @@
                 return _.contains(ent.value.authors, usr.username);
               }
           });
+          if (typeof ent.value.projectType !== 'undefined' && ent.value.projectType === 'other'){
+            publishers = $ctrl.data.publication.users;
+          }
           publishers = _.sortBy(publishers, function(p){
                          if (typeof p._ui[ent.uuid] !== 'undefined'){
                              return p._ui[ent.uuid];

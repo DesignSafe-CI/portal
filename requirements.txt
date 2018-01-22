@@ -42,7 +42,7 @@ django-treebeard==4.1.2
 django-websocket-redis==0.5.0
 djangocms-admin-style==1.2.7
 djangocms-attributes-field==0.3.0
-djangocms-cascade==0.12.0
+djangocms-cascade==0.14.1
 djangocms-column==1.7.0
 djangocms-file==2.0.2
 djangocms-flash==0.3.0

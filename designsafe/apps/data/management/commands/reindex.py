@@ -4,7 +4,7 @@ import logging
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import elasticsearch
-from elasticsearch import TransportError
+from elasticsearch import TransportError, ConnectionTimeout
 
 logger = logging.getLogger(__name__)
 

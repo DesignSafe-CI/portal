@@ -15,13 +15,20 @@ class DataConfig(AppConfig):
         from django.conf import settings
         try:
             connections.configure(
-                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']}
+                default={'hosts': settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']},
+                request_timeout=60,
+                sniff_on_start=True,
+                sniffer_timeout=60,
+                sniff_on_connection_fail=True,
+                sniff_timeout=10,
+                max_retries=3,
+                retry_on_timeout=True
             )
         except AttributeError as exc:
             logger.error('Missing ElasticSearch config. %s', exc)
             raise
         from designsafe.apps.data.models.agave.base import set_lazy_rels
-        from designsafe.apps.api.projects.models import *
+        from designsafe.apps.projects.models.agave.experimental import *
         set_lazy_rels()
         super(DataConfig, self).ready()
 

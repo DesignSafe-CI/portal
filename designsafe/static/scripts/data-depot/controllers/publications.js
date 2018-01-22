@@ -105,6 +105,11 @@
       DataBrowserService.preview(file, $scope.browser.listing);
     };
 
+    $scope.onMetadata = function($event, file) {
+      $event.stopPropagation();
+      DataBrowserService.viewMetadata([file], $scope.browser.listing);
+    };
+
     $scope.renderName = function(file){
       if (typeof file.metadata === 'undefined' ||
           file.metadata === null ||
