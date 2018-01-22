@@ -756,12 +756,13 @@
           $scope.projectTypes = [{
               id: 'experimental',
               label: 'Experimental'},{
-              id: 'simulation',
-              label: 'Simulation'},{
-              id: 'hybrid_simulation',
-              label: 'Hybrid Simulation'},{
-              id: 'field_reconnaissance',
-              label: 'Field Reconnaissance'}, {
+              // removing project type options until they are supported
+              // id: 'simulation',
+              // label: 'Simulation'},{
+              // id: 'hybrid_simulation',
+              // label: 'Hybrid Simulation'},{
+              // id: 'field_reconnaissance',
+              // label: 'Field Reconnaissance'}, {
               id: 'other',
               label: 'Other'}];
           $scope.efs = efs;
