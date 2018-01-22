@@ -37,7 +37,7 @@ from designsafe.views import project_version as des_version
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap
 from cms.sitemaps import CMSSitemap
-from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap
+from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap
 from designsafe import views
 
 # cms preferences
@@ -46,6 +46,7 @@ CMSSitemap.changefreq = 'weekly'
 
 sitemaps = {
     'home': HomeSitemap,
+    'subsite': SubSitemap,
     'static': StaticViewSitemap,
     'dynamic': DynamicViewSitemap,
     'projects': ProjectSitemap,
