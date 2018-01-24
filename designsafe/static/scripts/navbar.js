@@ -21,7 +21,7 @@
   //   $('#sitewide_search').hide();
   // }
 
-  // Here is where the search box format is Keith
+  // Here is where the sitewide search is [Keith]
   $('#sitewide_search').on('change', function (ev) {
     window.location = '/search?q=' + ev.target.value;
   });
