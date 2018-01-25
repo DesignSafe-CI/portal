@@ -8,7 +8,7 @@
     $scope.browser = DataBrowserService.state();
     $scope.UserService = UserService;
 
-    $scope.currentDir = function() {
+    $scope.placeholder = function() {
       var stateNames = {
         'myData':'My Data',
         'projects.list':'My Projects',
