@@ -1,5 +1,5 @@
 from agavepy.agave import Agave, AgaveException, load_resource
-from designsafe.apps.licenses.models import LICENSE_TYPES
+from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from designsafe.libs.common.decorators import profile as profile_fn
 from django.conf import settings
@@ -35,8 +35,8 @@ def index(request):
 
 
 def _app_license_type(app_id):
-    app_lic_type = app_id.split('-')[0].upper()
-    lic_type = next((t[0] for t in LICENSE_TYPES if t[0] == app_lic_type), None)
+    app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
+    lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
 
 @profile_fn
@@ -80,7 +80,9 @@ def call_api(request, service):
                                 'type': lic_type
                             }
                             if lic_type is not None:
-                                lic = request.user.licenses.filter(license_type=lic_type).first()
+                                _, license_models = get_license_info()
+                                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                                lic = license_model.objects.filter(user=request.user).first()
                                 data['license']['enabled'] = lic is not None
                     else:
                         metrics.info('agave.apps.list', extra={

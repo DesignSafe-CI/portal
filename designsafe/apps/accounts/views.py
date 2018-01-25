@@ -129,12 +129,13 @@ def manage_notifications(request):
 @login_required
 def manage_licenses(request):
     from designsafe.apps.licenses.models import get_license_info
-    licenses = get_license_info()
+    licenses, license_models = get_license_info()
+    licenses.sort(key=lambda x: x['license_type'])
+    license_models.sort(key=lambda x: x.license_type)
 
-    for l in licenses:
-        if request.user.licenses.filter(license_type=l['license_type']):
+    for l, m in zip(licenses, license_models):
+        if m.objects.filter(user=request.user).exists():
             l['current_user_license'] = True
-
     context = {
         'title': 'Software Licenses',
         'licenses': licenses
