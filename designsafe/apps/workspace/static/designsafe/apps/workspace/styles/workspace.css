@@ -126,7 +126,11 @@
 
 .app-active {
   background-color: #337AB7;
-  color: #fff;
+  color: #fff !important;
+}
+
+.app-active .app-title {
+  color: #fff !important;
 }
 
 .app-form-wrapper {
@@ -149,11 +153,9 @@
     background-color: #fcf8e3;
 }
 
-
 .dnd-list ul[dnd-list] {
     min-height: 42px;
 }
-
 
 .dnd-list ul[dnd-list] .dndPlaceholder {
     background-color: #ddd;
@@ -176,6 +178,10 @@
   margin-top:3.4px;
 }
 
+.version-label {
+    text-transform: none;
+}
+
 md-grid-tile {
     box-shadow: 1px 1px 0px rgba(8, 8, 8, 0.30);
 }
@@ -183,7 +189,13 @@ md-grid-tile {
 md-grid-tile:hover {
     cursor: pointer;
     box-shadow: 0px 0px 10px 1px grey;
+    color: #337AB7; 
 }
+
+md-grid-tile:hover .app-title {
+    color: #337AB7;
+}
+
 md-grid-tile:active {
     /* cursor: pointer; */
     box-shadow: inset 0px 0px 10px 1px grey;
@@ -261,7 +273,7 @@ font-family: 'designsafe-workspace';
 .icon-qgis:before {
     content: "\e907";
 }
-.icon-ls-dyna:before {
+i[class^="icon-ls"][class$="dyna"]:before {
     content: "\e908";
 }
 .icon-visit:before {
@@ -330,7 +342,7 @@ font-family: 'designsafe-workspace';
       font-size: 17px;
   }
   #workspace-tabs a h3 {
-      font-size: 19px;
+      font-size: 20px;
   }
   [class^="icon-"]:before,
   [class*=" icon-"]:before {

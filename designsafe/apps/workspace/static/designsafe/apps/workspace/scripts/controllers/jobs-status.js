@@ -3,6 +3,19 @@
   angular.module('designsafe').controller('JobsStatusCtrl',
   ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
 
+    NotificationService.processors.web = {
+      process: function (msg) {
+        $uibModal.open({
+          templateUrl: 'local/webjob-details-modal.html',
+          controller: 'VNCJobDetailsModalCtrl',
+          scope: $scope,
+          resolve: {
+            msg: msg
+          }
+        });
+      }
+    };
+
     NotificationService.processors.vnc = {
       'process': function notifyProcessor(msg){
         if('event_type' in msg && msg.event_type === 'VNC') {
@@ -86,34 +99,6 @@
       logger.log('jobs-refresh event detected with data: ', data);
       $scope.refresh();
     });
-
-    /*
-     * Receives the webhook notification from the vnc-type job and opens the
-     * modal dialog in the workspace letting the user know their job is ready
-     * to connect to.
-     */
-    // $scope.$on('ds.wsBus:default', function update_job(e, msg){
-    // $scope.$on('ds.wsBus:notify', function update_job(e, msg){
-    //   if('event_type' in msg && msg.event_type === 'VNC') {
-    //     $uibModal.open({
-    //       templateUrl: 'local/vncjob-details-modal.html',
-    //       controller: 'VNCJobDetailsModalCtrl',
-    //       scope: $scope,
-    //       resolve: {
-    //         msg: msg
-    //       }
-    //     });
-    //   }
-    //   else {
-    //     for (var i=0; i < $scope.data.jobs.length; i++){
-    //         if ($scope.data.jobs[i]['id'] == msg.extra.id) {
-    //           $scope.data.jobs[i]['status'] = msg.extra.status;
-    //           $scope.$apply();
-    //           break;
-    //         }
-    //     }
-    //   }
-    // });
 
 
   }]);

@@ -1,5 +1,105 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180104
+
+Improvements:
+
+- Adding profiling decorator to use on any view (Class or Function). Uses cProfiler and writes a profile and human readable stats to `designsafe/stats`.
+
+## 20180103
+
+Improvements:
+
+- Configuring Webhooks correctly to work with Potree
+
+## v2.3.1
+
+Fixes:
+
+- Correct defaults on node and processes for job sumission
+
+## v2.3.0
+
+Fixes:
+
+- Correct next parameted after login
+- Retry failed uploads
+- Publication pipeline bugs
+
+Improvements:
+
+- `setfacl` on files in data depot
+- Image viewer
+- Workspace apps categorization
+- Sitemap
+- Search
+
+## v2.2.1
+
+Fixes:
+
+- Elasticsearch connection config
+
+## v2.2.0
+
+Fixes:
+
+- DOI builder bugs
+- Adding team members in projects
+- Curation pipeline bugs
+
+Improvements:
+
+- Elasticsearch connection timeout and retry
+- Moving models files
+
+## v2.1.0
+
+Fixes:
+
+- PDF previewer
+- Experimental Project view
+- Data Depot listings
+
+Improvements:
+
+- Hazmapper images
+- Notifications UI
+- RAPID UI
+- Adding Google Drive to Data Depot
+- HPC apps node count and max run time
+- Elasticsearch connection
+
+## v2.0.5
+
+Fixes:
+
+- Shared with me bug
+
+## v2.0.4
+
+Fixes:
+
+- Showing correct entity on tree view when multiple siblings
+
+## v2.0.3
+
+Fixes:
+
+- Missing div in analysis list
+
+## v2.0.2
+
+Fixes:
+
+- Sorting authors in project and experiments
+
+## v2.0.1
+
+Fixes:
+
+- Publication metadata rendering
+
 ## v2.0.0
 
 Updates:
@@ -28,6 +128,17 @@ Fixes:
 - Updating Elasticsearch filtered queries
 - Fix various task errors
 - Rapid admin links
+
+## v1.1.1
+
+Improvements:
+
+- Using more processes for uWSGI
+
+Fixes:
+
+- Registration form bugs
+- Rapid links
 
 ## v1.1.0
 

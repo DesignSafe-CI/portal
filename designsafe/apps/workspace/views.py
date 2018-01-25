@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.licenses.models import LICENSE_TYPES
+from designsafe.libs.common.decorators import profile as profile_fn
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -31,6 +32,7 @@ def _app_license_type(app_id):
     return lic_type
 
 
+@profile_fn
 @login_required
 def call_api(request, service):
     try:

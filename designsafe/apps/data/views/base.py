@@ -13,6 +13,7 @@ from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, View
 from django.views.decorators.csrf import ensure_csrf_cookie
+from designsafe.libs.common.decorators import profile
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class DataDepotView(BasePublicTemplate):
         return redirect_to_login(
             path, resolved_login_url)
 
+    @profile
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         try:

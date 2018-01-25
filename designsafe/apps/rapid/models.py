@@ -1,9 +1,11 @@
 from django.conf import settings
 from datetime import datetime
+import logging
 from elasticsearch_dsl import (DocType, String, Date, Nested,
                                Boolean, GeoPoint, MetaField, Text,
                                Keyword)
 #from designsafe.connections import connections
+logger = logging.getLogger(__name__)
 
 class RapidNHEventType(DocType):
     class Meta:

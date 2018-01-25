@@ -28,7 +28,7 @@
             <p ng-bind-html="message.body"></p>
         </div>
     </div>
-    <h2>Run <em>{{data.app.label}}</em></h2>
+    <h2>Run <em>{{data.app.label}} <small class="version-label">ver. {{data.app.version}}</small></em></h2>
     <p>{{data.app.longDescription}}</p>
     <p ng-if="data.app.helpURI">
         <a href="{{data.app.helpURI}}" target="_blank">

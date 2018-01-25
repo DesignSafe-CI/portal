@@ -17,24 +17,26 @@
         params: {'q': query}
       }).then(
         function(response){
-          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'Private'], function(tab) {
+          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'My Apps'], function(tab) {
             self.lists[tab] = [];
           });
 
           // Current list of apps with an Icon
-          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'visit', 'openfoam', 'opensees'];
+          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls dyna', 'ls_dyna', 'visit', 'openfoam', 'opensees'];
 
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
-            if (appMeta.value.definition.isPublic){
-              if (appMeta.value.definition.available){
-                appMeta.value.definition.icon = null;
-                icons.some(function(icon) {
-                  if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
-                    appMeta.value.definition.icon = icon;
-                    return true;
-                  }
-                });
+            if (appMeta.value.definition.available) {
+              // Apply app icon if available, and apply label for ordering
+              appMeta.value.definition.orderBy = appMeta.value.definition.label;
+              appMeta.value.definition.icon = null;
+              icons.some(function (icon) {
+                if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
+                  appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
+                  return true;
+                }
+              });
+              if (appMeta.value.definition.isPublic){
                 // If App has no category, place in Simulation tab
                 try {
                   self.lists[appMeta.value.definition.appCategory].push(
@@ -45,12 +47,12 @@
                     appMeta
                   );
                 }
-              }
-            } else {
-              if (appMeta.value.definition.available){
-                self.lists['Private'].push(
-                  appMeta
-                );
+              } else {
+                if (appMeta.value.definition.available){
+                  self.lists['My Apps'].push(
+                    appMeta
+                  );
+                }
               }
             }
           });
