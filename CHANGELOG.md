@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180104
+
+Improvements:
+
+- Adding profiling decorator to use on any view (Class or Function). Uses cProfiler and writes a profile and human readable stats to `designsafe/stats`.
+
 ## 20180103
 
 Improvements:
