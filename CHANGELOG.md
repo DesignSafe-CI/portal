@@ -5,6 +5,7 @@
 Fixes:
 
 - Remove 'maxRunTime' and 'archivePath' on job form for simplicity.
+- Adding 'My Projects' to Worksapce mini browser.
 
 ## 20180104
 
