@@ -8,6 +8,7 @@ Improvements:
 - Adding subsites to Sitemaps
 - Re-enabling Data Depot search bar with improvements.
 - Disabling extra step on login workflow
+- Adding LS-DYNA to app list and corresponding license.
 
 Fixes:
 
