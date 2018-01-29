@@ -5,11 +5,15 @@
 Improvements:
 
 - Updating MATLAB Software License Lanugage
+- Adding subsites to Sitemaps
 
 Fixes:
 
 - Remove 'maxRunTime' and 'archivePath' on job form for simplicity.
 - Adding 'My Projects' to Worksapce mini browser.
+- Calculating 'processesPerNode' for jobs without 'nodeCount'.
+- Rejecting pending promises on data depot for files listing.
+- Temporarily removing projet image and non-supported project types.
 
 ## 20180104
 
