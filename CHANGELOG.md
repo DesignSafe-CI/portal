@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 
+
+Fixes:
+
+- Remove 'maxRunTime' and 'archivePath' on job form for simplicity.
+
 ## 20180104
 
 Improvements:
