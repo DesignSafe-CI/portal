@@ -70,7 +70,6 @@
       });
 
       $scope.resetForm = function() {
-        console.log($scope.data.app);
         $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
         $scope.form = {model: {}, readonly: $scope.data.needsLicense};
         $scope.form.schema = Apps.formSchema($scope.data.app);
@@ -98,9 +97,9 @@
         } else {
           items.push('maxRunTime', 'name', 'archivePath');
         }
-        // if ($scope.data.app.parallelism == "PARALLEL") {
-        //   items.push('nodeCount');
-        // }
+        if ($scope.data.app.parallelism == "PARALLEL") {
+          items.push('nodeCount');
+        }
         $scope.form.form.push({
           type: 'fieldset',
           readonly: $scope.data.needsLicense,
@@ -151,6 +150,11 @@
               }
             }
           });
+
+          // Calculate processorsPerNode if nodeCount parameter submitted
+          if (_.has(jobData, 'nodeCount')) {
+            jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+          }
 
           $scope.data.submitting = true;
           Jobs.submit(jobData).then(
