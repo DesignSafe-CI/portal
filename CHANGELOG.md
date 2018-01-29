@@ -1,6 +1,10 @@
 # DesignSafe-CI Portal Release Notes
 
-## 
+## [Next Release]
+
+Improvements:
+
+- Updating MATLAB Software License Lanugage
 
 Fixes:
 
