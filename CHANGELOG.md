@@ -7,6 +7,7 @@ Improvements:
 - Updating MATLAB Software License Lanugage
 - Adding subsites to Sitemaps
 - Re-enabling Data Depot search bar with improvements.
+- Disabling extra step on login workflow
 
 Fixes:
 
