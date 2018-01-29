@@ -21,8 +21,11 @@
   //   $('#sitewide_search').hide();
   // }
 
-  $('#sitewide_search').on('change', function (ev) {
-    window.location = '/search?q=' + ev.target.value;
+  $('#search_button').on('keypress click', function (ev) {
+    var searchstring = $('#searchfield').val();
+    if (ev.which === 13 || ev.type === 'click') {
+      window.location = '/search?q=' + searchstring;
+    }
   });
 
 

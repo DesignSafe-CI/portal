@@ -3,9 +3,30 @@
   app.requires.push('django.context');
 
   app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService', function ($scope, $state, $uibModal, Django, DataBrowserService, UserService) {
+    $scope.$state = $state;
     $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();
     $scope.UserService = UserService;
+
+    $scope.placeholder = function() {
+      var stateNames = {
+        'myData':'My Data',
+        'projects.list':'My Projects',
+        'sharedData':'Shared Data',
+        'boxData':'Box',
+        'dropboxData':'Dropbox',
+        'googledriveData':'Google Drive',
+        'publicData':'Public Data',
+        'communityData':'Community Data'
+      };
+
+      if (stateNames[$state.current.name]) {
+        return(stateNames[$state.current.name]);
+      }
+      else {
+        return('Data Depot');
+      }
+    };
 
     DataBrowserService.subscribe($scope, function($event, eventData) {
       if (eventData.type === DataBrowserService.FileEvents.FILE_SELECTION) {
