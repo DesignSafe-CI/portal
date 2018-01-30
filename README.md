@@ -68,6 +68,34 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 ## Next steps
 
+### Installing self-signed certificate
+
+First you need to get the certificate from Chrome.
+
+1. Go to [https://localhost](https://localhost) or [https://designsafe.dev](https://designsafe.dev)
+2. Click the lock icon with an X
+3. Click Certificate Information
+4. Go to Details
+5. Click on Export...
+6. Make a note where you save the file
+
+#### Linux (Ubuntu/Debian)
+
+    1. Chrome expects to find the certifiacet database in `~/.pki/nssdb`. Create, if needed:
+    `mkdir -p ~/.pki/nssb`
+    2. Import the cert with `certutil` (part of `libnss3-tools`)
+    `certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n <filename> -i <filename>
+    3. Make sure it was added by listing all the certificates installed. Should show up as `Texas Advanced Computing Center`
+    `certutil -d sql:$HOME/.pki/nssdb -L`
+
+#### OSX
+    1. Double click the `.cert` file
+    2. Select which keychain to install the cert (usually `login`)
+    3. A Keychain Access window will open. Look for the certificate there as `Texas Advanced Computing Center`
+    4. Double click the certificate
+    5. A details window will open. Expand the `Trust` section and select **Trust Always** for everything.
+    6. Close the window.
+
 ### Importing data from production
 
 If you need or want to import data from production to a local development instance
