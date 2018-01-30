@@ -131,6 +131,14 @@ with the contents of `datadump-YYYYMMDD.json`.
 
 See [this wiki page][6] for additional details.
 
+### Re-creating self signed cert
+
+The necessary configuration is already in `conf/nginx/designsafe.dev.conf`.
+
+Run this command to create a self signed cert using the corresponding configuration.
+
+`openssl req -config conf/nginx/designsafe.dev.conf -new -sha256 -newkey rsa:2048 -nodes -keyout conf/nginx/designsafe.dev.key -x509 -days 365 -out designsafe.dev.crt`
+
 ## Developing DesignSafe-CI Portal
 
 ### Apps
