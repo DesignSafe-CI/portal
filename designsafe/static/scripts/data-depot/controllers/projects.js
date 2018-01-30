@@ -16,14 +16,29 @@
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
+      // Create a function that checks if 'toStateParams.projectTitle' is empty. Replace it if so...
+      // this function will compare the project uuid to the state's projectID
+      // it will then return the 'title' of the matching project in place of the state's missing 'projectTitle'
+      function getTitle(tsp, proj) {
+        if (tsp.projectTitle === "") {
+          if (proj.length > 0) {
+            index = proj.findIndex(x => x.uuid==tsp.projectId);
+            return proj[index].value.title;
+          }
+        } else {
+          return tsp.projectTitle;
+        }
+      }
+
+
       if (toStateParams.filePath) {
         if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({
-            label: toStateParams.projectTitle,
+            label: getTitle(toStateParams, $scope.data.projects),
             href: $state.href('projects.view.data', {
               projectId: toStateParams.projectId,
               filePath: '/',
-              projectTitle: toStateParams.projectTitle
+              projectTitle: getTitle(toStateParams, $scope.data.projects)
             })
           });
         } else {
@@ -33,15 +48,26 @@
               filePath = '/';
             }
             $scope.data.navItems.push({
-              label: e || toStateParams.projectTitle,
+              label: e || getTitle(toStateParams, $scope.data.projects),
               href: $state.href('projects.view.data', {
                 projectId: toStateParams.projectId,
                 filePath: filePath,
-                projectTitle: toStateParams.projectTitle
+                projectTitle: getTitle(toStateParams, $scope.data.projects)
               })
             });
           });
         }
+      } else {
+        // when the user is in the base project file's directory 
+        // display the project title in the breadcrumbs
+        $scope.data.navItems.push({
+          label: getTitle(toStateParams, $scope.data.projects),
+          href: $state.href('projects.view.data', {
+            projectId: toStateParams.projectId,
+            filePath: '/',
+            projectTitle: getTitle(toStateParams, $scope.data.projects)
+          })
+        });
       }
 
       if ($state.current.name === 'projects') {
