@@ -1,5 +1,41 @@
 # DesignSafe-CI Portal Release Notes
 
+## [Next Release]
+
+Improvements:
+
+- Updating MATLAB Software License Lanugage
+- Adding subsites to Sitemaps
+- Re-enabling Data Depot search bar with improvements.
+- Disabling extra step on login workflow
+- Adding LS-DYNA to app list and corresponding license.
+
+Fixes:
+
+- Remove 'maxRunTime' and 'archivePath' on job form for simplicity.
+- Adding 'My Projects' to Worksapce mini browser.
+- Calculating 'processesPerNode' for jobs without 'nodeCount'.
+- Rejecting pending promises on data depot for files listing.
+- Temporarily removing projet image and non-supported project types.
+
+## 20180104
+
+Improvements:
+
+- Adding profiling decorator to use on any view (Class or Function). Uses cProfiler and writes a profile and human readable stats to `designsafe/stats`.
+
+## 20180103
+
+Improvements:
+
+- Configuring Webhooks correctly to work with Potree
+
+## v2.3.1
+
+Fixes:
+
+- Correct defaults on node and processes for job sumission
+
 ## v2.3.0
 
 Fixes:

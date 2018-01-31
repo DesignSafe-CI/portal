@@ -28,7 +28,25 @@ def index(request):
 @csrf_exempt
 def generic_webhook_handler(request):
     event_type = request.POST.get('event_type', None)
-    if event_type == 'VNC':
+    if event_type == 'WEB':
+        # This is for jobs that just point to a URL that gets created
+        # like the Potree Viewer Application
+        job_owner = request.POST.get('owner', '')
+        address = request.POST.get('address', '')
+        event_data = {
+            Notification.EVENT_TYPE: event_type,
+            Notification.STATUS: Notification.INFO,
+            Notification.OPERATION: 'web_link',
+            Notification.USER: job_owner,
+            Notification.MESSAGE: 'Ready to view.',
+            Notification.EXTRA: {
+                'address': address,
+            }
+        }
+        n = Notification.objects.create(**event_data)
+        n.save()
+        return HttpResponse('OK')
+    elif event_type == 'VNC':
         job_owner = request.POST.get('owner', '')
         host = request.POST.get('host', '')
         port = request.POST.get('port', '')

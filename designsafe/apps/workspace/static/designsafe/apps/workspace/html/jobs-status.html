@@ -94,3 +94,18 @@
         <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
     </div>
 </script>
+
+<script type="text/ng-template" id="local/webjob-details-modal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Your applicaiton is ready to view!</h3>
+    </div>
+    <div class="modal-body">
+        <div class="alert">
+            <p>To connect to your interactive session, click the button below.</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="{{msg.extra.address}}" target="_blank" class="btn btn-primary pull-left">Connect!</a>
+        <button class="btn btn-default" type="button" ng-click="dismiss()">Close</button>
+    </div>
+</script>

@@ -23,7 +23,7 @@
         },
         {
           id: 'nees.public',
-          name: 'Published Data',
+          name: 'Published',
           storage: {
             homeDir: '/',
             rootDir: '/corral-repl/tacc/NHERI/public/projects'
@@ -32,7 +32,19 @@
           uuid: '8688297665752666597-242ac119-0001-006',
           fileMgr: 'public',
           baseUrl: '/api/public/files'
-        }
+        },
+        {
+          id: 'designsafe.storage.projects',
+          name: 'My Projects',
+          storage: {
+            homeDir: '/',
+            rootDir: '/corral-repl/tacc/NHERI/projects'
+          },
+          type: 'STORAGE',
+          uuid: '5762770863681049062-242ac117-0001-006', // UUID seems to be unused
+          fileMgr: 'projects',
+          baseUrl: '/api/projects/files'
+        },
     ];
 
     service.getMonitor = function(system_id) {

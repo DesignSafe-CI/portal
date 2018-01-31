@@ -63,8 +63,8 @@ services:
     volumes:
       - ../nginx/nginx.debug.conf:/etc/nginx/nginx.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
-      - ../nginx/dummy.crt:/etc/ssl/dummy.crt
-      - ../nginx/dummy.key:/etc/ssl/dummy.key
+      - ../nginx/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
+      - ../nginx/designsafe.dev.key:/etc/ssl/designsafe.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ../../.:/srv/www/designsafe
       - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI

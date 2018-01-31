@@ -5,6 +5,7 @@
   app.controller('DataDepotNavCtrl', ['$scope', '$rootScope', '$state', 'Django', function($scope, $rootScope, $state, Django) {
 
     $scope.routerItems = [];
+    $scope.$state = $state;
 
     $scope.myDataFileId = 'designsafe.storage.default/' + Django.user + '/';
     $scope.sharedFileId = 'designsafe.storage.default/$SHARE/';
@@ -104,5 +105,14 @@
         routerItem.collapse = ! routerItem.collapse;
       }
     };
+
+    // allows state to be refreshed
+    // by clicking current nav button
+    $scope.stateReload = function(childItem) {
+      if(childItem == $state.current.name) {
+        $state.reload();
+      }
+    };
+
   }]);
 })(window, angular);

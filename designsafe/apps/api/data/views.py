@@ -8,6 +8,7 @@ from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.data import lookup_file_manager
 from designsafe.apps.api.data.sources import SourcesApi
 from designsafe.apps.api.notifications.models import Notification, Broadcast
+from designsafe.libs.common.decorators import profile
 
 import logging
 import json
@@ -89,6 +90,7 @@ class DataView(BaseDataView):
     """
     Data View to handle listing of a file or folder. GET HTTP Request.
     """
+    @profile
     def get(self, request, *args, **kwargs):
         try:
             resp = self._execute_operation(request, 'listing', **kwargs)
@@ -147,7 +149,8 @@ class DataFileManageView(BaseDataView):
                 return self._execute_operation(request, operation, **kwargs)
 
         return HttpResponseBadRequest('Invalid action')
-
+    
+    @profile
     def get(self, request, *args, **kwargs):
         operation = request.GET.get('action')
         fmt = request.GET.get('format', 'json')
@@ -157,14 +160,17 @@ class DataFileManageView(BaseDataView):
         else:
             return self.render_to_json_response(resp)
 
+    @profile
     def post(self, request, *args, **kwargs):
         resp = self._execute_post_operation(request, **kwargs)
         return self.render_to_json_response(resp)
 
+    @profile
     def put(self, request, *args, **kwargs):
         resp = self._execute_post_operation(request, **kwargs)
         return self.render_to_json_response(resp)
 
+    @profile
     def delete(self, request, *args, **kwargs):
         resp = self._execute_post_operation(request, **kwargs)
         return self.render_to_json_response(resp)

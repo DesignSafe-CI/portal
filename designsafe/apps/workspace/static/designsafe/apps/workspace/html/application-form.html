@@ -14,13 +14,15 @@
 </div>
 <div ng-if="data.type === 'agave' && data.app" class="app-form-wrapper">
     <div class="lead alert alert-warning" ng-if="data.needsLicense">
-        <h2>Software License Required</h2>
-        <p>
-            The use of this application requires that you have a {{data.app.license.type}}
-            license enabled for your account. Please visit the
-            <a href="/account/licenses/" target="_blank">manage software licenses</a>
-            section on the My Account page for details on how to enable this license.
-        </p>
+        <ng-container ng-if="data.app.license.type=='MATLAB'">
+            <h2>Academic License Eligibility Verification Required</h2>
+            <p>
+                The DesignSafe MATLAB license requires verification that you are an academic user.
+                Please visit the <a href="/account/licenses/" target="_blank">manage software licenses</a>
+                section on the Manage Account page to request activation of this license for your
+                DesignSafe user account.
+            </p>
+        </ng-container>
     </div>
     <div class="messages">
         <div ng-repeat="message in data.messages" class="alert alert-{{message.type}}">

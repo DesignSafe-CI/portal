@@ -603,7 +603,7 @@ table td {
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
   border-bottom: 15px solid #afafaf;
-  left: 1.25em;
+  left: -1px;
   top: 2px;
 }
 
@@ -611,7 +611,6 @@ table td {
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
   border-bottom: 14px solid #ffffff;
-  left: 1.3em;
   top: 3px;
 }
 

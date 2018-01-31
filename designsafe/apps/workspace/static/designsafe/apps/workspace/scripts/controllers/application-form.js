@@ -26,34 +26,34 @@
           Apps.get(app.value.definition.id).then(
             function(resp) {
             // check app execution system
-            Systems.getMonitor(resp.data.executionSystem)
-              .then(
-                function(response){
-                  if (response.data.length > 0){
-                      // perform check only when monitor is active
-                      if (response.data[0].active){
-                        if (response.data[0].lastSuccess !== null){
-                          var currentDate = new Date();
-                          var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
-                          var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
+            // Systems.getMonitor(resp.data.executionSystem)
+            //   .then(
+            //     function(response){
+            //       if (response.data.length > 0){
+            //           // perform check only when monitor is active
+            //           if (response.data[0].active){
+            //             if (response.data[0].lastSuccess !== null){
+            //               var currentDate = new Date();
+            //               var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
+            //               var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
 
-                          if (diff > response.data[0].frequency){
-                            $mdToast.show($mdToast.simple()
-                            .content($translate.instant('error_system_monitor'))
-                            .toastClass('warning')
-                            .parent($("#toast-container")));
-                            // toastr.warning($translate.instant('error_system_monitor'));
-                          }
-                        } else {
-                          $mdToast.show($mdToast.simple()
-                          .content($translate.instant('error_system_monitor'))
-                          .toastClass('warning')
-                          .parent($("#toast-container")));
-                          // toastr.warning($translate.instant('error_system_monitor'));
-                        }
-                    }
-                  }
-                });
+            //               if (diff > response.data[0].frequency){
+            //                 $mdToast.show($mdToast.simple()
+            //                 .content($translate.instant('error_system_monitor'))
+            //                 .toastClass('warning')
+            //                 .parent($("#toast-container")));
+            //                 // toastr.warning($translate.instant('error_system_monitor'));
+            //               }
+            //             } else {
+            //               $mdToast.show($mdToast.simple()
+            //               .content($translate.instant('error_system_monitor'))
+            //               .toastClass('warning')
+            //               .parent($("#toast-container")));
+            //               // toastr.warning($translate.instant('error_system_monitor'));
+            //             }
+            //         }
+            //       }
+            //     });
 
             $scope.data.app = resp.data;
             $scope.resetForm();
@@ -92,10 +92,14 @@
 
         /* job details */
         items = [];
-        items.push('maxRunTime', 'name', 'archivePath');
-        // if ($scope.data.app.parallelism == "PARALLEL") {
-        //   items.push('nodeCount');
-        // }
+        if ($scope.data.app.tags.includes('Interactive')) {
+          items.push('name');
+        } else {
+          items.push('maxRunTime', 'name', 'archivePath');
+        }
+        if ($scope.data.app.parallelism == "PARALLEL") {
+          items.push('nodeCount');
+        }
         $scope.form.form.push({
           type: 'fieldset',
           readonly: $scope.data.needsLicense,
@@ -106,7 +110,7 @@
         /* buttons */
         items = [];
         if (! $scope.data.needsLicense) {
-          items.push({type: 'submit', title: 'Run', style: 'btn-primary'});
+          items.push({type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary'});
         }
         items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
         $scope.form.form.push({
@@ -146,6 +150,11 @@
               }
             }
           });
+
+          // Calculate processorsPerNode if nodeCount parameter submitted
+          if (_.has(jobData, 'nodeCount')) {
+            jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+          }
 
           $scope.data.submitting = true;
           Jobs.submit(jobData).then(

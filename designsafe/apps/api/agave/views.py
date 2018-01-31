@@ -22,6 +22,7 @@ from designsafe.apps.data.models.agave.systems import BaseSystemResource
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.tasks import external_resource_upload
 from designsafe.apps.api.views import BaseApiView
+from designsafe.libs.common.decorators import profile as profile_fn
 from requests import HTTPError
 
 
@@ -47,6 +48,7 @@ class FileManagersView(View):
 class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
+    @profile_fn
     def get(self, request, file_mgr_name, system_id=None, file_path=None):
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated:
@@ -80,6 +82,7 @@ class FileListingView(BaseApiView):
 
 class FileMediaView(View):
 
+    @profile_fn
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public' \
@@ -139,6 +142,7 @@ class FileMediaView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+    @profile_fn
     def post(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
@@ -207,6 +211,7 @@ class FileMediaView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+    @profile_fn
     def put(self, request, file_mgr_name, system_id, file_path):
         if request.is_ajax():
             body = json.loads(request.body)
@@ -500,6 +505,7 @@ class FileMediaView(View):
 
         return HttpResponseBadRequest("Unsupported operation")
 
+    @profile_fn
     def delete(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated:
@@ -545,6 +551,7 @@ class FileMediaView(View):
 
 class FileSearchView(View):
     """ File Search View"""
+    @profile_fn
     def get(self, request, file_mgr_name, system_id = None, file_path = None):
         """ GET handler """
         offset = int(request.GET.get('offset', 0))
@@ -569,6 +576,7 @@ class FileSearchView(View):
 
 class FilePermissionsView(View):
 
+    @profile_fn
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == AgaveFileManager.NAME \
             or file_mgr_name == 'public':
@@ -584,6 +592,7 @@ class FilePermissionsView(View):
 
         return HttpResponseBadRequest("Unsupported operation.")
 
+    @profile_fn
     def post(self, request, file_mgr_name, system_id, file_path):
         if request.is_ajax():
             body = json.loads(request.body)
@@ -638,6 +647,8 @@ class FilePermissionsView(View):
         return HttpResponseBadRequest("Unsupported operation")
 
 class FileMetaView(View):
+
+    @profile_fn
     def get(self, request, file_mgr_name, system_id, file_path):
         if file_mgr_name == ElasticFileManager.NAME:
             if not request.user.is_authenticated:
@@ -651,6 +662,7 @@ class FileMetaView(View):
 
         return HttpResponseBadRequest('Unsupported file manager.')
 
+    @profile_fn
     def put(self, request, file_mgr_name, system_id, file_path):
         post_body = json.loads(request.body)
         metadata = post_body.get('metadata', {})

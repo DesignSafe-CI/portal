@@ -23,6 +23,7 @@ from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
+from designsafe.libs.common.decorators import profile as profile_fn
 #from requests.exceptions import HTTPError
 from designsafe.apps.projects.models.agave.experimental import (
     ExperimentalProject, Experiment, ModelConfig,
@@ -43,6 +44,7 @@ def template_project_storage_system(project):
     return system_template
 
 class PublicationView(BaseApiView):
+    @profile_fn
     def get(self, request, project_id):
         pub = Publication(project_id=project_id)
         if pub is not None and hasattr(pub, 'project'):
@@ -75,6 +77,7 @@ class PublicationView(BaseApiView):
                             status=200)
 
 class ProjectListingView(SecureMixin, BaseApiView):
+    @profile_fn
     def get(self, request, username):
         """Returns a list of Project for a specific user.
 
@@ -95,7 +98,7 @@ class ProjectListingView(SecureMixin, BaseApiView):
         return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
-
+    @profile_fn
     def get(self, request):
         """
         Returns a list of Projects for the current user.
@@ -109,6 +112,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         data = {'projects': projects}
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
+    @profile_fn
     def post(self, request):
         """
         Create a new Project. Projects and the root File directory for a Project should
@@ -241,6 +245,7 @@ class ProjectMetaLookupMixin(object):
 
 class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
 
+    @profile_fn
     def get(self, request, project_id):
         """
 
@@ -255,6 +260,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         project = cls(**meta_obj)
         return JsonResponse(project.to_body_dict(), safe=False)
 
+    @profile_fn
     def post(self, request, project_id):
         """
 
@@ -288,11 +294,13 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
 
 class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
+    @profile_fn
     def get(self, request, project_id):
         ag = request.user.agave_oauth.client
         project = BaseProject.manager().get(ag, uuid=project_id)
         return JsonResponse(project.collaborators)
 
+    @profile_fn
     def post(self, request, project_id):
         if request.is_ajax():
             post_data = json.loads(request.body)
@@ -339,6 +347,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
         return JsonResponse(project.collaborators)
 
+    @profile_fn
     def delete(self, request, project_id):
         if request.is_ajax():
             post_data = json.loads(request.body)
@@ -357,6 +366,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 
 class ProjectDataView(SecureMixin, BaseApiView):
 
+    @profile_fn
     def get(self, request, project_id, file_path=''):
         """
 
@@ -372,6 +382,7 @@ class ProjectDataView(SecureMixin, BaseApiView):
 
 class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
+    @profile_fn
     def get(self, request, project_id=None, name=None, uuid=None):
         """
 
@@ -394,6 +405,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         except ValueError:
             return HttpResponseBadRequest('Entity not valid.')
 
+    @profile_fn
     def delete(self, request, uuid):
         """
 
@@ -407,6 +419,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         ag.meta.deleteMetadata(uuid=uuid)
         return JsonResponse(meta.to_body_dict(), safe=False)
 
+    @profile_fn
     def post(self, request, project_id, name):
         """
 
@@ -459,6 +472,7 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
 
         return JsonResponse(resp.to_body_dict(), safe=False)
 
+    @profile_fn
     def put(self, request, uuid):
         """
 

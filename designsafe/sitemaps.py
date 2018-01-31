@@ -33,6 +33,7 @@ Adjusting these settings for the CMS is handled in ``designsafe.urls``
 """
 
 from django.contrib import sitemaps
+from django.contrib.sites.models import Site
 from django.urls import reverse
 from designsafe.apps.api.agave.filemanager.public_search_index import PublicElasticFileManager as pefm
 
@@ -59,6 +60,26 @@ class HomeSitemap(sitemaps.Sitemap):
 
     def items(self):
         return ['']
+
+    def location(self, item):
+        return item
+
+# Subsites
+class SubSitemap(sitemaps.Sitemap):
+    priority = 0.8
+    changefreq = 'weekly'
+
+    # redefine 'get_urls' so we can set 'domain' and 'name' to empty
+    # then feed in the subsite urls
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='' , name= '')
+        return super(SubSitemap, self).get_urls(site=site, **kwargs)
+
+    def items(self):
+        sublist = []
+        for subsite in Site.objects.all():
+            sublist.append(subsite)
+        return sublist[1:]
 
     def location(self, item):
         return item

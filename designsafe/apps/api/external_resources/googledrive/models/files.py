@@ -91,7 +91,7 @@ class GoogleDriveFile(object):
     @property
     def ext(self):
         try:
-            return '.{}'.format(self._item['fileExtension'])
+            return '.{}'.format(self._item['fileExtension']).lower()
         except KeyError:
             return None
 

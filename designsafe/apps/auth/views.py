@@ -50,12 +50,15 @@ def login_options(request):
         agave_status = None
         designsafe_status = None
 
-    context = {
-        'message': message,
-        'agave_status': agave_status,
-        'designsafe_status': designsafe_status,
-    }
-    return render(request, 'designsafe/apps/auth/login.html', context)
+    if(message==False):
+        return agave_oauth(request)
+    else:
+        context = {
+            'message': message,
+            'agave_status': agave_status,
+            'designsafe_status': designsafe_status,
+        }
+        return render(request, 'designsafe/apps/auth/login.html', context)
 
 
 def agave_oauth(request):

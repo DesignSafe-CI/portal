@@ -581,6 +581,7 @@ EZID_PASS = os.environ.get('EZID_PASS')
 EZID_SHOULDER = os.environ.get('EZID_SHOULDER')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
+PORTAL_PROFILE = os.environ.get('PORTAL_PROFILE', False)
 
 from celery_settings import *
 from external_resource_settings import *
