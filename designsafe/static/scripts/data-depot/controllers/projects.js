@@ -140,6 +140,10 @@
       $http.get('/api/projects/publication/' + $scope.data.project.value.projectId)
         .then(function(resp){
             $scope.data.publication = resp.data;
+            $scope.data.publication.experimentsList = $scope.data.publication.experimentsList || [];
+            $scope.data.publication.eventsList = $scope.data.publication.eventsList || [];
+            $scope.data.publication.analysisList = $scope.data.publication.analysisList || []; 
+            $scope.data.publication.reportsList = $scope.data.publication.reportsList || [];
         });
     });
 
@@ -656,6 +660,10 @@
         $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
           .then(function(resp){
               $scope.browser.publication = resp.data;
+              $scope.browser.publication.experimentsList = $scope.browser.publication.experimentsList || [];
+              $scope.browser.publication.eventsList = $scope.browser.publication.eventsList || [];
+              $scope.browser.publication.analysisList = $scope.browser.publication.analysisList || []; 
+              $scope.browser.publication.reportsList = $scope.browser.publication.reportsList || [];
           }, function(err){
             //no publication saved?
           })

@@ -295,6 +295,9 @@ def project_reserve_xml(publication):
     institutions = publication['institutions']
     contributors = ET.SubElement(resource, 'contributors')
     for institution in institutions:
+        if institution.get('label', None) is None:
+            continue
+
         contrib = ET.SubElement(contributors, 'contributor')
         name = ET.SubElement(contrib, 'contributorName')
         name.text = institution['label']
