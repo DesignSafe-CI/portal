@@ -308,7 +308,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         project.add_team_members([username])
         if member_type == 'teamMember':
             team_members = project.team_members
-            team_members.apend(username)
+            team_members.append(username)
             project.team_members = team_members
         elif member_type == 'coPis':
             co_pis = project.co_pis
