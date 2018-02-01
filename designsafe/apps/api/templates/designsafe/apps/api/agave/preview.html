@@ -74,9 +74,9 @@
         </script>
     {% elif video_preview %}
       <div>
-        <video controls>
+        <video width="400" controls preload="auto" autoplay>
           <source src="{{video_preview}}" type="{{mimetype}}">
-          <!-- Your browser is not capable of previewing this video. Please try downloading the file. -->
+          Your browser is not capable of previewing this video. Please try downloading the file.
         </video>
       </div>
     {% else %}
