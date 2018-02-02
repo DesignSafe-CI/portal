@@ -40,23 +40,23 @@
         return deferred.promise;
       };
 
-      $scope.addUserTabs = function(query, active){
-        $scope.error = '';
-        var self = this;
-        var deferred = $q.defer();
-        var query = {'name': $translate.instant('apps_metadata_list_name')};
+      // $scope.addUserTabs = function(query, active){
+      //   $scope.error = '';
+      //   var self = this;
+      //   var deferred = $q.defer();
+      //   var query = {'name': $translate.instant('apps_metadata_list_name')};
 
-        $scope.simpleList.getUserLists(query)
-          .then(function(response){
-            deferred.resolve(response);
-          })
-          .catch(function(response){
-            $scope.error = $translate.instant('error_tab_get') + response.data;
-            deferred.reject(response);
-          });
+      //   $scope.simpleList.getUserLists(query)
+      //     .then(function(response){
+      //       deferred.resolve(response);
+      //     })
+      //     .catch(function(response){
+      //       $scope.error = $translate.instant('error_tab_get') + response.data;
+      //       deferred.reject(response);
+      //     });
 
-        return deferred.promise;
-      };
+      //   return deferred.promise;
+      // };
 
       $scope.data = {
         activeApp: null,
@@ -113,16 +113,16 @@
         }
 
         $scope.addDefaultTabs({'name': $translate.instant('apps_metadata_name')})
-          .then(function(){
-            var deferred = $q.defer();
+          // .then(function(){
+          //   var deferred = $q.defer();
 
-            $scope.addUserTabs({'name': $translate.instant('apps_metadata_list_name')})
-              .then(function(response){
-                deferred.resolve(response);
-              });
+          //   $scope.addUserTabs({'name': $translate.instant('apps_metadata_list_name')})
+          //     .then(function(response){
+          //       deferred.resolve(response);
+          //     });
 
-            return deferred.promise;
-          })
+          //   return deferred.promise;
+          // })
           .then(function(response){
             const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'My Apps'];
 
