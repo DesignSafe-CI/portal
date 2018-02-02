@@ -42,7 +42,7 @@ class Project(BaseMetadataResource):
         self._project_system = None
 
     @classmethod
-    def list_projects(cls, agave_client):
+    def list_projects(cls, agave_client, **kwargs):
         """
         Get a list of Projects
         :param agave_client: agavepy.Agave: Agave API client instance
@@ -52,7 +52,7 @@ class Project(BaseMetadataResource):
             'name': Project.NAME
         }
         records = agave_client.meta.listMetadata(q=json.dumps(query), privileged=False)
-        return [cls(agave_client=agave_client, **r) for r in records]
+        return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in records]
 
     @classmethod
     def search(cls, q, agave_client):

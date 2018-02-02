@@ -99,7 +99,7 @@ class ProjectListingView(SecureMixin, BaseApiView):
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
     @profile_fn
-    def get(self, request):
+    def get(self, request, file_mgr_name=None, system_id=None):
         """
         Returns a list of Projects for the current user.
         :param request:
@@ -108,8 +108,21 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         """
         #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
-        projects = Project.list_projects(agave_client=ag)
-        data = {'projects': projects}
+
+        # Add metadata fields to project listings for workspace browser
+        if system_id:
+            projects = Project.list_projects(agave_client=ag, **{'path': '', 'type': 'dir', 'system': system_id})
+            for p in projects:
+                p.path = p.uuid
+                p.name = p.value['title']
+            data = {
+                'children': projects,
+                'path': 'Projects',
+            }
+        else:
+            projects = Project.list_projects(agave_client=ag)
+            data = {'projects': projects}
+
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
     @profile_fn
@@ -367,16 +380,18 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
 class ProjectDataView(SecureMixin, BaseApiView):
 
     @profile_fn
-    def get(self, request, project_id, file_path=''):
+    def get(self, request, file_path='', project_id=None, system_id=None, project_system_id=None, file_mgr_name=None):
         """
 
         :return: The root directory for the Project's data
         :rtype: JsonResponse
         """
         ag = request.user.agave_oauth.client
-        p = Project(ag, uuid=project_id)
-        list_path = '/'.join([project_id, file_path])
-        listing = BaseFileResource.listing(ag, p.project_system_id, list_path)
+        if project_system_id is None:
+            p = Project(ag, uuid=project_id)
+            project_system_id = p.project_system_id
+        
+        listing = BaseFileResource.listing(ag, project_system_id, file_path)
 
         return JsonResponse(listing, encoder=AgaveJSONEncoder, safe=False)
 
