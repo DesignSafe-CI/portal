@@ -84,6 +84,10 @@
     display: block;
 }
 
+.files-listing caption {
+    white-space: normal !important;
+}
+
 .apps-tray {
     padding-top: 10px;
     position: absolute;

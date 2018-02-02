@@ -209,7 +209,7 @@
       if(req){
         req.stopper.resolve();
         req = null;
-      };
+      }
       
       currentState.busy = true;
       currentState.busyListing = true;

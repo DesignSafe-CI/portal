@@ -119,14 +119,33 @@
       }
       $scope.data.filesListing = null;
       $scope.data.loading = true;
+
+      // Fixes file object when created through 'browseTrail' for project dirs
+      if ($scope.data.system.id == 'designsafe.storage.projects') {
+        if (file.path.split('/').length == 1) {
+          file.system = $scope.data.system.id;
+        } else if (file.system.includes('project-')) {
+          file.path = file.path.replace(/^(Projects\/([^\/]+)[\/]*)/, '');
+        }
+      }
       DataBrowserService.browse(file)
         .then(function(listing) {
+          listing.path = listing.path.replace(/^\/*/,'');
           $scope.data.filesListing = listing;
-          if ($scope.data.filesListing.children.length > 0){
-            $scope.data.filePath = $scope.data.filesListing.path;
+          $scope.data.filePath = $scope.data.filesListing.path;
+
+          // Set dirPath trail for wonky project file structure
+          if ($scope.data.system.id == 'designsafe.storage.projects') {
+            if (file.system.includes('project-')) {
+              $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
+            } else {
+              $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
+            }
+          } else {
             $scope.data.dirPath = $scope.data.filePath.split('/');
-            $scope.browser.listing = $scope.data.filesListing;
           }
+          $scope.browser.listing = $scope.data.filesListing;
+
           $scope.data.loading = false;
         }, function(err){
           logger.log(err);
