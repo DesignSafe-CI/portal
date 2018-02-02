@@ -29,6 +29,20 @@ urlpatterns = [
 
     url(r'^listing/(?P<username>[a-zA-Z0-9\-_\.]+)/?$', ProjectListingView.as_view(), name='listing'),
 
+
+    url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.]+)/(?P<project_id>[a-z0-9-]+)/$',
+        ProjectDataView.as_view(),
+        name='projects_data_listing'),
+    url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/(?P<project_system_id>[\w-]+)/(?P<file_path>[ \S]*)$',
+        ProjectDataView.as_view(),
+        name='projects_data_listing'),
+    url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.]+)/Projects$',
+        ProjectCollectionView.as_view(),
+        name='projects_listing'),
+    url(r'^files/listing/(?P<file_mgr_name>[\w.-]+)/(?P<system_id>[\w.]+)/$',
+        ProjectCollectionView.as_view(),
+        name='projects_listing'),
+
     url(r'^meta/(?P<uuid>[^ \/]+)/?$',
         ProjectMetaView.as_view(), name='project_meta'),
 
