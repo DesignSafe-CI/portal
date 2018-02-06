@@ -12,7 +12,16 @@
                 <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
             </div>
             <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && previewHref">
-                <iframe class="embed-responsive-item" ng-src="{{ previewHref }}"></iframe>
+                    <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" id="loading_ind"></i>
+                <iframe class="embed-responsive-item" ng-src="{{ previewHref }}" id="framepreview"></iframe>
+                <script type="text/javascript">
+                    $('#framepreview').on('load', function() {
+                        $('#loading_ind').hide();
+                    }).on('error', function() {
+                        $('#loading_ind').hide();
+                        $(this).hide().after('<p class="alert alert-danger">Unable to display preview.</p>');
+                    });
+                </script>
             </div>
         </div>
         <div class="caption">
