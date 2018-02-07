@@ -1,6 +1,20 @@
 # DesignSafe-CI Portal Release Notes
 
-## [Next Release]
+## 20180201
+
+Improvements:
+
+- Updating Nginx config to point to new local cert name.
+- Creating new cert for local dev.
+- Adding configuration to create local dev cert in the future.
+- Enabling video preview embedded in browser
+- Adding My Projects to Workspace file browser
+
+Fixes:
+
+- Displaying correct project name on breadcrumbs
+
+## 20180105
 
 Improvements:
 
@@ -29,6 +43,13 @@ Improvements:
 Improvements:
 
 - Configuring Webhooks correctly to work with Potree
+
+## v2.3.2
+
+Fixes:
+
+- Fixed error when adding team members
+- Fixed error when adding files for publishing
 
 ## v2.3.1
 
