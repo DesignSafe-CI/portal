@@ -8,6 +8,9 @@
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
 
+    // release selected files
+    DataBrowserService.deselect(DataBrowserService.state().selected);
+
     $scope.data = {
       navItems: [],
       projects: []
@@ -80,6 +83,12 @@
     $scope.ui = {};
     $scope.ui.busy = true;
     $scope.data.projects = [];
+
+
+    // release selected files on load
+    DataBrowserService.deselect(DataBrowserService.state().selected);
+
+
     ProjectService.list().then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
