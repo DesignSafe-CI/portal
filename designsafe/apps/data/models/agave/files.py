@@ -166,7 +166,8 @@ class BaseFileResource(BaseAgaveResource):
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                     SUPPORTED_TEXT_PREVIEW_EXTS +
                                     SUPPORTED_OBJECT_PREVIEW_EXTS + 
-                                    SUPPORTED_MS_OFFICE)
+                                    SUPPORTED_MS_OFFICE +
+                                    SUPPORTED_VIDEO_EXTS)
 
     def __init__(self, agave_client, system, path, **kwargs):
         super(BaseFileResource, self).__init__(agave_client, system=system, path=path,
