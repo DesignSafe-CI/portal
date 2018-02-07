@@ -2216,6 +2216,7 @@
    */
 
   function selectProjects(projects, reset) {
+    deselect(currentState.selected);
     if (!Array.isArray(projects)) {
       projects = [projects];
     }
