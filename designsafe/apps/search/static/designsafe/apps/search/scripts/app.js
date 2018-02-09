@@ -1,8 +1,10 @@
 (function(window, angular, $, _) {
   "use strict";
-
-  angular.module('designsafe')
-  .config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
+  var module = angular.module('designsafe');
+  module.requires.push(
+    'ngSanitize'
+  );
+  module.config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
      $httpProvider.defaults.transformResponse.push(function(responseData){
         convertDateStringsToDates(responseData);
         return responseData;
@@ -13,7 +15,7 @@
        });
   }]);
 
-  angular.module('designsafe').controller('SearchCtrl',
+  module.controller('SearchCtrl',
     ['$scope','$rootScope', '$location', '$window', 'searchService', 'Logging', 'djangoUrl',
     function($scope, $rootScope, $location, $window, searchService, Logging, djangoUrl) {
       $scope.data = {};
@@ -97,7 +99,7 @@
         var match;
         // Check for string properties which look like dates.
         if (typeof value === "string" && (match = value.match(regexIso8601))) {
-            var milliseconds = Date.parse(match[0])
+            var milliseconds = Date.parse(match[0]);
             if (!isNaN(milliseconds)) {
                 input[key] = new Date(milliseconds);
             }
