@@ -102,6 +102,12 @@ class Project(BaseMetadataResource):
     def remove_collaborator(self, username):
         logger.info('Removing collaborator "{}" from project "{}"'.format(username, self.uuid))
 
+        team_members = self.value.get('teamMembers', [])
+        # logger.info(coPis)
+        team_members = [uname for uname in team_members if uname != username]
+
+        self.value['teamMembers'] = team_members
+
         # Set permissions on the metadata record
         pem = BaseMetadataPermissionResource(self.uuid, self._agave)
         pem.username = username
