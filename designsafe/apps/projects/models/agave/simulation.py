@@ -43,7 +43,7 @@ class SimulationModel(RelatedEntity):
     project = fields.RelatedObjectField(SimulationProject)
 
 class ModelConfig(RelatedEntity):
-    model_name = 'designsafe.project.model_config'
+    model_name = 'designsafe.project.simulation.model'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
@@ -51,7 +51,7 @@ class ModelConfig(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class SimInput(RelatedEntity):
-    model_name = 'designsafe.project.sim_input'
+    model_name = 'designsafe.project.simulation.input'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
@@ -60,7 +60,7 @@ class SimInput(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class SimOutput(RelatedEntity):
-    model_name = 'designsafe.project.sim_output'
+    model_name = 'designsafe.project.simulation.outpu'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
@@ -70,7 +70,7 @@ class SimOutput(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class IntegratedDataAnalysis(RelatedEntity):
-    model_name = 'designsafe.project.integrated_data_analysis'
+    model_name = 'designsafe.project.simulation.integrated_data_analysis'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
@@ -80,7 +80,7 @@ class IntegratedDataAnalysis(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class IntegratedReport(RelatedEntity):
-    model_name = 'designsafe.project.integrated_report'
+    model_name = 'designsafe.project.simulation.integrated_report'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
