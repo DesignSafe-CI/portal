@@ -28,6 +28,7 @@ from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.projects.models.agave.experimental import (
     ExperimentalProject, Experiment, ModelConfig,
     Event, Analysis, SensorList, Report)
+from designsafe.apps.projects.models.agave import simulation
 from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
                                                                        Publication)
 logger = logging.getLogger(__name__)
@@ -238,23 +239,34 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         return JsonResponse(prj.to_body_dict(), safe=False)
 
 class ProjectMetaLookupMixin(object):
-    def _lookup_model(self, name):
-        if name == 'designsafe.project':
-            return ExperimentalProject
-        elif name == 'designsafe.project.experiment':
-            return Experiment
-        elif name == 'designsafe.project.event':
-            return Event
-        elif name == 'designsafe.project.analysis':
-            return Analysis
-        elif name == 'designsafe.project.sensor_list':
-            return SensorList
-        elif name == 'designsafe.project.model_config':
-            return ModelConfig
-        elif name == 'designsafe.project.report':
-            return Report
-        else:
+    def _lookup_model(self, name, prj_type=None):
+        clss = {
+            'designsafe.project': {
+                'experimental': ExperimentalProject,
+                'simulation': simulation.SimulationProject
+            },
+            'designsafe.project.experiment': Experiment,
+            'designsafe.project.event': Event,
+            'designsafe.project.analysis': Analysis,
+            'designsafe.project.sensor_list': SensorList,
+            'designsafe.project.model_config': ModelConfiguration,
+            'designsafe.project.report': Report,
+            'designsafe.project.simulation': simulation.SimulationModel,
+            'designsafe.project.simulation.model': simulation.ModelConfig,
+            'designsafe.project.simulation.input': simulation.SimInput,
+            'designsafe.project.simulation.output': simulation.SimOutput,
+            'designsafe.project.simulation.integrated_data_analysis': simulation.IntegratedDataAnalysis,
+            'designsafe.project.simulation.integrated_report': simulation.IntegratedReport
+        }
+
+        cls = clss.get(name)
+        if isinstance(cls, dict):
+            cls = cls.get(prj_type)
+
+        if cls is None:
             raise ValueError('No module found with that name.')
+
+        return cls
 
 class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
 
@@ -370,7 +382,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
-        # project.remove_collaborator(post_data.get('username'))
+        #project.remove_collaborator(post_data.get('username'))
         project.remove_co_pi(post_data.get('username'))
         project.save()
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
