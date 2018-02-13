@@ -103,4 +103,3 @@ class Report(RelatedEntity):
     project = fields.RelatedObjectField(SimulationProject)
     simulations = fields.RelatedObjectField(SimulationModel)
     files = fields.RelatedObjectField(FileModel, multiple=True)
->>>>>>> 62dec102... Adding simulation models
