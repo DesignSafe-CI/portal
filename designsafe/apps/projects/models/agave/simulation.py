@@ -97,7 +97,7 @@ class Analysis(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Report(RelatedEntity):
-    model_name = 'designsafe.project.integrated_report'
+    model_name = 'designsafe.project.report'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
