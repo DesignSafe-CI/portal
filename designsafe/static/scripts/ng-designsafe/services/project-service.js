@@ -183,6 +183,365 @@
      * @param {string} options.uuid The Project uuid
      * @returns {Promise}
      */
+    service.manageSimulations = function(options) {
+      var modal = $uibModal.open({
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-manage-simulations.html',
+        controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
+          $scope.data = {
+            busy: false,
+            simulations: options.simulations,
+            project: options.project,
+            form: {}
+          };
+          $scope.ui = {
+              experiments: {},
+              efs: efs,
+              experimentTypes: experimentTypes,
+              equipmentTypes: equipmentTypes,
+              updateExperiments: {},
+              showAddReport: {}
+              };
+          $scope.form = {
+            curExperiments: [],
+            addExperiments: [{}],
+            deleteExperiments: [],
+            entitiesToAdd:[]
+          };
+          $scope.form.curExperiments = $scope.data.project.experiment_set;
+
+          $scope.addExperiment = function () {
+            $scope.form.addExperiments.push({});
+          };
+
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss();
+          };
+
+          $scope.delNewExperiment = function(index){
+            $scope.form.addExperiments.splice(index, 1);
+          };
+
+          $scope.getEF = function(str){
+              var efs = $scope.ui.efs[$scope.data.project.value.projectType];
+              var ef = _.find(efs, function(ef){
+                return ef.name === str;
+              });
+              return ef;
+          };
+
+          $scope.getET = function(type, str){
+              var ets = $scope.ui.experimentTypes[type];
+              var et = _.find(ets, function(et){
+                return et.name === str;
+              });
+              return et;
+          };
+
+          $scope.getTagList = function(entity){
+            var tags = angular.copy(entyt.tags);
+            var res = [];
+            _.forEach(entity.value.tags, function(val, tagsType){
+                var r = _.map(Object.keys(val), function(v){
+                    return {tagType: tagsType, name: v, label: v};
+                });
+                res = res.concat(r);
+            });
+            return res;
+          };
+
+          $scope.editExp = function(exp){
+            $scope.editExpForm = {
+                exp: exp,
+                title: exp.value.title,
+                facility: exp.getEF($scope.data.project.value.projectType,
+                                    exp.value.experimentalFacility).label,
+                type: exp.value.experimentType,
+                equipment: exp.getET(exp.value.experimentalFacility,
+                                        exp.value.equipmentType).label,
+                description: exp.value.description
+            };
+            $scope.ui.showEditExperimentForm = true;
+          };
+
+
+          $scope.moveOrderUp = function($index, ent, list){
+            if (typeof ent._ui.order === 'undefined'){
+              ent._ui.order = 0;
+            } else if (ent._ui.order > 0){
+              var order = ent._ui.order;
+              var _ent = _.find(list, function(e){
+                                            return e._ui.order === order - 1; });
+              ent._ui.order -= 1;
+              _ent._ui.order += 1;
+            }
+          };
+
+          $scope.moveOrderDown = function($index, ent, list){
+            if (typeof ent._ui.order === 'undefined'){
+              ent._ui.order = 0;
+            } else if (ent._ui.order < list.length - 1){
+              var _ent = _.find(list, function(e){
+                                            return e._ui.order === ent._ui.order + 1; });
+              ent._ui.order += 1;
+              _ent._ui.order -= 1;
+            }
+          };
+
+          $scope.saveEditExperiment = function(){
+              var exp = $scope.editExpForm.exp;
+              exp.value.title = $scope.editExpForm.title;
+              exp.value.description = $scope.editExpForm.description;
+              $scope.ui.savingEditExp = true;
+              ProjectEntitiesService.update({data: {
+                  uuid: exp.uuid,
+                  entity: exp
+              }}).then(function(e){
+                  var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                  ent.update(e);
+                  $scope.ui.savingEditExp = false;
+                  $scope.data.experiments = $scope.data.project.experiment_set;
+                  $scope.ui.showEditExperimentForm = false;
+                  return e;
+              });
+          };
+
+          $scope.toggleDeleteExperiment = function(uuid){
+            if (uuid in $scope.ui.experiments &&
+                $scope.ui.experiments[uuid].deleted){
+              var index = $scope.form.deleteExperiments.indexOf(uuid);
+              $scope.form.deleteExperiments.splice(index, 1);
+              $scope.ui.experiments[uuid].deleted = false;
+            } else {
+              $scope.form.deleteExperiments.push(uuid);
+              $scope.ui.experiments[uuid] = {};
+              $scope.ui.experiments[uuid].deleted = true;
+            }
+          };
+
+          $scope.saveExperiment = function($event){
+            $event.preventDefault();
+            $scope.data.busy = true;
+            var addActions = _.map($scope.form.addExperiments, function(exp){
+              exp.description = exp.description || '';
+              if (exp.title && exp.experimentalFacility && exp.experimentType){
+                return ProjectEntitiesService.create({
+                  data: {
+                    uuid: $scope.data.project.uuid,
+                    name: 'designsafe.project.experiment',
+                    entity: exp
+                  }
+                }).then(function(res){
+                  $scope.data.project.addEntity(res);
+                  //$scope.data.experiments.push(res);
+                });
+              }
+            });
+
+            //var tasks = addActions.concat(removeActions);
+
+            $q.all(addActions).then(
+              function (results) {
+                $scope.data.busy = false;
+                $scope.form.addExperiments = [{}];
+                //$uibModalInstance.close(results);
+              },
+              function (error) {
+                $scope.data.error = error;
+                //$uibModalInstance.reject(error.data);
+              }
+            );
+          };
+
+          $scope.removeExperiments = function($event){
+            $scope.data.busy = true;
+
+            var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
+              return ProjectEntitiesService.delete({
+                data: {
+                  uuid: uuid,
+                }
+              }).then(function(entity){
+                var entityAttr = $scope.data.project.getRelatedAttrName(entity.name);
+                var entitiesArray = $scope.data.project[entityAttr];
+                entitiesArray = _.filter(entitiesArray, function(e){
+                        return e.uuid !== entity.uuid;
+                    });
+                $scope.data.project[entityAttr] = entitiesArray;
+                $scope.data.experiments = $scope.data.project[entityAttr];
+              });
+            });
+
+            $q.all(removeActions).then(
+              function (results) {
+                $scope.data.busy = false;
+                $scope.form.addExperiments = [{}];
+                //$uibModalInstance.close(results);
+              },
+              function (error) {
+                $scope.data.busy = false;
+                $scope.data.error = error;
+                //$uibModalInstance.reject(error.data);
+              }
+            );
+
+          };
+
+          $scope.removeAnalysis = function(uuid){
+            $scope.data.busy = true;
+            ProjectEntitiesService.delete({
+              data: {
+                uuid: uuid,
+              }
+            }).then(function(entity){
+                var entityAttr = $scope.data.project.getRelatedAttrName(entity.name);
+                var entitiesArray = $scope.data.project[entityAttr];
+                entitiesArray = _.filter(entitiesArray, function(e){
+                        return e.uuid !== entity.uuid;
+                    });
+                $scope.data.project[entityAttr] = entitiesArray;
+                $scope.data.busy = false;
+            },
+            function(error){
+                $scope.data.busy = false;
+              $scope.data.error = error;
+            });
+          };
+
+          $scope.delRelEntity = function(entity, rels){
+            var _entity = angular.copy(entity);
+            _.each(rels, function(rel, relName){
+              _entity.associationIds = _.without(_entity.associationIds, rel);
+              _entity.value[relName] = _.without(_entity.value[relName], rel);
+            });
+            ProjectEntitiesService.update({data: {uuid: entity.uuid, entity: _entity}})
+            .then(function(res){
+              options.project.getRelatedByUuid(res.uuid).update(res);
+            },
+            function(err){
+              $uibModalInstance.reject(err.data);
+            });
+          };
+
+          $scope.saveRelEntity = function(entity, rels){
+            var _entity = angular.copy(entity);
+            _.each(rels, function(rel, relName){
+              _entity.associationIds.push(rel);
+              _entity.value[relName].push(rel);
+            });
+            ProjectEntitiesService.update({data: {uuid: entity.uuid, entity: _entity}})
+            .then(function(res){
+              var attrName = '';
+              for (var name in options.project._related){
+                if (options.project._related[name] === res.name){
+                  attrName = name;
+                  break;
+                }
+              }
+              var entity =  _.find(options.project[attrName],
+                                    function(entity){ if (entity.uuid === res.uuid){ return entity; }});
+              entity.update(res);
+              $scope.form.updateExperiments = {};
+            },
+            function(err){
+              $uibModalInstance.reject(err.data);
+            });
+          };
+
+          $scope.ui.addingTag = false;
+          $scope.ui.tagTypes = [
+              {label: 'Model Config',
+               name: 'designsafe.project.model_config',
+               yamzId: 'h1312'},
+              {label: 'Sensor Info',
+               name: 'designsafe.project.sensor_list',
+               yamzId: 'h1557'},
+              {label: 'Event',
+               name: 'designsafe.project.event',
+               yamzId: 'h1253'},
+              {label: 'Analysis',
+               name: 'designsafe.project.analysis',
+               yamzId: 'h1333'},
+              {label: 'Report',
+               name: 'designsafe.project.report',
+               yamzId: ''}
+              ];
+          $scope.ui.analysisData = [
+            {name: 'graph', label: 'Graph'},
+            {name: 'visualization', label: 'Visualization'},
+            {name: 'table', label: 'Table'},
+            {name: 'other', label: 'Other'}
+          ];
+          $scope.ui.analysisApplication = [
+            {name: 'matlab', label: 'Matlab'},
+            {name: 'r', label: 'R'},
+            {name: 'jupyter', label: 'Jupyter'},
+            {name: 'other', label: 'Other'}
+          ];
+
+          $scope.data.form.projectTagToAdd = {optional:{}};
+
+          $scope.addProjectTag = function(){
+            var newTag = $scope.data.form.projectTagToAdd;
+            var nameComps = newTag.tagType.split('.');
+            var name = nameComps[nameComps.length-1];
+            var entity = {};
+            entity.name = newTag.tagType;
+            if (name === 'event'){
+              entity.eventType = newTag.tagAttribute;
+            } else if (name === 'analysis'){
+              entity.analysisType = newTag.tagAttribute;
+            } else if (name === 'sensor_list'){
+              entity.sensorListType = newTag.tagAttibute;
+            } else if (name === 'model_config'){
+              entity.coverage = newTag.tagAttribute;
+            }
+            for (var attr in $scope.data.form.projectTagToAdd.optional){
+              entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
+            }
+            $scope.ui.addingTag = true;
+            entity.title = newTag.tagTitle;
+            entity.description = newTag.tagDescription || '';
+            if (typeof $scope.data.files !== 'undefined'){
+              entity.filePaths = _.map($scope.data.files,
+                                     function(file){
+                                      return file.path;
+                                     });
+            }
+            $scope.ui.addingTag = true;
+            ProjectEntitiesService.create({data: {
+                uuid: $scope.data.project.uuid,
+                name: newTag.tagType,
+                entity: entity
+            }})
+            .then(
+               function(resp){
+                 $scope.data.form.projectTagToAdd = {optional:{}};
+                 //currentState.project.addEntity(resp);
+                 $scope.data.project.addEntity(resp);
+                 $scope.ui.error = false;
+                 $scope.ui.addingTag = false;
+               },
+               function(err){
+                 $scope.ui.error = true;
+                 $scope.error = err;
+               }
+           );
+          };
+
+        }],
+        size:'lg'
+      });
+
+      return modal.result;
+    };
+
+
+    /**
+     *
+     * @param options
+     * @param {string} options.uuid The Project uuid
+     * @returns {Promise}
+     */
     service.manageExperiments = function(options) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-manage-experiments.html',
@@ -756,9 +1115,9 @@
           $scope.projectTypes = [{
               id: 'experimental',
               label: 'Experimental'},{
+              id: 'simulation',
+              label: 'Simulation'},{
               // removing project type options until they are supported
-              // id: 'simulation',
-              // label: 'Simulation'},{
               // id: 'hybrid_simulation',
               // label: 'Hybrid Simulation'},{
               // id: 'field_reconnaissance',

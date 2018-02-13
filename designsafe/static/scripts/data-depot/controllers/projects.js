@@ -246,6 +246,22 @@
       });
     };
 
+    $scope.manageSimulations = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      var simulationAttr = $scope.data.project.getRelatedAttrName('designsafe.project.simulation');
+      var simulations = $scope.data.project[simulationAttr];
+      if (typeof simulations === 'undefined'){
+        $scope.data.project[simulationAttr] = [];
+        simulations = $scope.data.project[simulationAttr];
+      }
+      ProjectService.manageSimulations({'simulations': simulations,
+                                        'project': $scope.data.project}).then(function (simulations) {
+        $scope.data.simulations = simulations;
+      });
+    };
+
     $scope.dateString = function(s){
       var d = Date(s);
       return d;

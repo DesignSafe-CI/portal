@@ -1,0 +1,461 @@
+<div class="modal-header" style="border:none; text-align:center;">
+    <h4 class="modal-title" style="borer:nonel">
+        Manage Simulations
+    </h4>
+    <a href="https://www.youtube.com/watch?v=74z5jdVvNfg&index=5&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-cricle"></i> Learn More
+    </a>
+    <p class="alert alert-info">
+        To delete a Simulation, you must first remove all entities related to it. After this, removing an simulation is safe.
+    </p>
+</div>
+<div class="modal-body">
+    <div ng-if="data.busy">
+        <p class="lead">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading simulations data...
+        </p>
+    </div>
+    <div ng-if="! data.busy && data.error">
+        <p class="alert alert-danger lead">
+            {{ data.error }}
+        </p>
+    </div>
+    <div ng-if="! (data.busy || data.error)" class='experiments-listing'>
+        <div class='existing-experiments-listing'>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>
+                Simulation Title</th>
+                <th>Simulation Type</th>
+                <th style="width:15px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat-start="simulation in data.simulations"
+                  ng-class="{'experiment-deleted': ui.simulations[simulation.uuid].deleted}">
+                <td>{{simulation.value.title}}</td>
+                <td>{{simulation.simulationType</td>
+                <td><button class="btn btn-sm btn-link"
+                            ng-click="toggleDeleteSimulation(simulation.uuid)"
+                            alt="Mark simulation for deletion">
+                    <i class="fa text-danger" ng-class="{'fa-mail-reply': ui.simulations[simulations.uuid].deleted, 'fa-times-circle': !ui.simulations[simulation.uuid].deleted}"></i>
+                    <span class="sr-only">Delete</span>
+                    <button class="btn btn-sm btn-link"
+                            ng-click="editExp(simulation)">
+                            Edit <i class="fa fa-pencil-square-o"></i>
+                    </button>
+              </tr>
+              <tr ng-repeat-end style="border-bottom:2px solid black;"
+                  ng-class="{'experiment-deleted': ui.simulations[simulations.uuid].deleted}">
+                <td colspan="5">{{simulation.value.description}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-sm btn-danger"
+                  ng-click="removeSimulations()"
+                  alt="Remove simulations marked as deleted"
+                  ng-disabled="form.deleteSimulations.length==0">
+                  Remove simulations
+          </button>
+          <div class="experiment-add-form well well-sm"
+                ng-if="ui.showEditSimulationForm">
+            <form>
+                <button class="btn btn-sm btn-link pull-right"
+                        ng-click="ui.showEditSimulationForm = false"
+                        title="Close">
+                        <i class="fa fa-times"></i>
+                </button>
+                <p>Edit Simulation(s):</p>
+                <div class="form-group">
+                  <label for="id-sim-title" style="display:block">Title</label>
+                  <input class="form-control" name="exp-title" id="id-exp-title"
+                         ng-model="editSimForm.title"/>
+                </div>
+                <div class="form-gropu">
+                  <label for="id-sim-type" style="display:block">Simulation Type</label>
+                  <input class="form-control" disabled ng-model="editSimForm.facility" id="id-exp-facility"/>
+                </div>
+                <div class="form-group">
+                  <label for="id-sim-desc">Description</label> 
+                  <textarea style="width:100%; height:3em;" placeholder="Description"
+                            ng-model="editSimForm.description" id="id-sim-desc">
+                </textarea>
+                </div>
+                <button class="btn btn-info btn-sm"
+                        ng-click="saveEditSimulation()"
+                        ng-disabled="ui.savingEditSim">
+                    <span ng-if="!ui.savingEditSim">
+                    <i class="fa fa-check"></i> Save Simulation
+                    </span>
+
+                    <span style="padding: 9px;"
+                          class="bg-info text-info"
+                          ng-if="ui.savingEditSim">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </span>
+                </button>
+            </div>
+        </form>
+
+          </div>
+        </div>
+        <button class="btn btn-info"
+                ng-click="ui.showAddSimulationForm = true;"
+                ng-if="!ui.showAddSimulationForm">
+                <i class="fa fa-plus"></i> Add Simulation
+        </button>
+        <form>
+            <div class="well well-sm"
+                 ng-if="ui.showAddSimulationForm">
+                 <button class="btn btn-link pull-right"
+                         ng-click="ui.showAddSimulationForm = false;"
+                         title="Close">
+                 <i class="fa fa-times"></i>
+                 </button>
+                <p>Add Simulation:</p>
+                <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
+                <div class="form-group">
+                  <label for="add-sim-title">Simulation Title</label>
+                  <input type="text" class="form-control" id="add-sim-title"
+                         ng-model="form.addSimulation[0].title" />
+                </div>
+                <div class="form-group">
+                  <label for="add-sim-type">Simulation Type</label>
+                  <select ng-options="type.name as type.label for type in ui.simulationTypes"
+                          class="form-control"
+                          ng-model="form.addSimulation[0].simulationType"
+                          id="add-sim-type">
+                  </select>
+                  <input type="text" class="form-control" id="add-exp-type-other"
+                        placeholder="Custom Simulation Type"
+                        ng-model="form.addSimulation[0].simulationTypeOther"
+                        ng-if="form.addSimulation[0].simulationType == 'other'"/>
+                </div>
+                <div class="form-group">
+                  <label for="add-sim-desc">Description</label>
+                  <textarea style="height:3em;"
+                            class="form-control"
+                            id="add-sim-desc"
+                            ng-model="form.addSimulation[0].description"></textarea>
+                </div>
+                <button class="btn btn-info btn-sm" ng-click="saveSimulation($event)">
+                    <i class="fa fa-check"></i> Save Experiment
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="data-model-tree" style="border-top:1px solid lightgray;">
+     <div style="text-alignt:center;">
+     <h4 style="text-align:center;"> Relate Categories to Simulations </h4>
+    <a href="https://www.youtube.com/watch?v=O3KDlgbz9jA&index=6&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-circle"></i> Learn More
+    </a>
+     </div>
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="simulation in data.project.simulation_set | orderBy: simulation.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
+           <!--
+            <button class="btn btn-sm btn-link"
+                    style="margin-left:5px; padding:0; display:inline-block;"
+                    ng-click="ui.showAddReport[simulation.uuid] = true"
+                    ng-if="!ui.showAddReport[simulation.uuid] &&
+                           !data.project.getRelated('report_set', simulation.uuid).length">
+                    <i class="fa fa-plus-square"></i> Add Report
+            </button>
+            <div style="margin-left:5px; display:inline-block;"
+                 ng-if="ui.showAddReport[simulation.uuid] && 
+                           !data.project.getRelated('report_set', simulation.uuid).length">
+              <select
+                      ng-options="report as report.value.title for report in data.project.report_set"
+                      ng-model="form.updateSimulations[simulation.uuid].relProject">
+                      <option value="">Add Report</option>
+              </select>
+              <button class="btn btn-sm btn-link"
+                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relProject,
+                                          {project:data.project.uuid,
+                                          simulation: simulation.uuid});
+                                ui.showAddReport[simulation.uuid]=false"
+                      title="Add Report">
+                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+              </button>
+            </div>
+            <div style="margin-left:5px; display:inline-block;"
+                 ng-if="data.project.getRelated('report_set', simulation.uuid).length">
+                <span class="label tag-black">Report</span>
+                <span class="tab-title">
+                {{data.project.getRelated('report_set', simulation.uuid)[0].value.title}}   
+                </span>
+                <button class="btn btn-xsm btn-link"
+                        style="display:inline-block;"
+                        ng-if="data.project.getRelated('report_set', simulation.uuid).length"
+                        ng-click="delRelEntity(data.project.getRelated('report_set', simulation.uuid)[0],
+                                              {experiments: simulation.uuid})">
+                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                  <span class="sr-only">Delete</span>
+                </button>
+            </div>
+            -->
+          </div>
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="modelConfig in data.project.getRelated('modelconfig_set', simulation.uuid) | orderBy: modelConfig.value.title">
+              <div class="tree-el">
+              <span class="label tag-blue">Simulation Model</span>
+              <span class="tag-title">{{modelConfig.value.title}}</span>
+              <button class="btn btn-xsm btn-link"
+                      ng-if="data.project.getRelated('siminput_set', [simulation.uuid, modelConfig.uuid] ).length === 0"
+                      ng-click="delRelEntity(modelConfig,{simulations: simulation.uuid})">
+                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                <span class="sr-only">Delete</span>
+              </button>
+              </div>
+              <ul class="sensor-list-ul">
+                <li class="tree-container"
+                    ng-repeat="simInput in data.project.getRelated('siminput_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
+                  <div class="tree-el">  
+                  <span class="label tag-green">Simulation Input</span>
+                  <span class="tag-title">{{simInput.value.title}}</span>
+                  <button class="btn btn-xsm btn-link"
+                          ng-if="data.project.getRelated('simoutput_set', [simulation.uuid, modelConfig.uuid, siminput.uuid]).length === 0"
+                          ng-click="delRelEntity(simInput, {simulations: simulation.uuid,
+                                                            modelConfigs: modelConfig.uuid})">
+                    <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                    <span class="sr-only">Delete</span>
+                  </button>
+                  </div>
+                  <ul>
+                    <li 
+                        ng-repeat="simOutput in data.project.getRelated('simoutput_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
+                      <div class="tree-el">
+                      <span class="label tag-red tree-el">Simulation Output</span>
+                      <span class="tag-title">{{simOutput.value.title}}</span>
+                      <button class="btn btn-xsm btn-link"
+                              ng-click="delRelEntity(simOutput, {simulations: simulation.uuid,
+                                                                 modelConfigs: modelConfig.uuid,
+                                                                 simInputs: simInput.uuid})">
+                        <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                        <span class="sr-only">Delete</span>
+                      </button>
+                        <div style="display:inline-block;">
+                          <button class="btn btn-sm btn-link"
+                                  title="Move order Up"
+                                  style="display:inline-block;"
+                                  ng-click="moveOrderUp($index, event, all_events)" >
+                          <i class="fa fa-arrow-up"></i></button>
+                          <button class="btn btn-sm btn-link"
+                                  title="Move order Down"
+                                  style="display:inline-block;"
+                             ng-click="moveOrderDown($index, event, all_events)">
+                          <i class="fa fa-arrow-down"></i></button>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="tree-el">
+                      <select
+                              ng-options="entity as entity.value.title for entity in data.project.simoutput_set"
+                              ng-model="form.updateSimulations[simulation.uuid][modelConfig.uuid][simInput.uuid].relSimOutput">
+                              <option value="">Add Simulation Outputs</option>
+                      </select>
+                      <button class="btn btn-sm btn-link"
+                              ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][modelConfig.uuid][simInput.uuid].relSimOutput,
+                                                  {project:data.project.uuid,
+                                                   simulations: simulation.uuid,
+                                                   modelConfigs: modelConfig.uuid,
+                                                   simInputs: simInput.uuid})"
+                              title="Add Simulation Outputs">
+                        <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                      </button>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="tree-el">
+                  <select
+                          ng-options="entity as entity.value.title for entity in data.project.siminput_set"
+                          ng-model="form.updateSimulations[simulation.uuid][modelConfig.uuid].relSimInput">
+                          <option value="">Add Simulation Inputs</option>
+                  </select>
+                  <button class="btn btn-sm btn-link"
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][modelConfig.uuid].relSimInput,
+                                              {project:data.project.uuid,
+                                               simulations: simulation.uuid,
+                                               modelConfigs: modelConfig.uuid})"
+                          title="Add Simulation Inputs">
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                  </button>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="tree-el">
+              <select 
+                      ng-options="entity as entity.value.title for entity in data.project.modelconfig_set"
+                      ng-model="form.updateSimulations[simulation.uuid].relModelConfig">
+                      <option value="">Add Simulation Model</option>
+              </select>
+              <button class="btn btn-sm btn-link"
+                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relModelConfig,
+                                          {project: data.project.uuid,
+                                           simulations: simulation.uuid})"
+                      title="Add Simulation Model">
+                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+              </button>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="label tag-light-blue">Analysis </span>
+          <span class="ul-title">{{analysis.value.title}}</span>
+          <button class="btn btn-xsm btn-link"
+                  ng-click="removeAnalysis(analysis.uuid)">
+            <i class="fa fa-times-circle" style="color:black;"></i>
+            <span class="sr-only">Delete</span>
+          </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="add-extra-category">
+      <button class="btn btn-info"
+              ng-click="ui.showExtraCat=true"
+              ng-if="!ui.showExtraCat">
+        <i class="fa fa-plus"></i> Add Category
+      </button> 
+      <div class="add-extra-category-content well well-sm"
+           style="padding-bottom:10px; margin-bottom:10px;"
+           ng-if="ui.showExtraCat">
+        <div style="display:inline-block; width:20%">
+          <label for="id-tag-type" style="display:block">Type</label>
+          <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
+               ng-model="data.form.projectTagToAdd.tagType">
+            <yamz-term term-id="{{item.yamzId}}">
+              <i class="fa fa-question-circle"></i>
+            </yamz-term><span>{{item.label}}</span>
+          </div>
+        </div>
+        <div style="display:inline-block; width:45%;">
+          <label for="id-tag-title" style="display:block">Title</label>
+          <input class="form-control" style="width:90%; display:inline-block;"
+                 name="tag-title" id="id-tag-title"
+                 ng-model="data.form.projectTagToAdd.tagTitle"/>
+        </div>
+        <div style="display:inline-block; width:90%; padding-top:5px;">
+          <textarea style="width:100%;" placeholder="Description"
+        ng-model="data.form.projectTagToAdd.tagDescription">
+        </textarea>
+        </div>
+        <!--
+        <div ng-if="data.form.projectTagToAdd.tagType">
+          <div ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.model_config'">
+            <h4>Location</h4>
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-model-config-spatial" style="display:block">
+              Spatial:
+              </label>
+              <input type="text" class="form-control"
+                     ng-model="data.form.projectTagToAdd.optional.spatial"></input>
+            </div>
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-model-config-lat" style="display:block">
+              Lat:
+              </label>
+              <input type="text" class="form-control"
+                     ng-model="data.form.projectTagToAdd.optional.lat"></input>
+            </div>
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-model-config-long" style="display:block">
+              Long:
+              </label>
+              <input type="text" class="form-control"
+                     ng-model="data.form.projectTagToAdd.optional.lon"></input>
+            </div>
+          </div>
+
+          <div ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.sensor_list'">
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-sensor-type" style="display:block">
+              Sensor Type:
+              </label>
+              <input type="text" class="form-control"
+                     id="id-sensor-type"
+                     ng-model="data.form.projectTagToAdd.optional.sensorListType"></input>
+            </div>
+          </div>
+
+          <div ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.analysis'">
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-analysis-data" style="display:block">
+              Analysis Data:
+              </label>
+              <select ng-options="el.name as el.label for el in ui.analysisData"
+                     class="form-control"
+                     id="id-analysis-data"
+                     ng-model="data.form.projectTagToAdd.optional.analysisData"></select>
+            </div>
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-analysis-application" style="display:block">
+              Application:
+              </label>
+              <select ng-options="el.name as el.label for el in ui.analysisApplication"
+                     class="form-control"
+                     id="id-analysis-application"
+                     ng-model="data.form.projectTagToAdd.optional.application"></select>
+            </div>
+            <div style="display: inline-block; width:30%; padding:0px 3px;">
+              <label for="id-referenced-data" style="display:block">
+              Referenced Data:
+              </label>
+              <input type="text" class="form-control" id="id-referenced-data"
+                     ng-model="data.form.projectTagToAdd.optional.referencedData">
+            </div>
+          </div>
+
+        </div>
+        -->
+        <div style="width:100%; height:20px">
+          <button class="btn btn-sm btn-info pull-left"
+                  ng-click="addProjectTag()"
+                  ng-disabled="ui.addingTag">
+                <i class="fa fa-check"></i>
+                    Save Category
+
+        <span style="display:inline-block;padding: 9px;"
+              class="bg-info text-info"
+              ng-if="ui.addingTag">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </span>
+          </button>
+        </div>
+          <div class="alert alert-danger" ng-if="ui.error">
+            {{data.error}}
+          </div>
+      </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
+        <!--
+        <button ng-disabled="data.busy || data.error" class="btn btn-primary"
+                type="button" ng-click="saveExperiments($event)">
+            Save
+        </button>
+        -->
+    </div>
+</div>

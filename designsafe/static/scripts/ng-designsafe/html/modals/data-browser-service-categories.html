@@ -98,6 +98,111 @@
 
     <div class="add-project-labels" style="border-bottom: 1px solid lightgray; padding-bottom:10px;">
        <h4>Inventory</h4>
+       <div ng-if="data.project.value.projectType === 'simulation'">
+        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Simulation Model</h5>
+              <div ng-repeat="simulationModel in data.project.simulationmodel_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(simulationModel)">
+                <span ng-class="{'selected': isProjectTagSel(simulationModel)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{simulationModel.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(simulationModel)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Simulation Input</h5>
+              <div ng-repeat="simulationInput in data.project.simulationinput_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(simulationInput)">
+                <span ng-class="{'selected': isProjectTagSel(simulationInput)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{simulationInput.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(simulationInput)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Simulation Output</h5>
+              <div ng-repeat="simulationOutput in data.project.simulationoutput_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(simulationOutput)">
+                <span ng-class="{'selected': isProjectTagSel(simulationOutput)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{simulationOutput.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(simulationOutput)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Integrated Data Analysis</h5>
+              <div ng-repeat="analysis in data.project.integrateddataanalysis_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(analysis)">
+                <span ng-class="{'selected': isProjectTagSel(analysis)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{analysis.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(analysis)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+        </div>
+        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Integrated Report</h5>
+              <div ng-repeat="report in data.project.integratedreport_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(report)">
+                <span ng-class="{'selected': isProjectTagSel(report)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{report.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(report)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Analysis</h5>
+              <div ng-repeat="analysis in data.project.analysis_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(analysis)">
+                <span ng-class="{'selected': isProjectTagSel(analysis)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{analysis.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(analysis)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Report</h5>
+              <div ng-repeat="report in data.project.report_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(report)">
+                <span ng-class="{'selected': isProjectTagSel(report)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{report.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(report)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+        </div>
+       </div>
+       <div ng-if="data.project.value.projectType === 'experimental'">
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Model Config</h5>
@@ -172,6 +277,7 @@
               </div>
           </div>
         </div>
+       </div>
 <!-- ENDING INVENTORY LISTING -->
 
       <div>
@@ -256,7 +362,7 @@
          style="margin-top:10px; margin-bottom:10px; padding-bottom:20px; border-bottom:1px solid lightgray">
       <h3>Add Category</h3>
       <form>
-        <div style="display:inline-block; width:20%">
+        <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
                ng-model="data.form.projectTagToAdd.tagType">
@@ -272,13 +378,45 @@
                  ng-model="data.form.projectTagToAdd.tagTitle"/>
         </div>
         <!-- Extra form fields for categories start -->
-        <div class="extra-form-inputs" ng-if="data.form.projectTAgToAdd.tagType === 'designsafe.project.simulation.model'">
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.simulation.model'">
+         <div style="display:inline-block; width:30%">
           <label for="id-app-ver" style="display:block">Application & Version</label>
-          <div custom-select="item.name as item.label for item in ui.simModel.apps">
+          <div custom-select="item.name as item.label for item in ui.simModel.apps"
+               ng-model="data.form.simModel.app">
             <yamz-term term-id="{{item.yamzId}}">
               <i class="fa fa-question-circle"></i>
             </yamz-term><span>{{item.label}}</span>
           </div>
+          <input type="text" class="form-control" style="width:90%; display:inline-block;" 
+                 ng-model="data.form.simModel.appOther"
+                 ng-if="data.form.simModel.app === 'Other'"/>
+         </div>
+         <div style="display:inline-block; width:45%">
+          <label for="id-app-desc" style="display:block">Application Description</label>
+          <input class="form-control" style="width:90%; display:inline-block;"
+                 name="tag-title" id="id-app-desc"
+                 ng-model="data.form.simModel.appDesc"/>
+         </div>
+
+         <div style="display:inline-block; width:30%">
+          <label for="id-nhtype" style="display:block">Natural Hazard Type</label>
+          <div custom-select="item.name as item.label for item in ui.simModel.NHType"
+               ng-model="data.form.simModel.NHType">
+            <yamz-term term-id="{{item.yamzId}}">
+              <i class="fa fa-question-circle"></i>
+            </yamz-term><span>{{item.label}}</span>
+          </div>
+          <input type="text" class="form-control" style="width:90%; display:inline-block;" 
+                 ng-model="data.form.simModel.NHTypeOther"
+                 ng-if="data.form.simModel.NHType === 'Other'"/>
+         </div>
+         <div style="display:inline-block; width:45%">
+          <label for="id-app-desc" style="display:block">SimulatedSystem</label>
+          <input class="form-control" style="width:90%; display:inline-block;"
+                 name="tag-title" id="id-app-desc"
+                 ng-model="data.form.simModel.simulatedSystem"/>
+         </div>
+
         </div>
         <!-- Extra form fields for categories END -->
         <div style="display:inline-block; width:90%; padding-top:5px;">

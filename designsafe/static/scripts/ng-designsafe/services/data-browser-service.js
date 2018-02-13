@@ -1564,7 +1564,7 @@
           };
 
           $scope.ui.addingTag = false;
-          if (currentState.project.value.type === 'experimental'){
+          if (currentState.project.value.projectType === 'experimental'){
             $scope.ui.tagTypes = [
                 {label: 'Model Config',
                  name: 'designsafe.project.model_config',
@@ -1582,7 +1582,7 @@
                  name: 'designsafe.project.report',
                  yamzId: ''}
                 ];
-          } else if (currentState.project.value.type === 'simulation'){
+          } else if (currentState.project.value.projectType === 'simulation'){
             $scope.ui.tagTypes = [
                 {label: 'Simulation Model',
                  name: 'designsafe.project.simulation.model',
@@ -1607,7 +1607,8 @@
                  yamzId: ''}
                 ];
           }
-          $scope.ui.appAndVer = [
+          $scope.ui.simModel = {};
+          $scope.ui.simModel.apps = [
             {label: 'ADDCIRC',
              name: 'ADDCIRC',
              yamzId: '' },
@@ -1653,6 +1654,26 @@
             {label: 'Other',
              name: 'Other',
              yamzId: ''},
+          ];
+          $scope.ui.simModel.NHType = [
+            {label: 'Earthquake',
+             name: 'Earthquake',
+             yamzId: '' },
+            {label: 'Flood',
+             name: 'Flood',
+             yamzId: '' },
+            {label: 'Landslide',
+             name: 'Landslide',
+             yamzId: '' },
+            {label: 'Tornado',
+             name: 'Tornado',
+             yamzId: '' },
+            {label: 'Tsunami',
+             name: 'Tsunami',
+             yamzId: '' },
+            {label: 'Other',
+             name: 'Other',
+             yamzId: '' },
           ];
           $scope.data.form.projectTagToAdd = {optional:{}};
           $scope.data.catForm = {};
