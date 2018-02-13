@@ -60,7 +60,7 @@ class SimInput(RelatedEntity):
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class SimOutput(RelatedEntity):
-    model_name = 'designsafe.project.simulation.outpu'
+    model_name = 'designsafe.project.simulation.output'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
