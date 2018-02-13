@@ -249,7 +249,7 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.event': Event,
             'designsafe.project.analysis': Analysis,
             'designsafe.project.sensor_list': SensorList,
-            'designsafe.project.model_config': ModelConfiguration,
+            'designsafe.project.model_config': ModelConfig,
             'designsafe.project.report': Report,
             'designsafe.project.simulation': simulation.SimulationModel,
             'designsafe.project.simulation.model': simulation.ModelConfig,
