@@ -36,14 +36,15 @@
               <tr ng-repeat-start="simulation in data.simulations"
                   ng-class="{'experiment-deleted': ui.simulations[simulation.uuid].deleted}">
                 <td>{{simulation.value.title}}</td>
-                <td>{{simulation.simulationType</td>
+                <td ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</td>
+                <td ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</td>
                 <td><button class="btn btn-sm btn-link"
                             ng-click="toggleDeleteSimulation(simulation.uuid)"
                             alt="Mark simulation for deletion">
                     <i class="fa text-danger" ng-class="{'fa-mail-reply': ui.simulations[simulations.uuid].deleted, 'fa-times-circle': !ui.simulations[simulation.uuid].deleted}"></i>
                     <span class="sr-only">Delete</span>
                     <button class="btn btn-sm btn-link"
-                            ng-click="editExp(simulation)">
+                            ng-click="editSim(simulation)">
                             Edit <i class="fa fa-pencil-square-o"></i>
                     </button>
               </tr>
@@ -73,9 +74,12 @@
                   <input class="form-control" name="exp-title" id="id-exp-title"
                          ng-model="editSimForm.title"/>
                 </div>
-                <div class="form-gropu">
+                <div class="form-group">
                   <label for="id-sim-type" style="display:block">Simulation Type</label>
-                  <input class="form-control" disabled ng-model="editSimForm.facility" id="id-exp-facility"/>
+                  <input class="form-control" disabled ng-model="editSimForm.simulationType" id="id-exp-facility"/>
+                </div>
+                <div class="form-group" ng-if="editSimForm.simulationType == 'Other'">
+                  <input class="form-control" ng-model="editSimForm.simulationTypeOther" id="id-exp-facility"/>
                 </div>
                 <div class="form-group">
                   <label for="id-sim-desc">Description</label> 
@@ -131,7 +135,7 @@
                   <input type="text" class="form-control" id="add-exp-type-other"
                         placeholder="Custom Simulation Type"
                         ng-model="form.addSimulation[0].simulationTypeOther"
-                        ng-if="form.addSimulation[0].simulationType == 'other'"/>
+                        ng-if="form.addSimulation[0].simulationType == 'Other'"/>
                 </div>
                 <div class="form-group">
                   <label for="add-sim-desc">Description</label>
@@ -141,7 +145,7 @@
                             ng-model="form.addSimulation[0].description"></textarea>
                 </div>
                 <button class="btn btn-info btn-sm" ng-click="saveSimulation($event)">
-                    <i class="fa fa-check"></i> Save Experiment
+                    <i class="fa fa-check"></i> Save Simulation
                 </button>
             </div>
         </form>
@@ -155,7 +159,7 @@
      </div>
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="simulation in data.project.simulation_set | orderBy: simulation.value.title"
+            ng-repeat="simulation in data.project.simulationmodel_set | orderBy: simulation.value.title"
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>

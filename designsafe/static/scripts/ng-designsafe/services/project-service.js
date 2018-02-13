@@ -194,47 +194,62 @@
             form: {}
           };
           $scope.ui = {
-              experiments: {},
-              efs: efs,
-              experimentTypes: experimentTypes,
-              equipmentTypes: equipmentTypes,
-              updateExperiments: {},
+              simulations: {},
+              updateSimulations: {},
               showAddReport: {}
               };
+          $scope.ui.simulationTypes = [
+            {
+              name: 'Geotechnical',
+              label: 'Geotechnical'},
+            { name: 'Structural',
+              label: 'Structural'},
+            { name: 'Soil Structure System',
+              label: 'Soil Structure System'},
+            { name: 'Storm Surge',
+              label: 'Storm Surge'},
+            { name: 'Wind',
+              label: 'Wind'},
+            { name: 'Other',
+              label: 'Other'}
+          ];
           $scope.form = {
-            curExperiments: [],
-            addExperiments: [{}],
-            deleteExperiments: [],
+            curSimulation: [],
+            addSimulation: [{}],
+            deleteSimulations: [],
             entitiesToAdd:[]
           };
-          $scope.form.curExperiments = $scope.data.project.experiment_set;
 
-          $scope.addExperiment = function () {
-            $scope.form.addExperiments.push({});
+          $scope.saveSimulation = function($event){
+            $event.preventDefault();
+            $scope.data.busy = true;
+            var simulation = $scope.form.addSimulation[0];
+            if (_.isEmpty(simulation.title) || typeof simulation.title === 'undefined' ||
+                _.isEmpty(simulation.simulationType) || typeof simulation.simulationType === 'undefined'){
+                $scope.data.error = 'Title and Type are required.';
+                $scope.data.busy = false;
+                return;
+            }
+            simulation.description = simulation.description || '';
+            ProjectEntitiesService.create({
+              data: {
+                  uuid: $scope.data.project.uuid,
+                  name: 'designsafe.project.simulation',
+                  entity: simulation
+              }
+            }).then(function(res){
+                $scope.data.project.addEntity(res);
+            }).then(function(){
+                $scope.data.busy = false;
+                $scope.ui.showAddSimulationForm = false;
+                $scope.form.addSimulation = [{}];
+            });
           };
+
+          $scope.form.curExperiments = $scope.data.project.experiment_set;
 
           $scope.cancel = function () {
             $uibModalInstance.dismiss();
-          };
-
-          $scope.delNewExperiment = function(index){
-            $scope.form.addExperiments.splice(index, 1);
-          };
-
-          $scope.getEF = function(str){
-              var efs = $scope.ui.efs[$scope.data.project.value.projectType];
-              var ef = _.find(efs, function(ef){
-                return ef.name === str;
-              });
-              return ef;
-          };
-
-          $scope.getET = function(type, str){
-              var ets = $scope.ui.experimentTypes[type];
-              var et = _.find(ets, function(et){
-                return et.name === str;
-              });
-              return et;
           };
 
           $scope.getTagList = function(entity){
@@ -249,18 +264,14 @@
             return res;
           };
 
-          $scope.editExp = function(exp){
-            $scope.editExpForm = {
-                exp: exp,
-                title: exp.value.title,
-                facility: exp.getEF($scope.data.project.value.projectType,
-                                    exp.value.experimentalFacility).label,
-                type: exp.value.experimentType,
-                equipment: exp.getET(exp.value.experimentalFacility,
-                                        exp.value.equipmentType).label,
-                description: exp.value.description
+          $scope.editSim = function(sim){
+            $scope.editSimForm = {
+                description: sim.value.description,
+                simulationType: sim.value.simulationType,
+                simulationTypeOther: sim.value.simulationTypeOther,
+                title: sim.value.title
             };
-            $scope.ui.showEditExperimentForm = true;
+            $scope.ui.showEditSimulationForm = true;
           };
 
 
@@ -305,57 +316,23 @@
               });
           };
 
-          $scope.toggleDeleteExperiment = function(uuid){
-            if (uuid in $scope.ui.experiments &&
-                $scope.ui.experiments[uuid].deleted){
-              var index = $scope.form.deleteExperiments.indexOf(uuid);
-              $scope.form.deleteExperiments.splice(index, 1);
-              $scope.ui.experiments[uuid].deleted = false;
+          $scope.toggleDeleteSimulation = function(uuid){
+            if (uuid in $scope.ui.simulations &&
+                $scope.ui.simulations[uuid].deleted){
+              var index = $scope.form.deleteSimulations.indexOf(uuid);
+              $scope.form.deleteSimulations.splice(index, 1);
+              $scope.ui.simulations[uuid].deleted = false;
             } else {
-              $scope.form.deleteExperiments.push(uuid);
-              $scope.ui.experiments[uuid] = {};
-              $scope.ui.experiments[uuid].deleted = true;
+              $scope.form.deleteSimulations.push(uuid);
+              $scope.ui.simulations[uuid] = {};
+              $scope.ui.simulations[uuid].deleted = true;
             }
           };
 
-          $scope.saveExperiment = function($event){
-            $event.preventDefault();
-            $scope.data.busy = true;
-            var addActions = _.map($scope.form.addExperiments, function(exp){
-              exp.description = exp.description || '';
-              if (exp.title && exp.experimentalFacility && exp.experimentType){
-                return ProjectEntitiesService.create({
-                  data: {
-                    uuid: $scope.data.project.uuid,
-                    name: 'designsafe.project.experiment',
-                    entity: exp
-                  }
-                }).then(function(res){
-                  $scope.data.project.addEntity(res);
-                  //$scope.data.experiments.push(res);
-                });
-              }
-            });
-
-            //var tasks = addActions.concat(removeActions);
-
-            $q.all(addActions).then(
-              function (results) {
-                $scope.data.busy = false;
-                $scope.form.addExperiments = [{}];
-                //$uibModalInstance.close(results);
-              },
-              function (error) {
-                $scope.data.error = error;
-                //$uibModalInstance.reject(error.data);
-              }
-            );
-          };
-
-          $scope.removeExperiments = function($event){
+          $scope.removeSimulations = function($event){
             $scope.data.busy = true;
 
-            var removeActions = _.map($scope.form.deleteExperiments, function(uuid){
+            var removeActions = _.map($scope.form.deleteSimulations, function(uuid){
               return ProjectEntitiesService.delete({
                 data: {
                   uuid: uuid,
@@ -367,7 +344,7 @@
                         return e.uuid !== entity.uuid;
                     });
                 $scope.data.project[entityAttr] = entitiesArray;
-                $scope.data.experiments = $scope.data.project[entityAttr];
+                $scope.data.simulations = $scope.data.project[entityAttr];
               });
             });
 

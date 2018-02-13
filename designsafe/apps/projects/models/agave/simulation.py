@@ -34,10 +34,8 @@ class DataTag(MetadataModel):
 class SimulationModel(RelatedEntity):
     model_name = 'designsafe.project.simulation'
     title = fields.CharField('Title', max_length=1024)
-    application_version = fields.CharField('Application & Version', default='')
-    application_version_desc = fields.CharField('Application & Version Description', default='')
-    nh_type = fields.CharField('Natural Hazard Type', default='')
-    simulated_system = fields.CharField('Simulated System', default='')
+    simulation_type = fields.CharField('Simulation Type', max_length=1024)
+    simulation_type_other = fields.CharField('Simulation Type Other', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
@@ -45,6 +43,10 @@ class SimulationModel(RelatedEntity):
 class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.simulation.model'
     title = fields.CharField('Title', max_length=512)
+    application_version = fields.CharField('Application & Version', default='')
+    application_version_desc = fields.CharField('Application & Version Description', default='')
+    nh_type = fields.CharField('Natural Hazard Type', default='')
+    simulated_system = fields.CharField('Simulated System', default='')
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
     simulations = fields.RelatedObjectField(SimulationModel)
