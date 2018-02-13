@@ -715,7 +715,7 @@ def check_project_meta_pems(self, metadata_uuid):
 
 @shared_task(bind=True)
 def set_project_id(self, project_uuid):
-    from designsafe.apps.api.projects.models import ExperimentalProject
+    from designsafe.apps.projects.models.agave.experimental import ExperimentalProject
     logger.debug('Setting project ID')
     service = get_service_account_client()
     project = ExperimentalProject._meta.model_manager.get(service, project_uuid)
@@ -775,7 +775,9 @@ def copy_publication_files_to_corral(self, project_id):
                 logger.info(exc)
         else:
             try:
-                os.mkdir(os.path.dirname(local_dst_path))
+                if not os.path.isdir(os.path.dirname(local_dst_path)):
+                    os.mkdir(os.path.dirname(local_dst_path))
+
                 shutil.copy(local_src_path, local_dst_path)
             except OSError as exc:
                 logger.info(exc)
