@@ -327,8 +327,6 @@ class FileMediaView(View):
             elif action == 'mkdir':
                 try:
                     dir_name = body.get('name')
-                    dir_name = re.sub('[^a-zA-Z\_\- ]', '_', dir_name)
-                    dir_name = re.sub('\_+', '_', dir_name)
                     new_dir = fm.mkdir(system_id, file_path, dir_name)
                     metrics.info('Data Depot',
                                  extra = {

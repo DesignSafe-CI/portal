@@ -29,6 +29,7 @@ class DataConfig(AppConfig):
             raise
         from designsafe.apps.data.models.agave.base import set_lazy_rels
         from designsafe.apps.projects.models.agave.experimental import *
+        from designsafe.apps.projects.models.agave.simulation import *
         set_lazy_rels()
         super(DataConfig, self).ready()
 

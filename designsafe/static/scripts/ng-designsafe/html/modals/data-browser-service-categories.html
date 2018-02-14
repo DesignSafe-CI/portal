@@ -95,8 +95,114 @@
          </tbody>
         </table>
     </div>
+
     <div class="add-project-labels" style="border-bottom: 1px solid lightgray; padding-bottom:10px;">
        <h4>Inventory</h4>
+       <div ng-if="data.project.value.projectType === 'simulation'">
+        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Model</h5>
+              <div ng-repeat="simulationModel in data.project.modelconfig_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(simulationModel)">
+                <span ng-class="{'selected': isProjectTagSel(simulationModel)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{simulationModel.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(simulationModel)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Simulation Input</h5>
+              <div ng-repeat="simulationInput in data.project.siminput_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(simulationInput)">
+                <span ng-class="{'selected': isProjectTagSel(simulationInput)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{simulationInput.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(simulationInput)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Simulation Output</h5>
+              <div ng-repeat="simulationOutput in data.project.simoutput_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(simulationOutput)">
+                <span ng-class="{'selected': isProjectTagSel(simulationOutput)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{simulationOutput.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(simulationOutput)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Integrated Data Analysis</h5>
+              <div ng-repeat="analysis in data.project.integrateddataanalysis_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(analysis)">
+                <span ng-class="{'selected': isProjectTagSel(analysis)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{analysis.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(analysis)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+        </div>
+        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Integrated Report</h5>
+              <div ng-repeat="report in data.project.integratedreport_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(report)">
+                <span ng-class="{'selected': isProjectTagSel(report)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{report.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(report)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Analysis</h5>
+              <div ng-repeat="analysis in data.project.analysis_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(analysis)">
+                <span ng-class="{'selected': isProjectTagSel(analysis)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{analysis.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(analysis)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+          <div class="col-xs-3">
+              <h5 style="font-weight:normal;">Report</h5>
+              <div ng-repeat="report in data.project.report_set"
+                   style="width:100%; padding-bottom:5px;">
+                <button class="btn" style="background:none;"
+                        ng-click="toggleProjectTag(report)">
+                <span ng-class="{'selected': isProjectTagSel(report)}"
+                      class="label tag-blue"> </span>
+                <span class="tag-title">{{report.value.title}}</span>
+                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                   ng-class="{'fa-lock': isEntityLocked(report)}" class="fa"></i>
+                </button>
+              </div>
+          </div>
+        </div>
+       </div>
+       <div ng-if="data.project.value.projectType === 'experimental'">
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Model Config</h5>
@@ -171,6 +277,8 @@
               </div>
           </div>
         </div>
+       </div>
+<!-- ENDING INVENTORY LISTING -->
 
       <div>
         <button class="btn btn-sm btn-info"
@@ -234,46 +342,8 @@
       </button>
     </form>
   </div>
-      <!--
-      </div>
-      -->
-      </div>
-      <!--
-      <div class="list-custom-tags" ng-if="data.file && data.files.length == 1">
-      <h4>Custom tags</h4>
-        <div ng-if="!data.file.keywords.length && !ui.busy">
-            <p class="alert alert-info">There is no metadata to show. Please add tags separated by commas.</p>
-        </div>
 
-        <div ng-if="ui.busy">
-            <span style="display:inline-block;padding: 9px;" class="bg-info text-info">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-            </span>
-        </div>
-
-        <div class="tags-wrapper" ng-if="!ui.busy">
-          <ul class="tags-list">
-             <li ng-repeat="tag in data.file.keywords" 
-                 class="tag-item"
-                 ng-class="{'deleted': isMarkedDeleted(tag)}">
-               <button class="btn btn-sm"  
-                       ng-if="!isMarkedDeleted(tag)"
-                       title="Mark as deleted"
-                       ng-click="toggleTag(tag)">
-                       <span>&times;</span>
-               </button>
-               <button class="btn btn-sm"  
-                       ng-if="isMarkedDeleted(tag)"
-                       title="Mark as deleted"
-                       ng-click="toggleTag(tag)">
-                       <span><i class="fa fa-reply"></i></span>
-               </button>
-               <span ng-class="{'deleted': isMarkedDeleted(tag)}">{{tag}}</span>
-             </li>
-          </ul>
-        </div>
       </div>
-      -->
     </div>
     <div style="margin-top:10px;">
     <button class="btn btn-info"
@@ -292,10 +362,10 @@
          style="margin-top:10px; margin-bottom:10px; padding-bottom:20px; border-bottom:1px solid lightgray">
       <h3>Add Category</h3>
       <form>
-        <div style="display:inline-block; width:20%">
+        <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
-               ng-model="data.form.projectTagToAdd.tagType">
+               ng-model="data.form.projectTagToAdd.name">
             <yamz-term term-id="{{item.yamzId}}">
               <i class="fa fa-question-circle"></i>
             </yamz-term><span>{{item.label}}</span>
@@ -305,80 +375,55 @@
           <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
-                 ng-model="data.form.projectTagToAdd.tagTitle"/>
+                 ng-model="data.form.projectTagToAdd.title"/>
         </div>
+        <!-- Extra form fields for categories start -->
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
+         <div style="display:inline-block; width:30%">
+          <label for="id-app-ver" style="display:block">Application & Version</label>
+          <div custom-select="item.name as item.label for item in ui.simModel.apps"
+               ng-model="data.form.projectTagToAdd.applicationVersion">
+            <yamz-term term-id="{{item.yamzId}}">
+              <i class="fa fa-question-circle"></i>
+            </yamz-term><span>{{item.label}}</span>
+          </div>
+          <input type="text" class="form-control" style="width:90%; display:inline-block;" 
+                 ng-model="data.form.projectTagToAdd.applicationVersionOther"
+                 ng-if="data.form.simModel.app === 'Other'"/>
+         </div>
+         <div style="display:inline-block; width:45%">
+          <label for="id-app-desc" style="display:block">Application Description</label>
+          <input class="form-control" style="width:90%; display:inline-block;"
+                 name="tag-title" id="id-app-desc"
+                 ng-model="data.form.projectTagToAdd.applicationVersionDesc"/>
+         </div>
+
+         <div style="display:inline-block; width:30%">
+          <label for="id-nhtype" style="display:block">Natural Hazard Type</label>
+          <div custom-select="item.name as item.label for item in ui.simModel.NHType"
+               ng-model="data.form.projectTagToAdd.nhType">
+            <yamz-term term-id="{{item.yamzId}}">
+              <i class="fa fa-question-circle"></i>
+            </yamz-term><span>{{item.label}}</span>
+          </div>
+          <input type="text" class="form-control" style="width:90%; display:inline-block;" 
+                 ng-model="data.form.projectTagToAdd.nhTypeOther"
+                 ng-if="data.form.simModel.NHType === 'Other'"/>
+         </div>
+         <div style="display:inline-block; width:45%">
+          <label for="id-app-desc" style="display:block">SimulatedSystem</label>
+          <input class="form-control" style="width:90%; display:inline-block;"
+                 name="tag-title" id="id-app-desc"
+                 ng-model="data.form.projectTagToAdd.simulatedSystem"/>
+         </div>
+
+        </div>
+        <!-- Extra form fields for categories END -->
         <div style="display:inline-block; width:90%; padding-top:5px;">
           <textarea style="width:100%;" placeholder="Description"
-        ng-model="data.form.projectTagToAdd.tagDescription">
+        ng-model="data.form.projectTagToAdd.description">
         </textarea>
         </div>
-        <!--
-        <div ng-if="data.form.projectTagToAdd.tagType">
-          <div ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.model_config'">
-            <h4>Location</h4>
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-model-config-spatial" style="display:block">
-              Spatial:
-              </label>
-              <input type="text" class="form-control"
-                     ng-model="data.form.projectTagToAdd.optional.spatial"></input>
-            </div>
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-model-config-lat" style="display:block">
-              Lat:
-              </label>
-              <input type="text" class="form-control"
-                     ng-model="data.form.projectTagToAdd.optional.lat"></input>
-            </div>
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-model-config-long" style="display:block">
-              Long:
-              </label>
-              <input type="text" class="form-control"
-                     ng-model="data.form.projectTagToAdd.optional.lon"></input>
-            </div>
-          </div>
-          <div ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.sensor_list'">
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-sensor-type" style="display:block">
-              Sensor Type:
-              </label>
-              <input type="text" class="form-control"
-                     id="id-sensor-type"
-                     ng-model="data.form.projectTagToAdd.optional.sensorListType"></input>
-            </div>
-          </div>
-
-          <div ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.analysis'">
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-analysis-data" style="display:block">
-              Analysis Data:
-              </label>
-              <select ng-options="el.name as el.label for el in ui.analysisData"
-                     class="form-control"
-                     id="id-analysis-data"
-                     ng-model="data.form.projectTagToAdd.optional.analysisData"></select>
-            </div>
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-analysis-application" style="display:block">
-              Application:
-              </label>
-              <select ng-options="el.name as el.label for el in ui.analysisApplication"
-                     class="form-control"
-                     id="id-analysis-application"
-                     ng-model="data.form.projectTagToAdd.optional.application"></select>
-            </div>
-            <div style="display: inline-block; width:30%; padding:0px 3px;">
-              <label for="id-referenced-data" style="display:block">
-              Referenced Data:
-              </label>
-              <input type="text" class="form-control" id="id-referenced-data"
-                     ng-model="data.form.projectTagToAdd.optional.referencedData">
-            </div>
-          </div>
-
-        </div>
-        -->
         <div style="width:100%; height:20px">
           <button class="btn btn-sm btn-info"
                   ng-click="addProjectTag()"
@@ -401,17 +446,6 @@
     <div style="text-align:center;">
     <h4> Relate Categories in Manage Experiments </h4>
     </div>
-    <!--
-    <div class="custom-labels" ng-if="data.file && data.files.length == 1">
-      <h4>Custom Tags</h4>
-    <form>
-        <div class="form-group">
-            <label for="id-new-folder-name">Tags: </label>
-            <input type="text" class="form-control" id="id-metadata-tags" name="metadata-tags" placeholder="tag1, tag2, tag three" ng-model="data.form.metadataTags" autofocus select-on-focus>
-        </div>
-    </form>
-    </div>
-    -->
     <div style="padding:10px; margin-top:10px;" class="text-right">
         <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
         <!-- <button class="btn btn-primary" type="submit" ng-click="doSaveMetadata($event)">Save</button> -->

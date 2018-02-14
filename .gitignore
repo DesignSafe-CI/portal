@@ -1,0 +1,71 @@
+# ignore intellij IDE things
+.idea/
+
+# OsX DS_Store nonsense
+.DS_Store
+
+# ignore the populated environment file so as not to commit secrets!
+designsafe.env
+mysql.env
+rabbitmq.env
+rabbitmq.conf
+mysql.cnf
+
+# local config files
+conf/elasticsearch/elasticsearch.yml
+conf/elasticsearch/logging.yml
+conf/redis.conf
+
+# don't commit certs
+certs/
+
+# data directories
+data/redis/
+data/mysql/
+data/elasticsearch/
+data/static/
+data/media/
+data/NEHRI/
+
+# no node modules or package-lock
+node_modules/
+package-lock.json
+
+# in case you leave that here
+datadump.json
+
+# no development databases
+db.sqlite3*
+
+# ignore various Python things
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+*.mo
+*.pot
+*.log
+docs/_build/
+.docs/build
+target/
+
+# ignore Google Drive API secrets
+*secrets.json
+*secrets.py

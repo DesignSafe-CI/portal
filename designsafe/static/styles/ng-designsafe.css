@@ -655,3 +655,20 @@ span.tag-title {
 a[ng-click]:hover {
     cursor: pointer;
 }
+
+.squarebrackets:before {
+   content: " ";
+   border-left:1px solid black;
+   border-top:1px solid black;
+   border-bottom:1px solid black;
+   padding:0px 5px 5px 5px;
+}
+
+.squarebrackets:after
+{
+  content:" ";
+  padding:0px 5px 0px 5px;
+  border-right:1px solid black;
+  border-top:1px solid black;
+  border-bottom:1px solid black;
+}

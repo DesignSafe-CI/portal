@@ -149,9 +149,15 @@
             -->
             <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
                     ng-click="manageExperiments($event)"
-                    ng-if="data.project.value.projectType != 'other'">
+                    ng-if="data.project.value.projectType === 'experimental'">
                 <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
                 Manage Experiments
+            </button>
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
+                    ng-click="manageSimulations($event)"
+                    ng-if="data.project.value.projectType === 'simulation'">
+                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
+                Manage Simulations
             </button>
         </div>
 

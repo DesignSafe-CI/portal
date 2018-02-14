@@ -246,6 +246,22 @@
       });
     };
 
+    $scope.manageSimulations = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      var simulationAttr = $scope.data.project.getRelatedAttrName('designsafe.project.simulation');
+      var simulations = $scope.data.project[simulationAttr];
+      if (typeof simulations === 'undefined'){
+        $scope.data.project[simulationAttr] = [];
+        simulations = $scope.data.project[simulationAttr];
+      }
+      ProjectService.manageSimulations({'simulations': simulations,
+                                        'project': $scope.data.project}).then(function (simulations) {
+        $scope.data.simulations = simulations;
+      });
+    };
+
     $scope.dateString = function(s){
       var d = Date(s);
       return d;
@@ -1079,6 +1095,14 @@
         }
       },
 
+      filterSimulations : function(simulations){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return simulations;
+        } else {
+          return $scope.browser.publication.simulationsList;
+        }
+      },
+
       filterEvents : function(events, exp){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return events;
@@ -1090,11 +1114,22 @@
         }
       },
 
-      filterFiles : function(ent, evt, listing){
+      filterSimulationModels : function(models, simulation){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return models;
+        } else {
+          return _.filter($scope.browser.publication.simulationModelsList,
+            function(model){
+              return _.contains(model.associationIds, simulation.uuid);
+            });
+        }
+      },
+
+      filterFiles : function(parentEnt, ent, listing){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return listing;
-        } else if (ent.name === 'designsafe.project.experiment') {
-            return $scope.browser.publication.filesSelected[ent.uuid][evt.uuid];
+        } else if (parentEnt && typeof parentEnt.uuid !== 'undefined' && ent) {
+            return $scope.browser.publication.filesSelected[parentEnt.uuid][ent.uuid];
         } else {
             return $scope.browser.publication.filesSelected[ent.uuid];
         }

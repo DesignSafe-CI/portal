@@ -27,7 +27,6 @@ def lookup_model(entity):
             break
         except AttributeError:
             pass
-    logger.debug('cls: %s', cls)
     if cls is None and ename.endswith('_project'):
         return Project
     elif cls is None:

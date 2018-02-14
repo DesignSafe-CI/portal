@@ -46,9 +46,6 @@ class Publication(object):
 
                 if res.hits.total:
                     self._wrap = res[0]
-                    raise Exception('Initializing from existent publication '
-                                    'and a publication object was given. '
-                                    'Are you sure you want to do this? ')
                 else:
                     self._wrap = PublicationIndexed(**wrap)
 
