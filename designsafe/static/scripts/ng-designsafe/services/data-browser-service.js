@@ -146,7 +146,7 @@
     /**
       Checks to see if there is a folder in the selected listings. If so, download
       is not available.
-
+      
       @param {FileListing|FileListing[]} files Files to test
       @return {boolean}
     */
@@ -704,9 +704,44 @@
               $scope.busy = false;
             },
             function (err) {
-              if (file.name.split('.').pop() != 'ipynb') {
+              var fileExt = file.name.split('.').pop()
+              var videoExt = ['webm', 'ogg', 'mp4']
+
+              //check if preview is video
+              if (videoExt.includes(fileExt) ) {
+                file.download().then(
+                  function(data){
+                    var postit = data.href;
+                    var oReq = new XMLHttpRequest();
+                    oReq.open("GET", postit, true);
+                    oReq.responseType = 'blob';
+
+                    oReq.onload = function() {
+                      if (this.status === 200) {
+                        var videoBlob = this.response;
+                        var vid = URL.createObjectURL(videoBlob);
+
+                        document.getElementById("videoPlayer").src=vid;
+                      };
+                      $scope.busy = false;
+                    };
+                    oReq.onerror = function() {
+                      $scope.previewError = err.data;
+                      $scope.busy = false;
+                    };
+
+                    oReq.send();
+
+                  },
+                  function (err) {
+                    $scope.previewError = err.data;
+                    $scope.busy = false;
+                  });
+              // if filetype is not video or ipynb
+              } else if (fileExt != 'ipynb') {
                 $scope.previewError = err.data;
                 $scope.busy = false;
+              // if filetype is ipynb
               } else {
                   file.download().then(
                     function(data){
