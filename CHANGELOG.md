@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180202
+
+Improvements:
+
+- Adding first version of Simulation Data Model
+
+Fixes:
+
+- Performance on workspace loading.
+- Data depot selection of files.
+- Video previewer not working on Chrome.
+
 ## 20180201
 
 Improvements:
@@ -18,7 +30,7 @@ Fixes:
 
 Improvements:
 
-- Updating MATLAB Software License Lanugage
+- Updating MATLAB Software License Language
 - Adding subsites to Sitemaps
 - Re-enabling Data Depot search bar with improvements.
 - Disabling extra step on login workflow

@@ -18,10 +18,6 @@ conf/redis.conf
 
 # don't commit certs
 certs/
-conf/nginx/designsafe.dev.conf
-conf/nginx/designsafe.dev.crt
-conf/nginx/designsafe.dev.key
-conf/nginx/designsafe.dev.backup.crt
 
 # data directories
 data/redis/
