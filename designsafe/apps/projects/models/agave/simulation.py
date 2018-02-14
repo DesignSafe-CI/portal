@@ -44,8 +44,10 @@ class ModelConfig(RelatedEntity):
     model_name = 'designsafe.project.simulation.model'
     title = fields.CharField('Title', max_length=512)
     application_version = fields.CharField('Application & Version', default='')
+    application_version_other = fields.CharField('Application & Version Other', default='')
     application_version_desc = fields.CharField('Application & Version Description', default='')
     nh_type = fields.CharField('Natural Hazard Type', default='')
+    nh_type_other = fields.CharField('Natural Hazard Type Other', default='')
     simulated_system = fields.CharField('Simulated System', default='')
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)

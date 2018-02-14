@@ -101,8 +101,8 @@
        <div ng-if="data.project.value.projectType === 'simulation'">
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
-              <h5 style="font-weight:normal;">Simulation Model</h5>
-              <div ng-repeat="simulationModel in data.project.simulationmodel_set"
+              <h5 style="font-weight:normal;">Model</h5>
+              <div ng-repeat="simulationModel in data.project.modelconfig_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(simulationModel)">
@@ -365,7 +365,7 @@
         <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
-               ng-model="data.form.projectTagToAdd.tagType">
+               ng-model="data.form.projectTagToAdd.name">
             <yamz-term term-id="{{item.yamzId}}">
               <i class="fa fa-question-circle"></i>
             </yamz-term><span>{{item.label}}</span>
@@ -375,53 +375,53 @@
           <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
-                 ng-model="data.form.projectTagToAdd.tagTitle"/>
+                 ng-model="data.form.projectTagToAdd.title"/>
         </div>
         <!-- Extra form fields for categories start -->
-        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.tagType === 'designsafe.project.simulation.model'">
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
          <div style="display:inline-block; width:30%">
           <label for="id-app-ver" style="display:block">Application & Version</label>
           <div custom-select="item.name as item.label for item in ui.simModel.apps"
-               ng-model="data.form.simModel.app">
+               ng-model="data.form.projectTagToAdd.applicationVersion">
             <yamz-term term-id="{{item.yamzId}}">
               <i class="fa fa-question-circle"></i>
             </yamz-term><span>{{item.label}}</span>
           </div>
           <input type="text" class="form-control" style="width:90%; display:inline-block;" 
-                 ng-model="data.form.simModel.appOther"
+                 ng-model="data.form.projectTagToAdd.applicationVersionOther"
                  ng-if="data.form.simModel.app === 'Other'"/>
          </div>
          <div style="display:inline-block; width:45%">
           <label for="id-app-desc" style="display:block">Application Description</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-app-desc"
-                 ng-model="data.form.simModel.appDesc"/>
+                 ng-model="data.form.projectTagToAdd.applicationVersionDesc"/>
          </div>
 
          <div style="display:inline-block; width:30%">
           <label for="id-nhtype" style="display:block">Natural Hazard Type</label>
           <div custom-select="item.name as item.label for item in ui.simModel.NHType"
-               ng-model="data.form.simModel.NHType">
+               ng-model="data.form.projectTagToAdd.nhType">
             <yamz-term term-id="{{item.yamzId}}">
               <i class="fa fa-question-circle"></i>
             </yamz-term><span>{{item.label}}</span>
           </div>
           <input type="text" class="form-control" style="width:90%; display:inline-block;" 
-                 ng-model="data.form.simModel.NHTypeOther"
+                 ng-model="data.form.projectTagToAdd.nhTypeOther"
                  ng-if="data.form.simModel.NHType === 'Other'"/>
          </div>
          <div style="display:inline-block; width:45%">
           <label for="id-app-desc" style="display:block">SimulatedSystem</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-app-desc"
-                 ng-model="data.form.simModel.simulatedSystem"/>
+                 ng-model="data.form.projectTagToAdd.simulatedSystem"/>
          </div>
 
         </div>
         <!-- Extra form fields for categories END -->
         <div style="display:inline-block; width:90%; padding-top:5px;">
           <textarea style="width:100%;" placeholder="Description"
-        ng-model="data.form.projectTagToAdd.tagDescription">
+        ng-model="data.form.projectTagToAdd.description">
         </textarea>
         </div>
         <div style="width:100%; height:20px">

@@ -298,20 +298,20 @@
             }
           };
 
-          $scope.saveEditExperiment = function(){
-              var exp = $scope.editExpForm.exp;
-              exp.value.title = $scope.editExpForm.title;
-              exp.value.description = $scope.editExpForm.description;
-              $scope.ui.savingEditExp = true;
+          $scope.saveEditSimulation = function(){
+              var sim = $scope.editSimForm.sim;
+              sim.value.title = $scope.editExpForm.title;
+              sim.value.description = $scope.editExpForm.description;
+              $scope.ui.savingEditSim = true;
               ProjectEntitiesService.update({data: {
-                  uuid: exp.uuid,
-                  entity: exp
+                  uuid: sim.uuid,
+                  entity: sim
               }}).then(function(e){
                   var ent = $scope.data.project.getRelatedByUuid(e.uuid);
                   ent.update(e);
                   $scope.ui.savingEditExp = false;
-                  $scope.data.experiments = $scope.data.project.experiment_set;
-                  $scope.ui.showEditExperimentForm = false;
+                  $scope.data.simulations = $scope.data.project.simulation_set;
+                  $scope.ui.showEditSimulationForm = false;
                   return e;
               });
           };
@@ -423,61 +423,126 @@
               $uibModalInstance.reject(err.data);
             });
           };
-
           $scope.ui.addingTag = false;
-          $scope.ui.tagTypes = [
-              {label: 'Model Config',
-               name: 'designsafe.project.model_config',
-               yamzId: 'h1312'},
-              {label: 'Sensor Info',
-               name: 'designsafe.project.sensor_list',
-               yamzId: 'h1557'},
-              {label: 'Event',
-               name: 'designsafe.project.event',
-               yamzId: 'h1253'},
-              {label: 'Analysis',
-               name: 'designsafe.project.analysis',
-               yamzId: 'h1333'},
-              {label: 'Report',
-               name: 'designsafe.project.report',
-               yamzId: ''}
-              ];
-          $scope.ui.analysisData = [
-            {name: 'graph', label: 'Graph'},
-            {name: 'visualization', label: 'Visualization'},
-            {name: 'table', label: 'Table'},
-            {name: 'other', label: 'Other'}
+          if ($scope.data.project.value.projectType === 'experimental'){
+            $scope.ui.tagTypes = [
+                {label: 'Model Config',
+                 name: 'designsafe.project.model_config',
+                 yamzId: 'h1312'},
+                {label: 'Sensor Info',
+                 name: 'designsafe.project.sensor_list',
+                 yamzId: 'h1557'},
+                {label: 'Event',
+                 name: 'designsafe.project.event',
+                 yamzId: 'h1253'},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
+                ];
+          } else if ($scope.data.project.value.projectType === 'simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Simulation Model',
+                 name: 'designsafe.project.simulation.model',
+                 yamzId: ''},
+                {label: 'Simulation Input',
+                 name: 'designsafe.project.simulation.input',
+                 yamzId: ''},
+                {label: 'Simulation Output',
+                 name: 'designsafe.project.simulation.output',
+                 yamzId: ''},
+                {label: 'Integrated Data Analysis',
+                 name: 'designsafe.project.simulation.integrated_data_analysis',
+                 yamzId: ''},
+                {label: 'Integrated Report',
+                 name: 'designsafe.project.simulation.integrated_report',
+                 yamzId: ''},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
+                ];
+          }
+          $scope.ui.simModel = {};
+          $scope.ui.simModel.apps = [
+            {label: 'ADDCIRC',
+             name: 'ADDCIRC',
+             yamzId: '' },
+            {label: 'Abaqus',
+             name: 'Abaqus',
+             yamzId: ''},
+            {label: 'Atena',
+             name: 'Atena',
+             yamzId: ''},
+            {label: 'ClawPack/GeoClaw',
+             name: 'ClawPack/GeoClaw',
+             yamzId: ''},
+            {label: 'Diana',
+             name: 'Diana',
+             yamzId: ''},
+            {label: 'ETABS',
+             name: 'ETABS',
+             yamzId: ''},
+            {label: 'FUNWAVE',
+             name: 'FUNWAVE',
+             yamzId: ''},
+            {label: 'FLUENT/ANSYS',
+             name: 'FLUENT/ANSYS',
+             yamzId: ''},
+            {label: 'LS-Dyna',
+             name: 'LS-Dyna',
+             yamzId: ''},
+            {label: 'OpenFoam',
+             name: 'OpenFoam',
+             yamzId: ''},
+            {label: 'OpenSees',
+             name: 'OpenSees',
+             yamzId: ''},
+            {label: 'PERFORM',
+             name: 'PERFORM',
+             yamzId: ''},
+            {label: 'SAP',
+             name: 'SAP',
+             yamzId: ''},
+            {label: 'SWAN',
+             name: 'SWAN',
+             yamzId: ''},
+            {label: 'Other',
+             name: 'Other',
+             yamzId: ''},
           ];
-          $scope.ui.analysisApplication = [
-            {name: 'matlab', label: 'Matlab'},
-            {name: 'r', label: 'R'},
-            {name: 'jupyter', label: 'Jupyter'},
-            {name: 'other', label: 'Other'}
+          $scope.ui.simModel.NHType = [
+            {label: 'Earthquake',
+             name: 'Earthquake',
+             yamzId: '' },
+            {label: 'Flood',
+             name: 'Flood',
+             yamzId: '' },
+            {label: 'Landslide',
+             name: 'Landslide',
+             yamzId: '' },
+            {label: 'Tornado',
+             name: 'Tornado',
+             yamzId: '' },
+            {label: 'Tsunami',
+             name: 'Tsunami',
+             yamzId: '' },
+            {label: 'Other',
+             name: 'Other',
+             yamzId: '' },
           ];
-
           $scope.data.form.projectTagToAdd = {optional:{}};
 
           $scope.addProjectTag = function(){
-            var newTag = $scope.data.form.projectTagToAdd;
-            var nameComps = newTag.tagType.split('.');
+            var entity = $scope.data.form.projectTagToAdd;
+            var nameComps = entity.name.split('.');
             var name = nameComps[nameComps.length-1];
-            var entity = {};
-            entity.name = newTag.tagType;
-            if (name === 'event'){
-              entity.eventType = newTag.tagAttribute;
-            } else if (name === 'analysis'){
-              entity.analysisType = newTag.tagAttribute;
-            } else if (name === 'sensor_list'){
-              entity.sensorListType = newTag.tagAttibute;
-            } else if (name === 'model_config'){
-              entity.coverage = newTag.tagAttribute;
-            }
-            for (var attr in $scope.data.form.projectTagToAdd.optional){
-              entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
-            }
             $scope.ui.addingTag = true;
-            entity.title = newTag.tagTitle;
-            entity.description = newTag.tagDescription || '';
+            entity.description = entity.description || '';
             if (typeof $scope.data.files !== 'undefined'){
               entity.filePaths = _.map($scope.data.files,
                                      function(file){
@@ -487,7 +552,7 @@
             $scope.ui.addingTag = true;
             ProjectEntitiesService.create({data: {
                 uuid: $scope.data.project.uuid,
-                name: newTag.tagType,
+                name: entity.name,
                 entity: entity
             }})
             .then(
@@ -784,34 +849,116 @@
           };
 
           $scope.ui.addingTag = false;
-          $scope.ui.tagTypes = [
-              {label: 'Model Config',
-               name: 'designsafe.project.model_config',
-               yamzId: 'h1312'},
-              {label: 'Sensor Info',
-               name: 'designsafe.project.sensor_list',
-               yamzId: 'h1557'},
-              {label: 'Event',
-               name: 'designsafe.project.event',
-               yamzId: 'h1253'},
-              {label: 'Analysis',
-               name: 'designsafe.project.analysis',
-               yamzId: 'h1333'},
-              {label: 'Report',
-               name: 'designsafe.project.report',
-               yamzId: ''}
-              ];
-          $scope.ui.analysisData = [
-            {name: 'graph', label: 'Graph'},
-            {name: 'visualization', label: 'Visualization'},
-            {name: 'table', label: 'Table'},
-            {name: 'other', label: 'Other'}
+          if ($scope.data.project.value.projectType === 'experimental'){
+            $scope.ui.tagTypes = [
+                {label: 'Model Config',
+                 name: 'designsafe.project.model_config',
+                 yamzId: 'h1312'},
+                {label: 'Sensor Info',
+                 name: 'designsafe.project.sensor_list',
+                 yamzId: 'h1557'},
+                {label: 'Event',
+                 name: 'designsafe.project.event',
+                 yamzId: 'h1253'},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
+                ];
+          } else if ($scope.data.project.value.projectType === 'simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Simulation Model',
+                 name: 'designsafe.project.simulation.model',
+                 yamzId: ''},
+                {label: 'Simulation Input',
+                 name: 'designsafe.project.simulation.input',
+                 yamzId: ''},
+                {label: 'Simulation Output',
+                 name: 'designsafe.project.simulation.output',
+                 yamzId: ''},
+                {label: 'Integrated Data Analysis',
+                 name: 'designsafe.project.simulation.integrated_data_analysis',
+                 yamzId: ''},
+                {label: 'Integrated Report',
+                 name: 'designsafe.project.simulation.integrated_report',
+                 yamzId: ''},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
+                ];
+          }
+          $scope.ui.simModel = {};
+          $scope.ui.simModel.apps = [
+            {label: 'ADDCIRC',
+             name: 'ADDCIRC',
+             yamzId: '' },
+            {label: 'Abaqus',
+             name: 'Abaqus',
+             yamzId: ''},
+            {label: 'Atena',
+             name: 'Atena',
+             yamzId: ''},
+            {label: 'ClawPack/GeoClaw',
+             name: 'ClawPack/GeoClaw',
+             yamzId: ''},
+            {label: 'Diana',
+             name: 'Diana',
+             yamzId: ''},
+            {label: 'ETABS',
+             name: 'ETABS',
+             yamzId: ''},
+            {label: 'FUNWAVE',
+             name: 'FUNWAVE',
+             yamzId: ''},
+            {label: 'FLUENT/ANSYS',
+             name: 'FLUENT/ANSYS',
+             yamzId: ''},
+            {label: 'LS-Dyna',
+             name: 'LS-Dyna',
+             yamzId: ''},
+            {label: 'OpenFoam',
+             name: 'OpenFoam',
+             yamzId: ''},
+            {label: 'OpenSees',
+             name: 'OpenSees',
+             yamzId: ''},
+            {label: 'PERFORM',
+             name: 'PERFORM',
+             yamzId: ''},
+            {label: 'SAP',
+             name: 'SAP',
+             yamzId: ''},
+            {label: 'SWAN',
+             name: 'SWAN',
+             yamzId: ''},
+            {label: 'Other',
+             name: 'Other',
+             yamzId: ''},
           ];
-          $scope.ui.analysisApplication = [
-            {name: 'matlab', label: 'Matlab'},
-            {name: 'r', label: 'R'},
-            {name: 'jupyter', label: 'Jupyter'},
-            {name: 'other', label: 'Other'}
+          $scope.ui.simModel.NHType = [
+            {label: 'Earthquake',
+             name: 'Earthquake',
+             yamzId: '' },
+            {label: 'Flood',
+             name: 'Flood',
+             yamzId: '' },
+            {label: 'Landslide',
+             name: 'Landslide',
+             yamzId: '' },
+            {label: 'Tornado',
+             name: 'Tornado',
+             yamzId: '' },
+            {label: 'Tsunami',
+             name: 'Tsunami',
+             yamzId: '' },
+            {label: 'Other',
+             name: 'Other',
+             yamzId: '' },
           ];
 
           $scope.data.form.projectTagToAdd = {optional:{}};

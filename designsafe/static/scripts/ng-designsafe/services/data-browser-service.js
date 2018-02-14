@@ -1847,26 +1847,11 @@
           };
 
           $scope.addProjectTag = function(){
-            var newTag = $scope.data.form.projectTagToAdd;
-            var nameComps = newTag.tagType.split('.');
+            var entity = $scope.data.form.projectTagToAdd;
+            var nameComps = entity.name.split('.');
             var name = nameComps[nameComps.length-1];
-            var entity = {};
-            entity.name = newTag.tagType;
-            if (name === 'event'){
-              entity.eventType = newTag.tagAttribute;
-            } else if (name === 'analysis'){
-              entity.analysisType = newTag.tagAttribute;
-            } else if (name === 'sensor_list'){
-              entity.sensorListType = newTag.tagAttibute;
-            } else if (name === 'model_config'){
-              entity.coverage = newTag.tagAttribute;
-            }
-            for (var attr in $scope.data.form.projectTagToAdd.optional){
-              entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
-            }
             $scope.ui.addingTag = true;
-            entity.title = newTag.tagTitle;
-            entity.description = newTag.tagDescription || '';
+            entity.description = entity.description || '';
             if (typeof $scope.data.files !== 'undefined'){
               entity.filePaths = _.map($scope.data.files,
                                      function(file){
@@ -1876,7 +1861,7 @@
             $scope.ui.addingTag = true;
             ProjectEntitiesService.create({data: {
                 uuid: currentState.project.uuid,
-                name: newTag.tagType,
+                name: entity.name,
                 entity: entity
             }})
             .then(
