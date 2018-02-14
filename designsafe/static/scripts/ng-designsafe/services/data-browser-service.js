@@ -709,6 +709,7 @@
 
               //check if preview is video
               if (videoExt.includes(fileExt) ) {
+                $scope.prevVideo = true;
                 file.download().then(
                   function(data){
                     var postit = data.href;
@@ -723,15 +724,13 @@
 
                         document.getElementById("videoPlayer").src=vid;
                       };
-                      $scope.busy = false;
                     };
                     oReq.onerror = function() {
                       $scope.previewError = err.data;
                       $scope.busy = false;
                     };
-
                     oReq.send();
-
+                    $scope.busy = false;
                   },
                   function (err) {
                     $scope.previewError = err.data;
