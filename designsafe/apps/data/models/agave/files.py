@@ -134,8 +134,6 @@ class BaseFileResource(BaseAgaveResource):
         '.ppt', '.pot', '.pps', '.pptx', '.pptm', '.potx', '.ppsx', '.ppsm', '.sldx', '.sldm',
     ]
 
-    SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
-
     SUPPORTED_IMAGE_PREVIEW_EXTS = [
         '.png', '.gif', '.jpg', '.jpeg',
     ]
@@ -163,11 +161,12 @@ class BaseFileResource(BaseAgaveResource):
         '.mp4' : 'video/mp4'
     }
 
+    SUPPORTED_MS_OFFICE = SUPPORTED_MS_WORD + SUPPORTED_MS_POWERPOINT + SUPPORTED_MS_EXCEL
+
     SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
                                     SUPPORTED_TEXT_PREVIEW_EXTS +
                                     SUPPORTED_OBJECT_PREVIEW_EXTS + 
-                                    SUPPORTED_MS_OFFICE +
-                                    SUPPORTED_VIDEO_EXTS)
+                                    SUPPORTED_MS_OFFICE)
 
     def __init__(self, agave_client, system, path, **kwargs):
         super(BaseFileResource, self).__init__(agave_client, system=system, path=path,
