@@ -112,7 +112,7 @@
             );
         }
 
-        $scope.addDefaultTabs({'name': $translate.instant('apps_metadata_name')})
+        $scope.addDefaultTabs({"$and":[{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available":true}]})
           // .then(function(){
           //   var deferred = $q.defer();
 

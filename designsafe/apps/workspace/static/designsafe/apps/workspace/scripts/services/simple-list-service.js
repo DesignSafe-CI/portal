@@ -27,6 +27,10 @@
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
             if (appMeta.value.definition.available) {
+              // If label is undefined, set as id
+              if (!appMeta.value.definition.label) {
+                appMeta.value.definition.label = appMeta.value.definition.id;
+              }
               // Apply app icon if available, and apply label for ordering
               appMeta.value.definition.orderBy = appMeta.value.definition.label;
               appMeta.value.definition.icon = null;
