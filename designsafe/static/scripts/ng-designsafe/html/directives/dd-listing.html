@@ -133,9 +133,201 @@
                class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
                 This Simulation has no Models.
           </div>
-          <div ng-repeat="model in publicationCtrl.filterSimulationModel(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation) | orderBy: ['_ui.order', 'value.title']"
+          <div ng-repeat="model in publicationCtrl.filterSimulationModels(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation) | orderBy: ['_ui.order', 'value.title']"
                style="margin-bottom:10px;">
-               {{model.value.title}}
+            <div style="padding:3px;">
+              <span class="ds-text-red folder-tick">Simulation Model: {{model.value.title}} </span>
+            </div>
+            <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
+              <div style="border-bottom:1px solid lightgrey;">
+                <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">
+                  {{model.value.title}}
+                </a>
+              </div>
+              <div >
+                <div ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])">
+                  <a class="ds-text-blue"
+                     href=""
+                     ng-click="openPreviewTree()($event, simInput.uuid)">
+                    {{simInput.value.title}}
+                  </a>
+                  <div style="display:inline-block" ng-repeat="simOutput in browser.project.getRelated('simoutput_set', [simulation.uuid, model.uuid, simInput.uuid])">
+                    <a class="ds-text-green" href="" ng-click="openPreviewTree()($event, simOutput.uuid)">
+                      {{simOutput.value.title}}
+                    </a>
+                    <div style="display:inline-block" ng-repeat="analysis in browser.project.getRelated('analysis_set', [simulation.uuid, model.uui, simInput.uuid, simOutput.uuid])">
+                      <a class="ds-text-blue" href="" ng-click="openPreviewTree($event, analysis.uuid)">
+                        {{analysis.value.title}}
+                      </a>
+                    </div>
+                    <div style="display:inline-block" ng-repeat="report in browser.project.getRelated('report_set', [simulation.uuid, model.uuid, simInput.uuid, simOutput.uuid])">
+                      <a class="ds-text-black" href="" ng-click="openPreviewTree($event, report.uuid)">
+                        {{report.value.title}}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; max-height:300px; overflow:scroll;">
+              <table  class="table table-bordered table-striped"
+                      style="background-color: #fff;">
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Last modified</th>
+                  <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
+                    <button class="btn btn-default"
+                            ng-if="publicationCtrl.filterFiles(false, model, browser.listings[model.uuid]).length && 
+                                   !(browser.publication.filesSelected[model.uuid] &&
+                                    browser.publication.filesSelected[model.uuid].length)"
+                            ng-click="publicationCtrl.selectAllFiles(model)">
+                      <i class="fa fa-check"></i> Select All
+                    </button>
+                    <button class="btn btn-default"
+                            ng-if="browser.publication.filesSelected[model.uuid]
+                                   && browser.publication.filesSelected[model.uuid].length"
+                            ng-click="publicationCtrl.deselectAllFiles(model)">
+                      <i class="fa fa-times"></i> Deselect All
+                    </button>
+                  </th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in publicationCtrl.filterFiles(false, model, browser.listings[model.uuid]) | orderBy: ['type', 'path']">
+                    <td>
+                      <i class="fa {{file.icon()}}"></i>
+                      <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                        {{file.name}}
+                      </a>
+                    </td>
+                    <td>{{file.length|bytes}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                    <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
+                      <button class="btn btn-success"
+                              ng-if="publicationCtrl.isFileSelectedForPublication(model, false, file)"
+                              ng-click="publicationCtrl.deselectFileForPublication(model, false, file)"
+                              title="Selected">
+                        <i class="fa fa-check"></i><span class="sr-only">Selected</span>
+                      </button>
+                      <button class="btn btn-danger"
+                              ng-if="!publicationCtrl.isFileSelectedForPublication(model, false, file)"
+                              ng-click="publicationCtrl.selectFileForPublication(model, false, file)"
+                              title="Not Selected">
+                        <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="simulation-input"
+                      style="background:#fff; border:none;"
+                      ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])">
+                   <td colspan="4">
+                    <div class="entity-preview-header" id="details-{{simInput.uuid}}">
+                      <button class="btn btn-default btn-sm ds-text-green" style="width:100%">Simulation Input {{simInput.value.title}}</button>
+                    </div>
+                    <table class="table table-bordered table-striped">
+                      <tbody>
+                        <tr ng-repeat="file in publicationCtrl.filterFiles(false, simInput, browser.listings[simInput.uuid]) | orderBy: ['type', 'path']">
+                          <td>
+                            <i class="fa {{file.icon()}}"></i>
+                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                              {{file.name}}
+                            </a>
+                          </td>
+                          <td>{{file.length|bytes}}</td>
+                          <td>{{file.lastModified|date:"short"}}</td>
+                          <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
+                            <button class="btn btn-success"
+                                    ng-if="publicationCtrl.isFileSelectedForPublication(simInput, false, file)"
+                                    ng-click="publicationCtrl.deselectFileForPublication(simInput, false, file)"
+                                    title="Selected">
+                              <i class="fa fa-check"></i><span class="sr-only">Selected</span>
+                            </button>
+                            <button class="btn btn-danger"
+                                    ng-if="!publicationCtrl.isFileSelectedForPublication(simInput, false, file)"
+                                    ng-click="publicationCtrl.selectFileForPublication(simInput, false, file)"
+                                    title="Not Selected">
+                              <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr class="simulation-output"
+                            style="background:#fff; border:none; padding:0; margin:0"
+                            ng-repeat="simOutput in browser.project.getRelated('simoutput_set', [model.uuid, simInput.uuid])">
+                         <td colspan="4" style="padding:0; margin:0;">
+                          <div class="entity-preview-header" id="details-{{simOutput.uuid}}">
+                            <button class="btn btn-default btn-sm ds-text-red" style="width:100%">Simulation Output {{simOutput.value.title}}</button>
+                          </div>
+                          <table class="table table-bordered table-striped">
+                            <tbody>
+                              <tr ng-repeat="file in publicationCtrl.filterFiles(false, simOutput, browser.listings[simOutput.uuid]) | orderBy: ['type', 'path']">
+                                <td>
+                                  <i class="fa {{file.icon()}}"></i>
+                                  <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                    {{file.name}}
+                                  </a>
+                                </td>
+                                <td>{{file.length|bytes}}</td>
+                                <td>{{file.lastModified|date:"short"}}</td>
+                                <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
+                                  <button class="btn btn-success"
+                                          ng-if="publicationCtrl.isFileSelectedForPublication(simOutput, false, file)"
+                                          ng-click="publicationCtrl.deselectFileForPublication(simOutput, false, file)"
+                                          title="Selected">
+                                    <i class="fa fa-check"></i><span class="sr-only">Selected</span>
+                                  </button>
+                                  <button class="btn btn-danger"
+                                          ng-if="!publicationCtrl.isFileSelectedForPublication(simOutput, false, file)"
+                                          ng-click="publicationCtrl.selectFileForPublication(simOutput, false, file)"
+                                          title="Not Selected">
+                                    <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
+                                  </button>
+                                </td>
+                              </tr>
+                              <tr class="sim-data-analysis"
+                                  style="background:#fff; border:none; padding:0, margin:0"
+                                  ng-repeat="analysis in browser.project.getRelated('analysis_set', [model.uuid, siminput.uuid, simoutput.uuid])">
+                               <td colspan="4" style="padding:0; margin:0;">
+                                <table class="table table-bordered table-striped">
+                                  <tbody>
+                                    <tr ng-repeat="file in publicationCtrl.filterFiles(false, analysis, browser.listings[analysis.uuid]) | orderBy: ['type', 'path']">
+                                      <td>
+                                        <i class="fa {{file.icon()}}"></i>
+                                        <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                          {{file.name}}
+                                        </a>
+                                      </td>
+                                      <td>{{file.length|bytes}}</td>
+                                      <td>{{file.lastModified|date:"short"}}</td>
+                                      <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
+                                        <button class="btn btn-success"
+                                                ng-if="publicationCtrl.isFileSelectedForPublication(analysis, false, file)"
+                                                ng-click="publicationCtrl.deselectFileForPublication(analysis, false, file)"
+                                                title="Selected">
+                                          <i class="fa fa-check"></i><span class="sr-only">Selected</span>
+                                        </button>
+                                        <button class="btn btn-danger"
+                                                ng-if="!publicationCtrl.isFileSelectedForPublication(analysis, false, file)"
+                                                ng-click="publicationCtrl.selectFileForPublication(analysis, false, file)"
+                                                title="Not Selected">
+                                          <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                               </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                         </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                   </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
         </div>

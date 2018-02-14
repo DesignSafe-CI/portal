@@ -1125,11 +1125,11 @@
         }
       },
 
-      filterFiles : function(ent, evt, listing){
+      filterFiles : function(parentEnt, ent, listing){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return listing;
-        } else if (ent.name === 'designsafe.project.experiment') {
-            return $scope.browser.publication.filesSelected[ent.uuid][evt.uuid];
+        } else if (parentEnt && typeof parentEnt.uuid !== 'undefined' && ent) {
+            return $scope.browser.publication.filesSelected[parentEnt.uuid][ent.uuid];
         } else {
             return $scope.browser.publication.filesSelected[ent.uuid];
         }
