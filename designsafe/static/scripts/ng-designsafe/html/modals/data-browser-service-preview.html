@@ -23,10 +23,17 @@
                     });
                 </script>
             </div>
-            <div>
-                <video id="videoPlayer" width="600" controls autoplay src="" type="video/mp4">
-                    Error...
-                </video>
+            <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && prevVideo">
+                <div class="alert alert-warning"><p class="lead">Large video files will take longer to load...</p></div>
+                <video class="embed-responsive-item" id="videoPlayer" controls autoplay src="" type="video/mp4"></video>
+                <script type="text/javascript">
+                    $('#videoPlayer').on('load', function() {
+                        $('#loading_ind').hide();
+                    }).on('error', function() {
+                        $('#loading_ind').hide();
+                        $(this).hide().after('<p class="alert alert-danger">Unable to display preview.</p>');
+                    });
+                </script>
             </div>
         </div>
         <div class="caption">
