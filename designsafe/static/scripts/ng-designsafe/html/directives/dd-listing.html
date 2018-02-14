@@ -84,6 +84,67 @@
     </table>
   </div>
 
+<div class="simulation-publishing-steps"
+ ng-if="browser.showPreviewListing &&
+        browser.project.value.projectType == 'simulation' ">
+  <div ng-repeat="simulation in publicationCtrl.filterSimulations(browser.project.simulationmodel_set) | orderBy: 'value.title'"
+       ng-if="browser.showPreviewListing &&
+              (!browser.publishPipeline ||
+               browser.publishPipeline == 'select' ||
+               browser.publishPipeline == 'review')"
+       style="#fff;">
+    <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
+      <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
+              style="width:100%">
+        Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+      </button>
+      <div id="data-{{simulation.uuid}}" class="collapse"
+           ng-class="{'in': $index==0}">
+
+        <div style="border:1px solid black; background:white; margin-bottom:15px;">
+          <div style="padding:5px;">
+            <h3 style="margin-top:0">{{simulation.value.title}}</h3>
+            <p style="font-weight:bold;">Description</p>
+            <p>{{simulation.value.description}}</p>
+          </div>
+
+          <div style="width:49%; vertical-align:top; display:inline-block;">
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> (Appears when published)
+            </div>
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> (Appears when published)
+            </div>
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span> 
+              <span ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</span>
+              <span ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</span>
+            </div>
+          </div>
+          <div style="width:49%; vertical-align:top; display:inline-block;">
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Authors: </span>
+              <span ng-repeat="user in publicationCtrl.filterUsers(simulation.value.authors,
+                               browser.publication.users) | orderBy: ['_ui.order', 'last_name']" > {{user.last_name}}, {{user.first_name}};
+              </span>
+            </div>
+          </div>
+          <div ng-if="!publicationCtrl.filterSimulationModels(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation).length"
+               class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
+                This Simulation has no Models.
+          </div>
+          <div ng-repeat="model in publicationCtrl.filterSimulationModel(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation) | orderBy: ['_ui.order', 'value.title']"
+               style="margin-bottom:10px;">
+               {{model.value.title}}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="experimental-publishing-steps"
   ng-if="browser.project.value.projectType == 'experimental'">
   <div ng-repeat="experiment in publicationCtrl.filterExperiments(browser.project.experiment_set) | orderBy: 'value.title'"
