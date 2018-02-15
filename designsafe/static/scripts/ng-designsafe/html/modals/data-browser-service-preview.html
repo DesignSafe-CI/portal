@@ -1,92 +1,92 @@
 <div class="modal-header">
-        <h3 class="modal-title">File Preview: {{ file.name }}</h3>
-    </div>
-    <div class="modal-body">
-        <div class="thumbnail">
-            <div class="text-center nbv-preview">
-                <div ng-if="busy">
-                    <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
-                </div>
-                <div ng-if="! busy && previewError">
-                    <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
-                    <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
-                </div>
-                <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && previewHref">
-                        <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" id="loading_ind"></i>
-                    <iframe class="embed-responsive-item" ng-src="{{ previewHref }}" id="framepreview"></iframe>
-                    <script type="text/javascript">
-                        $('#framepreview').on('load', function() {
-                            $('#loading_ind').hide();
-                        }).on('error', function() {
-                            $('#loading_ind').hide();
-                            $(this).hide().after('<p class="alert alert-danger">Unable to display preview.</p>');
-                        });
-                    </script>
-                </div>
-                <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && prevVideo">
+    <h3 class="modal-title">File Preview: {{ file.name }}</h3>
+</div>
+<div class="modal-body">
+    <div class="thumbnail">
+        <div class="text-center nbv-preview">
+            <div ng-if="busy">
+                <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
+            </div>
+            <div ng-if="! busy && previewError">
+                <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
+                <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
+            </div>
+            <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && previewHref">
+                    <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" id="loading_ind"></i>
+                <iframe class="embed-responsive-item" ng-src="{{ previewHref }}" id="framepreview"></iframe>
+                <script type="text/javascript">
+                    $('#framepreview').on('load', function() {
+                        $('#loading_ind').hide();
+                    }).on('error', function() {
+                        $('#loading_ind').hide();
+                        $(this).hide().after('<p class="alert alert-danger">Unable to display preview.</p>');
+                    });
+                </script>
+            </div>
+            <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && prevVideo">
                     <div class="alert alert-warning"><p class="lead">Large video files will take longer to load...</p></div>
                         <video class="embed-responsive-item" id="videoPlayer" controls autoplay src="" type=""></video>
                 </div>
             </div>
-            <div class="caption">
-                <table class="table table-bordered">
-                    <tbody>
-                    <tr>
-                        <th>File name</th>
-                        <td>{{ file.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>File path</th>
-                        <td>{{ file.path }}</td>
-                    </tr>
-                    <tr>
-                        <th>File size</th>
-                        <td ng-if='file.length'>{{ file.length|bytes }}</td>
-                        <td ng-if='file.size'>{{ file.size|bytes }}</td>
-                    </tr>
-                    <tr>
-                        <th>Last modified</th>
-                        <td>{{ file.lastModified|date:"short" }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
-        <div class="actions text-center">
-            <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
-                <i class="fa fa-tags"></i>Tag
-            </button>
-    
-            <button class="btn btn-sm btn-default" ng-if="tests.canRename" ng-click="rename()">
-                <i class="fa fa-pencil"></i> Rename
-            </button>
-            
-            <button class="btn btn-sm btn-default" ng-if="tests.canMove" ng-click="move()">
-                <i class="fa fa-arrows"></i> Move
-            </button>
-            
-            <button class="btn btn-sm btn-default" ng-if="tests.canCopy" ng-click="copy()">
-                <i class="fa fa-copy"></i> Copy
-            </button>
-    
-            <button class="btn btn-sm btn-default" ng-if="tests.canDownload" ng-click="download()">
-                <i class="fa fa-cloud-download"></i> Download
-            </button>
-    
-            <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
-                <i class="fa fa-send"></i> Share
-            </button>
-    
-            <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
-                <i class="fa fa-trash"></i> Move to Trash
-            </button>
-    
-            <button class="btn btn-sm btn-danger" ng-if="tests.canDelete" ng-click="rm()">
-                <i class="fa fa-trash"></i> Delete
-            </button>
+        <div class="caption">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>File name</th>
+                    <td>{{ file.name }}</td>
+                </tr>
+                <tr>
+                    <th>File path</th>
+                    <td>{{ file.path }}</td>
+                </tr>
+                <tr>
+                    <th>File size</th>
+                    <td ng-if='file.length'>{{ file.length|bytes }}</td>
+                    <td ng-if='file.size'>{{ file.size|bytes }}</td>
+                </tr>
+                <tr>
+                    <th>Last modified</th>
+                    <td>{{ file.lastModified|date:"short" }}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="close()">Close</button>
+    <div class="actions text-center">
+        <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
+            <i class="fa fa-tags"></i>Tag
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canRename" ng-click="rename()">
+            <i class="fa fa-pencil"></i> Rename
+        </button>
+        
+        <button class="btn btn-sm btn-default" ng-if="tests.canMove" ng-click="move()">
+            <i class="fa fa-arrows"></i> Move
+        </button>
+        
+        <button class="btn btn-sm btn-default" ng-if="tests.canCopy" ng-click="copy()">
+            <i class="fa fa-copy"></i> Copy
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canDownload" ng-click="download()">
+            <i class="fa fa-cloud-download"></i> Download
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
+            <i class="fa fa-send"></i> Share
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
+            <i class="fa fa-trash"></i> Move to Trash
+        </button>
+
+        <button class="btn btn-sm btn-danger" ng-if="tests.canDelete" ng-click="rm()">
+            <i class="fa fa-trash"></i> Delete
+        </button>
     </div>
-    
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="close()">Close</button>
+</div>
