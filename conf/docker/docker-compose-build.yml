@@ -14,7 +14,7 @@ services:
       build:
         context: ../../.
         dockerfile: conf/docker/Dockerfile
-      image: designsafeci/portal:20180201
+      image: designsafeci/portal:20180203
       env_file: ../env_files/designsafe.env
       command: /bin/bash
       container_name: des_django_edge

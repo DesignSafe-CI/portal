@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180203
+
+Fixes:
+
+- Simulation Model CSS color coding
+- Preview Videos Chrome bug
+
 ## 20180202
 
 Improvements:
