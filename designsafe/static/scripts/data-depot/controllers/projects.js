@@ -1125,6 +1125,30 @@
         }
       },
 
+      filterSimAnalysis : function(analysis){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(analysis, function(anl){
+            return !anl.value.simOutputs.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.simulationsList, function(anl){
+            return !anl.value.simOutputs.length;
+          });
+        }
+      },
+
+      filterSimReports : function(reports){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(reports, function(rpt){
+            return !rpt.value.simOutputs.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.reportsList, function(rpt){
+            return !rpt.value.simOutputs.length;
+          });
+        }
+      },
+
       filterFiles : function(parentEnt, ent, listing){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return listing;
