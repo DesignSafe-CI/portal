@@ -73,37 +73,20 @@ class SimOutput(RelatedEntity):
     sim_inputs = fields.RelatedObjectField(SimInput)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
-class IntegratedDataAnalysis(RelatedEntity):
-    model_name = 'designsafe.project.simulation.integrated_data_analysis'
-    title = fields.CharField('Title', max_length=1024)
-    description = fields.CharField('Description', max_length=1024, default='')
-    project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
-    model_configs = fields.RelatedObjectField(ModelConfig)
-    sim_inputs = fields.RelatedObjectField(SimInput)
-    files = fields.RelatedObjectField(FileModel, multiple=True)
-
-class IntegratedReport(RelatedEntity):
-    model_name = 'designsafe.project.simulation.integrated_report'
-    title = fields.CharField('Title', max_length=1024)
-    description = fields.CharField('Description', max_length=1024, default='')
-    project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
-    model_configs = fields.RelatedObjectField(ModelConfig)
-    sim_inputs = fields.RelatedObjectField(SimInput)
-    files = fields.RelatedObjectField(FileModel, multiple=True)
-
 class Analysis(RelatedEntity):
-    model_name = 'designsafe.project.analysis'
+    model_name = 'designsafe.project.simulation.analysis'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
+    simulations = fields.RelatedObjectField(SimulationModel)
+    sim_outputs = fields.RelatedObjectField(SimOutput)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Report(RelatedEntity):
-    model_name = 'designsafe.project.report'
+    model_name = 'designsafe.project.simulation.report'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
     simulations = fields.RelatedObjectField(SimulationModel)
+    sim_outputs = fields.RelatedObjectField(SimOutput)
     files = fields.RelatedObjectField(FileModel, multiple=True)
