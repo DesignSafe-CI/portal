@@ -121,7 +121,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(simulationInput)">
                 <span ng-class="{'selected': isProjectTagSel(simulationInput)}"
-                      class="label tag-blue"> </span>
+                      class="label tag-green"> </span>
                 <span class="tag-title">{{simulationInput.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(simulationInput)}" class="fa"></i>
@@ -135,40 +135,10 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(simulationOutput)">
                 <span ng-class="{'selected': isProjectTagSel(simulationOutput)}"
-                      class="label tag-blue"> </span>
+                      class="label tag-red"> </span>
                 <span class="tag-title">{{simulationOutput.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(simulationOutput)}" class="fa"></i>
-                </button>
-              </div>
-          </div>
-          <div class="col-xs-3">
-              <h5 style="font-weight:normal;">Integrated Data Analysis</h5>
-              <div ng-repeat="analysis in data.project.integrateddataanalysis_set"
-                   style="width:100%; padding-bottom:5px;">
-                <button class="btn" style="background:none;"
-                        ng-click="toggleProjectTag(analysis)">
-                <span ng-class="{'selected': isProjectTagSel(analysis)}"
-                      class="label tag-blue"> </span>
-                <span class="tag-title">{{analysis.value.title}}</span>
-                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
-                   ng-class="{'fa-lock': isEntityLocked(analysis)}" class="fa"></i>
-                </button>
-              </div>
-          </div>
-        </div>
-        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
-          <div class="col-xs-3">
-              <h5 style="font-weight:normal;">Integrated Report</h5>
-              <div ng-repeat="report in data.project.integratedreport_set"
-                   style="width:100%; padding-bottom:5px;">
-                <button class="btn" style="background:none;"
-                        ng-click="toggleProjectTag(report)">
-                <span ng-class="{'selected': isProjectTagSel(report)}"
-                      class="label tag-blue"> </span>
-                <span class="tag-title">{{report.value.title}}</span>
-                <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
-                   ng-class="{'fa-lock': isEntityLocked(report)}" class="fa"></i>
                 </button>
               </div>
           </div>
@@ -179,13 +149,15 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(analysis)">
                 <span ng-class="{'selected': isProjectTagSel(analysis)}"
-                      class="label tag-blue"> </span>
+                      class="label tag-light-blue"> </span>
                 <span class="tag-title">{{analysis.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(analysis)}" class="fa"></i>
                 </button>
               </div>
           </div>
+        </div>
+        <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Report</h5>
               <div ng-repeat="report in data.project.report_set"
@@ -193,7 +165,7 @@
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(report)">
                 <span ng-class="{'selected': isProjectTagSel(report)}"
-                      class="label tag-blue"> </span>
+                      class="label tag-black"> </span>
                 <span class="tag-title">{{report.value.title}}</span>
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(report)}" class="fa"></i>

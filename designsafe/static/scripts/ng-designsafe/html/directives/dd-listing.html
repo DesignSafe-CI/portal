@@ -36,7 +36,7 @@
               </span>
               <span class="label selected"
                ng-repeat-start="entity in item._entities"
-               ng-class="{'tag-blue': entity.name === 'designsafe.project.model_config', 'tag-green': entity.name === 'designsafe.project.sensor_list', 'tag-red': entity.name === 'designsafe.project.event', 'tag-light-blue': entity.name === 'designsafe.project.analysis', 'tag-black': entity.name === 'designsafe.project.report'}">
+               ng-class="entity.cssClasses()['tag']">
                 {{ entity._displayName }}
               </span>
               <span ng-repeat-end class="tag-title">
@@ -148,33 +148,34 @@
           <div ng-repeat="model in publicationCtrl.filterSimulationModels(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation) | orderBy: ['_ui.order', 'value.title']"
                style="margin-bottom:10px;">
             <div style="padding:3px;">
-              <span class="ds-text-red folder-tick">Simulation Model: {{model.value.title}} </span>
+              <span ng-class="model.cssClasses()['text']"class="older-tick">Simulation Model: {{model.value.title}} </span>
             </div>
             <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
               <div style="border-bottom:1px solid lightgrey;">
-                <a class="ds-text-red" ng-click="openPreviewTree()($event, event.uuid)" href="#">
+                <a ng-class="model.cssClasses()['text']" ng-click="openPreviewTree()($event, model.uuid)" href="#">
                   {{model.value.title}}
                 </a>
               </div>
-              <div style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
-                          padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
-                <div ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])">
-                  <a class="ds-text-blue"
+              <div>
+                <div ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])"
+                     style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
+                            padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
+                  <a ng-class="simInput.cssClasses()['text']"
                      href=""
                      ng-click="openPreviewTree()($event, simInput.uuid)">
                     {{simInput.value.title}}
                   </a>
                   <div style="display:inline-block" ng-repeat="simOutput in browser.project.getRelated('simoutput_set', [simulation.uuid, model.uuid, simInput.uuid])">
-                    <a class="ds-text-green" href="" ng-click="openPreviewTree()($event, simOutput.uuid)">
+                    <a ng-class="simOutput.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, simOutput.uuid)">
                       {{simOutput.value.title}}
                     </a>
                     <div style="display:inline-block" ng-repeat="analysis in browser.project.getRelated('analysis_set', [simOutput.uuid], 'simOutputs')">
-                      <a class="ds-text-blue" href="" ng-click="openPreviewTree($event, analysis.uuid)">
+                      <a ng-class="analysis.cssClasses()['text']" href="" ng-click="openPreviewTree($event, analysis.uuid)">
                         {{analysis.value.title}}
                       </a>
                     </div>
                     <div style="display:inline-block" ng-repeat="report in browser.project.getRelated('report_set', [simOutput.uuid], 'simOutputs')">
-                      <a class="ds-text-black" href="" ng-click="openPreviewTree($event, report.uuid)">
+                      <a ng-class="report.cssClasses()['text']" href="" ng-click="openPreviewTree($event, report.uuid)">
                         {{report.value.title}}
                       </a>
                     </div>
@@ -235,7 +236,8 @@
                       ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])">
                    <td colspan="4">
                     <div class="entity-preview-header" id="details-{{simInput.uuid}}">
-                      <button class="btn btn-default btn-sm ds-text-green" style="width:100%">Simulation Input {{simInput.value.title}}</button>
+                      <button class="btn btn-default btn-sm" ng-class="simInput.cssClasses()['text']"
+                              style="width:100%">Simulation Input {{simInput.value.title}}</button>
                     </div>
                     <table class="table table-bordered table-striped">
                       <tbody>
@@ -268,7 +270,8 @@
                             ng-repeat="simOutput in browser.project.getRelated('simoutput_set', [model.uuid, simInput.uuid])">
                          <td colspan="4" style="padding:0; margin:0;">
                           <div class="entity-preview-header" id="details-{{simOutput.uuid}}">
-                            <button class="btn btn-default btn-sm ds-text-red" style="width:100%">Simulation Output {{simOutput.value.title}}</button>
+                            <button class="btn btn-default btn-sm" ng-class="simOutput.cssClasses()['text']"
+                                    style="width:100%">Simulation Output {{simOutput.value.title}}</button>
                           </div>
                           <table class="table table-bordered table-striped">
                             <tbody>
@@ -301,7 +304,8 @@
                                   ng-repeat="analysis in browser.project.getRelated('analysis_set', [simOutput.uuid], 'simOutputs')">
                                <td colspan="4" style="padding:0; margin:0;">
                                  <div class="entity-preview-header" id="details-{{analysis.uuid}}">
-                                   <button class="btn btn-default btn-sm ds-text-red" style="width:100%">Integrated Analysis {{analysis.value.title}}</button>
+                                   <button class="btn btn-default btn-sm" ng-class="analysis.cssClasses()['text']"
+                                           style="width:100%">Integrated Analysis {{analysis.value.title}}</button>
                                  </div>
                                 <table class="table table-bordered table-striped">
                                   <tbody>
@@ -338,7 +342,8 @@
                                   ng-repeat="report in browser.project.getRelated('report_set', [simOutput.uuid], 'simOutputs')">
                                <td colspan="4" style="padding:0; margin:0;">
                                  <div class="entity-preview-header" id="details-{{report.uuid}}">
-                                   <button class="btn btn-default btn-sm ds-text-red" style="width:100%">Integrated Report {{report.value.title}}</button>
+                                   <button class="btn btn-default btn-sm" ng-class="report.cssClasses()['text']"
+                                           style="width:100%">Integrated Report {{report.value.title}}</button>
                                  </div>
                                 <table class="table table-bordered table-striped">
                                   <tbody>

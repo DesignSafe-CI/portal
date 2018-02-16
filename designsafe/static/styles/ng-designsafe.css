@@ -406,6 +406,10 @@ tr.experiment-deleted {
     color: #D04348;
 }
 
+.ds-text-black {
+    color: black;
+}
+
 span.label.tag-light-blue {
     border: 2px solid #5BC0DE;
     color: black;

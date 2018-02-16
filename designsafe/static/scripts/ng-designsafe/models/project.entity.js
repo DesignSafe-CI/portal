@@ -110,6 +110,25 @@
       }
     }
 
+    var cssClasses = {
+        'designsafe.project.model_config': {'tag': 'tag-blue', 'text': 'ds-text-blue'},
+        'designsafe.project.sensor_list': {'tag': 'tag-green', 'text': 'ds-text-green'},
+        'designsafe.project.event': {'tag': 'tag-red', 'text': 'ds-text-red'},
+        'designsafe.project.analysis': {'tag': 'tag-light-blue', 'text': 'ds-text-light-blue'},
+        'designsafe.project.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
+
+        'designsafe.project.simulation.model': {'tag': 'tag-blue', 'text': 'ds-text-blue'},
+        'designsafe.project.simulation.input': {'tag': 'tag-green', 'text': 'ds-text-green'},
+        'designsafe.project.simulation.output': {'tag': 'tag-red', 'text': 'ds-text-red'},
+        'designsafe.project.simulation.analysis': {'tag': 'tag-light-blue', 'text': 'ds-text-light-blue'},
+        'designsafe.project.simulation.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
+    };
+
+    ProjectEntity.prototype.cssClasses = function(){
+      var self = this;
+      return cssClasses[self.name];
+    };
+
     ProjectEntity.prototype.getEF = function(projectType, str){
         var self = this;
         if (typeof self._ui.efs[projectType] === 'undefined'){
