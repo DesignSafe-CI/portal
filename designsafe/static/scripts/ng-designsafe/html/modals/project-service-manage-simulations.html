@@ -315,7 +315,7 @@
                                  ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
                                 <span class="label tag-black">Integrated Report</span>
                                 <span class="tab-title">
-                                {{data.project.getRelated('report_set', simOutput.uuid, 'simOutput')[0].value.title}}
+                                {{data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].value.title}}
                                 </span>
                                 <button class="btn btn-xsm btn-link"
                                         style="display:inline-block;"
@@ -337,7 +337,7 @@
                             </button>
                             <div style="margin-left:5px; display:inline-block;"
                                  ng-if="ui.showAddIntAnalysis[simOutput.uuid] && 
-                                           !data.project.getRelated('analysis_set', simOutput.uuid, 'simOutput').length">
+                                           !data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
                               <select
                                       ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
                                       ng-model="form.updateSimulations[simOutput.uuid].relSimAnalysis">
@@ -352,10 +352,10 @@
                               </button>
                             </div>
                             <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="data.project.getRelated('analysis_set', simOutput.uuid).length">
+                                 ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
                                 <span class="label tag-black">Integrated Analysis</span>
                                 <span class="tab-title">
-                                {{data.project.getRelated('analysis_set', simOutput.uuid, 'simOutput')[0].value.title}}
+                                {{data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0].value.title}}
                                 </span>
                                 <button class="btn btn-xsm btn-link"
                                         style="display:inline-block;"
