@@ -159,51 +159,92 @@
      </div>
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="simulation in data.project.simulationmodel_set | orderBy: simulation.value.title"
+            ng-repeat="simulation in data.project.simulationmodel_set | orderBy: 'value.title'"
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
-           <!--
-            <button class="btn btn-sm btn-link"
-                    style="margin-left:5px; padding:0; display:inline-block;"
-                    ng-click="ui.showAddReport[simulation.uuid] = true"
-                    ng-if="!ui.showAddReport[simulation.uuid] &&
-                           !data.project.getRelated('report_set', simulation.uuid).length">
-                    <i class="fa fa-plus-square"></i> Add Report
-            </button>
-            <div style="margin-left:5px; display:inline-block;"
-                 ng-if="ui.showAddReport[simulation.uuid] && 
-                           !data.project.getRelated('report_set', simulation.uuid).length">
-              <select
-                      ng-options="report as report.value.title for report in data.project.report_set"
-                      ng-model="form.updateSimulations[simulation.uuid].relProject">
-                      <option value="">Add Report</option>
-              </select>
-              <button class="btn btn-sm btn-link"
-                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relProject,
-                                          {project:data.project.uuid,
-                                          simulation: simulation.uuid});
-                                ui.showAddReport[simulation.uuid]=false"
-                      title="Add Report">
-                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
-              </button>
-            </div>
-            <div style="margin-left:5px; display:inline-block;"
-                 ng-if="data.project.getRelated('report_set', simulation.uuid).length">
-                <span class="label tag-black">Report</span>
-                <span class="tab-title">
-                {{data.project.getRelated('report_set', simulation.uuid)[0].value.title}}   
-                </span>
-                <button class="btn btn-xsm btn-link"
-                        style="display:inline-block;"
-                        ng-if="data.project.getRelated('report_set', simulation.uuid).length"
-                        ng-click="delRelEntity(data.project.getRelated('report_set', simulation.uuid)[0],
-                                              {experiments: simulation.uuid})">
-                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
-                  <span class="sr-only">Delete</span>
+            <div style="display:inline-block;">
+              <div>
+                <button class="btn btn-sm btn-link"
+                        style="margin-left:5px; padding:0; display:inline-block;"
+                        ng-click="ui.showAddSimReport[simulation.uuid] = true"
+                        ng-if="!ui.showAddSimReport[simulation.uuid] &&
+                               !data.project.getRelated('report_set', simulation.uuid, 'simulations').length">
+                        <i class="fa fa-plus-square"></i> Add Simulation Report
                 </button>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="ui.showAddSimReport[simulation.uuid] && 
+                               !data.project.getRelated('report_set', simulation.uuid, 'simulations').length">
+                  <select
+                          ng-options="report as report.value.title for report in data.project.report_set"
+                          ng-model="form.updateSimulations[simulation.uuid].relProject">
+                          <option value="">Add Simulation Report</option>
+                  </select>
+                  <button class="btn btn-sm btn-link"
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relProject,
+                                              {simulations: simulation.uuid});
+                                    ui.showAddSimReport[simulation.uuid]=false"
+                          title="Add Report">
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                  </button>
+                </div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('report_set', simulation.uuid).length">
+                    <span class="label tag-black">Simulation Report</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('report_set', simulation.uuid, 'simulations')[0].value.title}}
+                    </span>
+                    <button class="btn btn-xsm btn-link"
+                            style="display:inline-block;"
+                            ng-if="data.project.getRelated('report_set', simulation.uuid, 'simulations').length"
+                            ng-click="delRelEntity(data.project.getRelated('report_set', simulation.uuid, 'simulations')[0],
+                                                  {simulations: simulation.uuid})">
+                      <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                      <span class="sr-only">Delete</span>
+                    </button>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-link"
+                        style="margin-left:5px; padding:0; display:inline-block;"
+                        ng-click="ui.showAddSimAnalysis[simulation.uuid] = true"
+                        ng-if="!ui.showAddSimAnalysis[simulation.uuid] &&
+                               !data.project.getRelated('analysis_set', simulation.uuid, 'simulations').length">
+                        <i class="fa fa-plus-square"></i> Add Simulation Analysis
+                </button>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="ui.showAddSimAnalysis[simulation.uuid] && 
+                               !data.project.getRelated('analysis_set', simulation.uuid, 'simulations').length">
+                  <select
+                          ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
+                          ng-model="form.updateSimulations[simulation.uuid].relSimAnalysis">
+                          <option value="">Add Simulation Analysis</option>
+                  </select>
+                  <button class="btn btn-sm btn-link"
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relSimAnalysis,
+                                              {simulations: simulation.uuid});
+                                    ui.showAddSimAnalysis[simulation.uuid]=false"
+                          title="Add Report">
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                  </button>
+                </div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('analysis_set', simulation.uuid).length">
+                    <span class="label tag-black">Simulation Analysis</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0].value.title}}
+                    </span>
+                    <button class="btn btn-xsm btn-link"
+                            style="display:inline-block;"
+                            ng-if="data.project.getRelated('analysis_set', simulation.uuid, 'simulations').length"
+                            ng-click="delRelEntity(data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0],
+                                                  {simulations: simulation.uuid})">
+                      <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                      <span class="sr-only">Delete</span>
+                    </button>
+                </div>
+              </div>
             </div>
-            -->
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
@@ -245,6 +286,88 @@
                         <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                         <span class="sr-only">Delete</span>
                       </button>
+                        <div style="display:inline-block;">
+                          <div>
+                            <button class="btn btn-sm btn-link"
+                                    style="margin-left:5px; padding:0; display:inline-block;"
+                                    ng-click="ui.showAddIntReport[simOutput.uuid] = true"
+                                    ng-if="!ui.showAddIntReport[simOutput.uuid] &&
+                                           !data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
+                                    <i class="fa fa-plus-square"></i> Add Integrated Report
+                            </button>
+                            <div style="margin-left:5px; display:inline-block;"
+                                 ng-if="ui.showAddIntReport[simOutput.uuid] && 
+                                           !data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
+                              <select
+                                      ng-options="report as report.value.title for report in data.project.report_set"
+                                      ng-model="form.updateSimulations[simOutput.uuid].relReport">
+                                      <option value="">Add Integrated Report</option>
+                              </select>
+                              <button class="btn btn-sm btn-link"
+                                      ng-click="saveRelEntity(form.updateSimulations[simOutput.uuid].relReport,
+                                                          {simOutputs: simOutput.uuid});
+                                                ui.showAddSimReport[simOutput.uuid]=false"
+                                      title="Add Report">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                              </button>
+                            </div>
+                            <div style="margin-left:5px; display:inline-block;"
+                                 ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
+                                <span class="label tag-black">Integrated Report</span>
+                                <span class="tab-title">
+                                {{data.project.getRelated('report_set', simOutput.uuid, 'simOutput')[0].value.title}}
+                                </span>
+                                <button class="btn btn-xsm btn-link"
+                                        style="display:inline-block;"
+                                        ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length"
+                                        ng-click="delRelEntity(data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0],
+                                                              {simOutputs: simOutput.uuid})">
+                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                  <span class="sr-only">Delete</span>
+                                </button>
+                            </div>
+                          </div>
+                          <div>
+                            <button class="btn btn-sm btn-link"
+                                    style="margin-left:5px; padding:0; display:inline-block;"
+                                    ng-click="ui.showAddIntAnalysis[simOutput.uuid] = true"
+                                    ng-if="!ui.showAddIntAnalysis[simOutput.uuid] &&
+                                           !data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
+                                    <i class="fa fa-plus-square"></i> Add Integrated Analysis
+                            </button>
+                            <div style="margin-left:5px; display:inline-block;"
+                                 ng-if="ui.showAddIntAnalysis[simOutput.uuid] && 
+                                           !data.project.getRelated('analysis_set', simOutput.uuid, 'simOutput').length">
+                              <select
+                                      ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
+                                      ng-model="form.updateSimulations[simOutput.uuid].relSimAnalysis">
+                                      <option value="">Add Integrated Analysis</option>
+                              </select>
+                              <button class="btn btn-sm btn-link"
+                                      ng-click="saveRelEntity(form.updateSimulations[simOutput.uuid].relSimAnalysis,
+                                                          {simOutputs: simOutput.uuid});
+                                                ui.showAddIntAnalysis[simulation.uuid]=false"
+                                      title="Add Report">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                              </button>
+                            </div>
+                            <div style="margin-left:5px; display:inline-block;"
+                                 ng-if="data.project.getRelated('analysis_set', simOutput.uuid).length">
+                                <span class="label tag-black">Integrated Analysis</span>
+                                <span class="tab-title">
+                                {{data.project.getRelated('analysis_set', simOutput.uuid, 'simOutput')[0].value.title}}
+                                </span>
+                                <button class="btn btn-xsm btn-link"
+                                        style="display:inline-block;"
+                                        ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutput').length"
+                                        ng-click="delRelEntity(data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0],
+                                                              {simOutputs: simOutput.uuid})">
+                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                  <span class="sr-only">Delete</span>
+                                </button>
+                            </div>
+                          </div>
+                        </div>
                         <div style="display:inline-block;">
                           <button class="btn btn-sm btn-link"
                                   title="Move order Up"
@@ -320,7 +443,7 @@
 
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            ng-repeat="analysis in filterProjectOnlyRelatedAnalysis(data.project.analysis_set) | orderBy: analysis.value.title"
             style="border:none;">
           <div class="tree-el">  
           <span class="label tag-light-blue">Analysis </span>

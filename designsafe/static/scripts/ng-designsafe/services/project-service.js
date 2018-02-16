@@ -196,7 +196,10 @@
           $scope.ui = {
               simulations: {},
               updateSimulations: {},
-              showAddReport: {}
+              showAddSimReport: {},
+              showAddSimAnalysis: {},
+              showAddIntReport: {},
+              showAddIntAnalysis: {}
               };
           $scope.ui.simulationTypes = [
             {
@@ -218,6 +221,12 @@
             addSimulation: [{}],
             deleteSimulations: [],
             entitiesToAdd:[]
+          };
+
+          $scope.filterProjectOnlyRelatedAnalysis = function(analysis){
+            return _.filter(analysis, function(anl){
+              return !anl.value.simOutputs.length && !anl.value.simulations.length;
+            });
           };
 
           $scope.saveSimulation = function($event){
@@ -266,10 +275,11 @@
 
           $scope.editSim = function(sim){
             $scope.editSimForm = {
+                sim: sim,
                 description: sim.value.description,
                 simulationType: sim.value.simulationType,
                 simulationTypeOther: sim.value.simulationTypeOther,
-                title: sim.value.title
+                title: sim.value.title,
             };
             $scope.ui.showEditSimulationForm = true;
           };
@@ -300,8 +310,10 @@
 
           $scope.saveEditSimulation = function(){
               var sim = $scope.editSimForm.sim;
-              sim.value.title = $scope.editExpForm.title;
-              sim.value.description = $scope.editExpForm.description;
+              sim.value.title = $scope.editSimForm.title;
+              sim.value.description = $scope.editSimForm.description;
+              sim.value.simulationType = $scope.editSimForm.simulationType;
+              sim.value.simulationTypeOther = $scope.editSimForm.simulationTypeOther;
               $scope.ui.savingEditSim = true;
               ProjectEntitiesService.update({data: {
                   uuid: sim.uuid,
@@ -310,7 +322,7 @@
                   var ent = $scope.data.project.getRelatedByUuid(e.uuid);
                   ent.update(e);
                   $scope.ui.savingEditExp = false;
-                  $scope.data.simulations = $scope.data.project.simulation_set;
+                  $scope.data.simulations = $scope.data.project.simulations_set;
                   $scope.ui.showEditSimulationForm = false;
                   return e;
               });
@@ -453,17 +465,11 @@
                 {label: 'Simulation Output',
                  name: 'designsafe.project.simulation.output',
                  yamzId: ''},
-                {label: 'Integrated Data Analysis',
-                 name: 'designsafe.project.simulation.integrated_data_analysis',
-                 yamzId: ''},
-                {label: 'Integrated Report',
-                 name: 'designsafe.project.simulation.integrated_report',
-                 yamzId: ''},
                 {label: 'Analysis',
-                 name: 'designsafe.project.analysis',
+                 name: 'designsafe.project.simulation.analysis',
                  yamzId: 'h1333'},
                 {label: 'Report',
-                 name: 'designsafe.project.report',
+                 name: 'designsafe.project.simulation.report',
                  yamzId: ''}
                 ];
           }
@@ -878,17 +884,11 @@
                 {label: 'Simulation Output',
                  name: 'designsafe.project.simulation.output',
                  yamzId: ''},
-                {label: 'Integrated Data Analysis',
-                 name: 'designsafe.project.simulation.integrated_data_analysis',
-                 yamzId: ''},
-                {label: 'Integrated Report',
-                 name: 'designsafe.project.simulation.integrated_report',
-                 yamzId: ''},
                 {label: 'Analysis',
-                 name: 'designsafe.project.analysis',
+                 name: 'designsafe.project.simulation.analysis',
                  yamzId: 'h1333'},
                 {label: 'Report',
-                 name: 'designsafe.project.report',
+                 name: 'designsafe.project.simulation.report',
                  yamzId: ''}
                 ];
           }

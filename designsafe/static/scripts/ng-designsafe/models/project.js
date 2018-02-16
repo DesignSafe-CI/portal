@@ -118,13 +118,23 @@
      * @param {string} uuid Uuid of the related object.
      *
      */
-    Project.prototype.getRelated = function(attrName, uuids){
+    Project.prototype.getRelated = function(attrName, uuids, relatedAttribute){
       var self = this;
+      var relations = [];
       if (!_.isArray(uuids)){
         uuids = [uuids];
       }
       var ret = _.filter(self[attrName], function(entity){
-        if (_.difference(uuids, entity.associationIds).length === 0){
+        if (_.isEmpty(relatedAttribute) ||
+            typeof relatedAttribute === 'undefined'){
+          relations = entity.associationIds;
+        } else {
+          relations = entity.value[relatedAttribute] || [];
+        }
+        if ( _.isEmpty(relations)){
+          return;
+        }
+        if (_.difference(uuids, relations).length === 0){
           return entity;
         }
       });
