@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180204
+
+Fixes:
+
+- Listing analysis/rerpot correct files listing
+
 ## 20180203
 
 Fixes:
