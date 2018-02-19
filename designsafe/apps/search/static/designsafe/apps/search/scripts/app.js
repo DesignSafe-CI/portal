@@ -16,8 +16,9 @@
   }]);
 
   module.controller('SearchCtrl',
-    ['$scope','$rootScope', '$location', '$window', 'searchService', 'Logging', 'djangoUrl',
-    function($scope, $rootScope, $location, $window, searchService, Logging, djangoUrl) {
+    ['$scope','$rootScope', '$location', '$window', 'searchService', 'Logging', 'djangoUrl', 'Django',
+    function($scope, $rootScope, $location, $window, searchService, Logging, djangoUrl, Django) {
+      $scope.user = Django.user;
       $scope.data = {};
       $scope.Math = window.Math;
       $scope.counter = Array;
@@ -25,7 +26,7 @@
       $scope.results_per_page = 10;
       $scope.offset = 0;
       $scope.data.search_text = null;
-      $scope.data.type_filter = null;
+      $scope.data.type_filter = 'cms';
       $scope.filetype_filter = 'all';
       $scope.searching = false;
       $scope.inital_q = $location.search().q;
@@ -52,12 +53,7 @@
       };
 
       $scope.filter = function (ftype) {
-        // toggle the
-        if ($scope.data.type_filter === ftype) {
-          $scope.data.type_filter = null;
-        } else {
-          $scope.data.type_filter = ftype;
-        }
+        $scope.data.type_filter = ftype;
         $scope.page_num = 0;
         $scope.search();
       };

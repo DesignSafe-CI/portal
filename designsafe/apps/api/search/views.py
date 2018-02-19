@@ -63,7 +63,6 @@ class SearchView(BaseApiView):
         out['public_files_total'] = self.search_public_files(q, offset, limit).count()
         out['published_total'] = self.search_published(q, offset, limit).count()
         out['cms_total'] = self.search_cms_content(q, offset, limit).count()
-        #out['published_total'] = self.search_public_projects(q, offset, limit).count()
         out['private_files_total'] = 0
         if request.user.is_authenticated:
             out['private_files_total'] = self.search_my_data(self.request.user.username, q, offset, limit).count()
@@ -87,120 +86,32 @@ class SearchView(BaseApiView):
         return search
 
     def search_public_files(self, q, offset, limit):
-        search = Search(index="nees", doc_type='object')\
-            .query("match", systemId='nees.public')\
-            .query("query_string", query=q, default_operator="and")\
-            .query("match", type="file")\
-            .query("query_string", query=q, default_operator="and", fields=['name'])\
-            .filter("term", _type="object")\
+        filters = Q('term', system="nees.public") | \
+                  Q('term', system="designsafe.storage.published") | \
+                  Q('term', system="designsafe.storage.community")
+        search = Search(index="des-files")\
+            .query("query_string", query="*"+q+"*", default_operator="and")\
+            .filter(filters)\
+            .filter("term", type="file")\
             .extra(from_=offset, size=limit)
+        logger.info(search.to_dict())
         return search
 
-    def search_public_projects(self, q, offset, limit):
-        query = Q(
-            'bool',
-            should=[
-                Q('nested',
-                  path=['users'],
-                  query=Q('bool',
-                      must=Q(
-                          'query_string',
-                          query=q,
-                          default_operator='and',
-                          fields=['users.last_name', 'users.first_name', 'users.email'])
-                      )
-                  ),
-                Q('nested',
-                  path=['institutions'],
-                  query=Q(
-                      'bool',
-                      must=Q(
-                          'query_string',
-                          query=q,
-                          default_operator='and',
-                          fields=['institutions.label'])
-                     )
-                  ),
-               Q('nested',
-                 path=['project'],
-                 query=Q(
-                     'nested',
-                     path=['project.value'],
-                     query=Q(
-                       'bool',
-                       must=Q(
-                             'query_string',
-                             query=q,
-                             default_operator='and',
-                             fields=['project.value.projectType',
-                                     'project.value.description',
-                                     'project.value.title',
-                                     'project.value.projectId',
-                                     'project.value.ef',
-                                     'project.value.keywords',
-                                     'project.value.awardNumber'])
-                         )
-                    )
-                 ),
-            ])
-        search = Search(index="des-publications,des-publications_legacy")\
-            .filter(Q("bool", must=[
-                {"term": {'_type': "publication"}}
-            ]))\
-            .extra(from_=offset, size=limit)
-        search.query = query
-        return search
 
     def search_published(self, q, offset, limit):
-        query = Q(
-            'bool', must=[Q('simple_query_string', query=q,)]
-        )
-                #   fields=["description",
-                #           "endDate",
-                #           "equipment.component",
-                #           "equipment.equipmentClass",
-                #           "equipment.facility",
-                #           "fundorg"
-                #           "fundorgprojid",
-                #           "name",
-                #           "organization.name",
-                #           "pis.firstName",
-                #           "pis.lastName",
-                #           "title",
-                #           "users.last_name", "users.first_name", "users.email",
-                #           "institutions.label", "project.value.projectType",
-                #           "project.value.description",
-                #           "project.value.title",
-                #           "project.value.projectId",
-                #           "project.value.ef",
-                #           "project.value.keywords",
-                #           "project.value.awardNumber"])
+        query = Q('bool', must=[Q('simple_query_string', query=q, fields=["name", "description"])])
 
         search = Search(index="des-publications_legacy,des-publications")\
-            .extra(from_=offset, size=limit).highlight(
-                'description',
-                fragment_size=100).highlight_options(
-                pre_tags=["<b>"],
-                post_tags=["</b>"],
-                require_field_match=False)
-        search.query = query
+            .query(query)\
+            .extra(from_=offset, size=limit)
         return search
 
     def search_my_data(self, username, q, offset, limit):
         search = Search(index='des-files')
-        search = search.query("nested", path="permissions", query=Q("term", permissions__username=username))
+        search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         search = search.query("simple_query_string", query=q, fields=["name", "name._exact", "keywords"])
+        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system='designsafe.storage.default')
-        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         logger.info(search.to_dict())
-        # query = Q('bool',
-        #           filter=Q('bool',
-        #                    must=[Q({'term': {'systemId': 'designsafe.storage.default'}}),
-        #                          Q({'term': {'permissions.username': username}}),
-        #                          Q({'prefix': {'path._exact': username}})],
-        #                    must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
-        #            must=Q({'simple_query_string':{
-        #                     'query': q,
-        #                     'fields': ['name', 'name._exact', 'keywords']}}))
-        # search.query = query
         return search
