@@ -55,7 +55,6 @@ class FileListingView(BaseApiView):
                 return HttpResponseForbidden('Login required')
 
             fm = AgaveFileManager(agave_client=request.user.agave_oauth.client)
-            logger.info(request.user.agave_oauth)
             if system_id is None:
                 system_id = AgaveFileManager.DEFAULT_SYSTEM_ID
             if file_path is None:

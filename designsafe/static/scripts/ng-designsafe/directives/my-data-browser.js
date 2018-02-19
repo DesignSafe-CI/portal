@@ -82,12 +82,25 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
         $scope.data.source = src;
         $scope.selected = null;
         if ($scope.data.source === 'myprojects') {
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
           $scope.data.filesListing = null;
           $scope.data.dirPath = [];
           $scope.listProjects();
-        } else {
+        } else if  ($scope.data.source == 'community') {
+          DataBrowserService.apiParams.fileMgr = 'community';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
           $scope.data.filesListing = null;
-          $scope.data.filePath = null;
+          $scope.data.filePath = '/';
+          $scope.data.selectedProject = null;
+          $scope.data.system = 'designsafe.storage.community';
+          $scope.project_list = null;
+          $scope.browse();
+        } else {
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+          $scope.data.filesListing = null;
+          $scope.data.filePath = '/';
           $scope.data.selectedProject = null;
           $scope.data.system = 'designsafe.storage.default';
           $scope.project_list = null;

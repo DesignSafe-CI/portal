@@ -5,6 +5,10 @@
             ng-disabled="data.loading"
             ng-click="setSource('mydata')"> My Data </button>
     <button class="btn btn-default"
+            ng-class="{'btn-primary': data.source === 'community'}"
+            ng-disabled="data.loading"
+            ng-click="setSource('community')"> Community </button>
+    <button class="btn btn-default"
             ng-class="{'btn-primary': data.source === 'myprojects'}"
             ng-disabled="data.loading"
             ng-click="setSource('myprojects')"> My Projects </button>
