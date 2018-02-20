@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions.middleware',
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
@@ -75,6 +76,8 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
     'captcha',
+
+    'oauth2client.contrib.django_util',
 
     #websockets
     'ws4redis',

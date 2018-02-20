@@ -14,3 +14,16 @@ BOX_SYNC_AGAVE_SYSTEM = os.environ.get('BOX_SYNC_AGAVE_SYSTEM',
 #
 DROPBOX_APP_KEY = os.environ.get('DROPBOX_APP_KEY')
 DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')
+
+
+###
+# Settings for Google Drive integration
+#
+GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = 'client_secrets.json'
+GOOGLE_OAUTH2_SCOPES = ('https://www.googleapis.com/auth/drive',)
+GOOGLE_OAUTH2_REQUEST_ATTRIBUTE = 'google_oauth'
+GOOGLE_OAUTH2_STORAGE_MODEL = {
+    'model': 'designsafe.apps.googledrive_integration.models.GoogleDriveUserToken',
+    'user_property': 'user_id',
+    'credentials_property': 'credential'
+}
