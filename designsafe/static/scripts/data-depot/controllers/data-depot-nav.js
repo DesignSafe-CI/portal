@@ -41,7 +41,7 @@
           {
             name: 'My Projects',
             collapsible: false,
-            state: 'projects',
+            state: 'projects.list',
             description: 'Group access to shared directories'
           },/*
           {

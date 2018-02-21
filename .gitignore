@@ -27,6 +27,9 @@ data/static/
 data/media/
 data/NEHRI/
 
+# stats
+./stats
+
 # no node modules or package-lock
 node_modules/
 package-lock.json

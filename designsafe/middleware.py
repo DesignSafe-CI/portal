@@ -9,6 +9,7 @@ import json
 from django.contrib import messages
 from django.conf import settings
 from django.http import HttpResponse
+from django.core.exceptions import MiddlewareNotUsed
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
 from termsandconditions.models import TermsAndConditions
@@ -47,13 +48,16 @@ class RequestProfilingMiddleware(object):
     """Middleware to run cProfiler on each request"""
 
     def __init__(self, get_response=None):
-        self.get_response = get_response
-        stats_dirpath = os.path.join(os.path.dirname(__file__), '../stats')
-        if not os.path.isdir(stats_dirpath):
-            os.mkdir(stats_dirpath)
-        self.stats_dirpath = stats_dirpath
-        self.prfs = {}
-        self.profile = None
+        if settings.PORTAL_PROFILE:
+            self.get_response = get_response
+            stats_dirpath = os.path.join(os.path.dirname(__file__), '../stats')
+            if not os.path.isdir(stats_dirpath):
+                os.mkdir(stats_dirpath)
+            self.stats_dirpath = stats_dirpath
+            self.prfs = {}
+            self.profile = None
+        else:
+            raise MiddlewareNotUsed
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         reqid = re.sub(r"\/", "-", request.path.strip('/'))

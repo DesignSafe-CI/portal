@@ -72,11 +72,8 @@
           })
         });
       }
-
-      if ($state.current.name === 'projects') {
-        $state.go('projects.list');
-      }
     });
+    //$state.go('projects.list');
   }]);
 
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
