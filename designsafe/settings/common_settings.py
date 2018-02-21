@@ -67,7 +67,7 @@ INSTALLED_APPS = (
     'djangocms_video',
     'djangocms_forms',
 
-    'pipeline',
+    #'pipeline',
     'filer',
     'easy_thumbnails',
     'reversion',
@@ -125,6 +125,7 @@ CACHES = {
 }
 
 MIDDLEWARE_CLASSES = (
+    'designsafe.middleware.RequestProfilingMiddleware',
     'djng.middleware.AngularUrlMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -239,7 +240,7 @@ STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.PipelineFinder',
+    #'pipeline.finders.PipelineFinder',
 )
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'

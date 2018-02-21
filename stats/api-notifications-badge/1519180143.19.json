@@ -1,0 +1,9 @@
+{
+  "path": "/api/notifications/badge/", 
+  "POST": {}, 
+  "request": {
+    "CONTENT_LENGTH": "", 
+    "CONTENT_TYPE": "text/plain"
+  }, 
+  "GET": {}
+}

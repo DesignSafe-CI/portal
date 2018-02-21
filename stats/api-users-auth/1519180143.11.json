@@ -1,0 +1,9 @@
+{
+  "path": "/api/users/auth", 
+  "POST": {}, 
+  "request": {
+    "CONTENT_LENGTH": "", 
+    "CONTENT_TYPE": "text/plain"
+  }, 
+  "GET": {}
+}

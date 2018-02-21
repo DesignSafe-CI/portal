@@ -1,9 +1,17 @@
+"""Middlewares"""
+import logging
+import re
+import os
+import cProfile
+import pstats
+import time
+import json
 from django.contrib import messages
 from django.conf import settings
+from django.http import HttpResponse
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
 from termsandconditions.models import TermsAndConditions
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -35,3 +43,59 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                                  'resources.' % accept_url)
         return None
 
+class RequestProfilingMiddleware(object):
+    """Middleware to run cProfiler on each request"""
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+        stats_dirpath = os.path.join(os.path.dirname(__file__), '../stats')
+        if not os.path.isdir(stats_dirpath):
+            os.mkdir(stats_dirpath)
+        self.stats_dirpath = stats_dirpath
+        self.prfs = {}
+        self.profile = None
+
+    def process_view(self, request, callback, callback_args, callback_kwargs):
+        reqid = re.sub(r"\/", "-", request.path.strip('/'))
+        self.prfs[reqid] = cProfile.Profile()
+        #response = self.get_response(request)
+        self.prfs[reqid].enable()
+        args = (request,) + callback_args
+        try:
+            return callback(*args, **callback_args)
+        except:
+            return
+
+    def process_response(self, request, response):
+        reqid = re.sub(r"\/", "-", request.path.strip('/'))
+        if not self.prfs.get(reqid):
+            return response
+        self.prfs[reqid].disable()
+        prf = self.prfs[reqid]
+        req_dirname = re.sub(r"\/", "-", request.path.strip('/'))
+        req_dirpath = os.path.join(self.stats_dirpath, req_dirname)
+        if not os.path.isdir(req_dirpath):
+            os.mkdir(req_dirpath)
+        currtime = str(time.time())
+        prof_outpath = os.path.join(req_dirpath, currtime + '.prof')
+        det_outpath = os.path.join(req_dirpath, currtime + '.json')
+        self.prfs[reqid].dump_stats(prof_outpath)
+        #with open(prof_outpath, 'w+') as flo:
+        #    pstats.Stats(prf, stream=flo).sort_stats('cumtime', 'time')
+        with open(det_outpath, 'w+') as flo:
+            dets = {
+                'path': request.path,
+                'POST': request.POST.dict(),
+                'GET': request.GET.dict(),
+                'request': {
+                    'CONTENT_LENGTH': request.META.get('CONTENT_LENGTH'),
+                    'CONTENT_TYPE': request.META.get('CONTENT_TYPE')
+                },
+            }
+            if getattr(response, 'META', None):
+                dets['response'] = {
+                    'CONTENT_LENGTH': response.META.get('CONTENT_LENGHT'),
+                    'CONTENT_TYPE': response.META.get('CONTENT_TYPE')
+                }
+            json.dump(dets, flo, indent=2)
+        return response

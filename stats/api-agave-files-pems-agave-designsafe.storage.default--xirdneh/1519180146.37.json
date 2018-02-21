@@ -1,0 +1,9 @@
+{
+  "path": "/api/agave/files/pems/agave/designsafe.storage.default//xirdneh", 
+  "POST": {}, 
+  "request": {
+    "CONTENT_LENGTH": "", 
+    "CONTENT_TYPE": "text/plain"
+  }, 
+  "GET": {}
+}

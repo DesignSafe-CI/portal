@@ -66,3 +66,10 @@ class Project(MetadataModel):
         self.manager().agave_client.systems.updateRole(
             systemId=self.system,
             body={'username': username, 'role': 'USER'})
+
+    def save(self, ag):
+        if self.uuid:
+            prj = self._meta.model_manager.get(ag, self.uuid)
+            if prj.project_id:
+                self.project_id = prj.project_id
+        super(Project, self).save(ag)
