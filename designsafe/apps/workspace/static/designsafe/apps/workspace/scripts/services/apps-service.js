@@ -156,11 +156,17 @@
         title: 'Node Count (optional)',
         description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
         type: 'integer',
-        "minimum": 1,
-        "maximum": 12,
-        "format": "int64",
-        "validationMessage": "Must be an integer in the range 1 to 12.",
-        'x-schema-form': {placeholder: app.defaultNodeCount}
+        enum: Array.from(Array(12).keys()).map(i => i + 1),
+        default: app.defaultNodeCount,
+        'x-schema-form': {
+          type: 'select',
+          titleMap: _.map(Array.from(Array(12).keys()).map(i => i + 1), function (val) {
+            return {
+              'value': val,
+              'name': val
+            };
+          })
+        }
       };
 
       schema.properties.archivePath = {
