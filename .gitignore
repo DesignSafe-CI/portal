@@ -28,7 +28,7 @@ data/media/
 data/NEHRI/
 
 # stats
-./stats
+stats/
 
 # no node modules or package-lock
 node_modules/
