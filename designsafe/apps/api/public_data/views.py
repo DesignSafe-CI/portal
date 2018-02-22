@@ -53,13 +53,19 @@ class PublicDataListView(BaseApiView):
 
             file_mgr = PublicElasticFileManager()
         elif file_mgr_name == 'community':
-            ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            if not request.user.is_authenticated:
+                ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            else:
+                ag = request.user.agave_oauth.client
+
             file_mgr = CommunityFileManager(ag)
         elif file_mgr_name == 'published':
-            ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            if not request.user.is_authenticated:
+                ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            else:
+                ag = request.user.agave_oauth.client
+
             file_mgr = PublishedFileManager(ag)
-            #listing = file_mgr.listing(system_id, file_path)
-            #return JsonResponse({'response': 'ok'})
 
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
