@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180205
+
+Improvements:
+
+- Search improvements - better ES queries.
+- Static files handling improvements - no `django-pipeline`, adding SASS to webpack.
+
+Fixes:
+
+- Google Drive Token expiration error.
+- Update `nodeCount` to dropdown.
+
 ## 20180204
 
 Fixes:
