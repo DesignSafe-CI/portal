@@ -5,13 +5,16 @@ const path = require('path');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   devtool: 'source-map',
-  entry: './designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js',
+  entry: {
+      "./designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
+  },
   output: {
     path: __dirname,
-    filename: "./designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.[hash].js"
+    filename: "[name]"
   },
   resolve: {
     extensions: ['.js'],
@@ -28,10 +31,22 @@ module.exports = {
           presets: ['es2015']
         }
       },
-      {test: /\.css$/, use: 'css-loader'},
+      {
+        test: /\.(s?)css$/,
+        use: ExtractTextPlugin.extract({
+              fallback: "style-loader",
+              use: [{ loader: 'css-loader',},
+                    { loader: 'sass-loader',
+                      options: { sourceMap: true,
+                                 includePaths: ["./designsafe/static/styles"]
+                               }
+                    }]
+            })
+      },
     ]
   },
   plugins: [
+    new ExtractTextPlugin("./designsafe/static/styles/base.css"),
     new ngAnnotatePlugin({add:true}),
     new LiveReloadPlugin(),
   ],
