@@ -68,6 +68,15 @@
         </tr>
         <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
       </tbody>
+      <tbody ng-if="data.source === 'public' && data.publishedSelected == false">
+        <tr
+          ng-repeat = 'project in project_list'
+          ng-click = 'selectPublished(project)'>
+          <td> <a href="#"> <i class="fa fa-folder"> </i> {{project.meta.title }} </td>
+          <td> </td>
+        </tr>
+        <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
+      </tbody>
     </table>
     <div ng-if="data.loading" class="text-center">
       <i class="fa fa-spin fa-circle-o-notch fa-2x"></i>

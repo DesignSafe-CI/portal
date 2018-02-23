@@ -38,7 +38,7 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
       $scope.listPublished = function () {
         $scope.data.loading=true;
         $scope.data.selectedPublished = null;
-        $http.get("/api/public/files/listing/published/").then(function (resp) {
+        $http.get("/api/public/files/listing/public/nees.public/").then(function (resp) {
           console.log(resp);
           $scope.published_list = resp.data;
           $scope.data.publishedSelected = false;
@@ -128,6 +128,7 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
           $scope.data.filePath = '/';
           $scope.data.filesListing = null;
           $scope.project_list = null;
+          $scope.data.publishedSelected == false;
           $scope.browse();
         } else {
           DataBrowserService.apiParams.fileMgr = 'agave';
