@@ -146,7 +146,7 @@
     /**
       Checks to see if there is a folder in the selected listings. If so, download
       is not available.
-      
+
       @param {FileListing|FileListing[]} files Files to test
       @return {boolean}
     */
@@ -210,7 +210,7 @@
         req.stopper.resolve();
         req = null;
       }
-      
+
       currentState.busy = true;
       currentState.busyListing = true;
       currentState.error = null;
@@ -243,6 +243,7 @@
         currentState.error = err.data;
         currentState.loadingMore = false;
         currentState.reachedEnd = false;
+        return $q.reject(err);
       });
 
       return currentReq;
@@ -2324,7 +2325,7 @@
         });
     }
 
-        
+
   /**
    *
    * @param {Array} projects Array of project objects that will be set as selected

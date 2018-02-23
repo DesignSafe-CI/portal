@@ -9,7 +9,8 @@
     'ds.wsBus',
     'toastr',
     'logging',
-    'ui.customSelect'
+    'ui.customSelect',
+    'ngSanitize'
   );
 
   function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {

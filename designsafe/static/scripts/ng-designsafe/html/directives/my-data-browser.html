@@ -12,6 +12,10 @@
             ng-class="{'btn-primary': data.source === 'myprojects'}"
             ng-disabled="data.loading"
             ng-click="setSource('myprojects')"> My Projects </button>
+    <button class="btn btn-default"
+            ng-class="{'btn-primary': data.source === 'public'}"
+            ng-disabled="data.loading"
+            ng-click="setSource('public')"> Public </button>
   </div>
   <div>
     <div>

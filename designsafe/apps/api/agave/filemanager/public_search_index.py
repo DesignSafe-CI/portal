@@ -154,8 +154,8 @@ class PublicFullIndexed(DocType):
 
 class PublicProjectIndexed(DocType):
     class Meta:
-        index = 'nees'
-        doc_type = 'project'
+        index = 'des-publications'
+        doc_type = 'publication'
 
 class PublicExperimentIndexed(DocType):
     class Meta:
@@ -164,8 +164,8 @@ class PublicExperimentIndexed(DocType):
 
 class PublicObjectIndexed(DocType):
     class Meta:
-        index = 'nees'
-        doc_type = 'object'
+        index = 'des-publications_legacy'
+        doc_type = 'publication'
 
 
 class PublicSearchManager(object):
@@ -310,7 +310,7 @@ class PublicObject(object):
         base_path = base_path or '/'
         search = PublicObjectIndexed.search()
         query = Q('bool',
-                  must=[Q({'term': {'name._exact': name}}),
+                  must=[Q({'term': {'name': name}}),
                         Q({'term': {'path._exact': base_path}}),
                         Q({'term': {'systemId': system}})])
         search.query = query

@@ -35,6 +35,25 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
         });
       };
 
+      $scope.listPublished = function () {
+        $scope.data.loading=true;
+        $scope.data.selectedPublished = null;
+        $http.get("/api/public/files/listing/published/").then(function (resp) {
+          console.log(resp);
+          $scope.published_list = resp.data;
+          $scope.data.publishedSelected = false;
+        });
+      };
+
+      $scope.selectPublished = function (pub) {
+        $scope.data.system = pub.meta.system;
+        $scope.data.filePath = '/';
+        $scope.data.publishedSelected = true;
+        $scope.data.selectedPublished = pub;
+        $scope.selected = pub;
+        $scope.browse();
+      };
+
       $scope.selectProject = function (project) {
         $scope.data.system = 'project-' + project.uuid;
         $scope.data.filePath = '/';
@@ -46,7 +65,9 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
 
       $scope.browse = function () {
         $scope.data.loading = true;
+        console.log($scope.data)
         DataBrowserService.browse({system: $scope.data.system, path:$scope.data.filePath}).then(function (resp) {
+          console.log(resp)
           $scope.data.filesListing = resp;
           $scope.selected = resp;
           $scope.data.loading = false;
@@ -71,8 +92,12 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
             $scope.data.selectedProject = resp;
           });
 
-        } else {
+        } else if ($scope.data.system === 'designsafe.storage.default') {
           $scope.data.source = 'mydata';
+        } else if (DataBrowserService.apiParams.fileMgr === 'community'){
+          $scope.data.source = 'community';
+        } else {
+          $scope.data.source = 'public';
         }
       }
 
@@ -96,11 +121,19 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
           $scope.data.system = 'designsafe.storage.community';
           $scope.project_list = null;
           $scope.browse();
+        } else if  ($scope.data.source == 'public') {
+          DataBrowserService.apiParams.fileMgr = 'public';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          $scope.data.system = 'nees.public';
+          $scope.data.filePath = '/';
+          $scope.data.filesListing = null;
+          $scope.project_list = null;
+          $scope.browse();
         } else {
           DataBrowserService.apiParams.fileMgr = 'agave';
           DataBrowserService.apiParams.baseUrl = '/api/agave/files';
           $scope.data.filesListing = null;
-          $scope.data.filePath = '/';
+          $scope.data.filePath = '';
           $scope.data.selectedProject = null;
           $scope.data.system = 'designsafe.storage.default';
           $scope.project_list = null;
