@@ -705,8 +705,8 @@
               $scope.busy = false;
             },
             function (err) {
-              var fileExt = file.name.split('.').pop()
-              var videoExt = ['webm', 'ogg', 'mp4']
+              var fileExt = file.name.split('.').pop();
+              var videoExt = ['webm', 'ogg', 'mp4'];
 
               //check if preview is video
               if (videoExt.includes(fileExt) ) {
@@ -2311,7 +2311,7 @@
       }
       currentState.page += 1;
       currentState.loadingMore = true;
-      browsePage({system: currentState.listing.system,
+      return browsePage({system: currentState.listing.system,
                   path: currentState.listing.path,
                   page: currentState.page})
       .then(function(listing){

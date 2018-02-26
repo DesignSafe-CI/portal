@@ -21,7 +21,9 @@
     <div>
       <label ng-if="!saveas.filename">Browsing:</label>
       <label ng-if="saveas.filename"> Save to:</label></br>
-      <span ng-if="data.selectedProject" ng-click="selectProject(data.selectedProject)"> <a href="#"> {{data.selectedProject.value.title}} </a>
+      <span ng-if="data.selectedProject"
+            ng-click="selectProject(data.selectedProject)">
+        <a href="#"> {{data.selectedProject.value.title}} </a>
       </span>
       <span
         ng-repeat-start="dirElem in data.dirPath track by $index"
@@ -42,8 +44,8 @@
        data-bottom-height="0">
       <table class="table table-striped">
         <thead>
-        <th>File name</th>
-        <th>Size</th>
+          <th>File name</th>
+          <th>Size</th>
         </thead>
         <tbody>
           <tr
@@ -61,21 +63,11 @@
       </tbody>
       <tbody ng-if="data.source === 'myprojects' && data.projectSelected == false">
         <tr
-          ng-repeat = 'project in project_list'
+          ng-repeat = 'project in data.project_list'
           ng-click = 'selectProject(project)'>
-          <td> <a href="#"> <i class="fa fa-folder"> </i> {{project.value.title }} </td>
+          <td> <a href="#"> <i class="fa fa-folder"> </i> <span> {{project.value.title }} </span> </td>
           <td> </td>
         </tr>
-        <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
-      </tbody>
-      <tbody ng-if="data.source === 'public' && data.publishedSelected == false">
-        <tr
-          ng-repeat = 'project in project_list'
-          ng-click = 'selectPublished(project)'>
-          <td> <a href="#"> <i class="fa fa-folder"> </i> {{project.meta.title }} </td>
-          <td> </td>
-        </tr>
-        <tr ng-if="data.error"><td colspan="3"><p class="alert alert-danger">{{data.error}}</p></td></tr>
       </tbody>
     </table>
     <div ng-if="data.loading" class="text-center">
