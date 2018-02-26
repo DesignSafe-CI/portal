@@ -8,9 +8,9 @@ DJANGO_RT = {
 }
 
 TICKET_CATEGORIES = (
+    ('DATA_CURATION_PUBLICATION', 'Data Curation & Publication'),
     ('DATA_DEPOT', 'Data Depot'),
     ('DISCOVERY_WORKSPACE', 'Discovery Workspace'),
-    ('ECSS', 'ECSS'),
     ('LOGIN', 'Login/Registration'),
     ('OTHER', 'Other'),
 )
