@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions.middleware',
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
@@ -67,7 +68,7 @@ INSTALLED_APPS = (
     'djangocms_video',
     'djangocms_forms',
 
-    'pipeline',
+    #'pipeline',
     'filer',
     'easy_thumbnails',
     'reversion',
@@ -75,6 +76,8 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
     'captcha',
+
+    'oauth2client.contrib.django_util',
 
     #websockets
     'ws4redis',
@@ -125,6 +128,7 @@ CACHES = {
 }
 
 MIDDLEWARE_CLASSES = (
+    'designsafe.middleware.RequestProfilingMiddleware',
     'djng.middleware.AngularUrlMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -239,7 +243,7 @@ STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.PipelineFinder',
+    #'pipeline.finders.PipelineFinder',
 )
 MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
 MEDIA_URL = '/media/'
@@ -581,7 +585,10 @@ EZID_PASS = os.environ.get('EZID_PASS')
 EZID_SHOULDER = os.environ.get('EZID_SHOULDER')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
-PORTAL_PROFILE = os.environ.get('PORTAL_PROFILE', False)
+if os.environ.get('PORTAL_PROFILE') == 'True':
+    PORTAL_PROFILE = True
+else:
+    PORTAL_PROFILE = False
 
 from celery_settings import *
 from external_resource_settings import *

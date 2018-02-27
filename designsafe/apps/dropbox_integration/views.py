@@ -1,4 +1,5 @@
 from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException, CsrfException, NotApprovedException, ProviderException
+from dropbox.exceptions import AuthError
 from dropbox.dropbox import Dropbox
 
 from django.conf import settings
@@ -29,7 +30,7 @@ def index(request):
             dropbox = Dropbox(dropbox_token.access_token)
             dropbox_user=dropbox.users_get_account(dropbox_token.account_id)
             context['dropbox_connection'] = dropbox_user
-        except BadRequestException:
+        except BadRequestException or AuthError:
             # authentication failed
             logger.warning('Dropbox oauth token for user=%s failed to authenticate' %
                            request.user.username)

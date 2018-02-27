@@ -1,4 +1,4 @@
-{% load cms_tags staticfiles sekizai_tags menu_tags pipeline %}
+{% load cms_tags staticfiles sekizai_tags menu_tags %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -12,11 +12,18 @@
       <link rel="canonical" href="{{request.get_full_path}}">
       {% block head_extra %}{% endblock %}
       <!-- styles -->
-      {% stylesheet 'vendor' %}
-      {% stylesheet 'main' %}
+      <link href="{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
-      <link href="{% static 'styles/nested-list-group.scss' %}" rel="stylesheet">
       {% block styles %}{% endblock %}
       {% render_block "css" %}
       <base href="/">
@@ -37,8 +44,16 @@
     <!-- scripts -->
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
-    {% javascript 'vendor' %}
-    {% javascript 'main' %}
+
+    <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
+    <script src="{% static 'vendor/jquery/dist/jquery.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'vendor/d3/d3.min.js' %}"></script>
+
+    <script src="{% static 'scripts/utils.js' %}"></script>
+    <script src="{% static 'scripts/dateinput.js' %}"></script>
+    <script src="{% static 'scripts/navbar.js' %}"></script>
 
     <script src="{% static 'vendor/angular/angular.js' %}"></script>
     <script src="{% static 'vendor/angular-cookies/angular-cookies.min.js' %}"></script>

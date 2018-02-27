@@ -2,28 +2,20 @@
     <div class="col-sm-3">
         <h3> Refine By: </h3>
         <div class="list-group">
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "files"}' ng-click='filter("private_files")'> My Data
+            <a class="list-group-item"
+                ng-show="user !== 'AnonymousUser'"
+                ng-class='{"active":data.type_filter == "private_files"}' ng-click='filter("private_files")'> My Data
                 <span class="badge" ng-show='data.search_results.private_files_total'> {{ data.search_results.private_files_total }}</span>
             </a>
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "projects"}' ng-click='filter("published")'> Published
-                <span class="badge" ng-show='data.search_results.nees_total'> {{ data.search_results.nees_total }}</span>
+            <a class="list-group-item" ng-class='{"active":data.type_filter == "published"}' ng-click='filter("published")'> Published
+                <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "files"}' ng-click='filter("public_files")'> Public Files
+            <a class="list-group-item" ng-class='{"active":data.type_filter == "public_files"}' ng-click='filter("public_files")'> Public Files
                 <span class="badge" ng-show='data.search_results.public_files_total'> {{ data.search_results.public_files_total }}</span>
             </a>
-            <!--
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "experiments"}' ng-click='filter("experiments")'> Experiments
-                <span class="badge" ng-show='data.search_results.experiments_total'> {{ data.search_results.experiments_total }}</span>
-            </a>
-            -->
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "web"}' ng-click='filter("cms")'> Web Content
+            <a class="list-group-item" ng-class='{"active":data.type_filter == "cms"}' ng-click='filter("cms")'> Web Content
                 <span class="badge" ng-show='data.search_results.cms_total'> {{ data.search_results.cms_total }}</span>
             </a>
-            <!--
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "publications"}' ng-click='filter("publications")'> Publications
-                <span class="badge" ng-show='data.search_results.publications_total'> {{ data.search_results.publications_total }}</span>
-            </a>
-            -->
         </div>
     </div>
     <div class="col-sm-9">
@@ -54,14 +46,9 @@
              <label class="btn btn-xs btn-default" ng-model='filetype_filter' uib-btn-radio="'video'"> Video  </label>
           </div>
         </div> -->
-        <div ng-show = 'data.search_results.hits.length === 0 && data.type_filter'>
+        <div ng-show = 'data.search_results.hits.length === 0'>
           <div class="alert alert-danger">
-            <h3> <a ng-click="filter()" href=''> Nothing found! Want to try without any filters? </a> </h3>
-          </div>
-        </div>
-        <div ng-show = 'data.search_results.hits.length === 0 && !data.type_filter'>
-          <div class="alert alert-warning">
-            <h3> Sorry, nothing found! </h3>
+            <h3> Nothing found! </h3>
           </div>
         </div>
         <div ng-show = 'data.search_results.hits.length'>
@@ -70,22 +57,6 @@
             </div>
         </div>
         <div class="row" ng-if="data.search_results.total_hits > results_per_page">
-            <!-- <ul class="pagination">
-                <li>
-                  <a href="#" ng-click="select_page(page_num -1)">
-                    <i class="fa fa-chevron-left"></i>
-                  </a>
-                </li>
-                <li ng-repeat="i in counter(Math.ceil(data.search_results.total_hits / results_per_page)) track by $index">
-                  <a href="#" ng-click=select_page($index)> {{ $index + 1}}</a>
-                </li>
-
-                <li>
-                  <a href="#" ng-click="next_page()">
-                    <i class="fa fa-chevron-right"></i>
-                  </a>
-                </li>
-            </ul> -->
             <div class="col-md-3">
               <button class="btn btn-default pull-left"
                 ng-click="prev()"

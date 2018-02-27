@@ -15,9 +15,8 @@
     $scope.$watch('browser.listing', function() {
       $scope.test.createFiles = false;
       if ($scope.browser.listing) {
-        $scope.browser.listing.listPermissions().then(function (pems) {
-          $scope.test.createFiles = _.findWhere(pems, {username: Django.user}).permission.write;
-        });
+        $scope.test.createFiles = $scope.browser.listing.permissions === 'ALL' ||
+                                  $scope.browser.listing.permissions.indexOf('WRITE') > -1;
       }
     });
 

@@ -722,7 +722,9 @@
                         var videoBlob = this.response;
                         var vid = URL.createObjectURL(videoBlob);
 
+                        // set video source and mimetype
                         document.getElementById("videoPlayer").src=vid;
+                        document.getElementById("videoPlayer").setAttribute('type', `video/${fileExt}`);
                       };
                     };
                     oReq.onerror = function() {

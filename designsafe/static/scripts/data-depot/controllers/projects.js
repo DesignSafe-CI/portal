@@ -72,11 +72,8 @@
           })
         });
       }
-
-      if ($state.current.name === 'projects') {
-        $state.go('projects.list');
-      }
     });
+    //$state.go('projects.list');
   }]);
 
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
@@ -1122,6 +1119,30 @@
             function(model){
               return _.contains(model.associationIds, simulation.uuid);
             });
+        }
+      },
+
+      filterSimAnalysis : function(analysis){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(analysis, function(anl){
+            return !anl.value.simOutputs.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.simulationsList, function(anl){
+            return !anl.value.simOutputs.length;
+          });
+        }
+      },
+
+      filterSimReports : function(reports){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(reports, function(rpt){
+            return !rpt.value.simOutputs.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.reportsList, function(rpt){
+            return !rpt.value.simOutputs.length;
+          });
         }
       },
 

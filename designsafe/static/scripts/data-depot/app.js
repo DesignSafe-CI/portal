@@ -161,17 +161,17 @@
         }
       })
       .state('projects', {
-        url: '/projects/',
+        abstract:true,
         controller: 'ProjectRootCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-root.html'
       })
       .state('projects.list', {
-        url: '',
+        url: '/projects/',
         controller: 'ProjectListingCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-list.html'
       })
       .state('projects.view', {
-        url: '{projectId}/',
+        url: '/projects/{projectId}/',
         abstract: true,
         controller: 'ProjectViewCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-view.html',

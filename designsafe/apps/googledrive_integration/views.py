@@ -1,8 +1,6 @@
 import google_auth_oauthlib.flow
-import google.oauth2.credentials
 import requests
 import os
-from googleapiclient import discovery
 from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -17,10 +15,11 @@ from django.shortcuts import render
 from designsafe.apps.googledrive_integration.models import GoogleDriveUserToken
 from designsafe.apps.googledrive_integration.tasks import check_connection
 
-
-CLIENT_SECRETS_FILE = os.path.join(settings.SITE_DIR, 'client_secrets.json')
 import logging
 logger = logging.getLogger(__name__)
+
+CLIENT_SECRETS_FILE = os.path.join(
+    settings.SITE_DIR, settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON)
 
 @login_required
 def index(request):
@@ -50,7 +49,7 @@ def initialize_token(request):
     redirect_uri = reverse('googledrive_integration:oauth2_callback')
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE,
-        scopes=['https://www.googleapis.com/auth/drive'])
+        scopes=['https://www.googleapis.com/auth/drive',])
     flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
     logger.debug(request.build_absolute_uri(redirect_uri))
@@ -80,7 +79,7 @@ def oauth2_callback(request):
         redirect_uri = reverse('googledrive_integration:oauth2_callback')
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             CLIENT_SECRETS_FILE,
-            scopes=['https://www.googleapis.com/auth/drive'],
+            scopes=['https://www.googleapis.com/auth/drive',],
             state=state)
         flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
@@ -90,14 +89,9 @@ def oauth2_callback(request):
         flow.fetch_token(authorization_response=authorization_response)
             
         credentials = flow.credentials
-        logger.debug('CREDENTIAL SCOPES: {}'.format(credentials.scopes))
-        logger.debug('CREDENTIALS: {}'.format(credentials))
         token = GoogleDriveUserToken(
             user=request.user,
-            token=credentials.token,
-            refresh_token=credentials.refresh_token,
-            token_uri=credentials.token_uri,
-            scopes=credentials.scopes[0]
+            credential=credentials
         )
         
         token.save()
@@ -129,7 +123,7 @@ def disconnect(request):
             googledrive_user_token = GoogleDriveUserToken.objects.get(user=request.user)
 
             revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
-                params={'token': googledrive_user_token.token},
+                params={'token': googledrive_user_token.credential.token},
                 headers = {'content-type': 'application/x-www-form-urlencoded'})
             
             status_code = getattr(revoke, 'status_code')

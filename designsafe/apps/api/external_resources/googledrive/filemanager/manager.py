@@ -4,6 +4,7 @@ import re
 import sys
 import logging
 import io
+import time
 from designsafe.apps.api.tasks import reindex_agave
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.external_resources.googledrive.models.files import GoogleDriveFile
@@ -13,7 +14,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import (JsonResponse, HttpResponseBadRequest)
 from requests import HTTPError
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload, HttpError
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ class FileManager(object):
             raise ApiException(status=404, message='The file you requested does not exist.')
 
         except Exception as e:
-            if 'invalid_grant: Token has been expired or revoked.' in e:
+            if 'invalid_grant' in str(e):
                 message = 'While you previously granted this application access to Google Drive, ' \
                       'that grant appears to be no longer valid. Please ' \
                       '<a href="%s">disconnect and reconnect your Google Drive account</a> ' \
@@ -188,16 +189,18 @@ class FileManager(object):
                                       'file_id': '{}/{}'.format(agave_system_id, agave_file_path)
                                       },
                                       queue='indexing')
-        except:
-            logger.exception('Unexpected task failure: googledrive_download', extra={
+        except Exception as e:
+            logger.exception('Unexpected task failure: googledrive_copy', extra={
                 'username': username,
                 'file_id': src_file_id,
-                'dest_file_id': dest_file_id
+                'dest_file_id': dest_file_id,
+                'error_type': type(e),
+                'error': str(e)
             })
             n = Notification(event_type='data',
                              status=Notification.ERROR,
-                             operation='googledrive_download_error',
-                             message='We were unable to get the specified file from Google Drive. '
+                             operation='googledrive_copy_error',
+                             message='We were unable to copy the file from Google Drive. '
                                      'Please try again...',
                              user=username,
                              extra={'path': googledrive_item['name']})
@@ -276,16 +279,14 @@ class FileManager(object):
         :param download_directory_path:
         :return: the full path to the downloaded file
         """
-        googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="name, webContentLink, mimeType").execute()
+        googledrive_file = self.googledrive_api.files().get(fileId=file_id, fields="name, mimeType").execute()
 
         # convert utf-8 chars
         safe_filename = googledrive_file['name'].encode(sys.getfilesystemencoding(), 'ignore')
         file_download_path = os.path.join(download_directory_path, safe_filename)
         logger.debug('Download file %s <= googledrive://file/%s', file_download_path, file_id)
 
-        if 'webContentLink' in googledrive_file:
-            request = self.googledrive_api.files().get_media(fileId=file_id)
-        else:
+        if 'vnd.google-apps' in googledrive_file['mimeType']:
             # if googledrive_file['mimeType'] == 'application/vnd.google-apps.spreadsheet':
             #     mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             # elif googledrive_file['mimeType'] == 'application/vnd.google-apps.document':
@@ -294,27 +295,54 @@ class FileManager(object):
             #     mimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
             # else:
             n = Notification(event_type='data',
-                                status=Notification.ERROR,
-                                operation='googledrive_download_error',
-                                message='Copying Google-type files is currently unsupported. Convert the file to'
-                                ' a standard format and try again.',
-                                user=username,
-                                # show mimeType in Notification
-                                extra={'path': "{}".format(googledrive_file['name'])})
+                             status=Notification.ERROR,
+                             operation='googledrive_download_error',
+                             message='Copying Google-type files is currently unsupported. Export the file to'
+                             ' a standard format and try again.',
+                             user=username,
+                             extra={'path': "'{}' of type {}".format(googledrive_file['name'], googledrive_file['mimeType'])})
             n.save()
             return None
 
-            # # NEED TO CHECK FILE SIZE <= 10MB
-            # request = self.googledrive_api.files().export_media(fileId=file_id, mimeType=mimeType)
+        request = self.googledrive_api.files().get_media(fileId=file_id)
 
         # Incremental Partial Download
         fh = io.FileIO(file_download_path, 'wb')
         downloader = MediaIoBaseDownload(fh, request)
         done = False
+        backoff_attempts = 0
         while done is False:
-            status, done = downloader.next_chunk()
-        logger.debug('status:{}'.format(status))
-        logger.debug('done:{}'.format(done))
+            try:
+                status, done = downloader.next_chunk()
+                # logger.debug('status: {} percent'.format(status.progress()))
+            except HttpError as e:
+                # Incremental backoff for exceeding google api rate limit
+                if "Rate Limit Exceeded" in str(e):
+                    logger.debug('RATE LIMIT EXCEEDED')
+                    backoff_attempts += 1
+                    time.sleep(backoff_attempts)
+                    if backoff_attempts > 10:
+                        n = Notification(event_type='data',
+                                         status=Notification.ERROR,
+                                         operation='googledrive_download_error',
+                                         message='Rate Limit Exceeded. Try again after a few minutes for this file.',
+                                         user=username,
+                                         extra={'path': "{}".format(googledrive_file['name'])})
+                        n.save()
+                        return None
+                elif "Only files with binary content can be downloaded" in str(e):
+                    n = Notification(event_type='data',
+                                    status=Notification.ERROR,
+                                    operation='googledrive_download_error',
+                                    message='Only files with binary content can be downloaded. Convert the file to'
+                                    ' a standard format and try again.',
+                                    user=username,
+                                    extra={'path': "'{}' of type {}".format(googledrive_file['name'], googledrive_file['mimeType'])})
+                    n.save()
+                    return None
+                else:
+                    raise
+
         fh.close()
 
         return file_download_path
@@ -342,19 +370,31 @@ class FileManager(object):
                 logger.exception('Error creating directory: %s', directory_path)
                 raise
 
-        # limit = 100
-        # offset = 0
-        # while True:
         items = self.googledrive_api.files().list(q="'{}' in parents and trashed=False".format(folder_id)).execute()
         for item in items['files']:
             if item['mimeType'] == 'application/vnd.google-apps.folder':
                 self.download_folder(item['id'], directory_path, username)
             else:
-                self.download_file(item['id'], directory_path, username)
-            # if len(items) == limit:
-            #     offset += limit
-            # else:
-            #     break
+                try:
+                    self.download_file(item['id'], directory_path, username)
+                    logger.info('Google File download complete: {}'.format('/'.join([directory_path, item['id']])))
+                except Exception as e:
+                    logger.exception('Unexpected task failure: googledrive_download', extra={
+                        'username': username,
+                        'file_id': item['id'],
+                        'dest_file_id': '/'.join([directory_path, item['id']]),
+                        'error_type': type(e),
+                        'error': str(e)
+                    })
+                    n = Notification(event_type='data',
+                                    status=Notification.ERROR,
+                                    operation='googledrive_download_error',
+                                    message='We were unable to download file from Google Drive. '
+                                            'Please try again...',
+                                    user=username,
+                                    extra={'path': item['name']})
+                    n.save()
+                    raise
 
         return directory_path
 

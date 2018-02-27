@@ -255,8 +255,8 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.simulation.model': simulation.ModelConfig,
             'designsafe.project.simulation.input': simulation.SimInput,
             'designsafe.project.simulation.output': simulation.SimOutput,
-            'designsafe.project.simulation.integrated_data_analysis': simulation.IntegratedDataAnalysis,
-            'designsafe.project.simulation.integrated_report': simulation.IntegratedReport
+            'designsafe.project.simulation.analysis': simulation.Analysis,
+            'designsafe.project.simulation.report': simulation.Report
         }
 
         cls = clss.get(name)

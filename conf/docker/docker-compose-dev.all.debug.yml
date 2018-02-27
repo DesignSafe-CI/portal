@@ -129,3 +129,4 @@ volumes:
   mysql_data:
   es_data:
   rabbitmq_data:
+  sockets:

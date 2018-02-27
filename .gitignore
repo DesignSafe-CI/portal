@@ -4,6 +4,10 @@
 # OsX DS_Store nonsense
 .DS_Store
 
+# don't track webpack's bundles
+designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.*
+designsafe/static/styles/base.*
+
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env
 mysql.env
@@ -26,6 +30,9 @@ data/elasticsearch/
 data/static/
 data/media/
 data/NEHRI/
+
+# stats
+stats/
 
 # no node modules or package-lock
 node_modules/
