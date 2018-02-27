@@ -1135,45 +1135,86 @@
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
 
-            var removeActions = _.map($scope.form.curUsers, function (cur) {
+            console.log('Scope.Form');
+            console.log($scope.form);
+
+            // ----------------------------------------------------------------------------------Remove Users
+            console.log("Remove Users --------------------------------->");
+            var raList = _.map($scope.form.curUsers, function (cur) {
               if (cur.remove) {
-                return collabResource.delete({data: {
-                  uuid: $scope.data.project.uuid,
-                  username: cur.user.username
-                }});
+                return cur.user.username
               }
             });
 
-            var coPIsRemoveActions = _.map($scope.form.curCoPis, function(cur){
+            if (_.compact(raList).length > 0) {
+              var removeActions = collabResource.delete({data: {
+                uuid: $scope.data.project.uuid,
+                username: _.compact(raList)
+              }});
+            }
+            else {
+              var removeActions = [];
+            }
+
+            // ----------------------------------------------------------------------------------Remove CoPI
+            console.log("Remove CoPi --------------------------------->");
+            var rcpList = _.map($scope.form.curCoPis, function(cur){
               if(cur.remove){
-                return collabResource.delete({data:{
-                  uuid: $scope.data.project.uuid,
-                  username: cur.user.username
-                }});
+                return cur.user.username
               }
             });
 
-            removeActions = removeActions.concat(coPIsRemoveActions);
+            if (_.compact(rcpList).length > 0) {
+              var coPIsRemoveActions = collabResource.delete({data: {
+                uuid: $scope.data.project.uuid,
+                username: _.compact(rcpList),
+                memberType: 'coPis'
+              }});
+            }
+            else {
+              var coPIsRemoveActions = [];
+            }
 
-            var addActions = _.map($scope.form.addUsers, function (add) {
+            // ----------------------------------------------------------------------------------Add Users
+            console.log("Add Users --------------------------------->");
+            var aaList = _.map($scope.form.addUsers, function (add) {
               if (add.user && add.user.username) {
-                return collabResource.post({data: {
-                  uuid: $scope.data.project.uuid,
-                  username: add.user.username
-                }});
+                return add.user.username
               }
             });
 
-            addActions.concat(_.map($scope.form.addCoPis, function (add) {
-              if (add.user && add.user.username) {
-                return collabResource.post({data: {
-                  uuid: $scope.data.project.uuid,
-                  username: add.user.username,
-                  memberType: 'coPis'
-                }});
-              }
-            }));
+            if (_.compact(aaList).length > 0) {
+              var addActions = collabResource.post({data: {
+                uuid: $scope.data.project.uuid,
+                username: _.compact(aaList)
+              }});
+            }
+            else {
+              var addActions = [];
+            }
 
+            // ----------------------------------------------------------------------------------Add CoPi
+            console.log("Add CoPi --------------------------------->");
+
+            var acpList = _.map($scope.form.addCoPis, function (add) {
+              if (add.user && add.user.username) {
+                return add.user.username
+              }
+            });
+
+            if (_.compact(acpList).length > 0) {
+              var addCoPi = collabResource.post({data: {
+                uuid: $scope.data.project.uuid,
+                username: _.compact(acpList),
+                memberType: 'coPis'
+              }});
+            }
+            else {
+              var addCoPi = [];
+            }
+
+            // ----------------------------------------------------------------------------------Authorship
+            console.log("Authorship --------------------------------->");
             var expsToUpdate = [];
             _.each($scope.authorship, function(obj){
               expsToUpdate.push(obj);
@@ -1196,17 +1237,27 @@
                 //ProjectEntitiesService.update(
                 //    {data: {uuid: entity.uuid, entity: entity}}
                 //)
-            var tasks = removeActions.concat(addActions);
-            tasks = tasks.concat(updateExps);
+
+            // ----------------------------------------------------------------------------------Combine Requests
+            console.log("Combine All --------------------------------->");
+            var tasks = [];
+            tasks = tasks.concat(removeActions, coPIsRemoveActions, addActions, addCoPi, updateExps);
+            
+            console.log('TASKS ~~~~~~~~~~~~$');
+            console.log(tasks);
+
+            // ----------------------------------------------------------------------------------Process
             $q.all(tasks).then(
               function (results) {
                 // $uibModalInstance.close(results);
                 // $scope.data.busy = true;
+                console.log('success');
                 $scope.initForm();
                 $scope.loadData();
               },
               function (error) {
                 // $uibModalInstance.reject(error.data);
+                console.log('error');
                 $scope.data.busy = true;
                 $scope.initForm();
                 $scope.loadData();

@@ -167,7 +167,7 @@ class Project(BaseMetadataResource):
         self.add_collaborator(username)
 
     def remove_co_pi(self, username):
-        logger.info('Removing Co PI "{}" to project "{}"'.format(username, self.uuid))
+        logger.info('Removing Co PI "{}" from project "{}"'.format(username, self.uuid))
 
         coPis = self.value.get('coPis', [])
         # logger.info(coPis)
