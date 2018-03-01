@@ -9,8 +9,6 @@ from oauth2client.contrib.django_util.models import CredentialsField
 import os
 import json
 
-CLIENT_SECRETS_FILE = os.path.join(
-    settings.SITE_DIR, settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON)
 
 def create_credential_model(apps, schema_editor):
     # Find users that already have Google Drive access set up,
@@ -20,16 +18,14 @@ def create_credential_model(apps, schema_editor):
         "googledrive_integration", "GoogleDriveUserToken")
     tokens = GoogleDriveUserToken.objects.all()
     for google_token in tokens:
-        with open(CLIENT_SECRETS_FILE, 'r') as secrets_file:
-            client_secrets = json.load(secrets_file)
-            credentials = {
-                'token': google_token.token,
-                'refresh_token': google_token.refresh_token,
-                'token_uri': google_token.token_uri,
-                'client_id': client_secrets['web']['client_id'],
-                'client_secret': client_secrets['web']['client_secret'],
-                'scopes': [google_token.scopes]
-            }
+        credentials = {
+            'token': google_token.token,
+            'refresh_token': google_token.refresh_token,
+            'token_uri': google_token.token_uri,
+            'client_id': settings.GOOGLE_OAUTH2_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+            'scopes': [google_token.scopes]
+        }
         
         google_token.credential = Credentials(**credentials)
         google_token.save()

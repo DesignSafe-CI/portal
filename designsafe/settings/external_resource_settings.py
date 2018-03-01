@@ -19,7 +19,6 @@ DROPBOX_APP_SECRET = os.environ.get('DROPBOX_APP_SECRET')
 ###
 # Settings for Google Drive integration
 #
-GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = 'client_secrets.json'
 GOOGLE_OAUTH2_SCOPES = ('https://www.googleapis.com/auth/drive',)
 GOOGLE_OAUTH2_REQUEST_ATTRIBUTE = 'google_oauth'
 GOOGLE_OAUTH2_STORAGE_MODEL = {
