@@ -30,6 +30,7 @@ class BaseNotify(models.Model):
     EXTRA = CONTENT = 'extra'
     MESSAGE = 'message'
     OPERATION = 'operation'
+    ACTION_LINK = 'action_link'
 
     def to_dict(self):
         try:

@@ -70,6 +70,7 @@ def generic_webhook_handler(request):
             Notification.OPERATION: 'vnc_session_start',
             Notification.USER: job_owner,
             Notification.MESSAGE: 'Your VNC session is ready.',
+            Notification.ACTION_LINK: target_uri,
             Notification.EXTRA: {
                 'host': host,
                 'port': port,
