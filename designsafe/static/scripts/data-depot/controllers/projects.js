@@ -777,9 +777,13 @@
     };
 
     $scope.openPreviewTree = function($event, entityUuid){
+      var type=$scope.browser.project.value.projectType;
+      if (typeof type === 'undefined' || _.isEmpty(type)){
+        type = 'experimental';
+      }
       $event.preventDefault();
       $event.stopPropagation();
-      DataBrowserService.openPreviewTree(entityUuid);
+      DataBrowserService.openPreviewTree(entityUuid, type);
     };
 
     function _addToLists(ent, evt){

@@ -464,8 +464,9 @@
               ng-if="!ui.showExtraCat">
         <i class="fa fa-plus"></i> Add Category
       </button> 
-      
-      <form ng-if="ui.showExtraCat">
+      <div class="add-extra-category-content well well-sm"
+           style="padding-bottom:10px; margin-bottom:10px;" ng-if="ui.showExtraCat">
+      <form>
         <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
@@ -546,7 +547,7 @@
             {{data.error}}
           </div>
       </form>
-
+      </div>
     </div>
 </div>
 <div class="modal-footer">

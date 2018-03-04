@@ -1347,8 +1347,11 @@
     /**
      * Open Preview Tree
      */
-    function openPreviewTree(entityUuid){
+    function openPreviewTree(entityUuid, type){
       var template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-tree.html';
+      if (type !== 'experimental'){
+          template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-' + type + '-tree.html';
+      }
       var modal = $uibModal.open({
         templateUrl: template,
         controller:['$uibModalInstance', '$scope',
@@ -1361,7 +1364,8 @@
             $uibModalInstance.dismiss('cancel');
           };
                     }
-        ]
+        ],
+        size: 'lg'
       });
     }
 

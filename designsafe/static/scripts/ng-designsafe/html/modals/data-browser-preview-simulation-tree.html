@@ -1,0 +1,112 @@
+<div class="modal-header">
+  <h3 class="modal-title">
+    Simulation Preview Tree
+    </h3>
+</div>
+<div class="modal-body">
+    <div class="data-model-tree data-model-preview-tree">
+    <!-- TREE START -->
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="simulation in data.project.simulationmodel_set | orderBy: 'value.title'"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
+            <div style="display:inline-block;">
+              <div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('report_set', simulation.uuid).length">
+                    <span class="label tag-black" 
+                          ng-class="{'selected': data.project.getRelated('report_set', simulation.uuid, 'simulations')[0].uuid === data.entityUuid}">Simulation Report</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('report_set', simulation.uuid, 'simulations')[0].value.title}}
+                    </span>
+                </div>
+              </div>
+              <div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('analysis_set', simulation.uuid).length">
+                    <span class="label tag-light-blue"
+                          ng-class="{'selected': data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0].uuid === data.entityUuid}">Simulation Analysis</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0].value.title}}
+                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="modelConfig in data.project.getRelated('modelconfig_set', simulation.uuid) | orderBy: modelConfig.value.title">
+              <div class="tree-el">
+              <span class="label tag-blue"
+                    ng-class="{'selected': modelConfig.uuid === data.entityUuid}">Simulation Model</span>
+              <span class="tag-title">{{modelConfig.value.title}}</span>
+              </div>
+              <ul class="sensor-list-ul">
+                <li class="tree-container"
+                    ng-repeat="simInput in data.project.getRelated('siminput_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
+                  <div class="tree-el">  
+                  <span class="label tag-green"
+                        ng-class="{'selected': simInput.uuid === data.entityUuid}">Simulation Input</span>
+                  <span class="tag-title">{{simInput.value.title}}</span>
+                  </div>
+                  <ul>
+                    <li 
+                        ng-repeat="simOutput in data.project.getRelated('simoutput_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
+                      <div class="tree-el">
+                      <span class="label tag-red tree-el"
+                            ng-class="{'selected': simOutput.uuid === data.entityUuid}">Simulation Output</span>
+                      <span class="tag-title">{{simOutput.value.title}}</span>
+                        <div style="display:inline-block;">
+                          <div>
+                            <div style="margin-left:5px; display:inline-block;"
+                                 ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
+                                <span class="label tag-black"
+                                      ng-class="{'selected':data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].uuid === data.entityUuid}">Integrated Report</span>
+                                <span class="tab-title">
+                                {{data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].value.title}}
+                                </span>
+                            </div>
+                          </div>
+                          <div>
+                            <div style="margin-left:5px; display:inline-block;"
+                                 ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
+                                <span class="label tag-black"
+                                      ng-class="{'selected': data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0].uuid === data.entityUuid}">Integrated Analysis</span>
+                                <span class="tab-title">
+                                {{data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0].value.title}}
+                                </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    <!-- TREE END -->
+
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="label tag-light-blue"
+                ng-class="{'selected': analysis.uuid === data.entityUuid}">Analysis</span>
+          <span class="ul-title">{{analysis.value.title}}</span>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+
+
+</div>
+<div class="modal-footer">
+  <button class="pull-right btn btn-sm btn-default" ng-click="cancel()">Close</button>
+</div>
