@@ -146,7 +146,7 @@
     /**
       Checks to see if there is a folder in the selected listings. If so, download
       is not available.
-      
+
       @param {FileListing|FileListing[]} files Files to test
       @return {boolean}
     */
@@ -210,7 +210,7 @@
         req.stopper.resolve();
         req = null;
       }
-      
+
       currentState.busy = true;
       currentState.busyListing = true;
       currentState.error = null;
@@ -243,6 +243,7 @@
         currentState.error = err.data;
         currentState.loadingMore = false;
         currentState.reachedEnd = false;
+        return $q.reject(err);
       });
 
       return currentReq;
@@ -704,8 +705,8 @@
               $scope.busy = false;
             },
             function (err) {
-              var fileExt = file.name.split('.').pop()
-              var videoExt = ['webm', 'ogg', 'mp4']
+              var fileExt = file.name.split('.').pop();
+              var videoExt = ['webm', 'ogg', 'mp4'];
 
               //check if preview is video
               if (videoExt.includes(fileExt) ) {
@@ -1346,8 +1347,11 @@
     /**
      * Open Preview Tree
      */
-    function openPreviewTree(entityUuid){
+    function openPreviewTree(entityUuid, type){
       var template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-tree.html';
+      if (type !== 'experimental'){
+          template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-' + type + '-tree.html';
+      }
       var modal = $uibModal.open({
         templateUrl: template,
         controller:['$uibModalInstance', '$scope',
@@ -1360,7 +1364,8 @@
             $uibModalInstance.dismiss('cancel');
           };
                     }
-        ]
+        ],
+        size: 'lg'
       });
     }
 
@@ -2310,7 +2315,7 @@
       }
       currentState.page += 1;
       currentState.loadingMore = true;
-      browsePage({system: currentState.listing.system,
+      return browsePage({system: currentState.listing.system,
                   path: currentState.listing.path,
                   page: currentState.page})
       .then(function(listing){
@@ -2324,7 +2329,7 @@
         });
     }
 
-        
+
   /**
    *
    * @param {Array} projects Array of project objects that will be set as selected

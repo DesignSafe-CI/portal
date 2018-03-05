@@ -18,8 +18,12 @@ from designsafe.apps.googledrive_integration.tasks import check_connection
 import logging
 logger = logging.getLogger(__name__)
 
-CLIENT_SECRETS_FILE = os.path.join(
-    settings.SITE_DIR, settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON)
+CLIENT_CONFIG = {'web': {
+    "client_id": settings.GOOGLE_OAUTH2_CLIENT_ID,
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://accounts.google.com/o/oauth2/token",
+    "client_secret": settings.GOOGLE_OAUTH2_CLIENT_SECRET
+}}
 
 @login_required
 def index(request):
@@ -47,8 +51,8 @@ def index(request):
 @login_required
 def initialize_token(request):
     redirect_uri = reverse('googledrive_integration:oauth2_callback')
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE,
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        CLIENT_CONFIG,
         scopes=['https://www.googleapis.com/auth/drive',])
     flow.redirect_uri = request.build_absolute_uri(redirect_uri)
 
@@ -77,8 +81,8 @@ def oauth2_callback(request):
 
     try:
         redirect_uri = reverse('googledrive_integration:oauth2_callback')
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            CLIENT_SECRETS_FILE,
+        flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            CLIENT_CONFIG,
             scopes=['https://www.googleapis.com/auth/drive',],
             state=state)
         flow.redirect_uri = request.build_absolute_uri(redirect_uri)

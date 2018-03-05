@@ -42,7 +42,7 @@
           sf-form="form.form"
           sf-model="form.model"
           sf-options="{ supressPropertyTitles: true }"
-          ng-submit="onSubmit(appForm)"></form>
+          ng-submit="!data.submitting && onSubmit(appForm)"></form>
 
     <div ng-if="data.submitting">
         <span class="label label-info">

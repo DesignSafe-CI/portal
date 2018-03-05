@@ -18,9 +18,12 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
         systemsList: [],
         system: 'designsafe.storage.default',
         dirPath: [],
+        offset: 0,
         filePath: '',
         source: 'mydata',
-        selectedProject: null
+        selectedProject: null,
+        projectSelected: false,
+        publishedSelected: false
       };
 
       $scope.selected = null;
@@ -29,10 +32,29 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
         $scope.data.loading=true;
         $scope.data.selectedProject = null;
         ProjectService.list().then( function (resp) {
-          $scope.project_list = resp;
+          $scope.data.project_list = resp;
           $scope.data.loading = false;
           $scope.data.projectSelected = false;
         });
+      };
+
+      $scope.listPublished = function () {
+        $scope.data.loading=true;
+        $scope.data.selectedPublished = null;
+        $http.get("/api/public/files/listing/public/nees.public/").then(function (resp) {
+          console.log(resp);
+          $scope.data.published_list = resp.data;
+          $scope.data.publishedSelected = false;
+        });
+      };
+
+      $scope.selectPublished = function (pub) {
+        $scope.data.system = pub.system;
+        $scope.data.filePath = pub.path;
+        $scope.data.publishedSelected = true;
+        $scope.data.selectedPublished = pub;
+        $scope.selected = pub;
+        $scope.browse();
       };
 
       $scope.selectProject = function (project) {
@@ -46,6 +68,7 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
 
       $scope.browse = function () {
         $scope.data.loading = true;
+        $scope.data.error = null;
         DataBrowserService.browse({system: $scope.data.system, path:$scope.data.filePath}).then(function (resp) {
           $scope.data.filesListing = resp;
           $scope.selected = resp;
@@ -54,6 +77,7 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
           $scope.data.dirPath = $scope.data.filePath.split('/');
         }, function (err) {
           $scope.data.loading = false;
+          $scope.data.error = 'Something went wrong';
         });
       };
 
@@ -71,8 +95,12 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
             $scope.data.selectedProject = resp;
           });
 
-        } else {
+        } else if ($scope.data.system === 'designsafe.storage.default') {
           $scope.data.source = 'mydata';
+        } else if ($scope.data.system === 'designsafe.storage.community'){
+          $scope.data.source = 'community';
+        } else {
+          $scope.data.source = 'public';
         }
       }
 
@@ -80,14 +108,42 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
 
       $scope.setSource = function (src) {
         $scope.data.source = src;
+        $scope.data.error = null;
+        $scope.data.filePath = '/';
+        $scope.data.filesListing = null;
+        $scope.data.selectedProject = null;
         $scope.selected = null;
+        $scope.data.project_list = null;
+        $scope.data.published_list = null;
         if ($scope.data.source === 'myprojects') {
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
           $scope.data.filesListing = null;
+          $scope.data.filePath = '/';
           $scope.data.dirPath = [];
           $scope.listProjects();
-        } else {
+        } else if  ($scope.data.source == 'community') {
+          DataBrowserService.apiParams.fileMgr = 'community';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
           $scope.data.filesListing = null;
-          $scope.data.filePath = null;
+          $scope.data.filePath = '/';
+          $scope.data.selectedProject = null;
+          $scope.data.system = 'designsafe.storage.community';
+          $scope.project_list = null;
+          $scope.browse();
+        } else if  ($scope.data.source == 'public') {
+          DataBrowserService.apiParams.fileMgr = 'public';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          $scope.data.system = 'nees.public';
+          $scope.data.filePath = '/';
+          $scope.data.filesListing = null;
+          $scope.data.publishedSelected == false;
+          $scope.browse();
+        } else {
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+          $scope.data.filesListing = null;
+          $scope.data.filePath = '';
           $scope.data.selectedProject = null;
           $scope.data.system = 'designsafe.storage.default';
           $scope.project_list = null;
@@ -133,19 +189,18 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
 
         $scope.data.filesListing = null;
         $scope.data.loading = true;
+        $scope.data.error = null;
         DataBrowserService.browse(file)
           .then(function(listing) {
             $scope.data.filesListing = listing;
             if ($scope.data.filesListing.children.length > 0){
               $scope.data.filePath = $scope.data.filesListing.path;
               $scope.data.dirPath = $scope.data.filePath.split('/');
-              // $scope.browser.listing = $scope.data.filesListing;
             }
             $scope.selected = listing;
             $scope.data.loading = false;
           }, function(err){
-            logger.log(err);
-            $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+            $scope.data.error = 'Unable to list the selected data source';
             $scope.data.loading = false;
           });
       };
@@ -167,22 +222,25 @@ function (DataBrowserService, UserService, FileListing, ProjectService) {
       };
 
       $scope.renderName = function(file){
+        if (file.meta) {
+          return file.meta.title;
+        }
         if (typeof file.metadata === 'undefined' ||
             file.metadata === null ||
             _.isEmpty(file.metadata)){
           return file.name;
         }
-        var pathComps = file.path.split('/');
-        var experiment_re = /^experiment/;
-        if (file.path[0] === '/' && pathComps.length === 2) {
-          return file.metadata.project.title;
-        }
-        else if (file.path[0] !== '/' &&
-                 pathComps.length === 2 &&
-                 experiment_re.test(file.name.toLowerCase())){
-          return file.metadata.experiments[0].title;
-        }
         return file.name;
+      };
+
+      $scope.scrollToBottom = function(){
+        $scope.data.loading = DataBrowserService.loadingMore;
+        DataBrowserService.scrollToBottom().then(function (resp) {
+          $scope.data.loading = false;
+        }, function (err) {
+          $scope.data.loading =  false;
+        });
+
       };
 
     },

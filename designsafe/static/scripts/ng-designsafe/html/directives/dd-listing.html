@@ -4,7 +4,7 @@
    data-scroll-bottom="scrollToBottom()()"
    data-scroll-top="scrollToTop()()"
    data-bottom-height="0"
-   ng-if="browser.showMainListing || 
+   ng-if="browser.showMainListing ||
           (browser.showPreviewListing &&
           browser.project.value.projectType == 'other' &&
           (!browser.publishPipeline ||
@@ -65,9 +65,10 @@
           </span>
         </div>
         <div ng-if="! browser.busy && browser.error" class="text-center">
-          <p class="alert alert-danger">
-            {{ browser.error.message || browser.error }}
-          </p>
+          <div class="alert alert-danger">
+            <div ng-if="browser.error.message" ng-bind-html="browser.error.message"></div>
+            <div ng-if="!browser.error.message"> Somthing went wrong </div>
+          </div>
         </div>
         <div ng-if="! browser.busy && ! browser.error && (browser.listing.children|length) === 0" style="background-color: #fff;border: 1px solid #ddd;padding:8px;" class="text-center">
           <p class="lead">
@@ -116,7 +117,7 @@
               <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> (Appears when published)
             </div>
             <div>
-              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span> 
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span>
               <span ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</span>
               <span ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</span>
             </div>
@@ -170,12 +171,12 @@
                       {{simOutput.value.title}}
                     </a>
                     <div style="display:inline-block" ng-repeat="analysis in browser.project.getRelated('analysis_set', [simOutput.uuid], 'simOutputs')">
-                      <a ng-class="analysis.cssClasses()['text']" href="" ng-click="openPreviewTree($event, analysis.uuid)">
+                      <a ng-class="analysis.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, analysis.uuid)">
                         {{analysis.value.title}}
                       </a>
                     </div>
                     <div style="display:inline-block" ng-repeat="report in browser.project.getRelated('report_set', [simOutput.uuid], 'simOutputs')">
-                      <a ng-class="report.cssClasses()['text']" href="" ng-click="openPreviewTree($event, report.uuid)">
+                      <a ng-class="report.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, report.uuid)">
                         {{report.value.title}}
                       </a>
                     </div>
@@ -192,7 +193,7 @@
                   <th>Last modified</th>
                   <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                     <button class="btn btn-default"
-                            ng-if="publicationCtrl.filterFiles(false, model, browser.listings[model.uuid]).length && 
+                            ng-if="publicationCtrl.filterFiles(false, model, browser.listings[model.uuid]).length &&
                                    !(browser.publication.filesSelected[model.uuid] &&
                                     browser.publication.filesSelected[model.uuid].length)"
                             ng-click="publicationCtrl.selectAllFiles(model)">
@@ -587,7 +588,7 @@
               <span ng-repeat="user in publicationCtrl.filterUsers(experiment.value.authors,
                                browser.publication.users) | orderBy: ['_ui.order', 'last_name']" > {{user.last_name}}, {{user.first_name}};
               </span>
-              <div ng-if="browser.project.getRelated('report_set', experiment.uuid) && 
+              <div ng-if="browser.project.getRelated('report_set', experiment.uuid) &&
                           browser.publication.filesSelected[browser.project.getRelated('report_set', experiment.uuid)[0].uuid].length">
                 <span style="font-weight:bold; display:inline-block; width:100px;">Report: </span>
                 <a href="#details-{{browser.project.getRelated('report_set', experiment.uuid)[0].uuid}}"
@@ -641,7 +642,7 @@
                   <th>Last modified</th>
                   <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                     <button class="btn btn-default"
-                            ng-if="publicationCtrl.filterFiles(experiment, event, browser.listings[event.uuid]).length && 
+                            ng-if="publicationCtrl.filterFiles(experiment, event, browser.listings[event.uuid]).length &&
                                    !(browser.publication.filesSelected[experiment.uuid][event.uuid]
                                    && browser.publication.filesSelected[experiment.uuid][event.uuid].length)"
                             ng-click="publicationCtrl.selectAllFiles(experiment, event)">
@@ -1234,7 +1235,7 @@
  ng-if="browser.showPreviewListing &&
         browser.project.value.projectType == 'other' ">
   <div class="meta-review"
-   ng-if="browser.publishPipeline === 'meta'">  
+   ng-if="browser.publishPipeline === 'meta'">
     <div class="title">
       Project Information
       <span class="pull-right"><a href="/help">Need Help?</a></span>

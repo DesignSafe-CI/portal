@@ -17,6 +17,11 @@
 {% block content %}
 <div class="container">
     <h1>Submit a new ticket</h1>
+    <p>
+        If your question isn't answered by our <a href="{% url 'pages-details-by-slug' slug='faq' %}">FAQ</a> 
+        or <a href="{% url 'pages-details-by-slug' slug='rw/user-guides' %}">User Guides</a>,
+        please use this form to contact us with your questions.
+    </p>
     <p><i>Fields marked with <label class="required"></label> are required.</i></p>
     <form method="POST" enctype="multipart/form-data" action="">
         {% csrf_token %}
