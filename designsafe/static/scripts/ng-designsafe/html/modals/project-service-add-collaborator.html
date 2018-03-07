@@ -49,9 +49,9 @@
         </form>
         <hr>
         <form>
-          <span style="display:inline-block; width:10%;">Remove</span>
-          <span style="display:inline-block; width:60%;">Current Co-Pi(s):</span>
-          <span style="display:inline-block; width:25%;">Assign Authorship</span>
+          <span ng-show="form.curCoPis.length > 0" style="display:inline-block; width:10%;">Remove</span>
+          <span ng-show="form.curCoPis.length > 0" style="display:inline-block; width:60%;">Current Co-Pi(s):</span>
+          <span ng-show="form.curCoPis.length > 0" style="display:inline-block; width:25%;">Assign Authorship</span>
             <div class="form-group" ng-repeat="cur in form.curCoPis">
                 <div class="checkbox"  style="width:85%; margin-right:0; display:inline-block;">
                   <label>
@@ -110,9 +110,9 @@
         </form>
 
         <form>
-            <span style="display:inline-block; width:10%;">Remove</span>
-            <span style="display:inline-block; width:60%;">Current Team Member(s):</span>
-            <span style="display:inline-block; width:25%;">Assign Authorship</span>
+            <span ng-show="form.curUsers.length > 0" style="display:inline-block; width:10%;">Remove</span>
+            <span ng-show="form.curUsers.length > 0" style="display:inline-block; width:60%;">Current Team Member(s):</span>
+            <span ng-show="form.curUsers.length > 0" style="display:inline-block; width:25%;">Assign Authorship</span>
             <div class="form-group" ng-repeat="cur in form.curUsers">
                 <div class="checkbox" style="width:85%; margin-right:0; display:inline-block;">
                     <label>
