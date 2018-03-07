@@ -1135,7 +1135,6 @@
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
 
-<<<<<<< HEAD
             function runSerial() {
               // take each group of changes and resolve them in order
               return Promise.resolve()
@@ -1176,19 +1175,8 @@
                   uuid: $scope.data.project.uuid,
                   username: _.compact(raList)
                 }});
-=======
-            console.log('Scope.Form');
-            console.log($scope.form);
-
-            // ----------------------------------------------------------------------------------Remove Users
-            console.log("Remove Users --------------------------------->");
-            var raList = _.map($scope.form.curUsers, function (cur) {
-              if (cur.remove) {
-                return cur.user.username
->>>>>>> f701213f877d5e50cb52f8c1c76ed9d7ee82b5ca
               }
 
-<<<<<<< HEAD
               console.log('removeActions');
               console.log(removeActions);
               return removeActions;
@@ -1210,26 +1198,8 @@
                   username: _.compact(rcpList),
                   memberType: 'coPis'
                 }});
-=======
-            if (_.compact(raList).length > 0) {
-              var removeActions = collabResource.delete({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(raList)
-              }});
-            }
-            else {
-              var removeActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Remove CoPI
-            console.log("Remove CoPi --------------------------------->");
-            var rcpList = _.map($scope.form.curCoPis, function(cur){
-              if(cur.remove){
-                return cur.user.username
->>>>>>> f701213f877d5e50cb52f8c1c76ed9d7ee82b5ca
               }
 
-<<<<<<< HEAD
               console.log('coPIsRemoveActions');
               console.log(coPIsRemoveActions);
               return coPIsRemoveActions;
@@ -1250,27 +1220,8 @@
                   uuid: $scope.data.project.uuid,
                   username: _.compact(aaList)
                 }});
-=======
-            if (_.compact(rcpList).length > 0) {
-              var coPIsRemoveActions = collabResource.delete({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(rcpList),
-                memberType: 'coPis'
-              }});
-            }
-            else {
-              var coPIsRemoveActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Add Users
-            console.log("Add Users --------------------------------->");
-            var aaList = _.map($scope.form.addUsers, function (add) {
-              if (add.user && add.user.username) {
-                return add.user.username
->>>>>>> f701213f877d5e50cb52f8c1c76ed9d7ee82b5ca
               }
 
-<<<<<<< HEAD
               console.log('addActions');
               console.log(addActions);
               return addActions;
@@ -1298,44 +1249,6 @@
               console.log(addCoPi);
               return addCoPi;
             }
-=======
-            if (_.compact(aaList).length > 0) {
-              var addActions = collabResource.post({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(aaList)
-              }});
-            }
-            else {
-              var addActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Add CoPi
-            console.log("Add CoPi --------------------------------->");
-
-            var acpList = _.map($scope.form.addCoPis, function (add) {
-              if (add.user && add.user.username) {
-                return add.user.username
-              }
-            });
-
-            if (_.compact(acpList).length > 0) {
-              var addCoPi = collabResource.post({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(acpList),
-                memberType: 'coPis'
-              }});
-            }
-            else {
-              var addCoPi = [];
-            }
-
-            // ----------------------------------------------------------------------------------Authorship
-            console.log("Authorship --------------------------------->");
-            var expsToUpdate = [];
-            _.each($scope.authorship, function(obj){
-              expsToUpdate.push(obj);
-            });
->>>>>>> f701213f877d5e50cb52f8c1c76ed9d7ee82b5ca
 
             // ----------------------Authorship
             function userAuthorship()  {
@@ -1344,7 +1257,6 @@
                 expsToUpdate.push(obj);
               });
 
-<<<<<<< HEAD
               // TODO This should probably be a stack or something...
               // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
               var updateExps = _.map(expsToUpdate, function(_exp){
@@ -1362,37 +1274,6 @@
 
             // ----------------------Process all changes in order
             runSerial();
-=======
-                //ProjectEntitiesService.update(
-                //    {data: {uuid: entity.uuid, entity: entity}}
-                //)
-
-            // ----------------------------------------------------------------------------------Combine Requests
-            console.log("Combine All --------------------------------->");
-            var tasks = [];
-            tasks = tasks.concat(removeActions, coPIsRemoveActions, addActions, addCoPi, updateExps);
-            
-            console.log('TASKS ~~~~~~~~~~~~$');
-            console.log(tasks);
-
-            // ----------------------------------------------------------------------------------Process
-            $q.all(tasks).then(
-              function (results) {
-                // $uibModalInstance.close(results);
-                // $scope.data.busy = true;
-                console.log('success');
-                $scope.initForm();
-                $scope.loadData();
-              },
-              function (error) {
-                // $uibModalInstance.reject(error.data);
-                console.log('error');
-                $scope.data.busy = true;
-                $scope.initForm();
-                $scope.loadData();
-              }
-            );
->>>>>>> f701213f877d5e50cb52f8c1c76ed9d7ee82b5ca
           };
 
           $scope.cancel = function () {
