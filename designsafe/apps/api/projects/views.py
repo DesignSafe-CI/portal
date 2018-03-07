@@ -332,43 +332,50 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        ag = get_service_account_client()
-        project = BaseProject.manager().get(ag, uuid=project_id)
-        project.manager().set_client(ag)
-        username = post_data.get('username')
+        logger.info("POST DATA ADD ----------------------------------->")
+        logger.info(post_data)
+        logger.info(post_data["username"])
 
-        member_type = post_data.get('memberType', 'teamMember')
-        project.add_team_members([username])
-        if member_type == 'teamMember':
-            team_members = project.team_members
-            team_members.append(username)
-            project.team_members = team_members
-        elif member_type == 'coPis':
-            co_pis = project.co_pis
-            co_pis.append(username)
-            project.co_pis = co_pis
-        project.save(ag)
-        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
-        collab_users = get_user_model().objects.filter(username=username)
-        collab_users = []
-        if collab_users:
-            collab_user = collab_users[0]
-            try:
-                collab_user.profile.send_mail(
-                    "[Designsafe-CI] You have been added to a project!",
-                    "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
-                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
-            except DesignSafeProfile.DoesNotExist as err:
-                logger.info("Could not send email to user %s", collab_user)
-                body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
-                    url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
-                send_mail(
-                    "[Designsafe-CI] You have been added to a project!",
-                    body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [collab_user.email],
-                    html_message=body)
-                #logger.exception(err)
+        for user in post_data["username"]:
+
+            ag = get_service_account_client()
+            project = BaseProject.manager().get(ag, uuid=project_id)
+            project.manager().set_client(ag)
+            username = user #post_data.get('username')
+
+            member_type = post_data.get('memberType', 'teamMember')
+            project.add_team_members([username])
+
+            if member_type == 'teamMember':
+                team_members = project.team_members
+                team_members.append(username)
+                project.team_members = team_members
+            elif member_type == 'coPis':
+                co_pis = project.co_pis
+                co_pis.append(username)
+                project.co_pis = co_pis
+            project.save(ag)
+            tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
+            collab_users = get_user_model().objects.filter(username=username)
+            collab_users = []
+            if collab_users:
+                collab_user = collab_users[0]
+                try:
+                    collab_user.profile.send_mail(
+                        "[Designsafe-CI] You have been added to a project!",
+                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
+                except DesignSafeProfile.DoesNotExist as err:
+                    logger.info("Could not send email to user %s", collab_user)
+                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
+                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
+                    send_mail(
+                        "[Designsafe-CI] You have been added to a project!",
+                        body,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [collab_user.email],
+                        html_message=body)
+                    #logger.exception(err)
 
         return JsonResponse(project.collaborators)
 
@@ -379,13 +386,27 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
+        logger.info("POST DATA DELETE ----------------------------------->")
+        logger.info(post_data)
+        logger.info(post_data["username"])
+
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
-        #project.remove_collaborator(post_data.get('username'))
-        project.remove_co_pi(post_data.get('username'))
-        project.save()
-        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
+        for user in post_data["username"]:
+            #project.remove_collaborator(post_data.get('username'))
+            #project.remove_co_pi(user)
+            if "memberType" in post_data:
+                logger.info("This is a Co-PI...")
+                logger.info(user)
+                project.remove_co_pi(user)
+            else:
+                logger.info("This is a collaborator...")
+                logger.info(user)
+                project.remove_collaborator(user)
+            project.save()
+            tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
+
         return JsonResponse({'status': 'ok'})
 
 
