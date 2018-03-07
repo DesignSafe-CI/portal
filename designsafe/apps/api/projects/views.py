@@ -337,7 +337,6 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         logger.info(post_data["username"])
 
         for user in post_data["username"]:
-
             ag = get_service_account_client()
             project = BaseProject.manager().get(ag, uuid=project_id)
             project.manager().set_client(ag)
@@ -347,10 +346,16 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
             project.add_team_members([username])
 
             if member_type == 'teamMember':
+                logger.info("Adding a team member...")
+                logger.info(username)
+
                 team_members = project.team_members
                 team_members.append(username)
                 project.team_members = team_members
             elif member_type == 'coPis':
+                logger.info("Adding a Co-PI...")
+                logger.info(username)
+
                 co_pis = project.co_pis
                 co_pis.append(username)
                 project.co_pis = co_pis
