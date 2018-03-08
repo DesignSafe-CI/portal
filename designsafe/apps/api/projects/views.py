@@ -332,9 +332,6 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        logger.info("POST DATA ADD ----------------------------------->")
-        logger.info(post_data)
-        logger.info(post_data["username"])
 
         for user in post_data["username"]:
             ag = get_service_account_client()
@@ -346,16 +343,10 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
             project.add_team_members([username])
 
             if member_type == 'teamMember':
-                logger.info("Adding a team member...")
-                logger.info(username)
-
                 team_members = project.team_members
                 team_members.append(username)
                 project.team_members = team_members
             elif member_type == 'coPis':
-                logger.info("Adding a Co-PI...")
-                logger.info(username)
-
                 co_pis = project.co_pis
                 co_pis.append(username)
                 project.co_pis = co_pis
@@ -391,10 +382,6 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        logger.info("POST DATA DELETE ----------------------------------->")
-        logger.info(post_data)
-        logger.info(post_data["username"])
-
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
@@ -402,12 +389,8 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
             #project.remove_collaborator(post_data.get('username'))
             #project.remove_co_pi(user)
             if "memberType" in post_data:
-                logger.info("This is a Co-PI...")
-                logger.info(user)
                 project.remove_co_pi(user)
             else:
-                logger.info("This is a collaborator...")
-                logger.info(user)
                 project.remove_collaborator(user)
             project.save()
             tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')

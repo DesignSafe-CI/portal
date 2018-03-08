@@ -1134,6 +1134,7 @@
           $scope.saveCollaborators = function ($event) {
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
+            var projPi = $scope.data.project.value.pi;
 
             function runSerial() {
               // take each group of changes and resolve them in order
@@ -1177,8 +1178,6 @@
                 }});
               }
 
-              console.log('removeActions');
-              console.log(removeActions);
               return removeActions;
             }
 
@@ -1200,8 +1199,6 @@
                 }});
               }
 
-              console.log('coPIsRemoveActions');
-              console.log(coPIsRemoveActions);
               return coPIsRemoveActions;
             }
 
@@ -1213,6 +1210,11 @@
                 }
               });
 
+              // if PI is in list remove them...
+              if (aaList.includes(projPi)) {
+                aaList[aaList.indexOf(projPi)] = undefined;
+              }
+
               var addActions;
 
               if (_.compact(aaList).length > 0) {
@@ -1222,8 +1224,6 @@
                 }});
               }
 
-              console.log('addActions');
-              console.log(addActions);
               return addActions;
             }
 
@@ -1235,6 +1235,11 @@
                 }
               });
 
+              // if PI is in list remove them...
+              if (acpList.includes(projPi)) {
+                acpList[acpList.indexOf(projPi)] = undefined;
+              }
+
               var addCoPi;
 
               if (_.compact(acpList).length > 0) {
@@ -1245,8 +1250,6 @@
                 }});
               }
 
-              console.log('addCoPi');
-              console.log(addCoPi);
               return addCoPi;
             }
 
