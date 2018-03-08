@@ -22,18 +22,6 @@
           baseUrl: '/api/agave/files'
         },
         {
-          id: 'nees.public',
-          name: 'Published',
-          storage: {
-            homeDir: '/',
-            rootDir: '/corral-repl/tacc/NHERI/public/projects'
-          },
-          type: 'STORAGE',
-          uuid: '8688297665752666597-242ac119-0001-006',
-          fileMgr: 'public',
-          baseUrl: '/api/public/files'
-        },
-        {
           id: 'designsafe.storage.projects',
           name: 'My Projects',
           storage: {
@@ -44,6 +32,18 @@
           uuid: '5762770863681049062-242ac117-0001-006', // UUID seems to be unused
           fileMgr: 'projects',
           baseUrl: '/api/projects/files'
+        },
+        {
+          id: 'nees.public',
+          name: 'Published',
+          storage: {
+            homeDir: '/',
+            rootDir: '/corral-repl/tacc/NHERI/public/projects'
+          },
+          type: 'STORAGE',
+          uuid: '8688297665752666597-242ac119-0001-006',
+          fileMgr: 'public',
+          baseUrl: '/api/public/files'
         },
     ];
 
