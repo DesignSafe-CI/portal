@@ -19,6 +19,7 @@ class BaseNotify(models.Model):
     operation = models.CharField(max_length = 255, default = '')
     message = models.TextField(default='')
     extra = models.TextField(default='')
+    action_link = models.TextField(default='')
 
     SUCCESS = GREEN = 'SUCCESS'
     INFO = BLUE = 'INFO'
@@ -45,7 +46,8 @@ class BaseNotify(models.Model):
             'operation': self.operation,
             'message': self.message,
             'extra': extra,
-            'pk': self.pk
+            'pk': self.pk,
+            'action_link': self.action_link
         }
         return d
 
