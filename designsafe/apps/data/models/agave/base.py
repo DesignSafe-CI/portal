@@ -353,7 +353,7 @@ class Model(object):
         if not val['permission'].get('read', False) and \
             not val['permission'].get('write', False) and \
             not val['permission'].get('execute', False):
-            pems = filter(pems, lambda x: x['username'] == val['username'])
+            pems = filter(lambda x: x['username'] == val['username'], pems)
         
         else:
             pems.append(val)
@@ -362,7 +362,7 @@ class Model(object):
 
     def permission(self, username):
         pems = self.permission
-        pem = filter(pems, lambda x: x['username'] == username)
+        pem = filter(lambda x: x['username'] == username, pems)
         if len(pem):
             return pem[0]['permission']
         else:

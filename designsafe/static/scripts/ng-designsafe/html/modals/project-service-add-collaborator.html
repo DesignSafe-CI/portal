@@ -31,17 +31,17 @@
             <div style="width:7%; text-align:center; display:inline-block;">
               <button class="btn btn-sm btn-default"
                       data-toggle="collapse"
-                      data-target="#{{data.project.value.pi}}-experiments">
+                      data-target="#{{data.project.value.pi}}-authored">
                       <i class="fa fa-caret-square-o-down"></i>
               </button>
             </div>
-            <div class="collapse" id="{{data.project.value.pi}}-experiments">
+            <div class="collapse" id="{{data.project.value.pi}}-authored">
              <ul style="list-style:none;">
-               <li ng-repeat="exp in data.experiments">
+               <li ng-repeat="ent in data.authored">
                  <input type="checkbox" name="author-{{data.project.value.pi}}"
-                        ng-model="form.authors[exp.uuid][data.project.value.pi]"
-                        ng-change="toggleUserToExp(exp, data.project.value.pi)"/>
-                 <label for="author-{{data.project.value.pi}}">{{exp.value.title}}</label>
+                        ng-model="form.authors[ent.uuid][data.project.value.pi]"
+                        ng-change="toggleUserToEnt(ent, data.project.value.pi)"/>
+                 <label for="author-{{data.project.value.pi}}">{{ent.value.title}}</label>
                </li>
              </ul>
             </div>
@@ -65,17 +65,17 @@
                   <button class="btn btn-sm btn-default"
                           data-toggle="collapse"
                           ng-disabled="! canManage(cur.user.username)"
-                          data-target="#{{cur.user.username}}-experiments">
+                          data-target="#{{cur.user.username}}-authored">
                           <i class="fa fa-caret-square-o-down"></i>
                   </button>
                  </div>
-                   <div class="collapse" id="{{cur.user.username}}-experiments">
+                   <div class="collapse" id="{{cur.user.username}}-authored">
                     <ul style="list-style:none;">
-                      <li ng-repeat="exp in data.experiments">
+                      <li ng-repeat="ent in data.authored">
                         <input type="checkbox" name="author-{{cur.user.username}}"
                                ng-model="form.authors[exp.uuid][cur.user.username]"
-                               ng-change="toggleUserToExp(exp, cur.user.username)"/>
-                        <label for="author-{{cur.user.username}}">{{exp.value.title}}</label>
+                               ng-change="toggleUserToEnt(ent, cur.user.username)"/>
+                        <label for="author-{{cur.user.username}}">{{ent.value.title}}</label>
                       </li>
                     </ul>
                    </div>
@@ -128,17 +128,17 @@
                 <button class="btn btn-sm btn-default"
                         data-toggle="collapse"
                         ng-disabled="! canManage(cur.user.username)"
-                        data-target="#{{cur.user.username}}-experiments">
+                        data-target="#{{cur.user.username}}-authored">
                         <i class="fa fa-caret-square-o-down"></i>
                   </button>
                  </div>
-                   <div class="collapse" id="{{cur.user.username}}-experiments">
+                   <div class="collapse" id="{{cur.user.username}}-authored">
                     <ul style="list-style:none;">
-                      <li ng-repeat="exp in data.experiments">
+                      <li ng-repeat="ent in data.authored">
                         <input type="checkbox" name="author-{{cur.user.username}}"
                                ng-model="form.authors[exp.uuid][cur.user.username]"
-                               ng-change="toggleUserToExp(exp, cur.user.username)"/>
-                        <label for="author-{{cur.user.username}}">{{exp.value.title}}</label>
+                               ng-change="toggleUserToEnt(ent, cur.user.username)"/>
+                        <label for="author-{{cur.user.username}}">{{ent.value.title}}</label>
                       </li>
                     </ul>
                    </div>

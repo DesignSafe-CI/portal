@@ -52,13 +52,66 @@ class Project(MetadataModel):
 
         return body_dict
 
+    def add_pi(self, username):
+        self._add_team_members_pems([username])
+        if len(self.pi) > 0:
+            self.team_members += self.pi
+            self.team_members = list(set(self.team_members))
+        self.pi = username
+        self.save(self.manager().agave_client)
+        return self
+
+    def remove_pi(self, username):
+        self._remove_team_members_pems([username])
+        if len(self.co_pis):
+            self.pi = self.co_pis[0]
+        elif len(self.team_members):
+            self.pi = self.team_members[0]
+        self.save(self.manager().agave_client)
+        return self
+
+    def add_co_pis(self, usernames):
+        self._add_team_members_pems(usernames)
+        self.co_pis += usernames
+        self.co_pis = list(set(self.co_pis))
+        self.save(self.manager().agave_client)
+        return self
+
+    def remove_co_pis(self, usernames):
+        self._remove_team_members_pems(usernames)
+        self.co_pis = [co_pi for co_pi in self.co_pis if co_pi not in usernames]
+        self.save(self.manager().agave_client)
+        return self
+
     def add_team_members(self, usernames):
+        self._add_team_members_pems(usernames)
+        self.team_members += usernames
+        self.team_members = list(set(self.team_members))
+        self.save(self.manager().agave_client)
+        return self
+
+    def remove_team_members(self, usernames):
+        self._remove_team_members_pems(usernames)
+        self.team_members = [member for member in self.team_members if member not in usernames]
+        self.save(self.manager().agave_client)
+        return self
+
+    def _add_team_members_pems(self, usernames):
         agave_client = self.manager().agave_client
         for username in usernames:
             self.set_pem(username, 'ALL')
             agave_client.systems.updateRole(
                 systemId=self.system,
                 body={'username': username, 'role': 'USER'})
+        return self
+
+    def _remove_team_members_pems(self, usernames):
+        agave_client = self.manager().agave_client
+        for username in usernames:
+            self.set_pem(username, 'NONE')
+            agave_client.systems.updateRole(
+                systemId=self.system,
+                body={'username': username, 'role': 'NONE'})
         return self
 
     def add_admin(self, username):

@@ -1051,20 +1051,26 @@
               //projectResource.get({params: angular.copy(options)}),
               //service.get(angular.copy(options)),
               collabResource.get({params: {uuid: project.uuid}}),
-              ProjectEntitiesService.listEntities({uuid: project.uuid,
-                                  name: 'designsafe.project.experiment'})
             ];
+            if (project.value.projectType === 'experimental'){
+              loads.push(ProjectEntitiesService.listEntities(
+                {uuid: project.uuid, name: 'designsafe.project.experiment'})
+              );
+            } else if (project.value.projectType === 'simulation'){
+              loads.push(ProjectEntitiesService.listEntities(
+                {uuid: project.uuid, name: 'designsafe.project.simulation'}));
+            }
             $q.all(loads).then(function (results) {
               $scope.data.busy = false;
-              $scope.data.experiments = results[1];
-
-              _.each($scope.data.experiments, function(exp){
-                $scope.form.authors[exp.uuid] = {};
-                _.each(exp.value.authors, function(auth){
-                    $scope.form.authors[exp.uuid][auth] = true;
+              if (results.length > 1){
+                $scope.data.authored = results[1];
+              }
+              _.each($scope.data.authored, function(ent){
+                $scope.form.authors[ent.uuid] = {};
+                _.each(ent.value.authors, function(auth){
+                    $scope.form.authors[ent.uuid][auth] = true;
               });
             });
-
 
             $scope.form.curUsers = _.map(results[0].data.teamMembers, function (collab) {
               return {
@@ -1088,7 +1094,6 @@
 
           $scope.canManage = function (user) {
             var noManage = $scope.data.project.value.pi === user ||
-              Django.user === user ||
               user === 'ds_admin';
             return ! noManage;
           };
@@ -1116,117 +1121,65 @@
 
           $scope.authorship = [];
 
-          $scope.toggleUserToExp = function(exp, username){
-            var add = $scope.form.authors[exp.uuid][username];
-            $scope.authorship.push(exp);
+          $scope.toggleUserToEnt = function(ent, username){
+            var add = $scope.form.authors[ent.uuid][username];
+            $scope.authorship.push(ent);
             if (add){
-                exp.value.authors.push(username);
+                ent.value.authors.push(username);
             } else {
-                // $scope.authorship = _.reject($scope.authorship, function(obj){
-                                          // return obj.username === username; });
-                exp.value.authors = _.filter(exp.value.authors, function (d) {
+                ent.value.authors = _.filter(ent.value.authors, function (d) {
                   return d !== username;
                 });
             }
-
           };
 
           $scope.saveCollaborators = function ($event) {
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
-
-            console.log('Scope.Form');
-            console.log($scope.form);
-
-            // ----------------------------------------------------------------------------------Remove Users
-            console.log("Remove Users --------------------------------->");
-            var raList = _.map($scope.form.curUsers, function (cur) {
-              if (cur.remove) {
-                return cur.user.username
+            var raList = [];
+            var rcpList = [];
+            var aaList = [];
+            var acpList = [];
+            // Remove Users
+            raList = _.map($scope.form.curUsers, function (cur) {
+              if (cur.remove && cur.user.username) {
+                return {username: cur.user.username, memberType: 'teamMember'};
               }
             });
 
-            if (_.compact(raList).length > 0) {
-              var removeActions = collabResource.delete({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(raList)
-              }});
-            }
-            else {
-              var removeActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Remove CoPI
-            console.log("Remove CoPi --------------------------------->");
-            var rcpList = _.map($scope.form.curCoPis, function(cur){
-              if(cur.remove){
-                return cur.user.username
+            // Remove CoPI
+            rcpList = _.map($scope.form.curCoPis, function(cur){
+              if(cur.remove && cur.user.username){
+                return {username: cur.user.username, memberType: 'coPi'};
               }
             });
 
-            if (_.compact(rcpList).length > 0) {
-              var coPIsRemoveActions = collabResource.delete({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(rcpList),
-                memberType: 'coPis'
-              }});
-            }
-            else {
-              var coPIsRemoveActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Add Users
-            console.log("Add Users --------------------------------->");
-            var aaList = _.map($scope.form.addUsers, function (add) {
+            // Add Users
+            aaList = _.map($scope.form.addUsers, function (add) {
               if (add.user && add.user.username) {
-                return add.user.username
+                return {username: add.user.username, memberType: 'teamMember'};
               }
             });
 
-            if (_.compact(aaList).length > 0) {
-              var addActions = collabResource.post({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(aaList)
-              }});
-            }
-            else {
-              var addActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Add CoPi
-            console.log("Add CoPi --------------------------------->");
-
-            var acpList = _.map($scope.form.addCoPis, function (add) {
+            // Add CoPi
+            acpList = _.map($scope.form.addCoPis, function (add) {
               if (add.user && add.user.username) {
-                return add.user.username
+                return {username: add.user.username, memberType: 'coPi'};
               }
             });
 
-            if (_.compact(acpList).length > 0) {
-              var addCoPi = collabResource.post({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(acpList),
-                memberType: 'coPis'
-              }});
-            }
-            else {
-              var addCoPi = [];
-            }
-
-            // ----------------------------------------------------------------------------------Authorship
-            console.log("Authorship --------------------------------->");
-            var expsToUpdate = [];
+            // Authorship
+            var entsToUpdate = [];
             _.each($scope.authorship, function(obj){
-              expsToUpdate.push(obj);
+              entsToUpdate.push(obj);
             });
 
             // TODO This should probably be a stack or something...
-            // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
-            var updateExps = _.map(expsToUpdate, function(_exp){
-              // var _exp = $scope.data.project.getRelatedByUuid(uuid);
+            // Or allow batch update of entities.
+            var updateEnts = _.map(entsToUpdate, function(_ent){
               return ProjectEntitiesService.update({data: {
-                  uuid: _exp.uuid,
-                  entity: _exp
+                  uuid: _ent.uuid,
+                  entity: _ent
               }}).then(function(e){
                   var ent = $scope.data.project.getRelatedByUuid(e.uuid);
                   ent.update(e);
@@ -1234,33 +1187,47 @@
               });
             });
 
-                //ProjectEntitiesService.update(
-                //    {data: {uuid: entity.uuid, entity: entity}}
-                //)
-
-            // ----------------------------------------------------------------------------------Combine Requests
-            console.log("Combine All --------------------------------->");
-            var tasks = [];
-            tasks = tasks.concat(removeActions, coPIsRemoveActions, addActions, addCoPi, updateExps);
+            // Combine Requests
             
-            console.log('TASKS ~~~~~~~~~~~~$');
-            console.log(tasks);
-
-            // ----------------------------------------------------------------------------------Process
-            $q.all(tasks).then(
-              function (results) {
-                // $uibModalInstance.close(results);
-                // $scope.data.busy = true;
-                console.log('success');
-                $scope.initForm();
-                $scope.loadData();
+            // Process
+            collabResource.delete({
+                data: {
+                  uuid: $scope.data.project.uuid,
+                  users: _.compact(raList.concat(rcpList))
+                }
+            })
+            .then(
+              function(res){
+                return collabResource.post({
+                  data: {
+                    uuid: $scope.data.project.uuid,
+                    users: _.compact(aaList.concat(acpList))
+                  }
+                });
               },
-              function (error) {
-                // $uibModalInstance.reject(error.data);
-                console.log('error');
-                $scope.data.busy = true;
-                $scope.initForm();
+              function(error){
+                  $q.reject(error);
+              }
+            )
+            .then(
+              function(res){
+                return $q.all(updateEnts);
+              },
+              function(error){
+                  $q.reject(error);
+              }
+            )
+            .then(
+              function(res){
+                $scope.data.busy = false;
                 $scope.loadData();
+                $scope.initForm();
+              },
+              function(error){
+                $scope.data.busy = false;
+                $scope.data.error = error;
+                $scope.loadData();
+                $scope.initForm();
               }
             );
           };

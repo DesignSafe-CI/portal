@@ -312,7 +312,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.project_id = post_data.get('projectId', p.project_id)
         if new_pi and  new_pi != 'null' and p.pi != new_pi:
             p.pi = new_pi
-            p.add_team_members([new_pi])
+            p.add_pi(new_pi)
         p.save(ag)
         return JsonResponse(p.to_body_dict())
 
@@ -332,30 +332,21 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        logger.info("POST DATA ADD ----------------------------------->")
-        logger.info(post_data)
-        logger.info(post_data["username"])
+        team_members_to_add = [user['username'] for user in post_data.get('users') \
+                                   if user['memberType'] == 'teamMember']
+        co_pis_to_add = [user['username'] for user in post_data.get('users') \
+                             if user['memberType'] == 'coPi']
+        
+        ag = get_service_account_client()
+        project = BaseProject.manager().get(ag, uuid=project_id)
+        project.manager().set_client(ag)
+        #TODO: This should run on a task
+        project.add_team_members(team_members_to_add)
+        project.add_co_pis(co_pis_to_add)
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
 
-        for user in post_data["username"]:
-
-            ag = get_service_account_client()
-            project = BaseProject.manager().get(ag, uuid=project_id)
-            project.manager().set_client(ag)
-            username = user #post_data.get('username')
-
-            member_type = post_data.get('memberType', 'teamMember')
-            project.add_team_members([username])
-
-            if member_type == 'teamMember':
-                team_members = project.team_members
-                team_members.append(username)
-                project.team_members = team_members
-            elif member_type == 'coPis':
-                co_pis = project.co_pis
-                co_pis.append(username)
-                project.co_pis = co_pis
-            project.save(ag)
-            tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
+        #TODO: This should also run on a task
+        for username in team_members_to_add+co_pis_to_add:
             collab_users = get_user_model().objects.filter(username=username)
             collab_users = []
             if collab_users:
@@ -386,26 +377,16 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        logger.info("POST DATA DELETE ----------------------------------->")
-        logger.info(post_data)
-        logger.info(post_data["username"])
-
         ag = get_service_account_client()
-        project = Project.from_uuid(agave_client=ag, uuid=project_id)
-
-        for user in post_data["username"]:
-            #project.remove_collaborator(post_data.get('username'))
-            #project.remove_co_pi(user)
-            if "memberType" in post_data:
-                logger.info("This is a Co-PI...")
-                logger.info(user)
-                project.remove_co_pi(user)
-            else:
-                logger.info("This is a collaborator...")
-                logger.info(user)
-                project.remove_collaborator(user)
-            project.save()
-            tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
+        project = BaseProject.manager().get(ag, uuid=project_id)
+        project.manager().set_client(ag)
+        team_members_to_rm = [user['username'] for user in post_data['users'] \
+                                  if user['memberType'] == 'teamMember']
+        co_pis_to_rm = [user['username'] for user in post_data['users'] \
+                            if user['memberType'] == 'coPi']
+        project.remove_team_members(team_members_to_rm)
+        project.remove_co_pis(co_pis_to_rm)
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
 
         return JsonResponse({'status': 'ok'})
 
