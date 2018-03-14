@@ -18,12 +18,12 @@ def lookup_model(entity):
     name = ''
     for comp in name_comps:
         name += comp[0].upper() + comp[1:]
-    logger.debug('name: %s', name)
+    #logger.debug('name: %s', name)
     cls = None
     for module in [experimental, simulation, hybrid_simulation, rapid]:
         try:
             cls = getattr(module, name)
-            logger.debug('cls: %s', cls)
+            #logger.debug('cls: %s', cls)
             break
         except AttributeError:
             pass

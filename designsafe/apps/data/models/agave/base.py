@@ -111,8 +111,20 @@ class Manager(object):
         setattr(self.model_cls._meta, 'agave_client', agave_client)
         return self
 
-    def get(self, agave_client, uuid):
-        meta = agave_client.meta.getMetadata(uuid=uuid)
+    def get(self, agave_client, uuid=None, project_id=None):
+        if uuid is not None:
+            meta = agave_client.meta.getMetadata(uuid=uuid)
+        elif project_id is not None:
+            metas = agave_client.meta.listMetadata(
+                privileged=False,
+                q='{{"value.projectId": "{project_id}"}}'.format(project_id=project_id))
+            if len(metas):
+                meta = metas[0]
+            else:
+                raise ValueError('No metadata found')
+        else:
+            raise ValueError('No UUID or Project ID given')
+
         self.set_client(agave_client)
         return self.model_cls(**meta)
 

@@ -28,12 +28,12 @@ class Command(BaseCommand):
 
     def remove_fielddata(self, dict_obj, lvl=1):
         for key, val in six.iteritems(dict_obj):
-            self.stdout.write('-' * lvl + key)
+            #self.stdout.write('-' * lvl + key)
             if 'fielddata' in val:
                 val.pop('fielddata')
             if 'fields' in val:
                 for fields_key, fields_val in six.iteritems(val['fields']):
-                    self.stdout.write('-' * (lvl + 1) + fields_key)
+                    #self.stdout.write('-' * (lvl + 1) + fields_key)
                     if 'fielddata' in fields_val:
                         fields_val.pop('fielddata')
             if 'properties' in val:

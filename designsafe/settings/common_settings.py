@@ -100,6 +100,7 @@ INSTALLED_APPS = (
     # Designsafe apps
     'designsafe.apps.applications',
     'designsafe.apps.data',
+    'designsafe.apps.projects',
     'designsafe.apps.djangoRT',
     'designsafe.apps.notifications',
     'designsafe.apps.workspace',
