@@ -73,11 +73,10 @@ def register_lazy_rel(cls, field_name, related_obj_name, multiple, rel_cls):
                     )
 
 def set_lazy_rels():
-    for lazy_args in LAZY_OPS:
-        cls = REGISTRY[lazy_args[0]]
-        #lazy_args[2].rel_cls = cls
-        cls._meta._reverse_fields.append(lazy_args[1])
-        setattr(cls, lazy_args[1], lazy_args[2])
+    for reg_key, attrname, rel_obj in LAZY_OPS:
+        cls = REGISTRY[reg_key]
+        cls._meta._reverse_fields.append(attrname)
+        setattr(cls, attrname, rel_obj)
 
     del LAZY_OPS[:]
 

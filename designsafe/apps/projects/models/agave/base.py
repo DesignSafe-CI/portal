@@ -1,6 +1,7 @@
 """Base"""
 import logging
 import six
+import json
 from designsafe.apps.data.models.agave.base import Model as MetadataModel
 from designsafe.apps.data.models.agave import fields
 
@@ -122,7 +123,19 @@ class Project(MetadataModel):
 
     def save(self, ag):
         if self.uuid:
-            prj = self._meta.model_manager.get(ag, self.uuid)
+            prj = self.manager().get(ag, self.uuid)
             if prj.project_id:
                 self.project_id = prj.project_id
         super(Project, self).save(ag)
+
+    def related_entities(self, offset=0, limit=100):
+        from designsafe.apps.projects.models.utils import lookup_model
+        relattrs = self._meta._reverse_fields
+        rel_names = [getattr(self, attrname).related_obj_name for attrname in relattrs \
+                         if getattr(self, attrname).related_obj_name != 'designsafe.file']
+        resp = self.manager().agave_client.meta.listMetadata(
+            q=json.dumps({'name': {'$in': rel_names}, 'associationIds': self.uuid}),
+            offset=offset,
+            limit=limit)
+        ents = [lookup_model(rsp)(**rsp) for rsp in resp]
+        return ents

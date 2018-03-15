@@ -58,6 +58,28 @@
       var attribute = self.getRelatedAttrName(name);
       self[attribute] = entities;
     };
+    
+    /***
+     * Set entities relationship correctly
+     * @param {Array} entities Array of ProjectEntity object
+     *
+     */
+    Project.prototype.appendEntitiesRel = function(entities){
+      var self = this;
+      if (entities.length === 0){
+        return;
+      }
+      _.each(entities, function(ent){
+        var attribute = self.getRelatedAttrName(ent.name);
+        if (typeof self[attribute] === 'undefined'){
+          ent._ui.order = 0;
+          self[attribute] = [ent];
+        } else {
+          ent._ui.order = parseInt(self[attribute][self[attribute].length-1]._ui.order) + 1;
+          self[attribute].push(ent);
+        }
+      });
+    };
 
     /**
      * Add a newly created entity to the correct relations

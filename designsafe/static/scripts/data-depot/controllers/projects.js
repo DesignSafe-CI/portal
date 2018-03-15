@@ -130,7 +130,7 @@
     $scope.ui = {};
 
     function setEntitiesRel(resp){
-      $scope.data.project.setEntitiesRel(resp);
+      $scope.data.project.appendEntitiesRel(resp);
       return resp;
     }
 
@@ -140,21 +140,10 @@
       DataBrowserService.state().loadingEntities = true;
       $scope.data.loadingEntities = true;
       var _related = project._related;
-      var tasks = [];
-      for (var attrname in _related){
-        var name = _related[attrname];
-        if (name != 'designsafe.file'){
-          tasks.push(ProjectEntitiesService.listEntities(
-            {uuid: projectId, name: name})
-            .then(setEntitiesRel)
-            );
-        }
-      }
-      $q.all(tasks).then(
-        function(resp){
-          //$scope.data.project.setupAllRels();
-          return resp;
-        }).then(
+      ProjectEntitiesService.listEntities(
+        {uuid: projectId, name: 'all'})
+      .then(setEntitiesRel)
+      .then(
         function(resp){
             DataBrowserService.state().loadingEntities = false;
             $scope.data.loadingEntities = false;
@@ -302,9 +291,9 @@
 
     $scope.publishPipeline_review = function(){
       $scope.state.publishPipeline = 'review';
-      if (typeof $scope.saveInterval === 'undefined'){
-        $scope.saveInterval = $interval(savePublication, 1000);
-      }
+      //if (typeof $scope.saveInterval === 'undefined'){
+      //  $scope.saveInterval = $interval(savePublication, 1000);
+      //}
     };
 
     $scope.publishPipeline_meta = function(){
@@ -366,9 +355,12 @@
     };
 
     $scope.publishPipeline_publish = function(status){
-      if (typeof status !== 'undefined' && status != 'saved'){
-          $interval.cancel($scope.saveInterval);
-      } else if (typeof status === 'undefined'){
+      //if (typeof status !== 'undefined' && status != 'saved'){
+      //    $interval.cancel($scope.saveInterval);
+      //} else if (typeof status === 'undefined'){
+      //  status = 'published';
+      //}
+      if (typeof status === 'undefined'){
         status = 'published';
       }
       var publication = angular.copy($scope.state.publication);

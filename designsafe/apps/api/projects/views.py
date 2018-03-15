@@ -420,11 +420,18 @@ class ProjectMetaView(BaseApiView, SecureMixin, ProjectMetaLookupMixin):
         """
         ag = request.user.agave_oauth.client
         try:
-            if name is not None:
+            logger.debug('name: %s', name)
+            if name is not None and name != 'all':
                 model = self._lookup_model(name)
                 resp = model._meta.model_manager.list(ag, project_id)
                 resp_list = [r.to_body_dict() for r in resp]
                 resp_list = sorted(resp_list, key=lambda x: x['created'])
+                return JsonResponse(resp_list, safe=False)
+            elif name == 'all':
+                prj_obj = ag.meta.getMetadata(uuid=project_id)
+                prj = project_lookup_model(prj_obj)(**prj_obj)
+                prj.manager().set_client(ag)
+                resp_list = [ent.to_body_dict() for ent in prj.related_entities()]
                 return JsonResponse(resp_list, safe=False)
             elif uuid is not None:
                 meta = ag.meta.getMetadata(uuid=uuid)
