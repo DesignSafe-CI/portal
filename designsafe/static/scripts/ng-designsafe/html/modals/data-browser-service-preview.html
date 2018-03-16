@@ -24,7 +24,10 @@
                 </script>
             </div>
             <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && prevVideo">
-                    <div class="alert alert-warning"><p class="lead">Large video files will take longer to load...</p></div>
+                    <div class="alert alert-warning">
+                        <p class="lead">Video Preview</p>
+                        <p>Large video files will take longer to load, and some codecs are not supported.</p>
+                    </div>
                         <video class="embed-responsive-item" id="videoPlayer" controls autoplay src="" type=""></video>
                 </div>
             </div>
