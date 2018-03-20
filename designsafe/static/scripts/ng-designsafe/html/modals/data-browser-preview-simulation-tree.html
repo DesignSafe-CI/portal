@@ -8,7 +8,7 @@
     <!-- TREE START -->
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="simulation in data.project.simulationmodel_set | orderBy: 'value.title'"
+            ng-repeat="simulation in data.project.simulation_set | orderBy: 'value.title'"
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
@@ -37,7 +37,7 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('modelconfig_set', simulation.uuid) | orderBy: modelConfig.value.title">
+                ng-repeat="modelConfig in data.project.getRelated('model_set', simulation.uuid) | orderBy: modelConfig.value.title">
               <div class="tree-el">
               <span class="label tag-blue"
                     ng-class="{'selected': modelConfig.uuid === data.entityUuid}">Simulation Model</span>
@@ -45,7 +45,7 @@
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="simInput in data.project.getRelated('siminput_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
+                    ng-repeat="simInput in data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
                   <div class="tree-el">  
                   <span class="label tag-green"
                         ng-class="{'selected': simInput.uuid === data.entityUuid}">Simulation Input</span>
@@ -53,7 +53,7 @@
                   </div>
                   <ul>
                     <li 
-                        ng-repeat="simOutput in data.project.getRelated('simoutput_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="simOutput in data.project.getRelated('output_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el"
                             ng-class="{'selected': simOutput.uuid === data.entityUuid}">Simulation Output</span>

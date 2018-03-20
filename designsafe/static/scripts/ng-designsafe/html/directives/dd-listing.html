@@ -88,7 +88,7 @@
 <div class="simulation-publishing-steps"
  ng-if="browser.showPreviewListing &&
         browser.project.value.projectType == 'simulation' ">
-  <div ng-repeat="simulation in publicationCtrl.filterSimulations(browser.project.simulationmodel_set) | orderBy: 'value.title'"
+  <div ng-repeat="simulation in publicationCtrl.filterSimulations(browser.project.simulation_set) | orderBy: 'value.title'"
        ng-if="browser.showPreviewListing &&
               (!browser.publishPipeline ||
                browser.publishPipeline == 'select' ||
@@ -142,11 +142,11 @@
               </a>
             </div>
           </div>
-          <div ng-if="!publicationCtrl.filterSimulationModels(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation).length"
+          <div ng-if="!publicationCtrl.filterSimulationModels(browser.project.getRelated('model_set', simulation.uuid), simulation).length"
                class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
                 This Simulation has no Models.
           </div>
-          <div ng-repeat="model in publicationCtrl.filterSimulationModels(browser.project.getRelated('modelconfig_set', simulation.uuid), simulation) | orderBy: ['_ui.order', 'value.title']"
+          <div ng-repeat="model in publicationCtrl.filterSimulationModels(browser.project.getRelated('model_set', simulation.uuid), simulation) | orderBy: ['_ui.order', 'value.title']"
                style="margin-bottom:10px;">
             <div style="padding:3px;">
               <span ng-class="model.cssClasses()['text']"class="older-tick">Simulation Model: {{model.value.title}} </span>
@@ -158,7 +158,7 @@
                 </a>
               </div>
               <div>
-                <div ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])"
+                <div ng-repeat="simInput in browser.project.getRelated('input_set', [model.uuid])"
                      style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                             padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
                   <a ng-class="simInput.cssClasses()['text']"
@@ -166,7 +166,7 @@
                      ng-click="openPreviewTree()($event, simInput.uuid)">
                     {{simInput.value.title}}
                   </a>
-                  <div style="display:inline-block" ng-repeat="simOutput in browser.project.getRelated('simoutput_set', [simulation.uuid, model.uuid, simInput.uuid])">
+                  <div style="display:inline-block" ng-repeat="simOutput in browser.project.getRelated('output_set', [simulation.uuid, model.uuid, simInput.uuid])">
                     <a ng-class="simOutput.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, simOutput.uuid)">
                       {{simOutput.value.title}}
                     </a>
@@ -234,7 +234,7 @@
                   </tr>
                   <tr class="simulation-input"
                       style="background:#fff; border:none;"
-                      ng-repeat="simInput in browser.project.getRelated('siminput_set', [model.uuid])">
+                      ng-repeat="simInput in browser.project.getRelated('input_set', [model.uuid])">
                    <td colspan="4">
                     <div class="entity-preview-header" id="details-{{simInput.uuid}}">
                       <button class="btn btn-default btn-sm" ng-class="simInput.cssClasses()['text']"
@@ -268,7 +268,7 @@
                         </tr>
                         <tr class="simulation-output"
                             style="background:#fff; border:none; padding:0; margin:0"
-                            ng-repeat="simOutput in browser.project.getRelated('simoutput_set', [model.uuid, simInput.uuid])">
+                            ng-repeat="simOutput in browser.project.getRelated('output_set', [model.uuid, simInput.uuid])">
                          <td colspan="4" style="padding:0; margin:0;">
                           <div class="entity-preview-header" id="details-{{simOutput.uuid}}">
                             <button class="btn btn-default btn-sm" ng-class="simOutput.cssClasses()['text']"

@@ -102,7 +102,7 @@
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Model</h5>
-              <div ng-repeat="simulationModel in data.project.modelconfig_set"
+              <div ng-repeat="simulationModel in data.project.model_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(simulationModel)">
@@ -116,7 +116,7 @@
           </div>
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Simulation Input</h5>
-              <div ng-repeat="simulationInput in data.project.siminput_set"
+              <div ng-repeat="simulationInput in data.project.input_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(simulationInput)">
@@ -130,7 +130,7 @@
           </div>
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Simulation Output</h5>
-              <div ng-repeat="simulationOutput in data.project.simoutput_set"
+              <div ng-repeat="simulationOutput in data.project.output_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
                         ng-click="toggleProjectTag(simulationOutput)">

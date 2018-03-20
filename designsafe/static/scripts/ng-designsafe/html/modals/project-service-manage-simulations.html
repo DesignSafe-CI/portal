@@ -159,7 +159,7 @@
      </div>
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="simulation in data.project.simulationmodel_set | orderBy: 'value.title'"
+            ng-repeat="simulation in data.project.simulation_set | orderBy: 'value.title'"
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
@@ -248,12 +248,12 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('modelconfig_set', simulation.uuid) | orderBy: modelConfig.value.title">
+                ng-repeat="modelConfig in data.project.getRelated('model_set', simulation.uuid) | orderBy: modelConfig.value.title">
               <div class="tree-el">
               <span class="label tag-blue">Simulation Model</span>
               <span class="tag-title">{{modelConfig.value.title}}</span>
               <button class="btn btn-xsm btn-link"
-                      ng-if="data.project.getRelated('siminput_set', [simulation.uuid, modelConfig.uuid] ).length === 0"
+                      ng-if="data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid] ).length === 0"
                       ng-click="delRelEntity(modelConfig,{simulations: simulation.uuid})">
                 <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                 <span class="sr-only">Delete</span>
@@ -261,12 +261,12 @@
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="simInput in data.project.getRelated('siminput_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
+                    ng-repeat="simInput in data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
                   <div class="tree-el">  
                   <span class="label tag-green">Simulation Input</span>
                   <span class="tag-title">{{simInput.value.title}}</span>
                   <button class="btn btn-xsm btn-link"
-                          ng-if="data.project.getRelated('simoutput_set', [simulation.uuid, modelConfig.uuid, siminput.uuid]).length === 0"
+                          ng-if="data.project.getRelated('output_set', [simulation.uuid, modelConfig.uuid, siminput.uuid]).length === 0"
                           ng-click="delRelEntity(simInput, {simulations: simulation.uuid,
                                                             modelConfigs: modelConfig.uuid})">
                     <i class="fa fa-times-circle fa-2" style="color:black;"></i>
@@ -275,7 +275,7 @@
                   </div>
                   <ul>
                     <li 
-                        ng-repeat="simOutput in data.project.getRelated('simoutput_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="simOutput in data.project.getRelated('output_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el">Simulation Output</span>
                       <span class="tag-title">{{simOutput.value.title}}</span>
@@ -385,7 +385,7 @@
                     <li>
                       <div class="tree-el">
                       <select
-                              ng-options="entity as entity.value.title for entity in data.project.simoutput_set"
+                              ng-options="entity as entity.value.title for entity in data.project.output_set"
                               ng-model="form.updateSimulations[simulation.uuid][modelConfig.uuid][simInput.uuid].relSimOutput">
                               <option value="">Add Simulation Outputs</option>
                       </select>
@@ -405,7 +405,7 @@
                 <li>
                   <div class="tree-el">
                   <select
-                          ng-options="entity as entity.value.title for entity in data.project.siminput_set"
+                          ng-options="entity as entity.value.title for entity in data.project.input_set"
                           ng-model="form.updateSimulations[simulation.uuid][modelConfig.uuid].relSimInput">
                           <option value="">Add Simulation Inputs</option>
                   </select>
@@ -424,7 +424,7 @@
             <li>
               <div class="tree-el">
               <select 
-                      ng-options="entity as entity.value.title for entity in data.project.modelconfig_set"
+                      ng-options="entity as entity.value.title for entity in data.project.model_set"
                       ng-model="form.updateSimulations[simulation.uuid].relModelConfig">
                       <option value="">Add Simulation Model</option>
               </select>

@@ -31,7 +31,7 @@ class DataTag(MetadataModel):
     file = fields.RelatedObjectField(FileModel, default=[])
     desc = fields.CharField('Description', max_length=512, default='')
 
-class SimulationModel(RelatedEntity):
+class Simulation(RelatedEntity):
     model_name = 'designsafe.project.simulation'
     title = fields.CharField('Title', max_length=1024)
     simulation_type = fields.CharField('Simulation Type', max_length=1024)
@@ -40,7 +40,7 @@ class SimulationModel(RelatedEntity):
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
 
-class ModelConfig(RelatedEntity):
+class Model(RelatedEntity):
     model_name = 'designsafe.project.simulation.model'
     title = fields.CharField('Title', max_length=512)
     application_version = fields.CharField('Application & Version', default='')
@@ -51,26 +51,26 @@ class ModelConfig(RelatedEntity):
     simulated_system = fields.CharField('Simulated System', default='')
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
+    simulations = fields.RelatedObjectField(Simulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
-class SimInput(RelatedEntity):
+class Input(RelatedEntity):
     model_name = 'designsafe.project.simulation.input'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
-    model_configs = fields.RelatedObjectField(ModelConfig)
+    simulations = fields.RelatedObjectField(Simulation)
+    model_configs = fields.RelatedObjectField(Model)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
-class SimOutput(RelatedEntity):
+class Output(RelatedEntity):
     model_name = 'designsafe.project.simulation.output'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
-    model_configs = fields.RelatedObjectField(ModelConfig)
-    sim_inputs = fields.RelatedObjectField(SimInput)
+    simulations = fields.RelatedObjectField(Simulation)
+    model_configs = fields.RelatedObjectField(Model)
+    sim_inputs = fields.RelatedObjectField(Input)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Analysis(RelatedEntity):
@@ -78,8 +78,8 @@ class Analysis(RelatedEntity):
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
-    sim_outputs = fields.RelatedObjectField(SimOutput)
+    simulations = fields.RelatedObjectField(Simulation)
+    sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Report(RelatedEntity):
@@ -87,6 +87,6 @@ class Report(RelatedEntity):
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(SimulationProject)
-    simulations = fields.RelatedObjectField(SimulationModel)
-    sim_outputs = fields.RelatedObjectField(SimOutput)
+    simulations = fields.RelatedObjectField(Simulation)
+    sim_outputs = fields.RelatedObjectField(Output)
     files = fields.RelatedObjectField(FileModel, multiple=True)
