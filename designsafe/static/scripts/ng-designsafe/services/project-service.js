@@ -1134,135 +1134,149 @@
           $scope.saveCollaborators = function ($event) {
             if ($event) { $event.preventDefault();}
             $scope.data.busy = true;
+            var projPi = $scope.data.project.value.pi;
 
-            console.log('Scope.Form');
-            console.log($scope.form);
-
-            // ----------------------------------------------------------------------------------Remove Users
-            console.log("Remove Users --------------------------------->");
-            var raList = _.map($scope.form.curUsers, function (cur) {
-              if (cur.remove) {
-                return cur.user.username
-              }
-            });
-
-            if (_.compact(raList).length > 0) {
-              var removeActions = collabResource.delete({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(raList)
-              }});
-            }
-            else {
-              var removeActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Remove CoPI
-            console.log("Remove CoPi --------------------------------->");
-            var rcpList = _.map($scope.form.curCoPis, function(cur){
-              if(cur.remove){
-                return cur.user.username
-              }
-            });
-
-            if (_.compact(rcpList).length > 0) {
-              var coPIsRemoveActions = collabResource.delete({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(rcpList),
-                memberType: 'coPis'
-              }});
-            }
-            else {
-              var coPIsRemoveActions = [];
+            function runSerial() {
+              // take each group of changes and resolve them in order
+              return Promise.resolve()
+                  .then(function() {
+                      return remUsers();
+                  })
+                  .then(function() {
+                      return remCoPi();
+                  })
+                  .then(function() {
+                    return userAdd();
+                  })
+                  .then(function() {
+                      return copiAdd();
+                  })
+                  .then(function() {
+                    return userAuthorship();
+                  })
+                  .then(function() {
+                      // reload form when finished
+                      $scope.initForm();
+                      $scope.loadData();
+                  });
             }
 
-            // ----------------------------------------------------------------------------------Add Users
-            console.log("Add Users --------------------------------->");
-            var aaList = _.map($scope.form.addUsers, function (add) {
-              if (add.user && add.user.username) {
-                return add.user.username
-              }
-            });
-
-            if (_.compact(aaList).length > 0) {
-              var addActions = collabResource.post({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(aaList)
-              }});
-            }
-            else {
-              var addActions = [];
-            }
-
-            // ----------------------------------------------------------------------------------Add CoPi
-            console.log("Add CoPi --------------------------------->");
-
-            var acpList = _.map($scope.form.addCoPis, function (add) {
-              if (add.user && add.user.username) {
-                return add.user.username
-              }
-            });
-
-            if (_.compact(acpList).length > 0) {
-              var addCoPi = collabResource.post({data: {
-                uuid: $scope.data.project.uuid,
-                username: _.compact(acpList),
-                memberType: 'coPis'
-              }});
-            }
-            else {
-              var addCoPi = [];
-            }
-
-            // ----------------------------------------------------------------------------------Authorship
-            console.log("Authorship --------------------------------->");
-            var expsToUpdate = [];
-            _.each($scope.authorship, function(obj){
-              expsToUpdate.push(obj);
-            });
-
-            // TODO This should probably be a stack or something...
-            // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
-            var updateExps = _.map(expsToUpdate, function(_exp){
-              // var _exp = $scope.data.project.getRelatedByUuid(uuid);
-              return ProjectEntitiesService.update({data: {
-                  uuid: _exp.uuid,
-                  entity: _exp
-              }}).then(function(e){
-                  var ent = $scope.data.project.getRelatedByUuid(e.uuid);
-                  ent.update(e);
-                  return e;
+            // ----------------------Remove Users
+            function remUsers()  {
+              var raList = _.map($scope.form.curUsers, function (cur) {
+                if (cur.remove) {
+                  return cur.user.username;
+                }
               });
-            });
 
-                //ProjectEntitiesService.update(
-                //    {data: {uuid: entity.uuid, entity: entity}}
-                //)
+              var removeActions;
 
-            // ----------------------------------------------------------------------------------Combine Requests
-            console.log("Combine All --------------------------------->");
-            var tasks = [];
-            tasks = tasks.concat(removeActions, coPIsRemoveActions, addActions, addCoPi, updateExps);
-            
-            console.log('TASKS ~~~~~~~~~~~~$');
-            console.log(tasks);
-
-            // ----------------------------------------------------------------------------------Process
-            $q.all(tasks).then(
-              function (results) {
-                // $uibModalInstance.close(results);
-                // $scope.data.busy = true;
-                console.log('success');
-                $scope.initForm();
-                $scope.loadData();
-              },
-              function (error) {
-                // $uibModalInstance.reject(error.data);
-                console.log('error');
-                $scope.data.busy = true;
-                $scope.initForm();
-                $scope.loadData();
+              if (_.compact(raList).length > 0) {
+                removeActions = collabResource.delete({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: _.compact(raList)
+                }});
               }
-            );
+
+              return removeActions;
+            }
+
+            // ----------------------Remove CoPI
+            function remCoPi() {
+              var rcpList = _.map($scope.form.curCoPis, function(cur){
+                if(cur.remove){
+                  return cur.user.username;
+                }
+              });
+
+              var coPIsRemoveActions;
+
+              if (_.compact(rcpList).length > 0) {
+                coPIsRemoveActions = collabResource.delete({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: _.compact(rcpList),
+                  memberType: 'coPis'
+                }});
+              }
+
+              return coPIsRemoveActions;
+            }
+
+            // ----------------------Add Users
+            function userAdd()  {
+              var aaList = _.map($scope.form.addUsers, function (add) {
+                if (add.user && add.user.username) {
+                  return add.user.username;
+                }
+              });
+
+              // if PI is in list remove them...
+              if (aaList.includes(projPi)) {
+                aaList[aaList.indexOf(projPi)] = undefined;
+              }
+
+              var addActions;
+
+              if (_.compact(aaList).length > 0) {
+                addActions = collabResource.post({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: _.compact(aaList)
+                }});
+              }
+
+              return addActions;
+            }
+
+            // ----------------------Add CoPi
+            function copiAdd()  {
+              var acpList = _.map($scope.form.addCoPis, function (add) {
+                if (add.user && add.user.username) {
+                  return add.user.username;
+                }
+              });
+
+              // if PI is in list remove them...
+              if (acpList.includes(projPi)) {
+                acpList[acpList.indexOf(projPi)] = undefined;
+              }
+
+              var addCoPi;
+
+              if (_.compact(acpList).length > 0) {
+                addCoPi = collabResource.post({data: {
+                  uuid: $scope.data.project.uuid,
+                  username: _.compact(acpList),
+                  memberType: 'coPis'
+                }});
+              }
+
+              return addCoPi;
+            }
+
+            // ----------------------Authorship
+            function userAuthorship()  {
+              var expsToUpdate = [];
+              _.each($scope.authorship, function(obj){
+                expsToUpdate.push(obj);
+              });
+
+              // TODO This should probably be a stack or something...
+              // expsToUpdate = _.uniq(expsToUpdate, function (d) { return d.uuid;});
+              var updateExps = _.map(expsToUpdate, function(_exp){
+                // var _exp = $scope.data.project.getRelatedByUuid(uuid);
+                return ProjectEntitiesService.update({data: {
+                    uuid: _exp.uuid,
+                    entity: _exp
+                }}).then(function(e){
+                    var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                    ent.update(e);
+                    return e;
+                });
+              });
+            }
+
+            // ----------------------Process all changes in order
+            runSerial();
           };
 
           $scope.cancel = function () {

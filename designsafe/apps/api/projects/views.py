@@ -332,12 +332,8 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        logger.info("POST DATA ADD ----------------------------------->")
-        logger.info(post_data)
-        logger.info(post_data["username"])
 
         for user in post_data["username"]:
-
             ag = get_service_account_client()
             project = BaseProject.manager().get(ag, uuid=project_id)
             project.manager().set_client(ag)
@@ -386,10 +382,6 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         else:
             post_data = request.POST.copy()
 
-        logger.info("POST DATA DELETE ----------------------------------->")
-        logger.info(post_data)
-        logger.info(post_data["username"])
-
         ag = get_service_account_client()
         project = Project.from_uuid(agave_client=ag, uuid=project_id)
 
@@ -397,12 +389,8 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
             #project.remove_collaborator(post_data.get('username'))
             #project.remove_co_pi(user)
             if "memberType" in post_data:
-                logger.info("This is a Co-PI...")
-                logger.info(user)
                 project.remove_co_pi(user)
             else:
-                logger.info("This is a collaborator...")
-                logger.info(user)
                 project.remove_collaborator(user)
             project.save()
             tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
