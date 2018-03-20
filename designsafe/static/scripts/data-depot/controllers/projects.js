@@ -790,6 +790,11 @@
       } else if (ent.name === 'designsafe.project.report'){
         $scope.browser.publication.reportsList.push(ent);
         $scope.browser.publication.reportsList = _.uniq($scope.browser.publication.reportsList, function(e){return e.uuid;});
+      } else if (ent.name === 'designsafe.project.simulation'){
+        if (typeof $scope.browser.publication.simulations === 'undefined'){
+          $scope.browser.publication.simulations = [];
+        }
+        $scope.browser.publication.simulations.push(ent);
       }
     }
 
