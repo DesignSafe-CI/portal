@@ -251,10 +251,10 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.sensor_list': SensorList,
             'designsafe.project.model_config': ModelConfig,
             'designsafe.project.report': Report,
-            'designsafe.project.simulation': simulation.SimulationModel,
-            'designsafe.project.simulation.model': simulation.ModelConfig,
-            'designsafe.project.simulation.input': simulation.SimInput,
-            'designsafe.project.simulation.output': simulation.SimOutput,
+            'designsafe.project.simulation': simulation.Simulation,
+            'designsafe.project.simulation.model': simulation.Model,
+            'designsafe.project.simulation.input': simulation.Input,
+            'designsafe.project.simulation.output': simulation.Output,
             'designsafe.project.simulation.analysis': simulation.Analysis,
             'designsafe.project.simulation.report': simulation.Report
         }
