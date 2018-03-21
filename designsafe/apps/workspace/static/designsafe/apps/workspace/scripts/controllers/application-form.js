@@ -10,6 +10,7 @@
         messages: [],
         submitting: false,
         needsLicense: false,
+        unavailable: false,
         app: null,
         form: {}
       };
@@ -66,7 +67,8 @@
 
       $scope.resetForm = function() {
         $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
-        $scope.form = {model: {}, readonly: $scope.data.needsLicense};
+        $scope.data.unavailable = ($scope.data.app.executionSystem == "designsafe.community.exec.stampede" || $scope.data.app.executionSystem == "designsafe.community.exec.stampede.nores");
+        $scope.form = { model: {}, readonly: ($scope.data.needsLicense || $scope.data.unavailable)};
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [];
 
@@ -80,7 +82,7 @@
         }
         $scope.form.form.push({
           type: 'fieldset',
-          readonly: $scope.data.needsLicense,
+          readonly: ($scope.data.needsLicense || $scope.data.unavailable),
           title: 'Inputs',
           items: items
         });
@@ -97,14 +99,14 @@
         }
         $scope.form.form.push({
           type: 'fieldset',
-          readonly: $scope.data.needsLicense,
+          readonly: ($scope.data.needsLicense || $scope.data.unavailable),
           title: 'Job details',
           items: items
         });
 
         /* buttons */
         items = [];
-        if (! $scope.data.needsLicense) {
+        if (!($scope.data.needsLicense || $scope.data.unavailable)) {
           items.push({type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary'});
         }
         items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
