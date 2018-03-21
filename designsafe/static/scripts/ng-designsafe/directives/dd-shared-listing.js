@@ -1,7 +1,7 @@
 /**
  *
  */
-(function(window, angular) {
+export const ddSharedListing = function(window, angular) {
 
   var module = angular.module('designsafe');
 
@@ -21,4 +21,4 @@
     };
   });
 
-})(window, angular);
+}

@@ -1,4 +1,4 @@
-(function(window, angular, $, _) {
+export const dataBrowserFilters = function(window, angular, $, _) {
 
   var mod = angular.module('designsafe');
 
@@ -107,4 +107,4 @@
     };
   }]);
 
-})(window, angular, jQuery, _);
+}

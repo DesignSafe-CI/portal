@@ -1,4 +1,4 @@
-(function(){
+export const notificationsProvider = function(){
   'use strict';
   function NotificationService($rootScope, logger, toastr, djangoUrl, $http, $mdToast) {
       var processors = {};
@@ -122,4 +122,4 @@
 
   angular.module('ds.notifications').provider('NotificationService', NotificationServiceProvider);
 
-})();
+}
