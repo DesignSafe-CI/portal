@@ -1,4 +1,4 @@
-(function(window, angular) {
+export const ngDesignsafeFilters = function(window, angular) {
   var mod = angular.module('designsafe');
 
   mod.filter('bytes', function() {
@@ -43,4 +43,4 @@
     };
   });
 
-})(window, angular);
+}

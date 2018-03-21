@@ -1,7 +1,7 @@
 /**
  *
  */
-(function(window, angular) {
+export const ddPublicSearchListing = function(window, angular) {
 
   var module = angular.module('designsafe');
 
@@ -22,4 +22,4 @@
     };
   });
 
-})(window, angular);
+}

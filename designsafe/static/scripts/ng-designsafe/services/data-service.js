@@ -1,4 +1,4 @@
-(function(window, angular, $, _) {
+export const dataService = function(window, angular, $, _) {
   "use strict";
 
   var module = angular.module('designsafe');
@@ -290,4 +290,4 @@
   }]);
 
 
-})(window, angular, jQuery, _);
+}

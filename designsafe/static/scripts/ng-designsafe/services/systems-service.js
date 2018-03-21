@@ -1,4 +1,4 @@
-(function(window, angular, $, _) {
+export const systemsService = function(window, angular, $, _) {
   "use strict";
 
   var module = angular.module('designsafe');
@@ -47,5 +47,4 @@
   module
     .factory('SystemsService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
                                 'FileListing', 'Logging', SystemsService]);
-})(window, angular, jQuery, _);
-
+}

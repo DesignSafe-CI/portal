@@ -1,4 +1,4 @@
-(function(window, angular, $, _) {
+export const projectEntity = function(window, angular, $, _) {
   "use strict";
 
   var module = angular.module('designsafe');
@@ -302,4 +302,4 @@
 
     return ProjectEntity;
   }]);
-})(window, angular, jQuery, _);
+}

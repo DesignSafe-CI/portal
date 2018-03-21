@@ -1,4 +1,4 @@
-(function(window, angular, $, _) {
+export const fileListing = function(window, angular, $, _) {
   "use strict";
 
   var module = angular.module('designsafe');
@@ -593,4 +593,4 @@
 
   }]);
 
-})(window, angular, jQuery, _);
+}

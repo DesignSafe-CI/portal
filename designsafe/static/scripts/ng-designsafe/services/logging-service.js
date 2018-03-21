@@ -1,4 +1,4 @@
-(function(window, angular) {
+export const loggingService = function(window, angular) {
   "use strict";
 
   window.__DEBUG__ = window.__DEBUG__ || true;
@@ -110,4 +110,4 @@
 
   angular.module('designsafe').provider('Logging', LoggingServiceProvider);
 
-})(window, angular);
+}

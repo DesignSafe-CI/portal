@@ -1,4 +1,4 @@
-(function(angular, $){
+export const ngDesignsafeDirectives = function(angular, $){
   "use strict";
 
   var mod = angular.module('designsafe');
@@ -328,4 +328,4 @@
     };
   }]);
 
-})(angular, jQuery);
+}

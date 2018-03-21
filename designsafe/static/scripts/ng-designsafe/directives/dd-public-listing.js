@@ -1,7 +1,7 @@
 /**
  *
  */
-(function(window, angular) {
+export const ddPublicListing = function(window, angular) {
 
   var module = angular.module('designsafe');
 
@@ -25,4 +25,4 @@
     };
   });
 
-})(window, angular);
+}

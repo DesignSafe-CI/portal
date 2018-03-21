@@ -1,7 +1,7 @@
 /**
  * Created by mrhanlon on 4/28/16.
  */
-(function(window, angular, $) {
+export const notifications = function(window, angular, $) {
   "use strict";
 
   var app = angular.module('designsafe');
@@ -104,4 +104,4 @@
       $scope.init();
     }]);
 
-})(window, angular, jQuery);
+  }
