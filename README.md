@@ -68,33 +68,44 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 ## Next steps
 
-### Installing self-signed certificate
+### Installing local CA and creating self-signed certificate 
 
-First you need to get the certificate from Chrome.
-
-1. Go to [https://localhost](https://localhost) or [https://designsafe.dev](https://designsafe.dev)
-2. Click the lock icon with an X
-3. Click Certificate Information
-4. Go to Details
-5. Click on Export...
-6. Make a note where you save the file
-
-#### Linux (Ubuntu/Debian)
-
-    1. Chrome expects to find the certifiacet database in `~/.pki/nssdb`. Create, if needed:
-    `mkdir -p ~/.pki/nssb`
-    2. Import the cert with `certutil` (part of `libnss3-tools`)
-    `certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n <filename> -i <filename>
-    3. Make sure it was added by listing all the certificates installed. Should show up as `Texas Advanced Computing Center`
-    `certutil -d sql:$HOME/.pki/nssdb -L`
+Every file needed is in `conf/nginx/certs`.
 
 #### OSX
-    1. Double click the `.cert` file
-    2. Select which keychain to install the cert (usually `login`)
-    3. A Keychain Access window will open. Look for the certificate there as `Texas Advanced Computing Center`
-    4. Double click the certificate
-    5. A details window will open. Expand the `Trust` section and select **Trust Always** for everything.
-    6. Close the window.
+
+1. Open mac's Keychain Access
+2. File > Import Items
+3. Navigate to `$PROJECT/conf/nginx/certs`
+4. Select `ca.pem`
+5. Search for designsafe and double click on Designsafe CA
+6. Click on Trust and select "Trust Always"
+7. Close the window to save.
+
+#### Linux
+
+1. `$ cd $PROJECT/conf/nginx/certs`
+2. `$ sudo mkdir /usr/local/share/ca-certificates/extra`
+3. `$ sudo cp ca.pem /usr/local/share/ca-certificates/extra/designsafeCA.pem`
+4. `$ sudo update-ca-certificates`
+
+#### Firefox UI
+
+1. Go to preferences
+3. Search for Authorities
+4. Click on "View Certificates" under "Certificates"
+5. On the Certificate Manager go to the "Authorities" tab
+6. Click on "Import..."
+7. Browse to `$PROJECT/conf/nginx/certs`
+8. Select `ca.pem`
+
+#### Firefox CLI (not tested)
+
+1. `sudo apt-get install libnss3-tools` (or proper package manager)
+2. `certutil -A -n "designsafeCA" -t "TCu,Cu,Tu" -i ca.pem -d ${DBDIR}`
+3. `$DBDIR` differs from browser to browser for more info:
+    Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
+    Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
 
 ### Importing data from production
 
