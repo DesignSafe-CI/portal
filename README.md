@@ -68,7 +68,7 @@ Machine, which is required to run Docker on Mac/Windows hosts.
 
 ## Next steps
 
-### Installing local CA and creating self-signed certificate 
+### Installing local CA
 
 Every file needed is in `conf/nginx/certs`.
 
@@ -106,6 +106,16 @@ Every file needed is in `conf/nginx/certs`.
 3. `$DBDIR` differs from browser to browser for more info:
     Chromium: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_cert_management.md
     Firefox: https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data?redirectlocale=en-US&redirectslug=Profiles#How_to_find_your_profile
+
+### Creating Local CA and signed cert
+
+1. Generate RSA-2048 key for CA: `openssl genrsa -des3 -out ca.key 2048` (This file should already be in the repo)
+2. Generate root CA certificate: `openssl req -x509 -new -nodes -key ca.key -sha256 -days 365 -out ca.pem` (Root CA cert is valid for 365 days. Keep any form values to "Designsafe CA")
+3. Generate RSA-2048 key for local dev site: `openssl genrsa out designsafe.dev.key 2048` (This file should already be in the repo)
+4. Generate Cert Request (CSR): `openssql req -new -key -designsafe.dev.key -out designsafe.dev.csr` (Keep any form values to "Designsafe CA")
+5. Make sure `designsafe.dev.ext` is correct
+6. Generate Cert: `openssl x509 -req -in designsafe.dev.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out designsafe.dev.crt -days 365 -sha256 -extfile designsafe.dev.ext` (Cert is valid for 365 days. Keep default form values defined in .conf file)
+7. Files created: `designsafe.dev.key` (site private key), `designsafe.dev.csr` (site certificate signing request), `designsafe.dev.crt` (actual site certificate), `ca.key` (CA private key) and `ca.pem` (CA certificate).
 
 ### Importing data from production
 
