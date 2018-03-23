@@ -5870,6 +5870,9 @@ button.list-group-item-danger.active:focus {
 .embed-responsive-4by3 {
   padding-bottom: 75%;
 }
+.embed-responsive-podcast {
+  padding-bottom: 20%;
+}
 .well {
   min-height: 20px;
   padding: 19px;
