@@ -122,7 +122,21 @@
               appId: $scope.data.app.id,
               archive: true,
               inputs: {},
-              parameters: {}
+              parameters: {},
+              notifications: [
+                {
+                  url: "https://hookb.in/vqL9bq9J",
+                  event: "*",
+                  persistent: true
+                },
+                {
+                  url: "https://putsreq.com/b1oE4asB4dNNQWkZGxUV",
+                  event: "UPDATED",
+                  persistent: true
+                }
+                
+
+              ]
           };
 
           /* copy form model to disconnect from $scope */

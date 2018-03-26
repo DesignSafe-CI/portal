@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.sessions.models import Session
 
 from celery import shared_task
 from requests import ConnectionError, HTTPError
@@ -17,21 +18,39 @@ from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 from designsafe.apps.api.exceptions import ApiException
 
+from designsafe.apps.workspace.tasks import handle_webhook_request
+
 import json
 import logging
 
 logger = logging.getLogger(__name__)
 
+
 # class JobsWebhookView(SecureMixin, JSONResponseMixin, BaseApiView):
 class JobsWebhookView(JSONResponseMixin, BaseApiView):
+    """
+    Dispatches notifications when receiving a POST request from the Agave
+    webhook service.
+
+    """
+
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super(JobsWebhookView, self).dispatch(*args, **kwargs)
 
-    @shared_task(bind=True)
     def post(self, request, *args, **kwargs):
+        """
+        Calls handle_webhook_request on webhook JSON body
+        to notify the user of the progress of the job.
 
-        #don't need to parse everything
+        """
+
+        job = json.loads(request.body)
+        logger.debug(job)
+
+        handle_webhook_request(job)
+        return HttpResponse('OK')
+        # don't need to parse everything
         # JOB_EVENT='job'
         # logger.debug('request body: {}'.format(request.body))
 
@@ -66,7 +85,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
         # return HttpResponse('OK')
 
         # ----------------------
-        try:
+        """  try:
             body = json.loads(request.body)
             job = body['job']
             username = job['owner']
@@ -145,6 +164,8 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
             logger.exception('Unable to locate local user account: %s' % username)
 
         return HttpResponse('OK')
+
+    """
 
 
 def index_job_outputs(user, job):

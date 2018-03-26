@@ -22,6 +22,11 @@
       return $http.post(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), data);
     };
 
+    service.getWebhookUrl = function() {
+      console.log(djangoUrl.reverse('jobs_wh_handler'))
+      return djangoUrl.reverse('jobs_wh_handler');  
+    }
+
     return service;
   }]);
 })(window, angular, jQuery, _);

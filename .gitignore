@@ -1,6 +1,9 @@
 # ignore intellij IDE things
 .idea/
 
+i# ignore vsCode things
+settings.json
+
 # OsX DS_Store nonsense
 .DS_Store
 
@@ -73,6 +76,7 @@ coverage.xml
 docs/_build/
 .docs/build
 target/
+venv/
 
 # ignore Google Drive API secrets
 *secrets.json
