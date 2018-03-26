@@ -346,29 +346,41 @@ class AgaveIndexer(object):
         """
         docs_indexed = 0
         docs_deleted = 0
+        mgr = ESFileManager(username=username)
         for root, folders, files in self.walk_levels(system_id, path,
                                                      bottom_up=bottom_up):
+            logger.debug('system_id: %s, path: %s', system_id, root)
 
             objs_to_index, docs_to_delete = self._dedup_and_discover(system_id,
                                                 username, root, files, folders)
             for d in docs_to_delete:
-                logger.debug(u'delete_recursive: {}'.format(d.full_path))
-                #TODO: change this
-                docs_deleted += d.delete_recursive(username)
+                logger.debug(u'delete_recursive: %s', os.path.join(d.path, d.name))
+                res, search = mgr.listing_recursive(username)
+                if res.hits.total:
+                    for doc in search.scan():
+                        doc.delete()
+
+                d.delete()
+                docs_deleted += res.hits.total + 1
 
             if not full_indexing:
                 for o in objs_to_index:
-                    logger.debug(u'Indexing: {}'.format(o.full_path))
-                    #TODO: change this
-                    doc = Object.from_agave_file(username, o, get_pems = pems_indexing)
+                    logger.debug(u'Indexing: {}'.format(o.path))
+                    pems = None
+                    if pems_indexing:
+                        pems = self.ag.files.listPermissions(
+                            systemId=o.system,filePath=o.path)
+                    doc = mgr.index(o, pems=pems)
                     docs_indexed += 1
             else:
                 folders_and_files = folders + files
                 for o in folders_and_files:
-                    logger.debug(u'Get or create file: {}'.format(o.full_path))
-                    #TODO: change this
-                    doc = Object.from_agave_file(username, o,
-                                    auto_update = True, get_pems = pems_indexing)
+                    logger.debug(u'Get or create file: {}'.format(o.path))
+                    pems = None
+                    if pems_indexing:
+                        pems = self.ag.files.listPermissions(
+                            systemId=o.system,filePath=o.path)
+                    doc = mgr.index(o, pems=pems)
                     docs_indexed += 1
 
             if levels and (len(root.split('/')) - len(path.split('/')) + 1) >= levels:
@@ -379,13 +391,13 @@ class AgaveIndexer(object):
             for i in range(len(path_comp)):
                 file_path = '/'.join(path_comp)
                 path, name = os.path.split(path)
-                #TODO: change this
-                af = AgaveFile.from_file_path(system_id, username, file_path,
-                                        agave_client = self.agave_client)
-                logger.debug(u'Get or create file: {}'.format(af.full_path))
-                #TODO: change this
-                doc = Object.from_agave_file(username, af,
-                                    auto_update = full_indexing, get_pems = pems_indexing)
+                af = self.ag.files.list(systemId=system_id, filePath=file_path)
+                logger.debug(u'Get or create file: {}'.format(af.path))
+                pems = None
+                if pems_indexing:
+                    pems = self.ag.files.listPermissions(
+                        systemId=af.system, filePath=af.path)
+                doc = mgr.index(af, pems=pems)
                 docs_indexed += 1
                 path_comp.pop()
         return docs_indexed, docs_deleted
@@ -424,22 +436,21 @@ class AgaveIndexer(object):
         """
         import urllib
         cnt = 0
-        #TODO: change this
-        r, s = Object.listing_recursive(system_id, username, path)
+        mgr = ESFileManager(username=username)
+        r, s = mgr.listing_recursive(system_id, path)
         objs = sorted(s.scan(), key = lambda x: len(x.path.split('/')), reverse=bottom_up)
         if levels:
             objs = filter(lambda x: len(x.path.split('/')) <= levels, objs)
         p, n = os.path.split(path)
         if p == '':
             p = '/'
-        #TODO: change this
-        objs.append(Object.from_file_path(system_id, username, os.path.join(p, n)))
+        objs.append(mgr.get(system_id, os.path.join(p, n)))
         for o in objs:
             if len(o.path.split('/')) == 1 and o.name == 'Shared with me':
                 continue
-            #TODO: change this
-            pems = self.call_operation('files.listPermissions', filePath = urllib.quote(os.path.join(o.path, o.name)), systemId = system_id)
+            pems = self.ag.files.listPermissions(
+                filePath=urllib.quote(os.path.join(o.path, o.name)),
+                systemId=system_id)
             o.update(permissions = pems)
             cnt += 1
-
         return cnt
