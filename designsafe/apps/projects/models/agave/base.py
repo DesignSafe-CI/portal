@@ -124,7 +124,7 @@ class Project(MetadataModel):
     def save(self, ag):
         if self.uuid:
             prj = self.manager().get(ag, self.uuid)
-            if prj.project_id:
+            if prj.project_id and prj.project_id != 'None':
                 self.project_id = prj.project_id
         super(Project, self).save(ag)
 
