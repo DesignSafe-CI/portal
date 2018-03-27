@@ -109,15 +109,16 @@ class FileManager(object):
             if pems is None or not pems:
                 document.permissions = [{
                     'username': self.username,
-                        'permission': {
-                            'read': True,
-                            'write': True,
-                            'execute': True
-                        }
+                    'permission': {
+                        'read': True,
+                        'write': True,
+                        'execute': True
+                    }
                 }]
             else:
-                pems.pop('_links', None)
-                pems.pop('internalUsername', None)
+                for pem in pems:
+                    pem.pop('_links', None)
+                    pem.pop('internalUsername', None)
             document.save()
 
         if pems:
