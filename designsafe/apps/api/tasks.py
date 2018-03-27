@@ -40,11 +40,11 @@ def reindex_agave(self, username, file_id, full_indexing=True,
                            pems_indexing = pems_indexing,
                            index_full_path = index_full_path,
                            levels = levels)
-    parent_path_comps = file_path.strip('/').split('/')
-    if len(parent_path_comps) > 0:
-        parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
-        agave_fm.indexer.index(system_id, parent_path, file_user,
-                               levels = 1)
+    #parent_path_comps = file_path.strip('/').split('/')
+    #if len(parent_path_comps) > 0:
+    #    parent_path = os.path.join(*file_path.strip('/').split('/')[:-1])
+    #    agave_fm.indexer.index(system_id, parent_path, file_user,
+    #                           levels = 1)
 
 
 @shared_task(bind=True)

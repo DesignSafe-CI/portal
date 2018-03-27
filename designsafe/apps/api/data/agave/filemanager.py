@@ -6,6 +6,7 @@ from designsafe.apps.api.data.agave.agave_object import AgaveObject
 from designsafe.apps.api.data.agave.elasticsearch.documents import Object
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.data.abstract.filemanager import AbstractFileManager
+from designsafe.apps.data.managers.indexer import AgaveIndexer as AgaveFileIndexer
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -53,7 +54,7 @@ class FileManager(AbstractFileManager, AgaveObject):
         self.agave_client = user_obj.agave_oauth.client
         self.username = username
         self._user = user_obj
-        self.indexer = AgaveIndexer(agave_client = self.agave_client)
+        self.indexer = AgaveFileIndexer(agave_client=self.agave_client)
 
     def is_shared(self, file_id):
         """Checks if the `file_id` is shared for the file manager's user.
