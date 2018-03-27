@@ -798,6 +798,17 @@
       }
     }
 
+    function _addToSimLists(ent){
+      var nameComps = ent.name.split('.');
+      var name = nameComps[nameComps.length - 1];
+      var attrName = name + 's';
+      if (typeof $scope.browser.publication[attrName] === 'undefined'){
+        $scope.browser.publication[attrName] = [];
+      }
+      $scope.browser.publication[attrName].push(ent);
+      $scope.browser.publication[attrName] = _.uniq($scope.browser.publication[attrName], function(e){return e.uuid});
+    }
+
     function _removeFromLists(ent, evt){
       if (ent && ent.name == 'designsafe.project.experiment'){
           $scope.browser.publication.experimentsList = _.filter($scope.browser.publication.experimentsList, function(e){ return e.uuid !== ent.uuid;});
@@ -810,6 +821,13 @@
       if (evt){
           $scope.browser.publication.eventsList = _.filter($scope.browser.publication.eventsList, function(e){ return evt.uuid !== e.uuid;});
       }
+    }
+
+    function _removeFromSimLists(ent){
+      var nameComps = ent.name.split('.');
+      var name = nameComps[nameComps.length - 1];
+      var attrName = name + 's';
+      $scope.browser.publication[attrName] = _.filter($scope.browser.publication[attrName], function(e){ return e.uuid !== ent.uuid });
     }
 
     $scope.editProject = function() {
@@ -835,6 +853,19 @@
       ProjectService.manageExperiments({'experiments': experiments,
                                         'project': $scope.browser.project}).then(function (experiments) {
         $scope.browser.experiments = experiments;
+      });
+    };
+
+    $scope.manageSimulations = function() {
+      var simulationAttr = $scope.data.project.getRelatedAttrName('designsafe.project.simulation');
+      var simulations = $scope.data.project[simulationAttr];
+      if (typeof simulations === 'undefined'){
+        $scope.data.project[simulationAttr] = [];
+        simulations = $scope.data.project[simulationAttr];
+      }
+      ProjectService.manageSimulations({'simulations': simulations,
+                                        'project': $scope.data.project}).then(function (simulations) {
+        $scope.data.simulations = simulations;
       });
     };
 
@@ -966,6 +997,10 @@
         $scope.manageExperiments();
       },
 
+      openEditSimulations: function(){
+        $scope.manageSimulations();
+      },
+
       openEditTeamMembers: function(){
         $scope.manageCollabs();
       },
@@ -992,6 +1027,26 @@
           $scope.browser.publication.filesSelected[ent.uuid] = listing;
           _addToLists(ent);
         }
+      },
+
+      selectAllSimFiles : function(ent){
+        var listing = [];
+        try {
+            listing = $scope.browser.listings[ent.uuid];
+        } catch(e){
+            _addToSimLists(ent);
+            return;
+        }
+        $scope.browser.publication.filesSelected[ent.uuid] = listing;
+        _addToSimLists(ent);
+      },
+
+      selectFileForSimPublication : function(ent, file){
+        if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
+          $scope.browser.publication.filesSelected[ent.uuid] = [];
+        }
+        $scope.browser.publication.filesSelected[ent.uuid].push(file)
+        _addToSimLists(ent);
       },
 
       selectFileForPublication : function(ent, evt, file){
@@ -1021,6 +1076,13 @@
         }
       },
 
+      deselectAllSimFiles : function(ent){
+        if ($scope.browser.publication.filesSelected[ent.uuid] !== 'undefined'){
+          delete $scope.browser.publication.filesSelected[ent.uuid];
+        }
+        _removeFromSimLists(ent)
+      },
+
       deselectAllFiles : function(ent, evt){
         if (ent.name === 'designsafe.project.experiment'){
           $scope.browser.publication.filesSelected[ent.uuid][evt.uuid] = [];
@@ -1036,6 +1098,11 @@
           delete $scope.browser.publication.filesSelected[ent.uuid];
           _removeFromLists(ent);
         }
+      },
+
+      isFileSelectedForSimPublication : function(ent, file){
+        return _.find($scope.browser.publication.filesSelected[ent.uuid],
+            function(f){ return f.uuid() === file.uuid(); });
       },
 
       isFileSelectedForPublication : function(ent, evt, file){
@@ -1085,6 +1152,14 @@
         }
       },
 
+      deselectFileForSimPublication : function(ent, file){
+        _.reject($scope.browser.publication.filesSelected[ent.uuid],
+            function(f){ return f.uuid() === file.uuid()});
+        if (!$scope.browser.publication.filesSelected[ent.uuid].length){
+          _removeFromSimLists(ent);
+        }
+      },
+
       filterExperiments : function(experiments){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return experiments;
@@ -1097,7 +1172,7 @@
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
           return simulations;
         } else {
-          return $scope.browser.publication.simulationsList;
+          return $scope.browser.publication.simulations;
         }
       },
 
@@ -1116,9 +1191,31 @@
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
           return models;
         } else {
-          return _.filter($scope.browser.publication.simulationModelsList,
+          return _.filter($scope.browser.publication.models,
             function(model){
               return _.contains(model.associationIds, simulation.uuid);
+            });
+        }
+      },
+
+      filterSimulationInputs : function(models, simulation){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return models;
+        } else {
+          return _.filter($scope.browser.publication.inputs,
+            function(input){
+              return _.contains(input.associationIds, simulation.uuid);
+            });
+        }
+      },
+
+      filterSimulationOutputs : function(models, simulation){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return models;
+        } else {
+          return _.filter($scope.browser.publication.outputs,
+            function(output){
+              return _.contains(output.associationIds, simulation.uuid);
             });
         }
       },
@@ -1129,7 +1226,7 @@
             return !anl.value.simOutputs.length;
           });
         } else {
-          return _.filter($scope.browser.publication.simulationsList, function(anl){
+          return _.filter($scope.browser.publication.analysiss, function(anl){
             return !anl.value.simOutputs.length;
           });
         }
@@ -1141,7 +1238,7 @@
             return !rpt.value.simOutputs.length;
           });
         } else {
-          return _.filter($scope.browser.publication.reportsList, function(rpt){
+          return _.filter($scope.browser.publication.reports, function(rpt){
             return !rpt.value.simOutputs.length;
           });
         }
