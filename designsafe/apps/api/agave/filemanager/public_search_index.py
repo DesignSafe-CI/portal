@@ -310,7 +310,7 @@ class PublicObject(object):
         base_path = base_path or '/'
         search = PublicObjectIndexed.search()
         query = Q('bool',
-                  must=[Q({'term': {'name': name}}),
+                  must=[Q({'term': {'name._exact': name}}),
                         Q({'term': {'path._exact': base_path}}),
                         Q({'term': {'systemId': system}})])
         search.query = query
