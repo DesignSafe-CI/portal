@@ -115,6 +115,9 @@ class FileManager(object):
                             'execute': True
                         }
                 }]
+            else:
+                pems.pop('_links', None)
+                pems.pop('internalUsername', None)
             document.save()
 
         if pems:
