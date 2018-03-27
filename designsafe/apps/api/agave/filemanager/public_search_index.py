@@ -154,8 +154,8 @@ class PublicFullIndexed(DocType):
 
 class PublicProjectIndexed(DocType):
     class Meta:
-        index = 'des-publications'
-        doc_type = 'publication'
+        index = 'nees'
+        doc_type = 'project'
 
 class PublicExperimentIndexed(DocType):
     class Meta:
@@ -164,8 +164,8 @@ class PublicExperimentIndexed(DocType):
 
 class PublicObjectIndexed(DocType):
     class Meta:
-        index = 'des-publications_legacy'
-        doc_type = 'publication'
+        index = 'nees'
+        doc_type = 'object'
 
 
 class PublicSearchManager(object):
