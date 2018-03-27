@@ -1,5 +1,60 @@
 # DesignSafe-CI Portal Release Notes
 
+## 2.4.0
+
+Improvements:
+
+- Disable Stampede 1 apps
+- Add aspect ratio on CMS for podcasts
+
+Fixes:
+
+- Update local dev certificates
+- Add CA root certificate
+- Fix Elasticsearch migration
+- Simulation metadata preview
+
+## 20180304
+
+Fixes:
+
+- Correct model lookup for entities
+
+## 20180303
+
+Improvements:
+
+- Video notifications
+
+Fixes:
+
+- Workspace categories
+- Project create validation
+- Django command to remove null pointer references on metadata association Ids
+- Authorship on simulations
+- Merging parallel metadata calls into one
+- Simulation entitites class and API correctness
+
+## 20180302
+
+Fixes:
+
+- Collaborator modal works better
+- Google secrets managed in settings.py
+
+## 20180301
+
+Improvements:
+
+- Add community data to Hazmapper
+- Updating ticket submission form
+
+Fixes:
+
+- Add action link to VNC notification
+- Avoid multiple job submission
+- Simulation Preview Tree
+
 ## 20180205
 
 Improvements:

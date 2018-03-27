@@ -342,9 +342,9 @@
           inst._ui = {order: indx, deleted: false};
         });
         $scope.state.publication.institutions = _.uniq(institutions, function(inst){ return inst.label;});
-        if (typeof $scope.saveInterval === 'undefined'){
-          $scope.saveInterval = $interval($scope.publishPipeline_publish('saved'), 1000);
-        }
+        //if (typeof $scope.saveInterval === 'undefined'){
+        //  $scope.saveInterval = $interval($scope.publishPipeline_publish('saved'), 1000);
+        //}
         $scope.state.publishPipeline = 'meta';
       }
       else if (st == 'meta'){
