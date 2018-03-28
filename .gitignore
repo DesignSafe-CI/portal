@@ -19,6 +19,7 @@ mysql.cnf
 conf/elasticsearch/elasticsearch.yml
 conf/elasticsearch/logging.yml
 conf/redis.conf
+settings.json
 
 # don't commit certs
 certs/
