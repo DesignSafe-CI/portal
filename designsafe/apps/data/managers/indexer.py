@@ -391,7 +391,8 @@ class AgaveIndexer(object):
             for i in range(len(path_comp)):
                 file_path = '/'.join(path_comp)
                 path, name = os.path.split(path)
-                af = self.ag.files.list(systemId=system_id, filePath=file_path)
+                afs = self.ag.files.list(systemId=system_id, filePath=file_path)
+                af = afs[0]
                 logger.debug(u'Get or create file: {}'.format(af.path))
                 pems = None
                 if pems_indexing:
