@@ -130,11 +130,41 @@
                   persistent: true
                 },
                 {
-                  url: "https://putsreq.com/b1oE4asB4dNNQWkZGxUV",
-                  event: "UPDATED",
-                  persistent: true
+                  url: Apps.getWebhookUrl(),
+                  event: "PENDING",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "QUEUED",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "SUBMITTING",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "PROCESSING_INPUTS",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "RUNNING",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "KILLED",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "FAILED",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "STOPPED",
+                },
+                {
+                  url: Apps.getWebhookUrl(),
+                  event: "FINISHED",
                 }
-                
 
               ]
           };
