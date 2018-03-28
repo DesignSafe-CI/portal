@@ -7,7 +7,7 @@
                 ng-class='{"active":data.type_filter == "private_files"}' ng-click='filter("private_files")'> My Data
                 <span class="badge" ng-show='data.search_results.private_files_total'> {{ data.search_results.private_files_total }}</span>
             </a>
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "published"}' ng-click='filter("published")'> Published
+            <a class="list-group-item" ng-class='{"active":data.type_filter == "published"}' ng-click='filter("published")'> Published Projects
                 <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>
             <a class="list-group-item" ng-class='{"active":data.type_filter == "public_files"}' ng-click='filter("public_files")'> Public Files
@@ -48,7 +48,7 @@
         </div> -->
         <div ng-show = 'data.search_results.hits.length === 0'>
           <div class="alert alert-danger">
-            <h3> Nothing found! </h3>
+            <h3> Nothing found in {{prettyFilterName[data.type_filter]}}! </h3>
           </div>
         </div>
         <div ng-show = 'data.search_results.hits.length'>

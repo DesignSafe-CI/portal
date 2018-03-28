@@ -30,6 +30,12 @@
       $scope.filetype_filter = 'all';
       $scope.searching = false;
       $scope.inital_q = $location.search().q;
+      $scope.prettyFilterName = {
+        'cms': 'Web Content', 
+        'private_files': 'My Data' ,
+        'published': 'Published Projects', 
+        'public_files': 'Public Files'
+      }
 
       $scope.search = function(reset){
         arguments.length ? reset = true : reset= false;
