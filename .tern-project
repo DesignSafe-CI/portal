@@ -1,0 +1,22 @@
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "loadEgerly": [
+    "./designsafe/static/scripts/**/*.js"
+  ],
+  "plugins": {
+    "complete_string": {},
+    "angular": {},
+    "modules": {},
+    "es_modules": {},
+    "doc_comment": {
+      "fullDocs": true
+    },
+    "webpack": {
+      "configPath": "./webpack.config.js"
+    },
+    "node": {}
+  }
+}
