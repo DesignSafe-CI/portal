@@ -4,16 +4,24 @@
         <div class="list-group">
             <a class="list-group-item"
                 ng-show="user !== 'AnonymousUser'"
+                uib-tooltip="Search for files in My Data."
                 ng-class='{"active":data.type_filter == "private_files"}' ng-click='filter("private_files")'> My Data
                 <span class="badge" ng-show='data.search_results.private_files_total'> {{ data.search_results.private_files_total }}</span>
             </a>
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "published"}' ng-click='filter("published")'> Published Projects
+            <a class="list-group-item" 
+                uib-tooltip="Search projects published on DesignSafe."
+                ng-class='{"active":data.type_filter == "published"}' 
+                ng-click='filter("published")'> Published Projects
                 <span class="badge" ng-show='data.search_results.published_total'> {{ data.search_results.published_total }}</span>
             </a>
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "public_files"}' ng-click='filter("public_files")'> Public Files
+            <a class="list-group-item" 
+                uib-tooltip="Search all publicly available files."
+                ng-class='{"active":data.type_filter == "public_files"}' ng-click='filter("public_files")'> Public Files
                 <span class="badge" ng-show='data.search_results.public_files_total'> {{ data.search_results.public_files_total }}</span>
             </a>
-            <a class="list-group-item" ng-class='{"active":data.type_filter == "cms"}' ng-click='filter("cms")'> Web Content
+            <a class="list-group-item" 
+                uib-tooltip="Search DesignSafe web content (news, tutorials, etc.)"
+                ng-class='{"active":data.type_filter == "cms"}' ng-click='filter("cms")'> Web Content
                 <span class="badge" ng-show='data.search_results.cms_total'> {{ data.search_results.cms_total }}</span>
             </a>
         </div>
