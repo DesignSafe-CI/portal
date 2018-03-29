@@ -22,9 +22,12 @@ class Command(BaseCommand):
                             default=True)
         parser.add_argument('--remote-host', help="Remote host where 'from_index' resides." \
                             "Use this if we need to copy data from a remote cluster." \
-                            "You can use http(s)?://<url>:<port> or a 'ES_CONNECTIONS' "\
+                            "You can use http(s)?://<url>:<port> or a 'gitES_CONNECTIONS' "\
                             "key (e.g. 'default' or 'staging')")
         parser.add_argument('--timeout', help="Reindexing request timeout", type=int)
+        parser.add_argument('--sample', help="set to True to take a random sample", default=False, type=bool)
+        parser.add_argument('--size', help="size of the sample (default=100000)", default=100000, type=int)
+        parser.add_argument('--seed', help="seed for randomization", default="tacc rulz ok", type=str)
 
     def remove_fielddata(self, dict_obj, lvl=1):
         for key, val in six.iteritems(dict_obj):
@@ -46,6 +49,9 @@ class Command(BaseCommand):
         doc_type = options.get('doc-type')
         all_docs = options.get('all-docs')
         remote_host = options.get('remote_host')
+        sample = options.get('sample')
+        size = options.get('size')
+        seed = options.get('seed')
 
         body = {
             "source": {
@@ -55,6 +61,21 @@ class Command(BaseCommand):
                 "index": to_index
             }
         }
+
+        if sample:
+            body["size"] = size
+
+            body["source"]["query"] = {
+                "function_score": {
+                    "query": {
+                        "match_all": {}
+                    },
+                    "functions": [{
+                        "random_score": {"seed": seed}
+                    }]
+                }
+            }
+
 
         if remote_host:
             if remote_host.startswith('http://') \
