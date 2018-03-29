@@ -99,7 +99,7 @@ class SearchView(BaseApiView):
 
 
     def search_published(self, q, offset, limit):
-        query = Q('bool', must=[Q('simple_query_string', query=q)])
+        query = Q('bool', must=[Q('simple_query_string', query=q, fields=["name", "description"])])
 
         search = Search(index="des-publications_legacy,des-publications")\
             .query(query)\
