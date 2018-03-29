@@ -202,14 +202,14 @@ def handle_webhook_request(job):
         job (dict): Dictionary containing the webhook data.
 
     """
-    logger.debug(job)
+    # logger.debug(job)
     try:
         username = job['owner']
         job_id = job['id']
 
         user = get_user_model().objects.get(username=username)
         ag = user.agave_oauth.client
-        ag_job = ag.jobs.get(jobId=job_id)
+        # ag_job = ag.jobs.get(jobId=job_id)
 
         try:
             job['submitTime'] = str(job['submitTime'])
@@ -257,7 +257,7 @@ def handle_webhook_request(job):
 
             try:
                 logger.debug('Preparing to Index Job Output job=%s', job_name)
-                index_job_outputs(user, ag_job)
+                index_job_outputs(user, job)
                 logger.debug('Finished Indexing Job Output job=%s', job_name)
             except Exception as e:
                 logger.exception('Error indexing job output')
@@ -273,6 +273,8 @@ def handle_webhook_request(job):
             event_data[Notification.OPERATION] = 'job_status_update'
             n = Notification.objects.create(**event_data)
             n.save()
+
+            logger.debug(n.pk)
 
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)

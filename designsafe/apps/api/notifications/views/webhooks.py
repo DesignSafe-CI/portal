@@ -46,7 +46,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
         """
 
         job = json.loads(request.body)
-        logger.debug(job)
+        # logger.debug(job)
 
         handle_webhook_request(job)
         return HttpResponse('OK')
