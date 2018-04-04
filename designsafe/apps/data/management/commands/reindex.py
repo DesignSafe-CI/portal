@@ -22,7 +22,7 @@ class Command(BaseCommand):
                             default=True)
         parser.add_argument('--remote-host', help="Remote host where 'from_index' resides." \
                             "Use this if we need to copy data from a remote cluster." \
-                            "You can use http(s)?://<url>:<port> or a 'gitES_CONNECTIONS' "\
+                            "You can use http(s)?://<url>:<port> or a 'ES_CONNECTIONS' "\
                             "key (e.g. 'default' or 'staging')")
         parser.add_argument('--timeout', help="Reindexing request timeout", type=int)
         parser.add_argument('--sample', help="set to True to take a random sample", default=False, type=bool)
