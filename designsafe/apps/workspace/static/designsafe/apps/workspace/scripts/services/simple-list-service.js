@@ -17,12 +17,12 @@
         params: {'q': query}
       }).then(
         function(response){
-          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Utilities', 'My Apps'], function(tab) {
+          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Data Collections', 'Utilities', 'My Apps'], function(tab) {
             self.lists[tab] = [];
           });
 
           // Current list of apps with an Icon
-          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls dyna', 'ls_dyna', 'visit', 'openfoam', 'opensees'];
+          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls-pre/post', 'visit', 'openfoam', 'opensees'];
 
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;

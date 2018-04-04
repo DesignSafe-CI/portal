@@ -281,7 +281,7 @@ font-family: 'designsafe-workspace';
 .icon-qgis:before {
     content: "\e907";
 }
-i[class^="icon-ls"][class$="dyna"]:before {
+i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
     content: "\e908";
 }
 .icon-visit:before {
@@ -308,7 +308,7 @@ i[class^="icon-ls"][class$="dyna"]:before {
       font-size: 10px;
   }
   #workspace-tabs a h3 {
-      font-size: 1.1em;
+      font-size: 1em;
   }
   [class^="icon-"]:before,
   [class*=" icon-"]:before {
@@ -329,7 +329,7 @@ i[class^="icon-ls"][class$="dyna"]:before {
       font-size: 14px;
   }
   #workspace-tabs a h3 {
-      font-size: 1.2em;
+      font-size: 1.1em;
   }
   [class^="icon-"]:before,
   [class*=" icon-"]:before {
@@ -350,7 +350,7 @@ i[class^="icon-ls"][class$="dyna"]:before {
       font-size: 17px;
   }
   #workspace-tabs a h3 {
-      font-size: 20px;
+      font-size: 19px;
   }
   [class^="icon-"]:before,
   [class*=" icon-"]:before {
