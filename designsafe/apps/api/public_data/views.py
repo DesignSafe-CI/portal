@@ -118,7 +118,11 @@ class PublicSearchView(BaseApiView):
         if system_id is None:
             system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
 
-        file_mgr = PublicElasticFileManager()
+        if not request.user.is_authenticated:
+            ag = get_user_model().objects.get(username='envision').agave_oauth.client
+        else:
+            ag = request.user.agave_oauth.client
+        file_mgr = PublicElasticFileManager(ag)
         listing = file_mgr.search(system_id, query_string,
                                   offset=offset, limit=limit)
         # logger.info(listing)

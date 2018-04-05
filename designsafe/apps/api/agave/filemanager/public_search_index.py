@@ -442,6 +442,7 @@ class PublicElasticFileManager(BaseFileManager):
 
     def listing(self, system, file_path, offset=0, limit=100, status='published'):
         file_path = file_path or '/'
+        logger.debug('file_path: %s', file_path)
         if file_path == '/':
             listing = PublicObject.listing(system, file_path,
                                            offset=offset, limit=limit)
@@ -451,12 +452,14 @@ class PublicElasticFileManager(BaseFileManager):
         else:
             fmgr = AgaveFileManager(self._ag)
             listing = fmgr.listing(system, file_path, offset, limit, status=status)
-            _list = PublicObject.listing(
-                system, file_path, offset=offset, limit=limit
-            )
-            listing._wrapped['metadata'] = _list.metadata()
-            listing.trail = _list.trail()
-
+            try:
+                _list = PublicObject.listing(
+                    system, file_path, offset=offset, limit=limit
+                )
+                listing._wrapped['metadata'] = _list.metadata()
+                listing.trail = _list.trail()
+            except TransportError:
+                pass
         return listing
 
     def search(self, system, query_string,
