@@ -19,7 +19,7 @@
         </div>
 
         <div class="caption text-center">
-            <h4>{{ data.file | dsFileDisplayName }}</h4>
+            <h4>{{ data.file | dsFileDisplayName:data.listing }}</h4>
             <p class="preview-info">
               <span class="preview-file-size">
                 {{ data.file.size|bytes }} -

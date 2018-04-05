@@ -46,12 +46,15 @@ class PublicDataListView(BaseApiView):
                                  'published']:
             return HttpResponseBadRequest('Wrong Manager')
 
-        if system_id is None:
+        if system_id is None or (file_path is None or file_path == '/'):
             system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
         
         if file_mgr_name == PublicElasticFileManager.NAME:
-
-            file_mgr = PublicElasticFileManager()
+            if not request.user.is_authenticated:
+                ag = get_user_model().objects.get(username='envision').agave_oauth.client
+            else:
+                ag = request.user.agave_oauth.client
+            file_mgr = PublicElasticFileManager(ag)
         elif file_mgr_name == 'community':
             if not request.user.is_authenticated:
                 ag = get_user_model().objects.get(username='envision').agave_oauth.client

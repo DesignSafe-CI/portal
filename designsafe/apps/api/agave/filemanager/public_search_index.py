@@ -19,8 +19,10 @@ from elasticsearch_dsl import Search, DocType
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl.connections import connections
 from .base import BaseFileManager
+from designsafe.apps.api.agave.filemanager.agave import  AgaveFileManager
 
 logger = logging.getLogger(__name__)
+
 
 class PublicationIndexed(DocType):
     class Meta:
@@ -434,16 +436,26 @@ class PublicElasticFileManager(BaseFileManager):
     NAME = 'public'
     DEFAULT_SYSTEM_ID = 'nees.public'
 
-    def __init__(self):
+    def __init__(self, ag):
+        self._ag = ag
         super(PublicElasticFileManager, self).__init__()
 
     def listing(self, system, file_path, offset=0, limit=100, status='published'):
         file_path = file_path or '/'
-        listing = PublicObject.listing(system, file_path,
-                                       offset=offset, limit=limit)
-        publications = Publication.listing(status)
         if file_path == '/':
-            listing.children = itertools.chain(publications, listing.children)
+            listing = PublicObject.listing(system, file_path,
+                                           offset=offset, limit=limit)
+            publications = Publication.listing(status)
+            if file_path == '/':
+                listing.children = itertools.chain(publications, listing.children)
+        else:
+            fmgr = AgaveFileManager(self._ag)
+            listing = fmgr.listing(system, file_path, offset, limit, status=status)
+            _list = PublicObject.listing(
+                system, file_path, offset=offset, limit=limit
+            )
+            listing._wrapped['metadata'] = _list.metadata()
+            listing.trail = _list.trail()
 
         return listing
 

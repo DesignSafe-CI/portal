@@ -1929,6 +1929,15 @@
       if (typeof files !== 'undefined'){
         file = files[0];
       }
+      if (typeof listing !== 'undefined' &&
+          typeof listing.metadata !== 'undefined' &&
+          typeof listing.metadata.project !== 'undefined' &&
+          !_.isEmpty(listing.metadata.project) &&
+          (typeof file.metadata == 'undefined' || 
+           typeof file.metadata.project == 'undefined' ||
+           _.isEmpty(file.metadata.project))){
+        file.metadata = listing.metadata;
+      }
       if (typeof file !== 'undefined' &&
          typeof file.metadata !== 'undefined' &&
          file.metadata.project !== 'undefined'){

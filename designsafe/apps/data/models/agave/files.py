@@ -173,6 +173,7 @@ class BaseFileResource(BaseAgaveResource):
                                                **kwargs)
         self._children = None
         self._metadata = None
+        self._trail = None
 
     def __str__(self):
         return self.id
@@ -228,6 +229,9 @@ class BaseFileResource(BaseAgaveResource):
         :return: The file trail
         :rtype:
         """
+        if self._trail:
+            return self._trail
+
         path_comps = self.path.split('/')
 
         # the first item in path_comps is '', which represents '/'
@@ -236,6 +240,10 @@ class BaseFileResource(BaseAgaveResource):
                         'path': '/'.join(path_comps[0:i+1]) or '/',
                         } for i in range(0, len(path_comps))]
         return trail_comps
+
+    @trail.setter
+    def trail(self, value):
+        self._trail = value
 
     @property
     def metadata(self):
