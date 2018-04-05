@@ -1,4 +1,4 @@
-{% load cms_tags staticfiles sekizai_tags menu_tags %}
+{% load cms_tags staticfiles sekizai_tags menu_tags recaptcha2 %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -27,6 +27,7 @@
       {% block styles %}{% endblock %}
       {% render_block "css" %}
       <base href="/">
+      {% recaptcha_init 'en' %}
   </head>
   <body ng-app="designsafe">
     {% cms_toolbar %}

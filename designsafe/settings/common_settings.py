@@ -68,6 +68,9 @@ INSTALLED_APPS = (
     'djangocms_video',
     'djangocms_forms',
 
+    #django recaptcha
+    'snowpenguin.django.recaptcha2',
+
     #'pipeline',
     'filer',
     'easy_thumbnails',
@@ -75,7 +78,6 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
-    'captcha',
 
     'oauth2client.contrib.django_util',
 

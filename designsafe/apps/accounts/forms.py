@@ -4,7 +4,8 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
-from captcha.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
 
 from .models import (DesignSafeProfile, NotificationPreferences,
     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities)
@@ -342,7 +343,7 @@ class UserRegistrationForm(forms.Form):
               ' and I understand that having multiple accounts will result in suspension.',
         error_messages={'required': 'Please Agree to the DesignSafe Account Limit.'})
 
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(widget=ReCaptchaWidget)
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
