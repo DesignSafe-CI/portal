@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180401
+
+Fixes:
+
+- Listing NEES data directly from the filesystem
+
 ## 2.4.0
 
 Improvements:
