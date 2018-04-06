@@ -303,7 +303,18 @@ class ElasticFileManager(BaseFileManager):
 
     def search(self, system, username, query_string,
                file_path=None, offset=0, limit=100):
+        """
+        Executes a search in for files belonging to the logged-in user and 
+        returns a result dict to be passed to the front-end.
 
+        :param username: username of the logged-in user.
+        :param system: Agave filesystem to search (should be designsafe.storage.default)
+        :param query_string: user's query to pass to elasticsearch
+        :param file_path: unused here
+        :param offset: elasticsearch offset
+        :param limit: number of search hits to return
+
+        """
         search = IndexedFile.search()
         query = Q('bool',
                   filter=Q('bool',
@@ -334,16 +345,15 @@ class ElasticFileManager(BaseFileManager):
     def search_community(self, system, query_string,
                file_path=None, offset=0, limit=100):
         """
-        search = IndexedFile.search()
-        query = Q('bool',
-                  filter=Q('bool',
-                           must=[Q({'term': {'systemId': system}}),
-                                 ],
-                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
-                   must=Q({'simple_query_string':{
-                            'query': query_string,
-                            'fields': ['name', 'name._exact', 'keywords']}}))
-        search.query = query
+        Executes a search in community data and returns a dict with the results
+        and information needed by the front-end for formatting.
+
+        :param system: Agave filesystem to search (should be designsafe.storage.community)
+        :param username: username of the logged-in user.
+        :param query_string: user's query to pass to elasticsearch
+        :param file_path: unused here
+        :param offset: elasticsearch offset
+        :param limit: number of search hits to return
         """
 
         filters = Q('term', system="designsafe.storage.community") #| \
@@ -375,7 +385,6 @@ class ElasticFileManager(BaseFileManager):
 
     def search_shared(self, system, username, query_string,
                file_path=None, offset=0, limit=100):
-
         search = IndexedFile.search()
         query = Q('bool',
                   filter=Q('bool',
