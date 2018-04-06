@@ -307,8 +307,8 @@ class ElasticFileManager(BaseFileManager):
         Executes a search in for files belonging to the logged-in user and 
         returns a result dict to be passed to the front-end.
 
-        :param username: username of the logged-in user.
         :param system: Agave filesystem to search (should be designsafe.storage.default)
+        :param username: username of the logged-in user.
         :param query_string: user's query to pass to elasticsearch
         :param file_path: unused here
         :param offset: elasticsearch offset
