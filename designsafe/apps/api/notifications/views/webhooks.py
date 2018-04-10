@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.sessions.models import Session
+from django.conf import settings
 
 from celery import shared_task
 from requests import ConnectionError, HTTPError
@@ -37,6 +38,9 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super(JobsWebhookView, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse(settings.WEBHOOK_POST_URL + '/api/notifications/wh/jobs/')
 
     def post(self, request, *args, **kwargs):
         """

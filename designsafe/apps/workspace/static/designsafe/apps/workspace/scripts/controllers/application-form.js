@@ -16,6 +16,11 @@
       };
 
       $scope.$on('launch-app', function(e, app) {
+
+        Jobs.getWebhookUrl().then(function(response) {
+          $scope.webhookUrl = response.data;
+        })
+
         $scope.error = '';
 
         if ($scope.data.app) {
@@ -124,48 +129,55 @@
               inputs: {},
               parameters: {},
               notifications: [
+                /*
                 {
-                  url: "https://hookb.in/vqL9bq9J",
+                  url: "http://90370984.ngrok.io/api/notifications/wh/jobs/",
                   event: "*",
                   persistent: true
                 },
+                */
+                
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "PENDING",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "QUEUED",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "SUBMITTING",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "PROCESSING_INPUTS",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
+                  event: "STAGED",
+                },
+                {
+                  url: $scope.webhookUrl,
                   event: "RUNNING",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "KILLED",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "FAILED",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "STOPPED",
                 },
                 {
-                  url: Apps.getWebhookUrl(),
+                  url: $scope.webhookUrl,
                   event: "FINISHED",
                 }
-
+                
               ]
           };
 
