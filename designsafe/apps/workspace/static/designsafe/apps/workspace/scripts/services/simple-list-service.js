@@ -6,6 +6,7 @@
       this.selected = null,
       this.lists = {},
       this.map = {}
+      this.tabs = ['Simulation', 'Visualization', 'Data Processing', 'Data Collections', 'Utilities', 'My Apps'];
     };
 
     SimpleList.prototype.getDefaultLists = function(query) {
@@ -17,7 +18,7 @@
         params: {'q': query}
       }).then(
         function(response){
-          angular.forEach(['Simulation', 'Visualization', 'Data Processing', 'Data Collections', 'Utilities', 'My Apps'], function(tab) {
+          angular.forEach(self.tabs, function(tab) {
             self.lists[tab] = [];
           });
 

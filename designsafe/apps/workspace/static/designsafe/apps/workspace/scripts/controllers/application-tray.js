@@ -124,9 +124,7 @@
           //   return deferred.promise;
           // })
           .then(function(response){
-            const tabs = ['Simulation', 'Visualization', 'Data Processing', 'Data Collections', 'Utilities', 'My Apps'];
-
-            tabs.forEach(function (element) {
+            $scope.simpleList.tabs.forEach(function (element) {
                 $scope.tabs.push(
                   {
                     title: element,
