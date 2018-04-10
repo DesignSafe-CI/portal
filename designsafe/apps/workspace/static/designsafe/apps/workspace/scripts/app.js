@@ -1,11 +1,7 @@
 (function(window, angular, $) {
   "use strict";
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $urlRouterProvider, $stateProvider, toastrConfig) {
-    angular.extend(toastrConfig, {
-      positionClass: 'toast-bottom-left',
-      timeOut: 20000
-    });
+  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $urlRouterProvider, $stateProvider) {
 
     WSBusServiceProvider.setUrl(
         (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
@@ -35,14 +31,13 @@
     'ds.wsBus',
     'ds.notifications',
     'logging',
-    'toastr',
     'dndLists',
     'xeditable',
     'pascalprecht.translate',
     'ngStorage', 
     'ngMaterial'
   );
-  angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$urlRouterProvider', '$stateProvider', 'toastrConfig', config]);
+  angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$urlRouterProvider', '$stateProvider', config]);
 
   angular.module('designsafe')
     .run(function(editableOptions) {

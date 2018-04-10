@@ -1,8 +1,8 @@
 (function(window, angular, $) {
   "use strict";
   angular.module('designsafe').controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'toastr', 'Apps', 'Jobs', 'Systems', '$mdToast',
-    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, toastr, Apps, Jobs, Systems, $mdToast) {
+    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast',
+    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast) {
 
       $localStorage.systemChecks = {};
 
@@ -43,14 +43,12 @@
               //                 .content($translate.instant('error_system_monitor'))
               //                 .toastClass('warning')
               //                 .parent($("#toast-container")));
-              //                 // toastr.warning($translate.instant('error_system_monitor'));
               //               }
               //             } else {
               //               $mdToast.show($mdToast.simple()
               //               .content($translate.instant('error_system_monitor'))
               //               .toastClass('warning')
               //               .parent($("#toast-container")));
-              //               // toastr.warning($translate.instant('error_system_monitor'));
               //             }
               //         }
               //       }

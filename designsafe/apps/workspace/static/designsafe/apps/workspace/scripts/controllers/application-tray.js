@@ -18,8 +18,8 @@
   }])
   
   .controller('ApplicationTrayCtrl',
-    ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', 'toastr', '$mdToast', function(
-      $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, toastr, $mdToast) {
+    ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', '$mdToast', function(
+      $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, $mdToast) {
       $scope.tabs = [];
 
       $scope.simpleList = new SimpleList();
@@ -39,24 +39,6 @@
           });
         return deferred.promise;
       };
-
-      // $scope.addUserTabs = function(query, active){
-      //   $scope.error = '';
-      //   var self = this;
-      //   var deferred = $q.defer();
-      //   var query = {'name': $translate.instant('apps_metadata_list_name')};
-
-      //   $scope.simpleList.getUserLists(query)
-      //     .then(function(response){
-      //       deferred.resolve(response);
-      //     })
-      //     .catch(function(response){
-      //       $scope.error = $translate.instant('error_tab_get') + response.data;
-      //       deferred.reject(response);
-      //     });
-
-      //   return deferred.promise;
-      // };
 
       $scope.data = {
         activeApp: null,
@@ -92,14 +74,12 @@
                     .content($translate.instant('error_app_disabled'))
                     .toastClass('warning')
                     .parent($("#toast-container")));
-                    // toastr.warning($translate.instant('error_app_disabled'));
                   }
                 } else {
                   $mdToast.show($mdToast.simple()
                   .content($translate.instant('error_app_run'))
                   .toastClass('warning')
                   .parent($("#toast-container")));
-                  // toastr.warning($translate.instant('error_app_run'));
                 }
               },
               function(response){
@@ -107,22 +87,11 @@
                 .content($translate.instant('error_app_run'))
                 .toastClass('warning')
                 .parent($("#toast-container")));
-                // toastr.warning($translate.instant('error_app_run'));
               }
             );
         }
 
         $scope.addDefaultTabs({"$and":[{"name": `${$translate.instant('apps_metadata_name')}`}, {"value.definition.available":true}]})
-          // .then(function(){
-          //   var deferred = $q.defer();
-
-          //   $scope.addUserTabs({'name': $translate.instant('apps_metadata_list_name')})
-          //     .then(function(response){
-          //       deferred.resolve(response);
-          //     });
-
-          //   return deferred.promise;
-          // })
           .then(function(response){
             $scope.simpleList.tabs.forEach(function (element) {
                 $scope.tabs.push(
@@ -133,15 +102,6 @@
                   }
                 );            
             }, this);
-
-            // angular.forEach($scope.simpleList.lists, function(list, key){
-            //   if (key !== 'Public' && key !== 'Private') {
-            //     $scope.tabs.push({
-            //       title: key,
-            //       content: list
-            //     });
-            //   }
-            // });
 
             $scope.requesting = false;
           });
