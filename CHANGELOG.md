@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180405
+
+Fixes:
+
+- Ignoring 404 when deleting documents from elasticsearch
+
+## 20180404
+
+Fixes:
+
+- Shared with Me is working again
+
 ## 20180403
 
 Fixes:
