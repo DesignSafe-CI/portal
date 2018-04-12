@@ -358,9 +358,9 @@ class AgaveIndexer(object):
                 res, search = mgr.listing_recursive(username)
                 if res.hits.total:
                     for doc in search.scan():
-                        doc.delete()
+                        doc.delete(ignore=404)
 
-                d.delete()
+                d.delete(ignore=404)
                 docs_deleted += res.hits.total + 1
 
             if not full_indexing:
