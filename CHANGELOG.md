@@ -1,10 +1,52 @@
 # DesignSafe-CI Portal Release Notes
 
-## 20180401
+## 20180403
+
+Fixes:
+
+- Nees listing was not working correctly
+
+## 2.4.7 (20180402)
+
+Fixes:
+
+- Moving to Recaptcha 2
+
+## 2.4.6 (20180401)
 
 Fixes:
 
 - Listing NEES data directly from the filesystem
+
+## 2.4.5
+
+Fixes:
+
+- Permission indexing
+
+## 2.4.4
+
+Fixes:
+
+- NEES elasticsearch query
+
+## 2.4.3
+
+Fixes:
+
+- Removing `_links` from indexed permissions
+
+## 2.4.2
+
+Fixes:
+
+- Settings project ID after creation
+
+## 2.4.1
+
+Fixes:
+
+- Using correct NESS index
 
 ## 2.4.0
 
