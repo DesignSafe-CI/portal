@@ -286,42 +286,99 @@
     }
 
     function checkMetadata(){
-      var checklist = []; // fill with a list of ['complete', 'complete', 'incomplete] etc
-      var requirements = {
-        "projectReq": ["title", "projectType", "teamMemers", "description", "awardNumber", "keywords"],
-        "experimentReq": [""],
-        "simulationReq": [""],
-        "otherReq": [""],
-      };
       var projData = $scope.data.project.value;
+      var experimentsList = $scope.state.publication.experimentsList;
+      var analysisList = $scope.state.publication.analysisList;
+      var reportsList = $scope.state.publication.reportsList;
 
-      // fill checklist with complete/
+      var checklist = {};         // fill with a list of ['complete', 'complete', 'incomplete] etc
+      var requirements = {        // required fields that will be checked
+        "projectReq": ['title', 'projectType', 'teamMembers', 'description', 'awardNumber', 'keywords'],
+        "experimentReq": ['title', 'experimentType', 'experimentalFacility', 'description', 'authors'],
+        "simulationReq": [],
+        "otherReq": [],
+        "reportReq": ['title', 'description'],
+        "analysisReq": ['title', 'description'],
+      };
+
       console.log('Project Information ---->');
-      console.log($scope.data.project);
+      console.log(projData);
       console.log('Data that was selected for publication ---->');
       console.log($scope.state.publication);
-      console.log('institutions ---->');
-      console.log($scope.browser.publication.institutions);
 
-      //Project checklist
-      if (projData.title == '') {
-        checklist.push('incomplete');
-      } else {
-        checklist.push('complete');
-      }
+      //project checklist
+      checklist.project = {};
+      requirements.projectReq.forEach(function(req) {
+        if (projData[req] == '' || projData[req] == []) {
+          checklist.project[req] = "incomplete";
+        } else {
+          checklist.project[req] = "complete";
+        }
+      });
+
+      //experiment checklist
+      var i = 0;
+      experimentsList.forEach(function (exp) {
+        i++;
+        checklist['experiment' + i] = {};
+        requirements.experimentReq.forEach(function (req) {
+          if (exp.value[req] == '' || exp.value[req] == []) {
+            checklist['experiment' + i][req] = "incomplete";
+          } else {
+            checklist['experiment' + i][req] = "complete";
+          }
+        });
+      });
+
+      //analysis checklist
+      i = 0;
+      analysisList.forEach(function (exp) {
+        i++;
+        checklist['analysis' + i] = {};
+        requirements.analysisReq.forEach(function (req) {
+          if (exp.value[req] == '' || exp.value[req] == []) {
+            checklist['analysis' + i][req] = "incomplete";
+          } else {
+            checklist['analysis' + i][req] = "complete";
+          }
+        });
+      });
+
+      //report checklist
+      i = 0;
+      reportsList.forEach(function (exp) {
+        i++;
+        checklist['report' + i] = {};
+        requirements.reportReq.forEach(function (req) {
+          if (exp.value[req] == '' || exp.value[req] == []) {
+            checklist['report' + i][req] = "incomplete";
+          } else {
+            checklist['report' + i][req] = "complete";
+          }
+        });
+      });
 
 
+      console.log("checklists -------------------->");
+      console.log(checklist);
+      console.log("scan -------------------->");
+      var allow = true;
+      Object.values(checklist).forEach(function (exp) {
+        for (var req in exp) {
+          if (exp[req] == 'incomplete') {
+            allow = false;
+            console.log("You are missing: " + req);
+          }
+        }
+      });
 
-      //Proj Type checklist
-
-
-
-      // Check for missing metadata
-      if (checklist.includes('incomplete')) {
-        console.log('You are missing required metadata.');
-      } else {
+      // check for missing metadata
+      if (allow) {
         $scope.state.publishPipeline = 'agreement';
+      } else {
+        console.log('You are missing required metadata.');
       }
+      
     }
 
     $scope.publishPipeline_start = function(){
