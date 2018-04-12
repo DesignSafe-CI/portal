@@ -1,6 +1,7 @@
 import logging
 import os
 import six
+import json
 from itertools import takewhile
 from django.conf import settings
 from elasticsearch import TransportError, ConnectionTimeout
@@ -63,14 +64,14 @@ def merge_file_paths(system, user_context, file_path, s):
         d = Object(system, common_prefix.split('/')[0], common_prefix)
         if d._wrap:
             listing.append(d)
-
+    logger.debug('length: %d', len(listing))
     return listing
 
 class IndexedFile(DocType):
 
     class Meta:
-        index = 'designsafe'
-        doc_type = 'objects'
+        index = 'des-files'
+        doc_type = 'file'
 
 class Object(object):
     def __init__(self, system_id = None, user_context = None,
@@ -81,20 +82,30 @@ class Object(object):
             s = IndexedFile.search()
             path, name = os.path.split(file_path)
             path = path.strip('/') or '/'
-            q = Q('bool',
-                must = Q('bool',
-                        must = [
-                          Q({'term': {'path._exact': path}}),
-                          Q({'term': {'name._exact': name}})
-                        ]),
-                filter = Q('bool',
-                    must = [
-                        Q({'term': {'permissions.username': user_context}}),
-                        Q({'term': {'deleted': False}}),
-                        Q({'term': {'systemId': system_id}})
-                ]))
-            s.query = q
-            logger.debug('serach query: {}'.format(s.to_dict()))
+            path_q = Q('term', **{'path._exact': path})
+            name_q = Q('term', **{'name._exact': name})
+            system_q = Q('term', **{'system._exact': system_id})
+            query = Q('bool')
+            query.must = [
+                path_q,
+                name_q,
+                system_q
+            ]
+            # pems filter
+            user_pem_q = Q('term', **{'permissions.username': user_context})
+            world_pem_q = Q('term', **{'permissions.username': 'WORLD'})
+            bool_filter = Q('bool')
+            bool_filter.should = [
+                user_pem_q,
+                world_pem_q
+            ]
+            nested_filter = Q('nested')
+            nested_filter.path = 'permissions'
+            nested_filter.query = bool_filter
+            # set filter
+            query.filter = nested_filter
+            s = s.query(query)
+            logger.debug('serach query: %s', json.dumps(s.to_dict(), indent=4))
             try:
                 res = s.execute()
             except (TransportError, ConnectionTimeout) as e:
@@ -158,7 +169,7 @@ class Object(object):
               Agave file listing permissions:
             `` 'permissions': 'ALL' ``
         """
-        pems = [pem for pem in self._wrap.permissions if \
+        pems = [pem for pem in getattr(self._wrap, 'permissions', {'username': ''}) if \
                 pem['username'] == user_context]
         if not pems:
             return 'NONE'
@@ -184,7 +195,7 @@ class Object(object):
             file_dict['permissions'] = self.user_pems(user_context)
 
         file_dict['path'] = os.path.join(self._wrap.path, self._wrap.name)
-        file_dict['system'] = self._wrap['systemId']
+        file_dict['system'] = self._wrap['system']
         return file_dict
 
 
@@ -208,22 +219,41 @@ class ElasticFileManager(BaseFileManager):
         file_path = file_path or '/'
         file_path = file_path.strip('/')
         if file_path.strip('/').split('/')[0] != user_context:
-            q = Q('bool', must = Q({'term': {'path._path': file_path}}))
+            if file_path == '$SHARE':
+                q = Q('bool',
+                      must=[
+                        Q('term', **{'system._exact': system})
+                      ]
+                      )
+            else:
+                q = Q('bool',
+                      must=[
+                        Q('term', **{'path._path': file_path}),
+                        Q('term', **{'system._exact': system})
+                      ]
+                      )
         else:
-            q = Q('bool', must = Q({'term': {'path._exact': file_path}}))
-        filter_parts = [
-            Q({'term': {'systemId': system}}),
-            Q({'term': {'deleted': False}})
-        ]
+            q = Q('bool',
+                  must=[
+                       Q('term', **{'path._exact': file_path}),
+                       Q('term', **{'system._exact': system})
+                   ]
+                  )
         if user_context is not None:
-            filter_parts.append(Q({'term': {'permissions.username': user_context}}))
-        f = Q('bool', must=filter_parts)
+            username_q = Q('term', **{'permissions.username': user_context})
+            world_q = Q('term', **{'permissions.username': 'WORLD'})
+            pems_filter = Q('bool')
+            pems_filter.should = [username_q, world_q]
+            nested_filter = Q('nested')
+            nested_filter.path = 'permissions'
+            nested_filter.query = pems_filter
 
         if file_path == '$SHARE':
             file_path = '/'
-            query = Q('bool', filter=f)
+            home_filter = Q('bool', must_not=Q('term', **{'path._path': user_context}))
+            query = Q('bool', must=q, filter=[nested_filter, home_filter])
         else:
-            query = Q('bool', must=q, filter=f)
+            query = Q('bool', must=q)
     
         search = IndexedFile.search()
         search.query = query

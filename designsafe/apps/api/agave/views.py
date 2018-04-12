@@ -423,7 +423,7 @@ class FileMediaView(View):
                     else:
                         return HttpResponseBadRequest('Preview not available for this item.')
                 except HTTPError as e:
-                    logger.exception('Unable to preview file: {file_path}'.format(file=file))
+                    logger.exception('Unable to preview file: {file_path}'.format(file_path=file))
                     return HttpResponseBadRequest(e.response.text)
 
             elif action == 'rename':
