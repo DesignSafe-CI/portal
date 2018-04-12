@@ -38,7 +38,7 @@
         </div>
     </div>
     <h2>Run <em>{{data.app.label}} <small class="version-label">ver. {{data.app.version}}</small></em></h2>
-    <p>{{data.app.longDescription}}</p>
+    <p ng-bind-html="data.app.longDescription"></p>
     <p ng-if="data.app.helpURI">
         <a href="{{data.app.helpURI}}" target="_blank">
             <i class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
