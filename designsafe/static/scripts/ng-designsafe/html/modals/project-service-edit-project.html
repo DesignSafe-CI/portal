@@ -95,7 +95,7 @@
           </div>
           <p> Associated Project - Link to Project <p>
           <div class="form-group" ng-repeat="associatedProject in form.associatedProjectsAdded">
-              <input class="form-control" value="{{associatedProject.title}}" style="width:40%; display:inline-block;" ng-model="associatedProject.title"/> - <input class="form-control" value="{{associatedProject.href}}" style="width:40%; display:inline-block;" ng-model="associatedProject.href"/>
+              <input class="form-control" value="{{associatedProject.title}}" style="width:40%; display:inline-block;" ng-model="associatedProject.title"/> <i class="fa fa-link"></i> <input class="form-control" value="{{associatedProject.href}}" style="width:40%; display:inline-block;" ng-model="associatedProject.href"/>
           </div>
           <button class="btn btn-info btn-sm" ng-click="addAssociatedProject()">
             <i class="fa fa-plus"></i> Add another
@@ -103,9 +103,9 @@
         </div>
       </div>
       <div style="clear:both;">
-        <div class="form-group">
+        <div class="form-group required">
           <label for="id-keywords">Keywords</label>
-          <input class="form-control" type="text" id="id-keywords" ng-model="form.keywords" />
+          <input class="form-control" type="text" id="id-keywords" ng-model="form.keywords" required/>
           <p class="help-block">
             Add keywords separated by commas. e.g. keyword 1, keyword 2, keyword 3
           </p>

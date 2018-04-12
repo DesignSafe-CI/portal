@@ -295,9 +295,22 @@
                  name="tag-title" id="id-tag-title"
                  ng-model="data.catForm.title"/>
         </div>
-        <div style="display:inline-block; width:90%; padding-top:5px;">
-          <textarea style="width:100%;" placeholder="Description"
-        ng-model="data.catForm.description">
+        <div class="extra-form-inputs" ng-if="data.catForm.type === 'Analysis'">
+          <div style="display:inline-block; width:30%;">
+            <label for="id-tag-reference" style="display:block">Reference Data</label>
+            <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.catForm.reference">
+          </div>
+          <div align="center" style="display:inline-block; width:2%;">
+            <i class="fa fa-link"></i>
+          </div>
+          <div style="display:inline-block; width:30%;">
+            <label for="id-tag-reference" style="display:block;">Reference DOI</label>
+            <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-referencedoi" id="id-ref-data" ng-model="data.catForm.referencedoi">
+          </div>
+        </div>        
+        <div style="display:inline-block; width:90%;">
+          <label for="id-tag-description" style="display:block">Description</label>
+          <textarea style="width:100%;" ng-model="data.catForm.description">
         </textarea>
         </div>
       <button class="btn btn-info"
@@ -349,6 +362,22 @@
                  name="tag-title" id="id-tag-title"
                  ng-model="data.form.projectTagToAdd.title"/>
         </div>
+        <!-- Analysis Reference Data field start -->
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis'">
+            <div style="display:inline-block; width:30%;">
+              <label for="id-tag-reference" style="display:block">Reference Data</label>
+              <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.form.projectTagToAdd.reference">
+            </div>
+            <div align="center" style="display:inline-block; width:2%;">
+              <i class="fa fa-link"></i>
+            </div>
+            <div style="display:inline-block; width:30%;">
+              <label for="id-tag-reference" style="display:block;">Reference DOI</label>
+              <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-referencedoi" id="id-ref-data" ng-model="data.form.projectTagToAdd.referencedoi">
+            </div>
+          </div>
+        <!-- Analysis Reference Data field end -->
+
         <!-- Extra form fields for categories start -->
         <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
          <div style="display:inline-block; width:30%">
@@ -391,9 +420,9 @@
 
         </div>
         <!-- Extra form fields for categories END -->
-        <div style="display:inline-block; width:90%; padding-top:5px;">
-          <textarea style="width:100%;" placeholder="Description"
-        ng-model="data.form.projectTagToAdd.description">
+        <div style="display:inline-block; width:90%;">
+          <label for="id-tag-description" style="display:block">Description</label>
+          <textarea style="width:100%;" ng-model="data.form.projectTagToAdd.description">
         </textarea>
         </div>
         <div style="width:100%; height:20px">

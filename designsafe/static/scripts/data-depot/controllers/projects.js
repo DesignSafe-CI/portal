@@ -285,6 +285,45 @@
         });
     }
 
+    function checkMetadata(){
+      var checklist = []; // fill with a list of ['complete', 'complete', 'incomplete] etc
+      var requirements = {
+        "projectReq": ["title", "projectType", "teamMemers", "description", "awardNumber", "keywords"],
+        "experimentReq": [""],
+        "simulationReq": [""],
+        "otherReq": [""],
+      };
+      var projData = $scope.data.project.value;
+
+      // fill checklist with complete/
+      console.log('Project Information ---->');
+      console.log($scope.data.project);
+      console.log('Data that was selected for publication ---->');
+      console.log($scope.state.publication);
+      console.log('institutions ---->');
+      console.log($scope.browser.publication.institutions);
+
+      //Project checklist
+      if (projData.title == '') {
+        checklist.push('incomplete');
+      } else {
+        checklist.push('complete');
+      }
+
+
+
+      //Proj Type checklist
+
+
+
+      // Check for missing metadata
+      if (checklist.includes('incomplete')) {
+        console.log('You are missing required metadata.');
+      } else {
+        $scope.state.publishPipeline = 'agreement';
+      }
+    }
+
     $scope.publishPipeline_start = function(){
       $scope.state.publishPipeline = 'select';
     };
@@ -348,7 +387,10 @@
         $scope.state.publishPipeline = 'meta';
       }
       else if (st == 'meta'){
-        $scope.state.publishPipeline = 'agreement';
+        // check for missing metadata entries
+        checkMetadata();
+
+        // $scope.state.publishPipeline = 'agreement';
       }else {
         $scope.state.publishPipeline = 'agreement';
       }

@@ -1,5 +1,5 @@
 <div class="modal-header" style="border:none; text-align:center;">
-    <h4 class="modal-title" style="borer:nonel">
+    <h4 class="modal-title" style="border:nonel">
         Manage Experiments
     </h4>
     <a href="https://www.youtube.com/watch?v=74z5jdVvNfg&index=5&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
@@ -66,7 +66,7 @@
           </button>
           <div class="experiment-add-form well well-sm"
                 ng-if="ui.showEditExperimentForm">
-            <form>
+          <form name='editForm'>
                 <button class="btn btn-sm btn-link pull-right"
                         ng-click="ui.showEditExperimentForm = false"
                         title="Close">
@@ -76,7 +76,7 @@
                 <div class="form-group">
                   <label for="id-exp-title" style="display:block">Title</label>
                   <input class="form-control" name="exp-title" id="id-exp-title"
-                         ng-model="editExpForm.title"/>
+                       ng-model="editExpForm.title" required/>
                 </div>
                 <div class="form-gropu">
                   <label for="id-exp-facility" style="display:block">Experiment Facility</label>
@@ -93,22 +93,23 @@
                 <div class="form-group">
                   <label for="id-exp-desc">Description</label> 
                   <textarea style="width:100%; height:3em;" placeholder="Description"
-                            ng-model="editExpForm.description" id="id-exp-desc">
+                            ng-model="editExpForm.description" id="id-exp-desc" required>
                 </textarea>
                 </div>
+              <div class="alert alert-danger" ng-show="editForm.$invalid"><p class="lead" style="text-align:center; font-size:16px">You have missing metadata fields.</p></div>
                 <button class="btn btn-info btn-sm"
                         ng-click="saveEditExperiment()"
-                        ng-disabled="ui.savingEditExp">
+                      ng-disabled="editForm.$invalid"
+                      ng-hide="ui.savingEditExp">
                     <span ng-if="!ui.savingEditExp">
                     <i class="fa fa-check"></i> Save Experiment
                     </span>
-
+              </button>
                     <span style="padding: 9px;"
                           class="bg-info text-info"
                           ng-if="ui.savingEditExp">
                         <i class="fa fa-spinner fa-spin"></i> Loading...
                     </span>
-                </button>
             </div>
         </form>
 
@@ -119,7 +120,7 @@
                 ng-if="!ui.showAddExperimentForm">
                 <i class="fa fa-plus"></i> Add Experiment
         </button>
-        <form>
+      <form name='addForm'>
             <div class="well well-sm"
                  ng-if="ui.showAddExperimentForm">
                  <button class="btn btn-link pull-right"
@@ -129,55 +130,62 @@
                  </button>
                 <p>Add Experiment(s):</p>
                 <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
-                <div class="form-group">
-                  <label for="add-exp-title">Experiment Title</label>
+              <div class="form-group required">
+                <label for="add-exp-title">Experiment Title </label>
                   <input type="text" class="form-control" id="add-exp-title"
-                         ng-model="form.addExperiments[0].title" />
+                       ng-model="form.addExperiments[0].title" required/>
                 </div>
-                <div class="form-group">
-                  <label for="add-exp-facility">Experiment Facility</label>
+              <div class="form-group required">
+                <label for="add-exp-facility">Experiment Facility </label>
                       <select ng-options="ef.name as ef.label for ef in ui.efs[data.project.value.projectType]"
                               class="form-control"
                               ng-model="form.addExperiments[0].experimentalFacility"
-                              id="add-exp-facility">
+                            id="add-exp-facility"
+                            required>
                       </select>
                       <input type="text" class="form-control" id="add-exp-facility-other"
                             placeholder="Custom Experimental Facility"
                             ng-model="form.addExperiments[0].experimentalFacilityOther"
-                            ng-if="form.addExperiments[0].experimentalFacility == 'other'"/>
+                          ng-if="form.addExperiments[0].experimentalFacility == 'other'"
+                          required/>
                 </div>
-                <div class="form-group">
-                  <label for="add-exp-type">Experiment Type</label>
+              <div class="form-group required">
+                <label for="add-exp-type">Experiment Type </label>
                   <select ng-options="type.name as type.label for type in ui.experimentTypes[form.addExperiments[0].experimentalFacility]"
                           class="form-control"
                           ng-model="form.addExperiments[0].experimentType"
-                          id="add-exp-type">
+                        id="add-exp-type"
+                        required>
                   </select>
                   <input type="text" class="form-control" id="add-exp-facility-other"
                         placeholder="Custom Experiment Type"
                         ng-model="form.addExperiments[0].experimentTypeOther"
-                        ng-if="form.addExperiments[0].experimentType == 'other'"/>
+                      ng-if="form.addExperiments[0].experimentType == 'other'"
+                      required/>
                 </div>
-                <div class="form-group">
-                  <label for="add-equip-type">Equipment Type</label>
+              <div class="form-group required">
+                <label for="add-equip-type">Equipment Type </label>
                   <select ng-options="et.name as et.label for et in ui.equipmentTypes[form.addExperiments[0].experimentalFacility]"
                          class="form-control"
                          ng-model="form.addExperiments[0].equipmentType"
-                         id="id-equipment-type">
+                       id="id-equipment-type"
+                       required>
                   </select>
                   <input type="text" class="form-control" id="add-exp-facility-other"
                         placeholder="Custom Equipment Type"
                         ng-model="form.addExperiments[0].equipmentTypeOther"
-                        ng-if="form.addExperiments[0].equipmentType == 'other'"/>
+                      ng-if="form.addExperiments[0].equipmentType == 'other'"
+                      required/>
                 </div>
-                <div class="form-group">
+                <div class="form-group required">
                   <label for="add-exp-desc">Description</label>
                   <textarea style="height:3em;"
                             class="form-control"
                             id="add-exp-desc"
-                            ng-model="form.addExperiments[0].description"></textarea>
+                            ng-model="form.addExperiments[0].description" required></textarea>
                 </div>
-                <button class="btn btn-info btn-sm" ng-click="saveExperiment($event)">
+              <div class="alert alert-danger" ng-show="addForm.$invalid"><p class="lead" style="text-align:center; font-size:16px">Please fill out all required fields before saving.</p></div>
+              <button class="btn btn-info btn-sm" ng-disabled="addForm.$invalid" ng-click="saveExperiment($event)">
                     <i class="fa fa-check"></i> Save Experiment
                 </button>
             </div>
@@ -190,7 +198,7 @@
         -->
     </div>
     <div class="data-model-tree" style="border-top:1px solid lightgray;">
-     <div style="text-alignt:center;">
+   <div style="text-align:center;">
      <h4 style="text-align:center;"> Relate Categories to Experiments or Analysis </h4>
     <a href="https://www.youtube.com/watch?v=O3KDlgbz9jA&index=6&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
       <i class="fa fa-question-circle"></i> Learn More

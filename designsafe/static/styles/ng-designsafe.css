@@ -596,6 +596,14 @@ span.tag-title {
     overflow:auto;
 }
 
+.meta-review .header {
+    width:100%;
+    background:white;
+    overflow:auto;
+    margin: 0px;
+    padding: 0px;
+}
+
 .meta-review .title {
     text-align:center;
     border-bottom:1px solid black;
@@ -606,26 +614,23 @@ span.tag-title {
     padding:5px;
 }
 .meta-review .content-wrapper {
-    border-bottom:1px solid black;
+    border-top:1px solid black;
 }
 
 .meta-review .content .meta-row {
     width:100%;
     overflow:auto;
-    margin:5px 0px;
+    margin:10px 0px;
 }
 
 .meta-review .content .meta-row .attr {
     font-weight:bold;
-    display:inline-block;
-    width:45%;
-    text-align:right;
+    font-size: 15;
 }
 
 .meta-review .content .meta-row .value {
-    display:inline-block;
-    width:45%;
-    text-align:left;
+    width:100%;
+    font-size: 15;
 }
 
 .dropdown button.collapsed .dropdown-caret:before {

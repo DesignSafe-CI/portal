@@ -1,5 +1,5 @@
 <div class="modal-header" style="border:none; text-align:center;">
-    <h4 class="modal-title" style="borer:nonel">
+    <h4 class="modal-title" style="border:nonel">
         Manage Simulations
     </h4>
     <a href="https://www.youtube.com/watch?v=74z5jdVvNfg&index=5&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
@@ -62,7 +62,7 @@
           </button>
           <div class="experiment-add-form well well-sm"
                 ng-if="ui.showEditSimulationForm">
-            <form>
+          <form name='editForm'>
                 <button class="btn btn-sm btn-link pull-right"
                         ng-click="ui.showEditSimulationForm = false"
                         title="Close">
@@ -72,7 +72,7 @@
                 <div class="form-group">
                   <label for="id-sim-title" style="display:block">Title</label>
                   <input class="form-control" name="exp-title" id="id-exp-title"
-                         ng-model="editSimForm.title"/>
+                       ng-model="editSimForm.title" required/>
                 </div>
                 <div class="form-group">
                   <label for="id-sim-type" style="display:block">Simulation Type</label>
@@ -84,22 +84,23 @@
                 <div class="form-group">
                   <label for="id-sim-desc">Description</label> 
                   <textarea style="width:100%; height:3em;" placeholder="Description"
-                            ng-model="editSimForm.description" id="id-sim-desc">
+                            ng-model="editSimForm.description" id="id-sim-desc" required>
                 </textarea>
                 </div>
+              <div class="alert alert-danger" ng-show="editForm.$invalid"><p class="lead" style="text-align:center; font-size:16px">You have missing metadata fields.</p></div>
                 <button class="btn btn-info btn-sm"
                         ng-click="saveEditSimulation()"
-                        ng-disabled="ui.savingEditSim">
+                      ng-disabled="editForm.$invalid"
+                      ng-hide="ui.savingEditSim">
                     <span ng-if="!ui.savingEditSim">
                     <i class="fa fa-check"></i> Save Simulation
                     </span>
-
+              </button>
                     <span style="padding: 9px;"
                           class="bg-info text-info"
                           ng-if="ui.savingEditSim">
                         <i class="fa fa-spinner fa-spin"></i> Loading...
                     </span>
-                </button>
             </div>
         </form>
 
@@ -110,7 +111,7 @@
                 ng-if="!ui.showAddSimulationForm">
                 <i class="fa fa-plus"></i> Add Simulation
         </button>
-        <form>
+      <form name='addForm'>
             <div class="well well-sm"
                  ng-if="ui.showAddSimulationForm">
                  <button class="btn btn-link pull-right"
@@ -120,38 +121,41 @@
                  </button>
                 <p>Add Simulation:</p>
                 <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
-                <div class="form-group">
-                  <label for="add-sim-title">Simulation Title</label>
+              <div class="form-group required">
+                <label for="add-sim-title">Simulation Title </label>
                   <input type="text" class="form-control" id="add-sim-title"
-                         ng-model="form.addSimulation[0].title" />
+                       ng-model="form.addSimulation[0].title" required/>
                 </div>
-                <div class="form-group">
-                  <label for="add-sim-type">Simulation Type</label>
+              <div class="form-group required">
+                <label for="add-sim-type">Simulation Type </label>
                   <select ng-options="type.name as type.label for type in ui.simulationTypes"
                           class="form-control"
                           ng-model="form.addSimulation[0].simulationType"
-                          id="add-sim-type">
+                        id="add-sim-type"
+                        required>
                   </select>
                   <input type="text" class="form-control" id="add-exp-type-other"
                         placeholder="Custom Simulation Type"
                         ng-model="form.addSimulation[0].simulationTypeOther"
-                        ng-if="form.addSimulation[0].simulationType == 'Other'"/>
+                      ng-if="form.addSimulation[0].simulationType == 'Other'"
+                      required/>
                 </div>
-                <div class="form-group">
+                <div class="form-group required">
                   <label for="add-sim-desc">Description</label>
                   <textarea style="height:3em;"
                             class="form-control"
                             id="add-sim-desc"
-                            ng-model="form.addSimulation[0].description"></textarea>
+                            ng-model="form.addSimulation[0].description" required></textarea>
                 </div>
-                <button class="btn btn-info btn-sm" ng-click="saveSimulation($event)">
+              <div class="alert alert-danger" ng-show="addForm.$invalid"><p class="lead" style="text-align:center; font-size:16px">Please fill out all required fields before saving.</p></div>
+              <button class="btn btn-info btn-sm" ng-click="saveSimulation($event)" ng-disabled="addForm.$invalid">
                     <i class="fa fa-check"></i> Save Simulation
                 </button>
             </div>
         </form>
     </div>
     <div class="data-model-tree" style="border-top:1px solid lightgray;">
-     <div style="text-alignt:center;">
+     <div style="text-align:center;">
      <h4 style="text-align:center;"> Relate Categories to Simulations </h4>
     <a href="https://www.youtube.com/watch?v=O3KDlgbz9jA&index=6&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
       <i class="fa fa-question-circle"></i> Learn More

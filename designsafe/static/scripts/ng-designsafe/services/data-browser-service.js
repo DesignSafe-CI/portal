@@ -1811,6 +1811,8 @@
                   entity: cat,
                   type: cat._displayName,
                   title: cat.value.title,
+                  reference: cat.value.reference,
+                  referencedoi: cat.value.referencedoi,
                   description: cat.value.description
               };
               $scope.ui.showEditCategory = true;
@@ -1819,6 +1821,8 @@
           $scope.saveEditCategory = function(){
               var cat = $scope.data.catForm.entity;
               cat.value.title = $scope.data.catForm.title;
+              cat.value.reference = $scope.data.catForm.reference;
+              cat.value.referencedoi= $scope.data.catForm.referencedoi;
               cat.value.description = $scope.data.catForm.description;
               $scope.ui.editFormSaving = true;
               ProjectEntitiesService.update({data: {
