@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import AgaveOAuthToken, AgaveServiceStatus
+from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 import logging
 import os
 import requests
@@ -36,21 +37,23 @@ def login_options(request):
             if designsafe_status['status_code'] == 400:
                 message = {
                     'class': 'warning',
-                    'text': 'DesignSafe API Services are experiencing a Partial Service '
-                            'Disruption. Some services may be unavailable.'
+                    'text': 'DesignSafe API Services are experiencing a '
+                            'Partial Service Disruption. Some services '
+                            'may be unavailable.'
                 }
             elif designsafe_status['status_code'] == 500:
                 message = {
                     'class': 'danger',
-                    'text': 'DesignSafe API Services are experiencing a Service Disruption. '
-                            'Some services may be unavailable.'
+                    'text': 'DesignSafe API Services are experiencing a '
+                            'Service Disruption. Some services may be '
+                            'unavailable.'
                 }
     except Exception as e:
         logger.warn('Unable to check AgaveServiceStatus: %s', e.message)
         agave_status = None
         designsafe_status = None
 
-    if(message==False):
+    if not message:
         return agave_oauth(request)
     else:
         context = {
@@ -76,10 +79,17 @@ def agave_oauth(request):
         protocol = 'https'
     else:
         protocol = 'http'
-    redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
-                                      reverse('designsafe_auth:agave_oauth_callback'))
+    redirect_uri = '{}://{}{}'.format(
+        protocol,
+        request.get_host(),
+        reverse('designsafe_auth:agave_oauth_callback')
+    )
     authorization_url = (
-        '%s/authorize?client_id=%s&response_type=code&redirect_uri=%s&state=%s' % (
+        '%s/authorize?'
+        'client_id=%s&'
+        'response_type=code&'
+        'redirect_uri=%s&'
+        'state=%s' % (
             tenant_base_url,
             client_key,
             redirect_uri,
@@ -96,21 +106,29 @@ def agave_oauth_callback(request):
     state = request.GET.get('state')
 
     if request.session['auth_state'] != state:
-        msg = ('OAuth Authorization State mismatch!? auth_state=%s '
-               'does not match returned state=%s' % (request.session['auth_state'], state))
+        msg = (
+            'OAuth Authorization State mismatch!? auth_state=%s '
+            'does not match returned state=%s' % (
+                request.session['auth_state'], state
+            )
+        )
         logger.warning(msg)
         return HttpResponseBadRequest('Authorization State Failed')
 
     if 'code' in request.GET:
         # obtain a token for the user
         # Check for HTTP_X_DJANGO_PROXY custom header
-        django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
+        request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
+        django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false')
         if django_proxy or request.is_secure():
             protocol = 'https'
         else:
             protocol = 'http'
-        redirect_uri = '{}://{}{}'.format(protocol, request.get_host(),
-                                          reverse('designsafe_auth:agave_oauth_callback'))
+        redirect_uri = '{}://{}{}'.format(
+            protocol,
+            request.get_host(),
+            reverse('designsafe_auth:agave_oauth_callback')
+        )
         code = request.GET['code']
         tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
         client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
@@ -142,7 +160,19 @@ def agave_oauth_callback(request):
                 msg_tmpl = 'Login successful. Welcome back, %s %s!'
             else:
                 msg_tmpl = 'Login successful. Welcome to DesignSafe, %s %s!'
-            messages.success(request, msg_tmpl % (user.first_name, user.last_name))
+            messages.success(
+                request,
+                msg_tmpl % (
+                    user.first_name,
+                    user.last_name
+                )
+            )
+            check_or_create_agave_home_dir.apply_async(
+                args=(
+                    user.username,
+                ),
+                queue='files'
+            )
         else:
             messages.error(
                 request,
@@ -167,6 +197,7 @@ def agave_oauth_callback(request):
     else:
         # return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
         return HttpResponseRedirect(reverse('designsafe_dashboard:index'))
+
 
 def agave_session_error(request):
     return render(request, 'designsafe/apps/auth/agave_session_error.html')
