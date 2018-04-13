@@ -1,5 +1,16 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180407
+
+Improvements:
+
+- Improve workspace category handling
+
+Fixes:
+
+- Community search
+- User home creation
+
 ## 20180406
 
 Fixes:
