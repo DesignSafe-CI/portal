@@ -77,3 +77,6 @@ target/
 # ignore Google Drive API secrets
 *secrets.json
 *secrets.py
+
+# vscode
+.vscode/

@@ -554,7 +554,7 @@ class FileSearchView(View):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
-
+        
         if file_mgr_name != ElasticFileManager.NAME or not query_string:
             return HttpResponseBadRequest()
 
@@ -563,8 +563,14 @@ class FileSearchView(View):
 
         fmgr = ElasticFileManager()
         if not request.GET.get('shared', False):
-            listing = fmgr.search(system_id, request.user.username, query_string,
-                                  offset=offset, limit=limit)
+
+            if system_id == 'designsafe.storage.default':
+                listing = fmgr.search(system_id, request.user.username, query_string,
+                                    offset=offset, limit=limit)
+            elif system_id == 'designsafe.storage.community':
+                logger.debug("searching community...")
+                listing = fmgr.search_community('designsafe.storage.community', query_string,
+                                    offset=offset, limit=limit) 
         else:
             listing = fmgr.search_shared(system_id, request.user.username, query_string,
                                          offset=offset, limit=limit)

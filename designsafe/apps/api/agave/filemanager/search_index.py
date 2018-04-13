@@ -331,6 +331,48 @@ class ElasticFileManager(BaseFileManager):
         }
         return result
 
+    def search_community(self, system, query_string,
+               file_path=None, offset=0, limit=100):
+        """
+        search = IndexedFile.search()
+        query = Q('bool',
+                  filter=Q('bool',
+                           must=[Q({'term': {'systemId': system}}),
+                                 ],
+                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
+                   must=Q({'simple_query_string':{
+                            'query': query_string,
+                            'fields': ['name', 'name._exact', 'keywords']}}))
+        search.query = query
+        """
+
+        filters = Q('term', system="designsafe.storage.community") #| \
+                  #Q('term', system="designsafe.storage.published") | \
+                  #Q('term', system="designsafe.storage.community")
+        search = Search(index="des-files")\
+            .query("query_string", query="*"+query_string+"*", default_operator="and")\
+            .filter(filters)\
+            .extra(from_=offset, size=limit)
+            #.filter("term", type="file")\
+           
+
+
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result
+
     def search_shared(self, system, username, query_string,
                file_path=None, offset=0, limit=100):
 

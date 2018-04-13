@@ -13,7 +13,7 @@
         filePath: $scope.browser.listing.path
       });
       _.each($scope.browser.listing.children, function (child) {
-        child.href = $state.href('myData', {system: child.system, filePath: child.path});
+        child.href = $state.href('myData', {systemId: child.system, filePath: child.path});
       });
     }
 
