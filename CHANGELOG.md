@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180406
+
+Fixes:
+
+- Root directory was not being indeed when sharing files
+
 ## 20180405
 
 Fixes:
