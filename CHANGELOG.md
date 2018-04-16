@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180408
+
+Fixes:
+
+- Authorship for Team Members
+
 ## 20180407
 
 Improvements:
