@@ -37,7 +37,7 @@ class Publication(object):
             else:
                 s = PublicationIndexed.search()
                 s.query = Q({"term":
-                              {"projectId._exact": wrap['projectId']}
+                              {"projectId.keyword": wrap['projectId']}
                             })
                 try:
                     res = s.execute()
@@ -53,7 +53,7 @@ class Publication(object):
 
         elif project_id is not None:
             s = PublicationIndexed.search()
-            s.query = Q({"term": {"projectId._exact": project_id }})
+            s.query = Q({"term": {"projectId.keyword": project_id }})
             logger.debug('p serach query: {}'.format(s.to_dict()))
             try:
                 res = s.execute()
