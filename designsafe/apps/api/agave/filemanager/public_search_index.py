@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)
 
 class PublicationIndexed(DocType):
     class Meta:
-        index = 'published'
-        doc_type = 'publication'
+        index = settings.ES_INDICES['publications']['name']
+        doc_type = settings.ES_INDICES['publications']['documents'][0]['name']
 
 class Publication(object):
     def __init__(self, wrap=None, project_id=None, *args, **kwargs):
