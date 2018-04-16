@@ -1,13 +1,15 @@
 import logging
-import datetime
+# import datetime
 import os
-import urllib2
-from elasticsearch_dsl.query import Q, MultiMatch, Term
+# import urllib2
+# import json
+from elasticsearch_dsl.query import Q
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 class FileManager(object):
     """Elasticsearch File Manager Class"""
@@ -15,8 +17,14 @@ class FileManager(object):
         self.username = username
 
     def _pems_filter(self):
-        term_username_query = Q('term', **{'permissions.username': self.username})
-        term_world_query = Q('term', **{'permissions.username': 'WORLD'})
+        term_username_query = Q(
+            'term',
+            **{'permissions.username': self.username}
+        )
+        term_world_query = Q(
+            'term',
+            **{'permissions.username': 'WORLD'}
+        )
         bool_query = Q('bool')
         bool_query.should = [term_username_query, term_world_query]
         nested_query = Q('nested')
@@ -32,7 +40,10 @@ class FileManager(object):
         """
         logger.debug('listing %s', os.path.join(system, path))
         search = IndexedFile.search()
-        term_system_query = Q('term', **{'system._exact':system})
+        term_system_query = Q(
+            'term',
+            **{'system._exact': system}
+        )
         term_path_query = Q('term', **{'path._exact': path})
         bool_query = Q('bool')
         bool_query.must = [term_system_query, term_path_query]
@@ -43,10 +54,16 @@ class FileManager(object):
         logger.debug('res %s', str(res.hits.total))
         return res, search
 
-    def listing_recursive(self, system='designsafe.storage.default', path='/'):
+    def listing_recursive(
+            self,
+            system='designsafe.storage.default',
+            path='/'):
         """Lists every folder's children"""
         search = IndexedFile.search()
-        term_system_query = Q('term', **{'system._exact':system})
+        term_system_query = Q(
+            'term',
+            **{'system._exact': system}
+        )
         term_path_query = Q('term', **{'path._path': path})
         bool_query = Q('bool')
         bool_query.must = [term_system_query, term_path_query]
@@ -59,7 +76,10 @@ class FileManager(object):
     def get(self, system='designsafe.storage.default', path='/', name=''):
         """Gets a file"""
         search = IndexedFile.search()
-        term_system_query = Q('term', **{'system._exact':system})
+        term_system_query = Q(
+            'term',
+            **{'system._exact': system}
+        )
         term_path_query = Q('term', **{'path._exact': path})
         term_username_query = Q('term', **{'name._exact': name})
         bool_query = Q('bool')
@@ -72,6 +92,7 @@ class FileManager(object):
         search = search.query(bool_query)
         search = search.sort({'name._exact': 'asc'})
         res = search.execute()
+        # logger.debug('search :%s', json.dumps(search.to_dict(), indent=2))
         return res, search
 
     def index(self, file_object, pems):
@@ -81,7 +102,7 @@ class FileManager(object):
                                os.path.basename(file_object.path.strip('/')))
         if res.hits.total > 1:
             for doc in res[1:]:
-                doc.delete()
+                doc.delete(ignore=404)
         if res.hits.total >= 1:
             document = res[0]
             file_object.pop('_links')

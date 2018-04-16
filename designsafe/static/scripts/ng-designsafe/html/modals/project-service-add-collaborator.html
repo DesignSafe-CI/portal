@@ -136,7 +136,7 @@
                     <ul style="list-style:none;">
                       <li ng-repeat="ent in data.authored">
                         <input type="checkbox" name="author-{{cur.user.username}}"
-                               ng-model="form.authors[exp.uuid][cur.user.username]"
+                               ng-model="form.authors[ent.uuid][cur.user.username]"
                                ng-change="toggleUserToEnt(ent, cur.user.username)"/>
                         <label for="author-{{cur.user.username}}">{{ent.value.title}}</label>
                       </li>
