@@ -290,9 +290,14 @@
       var experimentsList = $scope.state.publication.experimentsList;
       var analysisList = $scope.state.publication.analysisList;
       var reportsList = $scope.state.publication.reportsList;
+      var publicationMessages = [];
+      var checklist = {
+        project: {},
+      };
 
-      var checklist = {};         // fill with a list of ['complete', 'complete', 'incomplete] etc
-      var requirements = {        // required fields that will be checked
+      // TODO:  add requirements to simulation and other project types
+      // object containing required* fields that will be checked
+      var requirements = {
         "projectReq": ['title', 'projectType', 'teamMembers', 'description', 'awardNumber', 'keywords'],
         "experimentReq": ['title', 'experimentType', 'experimentalFacility', 'description', 'authors'],
         "simulationReq": [],
@@ -301,84 +306,141 @@
         "analysisReq": ['title', 'description'],
       };
 
-      console.log('Project Information ---->');
-      console.log(projData);
-      console.log('Data that was selected for publication ---->');
-      console.log($scope.state.publication);
-
-      //project checklist
-      checklist.project = {};
+      checklist.project.name = projData.title;
+      checklist.project.category = "project";
       requirements.projectReq.forEach(function(req) {
         if (projData[req] == '' || projData[req] == []) {
-          checklist.project[req] = "incomplete";
+          checklist.project[req] = false;
         } else {
-          checklist.project[req] = "complete";
+          checklist.project[req] = true;
         }
       });
 
-      //experiment checklist
+      //check experiment requirements
+      //TODO: see if there is a better way to increment
       var i = 0;
+      var models = $scope.data.project.modelconfig_set;
+      var sensors = $scope.data.project.sensorlist_set;
+      var events = $scope.data.project.event_set;
       experimentsList.forEach(function (exp) {
-        i++;
-        checklist['experiment' + i] = {};
+        var title = experimentsList[i].value.title;
+
+        checklist['experiment'+i] = {};
+        checklist['experiment'+i].name = title;
+        checklist['experiment'+i].category = 'experiment';
+
+        //check experiment for model configs
+        checklist['experiment'+i].model = false;
+        models.forEach(function(mod){
+          mod.value.experiments.forEach(function(mid) {
+            if (exp.uuid == mid) {
+              checklist['experiment'+i].model = true;
+            }
+          });
+        });
+
+        //check experiment for event data
+        checklist['experiment'+i].event = false;
+        events.forEach(function(evt) {
+          evt.value.experiments.forEach(function(eid) {
+            if (exp.uuid == eid) {
+              checklist['experiment'+i].event = true;
+            }
+          });
+        });
+
+        //check experiment for sensor data
+        checklist['experiment'+i].sensor = false;
+        sensors.forEach(function(sen) {
+          sen.value.experiments.forEach(function(sid) {
+            if (exp.uuid == sid) {
+              checklist['experiment'+i].sensor = true;
+            }
+          });
+        });
+
         requirements.experimentReq.forEach(function (req) {
           if (exp.value[req] == '' || exp.value[req] == []) {
-            checklist['experiment' + i][req] = "incomplete";
+            checklist['experiment'+i][req] = false;
           } else {
-            checklist['experiment' + i][req] = "complete";
+            checklist['experiment'+i][req] = true;
           }
         });
+        i++;
       });
 
-      //analysis checklist
+      //check analysis requirements
       i = 0;
       analysisList.forEach(function (exp) {
-        i++;
-        checklist['analysis' + i] = {};
+        var title = analysisList[i].value.title;
+
+        checklist['analysis'+i] = {};
+        checklist['analysis'+i].name = title;
+        checklist['analysis'+i].category = 'analysis';
         requirements.analysisReq.forEach(function (req) {
           if (exp.value[req] == '' || exp.value[req] == []) {
-            checklist['analysis' + i][req] = "incomplete";
+            checklist['analysis'+i][req] = false;
           } else {
-            checklist['analysis' + i][req] = "complete";
+            checklist['analysis'+i][req] = true;
           }
         });
+        i++;
       });
 
-      //report checklist
+      //check report requirements
       i = 0;
       reportsList.forEach(function (exp) {
-        i++;
-        checklist['report' + i] = {};
+        var title = reportsList[i].value.title;
+
+        checklist['report'+i] = {};
+        checklist['report'+i].name = title;
+        checklist['report'+i].category = 'report';
         requirements.reportReq.forEach(function (req) {
           if (exp.value[req] == '' || exp.value[req] == []) {
-            checklist['report' + i][req] = "incomplete";
+            checklist['report'+i][req] = false;
           } else {
-            checklist['report' + i][req] = "complete";
+            checklist['report'+i][req] = true;
           }
         });
+        i++;
       });
 
-
+      console.log("projectdata -------------------->");
+      console.log($scope.data.project);
       console.log("checklists -------------------->");
       console.log(checklist);
-      console.log("scan -------------------->");
+      console.log("publications -------------------->");
+      console.log($scope.state.publication);
+
+      //check for missing metadata (experimental)
       var allow = true;
-      Object.values(checklist).forEach(function (exp) {
-        for (var req in exp) {
-          if (exp[req] == 'incomplete') {
-            allow = false;
-            console.log("You are missing: " + req);
-          }
+      if (projData.projectType == "experimental") {
+        // check for missing records
+        if (Object.keys(checklist).includes('experiment0') !== true) {
+          publicationMessages.push({title: "Project", message: "Your project must include an experiment."});
+          allow = false;
         }
+      }
+
+      i = 0;
+      Object.values(checklist).forEach(function(exp) {
+        Object.entries(exp).forEach(function(res) {
+          // res[0] == keys
+          // res[1] == values
+          if (res[1] === false) {
+            publicationMessages.push({title: exp.name, message: "You are missing: " + res[0]});
+            allow = false;
+          }
+        });
+        i++;
       });
 
-      // check for missing metadata
       if (allow) {
         $scope.state.publishPipeline = 'agreement';
       } else {
-        console.log('You are missing required metadata.');
+        $scope.ui.publicationMessages = publicationMessages;
+        return;
       }
-      
     }
 
     $scope.publishPipeline_start = function(){
@@ -471,6 +533,11 @@
       var modelConfigs = [];
       var sensorLists = [];
       var publicationMessages = [];
+
+      // TODO:  A series of checks and notification flags were created here 
+      //        but they are not being displayed. Suggest removing these
+      //        checks since they will be redundant. See above "checkMetadata"
+      //        function.
       
       if ($scope.state.project.value.projectType == 'experimental'){
         if (publication.experimentsList){
