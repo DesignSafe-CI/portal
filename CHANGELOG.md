@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180409
+
+Fixes:
+
+- Search UI updates
+
 ## 2.4.8 (20180408)
 
 Fixes:
