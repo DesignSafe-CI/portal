@@ -12,6 +12,8 @@ from celery import shared_task
 from requests import ConnectionError, HTTPError
 import logging
 
+from designsafe.apps.api.tasks import reindex_agave
+
 logger = logging.getLogger(__name__)
 
 class JobSubmitError(Exception):
@@ -154,7 +156,7 @@ def watch_job_status(self, username, job_id, current_status=None):
 
             try:
                 logger.debug('Preparing to Index Job Output job=%s', job)
-                index_job_outputs(user, job)
+                # reindex_agave.delay(username, job['archiveSystem']+job['archivePath'], levels=0)
                 logger.debug('Finished Indexing Job Output job=%s', job)
 
             except Exception as e:
@@ -286,7 +288,9 @@ def handle_webhook_request(job):
 
                     try:
                         logger.debug('Preparing to Index Job Output job=%s', job_name)
-                        index_job_outputs(user, job)
+                        # index_job_outputs(user, job)
+                        archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
+                        reindex_agave.delay(username, archivePath, levels=0)
                         logger.debug('Finished Indexing Job Output job=%s', job_name)
                     except Exception as e:
                         logger.exception('Error indexing job output')
