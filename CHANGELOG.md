@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## 20180410
+## 2.5.0 (20180410)
 
 Improvements:
 
