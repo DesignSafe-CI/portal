@@ -45,9 +45,23 @@ class Publication(object):
                     if getattr(e, 'status_code', 500) == 404:
                         raise
                     res = s.execute()
-
                 if res.hits.total:
                     self._wrap = res[0]
+                    for exp in getattr(self._wrap, 'experimentsList', []):
+                        doi = getattr(exp, 'doi')
+                        if not doi:
+                            continue
+
+                        experiment = filter(
+                            lambda x: x['uuid'] == exp.uuid,
+                            wrap.get('experimentsList', [])
+                        )
+                        if not len(experiment):
+                            continue
+
+                        experiment[0]['doi'] = doi
+
+                    self._wrap.update(**wrap)
                 else:
                     self._wrap = PublicationIndexed(**wrap)
 
