@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180410
+
+Improvements:
+
+- Admin ability to re-publish project
+
 ## 20180409
 
 Fixes:
