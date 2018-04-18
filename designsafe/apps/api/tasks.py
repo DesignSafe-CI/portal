@@ -773,6 +773,8 @@ def copy_publication_files_to_corral(self, project_id):
                 shutil.copytree(local_src_path, local_dst_path)
             except OSError as exc:
                 logger.info(exc)
+            except IOError as exc:
+                logger.info(exc)
         else:
             try:
                 if not os.path.isdir(os.path.dirname(local_dst_path)):
@@ -780,6 +782,8 @@ def copy_publication_files_to_corral(self, project_id):
 
                 shutil.copy(local_src_path, local_dst_path)
             except OSError as exc:
+                logger.info(exc)
+            except IOError as exc:
                 logger.info(exc)
 
     #for filepath in filepaths:
@@ -836,7 +840,7 @@ def save_publication(self, project_id):
         pub.update(**publication)
         copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
     except Exception as exc:
-        logger.error('Proj Id: %s. %s', project_id, exc)
+        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
