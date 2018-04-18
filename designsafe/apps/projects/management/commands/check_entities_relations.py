@@ -22,10 +22,10 @@ class Command(BaseCommand):
     pointer to a non-existent entity. This needs to be deleted aumtomatically.
     
     Since entities are agave metadata records (mongo documents) there is no
-     automatic deletion of these relations. Relations are managed by
-     using `associationIds` array. When an entity is saved Agave (or mongo)
-     checks every UUID in `associationIds` and if any UUID is invalid an
-     error is raised.
+    automatic deletion of these relations. Relations are managed by
+    using `associationIds` array. When an entity is saved Agave (or mongo)
+    checks every UUID in `associationIds` and if any UUID is invalid an
+    error is raised.
     """
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
