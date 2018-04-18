@@ -535,9 +535,9 @@
       var publicationMessages = [];
 
       // TODO:  A series of checks and notification flags were created here 
-      //        but they are not being displayed. Suggest removing these
-      //        checks since they will be redundant. See above "checkMetadata"
-      //        function.
+      //        but they are not being displayed in the metadata section.
+      //        Suggest going over these since some will be redundant. See
+      //        above "checkMetadata"
       
       if ($scope.state.project.value.projectType == 'experimental'){
         if (publication.experimentsList){
