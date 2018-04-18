@@ -16,7 +16,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-FILEDIR = os.path.join(os.path.dirname(__file__), './json/submitting.json')
+FILEDIR_PENDING = os.path.join(os.path.dirname(__file__), './json/pending.json') 
+FILEDIR_SUBMITTING = os.path.join(os.path.dirname(__file__), './json/submitting.json')
+FILEDIR_PENDING2 = os.path.join(os.path.dirname(__file__), './json/pending2.json') 
+
+webhook_body_pending = json.dumps(json.load(open(FILEDIR_PENDING))) 
+webhook_body_pending2 = json.dumps(json.load(open(FILEDIR_PENDING2))) 
+webhook_body_submitting = json.dumps(json.load(open(FILEDIR_SUBMITTING))) 
+
+wh_url = reverse('designsafe_api:jobs_wh_handler')
 
 # Create your tests here.
 class NotificationsTestCase(TestCase):
@@ -28,7 +36,7 @@ class NotificationsTestCase(TestCase):
         user.save()
         self.user = user
         self.client = Client()
-        self.testdata = open(FILEDIR)
+
         with open('designsafe/apps/api/fixtures/agave-model-config-meta.json') as f:
             model_config_meta = json.load(f)
         self.model_config_meta = model_config_meta
@@ -51,18 +59,32 @@ class NotificationsTestCase(TestCase):
         """
         self.assertEqual(self.user.username, 'ds_user')
 
-    def test_update_status_to_submitting(self):
-
-        self.status = 'not received' 
-
-        # f_json = json.load(open('./json/submitting.json'))
-        wh_url = reverse('designsafe_api:jobs_wh_handler')
-        r = self.client.post(wh_url, json.dumps(json.load(self.testdata)), content_type='application/json')
-        self.assertEqual(r.content, 'OK')
+    def test_submitting_webhook_returns_200_and_creates_notification(self):
+        r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        self.assertEqual(r.status_code, 200)
         n = Notification.objects.last()
         status_from_notification = n.to_dict()['extra']['status']
-        self.assertEqual(status_from_notification, 'SUBMITTING')
+        self.assertEqual(status_from_notification, 'PENDING')
 
+    def test_2_webhooks_same_status_same_jobId_should_give_1_notification(self):
+        r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+    
+        #assert that sending the same status twice doesn't trigger a second notification.
+        r2 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        self.assertEqual(Notification.objects.count(), 1)
+
+    def test_2_webhooks_different_status_same_jobId_should_give_2_notifications(self):
+        r1 = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+
+        r2 = self.client.post(wh_url, webhook_body_submitting, content_type='application/json')
+        self.assertEqual(Notification.objects.count(), 2) 
+
+    def test_2_webhooks_same_status_different_jobId_should_give_2_notifications(self):
+
+        r = self.client.post(wh_url, webhook_body_pending, content_type='application/json')
+        r2 = self.client.post(wh_url, webhook_body_pending2, content_type='application/json')
+
+        self.assertEqual(Notification.objects.count(), 2)
 
 
     

@@ -16,6 +16,7 @@ class BaseNotify(models.Model):
     datetime = models.DateTimeField(default=datetime.datetime.now, blank=True)
     #Status should be SUCCESS, INFO, ERROR, WARNING,
     status = models.CharField(max_length = 255)
+    jobId = models.CharField(max_length=255, blank=True)
     operation = models.CharField(max_length = 255, default = '')
     message = models.TextField(default='')
     extra = models.TextField(default='')
@@ -26,6 +27,7 @@ class BaseNotify(models.Model):
     ERROR = RED = 'ERROR'
     WARNING = ORANGE = 'WARNING'
     EVENT_TYPE = 'event_type'
+    JOB_ID = 'jobId'
     STATUS = 'status'
     USER = USERNAME = 'user'
     EXTRA = CONTENT = 'extra'

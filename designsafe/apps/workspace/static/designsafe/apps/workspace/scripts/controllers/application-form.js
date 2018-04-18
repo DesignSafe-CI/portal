@@ -15,12 +15,11 @@
         form: {}
       };
 
+      Jobs.getWebhookUrl().then(function(response) {
+        $scope.webhookUrl = response.data;
+      })
+
       $scope.$on('launch-app', function(e, app) {
-
-        Jobs.getWebhookUrl().then(function(response) {
-          $scope.webhookUrl = response.data;
-        })
-
         $scope.error = '';
 
         if ($scope.data.app) {

@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from designsafe.apps.api.notifications.models import Notification
+from django.db import transaction
 from agavepy.agave import AgaveException
 from celery import shared_task
 from requests import ConnectionError, HTTPError
@@ -223,6 +224,7 @@ def handle_webhook_request(job):
         logger.debug(job_status)
         event_data = {
             Notification.EVENT_TYPE: 'job',
+            Notification.JOB_ID: job_id,
             Notification.STATUS: '',
             Notification.USER: username,
             Notification.MESSAGE: '',
@@ -235,8 +237,22 @@ def handle_webhook_request(job):
             event_data[Notification.STATUS] = Notification.ERROR
             event_data[Notification.MESSAGE] = "Job '%s' Failed. Please try again..." % (job_name)
             event_data[Notification.OPERATION] = 'job_failed'
-            n = Notification.objects.create(**event_data)
-            n.save()
+
+            with transaction.atomic():
+                last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
+                should_notify = True
+
+                if last_notification:
+                    last_status = last_notification.to_dict()['extra']['status']
+                    logger.debug('last status: ' + last_status)
+
+                    if job_status == last_status:
+                        logger.debug('duplicate notification received.')
+                        should_notify = False
+
+                if should_notify:
+                    n = Notification.objects.select_for_update().create(**event_data)
+                    n.save()
 
         elif job_status == 'FINISHED':
             logger.debug('JOB STATUS CHANGE: id=%s status=%s' % (job_id, job_status))
@@ -251,16 +267,29 @@ def handle_webhook_request(job):
             event_data[Notification.MESSAGE] = "Job '%s' finished!" % (job_name)
             event_data[Notification.OPERATION] = 'job_finished'
 
-            n = Notification.objects.create(**event_data)
-            n.save()
-            logger.debug('Event data with action link %s' % event_data)
+            with transaction.atomic():
+                last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
+                should_notify = True
 
-            try:
-                logger.debug('Preparing to Index Job Output job=%s', job_name)
-                index_job_outputs(user, job)
-                logger.debug('Finished Indexing Job Output job=%s', job_name)
-            except Exception as e:
-                logger.exception('Error indexing job output')
+                if last_notification:
+                    last_status = last_notification.to_dict()['extra']['status']
+                    logger.debug('last status: ' + last_status)
+
+                    if job_status == last_status:
+                        logger.debug('duplicate notification received.')
+                        should_notify = False
+
+                if should_notify:
+                    n = Notification.objects.select_for_update().create(**event_data)
+                    n.save()
+                    logger.debug('Event data with action link %s' % event_data)
+
+                    try:
+                        logger.debug('Preparing to Index Job Output job=%s', job_name)
+                        index_job_outputs(user, job)
+                        logger.debug('Finished Indexing Job Output job=%s', job_name)
+                    except Exception as e:
+                        logger.exception('Error indexing job output')
 
             # elif current_status and current_status == job_status:
                 # DO NOT notify
@@ -271,11 +300,26 @@ def handle_webhook_request(job):
             event_data[Notification.STATUS] = Notification.INFO
             event_data[Notification.MESSAGE] = "Job '%s' updated to %s." % (job_name, job_status)
             event_data[Notification.OPERATION] = 'job_status_update'
-            n = Notification.objects.create(**event_data)
-            n.save()
 
-            logger.debug(n.pk)
+            with transaction.atomic():
+                last_notification = Notification.objects.select_for_update().filter(jobId=job_id).last()
+            
+                should_notify = True
 
+                if last_notification:
+                    last_status = last_notification.to_dict()['extra']['status']
+                    logger.debug('last status: ' + last_status)
+
+                    if job_status == last_status:
+                        logger.debug('duplicate notification received.')
+                        should_notify = False
+
+                if should_notify:
+                    n = Notification.objects.select_for_update().create(**event_data)
+                    n.save()
+
+                    logger.debug(n.pk)   
+            
     except ObjectDoesNotExist:
         logger.exception('Unable to locate local user account: %s' % username)
 
