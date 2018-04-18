@@ -699,11 +699,11 @@
         $scope.data.rootPaths = allFilePaths;
         $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
           .then(function(resp){
-              $scope.browser.publication = resp.data;
-              $scope.browser.publication.experimentsList = $scope.browser.publication.experimentsList || [];
-              $scope.browser.publication.eventsList = $scope.browser.publication.eventsList || [];
-              $scope.browser.publication.analysisList = $scope.browser.publication.analysisList || []; 
-              $scope.browser.publication.reportsList = $scope.browser.publication.reportsList || [];
+              //$scope.browser.publication = _.extend($scope.browser.publication, resp.data);
+              //$scope.browser.publication.experimentsList = $scope.browser.publication.experimentsList || [];
+              //$scope.browser.publication.eventsList = $scope.browser.publication.eventsList || [];
+              //$scope.browser.publication.analysisList = $scope.browser.publication.analysisList || []; 
+              //$scope.browser.publication.reportsList = $scope.browser.publication.reportsList || [];
           }, function(err){
             //no publication saved?
           })
