@@ -68,8 +68,11 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         pub = PublicationManager().save_publication(
             data['publication'], status)
-        #if data.get('action', 'save') == 'publish':
-        #    tasks.save_publication.apply_async(args=[pub.projectId],queue='files')
+        if data.get('status', 'save').startswith('publish'):
+            tasks.save_publication.apply_async(
+                args=[pub.projectId],
+                queue='files',
+                countdown=60)
         return JsonResponse({'status': 200,
                              'response': {
                                  'message': 'Your publication has been '
