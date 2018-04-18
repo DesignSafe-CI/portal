@@ -75,6 +75,14 @@ def _reserve_doi(xml_obj, target):
         raise Exception(res['error'])
 
 def _update_doi(doi, xml_obj=None, status='reserved'):
+    res = requests.get(
+        '{}/id/{}'.format(BASE_URI, doi),
+        auth=CREDS,
+        headers={'Content-Type': 'text/plain'}
+    )
+    if status == 'reserved' and res.status_code >= 200 and res.status_code <= 202:
+        status = parse_response(res.text).get('_status', status)
+
     if xml_obj is not None:
         xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
         metadata = {'_status': status, 'datacite': xml_str}
@@ -99,7 +107,10 @@ def _project_required_xml(publication):
     resource = xml_obj
     identifier = ET.SubElement(resource, 'identifier')
     identifier.attrib['identifierType'] = 'DOI'
-    identifier.text = SHOULDER.replace('doi:', '')
+    if project_body.get('doi', ''):
+        identifier.text = project_body.get('doi')
+    else:
+        identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
     #um = get_user_model()
     users = sorted(publication['users'], key=lambda x: x['_ui']['order'])
@@ -134,7 +145,10 @@ def _experiment_required_xml(users, experiment, created):
     resource = xml_obj
     identifier = ET.SubElement(resource, 'identifier')
     identifier.attrib['identifierType'] = 'DOI'
-    identifier.text = SHOULDER.replace('doi:', '')
+    if exp.get('doi', ''):
+        identifier.text = exp.get('doi')
+    else:
+        identifier.text = SHOULDER.replace('doi:', '')
     creators = ET.SubElement(resource, 'creators')
     #um = get_user_model()
     authors = exp.get('authors')
@@ -230,9 +244,19 @@ def experiment_reserve_xml(publication, experiment, created):
     xml_obj = _experiment_required_xml(publication['users'], experiment,
                                        created)
     now = dateutil.parser.parse(created)
-    reserve_res = _reserve_doi(xml_obj, ENTITY_TARGET_BASE.format(
-        project_id=publication['project']['value']['projectId'], entity_uuid=experiment['uuid']))
-    doi, ark = reserve_res.split('|')
+    if not experiment.get('doi', ''):
+        reserve_res = _reserve_doi(
+            xml_obj,
+            ENTITY_TARGET_BASE.format(
+                project_id=publication['project']['value']['projectId'],
+                entity_uuid=experiment['uuid']
+            )
+        )
+        doi, ark = reserve_res.split('|')
+    else:
+        doi = experiment.get('doi')
+        ark = experiment.get('doi')
+
     doi = doi.strip()
     ark = ark.strip()
     identifier = xml_obj.find('identifier')
@@ -277,8 +301,12 @@ def project_reserve_xml(publication):
     proj = project_body['value']
     xml_obj = _project_required_xml(publication)
     now = dateutil.parser.parse(publication['created'])
-    reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=proj['projectId']))
-    doi, ark = reserve_resp.split('|')
+    if not project_body.get('doi', ''):
+        reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=proj['projectId']))
+        doi, ark = reserve_resp.split('|')
+    else:
+        doi = project_body.get('doi')
+        ark = project_body.get('doi')
     doi = doi.strip()
     ark = ark.strip()
     logger.debug('doi: %s', doi)
