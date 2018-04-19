@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.5.1 (20180413)
+
+Fixes:
+
+- Typo moving files to published
+
 ## 20180412
 
 Fixes:
