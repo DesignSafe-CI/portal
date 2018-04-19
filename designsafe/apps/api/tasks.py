@@ -745,7 +745,8 @@ def copy_publication_files_to_corral(self, project_id):
     from designsafe.apps.api.agave.models.files import BaseFileResource
     import shutil
     publication = Publication(project_id=project_id)
-    if not len(publication):
+    filepaths = publication.related_file_paths()
+    if not len(filepaths):
         res = get_service_account_client().files.list(
             systemId='project-{project_uuid}'.format(
                 project_id=publication.project.uuid
@@ -757,8 +758,6 @@ def copy_publication_files_to_corral(self, project_id):
                 _file.name != '.' and _file.name != 'Trash'
             )
         ]
-    else:
-        filepaths = publication.related_file_paths()
 
     filepaths = list(set(filepaths))
     filepaths = sorted(filepaths)
