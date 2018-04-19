@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180411
+
+Fixes:
+
+- Making sure published files are copied for "Other" project
+
 ## 2.5.0 (20180410)
 
 Improvements:
