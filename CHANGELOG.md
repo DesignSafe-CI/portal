@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180412
+
+Fixes:
+
+- Typo when checking for filepaths to publish
+
 ## 20180411
 
 Fixes:
