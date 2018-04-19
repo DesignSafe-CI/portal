@@ -1,0 +1,1 @@
+"{\"des-files_a\":{\"settings\":{\"index\":{\"number_of_shards\":\"5\",\"provided_name\":\"des-files_a\",\"creation_date\":\"1522162476499\",\"analysis\":{\"analyzer\":{\"path_analyzer\":{\"type\":\"custom\",\"tokenizer\":\"path_hierarchy\"}}},\"number_of_replicas\":\"1\",\"uuid\":\"jZGOQVYrRvOppecd_G-qJw\",\"version\":{\"created\":\"5050199\"}}}},\"des-files\":{}}"

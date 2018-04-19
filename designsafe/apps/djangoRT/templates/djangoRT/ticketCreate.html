@@ -23,6 +23,21 @@
         please use this form to contact us with your questions.
     </p>
     <p><i>Fields marked with <label class="required"></label> are required.</i></p>
+    <p>Please Include where applicable:</p>
+    <ul>
+      <li>Which app/version of app is involved?</li>
+      <li>Which files are involved?</li>
+      <li>What is the error message displayed?</li>
+      <li>Please include any applicable screen shots.</li>
+      <li>If this is a typo or page request update please include the DesignSafe web address of the page in question.</li>
+      <li>Please include as much information as possible about your issue so that it can be addressed as soon as possible.</li>
+      <li>If it is a access permission issue please include the following:</li>
+        <ul>
+          <li>The name of project.</li>
+          <li>The directory or file.</li>
+          <li>the owner or PI of the project.</li>
+        </ul>
+    </ul>
     <form method="POST" enctype="multipart/form-data" action="">
         {% csrf_token %}
         {% bootstrap_form form %}
