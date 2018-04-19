@@ -745,19 +745,24 @@ def copy_publication_files_to_corral(self, project_id):
     from designsafe.apps.api.agave.models.files import BaseFileResource
     import shutil
     publication = Publication(project_id=project_id)
-    filepaths = publication.related_file_paths()
+    if not len(publication):
+        res = get_service_account_client().files.list(
+            systemId='project-{project_uuid}'.format(
+                project_id=publication.project.uuid
+            ),
+            filePath='/'
+        )
+        filepaths = [
+            _file.path.strip('/') for _file in res if (
+                _file.name != '.' and _file.name != 'Trash'
+            )
+        ]
+    else:
+        filepaths = publication.related_file_paths()
+
     filepaths = list(set(filepaths))
     filepaths = sorted(filepaths)
     base_path = ''.join(['/', publication.projectId])
-    #service = get_service_account_client()
-    #service.files.manage(systemId=settings.PUBLISHED_SYSTEM,
-    #                     filePath='/',
-    #                     body={'action': 'mkdir',
-    #                           'path': base_path})
-    #base_dir = BaseFileResource.listing(system=settings.PUBLISHED_SYSTEM,
-    #                                    path=base_path,
-    #                                    agave_client=service)
-    #proj_system = 'project-{}'.format(publication.project['uuid'])
     prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
     if not os.path.isdir(prefix_dest):
         os.mkdir(prefix_dest)

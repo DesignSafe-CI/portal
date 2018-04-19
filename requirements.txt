@@ -1,5 +1,5 @@
 pip
-agavepy==0.4.0
+agavepy==0.7.0
 alabaster==0.7.10
 amqp==2.2.1
 appnope==0.1.0
