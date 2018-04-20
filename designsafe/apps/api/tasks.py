@@ -749,7 +749,7 @@ def copy_publication_files_to_corral(self, project_id):
     if not len(filepaths):
         res = get_service_account_client().files.list(
             systemId='project-{project_uuid}'.format(
-                project_id=publication.project.uuid
+                project_uuid=publication.project.uuid
             ),
             filePath='/'
         )
