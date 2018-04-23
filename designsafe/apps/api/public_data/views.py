@@ -30,6 +30,7 @@ from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
 from designsafe.apps.api.agave.filemanager.public_search_index import PublicElasticFileManager
+from designsafe.apps.api.agave.filemanager.search_index import ElasticFileManager
 from designsafe.apps.api.agave.filemanager.community import CommunityFileManager
 from designsafe.apps.api.agave.filemanager.published import PublishedFileManager
 from designsafe.apps.api.agave.views import FileMediaView
@@ -109,6 +110,7 @@ class PublicSearchView(BaseApiView):
     def get(self, request, file_mgr_name,
             system_id=None, file_path=None):
         """GET handler"""
+        logger.debug(system_id)
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
@@ -123,9 +125,17 @@ class PublicSearchView(BaseApiView):
             ag = get_user_model().objects.get(username='envision').agave_oauth.client
         else:
             ag = request.user.agave_oauth.client
-        file_mgr = PublicElasticFileManager(ag)
-        listing = file_mgr.search(system_id, query_string,
-                                  offset=offset, limit=limit)
+        
+
+        if system_id == "nees.public":
+            file_mgr = PublicElasticFileManager(ag)
+            listing = file_mgr.search(system_id, query_string,
+                                    offset=offset, limit=limit)
+
+        elif system_id == "designsafe.storage.community":
+            file_mgr = ElasticFileManager()
+            listing = file_mgr.search_community('designsafe.storage.community', query_string,
+                                    offset=offset, limit=limit) 
         # logger.info(listing)
         return JsonResponse(listing)
 

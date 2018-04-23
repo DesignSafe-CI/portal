@@ -313,6 +313,37 @@
           }
         }
       })
+
+      .state('communityDataSearch',{
+        url: '/community-search/?query_string&offset&limit',
+        controller: 'CommunityDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
+        params: {
+          systemId: 'nees.public',
+          filePath: '$SEARCH'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'nees.public';
+            var filePath = $stateParams.filePath || '/';
+            DataBrowserService.apiParams.fileMgr = 'public';
+            DataBrowserService.apiParams.baseUrl = '/api/public/files';
+            DataBrowserService.apiParams.searchState = 'communityDataSearch';
+            var queryString = $stateParams.query_string;
+            if (/[^A-Za-z0-9]/.test(queryString)){
+              queryString = '"' + queryString + '"';
+            }
+            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
+            console.log(options);
+            return DataBrowserService.search(options);
+          }],
+          'auth': function($q) {
+              return true;
+          }
+        }
+      })
+
+
       .state('communityData', {
         // url: '/community/',
         // template: '<pre>local/communityData.html</pre>'
@@ -334,7 +365,7 @@
             // }
             DataBrowserService.apiParams.fileMgr = 'community';
             DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = 'dataSearch';
+            DataBrowserService.apiParams.searchState = 'communityDataSearch';
             return DataBrowserService.browse(options);
           }],
           'auth': function($q) {
