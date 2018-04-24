@@ -721,7 +721,7 @@
     $scope.onBrowseData = function onBrowseData($event, file) {
       $event.preventDefault();
       DataBrowserService.showListing();
-      if (file.type === 'file') {
+      if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('projects.view.data', {projectId: projectId,
