@@ -142,9 +142,6 @@
                 required: function (value) {
                     return value ? true : false;
                 }
-            },
-            validationMessage: {
-                'required': 'Missing required'
             }
         },
         "isPublic",
@@ -681,9 +678,6 @@
                               required: function (value) {
                                   return value ? true : false;
                               }
-                          },
-                          validationMessage: {
-                              'required': 'Missing required'
                           }
                       },
                       "shortDescription",
@@ -1589,9 +1583,13 @@
             switch($scope.addModel.select){
               case 'Agave':
                 if ($scope.myForm.$valid){
-                  // Add appCategory to tags, and remove appCategory field from definition
-                  $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
-                  delete $scope.model.appCategory;
+                    // Add formatted appCategory entry to tags, and replace old appCategory if it exists
+                    if ($scope.model.hasOwnProperty('appCategory')) {
+                        if ($scope.model.tags.filter(s => s.includes('appCategory')) !== undefined && $scope.model.tags.filter(s => s.includes('appCategory')).length != 0) {
+                            $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appCategory'))[0]));
+                        }
+                        $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
+                    }
                   Apps.createApp($scope.model)
                     .then(
                       function(response){
@@ -1658,8 +1656,8 @@
                                         controller: [
                                          '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
                                             // Define appCategory if it exists in tags
-                                            if (appMeta.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.tags.filter(s => s.includes('appCategory')).length != 0) {
-                                                appMeta.appCategory = appMeta.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                            if (appMeta.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
+                                                 appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
                                             }
                                             $scope.appMeta = appMeta;
                                             $scope.close = function() {
