@@ -283,7 +283,7 @@
                  ng-click="ui.showEditCategory = false"><i class="fa fa-times"></i></button>
          </div>
       <h3>Edit Category</h3>
-      <form>
+      <form name='editCategoryForm'>
         <div style="display:inline-block; width:20%">
           <label for="id-tag-type" style="display:block">Type</label>
           <input type="text"
@@ -293,7 +293,8 @@
           <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
-                 ng-model="data.catForm.title"/>
+                 ng-model="data.catForm.title"
+                 required/>
         </div>
         <div class="extra-form-inputs" ng-if="data.catForm.type === 'Analysis'">
           <div style="display:inline-block; width:30%;">
@@ -315,7 +316,7 @@
         </div>
       <button class="btn btn-info"
               ng-click="saveEditCategory()"
-              ng-disabled="ui.editFormSaving">
+              ng-disabled="ui.editFormSaving || editCategoryForm.$invalid">
         <span ng-if="!ui.editFormSaving">
               <i class="fa fa-check"></i> Update
         </span>
@@ -346,7 +347,7 @@
          ng-if="ui.showAddCategory"
          style="margin-top:10px; margin-bottom:10px; padding-bottom:20px; border-bottom:1px solid lightgray">
       <h3>Add Category</h3>
-      <form>
+      <form name='addCategoryForm'>
         <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
@@ -360,7 +361,8 @@
           <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
-                 ng-model="data.form.projectTagToAdd.title"/>
+                 ng-model="data.form.projectTagToAdd.title"
+                 required/>
         </div>
         <!-- Analysis Reference Data field start -->
         <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis'">
@@ -428,7 +430,7 @@
         <div style="width:100%; height:20px">
           <button class="btn btn-sm btn-info"
                   ng-click="addProjectTag()"
-                  ng-disabled="ui.addingTag">
+                  ng-disabled="ui.addingTag || addCategoryForm.$invalid">
                 <i class="fa fa-check"></i>
                     Save Category
 

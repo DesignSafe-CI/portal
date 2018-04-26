@@ -1374,7 +1374,7 @@ a.text-warning:focus {
 .text-danger {
   font-size: 18;
   font-weight: bold;
-  color: #a94442;
+  color: #b81917; /* #a94442 */
 }
 a.text-danger:hover,
 a.text-danger:focus {

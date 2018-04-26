@@ -295,8 +295,8 @@
         project: {},
       };
 
+      // object containing required* fields that will be checked on metadata page
       // TODO:  add requirements to simulation and other project types
-      // object containing required* fields that will be checked
       var requirements = {
         "projectReq": ['title', 'projectType', 'teamMembers', 'description', 'awardNumber', 'keywords'],
         "experimentReq": ['title', 'experimentType', 'experimentalFacility', 'description', 'authors'],
@@ -306,112 +306,128 @@
         "analysisReq": ['title', 'description'],
       };
 
-      checklist.project.name = projData.title;
-      checklist.project.category = "project";
-      requirements.projectReq.forEach(function(req) {
-        if (projData[req] == '' || projData[req] == []) {
-          checklist.project[req] = false;
-        } else {
-          checklist.project[req] = true;
-        }
-      });
-
-      //check experiment requirements
-      //TODO: see if there is a better way to increment
-      var i = 0;
-      var models = $scope.data.project.modelconfig_set;
-      var sensors = $scope.data.project.sensorlist_set;
-      var events = $scope.data.project.event_set;
-      experimentsList.forEach(function (exp) {
-        var title = experimentsList[i].value.title;
-
-        checklist['experiment'+i] = {};
-        checklist['experiment'+i].name = title;
-        checklist['experiment'+i].category = 'experiment';
-
-        //check experiment for model configs
-        checklist['experiment'+i].model = false;
-        models.forEach(function(mod){
-          mod.value.experiments.forEach(function(mid) {
-            if (exp.uuid == mid) {
-              checklist['experiment'+i].model = true;
-            }
-          });
-        });
-
-        //check experiment for event data
-        checklist['experiment'+i].event = false;
-        events.forEach(function(evt) {
-          evt.value.experiments.forEach(function(eid) {
-            if (exp.uuid == eid) {
-              checklist['experiment'+i].event = true;
-            }
-          });
-        });
-
-        //check experiment for sensor data
-        checklist['experiment'+i].sensor = false;
-        sensors.forEach(function(sen) {
-          sen.value.experiments.forEach(function(sid) {
-            if (exp.uuid == sid) {
-              checklist['experiment'+i].sensor = true;
-            }
-          });
-        });
-
-        requirements.experimentReq.forEach(function (req) {
-          if (exp.value[req] == '' || exp.value[req] == []) {
-            checklist['experiment'+i][req] = false;
+      //TODO: set 'requirement checks' in their own functions
+      //check project requirements
+      function projectRequirements(){
+        checklist.project.name = projData.title;
+        checklist.project.category = "project";
+        requirements.projectReq.forEach(function(req) {
+          if (projData[req] == '' || projData[req] == []) {
+            checklist.project[req] = false;
           } else {
-            checklist['experiment'+i][req] = true;
+            checklist.project[req] = true;
           }
         });
-        i++;
-      });
+        return;
+      }
+      
+      //check experiment requirements
+      function experimentRequirements(){
+        var i = 0;
+        //TODO: remove these with revision of event,sensor,modelconf check
+        var models = $scope.data.project.modelconfig_set;
+        var sensors = $scope.data.project.sensorlist_set;
+        var events = $scope.data.project.event_set;
+
+        experimentsList.forEach(function (exp) {
+          var title = experimentsList[i].value.title;
+
+          checklist['experiment'+i] = {};
+          checklist['experiment'+i].name = title;
+          checklist['experiment'+i].category = 'experiment';
+
+          
+          //model configs
+          checklist['experiment'+i].model = false;
+          models.forEach(function(mod){
+            mod.value.experiments.forEach(function(mid) {
+              if (exp.uuid == mid) {
+                checklist['experiment'+i].model = true;
+              }
+            });
+          });
+          
+          //sensor data
+          checklist['experiment'+i].sensor = false;
+          sensors.forEach(function(sen) {
+            sen.value.experiments.forEach(function(sid) {
+              if (exp.uuid == sid) {
+                checklist['experiment'+i].sensor = true;
+              }
+            });
+          });
+
+          //event data
+          checklist['experiment'+i].event = false;
+          events.forEach(function(evt) {
+            evt.value.experiments.forEach(function(eid) {
+              if (exp.uuid == eid) {
+                checklist['experiment'+i].event = true;
+              }
+            });
+          });
+
+          requirements.experimentReq.forEach(function (req) {
+            if (exp.value[req] == '' || exp.value[req] == []) {
+              checklist['experiment'+i][req] = false;
+            } else {
+              checklist['experiment'+i][req] = true;
+            }
+          });
+          i++;
+        });
+        return;
+      }
 
       //check analysis requirements
-      i = 0;
-      analysisList.forEach(function (exp) {
-        var title = analysisList[i].value.title;
+      function analysisRequirements(){
+        var i = 0;
+        analysisList.forEach(function (exp) {
+          var title = analysisList[i].value.title;
 
-        checklist['analysis'+i] = {};
-        checklist['analysis'+i].name = title;
-        checklist['analysis'+i].category = 'analysis';
-        requirements.analysisReq.forEach(function (req) {
-          if (exp.value[req] == '' || exp.value[req] == []) {
-            checklist['analysis'+i][req] = false;
-          } else {
-            checklist['analysis'+i][req] = true;
-          }
+          checklist['analysis'+i] = {};
+          checklist['analysis'+i].name = title;
+          checklist['analysis'+i].category = 'analysis';
+          requirements.analysisReq.forEach(function (req) {
+            if (exp.value[req] == '' || exp.value[req] == []) {
+              checklist['analysis'+i][req] = false;
+            } else {
+              checklist['analysis'+i][req] = true;
+            }
+          });
+          i++;
         });
-        i++;
-      });
+        return;
+      }
 
       //check report requirements
-      i = 0;
-      reportsList.forEach(function (exp) {
-        var title = reportsList[i].value.title;
+      function reportRequirements(){
+        var i = 0;
+        reportsList.forEach(function (exp) {
+          var title = reportsList[i].value.title;
 
-        checklist['report'+i] = {};
-        checklist['report'+i].name = title;
-        checklist['report'+i].category = 'report';
-        requirements.reportReq.forEach(function (req) {
-          if (exp.value[req] == '' || exp.value[req] == []) {
-            checklist['report'+i][req] = false;
-          } else {
-            checklist['report'+i][req] = true;
-          }
+          checklist['report'+i] = {};
+          checklist['report'+i].name = title;
+          checklist['report'+i].category = 'report';
+          requirements.reportReq.forEach(function (req) {
+            if (exp.value[req] == '' || exp.value[req] == []) {
+              checklist['report'+i][req] = false;
+            } else {
+              checklist['report'+i][req] = true;
+            }
+          });
+          i++;
         });
-        i++;
-      });
+        return;
+      }
 
-      console.log("projectdata -------------------->");
-      console.log($scope.data.project);
-      console.log("checklists -------------------->");
-      console.log(checklist);
-      console.log("publications -------------------->");
-      console.log($scope.state.publication);
+      
+      projectRequirements();
+      experimentRequirements();
+      analysisRequirements();
+      reportRequirements();
 
+      //TODO:   tune this area to respond to project type before checking
       //check for missing metadata (experimental)
       var allow = true;
       if (projData.projectType == "experimental") {
@@ -428,8 +444,15 @@
           // res[0] == keys
           // res[1] == values
           if (res[1] === false) {
-            publicationMessages.push({title: exp.name, message: "You are missing: " + res[0]});
-            allow = false;
+            if (res[0] == 'title') {
+              //if 'title' is missing push data category type
+              publicationMessages.push({title: exp.category, message: "You are missing: " + res[0]});
+              allow = false;
+            } else {
+              //if anything else push the data name
+              publicationMessages.push({title: exp.name, message: "You are missing: " + res[0]});
+              allow = false;
+            }
           }
         });
         i++;
@@ -506,10 +529,7 @@
         $scope.state.publishPipeline = 'meta';
       }
       else if (st == 'meta'){
-        // check for missing metadata entries
         checkMetadata();
-
-        // $scope.state.publishPipeline = 'agreement';
       }else {
         $scope.state.publishPipeline = 'agreement';
       }
