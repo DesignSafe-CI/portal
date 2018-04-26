@@ -22,7 +22,7 @@
             self.lists[tab] = [];
           });
 
-          // Current list of apps with an Icon
+          // Current list of apps with an Icon, maybe move this to agave metadata record
           const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls-pre/post', 'visit', 'openfoam', 'opensees'];
 
           angular.forEach(response.data, function(appMeta){
@@ -41,22 +41,19 @@
                   return true;
                 }
               });
-              if (appMeta.value.definition.isPublic){
+              if (appMeta.value.definition.isPublic) {
                 // If App has no category, place in Simulation tab
-                try {
-                  self.lists[appMeta.value.definition.appCategory].push(
-                    appMeta
-                  );
-                } catch (error) {
-                  self.lists['Simulation'].push(
-                    appMeta
-                  );
+                // Check if category exists either as a metadata field, or in a tag. Moving forward, all categeroies will be moved to tags
+                if (appMeta.value.definition.hasOwnProperty('appCategory')) {
+                  self.lists[appMeta.value.definition.appCategory].push(appMeta);
+                } else if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
+                  self.lists[appMeta.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1]].push(appMeta);
+                } else {
+                  self.lists['Simulation'].push(appMeta);
                 }
               } else {
-                if (appMeta.value.definition.available){
-                  self.lists['My Apps'].push(
-                    appMeta
-                  );
+                if (appMeta.value.definition.available) {
+                  self.lists['My Apps'].push(appMeta);
                 }
               }
             }
