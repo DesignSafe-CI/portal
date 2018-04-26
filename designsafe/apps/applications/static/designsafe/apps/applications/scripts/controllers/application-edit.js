@@ -42,7 +42,7 @@
                 "type": "string",
                 "description": "Categorization for this app if made public",
                 "enum": [
-                    "Simulation", "Visualization", "Data Processing", "Utilities"
+                    "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
                 ],
                 "title": "Category"
             },
@@ -185,7 +185,7 @@
                   "type": "string",
                   "description": "Categorization for this app if made public",
                   "enum": [
-                      "Simulation", "Visualization", "Data Processing", "Utilities"
+                      "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
                   ],
                   "title": "Category"
               },
@@ -1459,6 +1459,9 @@
             switch($scope.editModel.type){
               case 'agave':
                 if ($scope.myForm.$valid){
+                  // Add formatted appCategory entry to tags, which persists through publication
+                  $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
+                  delete $scope.model.appCategory;
                   Apps.createApp($scope.model)
                     .then(
                       function(response){
@@ -1521,6 +1524,10 @@
                                         },
                                         controller: [
                                          '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
+                                            // Define appCategory if it exists in tags
+                                            if (appMeta.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.tags.filter(s => s.includes('appCategory')).length != 0) {
+                                                appMeta.appCategory = appMeta.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                            }
                                             $scope.appMeta = appMeta;
 
                                             $scope.close = function() {
@@ -1562,6 +1569,7 @@
                   metadata.value = {};
                   metadata.value.definition = {};
                   metadata.value.definition.id = $scope.customModel.label+ '-' + $scope.customModel.version;
+                  metadata.value.definition.appCategory = $scope.customModel.appCategory;
                   metadata.value.type = $translate.instant('apps_metadata_custom');
                   _.extend(metadata.value.definition, angular.copy($scope.customModel));
 
@@ -1777,6 +1785,11 @@
                                     delete response.data.lastModified;
                                     delete response.data.revision;
                                     delete response.data.available;
+                                    // Define appCategory if it exists in tags, and remove from tags displayed to user to prevent multiple Categories
+                                    if (response.data.tags.filter(s => s.includes('appCategory')) !== undefined && response.data.tags.filter(s => s.includes('appCategory')).length != 0) {
+                                        response.data.appCategory = response.data.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                        response.data.tags.splice(response.data.tags.indexOf(response.data.tags.filter(s => s.includes('appCategory'))[0]));
+                                    }
                                     $scope.model = angular.copy(response.data);
 
                                     Apps.getSystems()
@@ -1879,6 +1892,12 @@
               delete $scope.editModel.definition.revision;
               delete $scope.editModel.definition.available;
               delete $scope.editModel.definition.id;
+
+              // Define appCategory if it exists in tags, and remove from tags displayed to user to prevent multiple Categories
+              if ($scope.editModel.definition.tags.filter(s => s.includes('appCategory')) !== undefined && $scope.editModel.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
+                  $scope.editModel.definition.appCategory = $scope.editModel.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                  $scope.editModel.definition.tags.splice($scope.editModel.definition.tags.indexOf($scope.editModel.definition.tags.filter(s => s.includes('appCategory'))[0]));
+              }
               $scope.model = $scope.editModel.definition;
 
               Apps.getSystems()

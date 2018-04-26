@@ -67,7 +67,7 @@
                 "type": "string",
                 "description": "Categorization for this app if made public",
                 "enum": [
-                    "Simulation", "Visualization", "Data Processing", "Utilities"
+                    "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
                 ],
                 "title": "Category"
             },
@@ -211,7 +211,7 @@
                   "type": "string",
                   "description": "Categorization for this app if made public",
                   "enum": [
-                      "Simulation", "Visualization", "Data Processing", "Utilities"
+                      "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
                   ],
                   "title": "Category"
               },
@@ -1589,6 +1589,9 @@
             switch($scope.addModel.select){
               case 'Agave':
                 if ($scope.myForm.$valid){
+                  // Add appCategory to tags, and remove appCategory field from definition
+                  $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
+                  delete $scope.model.appCategory;
                   Apps.createApp($scope.model)
                     .then(
                       function(response){
@@ -1618,7 +1621,10 @@
                                         },
                                         controller: [
                                          '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
-
+                                            // Define appCategory if it exists in tags
+                                            if (appMeta.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.tags.filter(s => s.includes('appCategory')).length != 0) {
+                                                appMeta.appCategory = appMeta.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                            }
                                             $scope.appMeta = appMeta;
 
                                             $scope.close = function() {
@@ -1651,6 +1657,10 @@
                                         },
                                         controller: [
                                          '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
+                                            // Define appCategory if it exists in tags
+                                            if (appMeta.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.tags.filter(s => s.includes('appCategory')).length != 0) {
+                                                appMeta.appCategory = appMeta.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                            }
                                             $scope.appMeta = appMeta;
                                             $scope.close = function() {
                                               $uibModalInstance.dismiss();
@@ -1693,6 +1703,7 @@
                   metadata.value.definition.id = $scope.customModel.label+ '-' + $scope.customModel.version;
                   metadata.value.definition.available = true;
                   metadata.value.definition.isPublic = false;
+                  metadata.value.definition.appCategory = $scope.customModel.appCategory;
                   metadata.value.type = 'html';
                   _.extend(metadata.value.definition, angular.copy($scope.customModel));
 
