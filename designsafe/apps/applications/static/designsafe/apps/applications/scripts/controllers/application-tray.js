@@ -788,6 +788,36 @@
                               }
 
                               break;
+                            case 'disable':
+                            case 'enable':
+                              var metadata = {};
+                              metadata.uuid = response.data[0].uuid;
+                              metadata.name = response.data[0].name;
+                              metadata.value = response.data[0].value;
+                              metadata.value.definition.available = (action === "enable");
+
+                              Apps.updateMeta(metadata, appMeta.uuid)
+                                .then(
+                                function (response) {
+                                  $scope.requesting = false;
+                                  $uibModalInstance.dismiss();
+                                  $scope.refreshApps();
+                                },
+                                function (response) {
+                                  $scope.requesting = false;
+                                  if (response.data) {
+                                    if (response.data.message) {
+                                      $scope.error = $translate.instant('error_app_update') + response.data.message;
+                                    } else {
+                                      $scope.error = $translate.instant('error_app_update') + response.data;
+                                    }
+                                  } else {
+                                    $scope.error = $translate.instant('error_app_update');
+                                  }
+                                }
+                                );
+
+                              break;
                             default:
                               var metadata = {};
                               // metadata.uuid = response.data[0].uuid;

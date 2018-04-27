@@ -91,15 +91,15 @@
                           </li>
                           <hr ng-if="!appMeta.value.definition.isPublic">
 
-                          <li ng-if="!appMeta.value.definition.available && appMeta.value.type === 'agave'">
+                          <li ng-if="!appMeta.value.definition.available">
                               <a ng-click="confirmAction(appMeta, 'enable')" role="button"> <i class="fa fa-check"></i> Enable </a>
                           </li>
-                          <hr ng-if="!appMeta.value.definition.available && appMeta.value.type === 'agave'">
+                          <hr ng-if="!appMeta.value.definition.available">
 
-                          <li ng-if="appMeta.value.definition.available && appMeta.value.type === 'agave'">
+                          <li ng-if="appMeta.value.definition.available">
                               <a ng-click="confirmAction(appMeta, 'disable')" role="button"> <i class="fa fa-remove"></i> Disable </a>
                           </li>
-                          <hr ng-if="appMeta.value.definition.available && appMeta.value.type === 'agave'">
+                          <hr ng-if="appMeta.value.definition.available">
 
                           <li>
                              <a ng-click="confirmAction(appMeta, 'delete')" role="button"> <i class="fa fa-trash-o"></i> Delete </a>
