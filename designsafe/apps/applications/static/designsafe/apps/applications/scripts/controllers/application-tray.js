@@ -723,23 +723,23 @@
                                       }
                                     });
                               break;
-
+                            case 'private':
                             case 'publish':
                               if (Django.user === 'ds_admin'){
                                 var metadata = {};
                                 metadata.uuid = response.data[0].uuid;
                                 metadata.name = response.data[0].name;
                                 metadata.value = response.data[0].value;
-                                metadata.value.definition.isPublic = true;
+                                metadata.value.definition.isPublic = (action === 'publish');
                                 metadata.value.definition.available = response.data[0].value.definition.available;
 
                                 Apps.updateMeta(metadata, appMeta.uuid)
                                   .then(
                                     function(response){
-                                      // make meta world readable
+                                      // make meta world readable, or remove world permissions if making private
                                       var body = {};
                                       body.username = 'world';
-                                      body.permission = 'READ';
+                                      body.permission = (action === 'publish') ? 'READ' : 'NONE';
                                       Apps.updateMetaPermissions(body, metadata.uuid)
                                         .then(
                                           function(response){

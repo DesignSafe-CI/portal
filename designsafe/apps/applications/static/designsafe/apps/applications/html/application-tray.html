@@ -81,6 +81,11 @@
                           </li>
                           <hr ng-if="!appMeta.value.definition.isPublic || appMeta.value.type === 'html'">
 
+                          <li ng-if="appMeta.value.definition.isPublic && appMeta.value.type === 'html'">
+                            <a ng-click="confirmAction(appMeta, 'private')" role="button"> <i class="fa fa-eye-slash"></i> Make Private </a>
+                          </li>
+                          <hr ng-if="appMeta.value.definition.isPublic && appMeta.value.type === 'html'">
+
                           <li>
                               <a ng-click="clone(appMeta)" role="button"> <i class="fa fa-clone"></i> Clone </a>
                           </li>
