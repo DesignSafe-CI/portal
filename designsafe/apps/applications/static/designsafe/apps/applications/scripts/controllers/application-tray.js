@@ -870,11 +870,11 @@
         });
       };
 
-      $scope.clone = function(app){
+      $scope.cloneApp = function(app){
         $scope.error = '';
         $scope.clone = false;
 
-        // Check system roles for cloning
+        // Check system roles for cloning -- TODO: Create simpler agave call for single user's pems
         var execSystem = $translate.instant('execution_default');
         Apps.getSystemRoles(execSystem)
           .then(
