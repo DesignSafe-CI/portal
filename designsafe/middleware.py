@@ -31,10 +31,14 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
         protected_path = is_path_protected(current_path)
 
         user_agent = request.META['HTTP_USER_AGENT']
-        if ('Chrome' not in user_agent) and ('Firefox' not in user_agent):
+        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent)
+
+        if not agent_is_supported:
             messages.warning(request, '<h4>Unsupported Browser</h4>'
-                                      'Designsafe is best experienced with Chrome or'
-                                      'Firefox. Other browsers may experience issues.')
+                                      'Your browser is not supported by DesignSafe. '
+                                      'Please switch to <a href="https://www.google.com/chrome">Chrome</a> '
+                                      'or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a> '
+                                      'if you experience issues.')
 
         if request.user.is_authenticated and protected_path:
             for term in TermsAndConditions.get_active_list():
