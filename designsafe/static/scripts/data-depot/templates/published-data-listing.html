@@ -23,7 +23,7 @@
                               ng-click="viewCollabs($event)">View Team Members</button>
                     </td>
                   </tr>
-                </tbody>
+                </tbody>{{project.doi}}
               </table>
             </td>
             <td style="padding:0px;">
@@ -31,7 +31,7 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%;">DOI</th>
-                    <td style="border-top:none; width:75%;">{{project.doi}}
+                    <td style="border-top:none; width:75%;">
                       <button class="btn btn-info btn-sm pull-right"
                               ng-click="showCitation(project)">Citation
                       </button>
@@ -119,7 +119,81 @@
     Loading... <i class="fa fa-spinner fa-spin"></i>
   </div>
   <hr>
-</div>
+
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Dataset",
+    "@id": "https://doi.org/"+{{project.doi}}, //dataset doi url 
+    "additionalType": "Project/Experimental", //dataset type
+    "name": {{ project.value.title }}, //dataset name
+    "alternateName": {{project.value.projectId}}, //alternative name of the dataset
+    "author": [
+      {
+        "@type": "Person",
+        "name": {{project.piLabel}}, 
+        "givenName": "Michael",
+        "familyName": "Motley"
+      },
+      {
+        "@type": "Person",
+        "name": "Pedro Arduino",
+        "givenName": "Pedro",
+        "familyName": "Arduino"
+      },
+      {
+        "@type": "Person",
+        "name": "Marc Eberhard",
+        "givenName": "Marc",
+        "familyName": "Eberhard"
+      },
+      {
+        "@type": "Person",
+        "name": "Daniel Cox",
+        "givenName": "Daniel",
+        "familyName": "Cox"
+      },
+      {
+        "@type": "Person",
+        "name": "Andre Barbosa",
+        "givenName": "Andre",
+        "familyName": "Barbosa"
+      },
+      {
+        "@type": "Person",
+        "name": "Krishnendu Shekhar",
+        "givenName": "Krishnendu",
+        "familyName": "Shekhar"
+      },
+      {
+        "@type": "Person",
+        "name": "Mohammad Shafiqual Alam",
+        "givenName": "Mohammad Shafiqual",
+        "familyName": "Alam"
+      },
+      {
+        "@type": "Person",
+        "name": "Pedro Lomonaco",
+        "givenName": "Pedro",
+        "familyName": "Lomonaco"
+      }
+    ],
+    "description": {{project.value.description}},
+    "license": "http://opendatacommons.org/licenses/by/1-0",
+    "keywords": {{project.value.keywords}},
+    "inLanguage": "English",
+    "datePublished": {{browser.publication.created| date: 'MMM/d/yyyy'}},
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Designsafe-CI"
+    },
+    "provider": {
+      "@type": "Organization",
+      "name": "TACC"
+    }
+  }
+</script>
 
 
 <div ng-if="project.value.projectType == 'other' || filePathComps.length > 1"><!-- File Listing View -->
