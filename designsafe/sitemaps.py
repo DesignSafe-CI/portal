@@ -36,6 +36,7 @@ from django.contrib import sitemaps
 from django.contrib.sites.models import Site
 from django.urls import reverse
 from designsafe.apps.api.agave.filemanager.public_search_index import PublicElasticFileManager as pefm
+from designsafe.apps.api.agave import get_service_account_client
 
 # imported urlpatterns from apps
 import urls     # from designsafe import urls not working?
@@ -150,14 +151,14 @@ class ProjectSitemap(sitemaps.Sitemap):
     changefreq = 'weekly'
 
     def items(self):
-
+        client = get_service_account_client()
         projPath = []
 
         # pefm - PublicElasticFileManager to grab public projects
         count = 0
         while True:
             count += 200
-            projects = pefm().listing('nees.public', '/', 0, count).to_dict()
+            projects = pefm(client).listing('nees.public', '/', 0, count).to_dict()
             if len(projects['children']) < count:
                 break
 
