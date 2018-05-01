@@ -150,6 +150,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.language.LanguageCookieMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
     'designsafe.middleware.DesignSafeTermsMiddleware',
+    'designsafe.middleware.DesignSafeSupportedBrowserMiddleware'
 )
 
 ROOT_URLCONF = 'designsafe.urls'

@@ -16,6 +16,17 @@ from termsandconditions.models import TermsAndConditions
 
 logger = logging.getLogger(__name__)
 
+class DesignSafeSupportedBrowserMiddleware:
+    def process_request(self, request):
+        user_agent = request.META['HTTP_USER_AGENT']
+        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent)
+
+        if not agent_is_supported:
+            messages.warning(request, '<h4>Unsupported Browser</h4>'
+                                      'Your browser is not supported by DesignSafe. '
+                                      'Please switch to <a href="https://www.google.com/chrome">Chrome</a> '
+                                      'or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a> '
+                                      'if you experience issues.')
 
 class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
     """
@@ -29,16 +40,6 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
         """Process each request to app to ensure terms have been accepted"""
         current_path = request.META['PATH_INFO']
         protected_path = is_path_protected(current_path)
-
-        user_agent = request.META['HTTP_USER_AGENT']
-        agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent)
-
-        if not agent_is_supported:
-            messages.warning(request, '<h4>Unsupported Browser</h4>'
-                                      'Your browser is not supported by DesignSafe. '
-                                      'Please switch to <a href="https://www.google.com/chrome">Chrome</a> '
-                                      'or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a> '
-                                      'if you experience issues.')
 
         if request.user.is_authenticated and protected_path:
             for term in TermsAndConditions.get_active_list():
