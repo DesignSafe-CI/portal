@@ -1195,6 +1195,21 @@
         DataBrowserService.viewCategories([]);
       },
 
+      isMissing: function(ent){
+        if (typeof(ent) == 'object') {
+          if (Object.keys(ent).length < 1) {
+            return true;
+          } else {
+            return false;
+        }
+        }
+        if (ent === '' || ent === undefined) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+
       selectAllFiles : function(ent, evt){
         var listing = [];
         if (ent.name === 'designsafe.project.experiment'){
