@@ -17,6 +17,11 @@ from termsandconditions.models import TermsAndConditions
 logger = logging.getLogger(__name__)
 
 class DesignSafeSupportedBrowserMiddleware:
+    """
+    Middleware to check if the user is running Chrome or Firefox and 
+    flash a warning otherwise.
+    """
+
     def process_request(self, request):
         user_agent = request.META['HTTP_USER_AGENT']
         agent_is_supported = ('Chrome' in user_agent) or ('Firefox' in user_agent)
