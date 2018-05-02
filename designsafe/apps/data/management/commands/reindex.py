@@ -1,10 +1,12 @@
-import six
+"""Reindex command"""
 import json
 import logging
+import six
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import elasticsearch
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import TransportError
+
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +95,7 @@ class Command(BaseCommand):
 
         if doc_type:
             body['source']['type'] = doc_type
-	self.stdout.write('doc_type: %s' % doc_type)
+            self.stdout.write('doc_type: %s' % doc_type)
         es_local = elasticsearch.Elasticsearch(
             settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
             request_timeout=120)
