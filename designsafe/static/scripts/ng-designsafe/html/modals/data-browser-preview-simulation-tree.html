@@ -63,7 +63,7 @@
                             <div style="margin-left:5px; display:inline-block;"
                                  ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
                                 <span class="label tag-black"
-                                      ng-class="{'selected':data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].uuid === data.entityUuid}">Integrated Report</span>
+                                      ng-class="{'selected': data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].uuid === data.entityUuid}">Integrated Report</span>
                                 <span class="tab-title">
                                 {{data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].value.title}}
                                 </span>
