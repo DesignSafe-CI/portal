@@ -289,7 +289,7 @@
       .state('publicDataSearch',{
         url: '/public-search/?query_string&offset&limit',
         controller: 'PublicationDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
+        templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
         params: {
           systemId: 'nees.public',
           filePath: '$SEARCH'

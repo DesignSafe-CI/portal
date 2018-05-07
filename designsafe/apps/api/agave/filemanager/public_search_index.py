@@ -508,9 +508,22 @@ class PublicElasticFileManager(BaseFileManager):
         else:
             projects_search = projects_search.sort('name._exact')
 
+        """
+        query = Q('bool', must=[Q('simple_query_string', query=query_string)])
+
+
+        projects_search = Search(index="des-publications_legacy,des-publications")\
+            .query(query)\
+            .extra(from_=offset, size=limit)
+        """
         t1 = datetime.datetime.now()
+        
         projects_res = projects_search.execute()
         logger.debug(datetime.datetime.now() - t1)
+
+        logger.debug(projects_res.hits.total)
+
+        """
         files_search = PublicObjectIndexed.search()
 
         files_query = Q('bool',
@@ -525,6 +538,7 @@ class PublicElasticFileManager(BaseFileManager):
         t1 = datetime.datetime.now()
         files_res = files_search.execute()
         logger.debug(datetime.datetime.now() - t1)
+        """
         if projects_res.hits.total:
             if projects_res.hits.total - offset > limit:
                 files_offset = 0
@@ -535,9 +549,10 @@ class PublicElasticFileManager(BaseFileManager):
             else:
                 projects_limit = projects_res.hits.total
                 files_limit = limit - projects_limit
-
+        
         # TODO: This is rather SLOW
         children = []
+  
         project_paths = [p.projectPath for p in projects_res]
         for project in projects_search[projects_offset:projects_limit]:
             logger.debug(project)
@@ -548,9 +563,9 @@ class PublicElasticFileManager(BaseFileManager):
                                 Q({'term': {'name._exact': project.projectPath}}),
                                 Q({'term': {'systemId': system}})])
             res = search.execute()
-            print res
             if res.hits.total:
                 children.append(PublicObject(res[0]).to_dict())
+        # print children
         # search = PublicObjectIndexed.search()
         # search.query = Q('bool',
         #     must=[
@@ -563,10 +578,12 @@ class PublicElasticFileManager(BaseFileManager):
 
         # for r in res[projects_offset:projects_limit]:
         #     children.append(PublicObject(r).to_dict())
-
+        """
         for file_doc in files_search[files_offset:files_limit]:
             logger.debug(file_doc)
             children.append(PublicObject(file_doc).to_dict())
+        """
+        
         logger.debug(datetime.datetime.now() - t1)
         result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
