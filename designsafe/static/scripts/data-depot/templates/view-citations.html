@@ -5,7 +5,7 @@
   <p>
     {{$ctrl.ui.ieeeCitation}}
   </p>
-  <!--
+<!--   
   <select class="form-control"
           ng-options="style for style in $ctrl.ui.styles"
           ng-model="$ctrl.ui.style"
@@ -19,6 +19,9 @@
   <button class="btn btn-default"
           ng-click="$ctrl.downloadCitation()">Download</button>
   -->
+</div>
+<div class="modal-body">
+  <button class="btn btn-info btn-sm" ng-click="$ctrl.downloadCitation()">Download Metadata</button>
 </div>
 <div class="modal-footer">
   <button class="btn btn-info"

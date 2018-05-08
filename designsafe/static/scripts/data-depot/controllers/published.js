@@ -2,10 +2,10 @@
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
-  app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django',
+  app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django', '$window',
                                      'DataBrowserService', 'FileListing',
                                      '$uibModal','$http', '$stateParams',
-                 function ($scope, $state, Django, DataBrowserService,
+                 function ($scope, $state, Django, $window, DataBrowserService,
                            FileListing, $uibModal, $http, $stateParams) {
   $scope.filePathComps = _.compact($stateParams.filePath.split('/'));
   $scope.browser = DataBrowserService.state();
@@ -464,11 +464,16 @@
             $uibModalInstance.dismiss('Close');
         };
         $ctrl.downloadCitation = function(){
-          var blob = new Blob([$ctrl.data.citation]);
-          var downloadLink = $('<a></a>');
-          downloadLink.attr('href', window.URL.createObjectURL(blob));
-          downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
-          downloadLink[0].click();
+          // var blob = new Blob([$ctrl.data.citation]);
+          // var downloadLink = $('<a></a>');
+          // downloadLink.attr('href', window.URL.createObjectURL(blob));
+          // downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
+          // downloadLink[0].click();
+
+          var doi = $ctrl.data.ent.doi;
+          doi = doi.slice(4);
+          doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
+          $window.open(doiurl);
         };
       $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
       $ctrl.getCitation();
