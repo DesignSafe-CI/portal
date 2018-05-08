@@ -550,9 +550,15 @@ class PublicElasticFileManager(BaseFileManager):
                 projects_limit = projects_res.hits.total
                 files_limit = limit - projects_limit
         
+        des_published_query = Q('bool', must=[Q('simple_query_string', query=query_string)])
+        des_published_search = PublicationIndexed.search()\
+            .query(des_published_query)\
+            .extra(from_=offset, size=limit)
+
+        des_published_res = des_published_search.execute()
+        children = [Publication(res).to_file() for res in des_published_res]
+
         # TODO: This is rather SLOW
-        children = []
-  
         project_paths = [p.projectPath for p in projects_res]
         for project in projects_search[projects_offset:projects_limit]:
             logger.debug(project)
