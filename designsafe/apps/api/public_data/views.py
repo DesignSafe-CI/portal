@@ -77,6 +77,7 @@ class PublicDataListView(BaseApiView):
         status = request.GET.get('status', 'published')
         listing = file_mgr.listing(system_id, file_path,
                                    offset=offset, limit=limit, status=status)
+        # logger.debug(listing.to_dict()['children'][0])
         return JsonResponse(listing.to_dict())
 
 class PublicMediaView(FileMediaView):

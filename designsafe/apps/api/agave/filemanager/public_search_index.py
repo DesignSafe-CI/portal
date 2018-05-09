@@ -159,6 +159,69 @@ class Publication(object):
         else:
             raise AttributeError('\'Publication\' has no attribute \'{}\''.format(name))
 
+class LegacyPublicationIndexed(DocType):
+   class Meta:
+        index = settings.ES_INDICES['publications_legacy']['name']
+        doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name'] 
+
+class LegacyPublication(object):
+    def __init__(self, wrap=None, project_id=None, *args, **kwargs):
+        if wrap is not None:
+            if isinstance(wrap, LegacyPublicationIndexed):
+                self._wrap = wrap
+
+    @classmethod
+    def listing(cls):
+        list_search = PublicSearchManager(cls, LegacyPublicationIndexed.search(), page_size=100)
+        # list_search._search.query = Q(None)
+        list_search.sort({'project._exact': 'asc'})
+        return list_search.results(0)
+
+    def to_file(self):
+        publication_dict = self._wrap.to_dict()
+
+        project_dict = {}
+        for key in ['deleted', 'description', 'endDate', 'facility', 'name', 
+            'organization', 'pis', 'project', 'projectPath', 'publications',
+            'startDate', 'system', 'title', 'sponsor']:
+            
+            if key in publication_dict:
+                project_dict[key] = publication_dict[key]
+
+        project_dict['systemId'] = publication_dict['system']
+
+        experiments = []
+        if 'experiments' in publication_dict:
+            experiments = publication_dict['experiments']
+
+        dict_obj = {'agavePath': 'agave://nees.public/{}'.\
+                                 format(self.path),
+                     'children': [],
+                     'deleted': False,
+                     'format': 'folder',
+                     'length': 24731027,
+                     'name': project_dict['name'],
+                     'path': '/{}'.format(self.path),
+                     'permissions': 'READ',
+                     'project': project_dict['project'],
+                     'system': project_dict['system'],
+                     'systemId': project_dict['system'],
+                     'type': 'dir',
+                     'metadata': {
+                         'experiments': experiments,
+                         'project': project_dict
+                     }}
+                
+        return dict_obj
+    
+    def __getattr__(self, name):
+        val = getattr(self._wrap, name, None)
+        if val:
+            return val
+        else:
+            return 'N/A'
+            # raise AttributeError('\'LegacyPublication\' has no attribute \'{}\''.format(name))
+
 class CMSIndexed(DocType):
     class Meta:
         index = 'cms'
@@ -444,6 +507,22 @@ class PublicObject(object):
             raise AttributeError('\'PublicObject\' has no attribute \'{}\''.\
                                  format(name))
 
+class PublicDocumentListing(object):
+    def __init__(self, listing_iterator, system, path):
+        self._listing_iterator = listing_iterator
+        self.system = system
+        self.path = path
+
+    def to_dict(self):
+        # logger.debug(self._doc.to_dict())
+        obj_dict = {}
+        obj_dict['system'] = self.system
+        obj_dict['path'] = self.path
+        obj_dict['children'] = [doc.to_file() for doc in self._listing_iterator]
+        return dict(obj_dict)
+
+
+
 class PublicElasticFileManager(BaseFileManager):
     """Manager to handle Public elastic search documents"""
 
@@ -458,22 +537,30 @@ class PublicElasticFileManager(BaseFileManager):
         file_path = file_path or '/'
         logger.debug('file_path: %s', file_path)
         if file_path == '/':
-            listing = PublicObject.listing(system, file_path,
-                                           offset=offset, limit=limit)
+            # listing = PublicObject.listing(system, file_path,
+            #                                offset=offset, limit=limit)
+
             publications = Publication.listing(status)
+            legacy_publications = LegacyPublication.listing()
             if file_path == '/':
-                listing.children = itertools.chain(publications, listing.children)
+                listing_iterator = itertools.chain(legacy_publications)
+                listing = PublicDocumentListing(listing_iterator, system, file_path)
         else:
             fmgr = AgaveFileManager(self._ag)
             listing = fmgr.listing(system, file_path, offset, limit, status=status)
+            """"
             try:
-                _list = PublicObject.listing(
-                    system, file_path, offset=offset, limit=limit
-                )
-                listing._wrapped['metadata'] = _list.metadata()
-                listing.trail = _list.trail()
+                #_list = PublicObject.listing(
+                #    system, file_path, offset=offset, limit=limit
+                #)
+                _list = None
+                #logger.debug(_list._doc.to_dict())
+                #listing._wrapped['metadata'] = _list.metadata()
+                #listing.trail = _list.trail()
+                #logger.debug(listing._wrapped['metadata']['project'])
             except TransportError:
                 pass
+            """
         return listing
 
     def search(self, system, query_string,
