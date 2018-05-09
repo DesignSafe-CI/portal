@@ -245,17 +245,17 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr ng-if="(experiment.systemId && experiment.experimentPath)">
+                                    <tr ng-if="experiment.path">
                                         <td>
                                             Files
                                         </td>
                                         <td>
-                                          <a fm-draggable data-agave-href = "agave://{{experiment.systemId}}/{{experiment.experimentPath}}"
-                                             href="/data/browser/public/{{experiment.systemId}}/{{experiment.experimentPath}}"
+                                          <a fm-draggable data-agave-href = "agave://nees.public/{{experiment.path}}"
+                                             href="/data/browser/public/nees.public/{{experiment.path}}"
                                              target="_blank"
                                              title="some title" class="file-folder">
                                              <i class="glyphicon glyphicon-folder-close"></i>
-                                              /{{experiment.experimentPath}}
+                                              /{{experiment.path}}
                                            </a>
                                         </td>
                                     </tr>
