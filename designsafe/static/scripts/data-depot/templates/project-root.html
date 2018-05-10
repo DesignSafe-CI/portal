@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
     <li ng-repeat="item in data.navItems">
-        <a ng-href="{{ item.href }}" ng-click="onBrowse()($event, item)">{{ item.label }}</a>
+        <a ng-href="{{ item.href }}">{{ item.label }}</a>
     </li>
 </ul>
 <ui-view></ui-view>
