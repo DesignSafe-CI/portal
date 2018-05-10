@@ -171,11 +171,11 @@ class LegacyPublication(object):
                 self._wrap = wrap
 
     @classmethod
-    def listing(cls):
-        list_search = PublicSearchManager(cls, LegacyPublicationIndexed.search(), page_size=100)
+    def listing(cls, offset, limit):
+        list_search = PublicSearchManager(cls, LegacyPublicationIndexed.search(), page_size=limit)
         # list_search._search.query = Q(None)
         list_search.sort({'project._exact': 'asc'})
-        return list_search.results(0)
+        return list_search.results(offset)
 
     def to_file(self):
         publication_dict = self._wrap.to_dict()
@@ -203,7 +203,7 @@ class LegacyPublication(object):
                      'name': project_dict['name'],
                      'path': '/{}'.format(self.path),
                      'permissions': 'READ',
-                     'project': project_dict['project'],
+                     # project': project_dict['project'],
                      'system': project_dict['system'],
                      'systemId': project_dict['system'],
                      'type': 'dir',
@@ -336,176 +336,6 @@ class PublicSearchManager(object):
         else:
             raise AttributeError('\'PublicSearchManager\' has no attribute \'{}\''.format(name))
 
-class PublicExpermient(object):
-    """Wraps elastic search experiment
-    """
-
-    def __init__(self, doc):
-        self._doc = doc
-
-    def to_dict(self):
-        obj_dict = self._doc.to_dict()
-        return obj_dict
-
-    @classmethod
-    def search(cls, using=None, index=None):
-        search = PublicExperimentIndexed.search(using, index)
-        return PublicSearchManager(cls, search)
-
-    def __getattr__(self, name):
-        val = getattr(self._doc, name, None)
-        if val:
-            return val
-        else:
-            raise AttributeError('\'PublicExperiment\' has no attribute \'{}\''.\
-                                 format(name))
-
-class PublicObject(object):
-    """Wraps elastic search object
-
-        This class exposes extra functionality needed for
-        an indexed public document instead of having any
-        logic in a subclass of :class:`DocType`. This is to
-        avoid any issues when using dictionaries or lists
-        since :class:`DocType` automatically returns those types
-        as :class:`~elasticsearch_dsl.utils.AttrDict` and
-        :class:`~elasticsearch_dsl.utils.AttrList` instead of
-        native types."""
-
-    def __init__(self, doc):
-        self._doc = doc
-        self.system = doc.systemId
-        self.path = os.path.join(doc.path, doc.name)
-        self.children = []
-        self._metadata = None
-        self._trail = []
-
-    @classmethod
-    def listing(cls, system, path, offset, limit):
-        list_search = PublicSearchManager(PublicObject,
-                                          PublicObjectIndexed.search(),
-                                          page_size=limit)
-        base_path, name = os.path.split(path.strip('/'))
-        base_path = base_path or '/'
-        search = PublicObjectIndexed.search()
-        query = Q('bool',
-                  must=[Q({'term': {'name._exact': name}}),
-                        Q({'term': {'path._exact': base_path}}),
-                        Q({'term': {'systemId': system}})])
-        search.query = query
-        res = search.execute()
-        if res.hits.total:
-            listing = cls(doc=res[0])
-            list_path = path.strip('/')
-        elif not path or path == '/':
-            listing = cls(PublicObjectIndexed(systemId=PublicElasticFileManager.DEFAULT_SYSTEM_ID,
-                                              path='/',
-                                              name=''))
-            listing.system = system
-            list_path = '/'
-        else:
-            raise TransportError()
-
-
-        list_search._search.query = Q('bool',
-                                      must=[Q({'term': {'path._exact': list_path}}),
-                                            Q({'term': {'systemId': system}})])
-        list_search.sort({'project._exact': 'asc'})
-        listing.children = list_search.results(offset)
-
-        return listing
-
-    def project_name(self):
-        if self._doc.path == '/':
-            return re.sub(r'\.groups$', '', self._doc.name)
-        else:
-            return re.sub(r'\.groups$', '', self._doc.path.split('/')[0])
-
-    def experiment_name(self):
-        full_path = os.path.join(self._doc.path.strip('/'), self._doc.name)
-        full_path_comps = full_path.split('/')
-        if len(full_path_comps) >= 2:
-            return full_path_comps[1]
-        else:
-            return ''
-
-    def project(self):
-        project_name = self.project_name()
-        project_search = PublicProjectIndexed.search()
-        project_search.query = Q('bool',
-                                 must=[Q({'term': {'name._exact': project_name}})])
-        res = project_search.execute()
-        if res.hits.total:
-            return res[0].to_dict()
-        else:
-            return {}
-
-    # TODO: This should not make more calls, kills performance
-    def experiments(self):
-        project_name = self.project_name()
-        experiment_name = self.experiment_name()
-        experiment_search = PublicSearchManager(PublicExpermient, PublicExperimentIndexed.search())
-        must_list = [Q({'term': {'project._exact': project_name}})]
-        if experiment_name:
-            must_list.append(Q({'term': {'name._exact': experiment_name}}))
-
-        experiment_search._search.query = Q('bool', must=must_list)
-        experiment_search = experiment_search.sort('name._exact', 'path._exact')
-        return [experiment.to_dict() for experiment in experiment_search.all()]
-
-    def metadata(self):
-        if self._metadata is None:
-            self._metadata = {'project': self.project(),
-                              'experiments': self.experiments()}
-        return self._metadata
-
-
-    # TODO: This should not make more calls, kills performance
-    def trail(self):
-
-        if self._trail:
-            return self._trail
-
-        path_comps = os.path.join(self._doc.path, self._doc.name).strip('/').split('/')
-        self._trail.append({'name': '/', 'system': self.system, 'path': '/'})
-        for i in range(0, len(path_comps)):
-            trail_item = {'name': path_comps[i] or '/',
-                          'system': self.system,
-                          'path': '/'.join(path_comps[:i+1]) or '/'}
-            if i == 0:
-                trail_item['name'] = self.project().get('title', path_comps[i])
-            elif i == 1:
-                experiment = filter(lambda x: x['name'] == path_comps[i], self.experiments())
-                if experiment:
-                    trail_item['name'] = experiment[0].get('title', path_comps[i])
-
-            self._trail.append(trail_item)
-
-        return self._trail
-
-    def to_dict(self):
-        # logger.debug(self._doc.to_dict())
-        obj_dict = self._doc.to_dict()
-        obj_dict['system'] = self.system
-        obj_dict['path'] = self.path
-        obj_dict['children'] = [doc.to_dict() if not hasattr(doc, 'projectId') else doc.to_file() for doc in self.children]
-        obj_dict['metadata'] = self.metadata()
-        obj_dict['permissions'] = 'READ'
-        obj_dict['trail'] = self.trail()
-        return obj_dict
-
-    @classmethod
-    def search(cls, using=None, index=None):
-        search = PublicObjectIndexed.search(using, index)
-        return PublicSearchManager(cls, search)
-
-    def __getattr__(self, name):
-        val = getattr(self._doc, name, None)
-        if val:
-            return val
-        else:
-            raise AttributeError('\'PublicObject\' has no attribute \'{}\''.\
-                                 format(name))
 
 class PublicDocumentListing(object):
     def __init__(self, listing_iterator, system, path):
@@ -539,12 +369,15 @@ class PublicElasticFileManager(BaseFileManager):
         if file_path == '/':
             # listing = PublicObject.listing(system, file_path,
             #                                offset=offset, limit=limit)
-
             publications = Publication.listing(status)
-            legacy_publications = LegacyPublication.listing()
-            if file_path == '/':
-                listing_iterator = itertools.chain(legacy_publications)
-                listing = PublicDocumentListing(listing_iterator, system, file_path)
+            legacy_publications = LegacyPublication.listing(offset, limit)
+
+            # show new publications on top; don't re-display when scrolling down
+            if offset == 0: 
+                listing_iterator = itertools.chain(publications, legacy_publications)
+            else:
+                listing_iterator = legacy_publications
+            listing = PublicDocumentListing(listing_iterator, system, file_path)
         else:
             fmgr = AgaveFileManager(self._ag)
             listing = fmgr.listing(system, file_path, offset, limit, status=status)
@@ -569,106 +402,26 @@ class PublicElasticFileManager(BaseFileManager):
         files_offset = offset
         projects_limit = limit
         projects_offset = offset
-        projects_search = PublicProjectIndexed.search()
 
-        projects_query = Q('bool',
-                           filter=Q('bool',
-                                    must=Q({'term': {'systemId': system}}),
-                                    must_not=Q({'term': {'path._exact': '/'}})),
-                           must=Q({'simple_query_string':{
-                                    'query': query_string,
-                                    'fields': ["description",
-                                               "endDate",
-                                               "equipment.component",
-                                               "equipment.equipmentClass",
-                                               "equipment.facility",
-                                               "fundorg"
-                                               "fundorgprojid",
-                                               "name",
-                                               "organization.name",
-                                               "pis.firstName",
-                                               "pis.lastName",
-                                               "title"]}}))
-        projects_search.query = projects_query
-        if sort:
-            projects_search = projects_search.sort(sort)
-        else:
-            projects_search = projects_search.sort('name._exact')
 
-        t1 = datetime.datetime.now()
-        projects_res = projects_search.execute()
-        logger.debug(datetime.datetime.now() - t1)
+        nees_published_query = Q('bool', must=[Q('simple_query_string', query=query_string)])
+        nees_published_search = LegacyPublicationIndexed.search()\
+            .query(nees_published_query)\
+            .extra(from_=offset, size=limit)
 
-        """
-        files_search = PublicObjectIndexed.search()
-
-        files_query = Q('bool',
-                        must=Q({'simple_query_string': {
-                                 'query': query_string,
-                                 'fields': ['name']}}),
-                        filter=Q('bool',
-                                 must=Q({'term': {'systemId': system}}),
-                                 must_not=Q({'term': {'path._exact': '/'}})))
-        files_search.query = files_query
-
-        t1 = datetime.datetime.now()
-        files_res = files_search.execute()
-        logger.debug(datetime.datetime.now() - t1)
-        """
-
-        if projects_res.hits.total:
-            if projects_res.hits.total - offset > limit:
-                files_offset = 0
-                files_limit = 0
-            elif projects_res.hits.total - offset < 0:
-                projects_offset = 0
-                projects_limit = 0
-            else:
-                projects_limit = projects_res.hits.total
-                files_limit = limit - projects_limit
-        
         des_published_query = Q('bool', must=[Q('simple_query_string', query=query_string)])
         des_published_search = PublicationIndexed.search()\
             .query(des_published_query)\
             .extra(from_=offset, size=limit)
 
+        nees_published_res = nees_published_search.execute()
         des_published_res = des_published_search.execute()
+
+        logger.debug(nees_published_res.hits.total)
+
         children = [Publication(res).to_file() for res in des_published_res]
-
-        # TODO: This is rather SLOW
-        project_paths = [p.projectPath for p in projects_res]
-        for project in projects_search[projects_offset:projects_limit]:
-            logger.debug(project)
-            search = PublicObjectIndexed.search()
-            search.query = Q('bool',
-                             must=[
-                                Q({'term': {'path._exact': '/'}}),
-                                Q({'term': {'name._exact': project.projectPath}}),
-                                Q({'term': {'systemId': system}})])
-            res = search.execute()
-            if res.hits.total:
-                children.append(PublicObject(res[0]).to_dict())
-
-        # search = PublicObjectIndexed.search()
-        # search.query = Q('bool',
-        #     must=[
-        #         Q({'term': {'path._exact': '/'}}),
-        #         Q({'terms': {'name._exact': project_paths}}),
-        #         Q({'term': {'systemId': system}})
-        #     ])
-        # res = search.execute()
-        # logger.debug(datetime.datetime.now() - t1)
-
-        # for r in res[projects_offset:projects_limit]:
-        #     children.append(PublicObject(r).to_dict())
+        children += [LegacyPublication(res).to_file() for res in nees_published_res]
         
-        """
-        for file_doc in files_search[files_offset:files_limit]:
-            logger.debug(file_doc)
-            children.append(PublicObject(file_doc).to_dict())
-        """
-        
-        logger.debug(datetime.datetime.now() - t1)
         result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
             'name': '$SEARCH',
