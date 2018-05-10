@@ -487,5 +487,45 @@
     });
 };
 
-}]);
+    $scope.ld = {
+      "@context": "http://schema.org",
+      "@type": "Dataset",
+      "@id": "https://doi.org/" + $scope.browser.publication.project.doi, //dataset doi url 
+      "additionalType": "Project/Experimental", //dataset type
+      "name": ''+$scope.ent.value.title, //dataset name
+      "alternateName": "{{project.value.projectId}}", //alternative name of the dataset
+      "author": [
+        //Loop through authors here
+        {
+        "@type": "Person",
+        "name": "{{user.first_name}} {{user.last_name}}",
+        "givenName": "{{user.first_name}}",
+        "familyName": "{{user.last_name}}"
+      }],
+    "description": "{{project.value.description}}",
+    "license": "http://opendatacommons.org/licenses/by/1-0",
+    "keywords": "{{project.value.keywords}}",
+    "inLanguage": "English",
+    "datePublished": "{{browser.publication.created| date: 'MMM/d/yyyy'}}",
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Designsafe-CI"
+    },
+    "provider": {
+      "@type": "Organization",
+      "name": "TACC"
+    }};  
+}])
+.directive('altmetrics', ['$sce', '$filter', function ($sce, $filter, $scope) {
+    return {
+      restrict: 'EA',
+      link: function (scope, element) {
+        scope.$watch('ld', function (schema) {
+          var schema = $sce.trustAsHtml($filter('json')(schema));
+          element[0].outerHTML = '<script type="application/ld+json">' + schema + '</script>';
+        });
+      }
+    };
+  }]);
 })(window, angular);
