@@ -327,7 +327,7 @@ class ElasticFileManager(BaseFileManager):
         """
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("simple_query_string", query=query_string, fields=["name", "name._exact", "keywords"])
+        search = search.query("query_string", query="*"+query_string+"*", fields=["name", "name._exact", "keywords"])
         
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system=system)
@@ -408,7 +408,7 @@ class ElasticFileManager(BaseFileManager):
 
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
+        search = search.query("query_string", query="*"+query_string+"*", fields=["name", "name._exact", "keywords"])
         
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system=system)
