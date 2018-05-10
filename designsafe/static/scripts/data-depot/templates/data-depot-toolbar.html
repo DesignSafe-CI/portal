@@ -12,7 +12,7 @@
     </div>
     <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
         <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
-            ng-hide="['Dropbox', 'My Projects', 'Box', 'Google Drive'].includes(placeholder())">
+            ng-hide="['Dropbox', 'My Projects', 'Box', 'Google Drive', 'Data Depot'].includes(placeholder())">
             <input class="form-control" style="width:240px;" placeholder="Find in {{ placeholder() }}" ng-model="search.queryString">
             <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
         </form>
