@@ -17,6 +17,8 @@
     };
 
     $scope.onBrowse = function ($event, file) {
+      console.log($event);
+      console.log(file);
       $event.preventDefault();
       $event.stopPropagation();
       if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
@@ -24,6 +26,10 @@
       } else {
         $state.go('projects', {systemId: file.system, filePath: file.path}, {reload: true});
       }
+    };
+
+    $scope.stateReload = function() {
+      $state.reload();
     };
 
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
