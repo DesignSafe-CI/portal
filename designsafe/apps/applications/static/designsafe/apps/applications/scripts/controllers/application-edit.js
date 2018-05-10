@@ -1574,7 +1574,7 @@
                   metadata.value.type = $translate.instant('apps_metadata_custom');
                   _.extend(metadata.value.definition, angular.copy($scope.customModel));
 
-                  Apps.getMeta(metadata.value.id)
+                  Apps.getMeta(metadata.value.definition.id)
                     .then(
                       function(response){
                         if ($scope.editModel.length === 0){
@@ -1609,7 +1609,7 @@
                                 $scope.requesting = false;
                               }
                             );
-                        } else {
+                        } else if (response.data.length === 1) {
                           // metadata.uuid = response.data[0].uuid;
                           Apps.updateMeta(metadata, response.data[0].uuid)
                             .then(
@@ -1643,6 +1643,9 @@
                               }
                             );
                           $scope.requesting = false;
+                        } else {
+                            $scope.error = $translate.instant('error_app_exists');
+                            $scope.requesting = false;
                         }
                       },
                       function(response){
