@@ -38,7 +38,7 @@
       if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
-        $state.go('myData', {systemId: file.system, filePath: file.path});
+        $state.go('myData', {systemId: file.system, filePath: file.path}, {reload: true});
       }
     };
 
