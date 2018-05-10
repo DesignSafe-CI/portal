@@ -16,6 +16,16 @@
       projects: []
     };
 
+    $scope.onBrowse = function ($event, file) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
+        DataBrowserService.preview(file, $scope.browser.listing);
+      } else {
+        $state.go('projects', {systemId: file.system, filePath: file.path}, {reload: true});
+      }
+    };
+
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
@@ -95,7 +105,7 @@
       $event.preventDefault();
       $state.go('projects.view.data', {projectId: project.uuid,
                                        filePath: '/',
-                                       projectTitle: project.value.title});
+                                       projectTitle: project.value.title}, {reload: true});
     };
 
     // function for when the row is selected, but the link to the project detail page is not
@@ -912,7 +922,7 @@
       } else {
         $state.go('projects.view.data', {projectId: projectId,
                                          filePath: file.path,
-                                         projectTitle: projectTitle});
+                                         projectTitle: projectTitle}, {reload: true});
       }
     };
 
