@@ -23,7 +23,7 @@
                               ng-click="viewCollabs($event)">View Team Members</button>
                     </td>
                   </tr>
-                </tbody>{{project.doi}}
+                </tbody>
               </table>
             </td>
             <td style="padding:0px;">
@@ -31,7 +31,7 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%;">DOI</th>
-                    <td style="border-top:none; width:75%;">
+                    <td style="border-top:none; width:75%;">{{project.doi}}
                       <button class="btn btn-info btn-sm pull-right"
                               ng-click="showCitation(project)">Citation
                       </button>
