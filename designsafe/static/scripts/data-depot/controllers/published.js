@@ -71,9 +71,11 @@
               });
           });
         $scope.ui.loadingProjectMeta = false;
+        
     });
+    
   }
- 
+
   FileListing.get({'system': 'designsafe.storage.published',
                    'name': 'projectimage.jpg',
                    'path': '/' + projId + '/projectimage.jpg'}).then(function(list){
@@ -465,16 +467,18 @@
     scope: $scope
     });
 };
-
+    /* for(i = 0; i<$scope.browser.publication.users.length; i++){
+      console.log('users: ' + $scope.browser.publication.users[i].first_name);
+    } */
     $scope.ld = {
       "@context": "http://schema.org",
       "@type": "Dataset",
       "@id": "https://doi.org/" + $scope.browser.publication.project.doi, //dataset doi url 
       "additionalType": "Project/Experimental", //dataset type
-      "name": $scope.browser.publication.project.value.title,//+$scope.title, //dataset name
+      "name": $scope.browser.publication.project.value.title, //dataset name
       "alternateName": $scope.browser.publication.project.value.projectId, //alternative name of the dataset
       "author": [
-        //for(i = 0; i<$scope.browser.publication.users.length; i++)
+        
         {
           "@type": "Person",
           "name": '',//$scope.browser.publication.user.first_name + ' ' + $scope.browser.publication.user.last_name,
@@ -494,17 +498,6 @@
       "provider": {
       "@type": "Organization",
       "name": "TACC"
-      }};  
+      }};   
 }]);
-.directive('altmetrics', ['$sce', '$filter', function ($sce, $filter, $scope) {
-    return {
-      restrict: 'EA',
-      link: function (scope, element) {
-        scope.$watch('ld', function (schema) {
-          var schema = $sce.trustAsHtml($filter('json')(schema));
-          element[0].outerHTML = '<script type="application/ld+json">' + schema + '</script>';
-        });
-      }
-    };
-  }]);
 })(window, angular);
