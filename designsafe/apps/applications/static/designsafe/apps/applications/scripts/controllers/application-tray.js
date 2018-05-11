@@ -875,17 +875,12 @@
 
         // Check system roles for cloning -- TODO: Create simpler agave call for single user's pems
         var execSystem = $translate.instant('execution_default');
-        Apps.getSystemRoles(execSystem)
+        Apps.getRoleForUser(execSystem)
           .then(
             function(response){
-              for(var i = 0; i < response.data.length; i++){
-                if (response.data[i].username === Django.user){
-                  if (response.data[i].role === 'ADMIN' || response.data[i].role === 'PUBLISHER' || response.data[i].role === 'OWNER'){
-                    $scope.clone = true;
-                    break;
-                  }
-                }
-              };
+              if (response.data.role === 'ADMIN' || response.data.role === 'PUBLISHER' || response.data.role === 'OWNER'){
+                $scope.clone = true;
+              }
 
               if ($scope.clone){
                   Apps.getSystems()
