@@ -6,7 +6,7 @@
       this.selected = null,
       this.lists = {},
       this.map = {}
-      this.tabs = ['Simulation', 'Visualization', 'Data Processing', 'Data Collections', 'Utilities', 'My Apps'];
+      this.tabs = ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities', 'My Apps'];
     };
 
     SimpleList.prototype.getDefaultLists = function(query) {

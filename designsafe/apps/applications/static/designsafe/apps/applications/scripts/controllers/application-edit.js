@@ -42,7 +42,7 @@
                 "type": "string",
                 "description": "Categorization for this app if made public",
                 "enum": [
-                    "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
+                    "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
                 ],
                 "title": "Category"
             },
@@ -182,7 +182,7 @@
                   "type": "string",
                   "description": "Categorization for this app if made public",
                   "enum": [
-                      "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
+                      "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
                   ],
                   "title": "Category"
               },

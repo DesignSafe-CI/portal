@@ -67,7 +67,7 @@
                 "type": "string",
                 "description": "Categorization for this app if made public",
                 "enum": [
-                    "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
+                    "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
                 ],
                 "title": "Category"
             },
@@ -208,7 +208,7 @@
                   "type": "string",
                   "description": "Categorization for this app if made public",
                   "enum": [
-                      "Simulation", "Visualization", "Data Processing", "Data Collections", "Utilities"
+                      "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
                   ],
                   "title": "Category"
               },
@@ -1598,6 +1598,7 @@
                         metadata.value = {};
                         metadata.value.definition = response.data;
                         metadata.value.type = 'agave';
+                        metadata.value.definition.appCategory = response.data.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
 
                         // Check if metadata record exists
                         Apps.getMeta(metadata.value.definition.id)
