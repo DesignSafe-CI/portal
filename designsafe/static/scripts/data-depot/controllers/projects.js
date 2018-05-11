@@ -514,8 +514,20 @@
             $scope.ui.publicationMessages = publicationMessages;
             return;
         }
+      } else if ($scope.state.project.value.projectType == 'simulation'){
+        delete publication.eventsList;
+        delete publication.modelConfigs;
+        delete publication.sensorLists;
+        delete publication.analysisList;
+        delete publication.reportsList;
+        delete publication.experimentsList;
+        publication.analysiss = _.uniq(publication.analysiss, function(e){ return e.uuid; });
+        publication.inputs = _.uniq(publication.inputs, function(e){ return e.uuid; });
+        publication.models = _.uniq(publication.models, function(e){ return e.uuid; });
+        publication.outputs = _.uniq(publication.outputs, function(e){ return e.uuid; });
+        publication.reports = _.uniq(publication.reports, function(e){ return e.uuid; });
+        publication.simulations = _.uniq(publication.simulations, function(e){ return e.uuid; });
       }
-
       if (typeof status === 'undefined' || status === null){
         status = 'publishing';
       }

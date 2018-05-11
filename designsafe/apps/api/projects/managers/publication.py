@@ -223,6 +223,52 @@ def _analysis_required_xml(users, analysis, created):
     desc.text = anl['description']
     return xml_obj
 
+def _simulation_required_xml(users, simulation, created):
+    sim = simulation['value']
+    xml_obj = _project_header()
+
+    resource = xml_obj
+    identifier = ET.SubElement(resource, 'identifier')
+    identifier.attrib['identifierType'] = 'DOI'
+    if sim.get('doi', ''):
+        identifier.text = sim.get('doi')
+    else:
+        identifier.text = SHOULDER.replace('doi:', '')
+    creators = ET.SubElement(resource, 'creators')
+    #um = get_user_model()
+    authors = sim.get('authors')
+    #authors = authors or users
+    for author in authors:
+        _userf = filter(lambda x: x['username'] == author, users)
+        if not len(_userf):
+            continue
+
+        _user = _userf[0]
+        creator = ET.SubElement(creators, 'creator')
+        creator_name = ET.SubElement(creator, 'creatorName')
+        creator_name.text = '{}, {}'.format(_user['last_name'], _user['first_name'])
+
+    titles = ET.SubElement(resource, 'titles')
+    title = ET.SubElement(titles, 'title')
+    title.text = sim['title']
+    publisher = ET.SubElement(resource, 'publisher')
+    publisher.text = 'Designsafe-CI'
+
+    now = dateutil.parser.parse(created)
+    publication_year = ET.SubElement(resource, 'publicationYear')
+    publication_year.text = str(now.year)
+
+    resource_type = ET.SubElement(resource, 'resourceType')
+    resource_type.text = "Simulation/{}".format(
+            sim['simulationType'].title())
+    resource_type.attrib['resourceTypeGeneral'] = 'Dataset'
+    descriptions = ET.SubElement(resource, 'descriptions')
+    desc = ET.SubElement(descriptions, 'description')
+    desc.attrib['descriptionType'] = 'Abstract'
+    desc.text = sim['description']
+    return xml_obj
+
+
 def analysis_reserve_xml(publication, analysis, created):
     anl = analysis['value']
     xml_obj = _analysis_required_xml(publication['users'], analysis,
@@ -295,6 +341,49 @@ def experiment_reserve_xml(publication, experiment, created):
 
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
+
+def simulation_reserve_xml(publication, simulation, created):
+    sim = simulation['value']
+    xml_obj = _simulation_required_xml(
+                publication['users'],
+                experiment,
+                created
+            )
+    now = dateutil.parser.parse(created)
+    if not simulation.get('doi', ''):
+        reserve_res = _reserve_doi(
+            xml_obj,
+            ENTITY_TARGET_BASE.format(
+                project_id=publication['project']['value']['projectId'],
+                entity_uuid=simulation['uuid']
+            )
+        )
+        doi, ark = reserve_res.split('|')
+    else:
+        doi = simulation.get('doi')
+        ark = simulation.get('doi')
+
+    doi = doi.strip()
+    ark = ark.strip()
+    identifier = xml_obj.find('identifier')
+    identifier.text = doi
+    resource = xml_obj
+    subjects = ET.SubElement(resource, 'subjects')
+    sim_type = ET.SubElement(subjects, 'subject')
+    sim_type.text = sim['simulationType'].title()
+    entities = (
+        simulation.get('models', []) +
+        simulation.get('inputs', []) +
+        simulation.get('outputs', [])
+    )
+
+    for entity in entities:
+        ent_sub = ET.SubElement(subjects, 'subject')
+        ent_sub.text = entity['value']['title']
+
+    _update_doi(doi, xml_obj)
+    return (doi, ark, xml_obj)
+
 
 def project_reserve_xml(publication):
     project_body = publication['project']
@@ -395,33 +484,42 @@ def reserve_publication(publication, analysis_doi=False):
     anl_dois = []
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
-    for exp in publication.get('experimentsList', []):
-        exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
-                                                           exp,
-                                                           publication['created'])
-        add_related(exp_xml, [proj_doi])
-        exps_dois.append(exp_doi)
-        exp['doi'] = exp_doi
-        xmls[exp_doi] = exp_xml
-        logger.debug('exp_doi: %s', exp_doi)
-        logger.debug('exp_ark: %s', exp_ark)
-        logger.debug('exp_xml: %s', exp_xml)
+    if publication['project']['value']['projectType'].lower() == 'experimental':
+        for exp in publication.get('experimentsList', []):
+            exp_doi, exp_ark, exp_xml = experiment_reserve_xml(publication,
+                                                               exp,
+                                                               publication['created'])
+            add_related(exp_xml, [proj_doi])
+            exps_dois.append(exp_doi)
+            exp['doi'] = exp_doi
+            xmls[exp_doi] = exp_xml
+            logger.debug('exp_doi: %s', exp_doi)
+            logger.debug('exp_ark: %s', exp_ark)
+            logger.debug('exp_xml: %s', exp_xml)
 
-    if analysis_doi:
-        for anl in publication.get('analysisList', []):
-            anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
-                                                             anl,
-                                                             publication['created'])
-            add_related(anl_xml, [proj_doi])
-            anl_dois.append(anl_doi)
-            anl['doi'] = anl_doi
-            xmls[anl_doi] = anl_xml
-            logger.debug('anl_doi: %s', anl_doi)
-            logger.debug('anl_ark: %s', anl_ark)
-            logger.debug('anl_xml: %s', anl_xml)
+        if analysis_doi:
+            for anl in publication.get('analysisList', []):
+                anl_doi, anl_ark, anl_xml = analysis_reserve_xml(publication,
+                                                                 anl,
+                                                                 publication['created'])
+                add_related(anl_xml, [proj_doi])
+                anl_dois.append(anl_doi)
+                anl['doi'] = anl_doi
+                xmls[anl_doi] = anl_xml
+                logger.debug('anl_doi: %s', anl_doi)
+                logger.debug('anl_ark: %s', anl_ark)
+                logger.debug('anl_xml: %s', anl_xml)
 
-    add_related(proj_xml, exps_dois + anl_dois)
-    for _doi in [proj_doi] + exps_dois + anl_dois:
-        logger.debug('Final project doi: %s', _doi)
-        _update_doi(_doi, xmls[_doi], status='public')
+        add_related(proj_xml, exps_dois + anl_dois)
+        for _doi in [proj_doi] + exps_dois + anl_dois:
+            logger.debug('Final project doi: %s', _doi)
+            _update_doi(_doi, xmls[_doi], status='public')
+    elif publication['project']['value']['projectType'].lower() == 'simulation':
+        for sim in publication.get('simulations', []):
+            sim_doi, sim_ark, sim_xml = simulation_reserve_xml(
+                    publication,
+                    sim,
+                    publication['created']
+            )
+        pass
     return publication
