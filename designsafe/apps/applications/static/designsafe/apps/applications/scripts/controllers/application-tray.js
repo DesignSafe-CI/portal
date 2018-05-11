@@ -528,8 +528,7 @@
                                         .then(
                                           function(response){
                                             $uibModalInstance.dismiss();
-                                            // $scope.parentUibModalInstance.dismiss();
-                                            // $scope.parentRefresh();
+                                            $scope.refreshApps();
                                           },
                                           function(response){
                                             if (response.data) {
