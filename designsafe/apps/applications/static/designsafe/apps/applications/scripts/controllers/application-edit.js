@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
   angular.module('designsafe').controller('ApplicationEditCtrl',
-    ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, SimpleList, MultipleList, AppsWizard, Django) {
+      ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', function ($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, SimpleList, MultipleList, AppsWizard, Django, appCategories) {
 
       /****** customForm *********/
       $scope.customSchema = {
@@ -41,9 +41,7 @@
             "appCategory": {
                 "type": "string",
                 "description": "Categorization for this app if made public",
-                "enum": [
-                    "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
-                ],
+                "enum": appCategories,
                 "title": "Category"
             },
             "isPublic": {
@@ -181,9 +179,7 @@
               "appCategory": {
                   "type": "string",
                   "description": "Categorization for this app if made public",
-                  "enum": [
-                      "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
-                  ],
+                  "enum": appCategories,
                   "title": "Category"
               },
               "icon": {

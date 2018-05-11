@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
   angular.module('designsafe').controller('ApplicationAddCtrl',
-    ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, SimpleList, MultipleList, AppsWizard, Django) {
+      ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', function ($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, SimpleList, MultipleList, AppsWizard, Django, appCategories) {
 
       /******* addForm form *********/
       $scope.addSchema = {
@@ -66,9 +66,7 @@
             "appCategory": {
                 "type": "string",
                 "description": "Categorization for this app if made public",
-                "enum": [
-                    "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
-                ],
+                "enum": appCategories,
                 "title": "Category"
             },
             "isPublic": {
@@ -207,9 +205,7 @@
               "appCategory": {
                   "type": "string",
                   "description": "Categorization for this app if made public",
-                  "enum": [
-                      "Simulation", "Visualization", "Data Processing", "Partner Data Apps", "Utilities"
-                  ],
+                  "enum": appCategories,
                   "title": "Category"
               },
               "icon": {

@@ -1,12 +1,12 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', function ($http, $q, djangoUrl, appCategories) {
 
     var SimpleList = function(){
-      this.selected = null,
-      this.lists = {},
-      this.map = {}
-      this.tabs = ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities', 'My Apps'];
+      this.selected = null;
+      this.lists = {};
+      this.map = {};
+      this.tabs = appCategories.concat(['My Apps']);
     };
 
     SimpleList.prototype.getDefaultLists = function(query) {
