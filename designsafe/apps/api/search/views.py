@@ -109,7 +109,7 @@ class SearchView(BaseApiView):
     def search_my_data(self, username, q, offset, limit):
         search = Search(index='des-files')
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("simple_query_string", query=q, fields=["name", "name._exact", "keywords"])
+        search = search.query("query_string", query="*"+q+"*", fields=["name", "name._exact", "keywords"])
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system='designsafe.storage.default')
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
