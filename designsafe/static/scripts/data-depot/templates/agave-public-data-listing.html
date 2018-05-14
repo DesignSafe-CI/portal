@@ -1,5 +1,6 @@
 <dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
-<dd-public-listing browser="browser"
+<dd-public-listing ng-if="browser.listing.path==='/'"
+            browser="browser"
             on-browse="onBrowse"
             on-select="onSelect"
             on-detail="onDetail"
@@ -9,3 +10,12 @@
             scroll-to-bottom="scrollToBottom"
             scroll-to-top="scrollToTop">
 </dd-public-listing>
+
+<dd-listing ng-if="browser.listing.path !== '/'"
+            browser="browser"
+            on-browse="onBrowse"
+            on-select="onSelect"
+            on-detail="onDetail"
+            scroll-to-top="scrollToTop"
+            scroll-to-bottom="scrollToBottom">
+</dd-listing>

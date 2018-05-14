@@ -15,6 +15,10 @@
         form: {}
       };
 
+      Jobs.getWebhookUrl().then(function(response) {
+        $scope.webhookUrl = response.data;
+      })
+
       $scope.$on('launch-app', function(e, app) {
         $scope.error = '';
 
@@ -122,7 +126,58 @@
               appId: $scope.data.app.id,
               archive: true,
               inputs: {},
-              parameters: {}
+              parameters: {},
+              notifications: [
+                /*
+                {
+                  url: "http://90370984.ngrok.io/api/notifications/wh/jobs/",
+                  event: "*",
+                  persistent: true
+                },
+                */
+                
+                {
+                  url: $scope.webhookUrl,
+                  event: "PENDING",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "QUEUED",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "SUBMITTING",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "PROCESSING_INPUTS",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "STAGED",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "RUNNING",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "KILLED",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "FAILED",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "STOPPED",
+                },
+                {
+                  url: $scope.webhookUrl,
+                  event: "FINISHED",
+                }
+                
+              ]
           };
 
           /* copy form model to disconnect from $scope */

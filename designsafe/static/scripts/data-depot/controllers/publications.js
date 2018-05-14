@@ -19,7 +19,12 @@
       filePath: $scope.browser.listing.path
     });
     _.each($scope.browser.listing.children, function (child) {
-      child.href = $state.href('publicData', {system: child.system, filePath: child.path});
+      if(child.system === 'nees.public'){
+        child.href = $state.href('publicData', {system: child.system, filePath: child.path});
+      }
+      if(child.system === 'designsafe.storage.published'){
+        child.href = $state.href('publishedData', {system: child.system, filePath: child.path});
+      }
     });
   }
 
@@ -54,7 +59,7 @@
       } else {
         filePath = file.path;
       }
-      if (file.type === 'file'){
+      if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder'){
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         if (file.system === 'nees.public'){

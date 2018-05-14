@@ -174,6 +174,7 @@
           </div>
         </div>
        </div>
+       <!-- End simulation Inventory -->
        <div ng-if="data.project.value.projectType === 'experimental'">
         <div class="project-label-inventory" style="overflow:auto; width:100%; margin: 13px 0;">
           <div class="col-xs-3">
@@ -283,7 +284,7 @@
                  ng-click="ui.showEditCategory = false"><i class="fa fa-times"></i></button>
          </div>
       <h3>Edit Category</h3>
-      <form>
+      <form name='editCategoryForm'>
         <div style="display:inline-block; width:20%">
           <label for="id-tag-type" style="display:block">Type</label>
           <input type="text"
@@ -293,16 +294,30 @@
           <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
-                 ng-model="data.catForm.title"/>
+                 ng-model="data.catForm.title"
+                 required/>
         </div>
-        <div style="display:inline-block; width:90%; padding-top:5px;">
-          <textarea style="width:100%;" placeholder="Description"
-        ng-model="data.catForm.description">
+        <div class="extra-form-inputs" ng-if="data.catForm.type === 'Analysis'">
+          <div style="display:inline-block; width:30%;">
+            <label for="id-tag-reference" style="display:block">Reference Data</label>
+            <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.catForm.reference">
+          </div>
+          <div align="center" style="display:inline-block; width:2%;">
+            <i class="fa fa-link"></i>
+          </div>
+          <div style="display:inline-block; width:30%;">
+            <label for="id-tag-reference" style="display:block;">Reference DOI</label>
+            <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-referencedoi" id="id-ref-data" ng-model="data.catForm.referencedoi">
+          </div>
+        </div>        
+        <div style="display:inline-block; width:90%;">
+          <label for="id-tag-description" style="display:block">Description</label>
+          <textarea style="width:100%;" ng-model="data.catForm.description">
         </textarea>
         </div>
       <button class="btn btn-info"
               ng-click="saveEditCategory()"
-              ng-disabled="ui.editFormSaving">
+              ng-disabled="ui.editFormSaving || editCategoryForm.$invalid">
         <span ng-if="!ui.editFormSaving">
               <i class="fa fa-check"></i> Update
         </span>
@@ -333,7 +348,7 @@
          ng-if="ui.showAddCategory"
          style="margin-top:10px; margin-bottom:10px; padding-bottom:20px; border-bottom:1px solid lightgray">
       <h3>Add Category</h3>
-      <form>
+      <form name='addCategoryForm'>
         <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
@@ -347,8 +362,25 @@
           <label for="id-tag-title" style="display:block">Title</label>
           <input class="form-control" style="width:90%; display:inline-block;"
                  name="tag-title" id="id-tag-title"
-                 ng-model="data.form.projectTagToAdd.title"/>
+                 ng-model="data.form.projectTagToAdd.title"
+                 required/>
         </div>
+        <!-- Analysis Reference Data field start -->
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis'">
+            <div style="display:inline-block; width:30%;">
+              <label for="id-tag-reference" style="display:block">Reference Data</label>
+              <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.form.projectTagToAdd.reference">
+            </div>
+            <div align="center" style="display:inline-block; width:2%;">
+              <i class="fa fa-link"></i>
+            </div>
+            <div style="display:inline-block; width:30%;">
+              <label for="id-tag-reference" style="display:block;">Reference DOI</label>
+              <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-referencedoi" id="id-ref-data" ng-model="data.form.projectTagToAdd.referencedoi">
+            </div>
+          </div>
+        <!-- Analysis Reference Data field end -->
+
         <!-- Extra form fields for categories start -->
         <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
          <div style="display:inline-block; width:30%">
@@ -391,15 +423,15 @@
 
         </div>
         <!-- Extra form fields for categories END -->
-        <div style="display:inline-block; width:90%; padding-top:5px;">
-          <textarea style="width:100%;" placeholder="Description"
-        ng-model="data.form.projectTagToAdd.description">
+        <div style="display:inline-block; width:90%;">
+          <label for="id-tag-description" style="display:block">Description</label>
+          <textarea style="width:100%;" ng-model="data.form.projectTagToAdd.description">
         </textarea>
         </div>
         <div style="width:100%; height:20px">
           <button class="btn btn-sm btn-info"
                   ng-click="addProjectTag()"
-                  ng-disabled="ui.addingTag">
+                  ng-disabled="ui.addingTag || addCategoryForm.$invalid">
                 <i class="fa fa-check"></i>
                     Save Category
 

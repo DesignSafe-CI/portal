@@ -618,7 +618,7 @@ table td {
   display: block;
 }
 
-.dropdown.open .dropdown-menu {
+.dropdown.open .dropdown-menu.notifications{
   top:140%;
   padding: 5px 0 0 0;
 }

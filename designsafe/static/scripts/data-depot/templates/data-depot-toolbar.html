@@ -1,4 +1,4 @@
-<div class="clearfix btn-toolbar-ds dd-toolbar" ds-fix-top="dd-toolbar-fixed-top">
+<div class="clearfix btn-toolbar-ds dd-toolbar">
     <div class="btn-toolbar btn-toolbar-left"
          role="toolbar"
          aria-label="Data Browser Search"
@@ -11,7 +11,8 @@
         -->
     </div>
     <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
-        <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex">
+        <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
+            ng-hide="['Dropbox', 'My Projects', 'Box', 'Google Drive', 'Project View', 'Project Data View'].includes(placeholder())">
             <input class="form-control" style="width:240px;" placeholder="Find in {{ placeholder() }}" ng-model="search.queryString">
             <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
         </form>

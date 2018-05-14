@@ -1,10 +1,12 @@
-import six
+"""Reindex command"""
 import json
 import logging
+import six
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import elasticsearch
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import TransportError
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +48,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from_index = options.get('from_index')
         to_index = options.get('to_index')
-        doc_type = options.get('doc-type')
-        all_docs = options.get('all-docs')
+        doc_type = options.get('doc_type')
+        all_docs = options.get('all_docs')
         remote_host = options.get('remote_host')
         sample = options.get('sample')
         size = options.get('size')
@@ -91,9 +93,9 @@ class Command(BaseCommand):
             raise CommandError('No valid remote hosts given. Remote host value given: {}'.\
                 format(remote_host))
 
-        if not all_docs and doc_type:
+        if doc_type:
             body['source']['type'] = doc_type
-
+            self.stdout.write('doc_type: %s' % doc_type)
         es_local = elasticsearch.Elasticsearch(
             settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
             request_timeout=120)

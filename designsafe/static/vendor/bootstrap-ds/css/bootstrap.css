@@ -1230,7 +1230,7 @@ h2,
 h3,
 .h3 {
   margin-top: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 h1 small,
 .h1 small,
@@ -1279,7 +1279,7 @@ h2,
 }
 h3,
 .h3 {
-  font-size: 19px;
+  font-size: 20px;
 }
 h4,
 .h4 {
@@ -1372,7 +1372,9 @@ a.text-warning:focus {
   color: #66512c;
 }
 .text-danger {
-  color: #a94442;
+  font-size: 18;
+  font-weight: bold;
+  color: #b81917; /* #a94442 */
 }
 a.text-danger:hover,
 a.text-danger:focus {

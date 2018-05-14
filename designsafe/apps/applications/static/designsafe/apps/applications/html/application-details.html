@@ -22,9 +22,9 @@
                     <td>Name</td>
                     <td>{{appMeta.value.definition.label}}</td>
                   </tr>
-                  <tr ng-if="appMeta.definition.appCategory">
+                  <tr ng-if="appMeta.value.definition.appCategory">
                     <td>Category</td>
-                    <td>{{appMeta.definition.appCategory}}</td>
+                    <td>{{appMeta.value.definition.appCategory}}</td>
                   </tr>
                   <tr ng-if="appMeta.value.definition.shortDescription">
                     <td>Description</td>
@@ -66,6 +66,10 @@
                    <td>Label</td>
                    <td>{{appMeta.value.definition.label}}</td>
                  </tr>
+                <tr ng-if="appMeta.value.definition.appCategory">
+                  <td>Category</td>
+                  <td>{{appMeta.value.definition.appCategory}}</td>
+                </tr>
                  <tr>
                    <td>Public</td>
                    <td>{{appMeta.value.definition.isPublic}}</td>

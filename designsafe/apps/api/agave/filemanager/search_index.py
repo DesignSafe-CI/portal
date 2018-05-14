@@ -144,7 +144,7 @@ class Object(object):
         self._wrap.save()
         return self
 
-    def user_pems(self, user_context):
+    def user_pems(self, user_context = None):
         """Converts from ES pems to user specific pems
 
         When doing an agave file listing the permissions returned
@@ -169,8 +169,14 @@ class Object(object):
               Agave file listing permissions:
             `` 'permissions': 'ALL' ``
         """
-        pems = [pem for pem in getattr(self._wrap, 'permissions', {'username': ''}) if \
-                pem['username'] == user_context]
+        logger.debug(getattr(self._wrap, 'permissions', {'username': ''}))
+        logger.debug(user_context)
+        if user_context:
+            pems = [pem for pem in getattr(self._wrap, 'permissions', {'username': ''}) if \
+                    pem['username'] == user_context]
+            logger.debug(pems)
+        else:
+            pems = [pem for pem in getattr(self._wrap, 'permissions', {'username': ''})] 
         if not pems:
             return 'NONE'
 
@@ -184,16 +190,19 @@ class Object(object):
             user_pem += 'EXECUTE_'
 
         user_pem = user_pem.strip('_')
-        if user_pem == 'RED_WRITE_EXECUTE':
+        if user_pem == 'READ_WRITE_EXECUTE':
             user_pem = 'ALL'
 
         return user_pem
 
     def to_dict(self, user_context=None):
         file_dict = self._wrap.to_dict()
-        if user_context:
-            file_dict['permissions'] = self.user_pems(user_context)
-
+        logger.debug(file_dict['name'])
+        logger.debug(file_dict['permissions'])
+        #if user_context:
+        file_dict['permissions'] = self.user_pems(user_context)
+        #elif file_dict['system'] == 'designsafe.storage.community':
+        #    file_dict['permissions'] = "ALL"
         file_dict['path'] = os.path.join(self._wrap.path, self._wrap.name)
         file_dict['system'] = self._wrap['system']
         return file_dict
@@ -267,7 +276,7 @@ class ElasticFileManager(BaseFileManager):
             res = search.execute()
 
         listing = merge_file_paths(system, user_context, file_path, search)
-
+        logger.debug(file_path)
         if file_path == '/':
             result = {
                 'trail': [{'name': '$SHARE', 'path': '/$SHARE'}],
@@ -299,6 +308,7 @@ class ElasticFileManager(BaseFileManager):
 
         for f in listing:
             result['children'].append(f.to_dict(user_context=user_context))
+        #logger.debug(result['permissions'])
         return result
 
     def search(self, system, username, query_string,
@@ -316,16 +326,12 @@ class ElasticFileManager(BaseFileManager):
 
         """
         search = IndexedFile.search()
-        query = Q('bool',
-                  filter=Q('bool',
-                           must=[Q({'term': {'systemId': system}}),
-                                 Q({'term': {'permissions.username': username}}),
-                                 Q({'prefix': {'path._exact': username}})],
-                           must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]),
-                   must=Q({'simple_query_string':{
-                            'query': query_string,
-                            'fields': ['name', 'name._exact', 'keywords']}}))
-        search.query = query
+        search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
+        search = search.query("query_string", query="*"+query_string+"*", fields=["name", "name._exact", "keywords"])
+        
+        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
+        search = search.filter("term", system=system)
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         res = search.execute()
         children = []
         if res.hits.total:
@@ -385,6 +391,7 @@ class ElasticFileManager(BaseFileManager):
 
     def search_shared(self, system, username, query_string,
                file_path=None, offset=0, limit=100):
+        """
         search = IndexedFile.search()
         query = Q('bool',
                   filter=Q('bool',
@@ -392,11 +399,24 @@ class ElasticFileManager(BaseFileManager):
                                  Q({'term': {'permissions.username': username}})],
                            must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}}),
                                      Q({'prefix': {'path._exact': username}})]),
-                   must=Q({'simple_query_string':{
+                   must=Q({'query_string':{
                             'query': query_string,
                             'fields': ['name', 'name._exact', 'keywords']}}))
         search.query = query
         res = search.execute()
+        """
+
+        search = IndexedFile.search()
+        search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
+        search = search.query("query_string", query="*"+query_string+"*", fields=["name", "name._exact", "keywords"])
+        
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': username}})]))
+        search = search.filter("term", system=system)
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
+        res = search.execute()
+
+        res = search.execute()
+
         children = []
         if res.hits.total:
             children = [Object(wrap=o).to_dict() for o in search[offset:limit]]

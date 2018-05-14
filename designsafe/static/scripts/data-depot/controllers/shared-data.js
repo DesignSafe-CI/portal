@@ -38,7 +38,7 @@
       } else {
         filePath = file.path;
       }
-      if (file.type === 'file'){
+      if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder'){
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         $state.go('sharedData', {systemId: file.system, filePath: file.path});

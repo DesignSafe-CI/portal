@@ -64,6 +64,8 @@ class Analysis(RelatedEntity):
     model_name = 'designsafe.project.analysis'
     analysis_type = fields.CharField('Analysis Type', max_length=255, default='other')
     title = fields.CharField('Title', max_length=1024)
+    reference = fields.CharField('Reference Data', max_length=1024)
+    referencedoi = fields.CharField('Reference DOI', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
     analysis_data = fields.CharField('Analysis Data', max_length=1024, default='')
     application = fields.CharField('Analysis Data', max_length=1024, default='')

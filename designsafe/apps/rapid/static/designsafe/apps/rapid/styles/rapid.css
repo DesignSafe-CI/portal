@@ -60,6 +60,7 @@ body {
 
 #sidebar {
   width: 25%;
+  max-width: 28rem;
   position: absolute;
   top: 0px;
   /*height: calc(100vh - 50px);*/
@@ -70,6 +71,14 @@ body {
   /*overflow-x: visible;*/
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   z-index: 500;
+}
+.sidebar-header {
+  height: 6rem;
+}
+.sidebar-header .img-responsive {
+  display: block;
+  width: auto;
+  max-height: 100%;
 }
 #sidebar .sidebar-header {
   border-bottom: 2px solid #d3d3d3;

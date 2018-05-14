@@ -17,7 +17,9 @@
         'dropboxData':'Dropbox',
         'googledriveData':'Google Drive',
         'publicData':'Public Data',
-        'communityData':'Community Data'
+        'communityData':'Community Data',
+        'projects.view': 'Project View',
+        'projects.view.data': 'Project Data View'
       };
 
       if (stateNames[$state.current.name]) {

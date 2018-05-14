@@ -1601,16 +1601,16 @@
                  name: 'designsafe.project.simulation.output',
                  yamzId: ''},
                 {label: 'Integrated Data Analysis',
-                 name: 'designsafe.project.simulation.integrated_data_analysis',
+                 name: 'designsafe.project.simulation.analysis',
                  yamzId: ''},
                 {label: 'Integrated Report',
-                 name: 'designsafe.project.simulation.integrated_report',
+                 name: 'designsafe.project.simulation.report',
                  yamzId: ''},
                 {label: 'Analysis',
-                 name: 'designsafe.project.analysis',
+                 name: 'designsafe.project.simulation.analysis',   // changed this to "simulation.analysis" from "analysis"
                  yamzId: 'h1333'},
                 {label: 'Report',
-                 name: 'designsafe.project.report',
+                 name: 'designsafe.project.simulation.report',    // changed this to "simulation.report" from "report"
                  yamzId: ''}
                 ];
           }
@@ -1811,6 +1811,8 @@
                   entity: cat,
                   type: cat._displayName,
                   title: cat.value.title,
+                  reference: cat.value.reference,
+                  referencedoi: cat.value.referencedoi,
                   description: cat.value.description
               };
               $scope.ui.showEditCategory = true;
@@ -1819,6 +1821,8 @@
           $scope.saveEditCategory = function(){
               var cat = $scope.data.catForm.entity;
               cat.value.title = $scope.data.catForm.title;
+              cat.value.reference = $scope.data.catForm.reference;
+              cat.value.referencedoi= $scope.data.catForm.referencedoi;
               cat.value.description = $scope.data.catForm.description;
               $scope.ui.editFormSaving = true;
               ProjectEntitiesService.update({data: {
@@ -1853,7 +1857,7 @@
               });
           };
 
-          $scope.addProjectTag = function(){
+          $scope.addProjectTag = function(){  // Error is here...
             var entity = $scope.data.form.projectTagToAdd;
             var nameComps = entity.name.split('.');
             var name = nameComps[nameComps.length-1];
@@ -1865,6 +1869,12 @@
                                       return file.path;
                                      });
             }
+            console.log('DETAILS');
+            console.log(currentState.project.uuid);
+            console.log(entity);
+            
+            // using entity.name to place the object
+            // what if we route the name if it is a normal report?
             $scope.ui.addingTag = true;
             ProjectEntitiesService.create({data: {
                 uuid: currentState.project.uuid,

@@ -1,5 +1,29 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.0 (20180501)
+
+Improvements:
+
+- Ticket form update
+- Job status notifications
+- File search within Data Depot
+- Removal of search on external resources
+- Publication form validation
+- HTML application can be disabled now
+- Publish apps can be now marked as not published for edit needs
+- Check user agent and show a ribbon if not 100% supported
+- Data Depot button labels and messages
+
+Fixes:
+
+- Preview for files that are not marked as files
+- Navbar dropdown spacing
+- Stampede app warning text
+- App Category in app definition's tags
+- Get App Category from metadata
+- App cloning form
+- Data Depot ribbon floating
+
 ## v2.5.1 (20180413)
 
 Fixes:
