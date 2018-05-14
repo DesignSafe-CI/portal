@@ -527,6 +527,24 @@
         publication.outputs = _.uniq(publication.outputs, function(e){ return e.uuid; });
         publication.reports = _.uniq(publication.reports, function(e){ return e.uuid; });
         publication.simulations = _.uniq(publication.simulations, function(e){ return e.uuid; });
+        function getFileObjs(ent){
+          var selectedFiles = $scope.state.publication.filesSelected[ent.uuid];
+          var files = _.map(selectedFiles, function(file){
+                  return {
+                      'path': file.path,
+                      'type': file.type,
+                      'length': file.length,
+                      'name': file.name
+                  };
+          });
+          ent.fileObjs = files;
+        }
+        _.each(publication.analysiss, getFileObjs);
+        _.each(publication.inputs, getFileObjs);
+        _.each(publication.models, getFileObjs);
+        _.each(publication.outputs, getFileObjs);
+        _.each(publication.reports, getFileObjs);
+        _.each(publication.simulations, getFileObjs);
       }
       if (typeof status === 'undefined' || status === null){
         status = 'publishing';
