@@ -355,7 +355,7 @@ class AgaveIndexer(object):
                                                 username, root, files, folders)
             for d in docs_to_delete:
                 logger.debug(u'delete_recursive: %s', os.path.join(d.path, d.name))
-                res, search = mgr.listing_recursive(username)
+                res, search = mgr.listing_recursive(d.system, d.path)
                 if res.hits.total:
                     for doc in search.scan():
                         doc.delete(ignore=404)
