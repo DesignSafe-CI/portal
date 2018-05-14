@@ -105,7 +105,7 @@
 </div>
 
 
-<div ng-if="project.value.projectType != 'experimental' || filePathComps.length > 1"><!-- File Listing View -->
+<div ng-if="project.value.projectType == 'other' || filePathComps.length > 1"><!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()"
         data-scroll-top="scrollToTop()"
@@ -218,7 +218,6 @@
                     </tr>
                   </thead>
                   <tbody>
-
                     <tr>
                       <td style="padding:0; border-top:none;">
                         <table class="table" style="margin-bottom:0px;">
@@ -255,7 +254,6 @@
                         </table>
                       </td>
                     </tr>
-
                     <tr>
                       <td style="padding:0; border-top:none;">
                         <table class="table" style="margin-bottom:0px;">
@@ -274,7 +272,6 @@
                       <td style="padding:0; border-top:none;">
                       </td>
                     </tr>
-
                     <tr>
                       <td style="padding:0; border-top:none;">
                         <table class="table" style="margin-bottom:0px;">
@@ -293,7 +290,6 @@
                       <td style="padding:0; border-top:none;">
                       </td>
                     </tr>
-
                     <tr>
                       <td style="padding:0; border-top:none;">
                         <table class="table" style="margin-bottom:0px;">
@@ -312,7 +308,6 @@
                       <td style="padding:0; border-top:none;">
                       </td>
                     </tr>
-
                     <tr>
                       <td style="padding:0; border-top:none;">
                         <table class="table" style="margin-bottom:0px;">
@@ -331,7 +326,6 @@
                       <td style="padding:0; border-top:none;">
                       </td>
                     </tr>
-
                     <tr ng-if="getRelated('reportsList', false, experiment.uuid).length">
                       <td style="padding:0; border-top:none;">
                         <table class="table" style="margin-bottom:0px;">
@@ -355,12 +349,9 @@
                       <td style="padding:0; border-top:none;">
                       </td>
                     </tr>
-
-
                   </tbody>
                 </table>
               </div>
-
               <div style="width:100%; padding-left:10px;" ng-if="experiment.value.description">
                 <p style="font-weight:bold;">Description</p>
                 <p>{{experiment.value.description}}</p>
@@ -432,10 +423,11 @@
               </table>
             </div>
           </div>
+
         </div>
-      </div>
+      </div> <!-- experiment list -->
     </div>
-  </div>
+  </div> <!-- Preview Wrapper -->
 
   <div class="project-preview-entities-details">
     <div ng-repeat="modelConfig in browser.publication.modelConfigs | orderBy: 'value.title'">
@@ -468,7 +460,7 @@
           </table>
         </div>
       </div>
-    </div>
+    </div> <!-- Model Config list -->
     <div ng-repeat="sensorList in browser.publication.sensorLists | orderBy: 'value.title'">
       <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
         <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
@@ -499,7 +491,7 @@
           </table>
         </div>
       </div>
-    </div>
+    </div> <!-- sensor lists -->
     <div ng-repeat="analysis in browser.publication.analysisList | orderBy: 'value.title'">
       <div class="entity-wrapper" 
            ng-if="analysis.files.length">
@@ -553,7 +545,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> <!-- Analysis List -->
 
     <div ng-repeat="report in browser.publication.reportsList | orderBy: 'value.title'">
       <div class="entity-wrapper"
@@ -603,8 +595,310 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> <!-- Reports List -->
+  </div> <!-- project -->
+</div> <!-- projectType -->
+  </div>
+  </div>
+</div>
+<div ng-if="project.value.projectType == 'simulation' && filePathComps.length <= 1">  <!-- simulation publishe dview -->
+</div> <!-- Simulation published view close -->
 
+  <div ng-repeat="simulation in browser.publication.simulations | orderBy: 'value.title'" style="#fff;">
+    <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
+      <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
+              style="width:100%">
+        Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+      </button>
+      <div id="data-{{simulation.uuid}}" class="collapse"
+           ng-class="{'in': $index==0}">
+
+        <div style="border:1px solid black; background:white; margin-bottom:15px;">
+          <div style="padding:5px;">
+            <h3 style="margin-top:0">{{simulation.value.title}}</h3>
+            <p style="font-weight:bold;">Description</p>
+            <p>{{simulation.value.description}}</p>
+          </div>
+
+          <div style="width:49%; vertical-align:top; display:inline-block;">
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span>
+              {{browser.publication.created| date: 'MMM/d/yyyy'}}
+            </div>
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> {{simulation.doi}}
+            </div>
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span>
+              <span ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</span>
+              <span ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</span>
+            </div>
+          </div>
+          <div style="width:49%; vertical-align:top; display:inline-block;">
+            <div>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Authors: </span>
+                <span ng-repeat="user in filterUsers(simulation.value.authors, browser.publication.users) | orderBy: sortUsers(simulation)">
+                {{user.last_name}}, {{user.first_name}};
+                </span>
+            </div>
+            <div ng-if="getRelated('analysiss', false, simulation.uuid).length">
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Analysis: </span>
+              <a ng-href="#data-{{getRelated('analysiss', false, simulation.uuid)[0].uuid}}">
+                {{getRelated('analysiss', false, simulation.uuid)[0].value.title}}
+              </a>
+            </div>
+            <div ng-if="getRelated('reports', false, simulation.uuid).length">
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Report: </span>
+              <a ng-href="#data-{{getRelated('reports', false, simulation.uuid)[0].uuid}}">
+                {{getRelated('reports', false, simulation.uuid)[0].value.title}}
+              </a>
+            </div>
+          </div>
+          <div ng-if="!getRelated('models', false, simulation.uuid).length"
+               class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
+                This Simulation has no Models.
+          </div>
+          <div ng-repeat="model in getRelated('models', false, simulation.uuid) | orderBy: ['_ui.order', 'value.title']"
+               style="margin-bottom:10px;">
+            <div style="padding:3px;">
+              <span ng-class="ds-text-black"class="older-tick">Simulation Model: {{model.value.title}} </span>
+            </div>
+            <div style="position:absolute; left:-110px; margin-top:-20px; width:110px;">
+              <div style="border-bottom:1px solid lightgrey;">
+                <a ng-class="ds-text-black" ng-click="viewSimulationRelations(model.uuid)" href="#">
+                  {{model.value.title}}
+                </a>
+              </div>
+              <div>
+                <div ng-repeat="simInput in getRelated('inputs', false, model.uuid)"
+                     style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
+                            padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
+                  <a class="ds-text-green" 
+                     href=""
+                     ng-click="viewSimulationRelations(simInput.uuid)">
+                    {{simInput.value.title}}
+                  </a>
+                  <div style="display:inline-block"
+                       ng-repeat="simOutput in getRelated('outputs', false, [model.uuid, simInput.uuid])">
+                    <a class="ds-text-red" href="" ng-click="viewSimulationRelations(simOutput.uuid)">
+                      {{simOutput.value.title}}
+                    </a>
+                    <div style="display:inline-block"
+                         ng-repeat="analysis in getRelated('analysiss', false, [simOutput.uuid])">
+                      <a class="ds-text-light-blue" href="" ng-click="viewSimulationRelations(analysis.uuid)">
+                        {{analysis.value.title}}
+                      </a>
+                    </div>
+                    <div style="display:inline-block"
+                         ng-repeat="report in getRelated('reports', false, [model.uuid, simOutput.uuid])">
+                      <a class="" href="" ng-click="viewSimulationRelations(report.uuid)">
+                        {{report.value.title}}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; overflow:scroll;">
+              <table  class="table table-bordered table-striped"
+                      style="background-color: #fff;">
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in model.files | orderBy: ['type', 'path']">
+                    <td>
+                      <i class="fa {{file.icon()}}"></i>
+                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                        {{file.name}}
+                      </a>
+                    </td>
+                    <td>{{file.length|bytes}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                  <tr class="simulation-input"
+                      style="background:#fff; border:none;"
+                      ng-repeat="simInput in getRelated('inputs', false, [simulation.uuid, model.uuid])">
+                   <td colspan="4">
+                    <div class="entity-preview-header" id="details-{{simInput.uuid}}">
+                      <button class="btn btn-default btn-sm ds-text-green"
+                              style="width:100%">Simulation Input {{simInput.value.title}}</button>
+                    </div>
+                    <table class="table table-bordered table-striped">
+                      <tbody>
+                        <tr ng-repeat="file in simInput.files | orderBy: ['type', 'path']">
+                          <td>
+                            <i class="fa {{file.icon()}}"></i>
+                            <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                              {{file.name}}
+                            </a>
+                          </td>
+                          <td>{{file.length|bytes}}</td>
+                          <td>{{file.lastModified|date:"short"}}</td>
+                        </tr>
+                        <tr class="simulation-output"
+                            style="background:#fff; border:none; padding:0; margin:0"
+                            ng-repeat="simOutput in getRelated('outputs', false, [model.uuid, simInput.uuid])">
+                         <td colspan="4" style="padding:0; margin:0;">
+                          <div class="entity-preview-header" id="details-{{simOutput.uuid}}">
+                            <button class="btn btn-default btn-sm ds-text-red"
+                                    style="width:100%">Simulation Output {{simOutput.value.title}}</button>
+                          </div>
+                          <table class="table table-bordered table-striped">
+                            <tbody>
+                              <tr ng-repeat="file in simOutput.files | orderBy: ['type', 'path']">
+                                <td>
+                                  <i class="fa {{file.icon()}}"></i>
+                                  <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                    {{file.name}}
+                                  </a>
+                                </td>
+                                <td>{{file.length|bytes}}</td>
+                                <td>{{file.lastModified|date:"short"}}</td>
+                              </tr>
+                              <tr class="sim-data-analysis"
+                                  style="background:#fff; border:none; padding:0, margin:0"
+                                  ng-repeat="analysis in getRelated('analysiss', false, [simOutput.uuid])">
+                               <td colspan="4" style="padding:0; margin:0;">
+                                 <div class="entity-preview-header" id="details-{{analysis.uuid}}">
+                                   <button class="btn btn-default btn-sm" class="ds-text-light-green"
+                                           style="width:100%">Integrated Analysis {{analysis.value.title}}</button>
+                                 </div>
+                                <table class="table table-bordered table-striped">
+                                  <tbody>
+                                    <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
+                                      <td>
+                                        <i class="fa {{file.icon()}}"></i>
+                                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                          {{file.name}}
+                                        </a>
+                                      </td>
+                                      <td>{{file.length|bytes}}</td>
+                                      <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                               </td>
+                              </tr>
+                              <tr class="sim-int-report"
+                                  style="background:#fff; border:none; padding:0, margin:0"
+                                  ng-repeat="report in getRelated('reports', false, [simulation.uuid, model.uuid, simOutput.uuid])">
+                               <td colspan="4" style="padding:0; margin:0;">
+                                 <div class="entity-preview-header" id="details-{{report.uuid}}">
+                                   <button class="btn btn-default btn-sm" class="ds-text-black"
+                                           style="width:100%">Integrated Report {{report.value.title}}</button>
+                                 </div>
+                                <table class="table table-bordered table-striped">
+                                  <tbody>
+                                    <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
+                                      <td>
+                                        <i class="fa {{file.icon()}}"></i>
+                                        <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                                          {{file.name}}
+                                        </a>
+                                      </td>
+                                      <td>{{file.length|bytes}}</td>
+                                      <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                               </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                         </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                   </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div ng-repeat="analysis in browser.publication.analysiss | orderBy: ['value.title', 'value.simulations.length']">
+    <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
+      <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#data-{{analysis.uuid}}"
+              style="width:100%">
+        <span ng-if="!analysis.value.simulations.length">Analysis {{analysis.value.title}} </span>
+        <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
+        <i class="fa dropdown-caret"></i>
+      </button>
+          <div id="data-{{analysis.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <table  class="table table-bordered table-striped"
+                      style="background-color: #fff;">
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in analysis.files | orderBy: ['type', 'path']">
+                    <td>
+                      <i class="fa {{file.icon()}}"></i>
+                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                        {{file.name}}
+                      </a>
+                    </td>
+                  <td ng-if="file.format == 'folder'"> -- </td>
+                    <td ng-if="!file.format == 'folder'">{{file.length|bytes}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      <div id="data-{{analysis.uuid}}" class="collapse"
+           ng-class="{'in': $index==0}">
+      </div>
+    </div>
+  </div>
+
+  <div ng-repeat="report in browser.publication.reports | orderBy: ['value.title', 'value.simulations.length']"
+       style="#fff;">
+    <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
+      <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{report.uuid}}"
+              style="width:100%" class="ds-text-black">
+        <span ng-if="!report.value.simulations.length">Report {{report.value.title}} </span>
+        <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
+        <i class="fa dropdown-caret"></i>
+      </button>
+          <div id="data-{{report.uuid}}" class="collapse in">
+            <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
+              <table  class="table table-bordered table-striped"
+                      style="background-color: #fff;">
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Last modified</th>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="file in report.files | orderBy: ['type', 'path']">
+                    <td>
+                      <i class="fa {{file.icon()}}"></i>
+                      <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
+                        {{file.name}}
+                      </a>
+                    </td>
+                  <td ng-if="file.format == 'folder'"> -- </td>
+                    <td ng-if="!file.format == 'folder'">{{file.length|bytes}}</td>
+                    <td>{{file.lastModified|date:"short"}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+    </div>
   </div>
 
 </div><!-- Cosing published View -->
