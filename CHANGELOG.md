@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.1 (20180502)
+
+Improvements:
+
+- App categories
+- Usage of Partner Data Apps
+
+Fixes:
+
+- Simulation publication rendering issues
+- Simulation project client validation
+- Site map bug
+
 ## v2.6.0 (20180501)
 
 Improvements:

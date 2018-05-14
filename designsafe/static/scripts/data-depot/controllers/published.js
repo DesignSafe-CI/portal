@@ -2,10 +2,10 @@
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
-  app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django',
+  app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django', '$window',
                                      'DataBrowserService', 'FileListing',
                                      '$uibModal','$http', '$stateParams',
-                 function ($scope, $state, Django, DataBrowserService,
+                 function ($scope, $state, Django, $window, DataBrowserService,
                            FileListing, $uibModal, $http, $stateParams) {
   $scope.filePathComps = _.compact($stateParams.filePath.split('/'));
   $scope.browser = DataBrowserService.state();
@@ -30,46 +30,28 @@
             fileMgr: 'published',
             baseUrl: '/api/public/files'
           };
-          _.each($scope.browser.publication.eventsList, function(evt){
+          function getFileObjs(evt){
               evt.files = _.map(evt.fileObjs, function(f){
                   f.system = 'designsafe.storage.published';
                   f.path = $scope.browser.publication.projectId + f.path;
                   f.permissions = 'READ';
                   return FileListing.init(f, _apiParams);
               });
-          });
-          _.each($scope.browser.publication.modelConfigs, function(mcf){
-              mcf.files = _.map(mcf.fileObjs, function(f){
-                  f.system = 'designsafe.storage.published';
-                  f.path = $scope.browser.publication.projectId + f.path;
-                  f.permissions = 'READ';
-                  return FileListing.init(f, _apiParams);
-              });
-          });
-          _.each($scope.browser.publication.sensorLists, function(slt){
-              slt.files = _.map(slt.fileObjs, function(f){
-                  f.system = 'designsafe.storage.published';
-                  f.path = $scope.browser.publication.projectId + f.path;
-                  f.permissions = 'READ';
-                  return FileListing.init(f, _apiParams);
-              });
-          });
-          _.each($scope.browser.publication.analysisList, function(anl){
-              anl.files = _.map(anl.fileObjs, function(f){
-                  f.system = 'designsafe.storage.published';
-                  f.path = $scope.browser.publication.projectId + f.path;
-                  f.permissions = 'READ';
-                  return FileListing.init(f, _apiParams);
-              });
-          });
-          _.each($scope.browser.publication.reportsList, function(rep){
-              rep.files = _.map(rep.fileObjs, function(f){
-                  f.system = 'designsafe.storage.published';
-                  f.path = $scope.browser.publication.projectId + f.path;
-                  f.permissions = 'READ';
-                  return FileListing.init(f, _apiParams);
-              });
-          });
+          }
+          if ($scope.browser.publication.project.value.projectType === 'experimental'){
+              _.each($scope.browser.publication.eventsList, getFileObjs);
+              _.each($scope.browser.publication.modelConfigs, getFileObjs);
+              _.each($scope.browser.publication.sensorLists, getFileObjs);
+              _.each($scope.browser.publication.analysisList, getFileObjs);
+              _.each($scope.browser.publication.reportsList, getFileObjs);
+          } else if ($scope.browser.publication.project.value.projectType === 'simulation'){
+              _.each($scope.browser.publication.analysiss, getFileObjs);
+              _.each($scope.browser.publication.inputs, getFileObjs);
+              _.each($scope.browser.publication.models, getFileObjs);
+              _.each($scope.browser.publication.outputs, getFileObjs);
+              _.each($scope.browser.publication.reports, getFileObjs);
+          }
+
         $scope.ui.loadingProjectMeta = false;
     });
   }
@@ -116,8 +98,10 @@
     };
 
     $scope.onBrowse = function($event, file) {
-      $event.preventDefault();
-      $event.stopPropagation();
+      if ($event){
+          $event.preventDefault();
+          $event.stopPropagation();
+      }
 
       var systemId = file.system || file.systemId;
       var filePath;
@@ -204,7 +188,8 @@
       var ents = [];
       ents = $scope.browser.publication[attrib];
       var res = _.filter(ents, function(ent){
-          if (_.intersection(uuids, ent.associationIds).length === uuids.length){
+          var inter = _.intersection(uuids, ent.associationIds);
+          if (inter && inter.length === uuids.length){
               return ent;
           }
       });
@@ -309,6 +294,38 @@
             } else {
                 $ctrl.data.publication = browser.publication;
             }
+            $ctrl.close = function(){
+                $uibModalInstance.dismiss('close');
+            };
+        }],
+        controllerAs: '$ctrl',
+        resolve: {
+            browser: $scope.browser
+        },
+        scope: $scope,
+        size: 'lg'
+      });
+    };
+
+    $scope.viewSimulationRelations = function(uuid){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-simulation-relations.html',
+        controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
+            var $ctrl = this;
+            $ctrl.data = {};
+            if (browser.listing.project){
+                $ctrl.data.publication = browser.listing;
+            } else {
+                $ctrl.data.publication = browser.publication;
+            }
+            $ctrl.data.selectedUuid = uuid;
+            $ctrl.isSelected = function(entityUuid){
+                if (entityUuid ===$ctrl.data.selectedUuid){
+                    return true;
+                } else {
+                    return false;
+                }
+            };
             $ctrl.close = function(){
                 $uibModalInstance.dismiss('close');
             };
@@ -447,11 +464,16 @@
             $uibModalInstance.dismiss('Close');
         };
         $ctrl.downloadCitation = function(){
-          var blob = new Blob([$ctrl.data.citation]);
-          var downloadLink = $('<a></a>');
-          downloadLink.attr('href', window.URL.createObjectURL(blob));
-          downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
-          downloadLink[0].click();
+          // var blob = new Blob([$ctrl.data.citation]);
+          // var downloadLink = $('<a></a>');
+          // downloadLink.attr('href', window.URL.createObjectURL(blob));
+          // downloadLink.attr('download', 'citation.' + $ctrl.ui.style);
+          // downloadLink[0].click();
+
+          var doi = $ctrl.data.ent.doi;
+          doi = doi.slice(4);
+          doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
+          $window.open(doiurl);
         };
       $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
       $ctrl.getCitation();

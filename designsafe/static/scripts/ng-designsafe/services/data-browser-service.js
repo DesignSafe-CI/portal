@@ -1607,10 +1607,10 @@
                  name: 'designsafe.project.simulation.report',
                  yamzId: ''},
                 {label: 'Analysis',
-                 name: 'designsafe.project.simulation.analysis',   // changed this to "simulation.analysis" from "analysis"
+                 name: 'designsafe.project.analysis',
                  yamzId: 'h1333'},
                 {label: 'Report',
-                 name: 'designsafe.project.simulation.report',    // changed this to "simulation.report" from "report"
+                 name: 'designsafe.project.report',
                  yamzId: ''}
                 ];
           }
@@ -1869,9 +1869,6 @@
                                       return file.path;
                                      });
             }
-            console.log('DETAILS');
-            console.log(currentState.project.uuid);
-            console.log(entity);
             
             // using entity.name to place the object
             // what if we route the name if it is a normal report?

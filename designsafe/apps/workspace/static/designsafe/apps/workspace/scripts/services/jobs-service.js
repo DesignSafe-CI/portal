@@ -23,9 +23,8 @@
     };
 
     service.getWebhookUrl = function() {
-      // console.log(djangoUrl.reverse('designsafe_api:jobs_wb_handler'))
       return $http.get(djangoUrl.reverse('designsafe_api:jobs_wh_handler'));  
-    }
+    };
 
     return service;
   }]);

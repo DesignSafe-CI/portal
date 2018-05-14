@@ -317,7 +317,7 @@
       .state('communityDataSearch',{
         url: '/community-search/?query_string&offset&limit',
         controller: 'CommunityDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
+        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
         params: {
           systemId: 'nees.public',
           filePath: '$SEARCH'

@@ -287,26 +287,30 @@
 
     function checkMetadata(){
       var projData = $scope.data.project.value;
+      // experimental
       var experimentsList = $scope.state.publication.experimentsList;
       var analysisList = $scope.state.publication.analysisList;
       var reportsList = $scope.state.publication.reportsList;
+      // simulation
+      var simSimulations = $scope.state.publication.simulations;
+      var simAnalysis = $scope.state.publication.analysiss;
+      var simReports = $scope.state.publication.reports;
+
       var publicationMessages = [];
       var checklist = {
         project: {},
       };
 
       // object containing required* fields that will be checked on metadata page
-      // TODO:  add requirements to simulation and other project types
       var requirements = {
         "projectReq": ['title', 'projectType', 'teamMembers', 'description', 'awardNumber', 'keywords'],
         "experimentReq": ['title', 'experimentType', 'experimentalFacility', 'description', 'authors'],
-        "simulationReq": [],
+        "simulationReq": ['title', 'authors', 'description', 'simulationType'], // add referenced data section..
         "otherReq": [],
         "reportReq": ['title', 'description'],
         "analysisReq": ['title', 'description'],
       };
 
-      //TODO: set 'requirement checks' in their own functions
       //check project requirements
       function projectRequirements(){
         checklist.project.name = projData.title;
@@ -324,7 +328,7 @@
       //check experiment requirements
       function experimentRequirements(){
         var i = 0;
-        //TODO: remove these with revision of event,sensor,modelconf check
+        //TODO: check for descriptions within models/sensors/events
         var models = $scope.data.project.modelconfig_set;
         var sensors = $scope.data.project.sensorlist_set;
         var events = $scope.data.project.event_set;
@@ -379,65 +383,186 @@
         return;
       }
 
+      //check simulation requirements
+      function simulationRequirements(){
+        var i = 0;
+        //TODO: add check to definition for models/inputs/outputs
+        var models = $scope.state.publication.models;
+        var inputs = $scope.state.publication.inputs;
+        var outputs = $scope.state.publication.outputs;
+
+
+        if (simSimulations === undefined || simSimulations == '') {
+          return;
+        } else {
+          simSimulations.forEach(function (sim) {
+            var title = simSimulations[i].value.title;
+
+            checklist['simulation'+i] = {};
+            checklist['simulation'+i].name = title;
+            checklist['simulation'+i].category = 'simulation';
+            
+            //models
+            if (models === undefined) {
+              checklist['simulation'+i].model = false;
+            } else {
+              checklist['simulation'+i].model = false;
+              models.forEach(function(mod){
+                mod.value.simulations.forEach(function(mid) {
+                  if (sim.uuid == mid) {
+                    checklist['simulation'+i].model = true;
+                  }
+                });
+              });
+            }
+
+            //inputs
+            if (inputs === undefined) {
+              checklist['simulation'+i].input = false;
+            } else {
+              checklist['simulation'+i].input = false;
+              inputs.forEach(function(ipt) {
+                ipt.value.simulations.forEach(function(iid) {
+                  if (sim.uuid == iid) {
+                    checklist['simulation'+i].input = true;
+                  }
+                });
+              });
+            }
+
+            //outputs
+            if (outputs === undefined) {
+              checklist['simulation'+i].output = false;  
+            } else {
+              checklist['simulation'+i].output = false;
+              outputs.forEach(function(opt) {
+                opt.value.simulations.forEach(function(oid) {
+                  if (sim.uuid == oid) {
+                    checklist['simulation'+i].output = true;
+                  }
+                });
+              });
+            }
+
+            requirements.simulationReq.forEach(function (req) {
+              if (sim.value[req] == '' || sim.value[req] == []) {
+                checklist['simulation'+i][req] = false;
+              } else {
+                checklist['simulation'+i][req] = true;
+              }
+            });
+            i++;
+          });
+        }
+        return;
+      }
+
       //check analysis requirements
       function analysisRequirements(){
         var i = 0;
-        analysisList.forEach(function (exp) {
-          var title = analysisList[i].value.title;
-
-          checklist['analysis'+i] = {};
-          checklist['analysis'+i].name = title;
-          checklist['analysis'+i].category = 'analysis';
-          requirements.analysisReq.forEach(function (req) {
-            if (exp.value[req] == '' || exp.value[req] == []) {
-              checklist['analysis'+i][req] = false;
-            } else {
-              checklist['analysis'+i][req] = true;
-            }
+        if (projData.projectType == "experimental" && analysisList !== undefined && analysisList !== '') {
+          analysisList.forEach(function (exp) {
+            var title = analysisList[i].value.title;
+  
+            checklist['analysis'+i] = {};
+            checklist['analysis'+i].name = title;
+            checklist['analysis'+i].category = 'analysis';
+            requirements.analysisReq.forEach(function (req) {
+              if (exp.value[req] == '' || exp.value[req] == []) {
+                checklist['analysis'+i][req] = false;
+              } else {
+                checklist['analysis'+i][req] = true;
+              }
+            });
+            i++;
           });
-          i++;
-        });
+        }
+        else if (projData.projectType == "simulation" && simAnalysis !== undefined && simAnalysis !== '') {
+          simAnalysis.forEach(function (exp) {
+            var title = simAnalysis[i].value.title;
+  
+            checklist['analysis'+i] = {};
+            checklist['analysis'+i].name = title;
+            checklist['analysis'+i].category = 'analysis';
+            requirements.analysisReq.forEach(function (req) {
+              if (exp.value[req] == '' || exp.value[req] == []) {
+                checklist['analysis'+i][req] = false;
+              } else {
+                checklist['analysis'+i][req] = true;
+              }
+            });
+            i++;
+          });
+        }
         return;
       }
 
       //check report requirements
       function reportRequirements(){
         var i = 0;
-        reportsList.forEach(function (exp) {
-          var title = reportsList[i].value.title;
 
-          checklist['report'+i] = {};
-          checklist['report'+i].name = title;
-          checklist['report'+i].category = 'report';
-          requirements.reportReq.forEach(function (req) {
-            if (exp.value[req] == '' || exp.value[req] == []) {
-              checklist['report'+i][req] = false;
-            } else {
-              checklist['report'+i][req] = true;
-            }
+        if (projData.projectType == "experimental" && reportsList !== undefined && reportsList !== '') {
+          reportsList.forEach(function (exp) {
+            var title = reportsList[i].value.title;
+
+            checklist['report'+i] = {};
+            checklist['report'+i].name = title;
+            checklist['report'+i].category = 'report';
+            requirements.reportReq.forEach(function (req) {
+              if (exp.value[req] == '' || exp.value[req] == []) {
+                checklist['report'+i][req] = false;
+              } else {
+                checklist['report'+i][req] = true;
+              }
+            });
+            i++;
           });
-          i++;
-        });
+        } else if (projData.projectType == "simulation" && simReports !== undefined && simReports !== '') {
+          simReports.forEach(function (exp) {
+            var title = simReports[i].value.title;
+
+            checklist['report'+i] = {};
+            checklist['report'+i].name = title;
+            checklist['report'+i].category = 'report';
+            requirements.reportReq.forEach(function (req) {
+              if (exp.value[req] == '' || exp.value[req] == []) {
+                checklist['report'+i][req] = false;
+              } else {
+                checklist['report'+i][req] = true;
+              }
+            });
+            i++;
+          });
+        }
         return;
       }
 
       
       projectRequirements();
       experimentRequirements();
+      simulationRequirements();
       analysisRequirements();
       reportRequirements();
 
-      //TODO:   tune this area to respond to project type before checking
-      //check for missing metadata (experimental)
+      //check for missing metadata blocks
       var allow = true;
       if (projData.projectType == "experimental") {
-        // check for missing records
         if (Object.keys(checklist).includes('experiment0') !== true) {
           publicationMessages.push({title: "Project", message: "Your project must include an experiment."});
           allow = false;
         }
+      } else if (projData.projectType == "simulation") {
+        if (Object.keys(checklist).includes('simulation0') !== true) {
+          publicationMessages.push({title: "Project", message: "Your project must include a simulation."});
+          allow = false;
+        }
+      }
+      if (Object.keys(checklist).includes('analysis0') !== true) {
+        publicationMessages.push({title: "Project", message: "Your project must include an analysis."});
+        allow = false;
       }
 
+      // return messages for missing fields
       i = 0;
       Object.values(checklist).forEach(function(exp) {
         Object.entries(exp).forEach(function(res) {
@@ -700,8 +825,38 @@
             $scope.ui.publicationMessages = publicationMessages;
             return;
         }
+      } else if ($scope.state.project.value.projectType == 'simulation'){
+        delete publication.eventsList;
+        delete publication.modelConfigs;
+        delete publication.sensorLists;
+        delete publication.analysisList;
+        delete publication.reportsList;
+        delete publication.experimentsList;
+        publication.analysiss = _.uniq(publication.analysiss, function(e){ return e.uuid; });
+        publication.inputs = _.uniq(publication.inputs, function(e){ return e.uuid; });
+        publication.models = _.uniq(publication.models, function(e){ return e.uuid; });
+        publication.outputs = _.uniq(publication.outputs, function(e){ return e.uuid; });
+        publication.reports = _.uniq(publication.reports, function(e){ return e.uuid; });
+        publication.simulations = _.uniq(publication.simulations, function(e){ return e.uuid; });
+        function getFileObjs(ent){
+          var selectedFiles = $scope.state.publication.filesSelected[ent.uuid];
+          var files = _.map(selectedFiles, function(file){
+                  return {
+                      'path': file.path,
+                      'type': file.type,
+                      'length': file.length,
+                      'name': file.name
+                  };
+          });
+          ent.fileObjs = files;
+        }
+        _.each(publication.analysiss, getFileObjs);
+        _.each(publication.inputs, getFileObjs);
+        _.each(publication.models, getFileObjs);
+        _.each(publication.outputs, getFileObjs);
+        _.each(publication.reports, getFileObjs);
+        _.each(publication.simulations, getFileObjs);
       }
-
       if (typeof status === 'undefined' || status === null){
         status = 'publishing';
       }
