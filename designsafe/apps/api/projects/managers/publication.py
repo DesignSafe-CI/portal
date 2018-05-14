@@ -346,7 +346,7 @@ def simulation_reserve_xml(publication, simulation, created):
     sim = simulation['value']
     xml_obj = _simulation_required_xml(
                 publication['users'],
-                experiment,
+                simulation,
                 created
             )
     now = dateutil.parser.parse(created)
@@ -482,6 +482,7 @@ def reserve_publication(publication, analysis_doi=False):
     logger.debug('proj_xml: %s', proj_xml)
     exps_dois = []
     anl_dois = []
+    sim_dois = []
     xmls = {proj_doi: proj_xml}
     publication['project']['doi'] = proj_doi
     if publication['project']['value']['projectType'].lower() == 'experimental':
@@ -521,5 +522,15 @@ def reserve_publication(publication, analysis_doi=False):
                     sim,
                     publication['created']
             )
-        pass
+            logger.debug('sim_doi: %s', sim_doi)
+            logger.debug('sim_ark: %s', sim_ark)
+            logger.debug('sim_xml: %s', sim_xml)
+            add_related(sim_xml, [proj_doi])
+            sim_dois.append(sim_doi)
+            sim['doi'] = sim_doi
+            xmls[sim_doi] = sim_xml
+        add_related(proj_xml, sim_dois)
+        for _doi in [proj_doi] + sim_dois:
+            logger.debug('DOI: %s', _doi)
+            _update_doi(_doi, xmls[_doi], status='public')
     return publication
