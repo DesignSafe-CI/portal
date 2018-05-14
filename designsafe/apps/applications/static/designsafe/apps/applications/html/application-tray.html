@@ -71,10 +71,10 @@
                           </li>
                           <hr ng-show="appMeta.value.type === 'agave' && appMeta.value.definition.available">
 
-                          <li ng-if="!appMeta.value.definition.isPublic">
+                          <li ng-if="!appMeta.value.definition.isPublic || appMeta.value.type === 'html'">
                               <a ng-click="editApp(appMeta)" role="button"> <i class="fa fa-pencil"></i> Edit </a>
                           </li>
-                          <hr ng-if="!appMeta.value.definition.isPublic">
+                          <hr ng-if="!appMeta.value.definition.isPublic|| appMeta.value.type === 'html'">
 
                           <li ng-if="!appMeta.value.definition.isPublic || appMeta.value.type === 'html'">
                               <a ng-click="editPermissions(appMeta)" role="button"> <i class="fa fa-share"></i> Share </a>

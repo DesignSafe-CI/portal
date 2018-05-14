@@ -465,12 +465,18 @@
                 {label: 'Simulation Output',
                  name: 'designsafe.project.simulation.output',
                  yamzId: ''},
-                {label: 'Analysis',
-                 name: 'designsafe.project.simulation.analysis',
+                 {label: 'Integrated Data Analysis',
+                  name: 'designsafe.project.simulation.analysis',
+                  yamzId: ''},
+                 {label: 'Integrated Report',
+                  name: 'designsafe.project.simulation.report',
+                  yamzId: ''},
+                 {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
                  yamzId: 'h1333'},
                 {label: 'Report',
-                 name: 'designsafe.project.simulation.report',
-                 yamzId: ''}
+                 name: 'designsafe.project.report',
+                 yamzId: ''},
                 ];
           }
           $scope.ui.simModel = {};

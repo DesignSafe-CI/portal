@@ -293,7 +293,7 @@ class BaseFileResource(BaseAgaveResource):
                      self.system, self.path, file_name, remote_url)
         result = self._agave.files.importData(systemId=self.system,
                                               filePath=urllib.quote(self.path),
-                                              fileName=file_name,
+                                              fileName=str(file_name),
                                               urlToIngest=remote_url)
         async_resp = AgaveAsyncResponse(self._agave, result)
         async_status = async_resp.result(600)

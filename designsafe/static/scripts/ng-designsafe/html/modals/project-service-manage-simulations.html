@@ -363,7 +363,7 @@
                                 </span>
                                 <button class="btn btn-xsm btn-link"
                                         style="display:inline-block;"
-                                        ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutput').length"
+                                        ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length"
                                         ng-click="delRelEntity(data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0],
                                                               {simOutputs: simOutput.uuid})">
                                   <i class="fa fa-times-circle fa-2" style="color:black;"></i>

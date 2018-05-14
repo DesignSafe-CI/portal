@@ -366,7 +366,7 @@
                  required/>
         </div>
         <!-- Analysis Reference Data field start -->
-        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis'">
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis' ">
             <div style="display:inline-block; width:30%;">
               <label for="id-tag-reference" style="display:block">Reference Data</label>
               <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.form.projectTagToAdd.reference">
@@ -380,7 +380,6 @@
             </div>
           </div>
         <!-- Analysis Reference Data field end -->
-
         <!-- Extra form fields for categories start -->
         <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
          <div style="display:inline-block; width:30%">

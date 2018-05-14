@@ -163,6 +163,14 @@
         params: {'system_id': system_id, 'roles': true}
       });
     };
+    
+    service.getRoleForUser = function(system_id) {
+      return $http({
+        url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+        method: 'GET',
+        params: {'system_id': system_id, 'user_role': true}
+      });
+    };
 
     service.getFile = function(system_id, path){
       return $http({

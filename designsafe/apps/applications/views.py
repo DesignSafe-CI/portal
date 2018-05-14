@@ -166,6 +166,7 @@ def call_api(request, service):
                 public = request.GET.get('isPublic')
                 type = request.GET.get('type')
                 roles = request.GET.get('roles')
+                user_role = request.GET.get('user_role')
 
                 if request.method == 'GET':
                     if system_id:
@@ -178,6 +179,15 @@ def call_api(request, service):
                                 }
                             })
                             data = agave.systems.listRoles(systemId=system_id)
+                        elif user_role:
+                            metrics.info('agave.systems.getRoleForUser', extra={
+                                'operation': 'agave.systems.getRoleForUser',
+                                'user': request.user.username,
+                                'info': {
+                                    'system_id': system_id
+                                }
+                            })
+                            data = agave.systems.getRoleForUser(systemId=system_id, username=request.user.username)
                         else:
                             metrics.info('agave.systems.get', extra={
                                 'operation': 'agave.systems.get',
