@@ -11,10 +11,6 @@ HAYSTACK_CONNECTIONS = {
 ES_CONNECTIONS = {
     'default': {
         'hosts': [
-<<<<<<< HEAD
-
-=======
->>>>>>> master
         ],
     },
     'staging': { #dev/qa
