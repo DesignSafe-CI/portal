@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.3 (20180504)
+
+Fixes:
+
+- Related file paths for Sim Pubs
+
 ## v2.6.2 (20180503)
 
 Fixes:
