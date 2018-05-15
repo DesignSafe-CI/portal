@@ -5,9 +5,10 @@
   module.directive('ddAltmetrics', ['$sce','$filter',function ($sce,$filter,$scope) {
     return {
       restrict: 'EA',
-      scope: { project: '='},
+      scope: { publication: '='},
       link: function (scope, element) {
-        scope.$watch(function stateWatch(){return scope.project;}, function(newState) {
+        scope.$watch(function stateWatch(){return scope.publication;}, function(newState) {
+          console.log(scope);
           if (typeof newState === 'undefined'){
             return;
           }
@@ -15,22 +16,22 @@
           var ld = {
             "@context": "http://schema.org",
             "@type": "Dataset",
-            "@id": "https://doi.org/" + publication.doi, //dataset doi url 
+            "@id": "https://doi.org/" + publication.project.doi, //dataset doi url 
             "additionalType": "Project/Experimental", //dataset type
-            "name": publication.value.title, //dataset name
-            "alternateName": publication.value.projectId, //alternative name of the dataset
+            "name": publication.project.value.title, //dataset name
+            "alternateName": publication.project.value.projectId, //alternative name of the dataset
             "author": [
               {
                 "@type": "Person",
-                "name": '',//publication.user.first_name + ' ' + publication.user.last_name,
-                "givenName": '',//publication.user.first_name,
+                "name": publication.users[0].first_name + ' ' + publication.users[0].last_name,
+                "givenName":'',//user.first_name,
                 "familyName": '',//publication.user.last_name
               }],
-            "description": publication.value.description,
+            "description": publication.project.value.description,
             "license": "http://opendatacommons.org/licenses/by/1-0",
-            "keywords": publication.value.keywords,
+            "keywords": publication.project.value.keywords,
             "inLanguage": "English",
-            "datePublished": $filter('date')(publication.created, 'MMM/d/yyyy'),
+            "datePublished": $filter('date')(publication.project.created, 'MMM/d/yyyy'),
             "schemaVersion": "http://datacite.org/schema/kernel-4",
             "publisher": {
               "@type": "Organization",
