@@ -114,9 +114,9 @@
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         if (file.system === 'nees.public'){
-          $state.go('publicData', {systemId: file.system, filePath: file.path});
+          $state.go('publicData', {systemId: file.system, filePath: file.path}, {reload: true});
         } else {
-          $state.go('publishedData', {systemId: file.system, filePath: file.path, listing:true});
+          $state.go('publishedData', {systemId: file.system, filePath: file.path, listing:true}, {reload: true});
         }
       }
     };

@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.2 (20180503)
+
+Fixes:
+
+- Breadcrumbs
+- Partner Data Apps on workspace
+
 ## v2.6.1 (20180502)
 
 Improvements:

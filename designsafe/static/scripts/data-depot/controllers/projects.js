@@ -10,11 +10,16 @@
 
     // release selected files
     DataBrowserService.deselect(DataBrowserService.state().selected);
-
     $scope.data = {
       navItems: [],
       projects: []
     };
+    
+
+    $scope.stateReload = function() { 
+      $state.reload();
+    };
+        
 
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
@@ -35,13 +40,14 @@
 
 
       if (toStateParams.filePath) {
+        
         if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({
-            label: getTitle(toStateParams, $scope.data.projects),
+            label: DataBrowserService.state().project.value.title,
             href: $state.href('projects.view.data', {
               projectId: toStateParams.projectId,
               filePath: '/',
-              projectTitle: getTitle(toStateParams, $scope.data.projects)
+              projectTitle: DataBrowserService.state().project.value.title
             })
           });
         } else {
@@ -51,16 +57,17 @@
               filePath = '/';
             }
             $scope.data.navItems.push({
-              label: e || getTitle(toStateParams, $scope.data.projects),
+              label: e || DataBrowserService.state().project.value.title,
               href: $state.href('projects.view.data', {
                 projectId: toStateParams.projectId,
                 filePath: filePath,
-                projectTitle: getTitle(toStateParams, $scope.data.projects)
+                projectTitle: DataBrowserService.state().project.value.title
               })
             });
           });
         }
       } else {
+        
         // when the user is in the base project file's directory 
         // display the project title in the breadcrumbs
         $scope.data.navItems.push({
@@ -95,7 +102,7 @@
       $event.preventDefault();
       $state.go('projects.view.data', {projectId: project.uuid,
                                        filePath: '/',
-                                       projectTitle: project.value.title});
+                                       projectTitle: project.value.title}, {reload: true});
     };
 
     // function for when the row is selected, but the link to the project detail page is not
@@ -1067,7 +1074,7 @@
       } else {
         $state.go('projects.view.data', {projectId: projectId,
                                          filePath: file.path,
-                                         projectTitle: projectTitle});
+                                         projectTitle: projectTitle}, {reload: true});
       }
     };
 

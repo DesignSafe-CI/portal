@@ -43,12 +43,19 @@
               });
               if (appMeta.value.definition.isPublic) {
                 // If App has no category, place in Simulation tab
-                // Check if category exists either as a metadata field, or in a tag. Moving forward, all categeroies will be moved to tags
+                // Check if category exists either as a metadata field, or in a tag. Moving forward, all categories will be moved to tags
+                var appCategory = 'Simulation';
                 if (appMeta.value.definition.hasOwnProperty('appCategory')) {
-                  self.lists[appMeta.value.definition.appCategory].push(appMeta);
+                  appCategory = appMeta.value.definition.appCategory;
                 } else if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
-                  self.lists[appMeta.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1]].push(appMeta);
+                  appCategory = appMeta.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                }
+                if (appCategory in self.lists) {
+                  self.lists[appCategory].push(appMeta);
+                } else if (appCategory == 'Data Collections') {
+                  self.lists['Partner Data Apps'].push(appMeta);
                 } else {
+                  console.log(`No app category ${appCategory} found for ${appMeta.value.definition.id}.`);
                   self.lists['Simulation'].push(appMeta);
                 }
               } else {
