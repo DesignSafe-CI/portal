@@ -59,6 +59,7 @@ class DesignSafeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
+    agree_to_account_limit = models.DateTimeField(auto_now_add=True, null=True)
     bio = models.CharField(max_length=4096, default=None, null=True, blank=True)
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
