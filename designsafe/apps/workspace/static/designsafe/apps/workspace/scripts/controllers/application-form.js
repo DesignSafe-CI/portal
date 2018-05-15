@@ -1,6 +1,20 @@
 (function(window, angular, $) {
   "use strict";
-  angular.module('designsafe').controller('ApplicationFormCtrl',
+  angular.module('designsafe')
+  .directive('compile', ['$compile', function ($compile) {
+    return function (scope, element, attrs) {
+      scope.$watch(
+        function (scope) {
+          return scope.$eval(attrs.compile);
+        },
+        function (value) {
+          element.html(value);
+          $compile(element.contents())(scope);
+        }
+      );
+    };
+  }])
+  .controller('ApplicationFormCtrl',
     ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast',
     function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast) {
 
@@ -231,6 +245,20 @@
               refocus();
             });
         }
+      };
+
+      $scope.onLaunchNotebook = function(href) {
+        let file_path = '/SCEC_BBP_GMportal/Run_me.ipynb'; // app.file_path
+        let file_mgr_name = 'community';
+        let system_id = 'designsafe.storage.community';
+        $scope.data.launching = true;
+        Apps.copyNotebook(file_mgr_name, system_id, file_path)
+        .then(function(resp) {
+          $scope.data.launching = false;
+          window.open(`${href}/user/${resp.data.path.split('/')[1]}/notebooks/mydata/${resp.data.name}`,'').focus();
+          }, function (err) {
+            scope.data.launching = false;
+          });
       };
 
       function refocus() {

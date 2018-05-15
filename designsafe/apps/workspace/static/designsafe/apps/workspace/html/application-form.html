@@ -10,7 +10,13 @@
     </div>
 </div>
 <div ng-if="data.type === 'html' && data.app">
-  <p ng-bind-html="data.app"></p>
+  <p compile="data.app"></p>
+  <div ng-if="data.launching">
+        <span class="label label-info">
+            <i class="fa fa-refresh fa-spin"></i>
+            Launching...
+        </span>
+    </div>
 </div>
 <div ng-if="data.type === 'agave' && data.app" class="app-form-wrapper">
     <div class="lead alert alert-warning" ng-if="data.needsLicense">

@@ -33,6 +33,18 @@
       });
     };
 
+    service.copyNotebook = function(file_mgr_name, system_id, file_path) {
+      return $http({
+        url: djangoUrl.reverse('designsafe_api:public_files_media', [file_mgr_name, system_id, file_path]),
+        method: 'PUT',
+        data: {
+          action: 'copy',
+          ipynb: true,
+          system: 'designsafe.storage.default'
+        }
+      });
+    };
+
     service.formSchema = function(app) {
       /**
        * Generate a JSON.schema for the app ready for angular-schema-form
