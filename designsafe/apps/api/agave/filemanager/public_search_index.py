@@ -140,11 +140,23 @@ class Publication(object):
 
     def related_file_paths(self):
         dict_obj = self._wrap.to_dict()
-        related_objs = dict_obj.get('modelConfigs', []) + \
-                       dict_obj.get('analysisList', []) + \
-                       dict_obj.get('sensorsList', []) + \
-                       dict_obj.get('eventsList', []) + \
-                       dict_obj.get('reportsList', [])
+        if dict_obj['project']['value']['projectType'] == 'experimental':
+            related_objs = (
+                dict_obj.get('modelConfigs', []) +
+                dict_obj.get('analysisList', []) +
+                dict_obj.get('sensorsList', []) +
+                dict_obj.get('eventsList', []) +
+                dict_obj.get('reportsList', [])
+            )
+        elif dict_obj['project']['value']['projectType'] == 'simulation':
+            related_objs = (
+                dict_obj.get('models', []) +
+                dict_obj.get('inputs', []) +
+                dict_obj.get('outputs', []) +
+                dict_obj.get('analysiss', []) +
+                dict_obj.get('reports', [])
+            )
+
         file_paths = []
         proj_sys = 'project-{}'.format(dict_obj['project']['uuid'])
         for obj in related_objs:
