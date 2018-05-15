@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.4 (20180505)
+
+Fixes:
+
+- Fix typo on copying files to corral
+
 ## v2.6.3 (20180504)
 
 Fixes:
