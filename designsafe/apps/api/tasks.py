@@ -749,7 +749,6 @@ def set_project_id(self, project_uuid):
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication
-    from designsafe.apps.api.agave.models.files import BaseFileResource
     import shutil
     publication = Publication(project_id=project_id)
     filepaths = publication.related_file_paths()
