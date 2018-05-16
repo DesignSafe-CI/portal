@@ -625,6 +625,7 @@
         $scope.state.publishPipeline = 'review';
       }
       else if (st == 'review'){
+        $scope.ui.publicationMessages = [];
         $scope.state.publishPipeline = 'select';
       }
       else {
