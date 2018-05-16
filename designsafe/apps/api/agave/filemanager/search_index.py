@@ -337,8 +337,9 @@ class ElasticFileManager(BaseFileManager):
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         
-        search = search.filter(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
+        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system=system)
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
         res = search.execute()
         children = []
@@ -421,7 +422,7 @@ class ElasticFileManager(BaseFileManager):
         search.query = query
         res = search.execute()
         """
-        
+
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
             if c.upper() not in ["AND", "OR"]:
