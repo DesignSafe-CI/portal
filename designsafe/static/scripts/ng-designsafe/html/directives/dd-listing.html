@@ -862,7 +862,7 @@
           <div class="meta-row">
             <div class="attr pull-left">
               <span>Integrated Data Analysis</span>
-              <span class="text-danger">*</span>
+              <!-- <span class="text-danger">*</span> -->
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
               </a>
@@ -870,9 +870,9 @@
             <div class="value pull-right">
               <span ng-repeat="intAnalysis in browser.project.analysis_set"
                 style="display:block;">
-                <span class="text-danger" ng-if="publicationCtrl.isMissing(intAnalysis.value.title)">
+                <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(intAnalysis.value.title)">
                   <i class="fa fa-exclamation-circle"></i>
-                </span>
+                </span> -->
                 <span ng-if="!publicationCtrl.isMissing(intAnalysis.value.simOutputs)">{{intAnalysis.value.title}}</span>
                 <div style="color: black;">
                   <span class="text-danger" ng-if="publicationCtrl.isMissing(intAnalysis.value.description)">
@@ -888,7 +888,7 @@
           <div class="meta-row">
             <div class="attr pull-left">
               <span>Integrated Reports</span>
-              <span class="text-danger">*</span>
+              <!-- <span class="text-danger">*</span> -->
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
               </a>
@@ -896,9 +896,9 @@
             <div class="value pull-right">
               <span ng-repeat="intReport in browser.project.report_set"
                 style="display:block;">
-                <span class="text-danger" ng-if="publicationCtrl.isMissing(intReport.value.title) && !publicationCtrl.isMissing(intReport.value.simOutputs)">
+                <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(intReport.value.title) && !publicationCtrl.isMissing(intReport.value.simOutputs)">
                   <i class="fa fa-exclamation-circle"></i>
-                </span>
+                </span> -->
                 <span ng-if="!publicationCtrl.isMissing(intReport.value.simOutputs)">{{intReport.value.title}}</span>
                 <div style="color: black;">
                   <span class="text-danger" ng-if="publicationCtrl.isMissing(intReport.value.description) && !publicationCtrl.isMissing(intReport.value.simOutputs)">
@@ -920,12 +920,17 @@
             </div>
           </div>
         </div>
+        <!-- analysis -->
         <div class="content-wrapper" style="border-top: none">
+          <h3 style="font-weight:500" ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimAnalysis(browser.project.analysis_set))">Analysis Information</h3>
+          <span ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimReports(browser.project.report_set))">It is recommended to include an Analysis.</span>
+        </div>
+        <!-- <div class="content-wrapper" style="border-top: none">
           <h3 style="font-weight:500" class="text-danger" ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimAnalysis(browser.project.analysis_set))">Analysis Information
               <i class="fa fa-exclamation-circle"></i>
           </h3>
           <span class="text-danger" ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimAnalysis(browser.project.analysis_set))">You must include an Analysis.</span>
-        </div>
+        </div> -->
         <div class="content-wrapper" ng-repeat="analysis in publicationCtrl.filterSimAnalysis(browser.project.analysis_set) | orderBy: ['_ui.order', 'value.title']">
           <h3 style="font-weight:500">Analysis Information</h3>
           <div class="meta-row">
