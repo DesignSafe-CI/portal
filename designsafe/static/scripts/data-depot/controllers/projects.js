@@ -310,11 +310,11 @@
 
       // object containing required* fields that will be checked on metadata page
       var requirements = {
-        "projectReq": ['title', 'projectType', 'teamMembers', 'description', 'awardNumber', 'keywords'],
+        "projectReq": ['title', 'projectType', 'description', 'awardNumber', 'keywords'],
         "experimentReq": ['title', 'experimentType', 'experimentalFacility', 'description', 'authors'],
         "simulationReq": ['title', 'authors', 'description', 'simulationType'], // add referenced data section..
         "otherReq": [],
-        "reportReq": ['title', 'description'],
+        "reportReq": ['title'],
         "analysisReq": ['title', 'description'],
       };
 

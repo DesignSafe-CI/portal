@@ -599,6 +599,7 @@
               </span>
             </div>
           </div>
+          <!--  -->
           <div class="meta-row">
             <div class="attr pull-left">
               <span>Team Members </span>
@@ -624,6 +625,7 @@
               </div>
             </div>
           </div>
+          <!--  -->
           <div class="meta-row">
             <div class="attr pull-left">
               <span>Project Description </span>
@@ -811,7 +813,7 @@
           </div>
           <div class="meta-row">
             <div class="attr pull-left">
-              <span>Inputs</span>
+              <span>Input</span>
               <span class="text-danger">*</span>
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
@@ -825,9 +827,9 @@
                 </span>
                 {{simInput.value.title}}
                 <div style="color: black;">
-                  <span class="text-danger" ng-if="publicationCtrl.isMissing(simInput.value.description)">
+                  <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(simInput.value.description)">
                     <i class="fa fa-exclamation-circle"></i>
-                  </span>
+                  </span> -->
                   {{simInput.value.description}}
                 </div>
               </span>
@@ -836,7 +838,7 @@
           </div>
           <div class="meta-row">
             <div class="attr pull-left">
-              <span>Outputs</span>
+              <span>Output</span>
               <span class="text-danger">*</span>
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
@@ -850,9 +852,9 @@
                 </span>
                 {{simOutput.value.title}}
                 <div style="color: black;">
-                  <span class="text-danger" ng-if="publicationCtrl.isMissing(simOutput.value.description)">
+                  <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(simOutput.value.description)">
                     <i class="fa fa-exclamation-circle"></i>
-                  </span>
+                  </span> -->
                   {{simOutput.value.description}}
                 </div>
               </span>
@@ -1007,7 +1009,7 @@
               <span>{{report.value.title}}</span>
             </div>
           </div>
-          <div class="meta-row">
+          <!-- <div class="meta-row">
             <div class="attr pull-left">
               <span>Report Description</span>
               <span class="text-danger">*</span>
@@ -1021,7 +1023,7 @@
               </span>
               <span>{{report.value.description}}</span>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
