@@ -558,10 +558,10 @@
           publicationMessages.push({title: "Project", message: "Your project must include an experiment."});
           allow = false;
         }
-        if (Object.keys(checklist).includes('analysis0') !== true) {
-          publicationMessages.push({title: "Project", message: "Your project must include an analysis."});
-          allow = false;
-        }
+        // if (Object.keys(checklist).includes('analysis0') !== true) {
+        //   publicationMessages.push({title: "Project", message: "Your project must include an analysis."});
+        //   allow = false;
+        // }
       } else if (projData.projectType == "simulation") {
         if (Object.keys(checklist).includes('simulation0') !== true) {
           publicationMessages.push({title: "Project", message: "Your project must include a simulation."});
