@@ -89,7 +89,7 @@ class SearchView(BaseApiView):
 
         split_query = q.split(" ")
         for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR"]:
+            if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
         
         q = " ".join(split_query)
@@ -118,7 +118,7 @@ class SearchView(BaseApiView):
 
         split_query = q.split(" ")
         for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR"]:
+            if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
         
         q = " ".join(split_query)

@@ -327,7 +327,7 @@ class ElasticFileManager(BaseFileManager):
         """
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR"]:
+            if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
         
         query_string = " ".join(split_query)
@@ -373,7 +373,7 @@ class ElasticFileManager(BaseFileManager):
         
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR"]:
+            if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
         
         query_string = " ".join(split_query)
@@ -425,7 +425,7 @@ class ElasticFileManager(BaseFileManager):
 
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
-            if c.upper() not in ["AND", "OR"]:
+            if c.upper() not in ["AND", "OR", "NOT"]:
                 split_query[i] = "*" + c + "*"
         
         query_string = " ".join(split_query)
