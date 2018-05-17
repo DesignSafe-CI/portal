@@ -88,6 +88,23 @@
             </td>
           </tr>
 
+          <tr ng-if="project.value.associatedProjects.length">
+            <td style="padding:0px;">
+              <table class="table" style="margin-botto:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Associated Projects</th>
+                    <td style="border-top:none; width:75%">
+                      <div data-ng-repeat="asc in project.value.associatedProjects">
+                          <span>{{asc.title}} - <a ng-href="asc.href">{{asc.href}}</a></span> 
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
         </tbody>
       </table>
     </div>
@@ -626,7 +643,8 @@
               {{browser.publication.created| date: 'MMM/d/yyyy'}}
             </div>
             <div>
-              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> {{simulation.doi}}
+              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span>
+                {{simulation.doi}}  
             </div>
             <div>
               <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span>
@@ -652,6 +670,11 @@
               <a ng-href="#data-{{getRelated('reports', false, simulation.uuid)[0].uuid}}">
                 {{getRelated('reports', false, simulation.uuid)[0].value.title}}
               </a>
+            </div>
+            <div>
+              <button class="btn btn-info btn-sm pull-right"
+                      ng-click="showCitation(simulation)">Citation
+              </button>
             </div>
           </div>
           <div ng-if="!getRelated('models', false, simulation.uuid).length"
