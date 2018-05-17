@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v.2.6.5 
+
+Fixes:
+
+- Analysis and Reports are not required on simulation project anymore
+- Citation button working on simulations
+- Associated projects rendered correctly on publications
+
 ## v2.6.4 (20180505)
 
 Fixes:
