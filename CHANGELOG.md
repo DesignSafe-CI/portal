@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## 20180506
+
+Improvements
+
+- Launch jupyter notebooks from App Tray
+- Altmetrics metadata in publications
+
+Fixes:
+
+- Public search fix
+- Datadepot left navbar highlight
+
 ## v2.6.6
 
 Fixes:
