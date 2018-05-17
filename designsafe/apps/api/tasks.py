@@ -840,7 +840,7 @@ def copy_publication_files_to_corral(self, project_id):
     #    logger.debug('No project image')
     save_to_fedora.apply_async(args=[project_id])
 
-@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+@shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def save_publication(self, project_id):
     from designsafe.apps.api.agave.filemanager.public_search_index import Publication  
     from designsafe.apps.api.projects.managers import publication as PublicationManager
@@ -898,3 +898,18 @@ def save_to_fedora(self, project_id):
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc)
         raise self.retry(exc=exc)
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def set_facl_project(self, project_uuid, usernames):
+    client = get_service_account_client()
+    for username in usernames:
+        job_body = {
+            'inputs': {
+                'username': username,
+                'directory': 'projects/{}'.format(project_uuid)
+            },
+            'name': 'setfacl',
+            'appId': 'setfacl_corral3-0.1'
+        }
+        res = client.jobs.submit(body=job_body)
+        logger.debug('set facl project: {}'.format(res))
