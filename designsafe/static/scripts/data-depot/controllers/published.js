@@ -488,37 +488,7 @@
     }, 
     scope: $scope
     });
-};  
-  /* $scope.ld = {
-    "@context": "http://schema.org",
-    "@type": "Dataset",
-    "@id": "https://doi.org/" + $scope.browser.publication.project.doi, //dataset doi url 
-    "additionalType": "Project/Experimental", //dataset type
-    "name": $scope.browser.publication.project.value.title, //dataset name
-    "alternateName": $scope.browser.publication.project.value.projectId, //alternative name of the dataset
-    "author": [
-
-      {
-        "@type": "Person",
-        "name": '',//$scope.browser.publication.user.first_name + ' ' + $scope.browser.publication.user.last_name,
-        "givenName": '',//$scope.browser.publication.user.first_name,
-        "familyName": '',//$scope.browser.publication.user.last_name
-      }],
-    "description": $scope.browser.publication.project.value.description,
-    "license": "http://opendatacommons.org/licenses/by/1-0",
-    "keywords": $scope.browser.publication.project.value.keywords,
-    "inLanguage": "English",
-    "datePublished": $scope.browser.publication.created,//$filter('date')($scope.browser.publication.created, 'MMM/d/yyyy'),
-    "schemaVersion": "http://datacite.org/schema/kernel-4",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Designsafe-CI"
-    },
-    "provider": {
-      "@type": "Organization",
-      "name": "TACC"
-    }
-  }; */
+}; 
 
 }]);
 })(window, angular);
