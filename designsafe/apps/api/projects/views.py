@@ -217,8 +217,10 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'operation': 'initial_pems_create',
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
         prj.add_team_members([request.user.username])
+        tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
         if prj.pi and prj.pi != request.user.username:
             prj.add_team_members([prj.pi])
+            tasks.set_facl_project.apply_async(args=[prj.uuid, [prj.pi]], queue='api')
             collab_users = get_user_model().objects.filter(username=prj.pi)
             if collab_users:
                 collab_user = collab_users[0]
@@ -347,6 +349,13 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         project.add_team_members(team_members_to_add)
         project.add_co_pis(co_pis_to_add)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
+        tasks.set_facl_project.apply_async(
+            args=[
+                project_id,
+                team_members_to_add + co_pis_to_add
+            ],
+            queue='api'
+        )
 
         #TODO: This should also run on a task
         for username in team_members_to_add+co_pis_to_add:
