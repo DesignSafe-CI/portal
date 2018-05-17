@@ -1,6 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
-## v.2.6.5 
+## v2.6.6
+
+Fixes:
+
+- Project's ACLs when adding members
+- User creation error on table field
+
+## v2.6.5 
 
 Fixes:
 
