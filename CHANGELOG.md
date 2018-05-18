@@ -6,6 +6,18 @@ Fixes:
 
 - Files from "Other" projects are not being copied correctly when publishing
 
+## 20180506
+
+Improvements
+
+- Launch jupyter notebooks from App Tray
+- Altmetrics metadata in publications
+
+Fixes:
+
+- Public search fix
+- Datadepot left navbar highlight
+
 ## v2.6.6
 
 Fixes:
@@ -296,6 +308,13 @@ Fixes:
 
 - Displaying correct project name on breadcrumbs
 
+## v2.3.2
+
+Fixes:
+
+- Typo when appending team members
+- Add files for addition
+
 ## 20180105
 
 Improvements:
@@ -326,7 +345,7 @@ Improvements:
 
 - Configuring Webhooks correctly to work with Potree
 
-## v2.3.2
+## 20180102
 
 Fixes:
 

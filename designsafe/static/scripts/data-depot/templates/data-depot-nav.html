@@ -1,19 +1,30 @@
 <div class="list-group list-group-root well">
 
-    <div class="list-group collapse"
-         ng-class="{'in': !routerItem.collapse}"
-         ng-repeat="childItem in routerItems"
-         ng-click="stateReload(childItem.state)">
-
-        <a uib-tooltip="{{ childItem.description }}" class="list-group-item"
-           ui-sref="{{ childItem.state }}"
-           ui-sref-active="active">
+    <div class="list-group collapse" ng-class="{'in': !routerItem.collapse}" ng-repeat="childItem in routerItems" ng-click="stateReload(childItem.state)">
+      <div ng-switch="childItem.state">
+        
+        <div ng-switch-when="projects.list">
+          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $state.includes('projects')}">
             {{ childItem.name }}
-        </a>
+          </a>
+        </div>
+        <div ng-switch-when="publicData">
+          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ng-class="{active: $state.includes('publicData') || $state.includes('publishedData')}">
+            {{ childItem.name }}
+          </a>
+        </div>
+        <div ng-switch-default>
+          <a uib-tooltip="{{ childItem.description }}" class="list-group-item" ui-sref="{{ childItem.state }}" ui-sref-active="active">
+            {{ childItem.name }}
+          </a>
+        </div>
+  
+      </div>
     </div>
-</div>
-<div style="text-align:center;">
-  <a class="" href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
-    <i class="fa fa-youtube-play"></i> Curation Tutorials
-  </a>
-</div>
+  </div>
+  
+  <div style="text-align:center;">
+    <a class="" href="https://www.youtube.com/playlist?list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-youtube-play"></i> Curation Tutorials
+    </a>
+  </div>

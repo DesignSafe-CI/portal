@@ -264,7 +264,11 @@ class FileMediaView(View):
                             'src_file_id': os.path.join(system_id, file_path.strip('/'))
                         }
                     elif body.get('system') != system_id:
-                        copied = fm.import_data(body.get('system'), body.get('path'),
+                        if body.get('ipynb'):
+                            path = '/{}'.format(request.user.username)
+                        else:
+                            path = body.get('path')
+                        copied = fm.import_data(body.get('system'), path,
                                                 system_id, file_path)
                         metrics.info('Data Depot',
                                      extra = {
@@ -273,7 +277,7 @@ class FileMediaView(View):
                                          'operation': 'data_depot_copy',
                                          'info': {
                                              'destSystemId': body.get('system'),
-                                             'destFilePath': body.get('path'),
+                                             'destFilePath': path,
                                              'fromSystemId': system_id,
                                              'fromFilePath': file_path}
                                      })

@@ -53,9 +53,11 @@
           }
 
         $scope.ui.loadingProjectMeta = false;
+        
     });
   }
- 
+                   
+
   FileListing.get({'system': 'designsafe.storage.published',
                    'name': 'projectimage.jpg',
                    'path': '/' + projId + '/projectimage.jpg'}).then(function(list){
@@ -145,6 +147,7 @@
       } else {
         DataBrowserService.select([file], true);
       }
+       
     };
 
     $scope.showFullPath = function(item){
@@ -485,7 +488,7 @@
     }, 
     scope: $scope
     });
-};
+}; 
 
 }]);
 })(window, angular);
