@@ -302,6 +302,13 @@ Fixes:
 
 - Displaying correct project name on breadcrumbs
 
+## v2.3.2
+
+Fixes:
+
+- Typo when appending team members
+- Add files for addition
+
 ## 20180105
 
 Improvements:
@@ -332,7 +339,7 @@ Improvements:
 
 - Configuring Webhooks correctly to work with Potree
 
-## v2.3.2
+## 20180102
 
 Fixes:
 
