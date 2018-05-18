@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <div class="ds-table-display-wrapper">
+  <div class="ds-table-display-wrapper ">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
         <th>Project title</th>
@@ -9,7 +9,7 @@
 
         <tbody>
         <tr ng-repeat="project in data.projects"
-            ng-if="data.projects"
+            ng-if="data.projects && !browser.busy"  
             ng-click="onSelect($event, project);"
             ng-class="{'ds-data-selected': project.selected}"
         >
@@ -21,7 +21,7 @@
             </td>
             <td>
                 <ds-user username="project.value.pi" format="name-username">
-                    {{ project.value.pi }}
+                    {{ project.value.pi }} 
                 </ds-user>
             </td>
             <td>
@@ -30,7 +30,7 @@
         </tr>
         </tbody>
         <caption>
-          <div ng-if="ui.busy"
+          <div ng-if="browser.busy || ui.busy"
                style="padding:10px; font-size:large; with:100%;"
                class="bg-info">
             <span>

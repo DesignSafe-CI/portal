@@ -3,10 +3,13 @@
   app.requires.push('django.context');
 
   app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
-
+    
+    $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = undefined;
+
+
 
     // release selected files
     DataBrowserService.deselect(DataBrowserService.state().selected);
@@ -86,8 +89,8 @@
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
     $scope.ui = {};
     $scope.ui.busy = true;
-    $scope.data.projects = [];
 
+    $scope.data.projects = [];
 
     // release selected files on load
     DataBrowserService.deselect(DataBrowserService.state().selected);
@@ -951,7 +954,7 @@
               $scope.browser.busyListing = false;
           });
       });
-
+    
     var setFilesDetails = function(filePaths){
       filePaths = _.uniq(filePaths);
       var p = $q(function(resolve, reject){
@@ -1649,6 +1652,5 @@
     };
 
     $scope.publicationCtrl = _publicationCtrl;
-
   }]);
 })(window, angular);
