@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.7
+
+Fixes:
+
+- Files from "Other" projects are not being copied correctly when publishing
+
 ## v2.6.6
 
 Fixes:
