@@ -415,7 +415,7 @@
             var filePath = $stateParams.filePath;
             DataBrowserService.apiParams.fileMgr = 'published';
             DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = undefined;
+            DataBrowserService.apiParams.searchState = 'publicDataSearch';
             return DataBrowserService.browse({system: systemId, path: filePath});
           }],
           'auth': function($q){
