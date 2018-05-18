@@ -128,7 +128,7 @@ class PublicSearchView(BaseApiView):
             ag = request.user.agave_oauth.client
         
 
-        if system_id == "nees.public":
+        if system_id == "nees.public" or system_id == "designsafe.storage.published":
             file_mgr = PublicElasticFileManager(ag)
             listing = file_mgr.search(system_id, query_string,
                                     offset=offset, limit=limit)
