@@ -140,6 +140,7 @@ class Publication(object):
 
     def related_file_paths(self):
         dict_obj = self._wrap.to_dict()
+        related_objs = []
         if dict_obj['project']['value']['projectType'] == 'experimental':
             related_objs = (
                 dict_obj.get('modelConfigs', []) +
