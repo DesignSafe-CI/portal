@@ -37,6 +37,9 @@
               <i class="fa fa-spinner fa-spin"></i> Loading...
            </span>
           </div>
+          <div ng-if="! browser.busy && browser.error" class="text-center">
+            <p class="alert alert-danger" ng-bind-html="browser.error.message || browser.error | toTrusted"></p>
+        </div>
         </caption>
     </table>
 </div>
