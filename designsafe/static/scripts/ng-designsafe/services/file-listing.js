@@ -128,7 +128,7 @@
         urlParts.push(this.id);
       }
       else if (this.path) {
-        urlParts.push(this.path);
+        urlParts.push(this.path.replace('#', '%23'));
       }
       return urlParts.join('/');
     };
@@ -142,7 +142,7 @@
         urlParts.push(this.id);
       }
       else if (this.path) {
-        urlParts.push(this.path);
+        urlParts.push(this.path.replace('#', '%23'));
       }
       return urlParts.join('/');
     };
@@ -156,7 +156,7 @@
         urlParts.push(this.id);
       }
       else if (this.path) {
-        urlParts.push(this.path);
+        urlParts.push(this.path.replace('#', '%23'));
       }
       return urlParts.join('/');
     };
@@ -170,7 +170,7 @@
         urlParts.push(this.id);
       }
       else if (this.path) {
-        urlParts.push(this.path);
+        urlParts.push(this.path.replace('#', '%23'));
       }
       return urlParts.join('/');
     };
@@ -184,11 +184,11 @@
     };
 
     FileListing.prototype.agaveUri = function() {
-      return 'agave://' + this.system + '/' + this.path;
+      return 'agave://' + this.system + '/' + this.path.replace('#', '%23');
     };
 
     FileListing.prototype.agaveUrl = function () {
-      return 'https://agave.designsafe-ci.org/files/v2/media/system/' + this.system + '/' + this.path;
+      return 'https://agave.designsafe-ci.org/files/v2/media/system/' + this.system + '/' + this.path.replace('#', '%23');
     };
 
     /**

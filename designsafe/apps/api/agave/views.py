@@ -232,7 +232,6 @@ class FileMediaView(View):
 
             fm = AgaveFileManager(agave_client=ag)
             action = body.get('action', '')
-            logger.info('action: %s', action)
             if action == 'copy':
                 try:
                     event_data = {
