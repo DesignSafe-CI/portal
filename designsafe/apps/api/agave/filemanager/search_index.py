@@ -325,13 +325,21 @@ class ElasticFileManager(BaseFileManager):
         :param limit: number of search hits to return
 
         """
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
+
+        logger.debug(query_string)
+
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("query_string", query="*"+query_string+"*", fields=["name", "name._exact", "keywords"])
         
-        search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
+        search = search.filter(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system=system)
-        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
+        search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
         res = search.execute()
         children = []
         if res.hits.total:
@@ -361,12 +369,20 @@ class ElasticFileManager(BaseFileManager):
         :param offset: elasticsearch offset
         :param limit: number of search hits to return
         """
+        
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
 
+        logger.debug(query_string)
         filters = Q('term', system="designsafe.storage.community") #| \
                   #Q('term', system="designsafe.storage.published") | \
                   #Q('term', system="designsafe.storage.community")
-        search = Search(index="des-files")\
-            .query("query_string", query="*"+query_string+"*", default_operator="and")\
+        search = IndexedFile.search()\
+            .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
             .filter(filters)\
             .extra(from_=offset, size=limit)
             #.filter("term", type="file")\
@@ -405,10 +421,17 @@ class ElasticFileManager(BaseFileManager):
         search.query = query
         res = search.execute()
         """
+        
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
 
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("query_string", query="*"+query_string+"*", fields=["name", "name._exact", "keywords"])
+        search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
         
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system=system)

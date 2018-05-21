@@ -417,15 +417,11 @@ class PublicElasticFileManager(BaseFileManager):
         projects_offset = offset
 
 
-        nees_published_query = Q('bool', must=[Q('simple_query_string', query=query_string)])
+        nees_published_query = Q('bool', must=[Q('query_string', query=query_string)])
         nees_published_search = LegacyPublicationIndexed.search()\
             .query(nees_published_query)\
             .extra(from_=offset, size=limit)
-
-        des_published_query = Q('bool', must=[
-            Q('simple_query_string', query=query_string),
-            Q({'term': {'status': status}}) 
-            ])
+        des_published_query = Q('bool', must=[Q('query_string', query=query_string)])
         des_published_search = PublicationIndexed.search()\
             .query(des_published_query)\
             .extra(from_=offset, size=limit)

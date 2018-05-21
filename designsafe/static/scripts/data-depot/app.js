@@ -78,9 +78,9 @@
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
             DataBrowserService.apiParams.searchState = 'dataSearch';
             var queryString = $stateParams.query_string;
-            if (/[^A-Za-z0-9]/.test(queryString)){
-              queryString = '"' + queryString + '"';
-            }
+            //if (/[^A-Za-z0-9]/.test(queryString)){
+            //  queryString = '"' + queryString + '"';
+            //}
             var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
             return DataBrowserService.search(options);
           }],
@@ -143,9 +143,9 @@
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
             DataBrowserService.apiParams.searchState = 'sharedDataSearch';
             var queryString = $stateParams.query_string;
-            if (/[^A-Za-z0-9]/.test(queryString)){
-              queryString = '"' + queryString + '"';
-            }
+            //if (/[^A-Za-z0-9]/.test(queryString)){
+            //  queryString = '"' + queryString + '"';
+            //}
             var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
             return DataBrowserService.search(options);
           }],
@@ -302,9 +302,9 @@
             DataBrowserService.apiParams.baseUrl = '/api/public/files';
             DataBrowserService.apiParams.searchState = 'publicDataSearch';
             var queryString = $stateParams.query_string;
-            if (/[^A-Za-z0-9]/.test(queryString)){
-              queryString = '"' + queryString + '"';
-            }
+            //if (/[^A-Za-z0-9]/.test(queryString)){
+            //  queryString = '"' + queryString + '"';
+            //}
             var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
             return DataBrowserService.search(options);
           }],
@@ -330,11 +330,10 @@
             DataBrowserService.apiParams.baseUrl = '/api/public/files';
             DataBrowserService.apiParams.searchState = 'communityDataSearch';
             var queryString = $stateParams.query_string;
-            if (/[^A-Za-z0-9]/.test(queryString)){
-              queryString = '"' + queryString + '"';
-            }
+            //if (/[^A-Za-z0-9]/.test(queryString)){
+            //  queryString = '"' + queryString + '"';
+            //}
             var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
-            console.log(options);
             return DataBrowserService.search(options);
           }],
           'auth': function($q) {

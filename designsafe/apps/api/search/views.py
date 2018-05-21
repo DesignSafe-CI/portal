@@ -86,11 +86,19 @@ class SearchView(BaseApiView):
         return search
 
     def search_public_files(self, q, offset, limit):
+
+        split_query = q.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR"]:
+                split_query[i] = "*" + c + "*"
+        
+        q = " ".join(split_query)
+
         filters = Q('term', system="nees.public") | \
                   Q('term', system="designsafe.storage.published") | \
                   Q('term', system="designsafe.storage.community")
         search = Search(index="des-files")\
-            .query("query_string", query="*"+q+"*", default_operator="and")\
+            .query("query_string", query=q, default_operator="and")\
             .filter(filters)\
             .filter("term", type="file")\
             .extra(from_=offset, size=limit)
@@ -99,7 +107,7 @@ class SearchView(BaseApiView):
 
 
     def search_published(self, q, offset, limit):
-        query = Q('bool', must=[Q('simple_query_string', query=q)])
+        query = Q('bool', must=[Q('query_string', query=q)])
 
         search = Search(index="des-publications_legacy,des-publications")\
             .query(query)\
@@ -107,9 +115,17 @@ class SearchView(BaseApiView):
         return search
 
     def search_my_data(self, username, q, offset, limit):
+
+        split_query = q.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR"]:
+                split_query[i] = "*" + c + "*"
+        
+        q = " ".join(split_query)
+
         search = Search(index='des-files')
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
-        search = search.query("query_string", query="*"+q+"*", fields=["name", "name._exact", "keywords"])
+        search = search.query("query_string", query=q, fields=["name", "name._exact", "keywords"])
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system='designsafe.storage.default')
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
