@@ -1,5 +1,19 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.8 (20180507)
+
+Improvements:
+
+- Publication file listing fallback
+- Search string supports AND and OR
+
+Fixes:
+
+- Public search
+- External resources error message
+- User agent string check
+- Hash symbol escaped correctly from files urls
+
 ## v2.6.7
 
 Fixes:
@@ -8,7 +22,7 @@ Fixes:
 
 ## 20180506
 
-Improvements
+Improvements:
 
 - Launch jupyter notebooks from App Tray
 - Altmetrics metadata in publications
