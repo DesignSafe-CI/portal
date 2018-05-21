@@ -122,7 +122,9 @@
   
   <dd-altmetrics publication="browser.publication"></dd-altmetrics>  
 
-<div ng-if="project.value.projectType == 'other' || filePathComps.length > 1"><!-- File Listing View -->
+<div ng-if="project.value.projectType != 'experimental' &&
+            project.value.projectType != 'simulation'
+            || filePathComps.length > 1"><!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="scrollToBottom()"
         data-scroll-top="scrollToTop()"
