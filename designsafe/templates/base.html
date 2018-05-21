@@ -133,7 +133,7 @@
             django.constant('Django', {
                 user: "{{ request.user }}",
                 context: {{ angular_init|default:"{}"|safe }}
-            })
+            });
         })(angular);
         
         var userAgent = navigator.userAgent
