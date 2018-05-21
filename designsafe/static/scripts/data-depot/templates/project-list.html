@@ -9,7 +9,7 @@
 
         <tbody>
         <tr ng-repeat="project in data.projects"
-            ng-if="data.projects && !browser.busy"  
+            ng-if="data.projects && ! browser.busy && ! browser.error"  
             ng-click="onSelect($event, project);"
             ng-class="{'ds-data-selected': project.selected}"
         >
@@ -37,9 +37,11 @@
               <i class="fa fa-spinner fa-spin"></i> Loading...
            </span>
           </div>
-          <div ng-if="! browser.busy && browser.error" class="text-center">
-            <p class="alert alert-danger" ng-bind-html="browser.error.message || browser.error | toTrusted"></p>
-        </div>
+        <div ng-if="! browser.busy && browser.error" class="text-center">
+            <div class="alert alert-danger">
+                <div ng-if="browser.error.message" ng-bind-html="browser.error.message"></div>
+                <div ng-if="!browser.error.message"> Something went wrong </div>
+            </div>
         </caption>
     </table>
 </div>

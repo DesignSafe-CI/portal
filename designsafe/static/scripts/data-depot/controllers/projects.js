@@ -89,6 +89,7 @@
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
     $scope.ui = {};
     $scope.ui.busy = true;
+    $scope.browser.error = null;  //clears any potential lingering error messages.
 
     $scope.data.projects = [];
 
