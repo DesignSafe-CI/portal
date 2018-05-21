@@ -133,8 +133,26 @@
             django.constant('Django', {
                 user: "{{ request.user }}",
                 context: {{ angular_init|default:"{}"|safe }}
-            });
+            })
         })(angular);
+        
+        var userAgent = navigator.userAgent
+        
+        if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox"))) {
+            $("#agentMessage").append("\
+                <div class='alert alert-warning'>\
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'>\
+                        <span aria-hidden='true'>&times;</span>\
+                    </button>\
+                    <p><h4>Unsupported Browser</h4>\
+                        Your browser is not supported by DesignSafe.\
+                        Please switch to <a href='https://www.google.com/chrome'>Chrome</a>\
+                        or <a href='https://www.mozilla.org/en-US/firefox/new/'>Firefox</a>\
+                        if you experience issues.\
+                    </p>\
+                </div>")
+        }
+        
     </script>
 
     {% include 'includes/analytics.html' %}
