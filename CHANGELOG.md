@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.6.9 (20180508)
+
+Fixes:
+
+- Hot-fix for marker placement
+
 ## v2.6.8 (20180507)
 
 Improvements:
