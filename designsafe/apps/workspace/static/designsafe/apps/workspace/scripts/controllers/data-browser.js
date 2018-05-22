@@ -104,9 +104,6 @@
     $scope.browseTrail = function($event, index){
       $event.stopPropagation();
       $event.preventDefault();
-      if ($scope.data.dirPath.length <= index+1){
-        return;
-      }
       $scope.browseFile({type: 'dir',
                          system: $scope.data.filesListing.system,
                          resource: $scope.data.filesListing.resource,
