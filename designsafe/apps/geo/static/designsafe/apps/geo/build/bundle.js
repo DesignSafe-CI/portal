@@ -1,41 +1,38 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
 /******/ 			exports: {}
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.l = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-
+/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -46,7 +43,7 @@
 /******/ 			});
 /******/ 		}
 /******/ 	};
-
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -55,19 +52,25 @@
 /******/ 		__webpack_require__.d(getter, 'a', getter);
 /******/ 		return getter;
 /******/ 	};
-
+/******/
 /******/ 	// Object.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = L;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -84,51 +87,6 @@ var RESERVED_KEYS = ['label', 'color', 'fillColor', 'fillOpacity', 'description'
 
 exports.RESERVED_KEYS = RESERVED_KEYS;
 exports.get_file_extension = get_file_extension;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DBModalCtrl = function () {
-  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "filename"];
-  function DBModalCtrl($scope, $uibModalInstance, filename) {
-    'ngInject';
-
-    _classCallCheck(this, DBModalCtrl);
-
-    this.$scope = $scope;
-    this.$uibModalInstance = $uibModalInstance;
-    this.selected = null;
-    this.saveas = { filename: filename };
-  }
-
-  _createClass(DBModalCtrl, [{
-    key: 'ok',
-    value: function ok() {
-      this.$uibModalInstance.close({ selected: this.selected, saveas: this.saveas.filename });
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      this.$uibModalInstance.dismiss('cancel');
-    }
-  }]);
-
-  return DBModalCtrl;
-}();
-
-exports.default = DBModalCtrl;
 
 /***/ }),
 /* 2 */
@@ -194,15 +152,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(17);
+var _L = __webpack_require__(0);
 
 var _L2 = _interopRequireDefault(_L);
 
-var _geoUtils = __webpack_require__(0);
+var _geoUtils = __webpack_require__(1);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _angular = __webpack_require__(18);
+var _angular = __webpack_require__(21);
 
 var _angular2 = _interopRequireDefault(_angular);
 
@@ -302,31 +260,196 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(11);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var DBModalCtrl = function () {
+  DBModalCtrl.$inject = ["$scope", "$uibModalInstance", "filename"];
+  function DBModalCtrl($scope, $uibModalInstance, filename) {
+    'ngInject';
+
+    _classCallCheck(this, DBModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+    this.selected = null;
+    this.saveas = { filename: filename };
+  }
+
+  _createClass(DBModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close({ selected: this.selected, saveas: this.saveas.filename });
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return DBModalCtrl;
+}();
+
+exports.default = DBModalCtrl;
+
+/***/ }),
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+config.$inject = ["$stateProvider", "$uibTooltipProvider", "$urlRouterProvider", "$locationProvider", "toastrConfig"];
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _directives = __webpack_require__(17);
+
+var _controllers = __webpack_require__(19);
+
+var _services = __webpack_require__(27);
+
+var mod = angular.module('designsafe');
+mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
+
+function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider, toastrConfig) {
+  'ngInject';
+
+  angular.extend(toastrConfig, {
+    timeOut: 1000
+  });
+
+  $locationProvider.html5Mode({
+    enabled: true
+  });
+
+  $stateProvider.state('geo', {
+    url: '',
+    abstract: true,
+    templateUrl: '/static/designsafe/apps/geo/html/index.html',
+    resolve: {
+      auth: function auth() {
+        return true;
+      }
+    }
+  }).state('geo.map', {
+    url: '/hazmapper',
+    templateUrl: '/static/designsafe/apps/geo/html/map.html',
+    controller: 'MapSidebarCtrl as vm'
+  }).state('geo.help', {
+    url: '/help',
+    templateUrl: '/static/designsafe/apps/geo/html/help.html',
+    controller: 'HelpCtrl as vm'
+  });
+  $urlRouterProvider.when('/', '/hazmapper');
+
+  //config popups etc
+  $uibTooltipProvider.options({ popupDelay: 1000 });
+}
+
+mod.config(config);
+
+exports.default = mod;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _customOnChange = __webpack_require__(18);
+
+var _customOnChange2 = _interopRequireDefault(_customOnChange);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.directives', []);
+
+mod.directive('customOnChange', _customOnChange2.default);
+exports.default = mod;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = customOnChange;
+function customOnChange() {
+  return {
+    restrict: 'A',
+    scope: {
+      handler: '&'
+    },
+    link: function link(scope, element, attrs) {
+      element.on('change', function (ev) {
+        scope.$apply(function () {
+          scope.handler({ ev: ev });
+        });
+      });
+    }
+  };
+}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _mapSidebar = __webpack_require__(20);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
-var _dbModal = __webpack_require__(1);
+var _dbModal = __webpack_require__(4);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _imageOverlayModal = __webpack_require__(9);
+var _imageOverlayModal = __webpack_require__(22);
 
 var _imageOverlayModal2 = _interopRequireDefault(_imageOverlayModal);
 
-var _help = __webpack_require__(8);
+var _help = __webpack_require__(23);
 
 var _help2 = _interopRequireDefault(_help);
 
-var _settingsModal = __webpack_require__(12);
+var _settingsModal = __webpack_require__(24);
 
 var _settingsModal2 = _interopRequireDefault(_settingsModal);
 
-var _confirmClearModal = __webpack_require__(7);
+var _confirmClearModal = __webpack_require__(25);
 
 var _confirmClearModal2 = _interopRequireDefault(_confirmClearModal);
 
-var _imagePreviewModal = __webpack_require__(10);
+var _imagePreviewModal = __webpack_require__(26);
 
 var _imagePreviewModal2 = _interopRequireDefault(_imagePreviewModal);
 
@@ -345,223 +468,7 @@ mod.controller('ImagePreviewModal', _imagePreviewModal2.default);
 exports.default = mod;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _customOnChange = __webpack_require__(13);
-
-var _customOnChange2 = _interopRequireDefault(_customOnChange);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.directives', []);
-
-mod.directive('customOnChange', _customOnChange2.default);
-exports.default = mod;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _geoStateService = __webpack_require__(16);
-
-var _geoStateService2 = _interopRequireDefault(_geoStateService);
-
-var _geoDataService = __webpack_require__(14);
-
-var _geoDataService2 = _interopRequireDefault(_geoDataService);
-
-var _geoSettingsService = __webpack_require__(15);
-
-var _geoSettingsService2 = _interopRequireDefault(_geoSettingsService);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mod = angular.module('ds.geo.services', []); // import customOnChange from './custom-on-change';
-
-mod.service('GeoStateService', _geoStateService2.default);
-mod.service('GeoDataService', _geoDataService2.default);
-mod.service('GeoSettingsService', _geoSettingsService2.default);
-
-// mod.directive('customOnChange', customOnChange);
-
-exports.default = mod;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ConfirmClearModalCtrl = function () {
-  ConfirmClearModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
-  function ConfirmClearModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
-    'ngInject';
-
-    _classCallCheck(this, ConfirmClearModalCtrl);
-
-    this.$scope = $scope;
-    this.$uibModalInstance = $uibModalInstance;
-  }
-
-  _createClass(ConfirmClearModalCtrl, [{
-    key: 'ok',
-    value: function ok() {
-      this.$uibModalInstance.close('ok');
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      this.$uibModalInstance.dismiss('cancel');
-    }
-  }]);
-
-  return ConfirmClearModalCtrl;
-}();
-
-exports.default = ConfirmClearModalCtrl;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var HelpCtrl = function HelpCtrl($scope) {
-  'ngInject';
-
-  _classCallCheck(this, HelpCtrl);
-
-  this.$scope = $scope;
-};
-HelpCtrl.$inject = ["$scope"];
-
-exports.default = HelpCtrl;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ImageOverlayModalCtrl = function () {
-  ImageOverlayModalCtrl.$inject = ["$scope", "$uibModalInstance"];
-  function ImageOverlayModalCtrl($scope, $uibModalInstance) {
-    'ngInject';
-
-    _classCallCheck(this, ImageOverlayModalCtrl);
-
-    this.$scope = $scope;
-    this.$uibModalInstance = $uibModalInstance;
-    this.data = {
-      file: null,
-      url: null,
-      min_lat: null,
-      max_lat: null,
-      min_lon: null,
-      max_lon: null
-    };
-  }
-
-  _createClass(ImageOverlayModalCtrl, [{
-    key: 'ok',
-    value: function ok() {
-      this.$uibModalInstance.close(this.data);
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      this.$uibModalInstance.dismiss('cancel');
-    }
-  }]);
-
-  return ImageOverlayModalCtrl;
-}();
-
-exports.default = ImageOverlayModalCtrl;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ImagePreviewModal = function () {
-  ImagePreviewModal.$inject = ["$scope", "$uibModalInstance", "GeoDataService", "marker"];
-  function ImagePreviewModal($scope, $uibModalInstance, GeoDataService, marker) {
-    'ngInject';
-
-    _classCallCheck(this, ImagePreviewModal);
-
-    this.$scope = $scope;
-    this.$uibModalInstance = $uibModalInstance;
-    this.GeoDataService = GeoDataService;
-    this.marker = marker;
-    console.log("ImagePreviewModal", this.marker);
-  }
-
-  _createClass(ImagePreviewModal, [{
-    key: 'cancel',
-    value: function cancel() {
-      this.$uibModalInstance.dismiss('cancel');
-    }
-  }]);
-
-  return ImagePreviewModal;
-}();
-
-exports.default = ImagePreviewModal;
-
-/***/ }),
-/* 11 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -581,11 +488,11 @@ var _mapProject = __webpack_require__(3);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
-var _dbModal = __webpack_require__(1);
+var _dbModal = __webpack_require__(4);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _geoUtils = __webpack_require__(0);
+var _geoUtils = __webpack_require__(1);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
@@ -1148,7 +1055,88 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 12 */
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = angular;
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImageOverlayModalCtrl = function () {
+  ImageOverlayModalCtrl.$inject = ["$scope", "$uibModalInstance"];
+  function ImageOverlayModalCtrl($scope, $uibModalInstance) {
+    'ngInject';
+
+    _classCallCheck(this, ImageOverlayModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+    this.data = {
+      file: null,
+      url: null,
+      min_lat: null,
+      max_lat: null,
+      min_lon: null,
+      max_lon: null
+    };
+  }
+
+  _createClass(ImageOverlayModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close(this.data);
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return ImageOverlayModalCtrl;
+}();
+
+exports.default = ImageOverlayModalCtrl;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var HelpCtrl = function HelpCtrl($scope) {
+  'ngInject';
+
+  _classCallCheck(this, HelpCtrl);
+
+  this.$scope = $scope;
+};
+HelpCtrl.$inject = ["$scope"];
+
+exports.default = HelpCtrl;
+
+/***/ }),
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1189,34 +1177,7 @@ var SettingsModalCtrl = function () {
 exports.default = SettingsModalCtrl;
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = customOnChange;
-function customOnChange() {
-  return {
-    restrict: 'A',
-    scope: {
-      handler: '&'
-    },
-    link: function link(scope, element, attrs) {
-      element.on('change', function (ev) {
-        scope.$apply(function () {
-          scope.handler({ ev: ev });
-        });
-      });
-    }
-  };
-}
-
-/***/ }),
-/* 14 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1228,7 +1189,149 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _geoUtils = __webpack_require__(0);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ConfirmClearModalCtrl = function () {
+  ConfirmClearModalCtrl.$inject = ["$scope", "$uibModalInstance", "GeoSettingsService"];
+  function ConfirmClearModalCtrl($scope, $uibModalInstance, GeoSettingsService) {
+    'ngInject';
+
+    _classCallCheck(this, ConfirmClearModalCtrl);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+  }
+
+  _createClass(ConfirmClearModalCtrl, [{
+    key: 'ok',
+    value: function ok() {
+      this.$uibModalInstance.close('ok');
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return ConfirmClearModalCtrl;
+}();
+
+exports.default = ConfirmClearModalCtrl;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImagePreviewModal = function () {
+  ImagePreviewModal.$inject = ["$scope", "$uibModalInstance", "GeoDataService", "marker"];
+  function ImagePreviewModal($scope, $uibModalInstance, GeoDataService, marker) {
+    'ngInject';
+
+    _classCallCheck(this, ImagePreviewModal);
+
+    this.$scope = $scope;
+    this.$uibModalInstance = $uibModalInstance;
+    this.GeoDataService = GeoDataService;
+    this.marker = marker;
+    console.log("ImagePreviewModal", this.marker);
+  }
+
+  _createClass(ImagePreviewModal, [{
+    key: 'cancel',
+    value: function cancel() {
+      this.$uibModalInstance.dismiss('cancel');
+    }
+  }]);
+
+  return ImagePreviewModal;
+}();
+
+exports.default = ImagePreviewModal;
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _geoStateService = __webpack_require__(28);
+
+var _geoStateService2 = _interopRequireDefault(_geoStateService);
+
+var _geoDataService = __webpack_require__(29);
+
+var _geoDataService2 = _interopRequireDefault(_geoDataService);
+
+var _geoSettingsService = __webpack_require__(30);
+
+var _geoSettingsService2 = _interopRequireDefault(_geoSettingsService);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mod = angular.module('ds.geo.services', []); // import customOnChange from './custom-on-change';
+
+mod.service('GeoStateService', _geoStateService2.default);
+mod.service('GeoDataService', _geoDataService2.default);
+mod.service('GeoSettingsService', _geoSettingsService2.default);
+
+// mod.directive('customOnChange', customOnChange);
+
+exports.default = mod;
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GeoStateService = function GeoStateService($scope, $state) {
+  _classCallCheck(this, GeoStateService);
+
+  this.$scope = $scope;
+  this.$state = $state;
+  this.last_db_path = null;
+};
+
+exports.default = GeoStateService;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _geoUtils = __webpack_require__(1);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
@@ -1260,9 +1363,13 @@ var GeoDataService = function () {
     this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
     this.previous_project_state = null;
+
+    // TODO: Should this marker size be auto somehow?
     this.HazmapperDivIcon = L.divIcon({
       className: 'hm-marker',
-      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
+      html: "<div> <i class='fa fa-map-marker'> </i> </div>",
+      iconSize: [21, 36],
+      iconAnchor: [10.5, 36]
     });
   }
 
@@ -1370,40 +1477,38 @@ var GeoDataService = function () {
       return this.$q(function (res, rej) {
         if (blob.ds_map) return res(_this3._from_dsmap(blob));
         try {
-          (function () {
-            var features = [];
-            var options = {
-              pointToLayer: function pointToLayer(feature, latlng) {
-                return L.marker(latlng, { icon: _this3.HazmapperDivIcon });
-              }
-            };
-            L.geoJSON(blob, options).getLayers().forEach(function (layer) {
+          var features = [];
+          var options = {
+            pointToLayer: function pointToLayer(feature, latlng) {
+              return L.marker(latlng, { icon: _this3.HazmapperDivIcon });
+            }
+          };
+          L.geoJSON(blob, options).getLayers().forEach(function (layer) {
 
-              var props = layer.feature.properties;
-              if (layer instanceof L.Marker && layer.feature.properties.image_src) {
-                var latlng = layer.getLatLng();
-                layer = _this3._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
-              }
+            var props = layer.feature.properties;
+            if (layer instanceof L.Marker && layer.feature.properties.image_src) {
+              var latlng = layer.getLatLng();
+              layer = _this3._make_image_marker(latlng.lat, latlng.lng, props.thumb_src, props.image_src, props.href);
+            }
 
-              //add in the optional metadata / reserved props
-              layer.options.metadata = [];
-              for (var key in props) {
+            //add in the optional metadata / reserved props
+            layer.options.metadata = [];
+            for (var key in props) {
 
-                // if the key is not reserved for hazmapper, put it in
-                // the metadata
-                if (GeoUtils.RESERVED_KEYS.indexOf(key) === -1) {
-                  layer.options.metadata.push({
-                    "key": key,
-                    "value": props[key]
-                  });
-                } else {
-                  layer.options[key] = props[key];
-                }
+              // if the key is not reserved for hazmapper, put it in
+              // the metadata
+              if (GeoUtils.RESERVED_KEYS.indexOf(key) === -1) {
+                layer.options.metadata.push({
+                  "key": key,
+                  "value": props[key]
+                });
+              } else {
+                layer.options[key] = props[key];
               }
-              features.push(layer);
-            });
-            res(features);
-          })();
+            }
+            features.push(layer);
+          });
+          res(features);
         } catch (e) {
           rej('Bad geoJSON');
         }
@@ -1440,6 +1545,7 @@ var GeoDataService = function () {
       var marker = L.marker([lat, lon], { icon: icon }).bindPopup(tmpl, {
         className: 'leaflet-popup-photo',
         maxWidth: "auto"
+        // maxHeight: 400
       });
       marker.on('popupopen', function (e) {
         _this4.$rootScope.$broadcast("image_popupopen", marker);
@@ -1461,36 +1567,34 @@ var GeoDataService = function () {
 
       return this.$q(function (res, rej) {
         try {
-          (function () {
-            var exif = EXIF.readFromBinaryFile(file);
-            var lat = exif.GPSLatitude;
-            var lon = exif.GPSLongitude;
-            //Convert coordinates to WGS84 decimal
-            var latRef = exif.GPSLatitudeRef || "N";
-            var lonRef = exif.GPSLongitudeRef || "W";
-            lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
-            lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
-            if (lat > 90 || lat < -90 || lon > 360 || lon < -360) {
-              rej('Bad EXIF GPS data');
+          var exif = EXIF.readFromBinaryFile(file);
+          var lat = exif.GPSLatitude;
+          var lon = exif.GPSLongitude;
+          //Convert coordinates to WGS84 decimal
+          var latRef = exif.GPSLatitudeRef || "N";
+          var lonRef = exif.GPSLongitudeRef || "W";
+          lat = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef == "N" ? 1 : -1);
+          lon = (lon[0] + lon[1] / 60 + lon[2] / 3600) * (lonRef == "W" ? -1 : 1);
+          if (lat > 90 || lat < -90 || lon > 360 || lon < -360) {
+            rej('Bad EXIF GPS data');
+          }
+          var thumb = null;
+          var preview = null;
+          _this5._resize_image(file, 100, 100).then(function (resp) {
+            thumb = resp;
+          }).then(function () {
+            return _this5._resize_image(file, 400, 400);
+          }).then(function (resp) {
+            preview = resp;
+            var marker = _this5._make_image_marker(lat, lon, thumb, preview, null);
+            if (agave_file) {
+              marker.options.href = agave_file._links.self.href;
+              marker.options.label = agave_file.name;
+            } else {
+              marker.options.label = fname;
             }
-            var thumb = null;
-            var preview = null;
-            _this5._resize_image(file, 100, 100).then(function (resp) {
-              thumb = resp;
-            }).then(function () {
-              return _this5._resize_image(file, 400, 400);
-            }).then(function (resp) {
-              preview = resp;
-              var marker = _this5._make_image_marker(lat, lon, thumb, preview, null);
-              if (agave_file) {
-                marker.options.href = agave_file._links.self.href;
-                marker.options.label = agave_file.name;
-              } else {
-                marker.options.label = fname;
-              }
-              res([marker]);
-            });
-          })();
+            res([marker]);
+          });
         } catch (e) {
           rej(e);
         }
@@ -1726,7 +1830,7 @@ var GeoDataService = function () {
 exports.default = GeoDataService;
 
 /***/ }),
-/* 15 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1752,101 +1856,6 @@ var GeoSettingsService = function GeoSettingsService() {
 
 exports.default = GeoSettingsService;
 
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var GeoStateService = function GeoStateService($scope, $state) {
-  _classCallCheck(this, GeoStateService);
-
-  this.$scope = $scope;
-  this.$state = $state;
-  this.last_db_path = null;
-};
-
-exports.default = GeoStateService;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports) {
-
-module.exports = L;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-module.exports = angular;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-config.$inject = ["$stateProvider", "$uibTooltipProvider", "$urlRouterProvider", "$locationProvider", "toastrConfig"];
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _directives = __webpack_require__(5);
-
-var _controllers = __webpack_require__(4);
-
-var _services = __webpack_require__(6);
-
-var mod = angular.module('designsafe');
-mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
-
-function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider, toastrConfig) {
-  'ngInject';
-
-  angular.extend(toastrConfig, {
-    timeOut: 1000
-  });
-
-  $locationProvider.html5Mode({
-    enabled: true
-  });
-
-  $stateProvider.state('geo', {
-    url: '',
-    abstract: true,
-    templateUrl: '/static/designsafe/apps/geo/html/index.html',
-    resolve: {
-      auth: function auth() {
-        return true;
-      }
-    }
-  }).state('geo.map', {
-    url: '/hazmapper',
-    templateUrl: '/static/designsafe/apps/geo/html/map.html',
-    controller: 'MapSidebarCtrl as vm'
-  }).state('geo.help', {
-    url: '/help',
-    templateUrl: '/static/designsafe/apps/geo/html/help.html',
-    controller: 'HelpCtrl as vm'
-  });
-  $urlRouterProvider.when('/', '/hazmapper');
-
-  //config popups etc
-  $uibTooltipProvider.options({ popupDelay: 1000 });
-}
-
-mod.config(config);
-
-exports.default = mod;
-
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.eac4eef59ff570241bac.js.map
+//# sourceMappingURL=bundle.js.map

@@ -14,11 +14,17 @@ export default class GeoDataService {
     this.GeoSettingsService = GeoSettingsService;
     this.active_project = null;
     this.previous_project_state = null;
+
+    // TODO: Should this marker size be auto somehow?
     this.HazmapperDivIcon = L.divIcon({
       className: 'hm-marker',
-      html: "<div> <i class='fa fa-map-marker'> </i> </div>"
+      html: "<div> <i class='fa fa-map-marker'> </i> </div>",
+      iconSize: [21, 36],
+      iconAnchor: [10.5, 36]
     });
   }
+
+  
 
   current_project(project) {
     if (!(project)) {
