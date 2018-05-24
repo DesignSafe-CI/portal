@@ -155,6 +155,13 @@ def agave_oauth_callback(request):
                 token.user = user
             token.save()
 
+            check_or_create_agave_home_dir.apply(
+                args=(
+                    user.username,
+                ),
+                queue='files'
+            )
+            
             login(request, user)
             if user.last_login is not None:
                 msg_tmpl = 'Login successful. Welcome back, %s %s!'
@@ -167,12 +174,7 @@ def agave_oauth_callback(request):
                     user.last_name
                 )
             )
-            check_or_create_agave_home_dir.apply_async(
-                args=(
-                    user.username,
-                ),
-                queue='files'
-            )
+            
         else:
             messages.error(
                 request,
