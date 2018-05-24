@@ -87,6 +87,8 @@
         $scope.form = { model: {}, readonly: ($scope.data.needsLicense || $scope.data.unavailable)};
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [];
+        //reset formValid, var is used for invalid form msg
+        $scope.data.formValid = [];
 
         /* inputs */
         var items = [];
@@ -136,6 +138,8 @@
         $scope.data.messages = [];
         $scope.$broadcast('schemaFormValidate');
         if (form.$valid) {
+          //set formValid to true, var is used for invalid error msg
+          $scope.data.formValid = true;
           var jobData = {
               appId: $scope.data.app.id,
               archive: true,
@@ -244,6 +248,10 @@
               });
               refocus();
             });
+        }
+        else {
+          // set a variable so we can show an error message when form is not valid
+          $scope.data.formValid = false;
         }
       };
 

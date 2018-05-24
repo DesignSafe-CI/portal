@@ -56,6 +56,11 @@
           sf-model="form.model"
           sf-options="{ supressPropertyTitles: true }"
           ng-submit="!data.submitting && onSubmit(appForm)"></form>
+    
+    <!-- error message for when form is invalid -->
+    <div ng-if="data.formValid === false">
+        Please enter a value for all required fields, shown in red above.
+    </div>
 
     <div ng-if="data.submitting">
         <span class="label label-info">
