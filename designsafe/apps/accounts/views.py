@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
@@ -498,13 +499,31 @@ def email_confirmation(request, code=None):
                 tas = TASClient()
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
-                    #check_or_create_agave_home_dir.apply_async(args=(user["username"],))
+                    check_or_create_agave_home_dir.apply(args=(user["username"],))
+                    
+                    ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                               token=settings.AGAVE_SUPER_TOKEN)
 
-                    messages.success(request,
-                                     'Congratulations, your account has been activated! '
-                                     'You can now log in to DesignSafe.')
-                    return HttpResponseRedirect(
-                        reverse('designsafe_accounts:manage_profile'))
+                    try:
+                        ag.files.list(
+                            systemId=settings.AGAVE_STORAGE_SYSTEM,
+                            filePath=username)
+
+                        messages.success(request,
+                                         'Congratulations, your account has been activated and home directory created! '
+                                         'You can now log in to DesignSafe.')
+
+                        return HttpResponseRedirect(
+                            reverse('designsafe_accounts:manage_profile'))
+
+                    except HTTPError:
+                        
+                        messages.error(request,
+                                       'We have not been able to create your home directory yet. Please try '
+                                       'again later. If this problem persists, please '
+                                       '<a href="/help">open a support ticket</a>.')
+                    
+                    
                 else:
                     messages.error(request,
                                    'We were unable to activate your account. Please try '
