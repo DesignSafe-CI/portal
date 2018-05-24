@@ -186,7 +186,7 @@
               </div>
             </div>
             <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; overflow:scroll;">
-              <table  class="table table-bordered table-striped"
+              <table  class="table table-bordered table-striped table-meta"
                       style="background-color: #fff;">
                 <thead>
                   <th>Name</th>
@@ -221,13 +221,13 @@
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
                               ng-if="publicationCtrl.isFileSelectedForSimPublication(model, file)"
-                              ng-click="publicationCtrl.deselectFileForSimPublication(model, file)"
+                              ng-click="publicationCtrl.deselectFileForSimPublication(model, file, simulation)"
                               title="Selected">
                         <i class="fa fa-check"></i><span class="sr-only">Selected</span>
                       </button>
                       <button class="btn btn-danger"
                               ng-if="!publicationCtrl.isFileSelectedForSimPublication(model, file)"
-                              ng-click="publicationCtrl.selectFileForSimPublication(model, file)"
+                              ng-click="publicationCtrl.selectFileForSimPublication(model, file, simulation)"
                               title="Not Selected">
                         <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
                       </button>
@@ -411,7 +411,7 @@
       </button>
           <div id="data-{{analysis.uuid}}" class="collapse in">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-              <table  class="table table-bordered table-striped"
+              <table  class="table table-bordered table-striped table-meta"
                       style="background-color: #fff;">
                 <thead>
                   <th>Name</th>
@@ -441,8 +441,8 @@
                         {{file.name}}
                       </a>
                     </td>
-                  <td ng-if="file.format == 'folder'"> -- </td>
-                    <td ng-if="!file.format == 'folder'">{{file.length|bytes}}</td>
+                    <td ng-if="file.format == 'folder'"> -- </td>
+                    <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
@@ -484,7 +484,7 @@
       </button>
           <div id="data-{{report.uuid}}" class="collapse in">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
-              <table  class="table table-bordered table-striped"
+              <table  class="table table-bordered table-striped table-meta"
                       style="background-color: #fff;">
                 <thead>
                   <th>Name</th>
@@ -514,8 +514,8 @@
                         {{file.name}}
                       </a>
                     </td>
-                  <td ng-if="file.format == 'folder'"> -- </td>
-                    <td ng-if="!file.format == 'folder'">{{file.length|bytes}}</td>
+                    <td ng-if="file.format == 'folder'"> -- </td>
+                    <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
@@ -758,6 +758,9 @@
             <div class="attr pull-left">
               <span>Authors</span>
               <span class="text-danger">*</span>
+              <a href="#" ng-click="publicationCtrl.openEditTeamMembers()">
+                <i class="fa fa-pencil-square-o"></i> Edit
+              </a>
             </div>
             <div class="value pull-right">
               <div ng-repeat="user in publicationCtrl.filterUsers(sim.value.authors,
@@ -1123,7 +1126,7 @@
               </div>
             </div>
             <div style="margin-left:-5px; padding-left:5px; margin-top:-11px; padding-top:7px; border-left:1px solid #ccc; border-radius:5px 0px 0px 5px; overflow:scroll;">
-              <table class="table table-bordered table-striped"
+              <table class="table table-bordered table-striped table-meta"
                      style="background-color: #fff;">
                 <thead>
                   <th>Name</th>
@@ -1187,7 +1190,7 @@
           <i class="fa dropdown-caret"></i>
         </button>
         <div id="files-{{modelConfig.uuid}}" class="collapse">
-          <table class="table table-bordered table-striped" style="background-color: #fff;">
+          <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
             <thead>
               <th>Name</th>
               <th>Size</th>
@@ -1220,7 +1223,7 @@
           <i class="fa dropdown-caret"></i>
         </button>
         <div id="files-{{sensorList.uuid}}" class="collapse">
-          <table class="table table-bordered table-striped" style="background-color: #fff;">
+          <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
             <thead>
               <th>Name</th>
               <th>Size</th>
@@ -1265,7 +1268,7 @@
                   </button>
                 </div>
               </div>
-              <table class="table table-bordered table-striped" style="background-color: #fff;">
+              <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
                 <thead>
                   <th>Name</th>
                   <th>Size</th>
@@ -1291,7 +1294,7 @@
                       </a>
                     </td>
                     <td ng-if="file.format == 'folder'"> -- </td>
-                    <td ng-if="!file.format == 'folder'">{{file.length|bytes}}</td>
+                    <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success" ng-if="publicationCtrl.isFileSelectedForPublication(analysis, false, file)" ng-click="publicationCtrl.deselectFileForPublication(analysis, false, file)"
@@ -1334,7 +1337,7 @@
                   </button>
                 </div>
               </div>
-              <table class="table table-bordered table-striped" style="background-color: #fff;">
+              <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
                 <thead>
                   <th>Name</th>
                   <th>Size</th>
@@ -1594,6 +1597,9 @@
                 <span>Authors</span>
                 <span class="text-danger">*</span>
                 <span ng-show="metaForm.$invalid">INVALID</span>
+                <a href="#" ng-click="publicationCtrl.openEditTeamMembers()">
+                  <i class="fa fa-pencil-square-o"></i> Edit
+                </a>
               </div>
               <div class="value pull-right">
                 <div ng-repeat="user in publicationCtrl.filterUsers(exp.value.authors,

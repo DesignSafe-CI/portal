@@ -1159,7 +1159,7 @@
         $scope.browser.publication[attrName] = [];
       }
       $scope.browser.publication[attrName].push(ent);
-      $scope.browser.publication[attrName] = _.uniq($scope.browser.publication[attrName], function(e){return e.uuid});
+      $scope.browser.publication[attrName] = _.uniq($scope.browser.publication[attrName], function(e){return e.uuid;});
     }
 
     function _removeFromLists(ent, evt){
@@ -1398,22 +1398,53 @@
       },
 
       selectAllSimFiles : function(ent){
-        var listing = [];
-        try {
-            listing = $scope.browser.listings[ent.uuid];
-        } catch(e){
-            _addToSimLists(ent);
-            return;
-        }
-        $scope.browser.publication.filesSelected[ent.uuid] = listing;
+        var listing = {};
+
+        // show inputs selected
+        _.each($scope.browser.project.input_set, function (set) {
+          if (set.value.modelConfigs.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add inputs
+            _addToSimLists(set);
+          }
+        });
+        // show outputs selected
+        _.each($scope.browser.project.output_set, function (set) {
+          if (set.value.modelConfigs.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+
+        // add model
         _addToSimLists(ent);
+        
+        // show model/report/analysis selected
+        if (ent._displayName == "Model" || ent._displayName == "Report" || ent._displayName == "Analysis") {
+          listing[ent.uuid] = $scope.browser.listings[ent.uuid];
+        }
+
+        // if there are already selected files do not deselect them when selecting more
+        if (Object.keys($scope.browser.publication.filesSelected).length === 0) {
+          $scope.browser.publication.filesSelected = listing;
+        } else {
+          _.map(listing, function(i){
+            Object.assign($scope.browser.publication.filesSelected, listing);
+          });
+        }
       },
 
-      selectFileForSimPublication : function(ent, file){
+      selectFileForSimPublication : function(ent, file, sim){
         if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
           $scope.browser.publication.filesSelected[ent.uuid] = [];
         }
-        $scope.browser.publication.filesSelected[ent.uuid].push(file)
+        // include simulation when adding a file associated with a model
+        if (ent._displayName == "Model"){
+          _addToSimLists(sim);
+        }
+        // show file as selected
+        $scope.browser.publication.filesSelected[ent.uuid].push(file);
         _addToSimLists(ent);
       },
 
@@ -1446,9 +1477,21 @@
 
       deselectAllSimFiles : function(ent){
         if ($scope.browser.publication.filesSelected[ent.uuid] !== 'undefined'){
+          _.each($scope.browser.project.input_set, function (set) {
+            if (set.value.modelConfigs.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.output_set, function (set) {
+            if (set.value.modelConfigs.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
           delete $scope.browser.publication.filesSelected[ent.uuid];
         }
-        _removeFromSimLists(ent)
+        _removeFromSimLists(ent);
       },
 
       deselectAllFiles : function(ent, evt){
@@ -1520,12 +1563,12 @@
         }
       },
 
-      deselectFileForSimPublication : function(ent, file){
-        _.reject($scope.browser.publication.filesSelected[ent.uuid],
-            function(f){ return f.uuid() === file.uuid()});
-        if (!$scope.browser.publication.filesSelected[ent.uuid].length){
-          _removeFromSimLists(ent);
+      deselectFileForSimPublication : function(ent, file, sim){
+        if (ent._displayName == "Model"){
+          _removeFromSimLists(sim);
         }
+        delete $scope.browser.publication.filesSelected[ent.uuid];
+        _removeFromSimLists(ent);
       },
 
       filterExperiments : function(experiments){
