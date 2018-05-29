@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import AgaveOAuthToken, AgaveServiceStatus
+from agavepy.agave import Agave, AgaveException
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 import logging
 import os
@@ -147,6 +148,11 @@ def agave_oauth_callback(request):
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
         if user:
+            #If the login() call doesn't get hit, DS falls apart because the browser gets redirected too many times.
+            #I commented login() out to test this.  So user is always true and those else statements are never hit.
+            #Proved this by using an incorrect pw and the failure messages below never came up. Instead, this seems to be
+            #controlled by the TAS/LDAP login page.
+
             try:
                 token = user.agave_oauth
                 token.update(**token_data)
@@ -161,19 +167,40 @@ def agave_oauth_callback(request):
                 ),
                 queue='files'
             )
-            
-            login(request, user)
-            if user.last_login is not None:
-                msg_tmpl = 'Login successful. Welcome back, %s %s!'
-            else:
-                msg_tmpl = 'Login successful. Welcome to DesignSafe, %s %s!'
-            messages.success(
-                request,
-                msg_tmpl % (
-                    user.first_name,
-                    user.last_name
+
+            hasFiles = []
+            ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token=settings.AGAVE_SUPER_TOKEN)
+
+            try:
+                #This is a rudimentary test to see if files come back from the homedir.  
+                #If they don't, the homedir must not exist
+                hasFiles = ag.files.list(
+                    systemId=settings.AGAVE_STORAGE_SYSTEM,
+                    filePath=username)
+                #This is not successfully running, ie:it's going to the exception.  Even when login() is called before.
+            except Exception:
+                messages.error(request,
+                              'We have not been able to create your home directory yet. Please try '
+                              'again later. If this problem persists, please '
+                              '<a href="/help">open a support ticket</a>.')
+                #return HttpResponseRedirect(reverse('designsafe_auth:login'))
+                #Using the statement above doesn't stop the too many redirects error.
+
+            if hasFiles:
+                #If user has no homedir, then we don't call login()
+                login(request, user)
+                if user.last_login is not None:
+                    msg_tmpl = 'Login successful. Welcome back, %s %s!'
+                else:
+                    msg_tmpl = 'Login successful. Welcome to DesignSafe, %s %s!'
+                messages.success(
+                    request,
+                    msg_tmpl % (
+                        user.first_name,
+                        user.last_name
+                    )
                 )
-            )
             
         else:
             messages.error(
