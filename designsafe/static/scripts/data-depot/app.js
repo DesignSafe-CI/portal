@@ -215,8 +215,8 @@
       })
       .state('projects.search', {
         url: '/project-search/?query_string&offset&limit&projects',
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
+        controller: 'ProjectSearchCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/project-search.html',
         params: {
           systemId: 'designsafe.storage.default',
           filePath: ''

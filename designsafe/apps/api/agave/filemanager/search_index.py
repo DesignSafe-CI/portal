@@ -423,19 +423,27 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        system_queries = [Q({'term': {'system._exact': system}}) for system in systems]
+        # system_queries = [Q({'term': {'system._exact': system}}) for system in systems]
 
-        filters = reduce(ior, system_queries)
-        search = IndexedFile.search()\
-            .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
-            .filter(filters)\
-            .extra(from_=offset, size=limit)
-            #.filter("term", type="file")\
-           
-        res = search.execute()
         children = []
-        if res.hits.total:
-            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+        for project in projects:
+
+            # filters = reduce(ior, system_queries)
+            search = IndexedFile.search()\
+                .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
+                .filter(Q({'term': {'system._exact': 'project-' + project.uuid}}))\
+                .extra(from_=offset, size=limit)
+                #.filter("term", type="file")\
+            
+            res = search.execute()
+            
+            if res.hits.total:
+                # children += [Object(wrap=o).to_dict().update({'title': project.uuid}) for o in search[offset:limit]]
+
+                for o in search[offset:limit]:
+                    child = Object(wrap=o).to_dict()
+                    child.update({'title': project.title})
+                    children.append(child)
 
         result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
