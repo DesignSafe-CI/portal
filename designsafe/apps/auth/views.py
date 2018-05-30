@@ -12,6 +12,8 @@ import logging
 import os
 import requests
 import time
+from requests import HTTPError
+
 
 
 logger = logging.getLogger(__name__)
@@ -147,6 +149,8 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
+        logger.info('******'*100)
+        logger.info(user)
         if user:
             #If the login() call doesn't get hit, DS falls apart because the browser gets redirected too many times.
             #I commented login() out to test this.  So user is always true and those else statements are never hit.
@@ -161,31 +165,35 @@ def agave_oauth_callback(request):
                 token.user = user
             token.save()
 
-            check_or_create_agave_home_dir.apply(
+            """ check_or_create_agave_home_dir.apply(
                 args=(
                     user.username,
                 ),
                 queue='files'
-            )
+            ) """            
 
             hasFiles = []
             ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token=settings.AGAVE_SUPER_TOKEN)
-
+                       token=token_data['access_token'])
             try:
                 #This is a rudimentary test to see if files come back from the homedir.  
                 #If they don't, the homedir must not exist
                 hasFiles = ag.files.list(
                     systemId=settings.AGAVE_STORAGE_SYSTEM,
-                    filePath=username)
-                #This is not successfully running, ie:it's going to the exception.  Even when login() is called before.
-            except Exception:
+                    filePath=user.username)
+                
+                #logger.info('filepath: ' +
+                            #str(settings.AGAVE_STORAGE_SYSTEM) + str(user.username))  # designsafe.storage.defaultfrankn
+                                                                                        # systems-delete $SYSTEM_ID
+            except (HTTPError, AgaveException):
                 messages.error(request,
                               'We have not been able to create your home directory yet. Please try '
                               'again later. If this problem persists, please '
                               '<a href="/help">open a support ticket</a>.')
-                #return HttpResponseRedirect(reverse('designsafe_auth:login'))
-                #Using the statement above doesn't stop the too many redirects error.
+                logger.info('************'*100)
+                logger.info('Redirect')
+                logger.info(reverse('designsafe_auth:login'))
+                return HttpResponseRedirect(reverse('designsafe_auth:login'))
 
             if hasFiles:
                 #If user has no homedir, then we don't call login()
@@ -201,8 +209,14 @@ def agave_oauth_callback(request):
                         user.last_name
                     )
                 )
+            else:
+                logger.info('************'*100)
+                logger.info('Redirect')
+                return HttpResponseRedirect(reverse('designsafe_auth:login'))
             
         else:
+            logger.info('************'*100)
+            logger.info('Redirect')
             messages.error(
                 request,
                 'Authentication failed. Please try again. If this problem '
@@ -213,18 +227,22 @@ def agave_oauth_callback(request):
         if 'error' in request.GET:
             error = request.GET['error']
             logger.warning('Authorization failed: %s' % error)
-
+        logger.info('************'*100)
+        logger.info('Redirect')
         messages.error(
             request, 'Authentication failed! Did you forget your password? '
                      '<a href="%s">Click here</a> to reset your password.' %
                      reverse('designsafe_accounts:password_reset'))
         return HttpResponseRedirect(reverse('designsafe_auth:login'))
-
     if 'next' in request.session:
+        logger.info('************'*100)
+        logger.info('Redirect')
         next_uri = request.session.pop('next')
         return HttpResponseRedirect(next_uri)
     else:
         # return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+        logger.info('************'*100)
+        logger.info('Redirect')
         return HttpResponseRedirect(reverse('designsafe_dashboard:index'))
 
 
