@@ -26,6 +26,7 @@
         needsLicense: false,
         unavailable: false,
         app: null,
+        up: true,
         form: {}
       };
 
@@ -73,6 +74,17 @@
               //     });
 
               $scope.data.app = resp.data;
+                
+              Apps.getSystemStatus(resp.data.executionSystem).then(function(response) {
+                if (response.data.result.length > 0) {
+                  var system_status = (response.data.result[0].status)
+                  $scope.data.up = (system_status === 'up')
+                }
+                else {
+                  $scope.data.up = true
+                }
+              });
+
               $scope.resetForm();
             });
           } else if (app.value.type === 'html'){
@@ -224,7 +236,8 @@
             jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
           }
 
-          $scope.data.submitting = true;
+          if ($scope.data.up) {
+            $scope.data.submitting = true;
           Jobs.submit(jobData).then(
             function(resp) {
               $scope.data.submitting = false;
@@ -248,6 +261,11 @@
               });
               refocus();
             });
+          }
+          else {
+            console.log('bad system')
+
+          }
         }
         else {
           // set a variable so we can show an error message when form is not valid

@@ -45,6 +45,18 @@
       });
     };
 
+    service.getSystemStatus = function(system) {
+      if (system === 'designsafe.community.exec.stampede2.nores') {
+        return $http.get("https://api.xsede.org/systems/v1/stampede2.tacc.xsede.org", 
+        {headers: {'X-Requested-With': undefined}});
+      } 
+      else {
+        return new Promise(function(resolve, reject) {
+          resolve({'data': {'result': []}})
+        })
+      }
+    }
+
     service.formSchema = function(app) {
       /**
        * Generate a JSON.schema for the app ready for angular-schema-form
