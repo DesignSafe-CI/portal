@@ -262,10 +262,7 @@
               refocus();
             });
           }
-          else {
-            console.log('bad system')
-
-          }
+          
         }
         else {
           // set a variable so we can show an error message when form is not valid
