@@ -7,11 +7,16 @@ import _ from 'underscore';
 import { mod } from '../ng-modernizr/ng-modernizr';
 //also need to import slickCarousel and djng.urls- from npm?
 
+//modules
+import { wsModule } from './modules/ws-module'
+import { notificationsModuel, notificationsModule } from './modules/notifications-module'
+
+import { wsBusService } from '../../../apps/signals/static/designsafe/apps/signals/scripts/provider'
 //import directives from ./directives.
 import { ddBoxListing } from './directives/dd-box-listing';
-import { ddBreadcrub } from './directives/dd-breadcrumb';
+import { ddBreadcrumb } from './directives/dd-breadcrumb';
 import { ddDropboxListing } from './directives/dd-dropbox-listing';
-import { ddGoogledriveListing } from './directives/dd-googledrive-listing';
+import { ddGoogleDriveListing } from './directives/dd-googledrive-listing';
 import { ddListing } from './directives/dd-listing';
 import { ddPublicListing } from './directives/dd-public-listing';
 import { ddPublicSearchListing } from './directives/dd-public-search-listing';
@@ -23,6 +28,7 @@ import { ngDesignsafeDirectives } from './directives/ng-designsafe-directives';
 
 //import controllers from ./controllers
 import { notifications } from './controllers/notifications';
+//import { mainCtrl } from '../data-depot/controllers/main';
 
 //import service from ./services
 import { dataBrowserService } from './services/data-browser-service';
@@ -45,27 +51,33 @@ import { ngDesignsafeFilters } from './filters/ng-designsafe-filters';
 import { projectEntity } from './models/project.entity';
 import { project } from './models/project';
 
+//import providers
+import { notificationsProvider } from './providers/notifications-provider';
+import { wsProvider } from './providers/ws-provider';
+
+wsModule()
+notificationsModule()
+
+wsBusService();
+
+notificationsProvider();
+//wsProvider();
+
 export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel']).config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 }])
-
 .constant('appCategories', ['Simulation', 'Visualization', 'Data Processing', 'Partner Data Apps', 'Utilities'])
 // Current list of icons for apps
 .constant('appIcons', ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls-pre/post', 'visit', 'openfoam', 'opensees'])
 
-.run(['UserService', '$http', function (UserService, $http) {
-  UserService.authenticate().then(function (resp) {
-    $http.defaults.headers.common['Authorization'] = 'Bearer ' + resp.oauth.access_token;
-  });
-}]);
 
 //Add directives from ./directives to the designsafe module.
 ddBoxListing(window, angular);
-ddBreadcrub(windows, angular);
+ddBreadcrumb(window, angular);
 ddDropboxListing(window, angular);
-ddGoogledriveListing(window, angular);
+ddGoogleDriveListing(window, angular);
 ddListing(window, angular);
 ddPublicListing(window, angular);
 ddPublicSearchListing(window, angular);
@@ -74,10 +86,11 @@ ddSharedListing(window, angular);
 metadataListing(window, angular);
 myDataBrowser(window, angular);
 myDataBrowser(window, angular);
-ngDesignsafeDirectives(window, $);
+ngDesignsafeDirectives(angular, $);
 
 //Add controllers from ./controllers.
-notifications(window, angular, any);
+notifications(window, angular, $);
+//mainCtrl(window, angular);
 
 //Add services
 dataBrowserService(window, angular, $);
@@ -91,6 +104,7 @@ systemsService(window, angular, $, _);
 ticketsService(window, angular);
 userService(window, angular);
 
+
 //add filters
 dataBrowserFilters(window, angular, $, _);
 ngDesignsafeFilters(window, angular);
@@ -98,3 +112,14 @@ ngDesignsafeFilters(window, angular);
 //add models
 projectEntity(window, angular, $, _);
 project(window, angular, $, _);
+
+//add providers
+
+
+ngDesignsafe
+
+.run(['UserService', '$http', function (UserService, $http) {
+  UserService.authenticate().then(function (resp) {
+    $http.defaults.headers.common['Authorization'] = 'Bearer ' + resp.oauth.access_token;
+  });
+}]);

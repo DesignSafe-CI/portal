@@ -12,6 +12,7 @@ module.exports = {
   entry: {
       "./designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
       "./designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
+      "./designsafe/static/build/bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js"
   },
   output: {
     path: __dirname,
@@ -31,6 +32,13 @@ module.exports = {
         options: {
           presets: ['es2015']
         }
+      },
+      {
+        test: /\.html$/,
+        use: [
+          { loader:'ngtemplate-loader'},
+          { loader: 'html-loader' }
+        ]
       },
       {
         test: /\.(s?)css$/,
@@ -63,5 +71,6 @@ module.exports = {
     _: '_',
     L: 'L',
     window: 'window',
+    djng: 'djng'
   }
 };
