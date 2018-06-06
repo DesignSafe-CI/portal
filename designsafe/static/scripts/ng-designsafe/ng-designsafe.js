@@ -4,14 +4,14 @@ import angular from 'angular';
 import _ from 'underscore';
 
 //ng.modernizr
-import { mod } from '../ng-modernizr/ng-modernizr';
+//import { mod } from '../ng-modernizr/ng-modernizr';
 //also need to import slickCarousel and djng.urls- from npm?
 
 //modules
-import { wsModule } from './modules/ws-module'
-import { notificationsModuel, notificationsModule } from './modules/notifications-module'
+//import { wsModule } from './modules/ws-module'
+//import { notificationsModuel, notificationsModule } from './modules/notifications-module'
 
-import { wsBusService } from '../../../apps/signals/static/designsafe/apps/signals/scripts/provider'
+//import { wsBusService } from '../../../apps/signals/static/designsafe/apps/signals/scripts/provider'
 //import directives from ./directives.
 import { ddBoxListing } from './directives/dd-box-listing';
 import { ddBreadcrumb } from './directives/dd-breadcrumb';
@@ -52,15 +52,15 @@ import { projectEntity } from './models/project.entity';
 import { project } from './models/project';
 
 //import providers
-import { notificationsProvider } from './providers/notifications-provider';
-import { wsProvider } from './providers/ws-provider';
+//import { notificationsProvider } from './providers/notifications-provider';
+//import { wsProvider } from './providers/ws-provider';
 
-wsModule()
-notificationsModule()
+//wsModule()
+//notificationsModule()
 
-wsBusService();
+//wsBusService();
 
-notificationsProvider();
+//notificationsProvider();
 //wsProvider();
 
 export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel']).config(['$httpProvider', function($httpProvider) {

@@ -1,4 +1,4 @@
-export const wsProvider = function(){
+(function(){
   'use strict';
   function WSBusService(configURL, $rootScope, logger){
     var ws;
@@ -49,4 +49,4 @@ export const wsProvider = function(){
 
   angular.module('ds.wsBus')
     .provider('WSBusService', WSBusServiceProvider);
-}
+})();

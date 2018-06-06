@@ -1,4 +1,4 @@
-export function notificationsModule(){
+(function() {
     'use strict';
     function config($interpolateProvider, $httpProvider) {
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -8,4 +8,4 @@ export function notificationsModule(){
     }
 
     angular.module('ds.notifications', ['logging', 'toastr', 'djng.urls']).config(config); //TODO: djng
-};
+})();

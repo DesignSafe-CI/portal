@@ -1,4 +1,4 @@
-export function wsModule(){
+(function wsModule(){
     'use strict';
     function config($interpolateProvider, $httpProvider) {
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -8,4 +8,4 @@ export function wsModule(){
     }
 
     angular.module('ds.wsBus', ['logging', 'toastr']).config(config);
-};
+})();
