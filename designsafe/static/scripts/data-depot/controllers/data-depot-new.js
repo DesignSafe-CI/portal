@@ -1,4 +1,4 @@
-(function(window, angular) {
+export function dataDepotNewCtrl(window, angular) {
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
@@ -67,4 +67,4 @@
   }]);
 
 
-})(window, angular);
+}

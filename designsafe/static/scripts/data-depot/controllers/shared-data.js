@@ -1,4 +1,4 @@
-(function(window, angular) {
+export function sharedData(window, angular) {
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
@@ -87,4 +87,4 @@
       DataBrowserService.preview(file, $scope.browser.listing);
     };
   }]);
-})(window, angular);
+}

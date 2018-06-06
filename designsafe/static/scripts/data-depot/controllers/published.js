@@ -1,4 +1,4 @@
-(function(window, angular) {
+export function publishedDataCtrl(window, angular) {
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
@@ -448,4 +448,4 @@
     };
 
 }]);
-})(window, angular);
+}
