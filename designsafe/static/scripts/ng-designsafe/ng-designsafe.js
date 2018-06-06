@@ -63,6 +63,19 @@ import { project } from './models/project';
 //notificationsProvider();
 //wsProvider();
 
+//data depot controllers
+import { communityDataCtrl } from '../data-depot/controllers/community';
+import { dataDepotNavCtrl } from '../data-depot/controllers/data-depot-nav';
+import {dataDepotNewCtrl } from '../data-depot/controllers/data-depot-new'
+import { dataDepotToolbarCtrl } from '../data-depot/controllers/data-depot-toolbar'
+import {externalDataCtrl } from '../data-depot/controllers/external-data';
+import { mainCtrl } from '../data-depot/controllers/main';
+import { myDataCtrl } from '../data-depot/controllers/my-data';
+import { projectsController } from '../data-depot/controllers/projects';
+import { publicationDataCtrl } from '../data-depot/controllers/publications';
+import { publishedDataCtrl } from '../data-depot/controllers/published';
+import { sharedData } from '../data-depot/controllers/shared-data';
+
 export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel']).config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
@@ -93,7 +106,8 @@ notifications(window, angular, $);
 //mainCtrl(window, angular);
 
 //Add services
-dataBrowserService(window, angular, $);
+dataBrowserService(window, angular, $, _);
+projectService(window, angular, _)
 dataService(window, angular, $, _);
 fileListing(window, angular, $, _);
 loggingService(window, angular);
@@ -114,12 +128,18 @@ projectEntity(window, angular, $, _);
 project(window, angular, $, _);
 
 //add providers
+//add data depot controllers
 
-
-ngDesignsafe
-
-.run(['UserService', '$http', function (UserService, $http) {
-  UserService.authenticate().then(function (resp) {
-    $http.defaults.headers.common['Authorization'] = 'Bearer ' + resp.oauth.access_token;
-  });
-}]);
+communityDataCtrl(window, angular);
+dataDepotNavCtrl(window, angular);
+dataDepotNewCtrl(window, angular);
+dataDepotToolbarCtrl(window, angular);
+dataDepotToolbarCtrl(window, angular);
+externalDataCtrl(window, angular);
+externalDataCtrl(window, angular);
+mainCtrl(window, angular);
+myDataCtrl(window, angular, _);
+projectsController(window, angular);
+publicationDataCtrl(window, angular);
+publishedDataCtrl(window, angular);
+sharedData(window, angular);

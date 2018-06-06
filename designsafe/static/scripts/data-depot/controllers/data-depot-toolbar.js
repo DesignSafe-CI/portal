@@ -1,4 +1,4 @@
-(function(window, angular) {
+export function dataDepotToolbarCtrl(window, angular) {
   var app = angular.module('designsafe');
   app.requires.push('django.context');
 
@@ -102,4 +102,4 @@
       }
     };
   }]);
-})(window, angular);
+}
