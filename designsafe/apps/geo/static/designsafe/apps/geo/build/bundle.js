@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -90,6 +90,12 @@ exports.get_file_extension = get_file_extension;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+module.exports = angular;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -140,7 +146,7 @@ var LayerGroup = function () {
 exports.default = LayerGroup;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -160,7 +166,7 @@ var _geoUtils = __webpack_require__(1);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _angular = __webpack_require__(21);
+var _angular = __webpack_require__(2);
 
 var _angular2 = _interopRequireDefault(_angular);
 
@@ -250,7 +256,7 @@ var MapProject = function () {
 exports.default = MapProject;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -295,7 +301,6 @@ var DBModalCtrl = function () {
 exports.default = DBModalCtrl;
 
 /***/ }),
-/* 5 */,
 /* 6 */,
 /* 7 */,
 /* 8 */,
@@ -306,7 +311,8 @@ exports.default = DBModalCtrl;
 /* 13 */,
 /* 14 */,
 /* 15 */,
-/* 16 */
+/* 16 */,
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -317,9 +323,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _directives = __webpack_require__(17);
+var _directives = __webpack_require__(18);
 
-var _controllers = __webpack_require__(19);
+var _controllers = __webpack_require__(20);
 
 var _services = __webpack_require__(27);
 
@@ -366,7 +372,7 @@ mod.config(config);
 exports.default = mod;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -376,7 +382,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(18);
+var _customOnChange = __webpack_require__(19);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -388,7 +394,7 @@ mod.directive('customOnChange', _customOnChange2.default);
 exports.default = mod;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -415,7 +421,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -425,11 +431,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(20);
+var _mapSidebar = __webpack_require__(21);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
-var _dbModal = __webpack_require__(4);
+var _dbModal = __webpack_require__(5);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
@@ -468,7 +474,7 @@ mod.controller('ImagePreviewModal', _imagePreviewModal2.default);
 exports.default = mod;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -480,15 +486,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _layer_group = __webpack_require__(2);
+var _layer_group = __webpack_require__(3);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(3);
+var _mapProject = __webpack_require__(4);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
-var _dbModal = __webpack_require__(4);
+var _dbModal = __webpack_require__(5);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
@@ -1055,12 +1061,6 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports) {
-
-module.exports = angular;
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1335,11 +1335,11 @@ var _geoUtils = __webpack_require__(1);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _layer_group = __webpack_require__(2);
+var _layer_group = __webpack_require__(3);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(3);
+var _mapProject = __webpack_require__(4);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 

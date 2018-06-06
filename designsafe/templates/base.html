@@ -31,7 +31,6 @@
   </head>
   <body ng-app="designsafe">
     {% cms_toolbar %}
-
     {% include 'includes/header.html' %}
     {% include 'includes/navigation.html' %}
 
@@ -69,9 +68,12 @@
     <script type="text/javascript" src="{% static 'vendor/slick-carousel/slick/slick.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/angular-slick-carousel/dist/angular-slick.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/angular-ui-bootstrap/dist/ui-bootstrap.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap.js' %}"></script> -->
+    
+    <!--<script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>-->
 
-    <script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>
+    <script type="text/javascript" src="{% static 'build/bundle.js' %}"></script>
+    <!--
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
@@ -82,15 +84,15 @@
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/modules/notifications-module.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/providers/notifications-provider.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/controllers/notifications.js' %}"></script>
-
+    -->
     <script type="text/javascript" src="{% static 'scripts/logging/logger.js' %}"></script>
 
     <script src="{% static 'vendor/httpi/build/httpi.min.js' %}"></script>
 
     {% block scripts %}{% endblock %}
     {% render_block "js" %}
+    <!--
 
-        <!-- DATA BROWSER DIRECTIVES/SREVICES -->
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-listing.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-search-listing.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-project-search-listing.js' %}"></script>
@@ -105,7 +107,7 @@
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/my-data-browser.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-altmetrics.js' %}"></script>
 
-        <!-- -->
+
 
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/data-browser-filters.js' %}"></script>
         <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
@@ -125,8 +127,8 @@
         <script type="text/javascript" src="{% static 'vendor/prismjs/prism.js' %}"></script>
         <script type="text/javascript" src="{% static 'vendor/marked/lib/marked.js' %}"></script>
         <script src="{% static 'scripts/navbar.js' %}"></script>
-		<!-- DATA BROWSER DIRECTIVES/SERVICES -->
 
+    -->
     <script type="text/javascript">
         (function(angular) {
             var django = angular.module('django.context', []);

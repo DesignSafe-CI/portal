@@ -44,7 +44,7 @@ export const notifications = function(window, angular, $) {
                 function init(NotificationService, logger){
     NotificationService.init();
   }]);
-
+  
   app.controller('NotificationBadgeCtrl',
     ['$rootScope', '$scope', '$filter', 'djangoUrl', 'Logging', 'Django', 'NotificationService', '$http', 'logger',
     function($rootScope, $scope, $filter, djangoUrl, Logging, Django, NotificationService, $http, logger) {
