@@ -76,13 +76,8 @@
               $scope.data.app = resp.data;
                 
               Apps.getSystemStatus(resp.data.executionSystem).then(function(response) {
-                if (response.data.result.length > 0) {
-                  var system_status = (response.data.result[0].status)
-                  $scope.data.up = (system_status === 'up')
-                }
-                else {
-                  $scope.data.up = true
-                }
+                var heartbeatStatus = response.data.heartbeat.status
+                $scope.data.up = heartbeatStatus
               });
 
               $scope.resetForm();

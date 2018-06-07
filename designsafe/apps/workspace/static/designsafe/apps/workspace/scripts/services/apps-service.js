@@ -46,14 +46,26 @@
     };
 
     service.getSystemStatus = function(system) {
-      if (system === 'designsafe.community.exec.stampede2.nores') {
-        return $http.get("https://api.xsede.org/systems/v1/stampede2.tacc.xsede.org", 
-        {headers: {'X-Requested-With': undefined}});
-      } 
-      else {
-        return new Promise(function(resolve, reject) {
-          resolve({'data': {'result': []}})
-        })
+      switch(system) {
+        case 'designsafe.community.exec.stampede2.nores':
+          return $http.get("https://portal.tacc.utexas.edu/commnq/stampede2.tacc.utexas.edu/summary.json", 
+          {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
+          break;
+
+          case 'designsafe.community.exec.maverick':
+          return $http.get("https://portal.tacc.utexas.edu/commnq/maverick.tacc.utexas.edu/summary.json", 
+          {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
+          break;
+
+          case 'designsafe.community.exec.ls5':
+          return $http.get("https://portal.tacc.utexas.edu/commnq/lonestar5.tacc.utexas.edu/summary.json", 
+          {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
+          break;
+
+          default:
+            return new Promise(function(resolve, reject) {
+              resolve({'data': {'heartbeat': {'status': true}}})
+            })
       }
     }
 
