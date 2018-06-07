@@ -2,12 +2,13 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from designsafe.apps.workspace import views
+from views import ApiService
 
 # TODO look at linking directly into an app in the workspace
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^api/(?P<service>[a-z]+?)/$', views.call_api, name='call_api'),
+    url(r'^api/(?P<service>[a-z]+?)/$', ApiService.as_view()),
     url(r'^notification/process/(?P<pk>\d+)', views.process_notification, name='process_notification'),
 ]
 

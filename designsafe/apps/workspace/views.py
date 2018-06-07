@@ -33,6 +33,34 @@ def _app_license_type(app_id):
     return lic_type
 
 class ApiService(View):
+    def get(self, request, service):
+        """GET"""
+        handler_name = 'get_{service}'.format(service=service)
+        try:
+            handler = getattr(self, handler_name)
+        except AttributeError:
+            return HTTPBadRequest()
+
+    def post(self, request, service):
+        """POST"""
+        handler_name = 'post_{service}'.format(service=service)
+        try:
+            handler = getattr(self, handler_name)
+        except AttributeError:
+            return HTTPBadRequest()
+
+    def delete(self, request, service):
+        """DELETE"""
+        handler_name = 'delete_{service}'.format(service=service)
+        try:
+            handler = getattr(self, handler_name)
+        except AttributeError:
+            return HTTPBadRequest()
+
+    def __init__(self, request, agave):
+        self.request = request
+        self.agave = agave
+
     def get_apps(self):
         app_id = self.request.GET.get('app_id')
         if app_id:
@@ -211,54 +239,54 @@ class ApiService(View):
             return data
 
 
-@profile_fn
-@login_required
-def call_api(request, service):
-    try:
-        agave = request.user.agave_oauth.client
-        api_service = ApiService(request, agave)
+# @profile_fn
+# @login_required
+# def call_api(request, service):
+#     try:
+#         agave = request.user.agave_oauth.client
+#         api_service = ApiService(request, agave)
 
-        if service == 'apps':
-            data = api_service.get_apps()
+#         if service == 'apps':
+#             data = api_service.get_apps()
 
-        elif service == 'monitors':
-            data = api_service.get_monitors()
+#         elif service == 'monitors':
+#             data = api_service.get_monitors()
 
-        elif service == 'meta':
-            data = api_service.get_meta()
-            data = api_service.post_meta()
-            data = api_service._meta()
+#         elif service == 'meta':
+#             data = api_service.get_meta()
+#             data = api_service.post_meta()
+#             data = api_service._meta()
 
 
-        # TODO: Need auth on this DELETE business
-        elif service == 'jobs':
-            data = api_service.get_jobs()
-            data= api_service.post_jobs()
-            data = api_service.delete_jobs()
+#         # TODO: Need auth on this DELETE business
+#         elif service == 'jobs':
+#             data = api_service.get_jobs()
+#             data= api_service.post_jobs()
+#             data = api_service.delete_jobs()
 
-        else:
-            return HttpResponse('Unexpected service: %s' % service, status=400)
+#         else:
+#             return HttpResponse('Unexpected service: %s' % service, status=400)
 
-    except HTTPError as e:
-        logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-            service, e.message))
-        return HttpResponse(json.dumps(e.message),
-                            content_type='application/json',
-                            status=400)
-    except AgaveException as e:
-        logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
-            service, e.message))
-        return HttpResponse(json.dumps(e.message), content_type='application/json',
-                            status=400)
-    except Exception as e:
-        logger.error('Failed to execute {0} API call due to Exception={1}'.format(
-            service, e))
-        return HttpResponse(
-            json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
-            content_type='application/json', status=400)
+#     except HTTPError as e:
+#         logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
+#             service, e.message))
+#         return HttpResponse(json.dumps(e.message),
+#                             content_type='application/json',
+#                             status=400)
+#     except AgaveException as e:
+#         logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+#             service, e.message))
+#         return HttpResponse(json.dumps(e.message), content_type='application/json',
+#                             status=400)
+#     except Exception as e:
+#         logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+#             service, e))
+#         return HttpResponse(
+#             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+#             content_type='application/json', status=400)
 
-    return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
-                        content_type='application/json')
+#     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
+#                         content_type='application/json')
 
 
 def process_notification(request, pk, **kwargs):
