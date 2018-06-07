@@ -33,10 +33,6 @@ def _app_license_type(app_id):
     return lic_type
 
 class ApiService(View):
-    def __init__(self, request, agave):
-        self.request = request
-        self.agave = agave
-
     def get_apps(self):
         app_id = self.request.GET.get('app_id')
         if app_id:
@@ -111,7 +107,7 @@ class ApiService(View):
 
         return data
 
-    def get_job(self):
+    def get_jobs(self):
         if self.request.method == 'GET':
             job_id = self.request.GET.get('job_id')
 
@@ -135,7 +131,7 @@ class ApiService(View):
                 data = self.agave.jobs.list(limit=limit, offset=offset)
         return data
 
-    def post_job(self):
+    def post_jobs(self):
         if self.request.method == 'POST':
             job_post = json.loads(self.request.body)
             job_id = job_post.get('job_id')
@@ -208,7 +204,7 @@ class ApiService(View):
 
         # 2 lines above: how to verify that user called a method different from delete, post or get job?
 
-    def delete_job(self):
+    def delete_jobs(self):
         if self.request.method == 'DELETE':
             job_id = self.request.GET.get('job_id')
             data = self.agave.jobs.delete(jobId=job_id)
@@ -236,9 +232,9 @@ def call_api(request, service):
 
         # TODO: Need auth on this DELETE business
         elif service == 'jobs':
-            data = api_service.get_job()
-            data= api_service.post_job()
-            data = api_service.delete_job()
+            data = api_service.get_jobs()
+            data= api_service.post_jobs()
+            data = api_service.delete_jobs()
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
