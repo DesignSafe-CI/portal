@@ -71,6 +71,7 @@ class ApiService(View):
     def get_meta(self):
         app_id = self.request.GET.get('app_id')
         if self.request.method == 'GET':
+            # the line above has to go in all methods, condition is not needed anymore when methods are called individually
             if app_id:
                 data = self.agave.meta.get(appId=app_id)
                 lic_type = _app_license_type(app_id)
@@ -86,7 +87,11 @@ class ApiService(View):
             else:
                 query = self.request.GET.get('q')
                 data = self.agave.meta.listMetadata(q=query)
-        elif self.request.method == 'POST':
+
+        return data
+
+    def post_meta(self):
+        if self.request.method == 'POST':
             meta_post = json.loads(self.request.body)
             meta_uuid = meta_post.get('uuid')
 
@@ -95,7 +100,11 @@ class ApiService(View):
                 data = self.agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
             else:
                 data = self.agave.meta.addMetadata(body=meta_post)
-        elif self.request.method == 'DELETE':
+
+        return data
+
+    def delete_meta(self):
+        if self.request.method == 'DELETE':
             meta_uuid = self.request.GET.get('uuid')
             if meta_uuid:
                 data = self.agave.meta.deleteMetadata(uuid=meta_uuid)
@@ -103,10 +112,31 @@ class ApiService(View):
         return data
 
     def get_job(self):
-        if self.request.method == 'DELETE':
+        if self.request.method == 'GET':
             job_id = self.request.GET.get('job_id')
-            data = self.agave.jobs.delete(jobId=job_id)
-        elif self.request.method == 'POST':
+
+            # get specific job info
+            if job_id:
+                data = self.agave.jobs.get(jobId=job_id)
+                q = {"associationIds": job_id}
+                job_meta = self.agave.meta.listMetadata(q=json.dumps(q))
+                data['_embedded'] = {"metadata": job_meta}
+
+                archive_system_path = '{}/{}'.format(data['archiveSystem'],
+                                                        data['archivePath'])
+                data['archiveUrl'] = reverse(
+                    'designsafe_data:data_depot')
+                data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
+
+            # list jobs
+            else:
+                limit = self.request.GET.get('limit', 10)
+                offset = self.request.GET.get('offset', 0)
+                data = self.agave.jobs.list(limit=limit, offset=offset)
+        return data
+
+    def post_job(self):
+        if self.request.method == 'POST':
             job_post = json.loads(self.request.body)
             job_id = job_post.get('job_id')
 
@@ -173,34 +203,16 @@ class ApiService(View):
                 offset = self.request.GET.get('offset', 0)
                 data = self.agave.jobs.list(limit=limit, offset=offset)
 
-        elif self.request.method == 'GET':
+        # else:
+        #     return HttpResponse('Unexpected service: %s' % service, status=400)
+
+        # 2 lines above: how to verify that user called a method different from delete, post or get job?
+
+    def delete_job(self):
+        if self.request.method == 'DELETE':
             job_id = self.request.GET.get('job_id')
-
-            # get specific job info
-            if job_id:
-                data = self.agave.jobs.get(jobId=job_id)
-                q = {"associationIds": job_id}
-                job_meta = self.agave.meta.listMetadata(q=json.dumps(q))
-                data['_embedded'] = {"metadata": job_meta}
-
-                archive_system_path = '{}/{}'.format(data['archiveSystem'],
-                                                        data['archivePath'])
-                data['archiveUrl'] = reverse(
-                    'designsafe_data:data_depot')
-                data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
-
-            # list jobs
-            else:
-                limit = self.request.GET.get('limit', 10)
-                offset = self.request.GET.get('offset', 0)
-                data = self.agave.jobs.list(limit=limit, offset=offset)
-        else:
-            return HttpResponse('Unexpected service: %s' % service, status=400)
-
-# if none of the services is called. What to do with this else?
-
-    # else:
-    #     return HttpResponse('Unexpected service: %s' % service, status=400) 
+            data = self.agave.jobs.delete(jobId=job_id)
+            return data
 
 
 @profile_fn
@@ -218,11 +230,18 @@ def call_api(request, service):
 
         elif service == 'meta':
             data = api_service.get_meta()
+            data = api_service.post_meta()
+            data = api_service._meta()
 
 
         # TODO: Need auth on this DELETE business
         elif service == 'jobs':
             data = api_service.get_job()
+            data= api_service.post_job()
+            data = api_service.delete_job()
+
+        else:
+            return HttpResponse('Unexpected service: %s' % service, status=400)
 
     except HTTPError as e:
         logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
