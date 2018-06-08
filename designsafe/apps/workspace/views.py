@@ -37,7 +37,7 @@ class ApiService(View):
         """GET"""
         handler_name = 'get_{service}'.format(service=service)
         try:
-            handler = getattr(self, handler_name)
+            handler = getattr(self, handler_name) # do I need to add a return here/ trying already calls?
         except AttributeError:
             return HTTPBadRequest()
 
@@ -58,7 +58,7 @@ class ApiService(View):
             return HTTPBadRequest()
 
     def __init__(self, request, agave):
-        self.request = request
+        self.request = request # I guess I don't need to init
         self.agave = agave
 
     def get_apps(self):
