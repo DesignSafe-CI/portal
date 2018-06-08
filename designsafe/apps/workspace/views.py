@@ -10,6 +10,7 @@ from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.common.decorators import profile as profile_fn
+from designsafe.apps.api.views import BaseApiView
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -32,7 +33,8 @@ def _app_license_type(app_id):
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
 
-class ApiService(View):
+class ApiService(BaseApiView):
+    @profile_fn
     def get(self, request, service):
         """GET"""
         handler_name = 'get_{service}'.format(service=service)
@@ -41,6 +43,7 @@ class ApiService(View):
         except AttributeError:
             return HTTPBadRequest()
 
+    @profile_fn
     def post(self, request, service):
         """POST"""
         handler_name = 'post_{service}'.format(service=service)
@@ -49,6 +52,7 @@ class ApiService(View):
         except AttributeError:
             return HTTPBadRequest()
 
+    @profile_fn
     def delete(self, request, service):
         """DELETE"""
         handler_name = 'delete_{service}'.format(service=service)

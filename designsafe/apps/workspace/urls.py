@@ -8,7 +8,7 @@ from views import ApiService
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^api/(?P<service>[a-z]+?)/$', ApiService.as_view()),
+    url(r'^api/(?P<service>[a-z]+?)/$', ApiService.as_view(), name='call_api'),
     url(r'^notification/process/(?P<pk>\d+)', views.process_notification, name='process_notification'),
 ]
 
