@@ -36,7 +36,13 @@ def _app_license_type(app_id):
 class ApiService(BaseApiView):
     @profile_fn
     def get(self, request, service):
-        """GET"""
+        """
+        call GET method
+        
+        :param request: the HttpRequest object.
+        :param service: the service called by user (apps, monitors, meta or jobs)
+        :return: method call 
+        """
         handler_name = 'get_{service}'.format(service=service)
         try:
             handler = getattr(self, handler_name) # do I need to add a return here/ trying already calls?
@@ -98,44 +104,40 @@ class ApiService(BaseApiView):
 
     def get_meta(self):
         app_id = self.request.GET.get('app_id')
-        if self.request.method == 'GET':
-            # the line above has to go in all methods, condition is not needed anymore when methods are called individually
-            if app_id:
-                data = self.agave.meta.get(appId=app_id)
-                lic_type = _app_license_type(app_id)
-                data['license'] = {
-                    'type': lic_type
-                }
-                if lic_type is not None:
-                    _, license_models = get_license_info()
-                    license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
-                    lic = license_model.objects.filter(user=self.request.user).first()
-                    data['license']['enabled'] = lic is not None
+        if app_id:
+            data = self.agave.meta.get(appId=app_id)
+            lic_type = _app_license_type(app_id)
+            data['license'] = {
+                'type': lic_type
+            }
+            if lic_type is not None:
+                _, license_models = get_license_info()
+                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                lic = license_model.objects.filter(user=self.request.user).first()
+                data['license']['enabled'] = lic is not None
 
-            else:
-                query = self.request.GET.get('q')
-                data = self.agave.meta.listMetadata(q=query)
+        else:
+            query = self.request.GET.get('q')
+            data = self.agave.meta.listMetadata(q=query)
 
         return data
 
     def post_meta(self):
-        if self.request.method == 'POST':
-            meta_post = json.loads(self.request.body)
-            meta_uuid = meta_post.get('uuid')
+        meta_post = json.loads(self.request.body)
+        meta_uuid = meta_post.get('uuid')
 
-            if meta_uuid:
-                del meta_post['uuid']
-                data = self.agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
-            else:
-                data = self.agave.meta.addMetadata(body=meta_post)
+        if meta_uuid:
+            del meta_post['uuid']
+            data = self.agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
+        else:
+            data = self.agave.meta.addMetadata(body=meta_post)
 
         return data
 
     def delete_meta(self):
-        if self.request.method == 'DELETE':
-            meta_uuid = self.request.GET.get('uuid')
-            if meta_uuid:
-                data = self.agave.meta.deleteMetadata(uuid=meta_uuid)
+        meta_uuid = self.request.GET.get('uuid')
+        if meta_uuid:
+            data = self.agave.meta.deleteMetadata(uuid=meta_uuid)
 
         return data
 
@@ -163,83 +165,81 @@ class ApiService(BaseApiView):
         return JsonResponse(data, safe=False)
 
     def post_jobs(self):
-        if self.request.method == 'POST':
-            job_post = json.loads(self.request.body)
-            job_id = job_post.get('job_id')
+        job_post = json.loads(self.request.body)
+        job_id = job_post.get('job_id')
 
-            # cancel job / stop job
-            if job_id:
-                data = self.agave.jobs.manage(jobId=job_id, body='{"action":"stop"}')
+        # cancel job / stop job
+        if job_id:
+            data = self.agave.jobs.manage(jobId=job_id, body='{"action":"stop"}')
 
-            # submit job
-            elif job_post:
+        # submit job
+        elif job_post:
 
-                # cleaning archive path value
-                if 'archivePath' in job_post:
-                    parsed = urlparse(job_post['archivePath'])
-                    if parsed.path.startswith('/'):
-                        # strip leading '/'
-                        archive_path = parsed.path[1:]
-                    else:
-                        archive_path = parsed.path
-
-                    if not archive_path.startswith(self.request.user.username):
-                        archive_path = '{}/{}'.format(
-                            self.request.user.username, archive_path)
-
-                    job_post['archivePath'] = archive_path
-
-                    if parsed.netloc:
-                        job_post['archiveSystem'] = parsed.netloc
+            # cleaning archive path value
+            if 'archivePath' in job_post:
+                parsed = urlparse(job_post['archivePath'])
+                if parsed.path.startswith('/'):
+                    # strip leading '/'
+                    archive_path = parsed.path[1:]
                 else:
-                    job_post['archivePath'] = \
-                        '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
-                            self.request.user.username,
-                            datetime.now().strftime('%Y-%m-%d'))
+                    archive_path = parsed.path
 
-                # check for running licensed apps
-                lic_type = _app_license_type(job_post['appId'])
-                if lic_type is not None:
-                    _, license_models = get_license_info()
-                    license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
-                    lic = license_model.objects.filter(user=self.request.user).first()
-                    job_post['parameters']['_license'] = lic.license_as_str()
+                if not archive_path.startswith(self.request.user.username):
+                    archive_path = '{}/{}'.format(
+                        self.request.user.username, archive_path)
 
-                # url encode inputs
-                if job_post['inputs']:
-                    for key, value in six.iteritems(job_post['inputs']):
-                        parsed = urlparse(value)
-                        if parsed.scheme:
-                            job_post['inputs'][key] = '{}://{}{}'.format(
-                                parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
-                        else:
-                            job_post['inputs'][key] = urllib.quote(parsed.path)
+                job_post['archivePath'] = archive_path
 
-                try:
-                    data = submit_job(self.request, self.request.user.username, job_post)
-                except JobSubmitError as e:
-                    data = e.json()
-                    logger.error('Failed to submit job {0}'.format(data))
-                    return HttpResponse(json.dumps(data),
-                                        content_type='application/json',
-                                        status=e.status_code)
-
-            # list jobs (via POST?)
+                if parsed.netloc:
+                    job_post['archiveSystem'] = parsed.netloc
             else:
-                limit = self.request.GET.get('limit', 10)
-                offset = self.request.GET.get('offset', 0)
-                data = self.agave.jobs.list(limit=limit, offset=offset)
+                job_post['archivePath'] = \
+                    '{}/archive/jobs/{}/${{JOB_NAME}}-${{JOB_ID}}'.format(
+                        self.request.user.username,
+                        datetime.now().strftime('%Y-%m-%d'))
 
-        # else:
-        #     return HttpResponse('Unexpected service: %s' % service, status=400)
+            # check for running licensed apps
+            lic_type = _app_license_type(job_post['appId'])
+            if lic_type is not None:
+                _, license_models = get_license_info()
+                license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
+                lic = license_model.objects.filter(user=self.request.user).first()
+                job_post['parameters']['_license'] = lic.license_as_str()
 
-        # 2 lines above: how to verify that user called a method different from delete, post or get job?
+            # url encode inputs
+            if job_post['inputs']:
+                for key, value in six.iteritems(job_post['inputs']):
+                    parsed = urlparse(value)
+                    if parsed.scheme:
+                        job_post['inputs'][key] = '{}://{}{}'.format(
+                            parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                    else:
+                        job_post['inputs'][key] = urllib.quote(parsed.path)
+
+            try:
+                data = submit_job(self.request, self.request.user.username, job_post)
+            except JobSubmitError as e:
+                data = e.json()
+                logger.error('Failed to submit job {0}'.format(data))
+                return HttpResponse(json.dumps(data),
+                                    content_type='application/json',
+                                    status=e.status_code)
+
+        # list jobs (via POST?)
+        else:
+            limit = self.request.GET.get('limit', 10)
+            offset = self.request.GET.get('offset', 0)
+            data = self.agave.jobs.list(limit=limit, offset=offset)
+
+    # else:
+    #     return HttpResponse('Unexpected service: %s' % service, status=400)
+
+    # 2 lines above: how to verify that user called a method different from delete, post or get job?
 
     def delete_jobs(self):
-        if self.request.method == 'DELETE':
-            job_id = self.request.GET.get('job_id')
-            data = self.agave.jobs.delete(jobId=job_id)
-            return data
+        job_id = self.request.GET.get('job_id')
+        data = self.agave.jobs.delete(jobId=job_id)
+        return data
 
 
 # @profile_fn
