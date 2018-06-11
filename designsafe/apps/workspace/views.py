@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
 from django.views.generic.base import View
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
@@ -40,8 +40,12 @@ class ApiService(BaseApiView):
         handler_name = 'get_{service}'.format(service=service)
         try:
             handler = getattr(self, handler_name) # do I need to add a return here/ trying already calls?
-        except AttributeError:
-            return HTTPBadRequest()
+        except AttributeError as exc:
+            logger.error(exc, exc_info=True)
+            return HttpResponseBadRequest('No handler')
+
+        logger.debug('handler: %s', handler)
+        return handler(service)
 
     @profile_fn
     def post(self, request, service):
@@ -60,10 +64,6 @@ class ApiService(BaseApiView):
             handler = getattr(self, handler_name)
         except AttributeError:
             return HTTPBadRequest()
-
-    def __init__(self, request, agave):
-        self.request = request # I guess I don't need to init
-        self.agave = agave
 
     def get_apps(self):
         app_id = self.request.GET.get('app_id')
@@ -139,29 +139,28 @@ class ApiService(BaseApiView):
 
         return data
 
-    def get_jobs(self):
-        if self.request.method == 'GET':
-            job_id = self.request.GET.get('job_id')
+    def get_jobs(self, service):
+        job_id = self.request.GET.get('job_id')
+        agv = self.request.user.agave_oauth.client
+        # get specific job info
+        if job_id:
+            data = agv.jobs.get(jobId=job_id)
+            q = {"associationIds": job_id}
+            job_meta = agv.meta.listMetadata(q=json.dumps(q))
+            data['_embedded'] = {"metadata": job_meta}
 
-            # get specific job info
-            if job_id:
-                data = self.agave.jobs.get(jobId=job_id)
-                q = {"associationIds": job_id}
-                job_meta = self.agave.meta.listMetadata(q=json.dumps(q))
-                data['_embedded'] = {"metadata": job_meta}
-
-                archive_system_path = '{}/{}'.format(data['archiveSystem'],
+            archive_system_path = '{}/{}'.format(data['archiveSystem'],
                                                         data['archivePath'])
-                data['archiveUrl'] = reverse(
-                    'designsafe_data:data_depot')
-                data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
+            data['archiveUrl'] = reverse(
+                'designsafe_data:data_depot')
+            data['archiveUrl'] += 'agave/{}/'.format(archive_system_path)
 
             # list jobs
-            else:
-                limit = self.request.GET.get('limit', 10)
-                offset = self.request.GET.get('offset', 0)
-                data = self.agave.jobs.list(limit=limit, offset=offset)
-        return data
+        else:
+            limit = self.request.GET.get('limit', 10)
+            offset = self.request.GET.get('offset', 0)
+            data = agv.jobs.list(limit=limit, offset=offset)
+        return JsonResponse(data, safe=False)
 
     def post_jobs(self):
         if self.request.method == 'POST':

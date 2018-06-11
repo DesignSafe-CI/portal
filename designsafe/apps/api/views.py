@@ -25,6 +25,7 @@ class BaseApiView(View):
             status = e.response.status_code
             message = e.response.reason
             extra = e.extra
+            extra['sessionId'] = request.session.session_key
             logger.error('{}'.format(message), exc_info=True, extra=extra)
         except (ConnectionError, HTTPError) as e:
             status = e.response.status_code
