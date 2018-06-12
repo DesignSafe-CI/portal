@@ -36,16 +36,15 @@ def _app_license_type(app_id):
 class ApiService(BaseApiView):
     @profile_fn
     def get(self, request, service):
-        """
-        call GET method
+        """Call GET method.
         
         :param request: the HttpRequest object.
-        :param service: the service called by user (apps, monitors, meta or jobs)
-        :return: method call 
+        :param service: the service called by user (apps, monitors, meta or jobs).
+        :returns: call GET method.
         """
         handler_name = 'get_{service}'.format(service=service)
         try:
-            handler = getattr(self, handler_name) # do I need to add a return here/ trying already calls?
+            handler = getattr(self, handler_name)
         except AttributeError as exc:
             logger.error(exc, exc_info=True)
             return HttpResponseBadRequest('No handler')
@@ -55,26 +54,45 @@ class ApiService(BaseApiView):
 
     @profile_fn
     def post(self, request, service):
-        """POST"""
+        """Call POST method.
+
+        :param request: the HttpRequest object.
+        :param service: the service called by user (apps, monitors, meta or jobs).
+        :returns: call POST method.
+        """
         handler_name = 'post_{service}'.format(service=service)
         try:
             handler = getattr(self, handler_name)
-        except AttributeError:
-            return HTTPBadRequest()
+        except AttributeError as exc:
+            logger.error(exc, exc_info=True)
+            return HttpResponseBadRequest('No handler')
+
+        logger.debug('handler: %s', handler)
+        return handler(service)
 
     @profile_fn
     def delete(self, request, service):
-        """DELETE"""
+        """Call DELETE method.
+        
+        :param request: the HttpRequest object.
+        :param service: the service called by user (apps, monitors, meta or jobs).
+        :returns: call DELETE method.
+        """
         handler_name = 'delete_{service}'.format(service=service)
         try:
             handler = getattr(self, handler_name)
-        except AttributeError:
-            return HTTPBadRequest()
+        except AttributeError as exc:
+            logger.error(exc, exc_info=True)
+            return HttpResponseBadRequest('No handler')
 
-    def get_apps(self):
+        logger.debug('handler: %s', handler)
+        return handler(service)
+
+    def get_apps(self, service):
         app_id = self.request.GET.get('app_id')
+        agv = self.request.user.agave_oauth.client
         if app_id:
-            data = self.agave.apps.get(appId=app_id)
+            data = agv.apps.get(appId=app_id)
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
@@ -89,23 +107,24 @@ class ApiService(BaseApiView):
 
             public_only = self.request.GET.get('publicOnly')
             if public_only == 'true':
-                data = self.agave.apps.list(publicOnly='true')
+                data = agv.apps.list(publicOnly='true')
             else:
-                data = self.agave.apps.list()
+                data = agv.apps.list()
 
         return data
 
-    def get_monitors(self):
+    def get_monitors(self, service):
         target = self.request.GET.get('target')
         ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
         data = ds_admin_client.monitors.list(target=target)
 
         return data
 
-    def get_meta(self):
+    def get_meta(self, service):
         app_id = self.request.GET.get('app_id')
+        agv = self.request.user.agave_oauth.client
         if app_id:
-            data = self.agave.meta.get(appId=app_id)
+            data = agv.meta.get(appId=app_id)
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
@@ -118,32 +137,42 @@ class ApiService(BaseApiView):
 
         else:
             query = self.request.GET.get('q')
-            data = self.agave.meta.listMetadata(q=query)
+            data = agv.meta.listMetadata(q=query)
 
         return data
 
-    def post_meta(self):
+    def post_meta(self, service):
         meta_post = json.loads(self.request.body)
         meta_uuid = meta_post.get('uuid')
+        agv = self.request.user.agave_oauth.client
 
         if meta_uuid:
             del meta_post['uuid']
-            data = self.agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
+            data = agv.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
         else:
-            data = self.agave.meta.addMetadata(body=meta_post)
+            data = agv.meta.addMetadata(body=meta_post)
 
         return data
 
-    def delete_meta(self):
+    def delete_meta(self, service):
         meta_uuid = self.request.GET.get('uuid')
+        agv = self.request.user.agave_oauth.client
+
         if meta_uuid:
-            data = self.agave.meta.deleteMetadata(uuid=meta_uuid)
+            data = agv.meta.deleteMetadata(uuid=meta_uuid)
 
         return data
 
     def get_jobs(self, service):
+        """.
+        
+        :param service: jobs.
+        :returns: json object.
+        """
+        
         job_id = self.request.GET.get('job_id')
         agv = self.request.user.agave_oauth.client
+
         # get specific job info
         if job_id:
             data = agv.jobs.get(jobId=job_id)
@@ -164,13 +193,14 @@ class ApiService(BaseApiView):
             data = agv.jobs.list(limit=limit, offset=offset)
         return JsonResponse(data, safe=False)
 
-    def post_jobs(self):
+    def post_jobs(self, service):
         job_post = json.loads(self.request.body)
         job_id = job_post.get('job_id')
+        agv = self.request.user.agave_oauth.client
 
         # cancel job / stop job
         if job_id:
-            data = self.agave.jobs.manage(jobId=job_id, body='{"action":"stop"}')
+            data = agv.jobs.manage(jobId=job_id, body='{"action":"stop"}')
 
         # submit job
         elif job_post:
@@ -229,16 +259,17 @@ class ApiService(BaseApiView):
         else:
             limit = self.request.GET.get('limit', 10)
             offset = self.request.GET.get('offset', 0)
-            data = self.agave.jobs.list(limit=limit, offset=offset)
+            data = agv.jobs.list(limit=limit, offset=offset)
 
     # else:
     #     return HttpResponse('Unexpected service: %s' % service, status=400)
 
     # 2 lines above: how to verify that user called a method different from delete, post or get job?
 
-    def delete_jobs(self):
+    def delete_jobs(self, service):
         job_id = self.request.GET.get('job_id')
-        data = self.agave.jobs.delete(jobId=job_id)
+        agv = self.request.user.agave_oauth.client
+        data = agv.jobs.delete(jobId=job_id)
         return data
 
 
