@@ -142,6 +142,8 @@
     };
 
     $scope.scrollToBottom = function () {
+      offset = 0;
+
       if ($scope.browser.loadingMore || $scope.browser.reachedEnd) {
         return;
       }
@@ -149,16 +151,20 @@
       $scope.browser.busyListingPage = true;
       $scope.browser.loadingMore = true;
       page += 1;
+      offset = limit * page;
 
-      offset += limit * page;
-      ProjectService.list({offset: offset, limit: limit}).then(function (projects) {
+      ProjectService.list({offset: offset, limit: limit}).then(function (projects) {  
+        //This is making a listing call and adding it to the existing Project list
+        $scope.data.projects = $scope.data.projects.concat(_.map(projects, 
+          function (p) { p.href = $state.href('projects.view', { projectId: p.uuid }); return p; }));  
         $scope.browser.busyListingPage = false;
-        $scope.data.projects = $scope.data.projects.concat(_.map(projects, function (p) { p.href = $state.href('projects.view', { projectId: p.uuid }); return p; }));
       });
+
       $scope.browser.loadingMore = false;
-      if ($scope.data.projects.length < (offset + limit)) {
+
+      if ($scope.data.projects.length < offset) {
         $scope.browser.reachedEnd = true;
-      }
+      } 
     };
   }]);
 
