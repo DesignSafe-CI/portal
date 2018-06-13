@@ -121,6 +121,7 @@
         }
         if ($scope.data.app.parallelism == "PARALLEL") {
           items.push('nodeCount');
+          items.push('processorsPerNode');
         }
         $scope.form.form.push({
           type: 'fieldset',
@@ -227,9 +228,9 @@
           });
 
           // Calculate processorsPerNode if nodeCount parameter submitted
-          if (_.has(jobData, 'nodeCount')) {
-            jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
-          }
+          // if (_.has(jobData, 'nodeCount')) {
+          //   jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
+          // }
 
           $scope.data.submitting = true;
           Jobs.submit(jobData).then(
