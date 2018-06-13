@@ -478,6 +478,12 @@
           doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
           $window.open(doiurl);
         };
+        $ctrl.navEzid = function(){
+          var doi = $ctrl.data.ent.doi;
+          // doi = doi.slice(4);
+          doiurl = "https://ezid.cdlib.org/id/" + doi;
+          $window.open(doiurl);
+        };
       $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
       $ctrl.getCitation();
     }],
