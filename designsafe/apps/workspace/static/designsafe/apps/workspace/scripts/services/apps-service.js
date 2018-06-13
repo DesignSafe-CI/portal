@@ -45,30 +45,6 @@
       });
     };
 
-    service.getSystemStatus = function(system) {
-      switch(system) {
-        case 'designsafe.community.exec.stampede2.nores':
-          return $http.get("https://portal.tacc.utexas.edu/commnq/stampede2.tacc.utexas.edu/summary.json", 
-          {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
-          break;
-
-          case 'designsafe.community.exec.maverick':
-          return $http.get("https://portal.tacc.utexas.edu/commnq/maverick.tacc.utexas.edu/summary.json", 
-          {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
-          break;
-
-          case 'designsafe.community.exec.ls5':
-          return $http.get("https://portal.tacc.utexas.edu/commnq/lonestar5.tacc.utexas.edu/summary.json", 
-          {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
-          break;
-
-          default:
-            return new Promise(function(resolve, reject) {
-              resolve({'data': {'heartbeat': {'status': true}}})
-            })
-      }
-    }
-
     service.formSchema = function(app) {
       /**
        * Generate a JSON.schema for the app ready for angular-schema-form

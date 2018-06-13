@@ -25,8 +25,8 @@
         submitting: false,
         needsLicense: false,
         unavailable: false,
+        systemDown: false,
         app: null,
-        up: true,
         form: {}
       };
 
@@ -75,12 +75,13 @@
 
               $scope.data.app = resp.data;
                 
-              Apps.getSystemStatus(resp.data.executionSystem).then(function(response) {
-                var heartbeatStatus = response.data.heartbeat.status
-                $scope.data.up = heartbeatStatus
+              Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
+                var heartbeatStatus = response.data.heartbeat.status;
+                $scope.data.systemDown = (heartbeatStatus == false);
+                $scope.resetForm();
               });
 
-              $scope.resetForm();
+              
             });
           } else if (app.value.type === 'html'){
                 $scope.data.type = app.value.type;
@@ -107,7 +108,7 @@
         }
         $scope.form.form.push({
           type: 'fieldset',
-          readonly: ($scope.data.needsLicense || $scope.data.unavailable),
+          readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
           title: 'Inputs',
           items: items
         });
@@ -124,14 +125,14 @@
         }
         $scope.form.form.push({
           type: 'fieldset',
-          readonly: ($scope.data.needsLicense || $scope.data.unavailable),
+          readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
           title: 'Job details',
           items: items
         });
 
         /* buttons */
         items = [];
-        if (!($scope.data.needsLicense || $scope.data.unavailable)) {
+        if (!($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown)) {
           items.push({type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary'});
         }
         items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
@@ -231,32 +232,32 @@
             jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
           }
 
-          if ($scope.data.up) {
-            $scope.data.submitting = true;
-          Jobs.submit(jobData).then(
-            function(resp) {
-              $scope.data.submitting = false;
-              $rootScope.$broadcast('job-submitted', resp.data);
-              $scope.data.messages.push({
-                type: 'success',
-                header: 'Job Submitted Successfully',
-                body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
-              });
-              $scope.resetForm();
-              refocus();
-            }, function(err) {
-              $scope.data.submitting = false;
-              $scope.data.messages.push({
-                type: 'danger',
-                header: 'Job Submit Failed',
-                body: 'Your job submission failed with the following message:<br>' +
-                      '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
-                      'Please try again. If this problem persists, please ' +
-                      '<a href="/help" target="_blank">submit a support ticket</a>.'
-              });
-              refocus();
+        if ($scope.data.up) 
+          $scope.data.submitting = true;
+        Jobs.submit(jobData).then(
+          function(resp) {
+            $scope.data.submitting = false;
+            $rootScope.$broadcast('job-submitted', resp.data);
+            $scope.data.messages.push({
+              type: 'success',
+              header: 'Job Submitted Successfully',
+              body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
             });
-          }
+            $scope.resetForm();
+            refocus();
+          }, function(err) {
+            $scope.data.submitting = false;
+            $scope.data.messages.push({
+              type: 'danger',
+              header: 'Job Submit Failed',
+              body: 'Your job submission failed with the following message:<br>' +
+                    '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
+                    'Please try again. If this problem persists, please ' +
+                    '<a href="/help" target="_blank">submit a support ticket</a>.'
+            });
+            refocus();
+          });
+        
           
         }
         else {
