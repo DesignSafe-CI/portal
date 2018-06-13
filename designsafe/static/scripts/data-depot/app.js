@@ -169,7 +169,27 @@
       .state('projects.list', {
         url: '/projects/',
         controller: 'ProjectListingCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-list.html'
+        templateUrl: '/static/scripts/data-depot/templates/project-list.html',
+        params: {
+          systemId: 'designsafe.storage.default'
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            DataBrowserService.apiParams.searchState = 'projects.search';
+            var options = {
+              system: ($stateParams.systemId || 'designsafe.storage.default'),
+              path: ($stateParams.filePath || Django.user)
+              
+            };
+            if (options.path === '/') {
+              options.path = Django.user;
+            }
+
+            DataBrowserService.currentState.listing = {'system': 'designsafe.storage.default', 'permissions': []}
+
+          }],
+        }
+    
       })
       .state('projects.view', {
         url: '/projects/{projectId}/',
@@ -191,6 +211,38 @@
           'projectId': function($stateParams) { return $stateParams.projectId; },
           'filePath': function($stateParams) { return $stateParams.filePath || '/'; },
           'projectTitle': function($stateParams) { return $stateParams.projectTitle; }
+        }
+      })
+      .state('projects.search', {
+        url: '/project-search/?query_string&offset&limit&projects',
+        controller: 'MyDataCtrl',
+        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
+        params: {
+          systemId: 'designsafe.storage.default',
+          filePath: ''
+        },
+        resolve: {
+          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            var systemId = $stateParams.systemId || 'designsafe.storage.default';
+            var filePath = $stateParams.filePath || Django.user;
+            DataBrowserService.apiParams.fileMgr = 'agave';
+            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            DataBrowserService.apiParams.searchState = 'projects.search';
+            var queryString = $stateParams.query_string;
+         
+            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, projects: true};
+            return DataBrowserService.search(options);
+          }],
+          'auth': function($q) {
+            if (Django.context.authenticated) {
+              return true;
+            } else {
+              return $q.reject({
+                type: 'authn',
+                context: Django.context
+              });
+            }
+          }
         }
       })
       .state('myPublications', {

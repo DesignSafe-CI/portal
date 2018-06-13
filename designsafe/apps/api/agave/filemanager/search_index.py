@@ -2,8 +2,11 @@ import logging
 import os
 import six
 import json
+from operator import ior
 from itertools import takewhile
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from designsafe.apps.api.projects.models import Project
 from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl import Search, DocType
@@ -404,6 +407,47 @@ class ElasticFileManager(BaseFileManager):
             'children': children,
             'permissions': 'READ'
         }
+        return result
+
+    def search_projects(self, username, query_string, file_path=None, offset=0, limit=100):
+        user = get_user_model().objects.get(username=username)
+        ag = user.agave_oauth.client
+
+        projects = Project.list_projects(agave_client=ag)
+        systems = ['project-' + project.uuid for project in projects]
+
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
+
+        system_queries = [Q({'term': {'system._exact': system}}) for system in systems]
+
+        filters = reduce(ior, system_queries)
+        search = IndexedFile.search()\
+            .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
+            .filter(filters)\
+            .extra(from_=offset, size=limit)
+            #.filter("term", type="file")\
+           
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': 'designsafe.projects',
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+
+        logger.debug(result)
         return result
 
     def search_shared(self, system, username, query_string,

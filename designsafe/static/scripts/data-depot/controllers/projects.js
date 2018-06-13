@@ -7,7 +7,9 @@
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-    DataBrowserService.apiParams.searchState = undefined;
+    DataBrowserService.apiParams.searchState = 'projects.search';
+
+    //DataBrowserService.currentListing = 'new listing thing.'
 
 
 
@@ -89,8 +91,8 @@
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
     $scope.ui = {};
     $scope.ui.busy = true;
+    $scope.browser = DataBrowserService.state();
     $scope.browser.error = null;  //clears any potential lingering error messages.
-
     $scope.data.projects = [];
 
     // release selected files on load

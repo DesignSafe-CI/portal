@@ -44,6 +44,8 @@
       ui: {}
     };
 
+    var currentListing = 'listing';
+
     var efs = {
       'experimental': [
         //{name: 'other', label: 'Other'},
@@ -58,6 +60,11 @@
     };
 
     var apiParams = {
+      fileMgr : 'agave',
+      baseUrl : '/api/agave/files'
+    };
+
+    var apiParams2 = {
       fileMgr : 'agave',
       baseUrl : '/api/agave/files'
     };
@@ -245,7 +252,6 @@
         currentState.reachedEnd = false;
         return $q.reject(err);
       });
-
       return currentReq;
     }
 
@@ -2405,6 +2411,7 @@
       FileEvents: FileEvents,
       state: state,
       apiParameters: apiParameters,
+      currentState: currentState,
 
       /* data/files functions */
       allowedActions: allowedActions,
