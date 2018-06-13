@@ -81,7 +81,6 @@
                 $scope.resetForm();
               });
 
-              
             });
           } else if (app.value.type === 'html'){
                 $scope.data.type = app.value.type;
@@ -232,7 +231,6 @@
             jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
           }
 
-
           $scope.data.submitting = true;
           Jobs.submit(jobData).then(
             function(resp) {
@@ -257,8 +255,6 @@
               });
               refocus();
             });
-        
-          
         }
         else {
           // set a variable so we can show an error message when form is not valid
