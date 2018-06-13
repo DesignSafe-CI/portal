@@ -44,13 +44,34 @@ class ApiService(BaseApiView):
         """
         handler_name = 'get_{service}'.format(service=service)
         try:
-            handler = getattr(self, handler_name)
+            handler = getattr(self, handler_name) #self.get_apps
         except AttributeError as exc:
             logger.error(exc, exc_info=True)
             return HttpResponseBadRequest('No handler')
 
         logger.debug('handler: %s', handler)
-        return handler(service)
+        try:
+            data = handler(service) #self.get_apps('apps)
+        except HTTPError as e:
+            logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
+                service, e.message))
+            return HttpResponse(json.dumps(e.message),
+                                content_type='application/json',
+                                status=400)
+        except AgaveException as e:
+            logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+                service, e.message))
+            return HttpResponse(json.dumps(e.message), content_type='application/json',
+                                status=400)
+        except Exception as e:
+            logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+                service, e))
+            return HttpResponse(
+                json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+                content_type='application/json', status=400)
+
+        return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
+                            content_type='application/json')
 
     @profile_fn
     def post(self, request, service):
@@ -68,8 +89,28 @@ class ApiService(BaseApiView):
             return HttpResponseBadRequest('No handler')
 
         logger.debug('handler: %s', handler)
-        return handler(service)
+        try:
+            data = handler(service) #self.get_apps('apps)
+        except HTTPError as e:
+            logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
+                service, e.message))
+            return HttpResponse(json.dumps(e.message),
+                                content_type='application/json',
+                                status=400)
+        except AgaveException as e:
+            logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+                service, e.message))
+            return HttpResponse(json.dumps(e.message), content_type='application/json',
+                                status=400)
+        except Exception as e:
+            logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+                service, e))
+            return HttpResponse(
+                json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+                content_type='application/json', status=400)
 
+        return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
+                            content_type='application/json')
     @profile_fn
     def delete(self, request, service):
         """Call DELETE method.
@@ -86,9 +127,34 @@ class ApiService(BaseApiView):
             return HttpResponseBadRequest('No handler')
 
         logger.debug('handler: %s', handler)
-        return handler(service)
+        try:
+            data = handler(service) #self.get_apps('apps)
+        except HTTPError as e:
+            logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
+                service, e.message))
+            return HttpResponse(json.dumps(e.message),
+                                content_type='application/json',
+                                status=400)
+        except AgaveException as e:
+            logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
+                service, e.message))
+            return HttpResponse(json.dumps(e.message), content_type='application/json',
+                                status=400)
+        except Exception as e:
+            logger.error('Failed to execute {0} API call due to Exception={1}'.format(
+                service, e))
+            return HttpResponse(
+                json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
+                content_type='application/json', status=400)
+
+        return data
 
     def get_apps(self, service):
+        """Gets apps service .
+        
+        :param service: app.
+        :returns: application object.
+        """
         app_id = self.request.GET.get('app_id')
         agv = self.request.user.agave_oauth.client
         if app_id:
@@ -191,7 +257,7 @@ class ApiService(BaseApiView):
             limit = self.request.GET.get('limit', 10)
             offset = self.request.GET.get('offset', 0)
             data = agv.jobs.list(limit=limit, offset=offset)
-        return JsonResponse(data, safe=False)
+        return data
 
     def post_jobs(self, service):
         job_post = json.loads(self.request.body)
@@ -261,16 +327,24 @@ class ApiService(BaseApiView):
             offset = self.request.GET.get('offset', 0)
             data = agv.jobs.list(limit=limit, offset=offset)
 
+        return data
+
     # else:
     #     return HttpResponse('Unexpected service: %s' % service, status=400)
 
     # 2 lines above: how to verify that user called a method different from delete, post or get job?
 
     def delete_jobs(self, service):
+        """Get details of job by jobId and deletes job.
+        
+        :param service: jobs.
+        :returns: null HttpResponse object.
+        """
         job_id = self.request.GET.get('job_id')
         agv = self.request.user.agave_oauth.client
         data = agv.jobs.delete(jobId=job_id)
-        return data
+        return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
+                        content_type='application/json')
 
 
 # @profile_fn
