@@ -3,9 +3,9 @@
    <table class="table table-bordered table-striped files-listing-table" style="background-color: #fff;">
         <thead>
         <th style="width: 400px;">Name</th>
+        <th style="width: 100px">Project</th>
         <th style="width: 100px;">Path</th>
         <th style="width: 100px;">Size</th>
-        <th style="width: 100px">Project</th>
         </thead>
 
         <tbody>
@@ -20,10 +20,11 @@
                     {{ item.name }}
                 </a>
             </td>
+            <td><a ng-href="{{item.project_href}}" ng-click="onBrowseProject()($event, item)">{{item.title}}</a></td>
             <td>{{ item.path }}</td>
             <td ng-if="item.format == 'folder'"> -- </td>
             <td ng-if="item.format == 'raw'">{{ item.length|bytes }}</td>
-            <td><a ng-href="{{item.project_href}}" ng-click="onBrowseProject()($event, item)">{{item.title}}</a></td>
+            
         </tr>
         <tr ng-if="browser.busyListingPage">
           <td>

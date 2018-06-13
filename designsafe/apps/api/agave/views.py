@@ -572,10 +572,8 @@ class FileSearchView(View):
             listing = fmgr.search_shared(system_id, request.user.username, query_string,
                                          offset=offset, limit=limit)
         elif request.GET.get('projects', False):
-            logger.debug('searching projects...')
             listing = fmgr.search_projects(request.user.username, query_string,
                                 offset=offset, limit=limit)
-            logger.debug(listing)
 
         return JsonResponse(listing)
 

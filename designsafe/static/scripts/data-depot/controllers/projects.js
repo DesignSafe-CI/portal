@@ -26,6 +26,7 @@
     };
         
 
+    
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
@@ -45,8 +46,7 @@
 
 
       if (toStateParams.filePath) {
-        
-        if (toStateParams.filePath === '/') {
+        if (toStateParams.filePath === '/' || toStateParams.filePath === '$PATH') {
           $scope.data.navItems.push({
             label: DataBrowserService.state().project.value.title,
             href: $state.href('projects.view.data', {
@@ -60,6 +60,9 @@
             var filePath = l.slice(0, i + 1).join('/');
             if (filePath === '') {
               filePath = '/';
+            }
+            if (e === '$SEARCH') {
+              e = ''
             }
             $scope.data.navItems.push({
               label: e || DataBrowserService.state().project.value.title,

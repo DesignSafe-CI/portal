@@ -2,7 +2,6 @@ import logging
 import os
 import six
 import json
-from operator import ior
 from itertools import takewhile
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -414,7 +413,6 @@ class ElasticFileManager(BaseFileManager):
         ag = user.agave_oauth.client
 
         projects = Project.list_projects(agave_client=ag)
-        systems = ['project-' + project.uuid for project in projects]
 
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
@@ -423,23 +421,17 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        # system_queries = [Q({'term': {'system._exact': system}}) for system in systems]
-
         children = []
         for project in projects:
 
-            # filters = reduce(ior, system_queries)
             search = IndexedFile.search()\
                 .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
                 .filter(Q({'term': {'system._exact': 'project-' + project.uuid}}))\
                 .extra(from_=offset, size=limit)
-                #.filter("term", type="file")\
             
             res = search.execute()
             
             if res.hits.total:
-                # children += [Object(wrap=o).to_dict().update({'title': project.uuid}) for o in search[offset:limit]]
-
                 for o in search[offset:limit]:
                     child = Object(wrap=o).to_dict()
                     child.update({'title': project.title})
@@ -455,7 +447,6 @@ class ElasticFileManager(BaseFileManager):
             'permissions': 'READ'
         }
 
-        logger.debug(result)
         return result
 
     def search_shared(self, system, username, query_string,

@@ -44,8 +44,6 @@
       ui: {}
     };
 
-    var currentListing = 'listing';
-
     var efs = {
       'experimental': [
         //{name: 'other', label: 'Other'},
@@ -60,11 +58,6 @@
     };
 
     var apiParams = {
-      fileMgr : 'agave',
-      baseUrl : '/api/agave/files'
-    };
-
-    var apiParams2 = {
       fileMgr : 'agave',
       baseUrl : '/api/agave/files'
     };
