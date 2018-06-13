@@ -110,8 +110,6 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :return: A list of Projects to which the current user has access
         :rtype: JsonResponse
         """
-        logger.info("******" * 100)
-        logger.info('ProjectCollectionView')
         #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
 
