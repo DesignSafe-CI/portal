@@ -9,6 +9,7 @@ from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.common.decorators import profile as profile_fn
+from designsafe.apps.api.tasks import index_or_update_project
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -88,7 +89,9 @@ def call_api(request, service):
 
                 if meta_uuid:
                     del meta_post['uuid']
+                    logger.debug('UPDATING METADATA from apps/workspace/views')
                     data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
+                    index_or_update_project.apply_async(args=[dict(data)], queue='api')
                 else:
                     data = agave.meta.addMetadata(body=meta_post)
             elif request.method == 'DELETE':

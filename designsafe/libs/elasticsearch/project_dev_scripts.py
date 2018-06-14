@@ -18,24 +18,39 @@ def make_populate():
     first.save()
 
 
-def create_or_update_project(client, uuid):
+def index_or_update_project(client, body):
     project_search = IndexedProject.search().filter(
         Q({'term': 
-            {'uuid._exact': '3689905702218559000-242ac11e-0001-012'}
-        }))
-
+            {'uuid._exact': body['uuid']}
+        })
+    )
     res = project_search.execute()
 
     if res.hits.total == 0:
-        query = {'uuid': uuid}
-        records = client.meta.listMetadata(q=json.dumps(query))
-        project_info = dict(records[0])
+        # Create an ES record for the new metadata.
+        # project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
 
-        project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
-
-        project_ES = IndexedProject(**project_info_args)
-
+        project_ES = IndexedProject(**body)
         project_ES.save()
+
+    elif res.hits.total == 1:
+        # Update the record.
+
+        doc = res[0]
+        doc.update(**body)
+
+    else:
+        # If we're here we've somehow indexed the same project multiple times. 
+        # Delete all records and replace with the metadata passed to the task.
+        
+        for doc in res:
+            doc.delete()
+
+        project_ES = IndexedProject(**body) 
+        project_ES.save()
+
+         
+
 
 
 
