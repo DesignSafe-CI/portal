@@ -23,24 +23,34 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def index(request):
+    """Renders workspace endpoint.
+        
+        :param service: A HttpRequest object.
+        :returns: index.html.
+        """
     context = {
     }
     return render(request, 'designsafe/apps/workspace/index.html', context)
 
 
 def _app_license_type(app_id):
+    """Verifies if app has license.
+        
+        :param service: app id.
+        :returns: license type.
+        """
     app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
     return lic_type
 
 class ApiService(BaseApiView):
     @profile_fn
-    def get(self, request, service):
-        """Call GET method.
+    def get(self, request, service): # will monitors be removed?
+        """Calls GET method.
         
         :param request: the HttpRequest object.
-        :param service: the service called by user (apps, monitors, meta or jobs).
-        :returns: call GET method.
+        :param service: the service called by user (apps, monitors, meta or jobs). 
+        :returns: call to GET method on service (get_apps(), get_meta(), get_jobs()).
         """
         handler_name = 'get_{service}'.format(service=service)
         try:
@@ -75,11 +85,11 @@ class ApiService(BaseApiView):
 
     @profile_fn
     def post(self, request, service):
-        """Call POST method.
+        """Calls POST method.
 
         :param request: the HttpRequest object.
-        :param service: the service called by user (apps, monitors, meta or jobs).
-        :returns: call POST method.
+        :param service: the service called by user (meta or jobs).
+        :returns: call to POST method on service (post_meta(), post_jobs()).
         """
         handler_name = 'post_{service}'.format(service=service)
         try:
@@ -113,11 +123,11 @@ class ApiService(BaseApiView):
                             content_type='application/json')
     @profile_fn
     def delete(self, request, service):
-        """Call DELETE method.
+        """Calls DELETE method.
         
         :param request: the HttpRequest object.
-        :param service: the service called by user (apps, monitors, meta or jobs).
-        :returns: call DELETE method.
+        :param service: the service called by user (meta or jobs).
+        :returns: call to DELETE method on service (delete_meta(), delete_jobs())
         """
         handler_name = 'delete_{service}'.format(service=service)
         try:
@@ -150,9 +160,9 @@ class ApiService(BaseApiView):
         return data
 
     def get_apps(self, service):
-        """Gets apps service .
+        """Gets apps service.
         
-        :param service: app.
+        :param service: apps.
         :returns: application object.
         """
         app_id = self.request.GET.get('app_id')
@@ -179,7 +189,8 @@ class ApiService(BaseApiView):
 
         return data
 
-    def get_monitors(self, service):
+    def get_monitors(self, service): # Should be deleted
+        """ """
         target = self.request.GET.get('target')
         ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
         data = ds_admin_client.monitors.list(target=target)
@@ -187,6 +198,11 @@ class ApiService(BaseApiView):
         return data
 
     def get_meta(self, service):
+        """Lists and/or searchs metadata.
+        
+        :param service: meta.
+        :returns: array of MetadataResponse object.
+        """
         app_id = self.request.GET.get('app_id')
         agv = self.request.user.agave_oauth.client
         if app_id:
@@ -208,6 +224,11 @@ class ApiService(BaseApiView):
         return data
 
     def post_meta(self, service):
+        """Updates or adds new metadata.
+        
+        :param service: meta.
+        :returns: A single Metadata object.
+        """
         meta_post = json.loads(self.request.body)
         meta_uuid = meta_post.get('uuid')
         agv = self.request.user.agave_oauth.client
@@ -221,6 +242,11 @@ class ApiService(BaseApiView):
         return data
 
     def delete_meta(self, service):
+        """Removes metadata from system.
+        
+        :param service: meta.
+        :returns: A single EmptyMetadata object.
+        """
         meta_uuid = self.request.GET.get('uuid')
         agv = self.request.user.agave_oauth.client
 
@@ -230,7 +256,7 @@ class ApiService(BaseApiView):
         return data
 
     def get_jobs(self, service):
-        """.
+        """Gets details of the job with specific job id.
         
         :param service: jobs.
         :returns: json object.
@@ -260,6 +286,11 @@ class ApiService(BaseApiView):
         return data
 
     def post_jobs(self, service):
+        """Submits a new job.
+        
+        :param service: jobs.
+        :returns: A single job object.
+        """
         job_post = json.loads(self.request.body)
         job_id = job_post.get('job_id')
         agv = self.request.user.agave_oauth.client
@@ -335,7 +366,7 @@ class ApiService(BaseApiView):
     # 2 lines above: how to verify that user called a method different from delete, post or get job?
 
     def delete_jobs(self, service):
-        """Get details of job by jobId and deletes job.
+        """Gets details of job by job id and deletes job.
         
         :param service: jobs.
         :returns: null HttpResponse object.
@@ -347,57 +378,13 @@ class ApiService(BaseApiView):
                         content_type='application/json')
 
 
-# @profile_fn
-# @login_required
-# def call_api(request, service):
-#     try:
-#         agave = request.user.agave_oauth.client
-#         api_service = ApiService(request, agave)
-
-#         if service == 'apps':
-#             data = api_service.get_apps()
-
-#         elif service == 'monitors':
-#             data = api_service.get_monitors()
-
-#         elif service == 'meta':
-#             data = api_service.get_meta()
-#             data = api_service.post_meta()
-#             data = api_service._meta()
-
-
-#         # TODO: Need auth on this DELETE business
-#         elif service == 'jobs':
-#             data = api_service.get_jobs()
-#             data= api_service.post_jobs()
-#             data = api_service.delete_jobs()
-
-#         else:
-#             return HttpResponse('Unexpected service: %s' % service, status=400)
-
-#     except HTTPError as e:
-#         logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-#             service, e.message))
-#         return HttpResponse(json.dumps(e.message),
-#                             content_type='application/json',
-#                             status=400)
-#     except AgaveException as e:
-#         logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
-#             service, e.message))
-#         return HttpResponse(json.dumps(e.message), content_type='application/json',
-#                             status=400)
-#     except Exception as e:
-#         logger.error('Failed to execute {0} API call due to Exception={1}'.format(
-#             service, e))
-#         return HttpResponse(
-#             json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
-#             content_type='application/json', status=400)
-
-#     return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),
-#                         content_type='application/json')
-
-
 def process_notification(request, pk, **kwargs):
+    """Redirects user.
+        
+        :param request: the HttpRequest object.
+        :param service: primary key.
+        :returns: path for redirecting.???
+        """
     n = Notification.objects.get(pk=pk)
     extra = n.extra_content
     logger.info('extra: {}'.format(extra))
