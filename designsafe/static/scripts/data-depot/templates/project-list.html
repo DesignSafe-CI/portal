@@ -8,7 +8,7 @@
         </thead>
 
         <tbody>
-        <tr ng-repeat="project in data.projects | orderBy: 'created' : reverse = true"
+        <tr ng-repeat="project in data.projects"
             ng-if="data.projects && ! browser.busyListing"
             ng-click="onSelect($event, project);"
             ng-class="{'ds-data-selected': project.selected}"

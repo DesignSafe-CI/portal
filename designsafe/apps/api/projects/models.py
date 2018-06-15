@@ -48,8 +48,6 @@ class Project(BaseMetadataResource):
         :param agave_client: agavepy.Agave: Agave API client instance
         :return:
         """
-        logger.info("******" * 100)
-        logger.info('list_projects')
         query = {
             'name': Project.NAME
         }
