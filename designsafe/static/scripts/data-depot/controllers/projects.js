@@ -293,6 +293,24 @@
       });
     };
 
+    $scope.manageHybridSimulations = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      var hybridSimulationAttr = $scope.data.project.getRelatedAttrName(
+          'designsafe.project.hybrid_simulation'
+      );
+      var hybridSimulations = $scope.data.project[hybridSimulationAttr];
+      if (typeof hybridSimulations === 'undefined'){
+        $scope.data.project[hybridSimulationAttr] = [];
+        hybridSimulations = $scope.data.project[hybridSimulationAttr];
+      }
+      ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations,
+                                        'project': $scope.data.project}).then(function (simulations) {
+        $scope.data.hybridSimulations = hybridSimulations;
+      });
+    };
+
     $scope.dateString = function(s){
       var d = Date(s);
       return d;
