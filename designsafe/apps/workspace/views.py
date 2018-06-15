@@ -37,7 +37,7 @@ def _app_license_type(app_id):
     """Verifies if app has license.
         
         :param service: app id.
-        :returns: license type.
+        :returns: "MATLAB" or "LS-DYNA" if in LICENSE_TYPES or None if not in LICENSE_TYPES.
         """
     app_lic_type = app_id.replace('-{}'.format(app_id.split('-')[-1]), '').upper()
     lic_type = next((t for t in LICENSE_TYPES if t in app_lic_type), None)
@@ -88,7 +88,7 @@ class ApiService(BaseApiView):
         """Calls POST method.
 
         :param request: the HttpRequest object.
-        :param service: the service called by user (meta or jobs).
+        :param service: the service called by user (service can be meta or jobs).
         :returns: call to POST method on service (post_meta(), post_jobs()).
         """
         handler_name = 'post_{service}'.format(service=service)
@@ -126,7 +126,7 @@ class ApiService(BaseApiView):
         """Calls DELETE method.
         
         :param request: the HttpRequest object.
-        :param service: the service called by user (meta or jobs).
+        :param service: the service called by user (service can be meta or jobs).
         :returns: call to DELETE method on service (delete_meta(), delete_jobs())
         """
         handler_name = 'delete_{service}'.format(service=service)
