@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
@@ -158,22 +158,24 @@ def agave_oauth_callback(request):
                 token = AgaveOAuthToken(**token_data)
                 token.user = user
             token.save()
-
-            check_or_create_agave_home_dir.apply(args=(user.username,),queue='files')            
-
+            ###Between 161-177 works with supertoken####
             login(request, user)
-            if user.last_login is not None:
-                msg_tmpl = 'Login successful. Welcome back, %s %s!'
-            else:
-                msg_tmpl = 'Login successful. Welcome to DesignSafe, %s %s!'
-            messages.success(
-                request,
-                msg_tmpl % (
-                    user.first_name,
-                    user.last_name
+
+            ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                       token=settings.AGAVE_SUPER_TOKEN)
+            try:
+                ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                              filePath=user.username)   
+            except HTTPError:
+                check_or_create_agave_home_dir.apply(args=(user.username,),queue='files')   
+                messages.error(
+                    request,
+                    'An Agave home directory has not been created for you yet.  Please try logging on again later. '
+                    'If this issue persists please submit a support ticket.'
                 )
-            )
-            
+                logout(request)
+                return HttpResponseRedirect('https://designsafe.dev/')
+
         else:
             messages.error(
                 request,
