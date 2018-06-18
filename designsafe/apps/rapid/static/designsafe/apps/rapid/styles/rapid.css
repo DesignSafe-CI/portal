@@ -56,7 +56,6 @@ body {
 
 .fade {
   opacity:1;
-  overflow-y: scroll;
 }
 
 #sidebar {
@@ -269,4 +268,8 @@ body {
 .form-group.required .control-label:after{
   content:"*";
   color:red;
+}
+
+.recon-event-details {
+  overflow-y: scroll;
 }
