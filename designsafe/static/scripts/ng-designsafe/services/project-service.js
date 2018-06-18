@@ -232,7 +232,7 @@
             ProjectEntitiesService.create({
               data: {
                   uuid: $scope.data.project.uuid,
-                  name: 'designsafe.project.simulation',
+                  name: 'designsafe.project.hybrid_simulation',
                   entity: simulation
               }
             }).then(function(res){
