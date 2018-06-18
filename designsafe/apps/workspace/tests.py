@@ -5,6 +5,15 @@ from designsafe.apps.auth.models import AgaveOAuthToken
 from django.http import HttpRequest
 from .views import _app_license_type, ApiService
 
+class AttrDict(dict):
+
+    def __getattr__(self, key):
+        return self[key]
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+
 class TestWorspace(TestCase):
 
     def setUp(self):
@@ -26,7 +35,7 @@ class TestWorspace(TestCase):
     def test_workspace_denies_anonymous(self):
         response = self.client.get('/rw/workspace/', follow=True)
         # print response.__dict__
-        self.assertTrue(response.status_code >= 301 <400)
+        self.assertTrue(response.status_code >= 301 < 400)
         
     def test_workspace_loads(self):
         self.client.login(username='test', password='test')
@@ -46,15 +55,19 @@ class TestWorspace(TestCase):
         license2 = _app_license_type("opensees-MP-2.5.0.6606u8")
         self.assertEqual(license2, None)
 
-    def test_get(self):
-        # request = HttpRequest()
-        # service_type = "apps"
-        # apps_service = ApiService()
+    
+    def test_get_apps(self):
         self.client.login(username='test', password='test')
+
+        apps = [
+            AttrDict({
+                "id": "opensees-SP-2.5.0.6606u7",
+                "name": "opensees-SP",
+            })
+        ]
+
         response = self.client.get('/angular/reverse/?djng_url_name=designsafe_workspace%3Acall_api&djng_url_args=apps&app_id=OpenseesMp-3.0.0.6709u2')
+        data = response.json()
         # self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, True)
-
-
-
-        
+        self.assertEqual(response.content, data)
+        # self.assertTrue('response' in data)
