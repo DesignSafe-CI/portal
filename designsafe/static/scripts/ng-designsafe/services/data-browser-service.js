@@ -1612,6 +1612,27 @@
                  name: 'designsafe.project.report',
                  yamzId: ''}
                 ];
+          } else if (currentState.project.value.projectType === 'hybrid_simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Coordinator',
+                 name: 'designsafe.project.hybrid_simulation.coordinator',
+                 yamzId: ''},
+                {label: 'Simulation Substructure',
+                 name: 'designsafe.project.hybrid_simulation.sim_substructure',
+                 yamzId: ''},
+                {label: 'Experimental Substructure',
+                 name: 'designsafe.project.hybrid_simulation.exp_substructure',
+                 yamzId: ''},
+                {label: 'Output',
+                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 yamzId: ''},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
+                ];
           }
           $scope.ui.simModel = {};
           $scope.ui.simModel.apps = [

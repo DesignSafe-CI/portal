@@ -28,7 +28,7 @@ from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.projects.models.agave.experimental import (
     ExperimentalProject, Experiment, ModelConfig,
     Event, Analysis, SensorList, Report)
-from designsafe.apps.projects.models.agave import simulation
+from designsafe.apps.projects.models.agave import simulation, hybrid_simulation
 from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
                                                                        Publication)
 logger = logging.getLogger(__name__)
@@ -263,7 +263,14 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.simulation.input': simulation.Input,
             'designsafe.project.simulation.output': simulation.Output,
             'designsafe.project.simulation.analysis': simulation.Analysis,
-            'designsafe.project.simulation.report': simulation.Report
+            'designsafe.project.simulation.report': simulation.Report,
+            'designsafe.project.hybrid_simulation': hybrid_simulation.HybridSimulation,
+            'designsafe.project.hybrid_simulation.coordinator': hybrid_simulation.Coordinator,
+            'designsafe.project.hybrid_simulation.sim_substructure': hybrid_simulation.SimSubstructure,
+            'designsafe.project.hybrid_simulation.exp_substructure': hybrid_simulation.ExpSubstructure,
+            'designsafe.project.hybrid_simulation.output': hybrid_simulation.Output,
+            'designsafe.project.hybrid_simulation.analysis': hybrid_simulation.Analysis,
+            'designsafe.project.hybrid_simulation.report': hybrid_simulation.Report
         }
 
         cls = clss.get(name)
