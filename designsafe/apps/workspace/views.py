@@ -382,8 +382,8 @@ def process_notification(request, pk, **kwargs):
     """Redirects user.
         
         :param request: the HttpRequest object.
-        :param service: primary key.
-        :returns: path for redirecting.???
+        :param pk: primary key.
+        :returns: a redirect to target_path.???
         """
     n = Notification.objects.get(pk=pk)
     extra = n.extra_content
