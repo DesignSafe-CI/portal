@@ -688,7 +688,7 @@
     function preview (file, listing) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
+        controller: ['$scope', '$uibModalInstance', '$sce', 'file', '$location', function ($scope, $uibModalInstance, $sce, file, $location) {
           $scope.file = file;
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
@@ -804,6 +804,20 @@
 
           $scope.close = function () {
             $uibModalInstance.dismiss();
+          };
+
+          $scope.openInJupyter = function () {
+            let str = file.href;
+            let sep = file.system;
+            sep = sep.slice(19);
+            if(sep === 'default'){
+              sep = `data/browser/agave/designsafe.storage.default/%2F${Django.user}`;
+              str = 'mydata/' + str.substring(str.indexOf(sep) + sep.length);
+            }else{
+              str = str.substring(str.indexOf(sep));
+            }
+            let finalStr = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${str}`;
+            window.open(finalStr);
           };
 
         }],
