@@ -688,7 +688,7 @@
     function preview (file, listing) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'file', '$location', function ($scope, $uibModalInstance, $sce, file, $location) {
+        controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
           $scope.file = file;
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
