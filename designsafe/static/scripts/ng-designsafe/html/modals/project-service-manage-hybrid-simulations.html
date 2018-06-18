@@ -119,15 +119,15 @@
                          title="Close">
                  <i class="fa fa-times"></i>
                  </button>
-                <p>Add Simulation:</p>
+                <p>Add Hybrid Simulation:</p>
                 <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
               <div class="form-group required">
-                <label for="add-sim-title">Simulation Title </label>
+                <label for="add-sim-title">Hybrid Simulation Title </label>
                   <input type="text" class="form-control" id="add-sim-title"
                        ng-model="form.addSimulation[0].title" required/>
                 </div>
               <div class="form-group required">
-                <label for="add-sim-type">Simulation Type </label>
+                <label for="add-sim-type">Hybrid Simulation Type </label>
                   <select ng-options="type.name as type.label for type in ui.simulationTypes"
                           class="form-control"
                           ng-model="form.addSimulation[0].simulationType"

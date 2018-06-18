@@ -198,14 +198,8 @@
               };
           $scope.ui.simulationTypes = [
             {
-              name: 'Geotechnical',
-              label: 'Geotechnical'},
-            { name: 'Structural',
-              label: 'Structural'},
-            { name: 'Soil Structure System',
-              label: 'Soil Structure System'},
-            { name: 'Storm Surge',
-              label: 'Storm Surge'},
+              name: 'Earthquake',
+              label: 'Earthquake'},
             { name: 'Wind',
               label: 'Wind'},
             { name: 'Other',
@@ -472,6 +466,27 @@
                 {label: 'Report',
                  name: 'designsafe.project.report',
                  yamzId: ''},
+                ];
+          } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Coordinator',
+                 name: 'designsafe.project.hybrid_simulation.coordinator',
+                 yamzId: ''},
+                {label: 'Simulation Substructure',
+                 name: 'designsafe.project.hybrid_simulation.sim_substructure',
+                 yamzId: ''},
+                {label: 'Experimental Substructure',
+                 name: 'designsafe.project.hybrid_simulation.exp_substructure',
+                 yamzId: ''},
+                {label: 'Output',
+                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 yamzId: ''},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
                 ];
           }
           $scope.ui.simModel = {};
@@ -884,6 +899,27 @@
                 {label: 'Report',
                  name: 'designsafe.project.report',
                  yamzId: ''},
+                ];
+          } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Coordinator',
+                 name: 'designsafe.project.hybrid_simulation.coordinator',
+                 yamzId: ''},
+                {label: 'Simulation Substructure',
+                 name: 'designsafe.project.hybrid_simulation.sim_substructure',
+                 yamzId: ''},
+                {label: 'Experimental Substructure',
+                 name: 'designsafe.project.hybrid_simulation.exp_substructure',
+                 yamzId: ''},
+                {label: 'Output',
+                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 yamzId: ''},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
                 ];
           }
           $scope.ui.simModel = {};
@@ -1304,6 +1340,27 @@
                  name: 'designsafe.project.simulation.report',
                  yamzId: ''}
                 ];
+          } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Coordinator',
+                 name: 'designsafe.project.hybrid_simulation.coordinator',
+                 yamzId: ''},
+                {label: 'Simulation Substructure',
+                 name: 'designsafe.project.hybrid_simulation.sim_substructure',
+                 yamzId: ''},
+                {label: 'Experimental Substructure',
+                 name: 'designsafe.project.hybrid_simulation.exp_substructure',
+                 yamzId: ''},
+                {label: 'Output',
+                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 yamzId: ''},
+                {label: 'Analysis',
+                 name: 'designsafe.project.analysis',
+                 yamzId: 'h1333'},
+                {label: 'Report',
+                 name: 'designsafe.project.report',
+                 yamzId: ''}
+                ];
           }
           $scope.ui.simModel = {};
           $scope.ui.simModel.apps = [
@@ -1472,6 +1529,9 @@
             } else if (project.value.projectType === 'simulation'){
               loads.push(ProjectEntitiesService.listEntities(
                 {uuid: project.uuid, name: 'designsafe.project.simulation'}));
+            } else if (project.value.projectType === 'hybrid_simulation'){
+              loads.push(ProjectEntitiesService.listEntities(
+                {uuid: project.uuid, name: 'designsafe.project.hybrid_simulation'}));
             }
             $q.all(loads).then(function (results) {
               $scope.data.busy = false;
