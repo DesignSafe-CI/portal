@@ -1,5 +1,22 @@
 # DesignSafe-CI Portal Release Notes
 
+## v20180601
+
+Fixes:
+
+- Loading spinners across data browsers.
+- Publications breadcrumbs.
+- My Projects pagination.
+
+Improvements:
+
+- Refresh files listing in Workspace.
+- Hybrid Simulation data model.
+- Execution Systems Monitor.
+- EZID download link on publications.
+- Search in My Projects.
+- `ProcessorsPerNode` option in app.
+
 ## v2.6.9 (20180508)
 
 Fixes:
