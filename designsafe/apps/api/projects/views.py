@@ -265,6 +265,7 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.simulation.analysis': simulation.Analysis,
             'designsafe.project.simulation.report': simulation.Report,
             'designsafe.project.hybrid_simulation': hybrid_simulation.HybridSimulation,
+            'designsafe.project.hybrid_simulation.global_model': hybrid_simulation.GlobalModel,
             'designsafe.project.hybrid_simulation.coordinator': hybrid_simulation.Coordinator,
             'designsafe.project.hybrid_simulation.sim_substructure': hybrid_simulation.SimSubstructure,
             'designsafe.project.hybrid_simulation.exp_substructure': hybrid_simulation.ExpSubstructure,

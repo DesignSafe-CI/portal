@@ -1614,6 +1614,9 @@
                 ];
           } else if (currentState.project.value.projectType === 'hybrid_simulation'){
             $scope.ui.tagTypes = [
+                {label: 'Global Model',
+                 name: 'designsafe.project.hybrid_simulation.global_model',
+                 yamzId: ''},
                 {label: 'Coordinator',
                  name: 'designsafe.project.hybrid_simulation.coordinator',
                  yamzId: ''},
@@ -1624,7 +1627,7 @@
                  name: 'designsafe.project.hybrid_simulation.exp_substructure',
                  yamzId: ''},
                 {label: 'Output',
-                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 name: 'designsafe.project.hybrid_simulation.output',
                  yamzId: ''},
                 {label: 'Analysis',
                  name: 'designsafe.project.analysis',

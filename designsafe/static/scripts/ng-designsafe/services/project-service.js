@@ -214,7 +214,7 @@
 
           $scope.filterProjectOnlyRelatedAnalysis = function(analysis){
             return _.filter(analysis, function(anl){
-              return !anl.value.simOutputs.length && !anl.value.simulations.length;
+              return !anl.value.hybridSimulations.length;
             });
           };
 
@@ -469,6 +469,9 @@
                 ];
           } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
             $scope.ui.tagTypes = [
+                {label: 'Global Model',
+                 name: 'designsafe.project.hybrid_simulation.global_model',
+                 yamzId: ''},
                 {label: 'Coordinator',
                  name: 'designsafe.project.hybrid_simulation.coordinator',
                  yamzId: ''},
@@ -479,7 +482,7 @@
                  name: 'designsafe.project.hybrid_simulation.exp_substructure',
                  yamzId: ''},
                 {label: 'Output',
-                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 name: 'designsafe.project.hybrid_simulation.output',
                  yamzId: ''},
                 {label: 'Analysis',
                  name: 'designsafe.project.analysis',
@@ -489,74 +492,6 @@
                  yamzId: ''}
                 ];
           }
-          $scope.ui.simModel = {};
-          $scope.ui.simModel.apps = [
-            {label: 'ADDCIRC',
-             name: 'ADDCIRC',
-             yamzId: '' },
-            {label: 'Abaqus',
-             name: 'Abaqus',
-             yamzId: ''},
-            {label: 'Atena',
-             name: 'Atena',
-             yamzId: ''},
-            {label: 'ClawPack/GeoClaw',
-             name: 'ClawPack/GeoClaw',
-             yamzId: ''},
-            {label: 'Diana',
-             name: 'Diana',
-             yamzId: ''},
-            {label: 'ETABS',
-             name: 'ETABS',
-             yamzId: ''},
-            {label: 'FUNWAVE',
-             name: 'FUNWAVE',
-             yamzId: ''},
-            {label: 'FLUENT/ANSYS',
-             name: 'FLUENT/ANSYS',
-             yamzId: ''},
-            {label: 'LS-Dyna',
-             name: 'LS-Dyna',
-             yamzId: ''},
-            {label: 'OpenFoam',
-             name: 'OpenFoam',
-             yamzId: ''},
-            {label: 'OpenSees',
-             name: 'OpenSees',
-             yamzId: ''},
-            {label: 'PERFORM',
-             name: 'PERFORM',
-             yamzId: ''},
-            {label: 'SAP',
-             name: 'SAP',
-             yamzId: ''},
-            {label: 'SWAN',
-             name: 'SWAN',
-             yamzId: ''},
-            {label: 'Other',
-             name: 'Other',
-             yamzId: ''},
-          ];
-          $scope.ui.simModel.NHType = [
-            {label: 'Earthquake',
-             name: 'Earthquake',
-             yamzId: '' },
-            {label: 'Flood',
-             name: 'Flood',
-             yamzId: '' },
-            {label: 'Landslide',
-             name: 'Landslide',
-             yamzId: '' },
-            {label: 'Tornado',
-             name: 'Tornado',
-             yamzId: '' },
-            {label: 'Tsunami',
-             name: 'Tsunami',
-             yamzId: '' },
-            {label: 'Other',
-             name: 'Other',
-             yamzId: '' },
-          ];
           $scope.data.form.projectTagToAdd = {optional:{}};
 
           $scope.addProjectTag = function(){
@@ -902,6 +837,9 @@
                 ];
           } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
             $scope.ui.tagTypes = [
+                {label: 'Global Model',
+                 name: 'designsafe.project.hybrid_simulation.global_model',
+                 yamzId: ''},
                 {label: 'Coordinator',
                  name: 'designsafe.project.hybrid_simulation.coordinator',
                  yamzId: ''},
@@ -912,7 +850,7 @@
                  name: 'designsafe.project.hybrid_simulation.exp_substructure',
                  yamzId: ''},
                 {label: 'Output',
-                 name: 'designsafe.project.hybrid_simulation.analysis',
+                 name: 'designsafe.project.hybrid_simulation.output',
                  yamzId: ''},
                 {label: 'Analysis',
                  name: 'designsafe.project.analysis',
@@ -1342,6 +1280,9 @@
                 ];
           } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
             $scope.ui.tagTypes = [
+                {label: 'Global Model',
+                 name: 'designsafe.project.hybrid_simulation.global_model',
+                 yamzId: ''},
                 {label: 'Coordinator',
                  name: 'designsafe.project.hybrid_simulation.coordinator',
                  yamzId: ''},

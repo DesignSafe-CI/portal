@@ -163,7 +163,7 @@
      </div>
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="simulation in data.project.simulation_set | orderBy: 'value.title'"
+            ng-repeat="simulation in data.project.hybridsimulation_set | orderBy: 'value.title'"
             style="border:none;">
           <div class="tree-el">  
           <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
@@ -173,12 +173,12 @@
                         style="margin-left:5px; padding:0; display:inline-block;"
                         ng-click="ui.showAddSimReport[simulation.uuid] = true"
                         ng-if="!ui.showAddSimReport[simulation.uuid] &&
-                               !data.project.getRelated('report_set', simulation.uuid, 'simulations').length">
+                               !data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length">
                         <i class="fa fa-plus-square"></i> Add Simulation Report
                 </button>
                 <div style="margin-left:5px; display:inline-block;"
                      ng-if="ui.showAddSimReport[simulation.uuid] && 
-                               !data.project.getRelated('report_set', simulation.uuid, 'simulations').length">
+                               !data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length">
                   <select
                           ng-options="report as report.value.title for report in data.project.report_set"
                           ng-model="form.updateSimulations[simulation.uuid].relProject">
@@ -196,12 +196,12 @@
                      ng-if="data.project.getRelated('report_set', simulation.uuid).length">
                     <span class="label tag-black">Simulation Report</span>
                     <span class="tab-title">
-                    {{data.project.getRelated('report_set', simulation.uuid, 'simulations')[0].value.title}}
+                    {{data.project.getRelated('report_set', simulation.uuid, 'hybridSimulations')[0].value.title}}
                     </span>
                     <button class="btn btn-xsm btn-link"
                             style="display:inline-block;"
-                            ng-if="data.project.getRelated('report_set', simulation.uuid, 'simulations').length"
-                            ng-click="delRelEntity(data.project.getRelated('report_set', simulation.uuid, 'simulations')[0],
+                            ng-if="data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length"
+                            ng-click="delRelEntity(data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations')[0],
                                                   {simulations: simulation.uuid})">
                       <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                       <span class="sr-only">Delete</span>
@@ -213,12 +213,12 @@
                         style="margin-left:5px; padding:0; display:inline-block;"
                         ng-click="ui.showAddSimAnalysis[simulation.uuid] = true"
                         ng-if="!ui.showAddSimAnalysis[simulation.uuid] &&
-                               !data.project.getRelated('analysis_set', simulation.uuid, 'simulations').length">
+                               !data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length">
                         <i class="fa fa-plus-square"></i> Add Simulation Analysis
                 </button>
                 <div style="margin-left:5px; display:inline-block;"
                      ng-if="ui.showAddSimAnalysis[simulation.uuid] && 
-                               !data.project.getRelated('analysis_set', simulation.uuid, 'simulations').length">
+                               !data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length">
                   <select
                           ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
                           ng-model="form.updateSimulations[simulation.uuid].relSimAnalysis">
@@ -226,7 +226,7 @@
                   </select>
                   <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relSimAnalysis,
-                                              {simulations: simulation.uuid});
+                                              {hybridSimulations: simulation.uuid});
                                     ui.showAddSimAnalysis[simulation.uuid]=false"
                           title="Add Report">
                     <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
@@ -236,12 +236,12 @@
                      ng-if="data.project.getRelated('analysis_set', simulation.uuid).length">
                     <span class="label tag-black">Simulation Analysis</span>
                     <span class="tab-title">
-                    {{data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0].value.title}}
+                    {{data.project.getRelated('analysis_set', simulation.uuid, 'hybridSimulations')[0].value.title}}
                     </span>
                     <button class="btn btn-xsm btn-link"
                             style="display:inline-block;"
-                            ng-if="data.project.getRelated('analysis_set', simulation.uuid, 'simulations').length"
-                            ng-click="delRelEntity(data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0],
+                            ng-if="data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length"
+                            ng-click="delRelEntity(data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations')[0],
                                                   {simulations: simulation.uuid})">
                       <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                       <span class="sr-only">Delete</span>
@@ -252,173 +252,182 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('model_set', simulation.uuid) | orderBy: modelConfig.value.title">
+                ng-repeat="globalModel in data.project.getRelated('globalmodel_set', simulation.uuid) | orderBy: 'value.title'">
               <div class="tree-el">
-              <span class="label tag-blue">Simulation Model</span>
-              <span class="tag-title">{{modelConfig.value.title}}</span>
+              <span class="label tag-blue">Global Model</span>
+              <span class="tag-title">{{globalModel.value.title}}</span>
               <button class="btn btn-xsm btn-link"
-                      ng-if="data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid] ).length === 0"
-                      ng-click="delRelEntity(modelConfig,{simulations: simulation.uuid})">
+                      ng-if="data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid] ).length === 0"
+                      ng-click="delRelEntity(globalModel,{hybridSimulations: simulation.uuid})">
                 <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                 <span class="sr-only">Delete</span>
               </button>
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="simInput in data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
+                    ng-repeat="coordinator in data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid]) | orderBy: 'value.title'">
                   <div class="tree-el">  
-                  <span class="label tag-green">Simulation Input</span>
-                  <span class="tag-title">{{simInput.value.title}}</span>
+                  <span class="label tag-green">Master Simulator Coordinator</span>
+                  <span class="tag-title">{{coordinator.value.title}}</span>
                   <button class="btn btn-xsm btn-link"
-                          ng-if="data.project.getRelated('output_set', [simulation.uuid, modelConfig.uuid, siminput.uuid]).length === 0"
-                          ng-click="delRelEntity(simInput, {simulations: simulation.uuid,
-                                                            modelConfigs: modelConfig.uuid})">
+                          ng-if="data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]).length === 0 && 
+                          data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]).length === 0 && 
+                          data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]).length === 0"
+                          ng-click="delRelEntity(coordinator, {hybridSimulations: simulation.uuid,
+                                                            globalModels: globalModel.uuid})">
                     <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                     <span class="sr-only">Delete</span>
                   </button>
                   </div>
-                  <ul>
-                    <li 
-                        ng-repeat="simOutput in data.project.getRelated('output_set', [simulation.uuid, modelConfig.uuid, simInput.uuid]) | orderBy: '_ui.order'">
-                      <div class="tree-el">
-                      <span class="label tag-red tree-el">Simulation Output</span>
-                      <span class="tag-title">{{simOutput.value.title}}</span>
-                      <button class="btn btn-xsm btn-link"
-                              ng-click="delRelEntity(simOutput, {simulations: simulation.uuid,
-                                                                 modelConfigs: modelConfig.uuid,
-                                                                 simInputs: simInput.uuid})">
-                        <i class="fa fa-times-circle fa-2" style="color:black;"></i>
-                        <span class="sr-only">Delete</span>
-                      </button>
-                        <div style="display:inline-block;">
-                          <div>
-                            <button class="btn btn-sm btn-link"
-                                    style="margin-left:5px; padding:0; display:inline-block;"
-                                    ng-click="ui.showAddIntReport[simOutput.uuid] = true"
-                                    ng-if="!ui.showAddIntReport[simOutput.uuid] &&
-                                           !data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
-                                    <i class="fa fa-plus-square"></i> Add Integrated Report
+                  <ul class="hybrid-sim-coord-output">
+                    <li
+                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                        <div class="tree-el">
+                            <span class="label tag-red tree-el">Coordinator Output</span>
+                            <span class="tag-title">{{output.value.title}}</span>
+                            <button class="btn btn-xsm btn-link"
+                                    ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
+                                                                    globalModels: globalModel.uuid,
+                                                                    coordinators: coordinator.uuid})">
+                                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                <span class="sr-only">Delete</span>
                             </button>
-                            <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="ui.showAddIntReport[simOutput.uuid] && 
-                                           !data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
-                              <select
-                                      ng-options="report as report.value.title for report in data.project.report_set"
-                                      ng-model="form.updateSimulations[simOutput.uuid].relReport">
-                                      <option value="">Add Integrated Report</option>
-                              </select>
-                              <button class="btn btn-sm btn-link"
-                                      ng-click="saveRelEntity(form.updateSimulations[simOutput.uuid].relReport,
-                                                          {simOutputs: simOutput.uuid});
-                                                ui.showAddSimReport[simOutput.uuid]=false"
-                                      title="Add Report">
-                                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
-                              </button>
-                            </div>
-                            <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length">
-                                <span class="label tag-black">Integrated Report</span>
-                                <span class="tab-title">
-                                {{data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0].value.title}}
-                                </span>
-                                <button class="btn btn-xsm btn-link"
-                                        style="display:inline-block;"
-                                        ng-if="data.project.getRelated('report_set', simOutput.uuid, 'simOutputs').length"
-                                        ng-click="delRelEntity(data.project.getRelated('report_set', simOutput.uuid, 'simOutputs')[0],
-                                                              {simOutputs: simOutput.uuid})">
-                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
-                                  <span class="sr-only">Delete</span>
-                                </button>
-                            </div>
-                          </div>
-                          <div>
-                            <button class="btn btn-sm btn-link"
-                                    style="margin-left:5px; padding:0; display:inline-block;"
-                                    ng-click="ui.showAddIntAnalysis[simOutput.uuid] = true"
-                                    ng-if="!ui.showAddIntAnalysis[simOutput.uuid] &&
-                                           !data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
-                                    <i class="fa fa-plus-square"></i> Add Integrated Analysis
-                            </button>
-                            <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="ui.showAddIntAnalysis[simOutput.uuid] && 
-                                           !data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
-                              <select
-                                      ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
-                                      ng-model="form.updateSimulations[simOutput.uuid].relSimAnalysis">
-                                      <option value="">Add Integrated Analysis</option>
-                              </select>
-                              <button class="btn btn-sm btn-link"
-                                      ng-click="saveRelEntity(form.updateSimulations[simOutput.uuid].relSimAnalysis,
-                                                          {simOutputs: simOutput.uuid});
-                                                ui.showAddIntAnalysis[simulation.uuid]=false"
-                                      title="Add Report">
-                                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
-                              </button>
-                            </div>
-                            <div style="margin-left:5px; display:inline-block;"
-                                 ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length">
-                                <span class="label tag-black">Integrated Analysis</span>
-                                <span class="tab-title">
-                                {{data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0].value.title}}
-                                </span>
-                                <button class="btn btn-xsm btn-link"
-                                        style="display:inline-block;"
-                                        ng-if="data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs').length"
-                                        ng-click="delRelEntity(data.project.getRelated('analysis_set', simOutput.uuid, 'simOutputs')[0],
-                                                              {simOutputs: simOutput.uuid})">
-                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
-                                  <span class="sr-only">Delete</span>
-                                </button>
-                            </div>
-                          </div>
                         </div>
-                        <div style="display:inline-block;">
-                          <button class="btn btn-sm btn-link"
-                                  title="Move order Up"
-                                  style="display:inline-block;"
-                                  ng-click="moveOrderUp($index, event, all_events)" >
-                          <i class="fa fa-arrow-up"></i></button>
-                          <button class="btn btn-sm btn-link"
-                                  title="Move order Down"
-                                  style="display:inline-block;"
-                             ng-click="moveOrderDown($index, event, all_events)">
-                          <i class="fa fa-arrow-down"></i></button>
-                        </div>
-                      </div>
                     </li>
                     <li>
-                      <div class="tree-el">
-                      <select
-                              ng-options="entity as entity.value.title for entity in data.project.output_set"
-                              ng-model="form.updateSimulations[simulation.uuid][modelConfig.uuid][simInput.uuid].relSimOutput">
-                              <option value="">Add Simulation Outputs</option>
-                      </select>
-                      <button class="btn btn-sm btn-link"
-                              ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][modelConfig.uuid][simInput.uuid].relSimOutput,
-                                                  {project:data.project.uuid,
-                                                   simulations: simulation.uuid,
-                                                   modelConfigs: modelConfig.uuid,
-                                                   simInputs: simInput.uuid})"
-                              title="Add Simulation Outputs">
-                        <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
-                      </button>
-                      </div>
+                        <div class="tree-el">
+                            <select ng-options="entity as entity.value.title for entity in data.project.output_set"
+                                    ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimOutput">
+                                <option value="">Add Coordinator Output</option>
+                            </select>
+                            <button class="btn btn-sm btn-link"
+                                    ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimOutput,
+                                    {project:data.project.uuid,
+                                     hybridSimulations: simulation.uuid,
+                                     globalModels: globalModel.uuid,
+                                     coordinators: coordinator.uuid})"
+                                    title="Add Coordinator Output">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                            </button>
+                        </div>
                     </li>
+                  </ul>
+                  <ul>
+                      <li 
+                           ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
+                          <div class="tree-el">
+                              <span class="label tag-yellow tree-el">Numerical (Simulation) Substructure</span>
+                              <span class="tag-title">{{substructure.value.title}}</span>
+                              <button class="btn btn-xsm btn-link"
+                                      ng-click="delRelEntity(substructure, {hybridSimulations: simulation.uuid,
+                                                                            globalModels: globalModel.uuid,
+                                                                            coordinators: coordinator.uuid})">
+                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                  <span class="sr-only">Delete</span>
+                              </button>
+                          </div>
+                    <ul class="hybrid-sim-coord-output">
+                    <li
+                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        <div class="tree-el">
+                            <span class="label tag-red tree-el">Simulation Output</span>
+                            <span class="tag-title">{{output.value.title}}</span>
+                            <button class="btn btn-xsm btn-link"
+                                    ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
+                                                                    globalModels: globalModel.uuid,
+                                                                    coordinators: coordinator.uuid,
+                                                                    simSubstructures: substructure.uuid})">
+                                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                <span class="sr-only">Delete</span>
+                            </button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="tree-el">
+                            <select ng-options="entity as entity.value.title for entity in data.project.output_set"
+                                    ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput">
+                                <option value="">Add Simulation Output</option>
+                            </select>
+                            <button class="btn btn-sm btn-link"
+                                    ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput,
+                                    {project:data.project.uuid,
+                                     hybridSimulations: simulation.uuid,
+                                     globalModels: globalModel.uuid,
+                                     coordinators: coordinator.uuid,
+                                     simSubstructures: substructure.uuid})"
+                                    title="Add Coordinator Output">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                            </button>
+                        </div>
+                    </li>
+                  </ul>
+
+                      </li>
+                      <li>
+                          <div class="tree-el">
+                              <select ng-options="entity as entity.value.title for entity in data.project.simsubstructure_set"
+                                      ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure">
+                                  <option value="">Add Simulation Substructure</option>
+                              </select>
+                              <button class="btn btn-sm btn-link"
+                                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure,
+                                      {project:data.project.uuid,
+                                      hybridSimulations: simulation.uuid,
+                                      globalModels: globalModel.uuid,
+                                      coordinators: coordinator.uuid})"
+                                      title="Add Simulation Substructure">
+                                  <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                              </button>
+                          </div>
+                      </li>
+                  </ul>
+                  <ul>
+                      <li 
+                           ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
+                          <div class="tree-el">
+                              <span class="label tag-purple tree-el">Physical (Experimental) Substructure</span>
+                              <span class="tag-title">{{substructure.value.title}}</span>
+                              <button class="btn btn-xsm btn-link"
+                                      ng-click="delRelEntity(substructure, {hybridSimulations: simulation.uuid,
+                                                                            globalModels: globalModel.uuid,
+                                                                            coordinators: coordinator.uuid})">
+                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                  <span class="sr-only">Delete</span>
+                              </button>
+                          </div>
+                      </li>
+                      <li>
+                          <div class="tree-el">
+                              <select ng-options="entity as entity.value.title for entity in data.project.expsubstructure_set"
+                                      ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relExpSubstructure">
+                                  <option value="">Add Experimental Substructure</option>
+                              </select>
+                              <button class="btn btn-sm btn-link"
+                                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relExpSubstructure,
+                                      {project:data.project.uuid,
+                                      hybridSimulations: simulation.uuid,
+                                      globalModels: globalModel.uuid,
+                                      coordinators: coordinator.uuid})"
+                                      title="Add Simulation Substructure">
+                                  <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                              </button>
+                          </div>
+                      </li>
                   </ul>
                 </li>
                 <li>
                   <div class="tree-el">
                   <select
-                          ng-options="entity as entity.value.title for entity in data.project.input_set"
-                          ng-model="form.updateSimulations[simulation.uuid][modelConfig.uuid].relSimInput">
-                          <option value="">Add Simulation Inputs</option>
+                          ng-options="entity as entity.value.title for entity in data.project.coordinator_set"
+                          ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator">
+                          <option value="">Add Coordinator</option>
                   </select>
                   <button class="btn btn-sm btn-link"
-                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][modelConfig.uuid].relSimInput,
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator,
                                               {project:data.project.uuid,
-                                               simulations: simulation.uuid,
-                                               modelConfigs: modelConfig.uuid})"
-                          title="Add Simulation Inputs">
+                                               hybridSimulations: simulation.uuid,
+                                               globalModels: globalModel.uuid})"
+                          title="Add Coordinator">
                     <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
                   </button>
                   </div>
@@ -428,15 +437,15 @@
             <li>
               <div class="tree-el">
               <select 
-                      ng-options="entity as entity.value.title for entity in data.project.model_set"
-                      ng-model="form.updateSimulations[simulation.uuid].relModelConfig">
-                      <option value="">Add Simulation Model</option>
+                      ng-options="entity as entity.value.title for entity in data.project.globalmodel_set"
+                      ng-model="form.updateSimulations[simulation.uuid].relGlobalModel">
+                      <option value="">Add Global Model</option>
               </select>
               <button class="btn btn-sm btn-link"
-                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relModelConfig,
+                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relGlobalModel,
                                           {project: data.project.uuid,
-                                           simulations: simulation.uuid})"
-                      title="Add Simulation Model">
+                                           hybridSimulations: simulation.uuid})"
+                      title="Add Global Model">
                 <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
               </button>
               </div>
@@ -487,6 +496,16 @@
                  ng-model="data.form.projectTagToAdd.title"/>
         </div>
         <!-- Extra form fields for categories start -->
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.coordinator' ||
+                    data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.sim_substructure'">
+          <div style="display:inline-block; width:30%">
+            <label for="id-app-ver" style="display:block">Application & Version</label>
+            <input type="text" class="form-control" style="width:90%; display:inline-block;" 
+                   name="id-app-ver" id="id-app-ver"
+                   ng-model="data.form.projectTagToAdd.applicationVersion"/>
+         </div>
+
+        </div>
         <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
          <div style="display:inline-block; width:30%">
           <label for="id-app-ver" style="display:block">Application & Version</label>

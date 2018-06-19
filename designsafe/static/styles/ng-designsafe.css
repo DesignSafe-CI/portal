@@ -410,6 +410,28 @@ tr.experiment-deleted {
     color: black;
 }
 
+span.label.tag-yellow {
+    border: 2px solid #B59300;
+    color: black;
+}
+
+span.label.tag-yellow.selected {
+    border: 2px solid #B59300;
+    background: #B59300;
+    color: white;
+}
+
+span.label.tag-purple {
+    border: 2px solid #865AA7;
+    color: black;
+}
+
+span.label.tag-purple.selected {
+    border: 2px solid #865AA7;
+    background: #865AA7;
+    color: white;
+}
+
 span.label.tag-light-blue {
     border: 2px solid #5BC0DE;
     color: black;
@@ -480,6 +502,10 @@ span.tag-title {
     word-break: break-word;
     white-space: normal;
     text-align: left;
+}
+
+.data-model-tree ul ul.hybrid-sim-coord-output li {
+    margin-left:30px;
 }
 
 .data-model-tree ul, .data-model-tree li {
