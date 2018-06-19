@@ -259,7 +259,7 @@
       currentState.busy = true;
       currentState.busyListingPage = true;
       currentState.error = null;
-      var limit = 100;
+      var limit = 3;
       var offset = 0;
       if (options.page){
         offset += limit * options.page;

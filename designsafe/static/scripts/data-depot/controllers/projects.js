@@ -142,6 +142,48 @@
     };
 
     $scope.scrollToBottom = function () {
+      
+      //Trying to bring the currentState.listing.system data into scrollToBottom
+      
+      // Fixes file object when created through 'browseTrail' for project dirs
+      //The code below won't work because of an unknown provider error:
+      ProjectService.list().then(function (systemList) {
+        $scope.browser.systemList = systemList;
+        $scope.browser.listing = systemList[0];
+      }); 
+
+      if ($scope.browser.system == 'designsafe.storage.projects') {
+        if (file.path.split('/').length == 1) {
+          file.system = $scope.browser.system;
+        } else if (file.system.includes('project-')) {
+          file.path = file.path.replace(/^(Projects\/([^\/]+)[\/]*)/, '');
+        }
+      }
+      DataBrowserService.browse(file)
+        .then(function (listing) {
+          listing.path = listing.path.replace(/^\/*/, '');
+          $scope.browser.filesListing = listing;
+          $scope.browser.filePath = $scope.browser.filesListing.path;
+
+          // Set dirPath trail for wonky project file structure
+          if ($scope.browser.system == 'designsafe.storage.projects') {
+            if (file.system.includes('project-')) {
+              $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
+            } else {
+              $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
+            }
+          } else {
+            $scope.data.dirPath = $scope.data.filePath.split('/');
+          }
+          $scope.browser.listing = $scope.data.filesListing;
+
+          $scope.data.loading = false;
+        }, function (err) {
+          logger.log(err);
+          $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+          $scope.data.loading = false;
+        }); 
+      //the method below relies on currentState.listing.system and currentState.listing.path, which are null right now.
       DataBrowserService.scrollToBottom();
     };
   }]);
