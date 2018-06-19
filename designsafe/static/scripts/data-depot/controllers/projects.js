@@ -137,6 +137,13 @@
       }
     };
 
+    $scope.scrollToTop = function () {
+      return;
+    };
+
+    $scope.scrollToBottom = function () {
+      DataBrowserService.scrollToBottom();
+    };
   }]);
 
   app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', '$http', '$interval', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {

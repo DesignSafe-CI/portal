@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <div class="ds-table-display-wrapper ">
+  <div class="ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="scrollToBottom()()" data-scroll-top="scrollToTop()()" data-bottom-height="0">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
         <th>Project title</th>
@@ -9,7 +9,7 @@
 
         <tbody>
         <tr ng-repeat="project in data.projects"
-            ng-if="data.projects && ! browser.busy && ! browser.error"  
+            ng-if="data.projects && ! browser.busyListing"
             ng-click="onSelect($event, project);"
             ng-class="{'ds-data-selected': project.selected}"
         >
@@ -28,10 +28,17 @@
                 {{ project.lastUpdated|date:"short" }}
             </td>
         </tr>
+        <tr ng-if="browser.busyListingPage">
+            <td>
+                <span class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </td>
+        </tr>
         </tbody>
         <caption>
-          <div ng-if="browser.busy || ui.busy"
-               style="padding:10px; font-size:large; with:100%;"
+          <div ng-if="ui.busy"
+               style="padding:10px; font-size:large; width:100%;"
                class="bg-info">
             <span>
               <i class="fa fa-spinner fa-spin"></i> Loading...
