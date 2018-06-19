@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', function ($http, $q, djangoUrl, appCategories) {
+  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', 'appIcons', function ($http, $q, djangoUrl, appCategories, appIcons) {
 
     var SimpleList = function(){
       this.selected = null;
@@ -22,9 +22,6 @@
             self.lists[tab] = [];
           });
 
-          // Current list of apps with an Icon, maybe move this to agave metadata record
-          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls-pre/post', 'visit', 'openfoam', 'opensees'];
-
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
             if (appMeta.value.definition.available) {
@@ -42,7 +39,7 @@
 
               // Remove this when all apps have moved icon to tags
               if (appMeta.value.definition.icon == null) {
-                icons.some(function (icon) {
+                appIcons.some(function (icon) {
                   if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
                     appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
                     return true;
