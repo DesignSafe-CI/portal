@@ -1060,6 +1060,10 @@
                   if (app.value.definition.hasOwnProperty("tags") && app.value.definition.tags.filter(s => s.includes('appCategory')) !== undefined && app.value.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
                     app.value.definition.appCategory = app.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
                   }
+                  // Find appIcon if it exists in tags
+                  if (app.value.definition.hasOwnProperty("tags") && app.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && app.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+                    app.value.definition.appIcon = app.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                  }
                   $scope.appMeta = app;
                 };
 
