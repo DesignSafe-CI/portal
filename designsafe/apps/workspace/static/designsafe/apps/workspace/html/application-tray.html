@@ -11,11 +11,6 @@
       <uib-tab class="workspace-tab" ng-repeat="tab in tabs" active="tab.active" ng-init="tab.active=false" focusout="showApps($event, tab)">
         <uib-tab-heading>
           <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
-          <!-- <div ng-switch="tab.title">
-            <div ng-switch-default>
-              <span>{{tab.title}} <i class="fa fa-times" aria-hidden="true" ng-click="removeTab($event, $index, tab)"></i></span>
-            </div>
-          </div> -->
         </uib-tab-heading>
 
         <div ng-show="!tab.edit" class="apps-tray">
@@ -36,64 +31,6 @@
             </md-grid-tile>
           </md-grid-list>
         </div>
-        <!-- <div ng-show="tab.edit" class="dnd-list">
-          <div class="page-header">
-            <h3>Customize your apps tray</h3>
-            <p>
-              Select any DesignSafe-CI Apps from the Apps tray and drag
-              them to your customized tray. Click your tray title to edit it.
-              Save your changes.
-            </p>
-          </div>
-          <div class="row top-buffer">
-            <div ng-repeat="list in tab.multiple.lists" class="col-md-6">
-              <div class="panel panel-info">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                      <div ng-switch="list.listName">
-                        <div ng-switch-when="Apps">
-                          {{list.listName}}
-                        </div>
-                        <div ng-switch-default>
-                          <a href="#" editable-text="list.listName">{{list.listName}}</a>
-                        </div>
-                      </div>
-                    </h3>
-                </div>
-                <div class="panel-body text-center">
-
-                  <ul dnd-list dnd-drop="onDrop(list, item, index)" class="list-inline">
-                    <li ng-repeat="item in list.items"
-                        dnd-draggable="getSelectedItemsIncluding(list, item)"
-                        dnd-dragstart="onDragstart(list, event)"
-                        dnd-moved="onMoved(list)"
-                        dnd-dragend="list.dragging = false"
-                        dnd-selected="item.selected = !item.selected"
-                        ng-class="{'selected': item.selected}"
-                        ng-hide="list.dragging && item.selected"
-                        class="app-wrapper"
-                        >
-                          <div class="app text-center">
-                            <div class="app-icon"><i class="fa fa-cube fa-3x"></i></div>
-                            <div class="app-title">{{item.label}}</div>
-                            <div class="app-version">{{item.version}}</div>
-                          </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="button-group pull-right" ng-show="list.listName !== 'Apps'">
-                <button class="btn btn-default" ng-click="cancelTab(tab, list)">Cancel</button>
-                <button class="btn btn-primary" ng-click="saveTab(tab, list)">Save</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <div class="text-center">
-          <button ng-show="tab.title !== 'Public' && tab.title !== 'Private' && !tab.edit" class="btn btn-default" ng-click="editTab(tab); tab.edit = !tab.edit">Edit</button>
-        </div> -->
       </uib-tab>
-      <!-- <button class="btn btn-default btn-tab" ng-click="addTab()" ><i class="fa fa-plus"></i></button> -->
     </uib-tabset>
 </div>
