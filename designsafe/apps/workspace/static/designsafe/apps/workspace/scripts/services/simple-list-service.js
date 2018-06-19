@@ -32,24 +32,27 @@
               // Apply label for ordering
               appMeta.value.definition.orderBy = appMeta.value.definition.label;
 
-              // Parse app icon
+              // Parse app icon from tags for agave apps, or from metadata field for html apps
+              appMeta.value.definition.icon = null;
               if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
                 appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
-              }
-
-              // Remove this when all apps have moved icon to tags
-              if (appMeta.value.definition.icon == null) {
+              } else if (appMeta.value.definition.hasOwnProperty('appIcon')) {
+                appMeta.value.definition.icon = appMeta.value.definition.appIcon;
+              } else (
                 appIcons.some(function (icon) {
                   if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
                     appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
                     return true;
                   }
-                });
+                })
+              );
+              if (appMeta.value.definition.icon == '') {
+                appMeta.value.definition.icon = null;
               }
               
               if (appMeta.value.definition.isPublic) {
                 // If App has no category, place in Simulation tab
-                // Check if category exists either as a metadata field, or in a tag. Moving forward, all categories will be moved to tags
+                // Check if category exists either as a metadata field, or in a tag
                 var appCategory = 'Simulation';
                 if (appMeta.value.definition.hasOwnProperty('appCategory')) {
                   appCategory = appMeta.value.definition.appCategory;
