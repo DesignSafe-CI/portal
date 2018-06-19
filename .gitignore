@@ -10,7 +10,7 @@ settings.json
 # don't track webpack's bundles
 designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.*
 designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.*
-designsafe/static/build/bundle.*
+designsafe/static/build/
 designsafe/static/styles/base.*
 /static
 

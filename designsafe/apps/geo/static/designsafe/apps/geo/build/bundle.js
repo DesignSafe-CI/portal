@@ -60,17 +60,26 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports) {
 
+module.exports = angular;
+
+/***/ }),
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports) {
+
 module.exports = L;
 
 /***/ }),
-/* 1 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -89,13 +98,9 @@ exports.RESERVED_KEYS = RESERVED_KEYS;
 exports.get_file_extension = get_file_extension;
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = angular;
-
-/***/ }),
-/* 3 */
+/* 6 */,
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -146,7 +151,7 @@ var LayerGroup = function () {
 exports.default = LayerGroup;
 
 /***/ }),
-/* 4 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -158,15 +163,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _L = __webpack_require__(0);
+var _L = __webpack_require__(4);
 
 var _L2 = _interopRequireDefault(_L);
 
-var _geoUtils = __webpack_require__(1);
+var _geoUtils = __webpack_require__(5);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _angular = __webpack_require__(2);
+var _angular = __webpack_require__(0);
 
 var _angular2 = _interopRequireDefault(_angular);
 
@@ -256,7 +261,7 @@ var MapProject = function () {
 exports.default = MapProject;
 
 /***/ }),
-/* 5 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -301,18 +306,20 @@ var DBModalCtrl = function () {
 exports.default = DBModalCtrl;
 
 /***/ }),
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
 /* 14 */,
 /* 15 */,
 /* 16 */,
-/* 17 */
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -323,11 +330,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _directives = __webpack_require__(18);
+var _directives = __webpack_require__(25);
 
-var _controllers = __webpack_require__(20);
+var _controllers = __webpack_require__(27);
 
-var _services = __webpack_require__(27);
+var _services = __webpack_require__(34);
 
 var mod = angular.module('designsafe');
 mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
@@ -372,7 +379,7 @@ mod.config(config);
 exports.default = mod;
 
 /***/ }),
-/* 18 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -382,7 +389,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _customOnChange = __webpack_require__(19);
+var _customOnChange = __webpack_require__(26);
 
 var _customOnChange2 = _interopRequireDefault(_customOnChange);
 
@@ -394,7 +401,7 @@ mod.directive('customOnChange', _customOnChange2.default);
 exports.default = mod;
 
 /***/ }),
-/* 19 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -421,7 +428,7 @@ function customOnChange() {
 }
 
 /***/ }),
-/* 20 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -431,31 +438,31 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _mapSidebar = __webpack_require__(21);
+var _mapSidebar = __webpack_require__(28);
 
 var _mapSidebar2 = _interopRequireDefault(_mapSidebar);
 
-var _dbModal = __webpack_require__(5);
+var _dbModal = __webpack_require__(10);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _imageOverlayModal = __webpack_require__(22);
+var _imageOverlayModal = __webpack_require__(29);
 
 var _imageOverlayModal2 = _interopRequireDefault(_imageOverlayModal);
 
-var _help = __webpack_require__(23);
+var _help = __webpack_require__(30);
 
 var _help2 = _interopRequireDefault(_help);
 
-var _settingsModal = __webpack_require__(24);
+var _settingsModal = __webpack_require__(31);
 
 var _settingsModal2 = _interopRequireDefault(_settingsModal);
 
-var _confirmClearModal = __webpack_require__(25);
+var _confirmClearModal = __webpack_require__(32);
 
 var _confirmClearModal2 = _interopRequireDefault(_confirmClearModal);
 
-var _imagePreviewModal = __webpack_require__(26);
+var _imagePreviewModal = __webpack_require__(33);
 
 var _imagePreviewModal2 = _interopRequireDefault(_imagePreviewModal);
 
@@ -474,7 +481,7 @@ mod.controller('ImagePreviewModal', _imagePreviewModal2.default);
 exports.default = mod;
 
 /***/ }),
-/* 21 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -486,19 +493,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _layer_group = __webpack_require__(3);
+var _layer_group = __webpack_require__(8);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(4);
+var _mapProject = __webpack_require__(9);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
-var _dbModal = __webpack_require__(5);
+var _dbModal = __webpack_require__(10);
 
 var _dbModal2 = _interopRequireDefault(_dbModal);
 
-var _geoUtils = __webpack_require__(1);
+var _geoUtils = __webpack_require__(5);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
@@ -1061,7 +1068,7 @@ var MapSidebarCtrl = function () {
 exports.default = MapSidebarCtrl;
 
 /***/ }),
-/* 22 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1112,7 +1119,7 @@ var ImageOverlayModalCtrl = function () {
 exports.default = ImageOverlayModalCtrl;
 
 /***/ }),
-/* 23 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1136,7 +1143,7 @@ HelpCtrl.$inject = ["$scope"];
 exports.default = HelpCtrl;
 
 /***/ }),
-/* 24 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1177,7 +1184,7 @@ var SettingsModalCtrl = function () {
 exports.default = SettingsModalCtrl;
 
 /***/ }),
-/* 25 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1220,7 +1227,7 @@ var ConfirmClearModalCtrl = function () {
 exports.default = ConfirmClearModalCtrl;
 
 /***/ }),
-/* 26 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1261,7 +1268,7 @@ var ImagePreviewModal = function () {
 exports.default = ImagePreviewModal;
 
 /***/ }),
-/* 27 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1271,15 +1278,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _geoStateService = __webpack_require__(28);
+var _geoStateService = __webpack_require__(35);
 
 var _geoStateService2 = _interopRequireDefault(_geoStateService);
 
-var _geoDataService = __webpack_require__(29);
+var _geoDataService = __webpack_require__(36);
 
 var _geoDataService2 = _interopRequireDefault(_geoDataService);
 
-var _geoSettingsService = __webpack_require__(30);
+var _geoSettingsService = __webpack_require__(37);
 
 var _geoSettingsService2 = _interopRequireDefault(_geoSettingsService);
 
@@ -1296,7 +1303,7 @@ mod.service('GeoSettingsService', _geoSettingsService2.default);
 exports.default = mod;
 
 /***/ }),
-/* 28 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1319,7 +1326,7 @@ var GeoStateService = function GeoStateService($scope, $state) {
 exports.default = GeoStateService;
 
 /***/ }),
-/* 29 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1331,15 +1338,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _geoUtils = __webpack_require__(1);
+var _geoUtils = __webpack_require__(5);
 
 var GeoUtils = _interopRequireWildcard(_geoUtils);
 
-var _layer_group = __webpack_require__(3);
+var _layer_group = __webpack_require__(8);
 
 var _layer_group2 = _interopRequireDefault(_layer_group);
 
-var _mapProject = __webpack_require__(4);
+var _mapProject = __webpack_require__(9);
 
 var _mapProject2 = _interopRequireDefault(_mapProject);
 
@@ -1830,7 +1837,7 @@ var GeoDataService = function () {
 exports.default = GeoDataService;
 
 /***/ }),
-/* 30 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

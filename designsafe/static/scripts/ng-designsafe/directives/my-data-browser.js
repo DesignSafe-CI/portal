@@ -8,7 +8,7 @@ export const myDataBrowser = function(window, angular) {
         selected: '=selected',
         saveas: '=saveas'
       },
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/my-data-browser.html',
+      template: require('../html/directives/my-data-browser.html'),
       link: function ($scope, element, attrs) {
         $scope.picker = $scope.picker || 'all';
         $scope.data = {

@@ -17,7 +17,7 @@
 {% addtoblock "css" %}
 <link href="{% static 'vendor/codemirror/lib/codemirror.css' %}" rel="stylesheet">
 <link href="{% static 'vendor/codemirror/theme/neo.css' %}" rel="stylesheet" rel="stylesheet">
-<link href="{% static 'designsafe/apps/applications/styles/applications.css' %}" rel="stylesheet">
+<link href="{% static 'scripts/applications/styles/applications.css' %}" rel="stylesheet">
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
@@ -42,6 +42,9 @@
 {% endaddtoblock %}
 
 {% addtoblock 'js' %}
+<script src="{% static 'build/applications.bundle.js' %}"></script>
+<script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
+<!--
 <script src="{% static 'designsafe/apps/applications/scripts/app.js' %}"></script>
 <script src="{% static 'designsafe/apps/applications/scripts/controllers/application-tray.js' %}"></script>
 <script src="{% static 'designsafe/apps/applications/scripts/controllers/application-add.js' %}"></script>
@@ -55,5 +58,5 @@
 <script src="{% static 'designsafe/apps/applications/scripts/filters/sanitize.js' %}"></script>
 <script src="{% static 'designsafe/apps/applications/scripts/providers/translations.js' %}"></script>
 {% endaddtoblock %}
-
+-->
 {% endblock %}

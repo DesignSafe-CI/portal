@@ -619,7 +619,7 @@ export const projectService = function(window, angular, _, undefined) {
      */
     service.manageSimulations = function(options) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-manage-simulations.html',
+        template: require('../html/modals/project-service-manage-simulations.html'),
         controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
           $scope.data = {
             busy: false,
@@ -1056,7 +1056,7 @@ export const projectService = function(window, angular, _, undefined) {
      */
     service.manageExperiments = function(options) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-manage-experiments.html',
+        template: require('../html/modals/project-service-manage-experiments.html'),
         controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
           $scope.data = {
             busy: false,
@@ -1520,7 +1520,7 @@ export const projectService = function(window, angular, _, undefined) {
      */
     service.manageCollaborators = function(project) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-add-collaborator.html',
+        template: require('../html/modals/project-service-add-collaborator.html'),
         controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
           $scope.data = {
             busy: true,
@@ -1746,7 +1746,7 @@ export const projectService = function(window, angular, _, undefined) {
     service.editProject = function(project) {
       var modal = $uibModal.open({
         size: 'md',
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-edit-project.html',
+        template: require('../html/modals/project-service-edit-project.html'),
         controller: ['$scope', '$uibModalInstance', 'UserService', 'project', function ($scope, $uibModalInstance, UserService, project) {
           $scope.ui = {busy: false,
                        error: null};

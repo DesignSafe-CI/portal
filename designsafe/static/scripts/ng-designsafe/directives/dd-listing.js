@@ -10,7 +10,7 @@ export const ddListing = function(window, angular) {
       restrict: 'E',
       transclude: true,
       replace: true,
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/dd-listing.html',
+      template: require('../html/directives/dd-listing.html'),
       scope: {
         browser: '=',
         onBrowse: '&',
