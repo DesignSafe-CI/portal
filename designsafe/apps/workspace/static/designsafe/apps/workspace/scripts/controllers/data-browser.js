@@ -49,9 +49,16 @@
       DataBrowserService.browse({system: $scope.data.system.id, path: $scope.data.filePath})
         .then(function(listing) {
           $scope.data.filesListing = listing;
+
           if ($scope.data.filesListing.children.length > 0){
-            $scope.data.filePath = $scope.data.filesListing.path;
-            $scope.data.dirPath = $scope.data.filePath.split('/');
+            if(listing.system==='designsafe.storage.published' || listing.system === 'nees.public' ){
+              $scope.data.filePath = "Published";
+              $scope.data.dirPath = ["", "Published"];
+            }
+            else{
+              $scope.data.filePath = $scope.data.filesListing.path;
+              $scope.data.dirPath = $scope.data.filePath.split('/');
+            }
           }
           $scope.data.loading = false;
         }, function(err){
@@ -104,6 +111,14 @@
     $scope.browseTrail = function($event, index){
       $event.stopPropagation();
       $event.preventDefault();
+      if ($scope.data.dirPath.length <= index+1){
+        return;
+      }
+      if( ($scope.data.filesListing.system==='designsafe.storage.published' ||
+          $scope.data.filesListing.system === 'nees.public') &&
+          $scope.data.dirPath.length===1){
+        $scope.data.dirPath = ["Published"];
+      }
       $scope.browseFile({type: 'dir',
                          system: $scope.data.filesListing.system,
                          resource: $scope.data.filesListing.resource,
@@ -123,8 +138,19 @@
           file.system = $scope.data.system.id;
         } else if (file.system.includes('project-')) {
           file.path = file.path.replace(/^(Projects\/([^\/]+)[\/]*)/, '');
+          
         }
       }
+
+      if($scope.data.system.id ==='designsafe.storage.published' || $scope.data.system.id === 'nees.public' ){
+        if (file.path.split('/').length == 1) {
+          file.system = $scope.data.system.id;
+          file.path = "/";
+        } else if (file.system.includes('public') || file.system.includes('published')) {
+          file.path = file.path.replace("Published", '');
+        }
+      }
+      
       DataBrowserService.browse(file)
         .then(function(listing) {
           listing.path = listing.path.replace(/^\/*/,'');
@@ -132,23 +158,29 @@
           $scope.data.filePath = $scope.data.filesListing.path;
 
           // Set dirPath trail for wonky project file structure
+
           if ($scope.data.system.id == 'designsafe.storage.projects') {
             if (file.system.includes('project-')) {
               $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
             } else {
               $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
             }
+          } else if($scope.data.system.id==='designsafe.storage.published' || $scope.data.system.id === 'nees.public' ){
+            if(file.system.includes('public') || file.system.includes('published')){
+              $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));              
+            } else {
+              $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));              
+            }
           } else {
             $scope.data.dirPath = $scope.data.filePath.split('/');
           }
-          $scope.browser.listing = $scope.data.filesListing;
-
-          $scope.data.loading = false;
-        }, function(err){
-          logger.log(err);
-          $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
-          $scope.data.loading = false;
-        });
+              $scope.browser.listing = $scope.data.filesListing;
+              $scope.data.loading = false;
+            }, function(error){
+              logger.log(error);
+              $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
+              $scope.data.loading = false;
+            });
     };
 
     //$scope.browseFile = function(file) {
