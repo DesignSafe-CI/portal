@@ -54,7 +54,7 @@ class Project(BaseMetadataResource):
             'name': Project.NAME
         }
         records = agave_client.meta.listMetadata(q=json.dumps(
-            query), privileged=False, offset=getattr(kwargs, 'offset'), limit=getattr(kwargs, 'limit'))
+            query), privileged=False, offset=kwargs.get('offset', 0), limit=kwargs.get('limit',100))
         return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in records]
 
     @classmethod

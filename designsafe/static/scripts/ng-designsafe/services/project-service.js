@@ -94,7 +94,7 @@
 
     /**
      * Get a list of Projects for the current user
-     * @param {String} options The offset and limit variables
+     * @param {Object} options The offset and limit variables
      * @returns {Project[]}
      */
     service.list = function(options) {

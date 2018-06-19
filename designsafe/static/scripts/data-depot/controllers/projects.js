@@ -96,12 +96,13 @@
     $scope.browser = DataBrowserService.state();
     $scope.browser.error = null;  //clears any potential lingering error messages.
     $scope.data.projects = [];
+    var offset = 0;
+    var limit = 100;
+    var page = 0;
 
     // release selected files on load
     DataBrowserService.deselect(DataBrowserService.state().selected);
-
-
-    ProjectService.list({offset:0, limit:5}).then(function(projects) {
+    ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
@@ -141,49 +142,23 @@
     };
 
     $scope.scrollToBottom = function () {
-      
-      //Trying to bring the currentState.listing.system data into scrollToBottom
-      
-      // Fixes file object when created through 'browseTrail' for project dirs
-      //The code below won't work because of an unknown provider error:
-      /* ProjectService.list().then(function (systemList) {
-        $scope.browser.systemList = systemList;
-        $scope.browser.listing = systemList[0];
-      });  */
-
-      /* if ($scope.browser.system == 'designsafe.storage.projects') {
-        if (file.path.split('/').length == 1) {
-          file.system = $scope.browser.system;
-        } else if (file.system.includes('project-')) {
-          file.path = file.path.replace(/^(Projects\/([^\/]+)[\/]*)/, '');
-        }
+      if ($scope.browser.loadingMore || $scope.browser.reachedEnd) {
+        return;
       }
-      DataBrowserService.browse(file)
-        .then(function (listing) { */
-        //  listing.path = listing.path.replace(/^\/*/, '');
-         /* $scope.browser.filesListing = listing;
-          $scope.browser.filePath = $scope.browser.filesListing.path;
+      
+      $scope.browser.busyListingPage = true;
+      $scope.browser.loadingMore = true;
+      page += 1;
 
-          // Set dirPath trail for wonky project file structure
-          if ($scope.browser.system == 'designsafe.storage.projects') {
-            if (file.system.includes('project-')) {
-              $scope.data.dirPath = $scope.data.dirPath.slice(0, 2).concat($scope.data.filePath.split('/'));
-            } else {
-              $scope.data.dirPath = (file.name ? $scope.data.dirPath.concat(file.name) : $scope.data.filePath.split('/'));
-            }
-          } else {
-            $scope.data.dirPath = $scope.data.filePath.split('/');
-          }
-          $scope.browser.listing = $scope.data.filesListing;
-
-          $scope.data.loading = false;
-        }, function (err) {
-          logger.log(err);
-          $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
-          $scope.data.loading = false;
-        }); */
-      //the method below relies on currentState.listing.system and currentState.listing.path, which are null right now.
-      DataBrowserService.scrollToBottom();
+      offset += limit * page;
+      ProjectService.list({offset: offset, limit: limit}).then(function (projects) {
+        $scope.browser.busyListingPage = false;
+        $scope.data.projects = $scope.data.projects.concat(_.map(projects, function (p) { p.href = $state.href('projects.view', { projectId: p.uuid }); return p; }));
+      });
+      $scope.browser.loadingMore = false;
+      if ($scope.data.projects.length < (offset + limit)) {
+        $scope.browser.reachedEnd = true;
+      }
     };
   }]);
 

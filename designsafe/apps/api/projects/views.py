@@ -126,11 +126,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                 'path': 'Projects',
             }
         else:
-            projects = Project.list_projects(agave_client=ag)
-            data = {'projects': projects}
             offset = request.GET.get('offset', 0)
             limit = request.GET.get('limit', 100)
-
+            projects = Project.list_projects(agave_client=ag, **{'offset':offset, 'limit':limit})
+            data = {'projects': projects}
+            
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
     @profile_fn
