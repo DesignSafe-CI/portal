@@ -1,163 +1,192 @@
-(function(window, angular) {
-  var module = angular.module('designsafe');
-  module.requires.push(
-    'ui.router',
-    'djng.urls', //TODO: djng
-    'ui.bootstrap',
-    'django.context',
-    'ds.notifications',
-    'ds.wsBus',
-    'toastr',
-    'logging',
-    'ui.customSelect',
-    'ngSanitize'
-  );
+import $ from 'jquery';
+import angular from 'angular';
+import _ from 'underscore';
 
-  function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-    $locationProvider.html5Mode(true);
-    $urlMatcherFactoryProvider.strictMode(false);
+import { communityDataCtrl } from './controllers/community';
+import { dataDepotNavCtrl } from './controllers/data-depot-nav';
+import {dataDepotNewCtrl } from './controllers/data-depot-new'
+import { dataDepotToolbarCtrl } from './controllers/data-depot-toolbar'
+import { externalDataCtrl } from './controllers/external-data';
+import { mainCtrl } from './controllers/main';
+import { myDataCtrl } from '../data-depot/controllers/my-data';
+import { projectsController } from '../data-depot/controllers/projects';
+import { publicationDataCtrl } from '../data-depot/controllers/publications';
+import { publishedDataCtrl } from '../data-depot/controllers/published';
+import { sharedData } from '../data-depot/controllers/shared-data';
 
-    angular.extend(toastrConfig, {
-      positionClass: 'toast-bottom-left',
-      timeOut: 20000
-    });
+communityDataCtrl(window, angular);
+dataDepotNavCtrl(window, angular);
+dataDepotNewCtrl(window, angular);
+dataDepotToolbarCtrl(window, angular);
+dataDepotToolbarCtrl(window, angular);
+externalDataCtrl(window, angular);
+externalDataCtrl(window, angular);
+mainCtrl(window, angular);
+myDataCtrl(window, angular, _);
+projectsController(window, angular);
+publicationDataCtrl(window, angular);
+publishedDataCtrl(window, angular);
+sharedData(window, angular);
 
-    $stateProvider
-      /* Private */
-      .state('myData', {
-        url: '/agave/{systemId}/{filePath:any}/',
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.default',
-          filePath: Django.user
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var options = {
-              system: ($stateParams.systemId || 'designsafe.storage.default'),
-              path: ($stateParams.filePath || Django.user)
-            };
-            if (options.path === '/') {
-              options.path = Django.user;
-            }
-            DataBrowserService.apiParams.fileMgr = 'agave';
-            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            DataBrowserService.apiParams.searchState = 'dataSearch';
-            return DataBrowserService.browse(options);
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
+export var module = angular.module('designsafe');
+module.requires.push(
+  'ui.router',
+  'djng.urls', //TODO: djng
+  'ui.bootstrap',
+  'django.context',
+  'ds.notifications',
+  'ds.wsBus',
+  'toastr',
+  'logging',
+  'ui.customSelect',
+  'ngSanitize'
+);
+
+function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
+
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+  $locationProvider.html5Mode(true);
+  $urlMatcherFactoryProvider.strictMode(false);
+
+  angular.extend(toastrConfig, {
+    positionClass: 'toast-bottom-left',
+    timeOut: 20000
+  });
+
+  $stateProvider
+    /* Private */
+    .state('myData', {
+      url: '/agave/{systemId}/{filePath:any}/',
+      controller: 'MyDataCtrl',
+      template: require('./templates/agave-data-listing.html'),
+      params: {
+        systemId: 'designsafe.storage.default',
+        filePath: Django.user
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var options = {
+            system: ($stateParams.systemId || 'designsafe.storage.default'),
+            path: ($stateParams.filePath || Django.user)
+          };
+          if (options.path === '/') {
+            options.path = Django.user;
+          }
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+          DataBrowserService.apiParams.searchState = 'dataSearch';
+          return DataBrowserService.browse(options);
+        }],
+        'auth': function($q) {
+          if (Django.context.authenticated) {
+            return true;
+          } else {
+            return $q.reject({
+              type: 'authn',
+              context: Django.context
+            });
           }
         }
-      })
-      .state('dataSearch',{
-        url: '/agave-search/?query_string&offset&limit',
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.default',
-          filePath: '$SEARCH'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var systemId = $stateParams.systemId || 'designsafe.storage.default';
-            var filePath = $stateParams.filePath || Django.user;
-            DataBrowserService.apiParams.fileMgr = 'agave';
-            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            DataBrowserService.apiParams.searchState = 'dataSearch';
-            var queryString = $stateParams.query_string;
-            //if (/[^A-Za-z0-9]/.test(queryString)){
-            //  queryString = '"' + queryString + '"';
-            //}
-            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
-            return DataBrowserService.search(options);
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
+      }
+    })
+    .state('dataSearch',{
+      url: '/agave-search/?query_string&offset&limit',
+      controller: 'MyDataCtrl',
+      template: require('./templates/agave-search-data-listing.html'),
+      params: {
+        systemId: 'designsafe.storage.default',
+        filePath: '$SEARCH'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var systemId = $stateParams.systemId || 'designsafe.storage.default';
+          var filePath = $stateParams.filePath || Django.user;
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+          DataBrowserService.apiParams.searchState = 'dataSearch';
+          var queryString = $stateParams.query_string;
+          //if (/[^A-Za-z0-9]/.test(queryString)){
+          //  queryString = '"' + queryString + '"';
+          //}
+          var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
+          return DataBrowserService.search(options);
+        }],
+        'auth': function($q) {
+          if (Django.context.authenticated) {
+            return true;
+          } else {
+            return $q.reject({
+              type: 'authn',
+              context: Django.context
+            });
           }
         }
-      })
-      .state('sharedData', {
-        url: '/shared/{systemId}/{filePath:any}/',
-        controller: 'SharedDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-shared-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.default',
-          filePath: '$SHARE'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var systemId = $stateParams.systemId || 'designsafe.storage.default';
-            var filePath = $stateParams.filePath || '$SHARE/';
+      }
+    })
+    .state('sharedData', {
+      url: '/shared/{systemId}/{filePath:any}/',
+      controller: 'SharedDataCtrl',
+      template: require('./templates/agave-shared-data-listing.html'),
+      params: {
+        systemId: 'designsafe.storage.default',
+        filePath: '$SHARE'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var systemId = $stateParams.systemId || 'designsafe.storage.default';
+          var filePath = $stateParams.filePath || '$SHARE/';
 
-            DataBrowserService.apiParams.fileMgr = 'agave';
-            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            DataBrowserService.apiParams.searchState = 'sharedDataSearch';
-            return DataBrowserService.browse({system: systemId, path: filePath});
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+          DataBrowserService.apiParams.searchState = 'sharedDataSearch';
+          return DataBrowserService.browse({system: systemId, path: filePath});
+        }],
+        'auth': function($q) {
+          if (Django.context.authenticated) {
+            return true;
+          } else {
+            return $q.reject({
+              type: 'authn',
+              context: Django.context
+            });
           }
         }
-      })
-      .state('sharedDataSearch',{
-        url: '/shared-search/?query_string&offset&limit&shared',
-        controller: 'MyDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.default',
-          filePath: '$SEARCHSHARED',
-          shared: 'true'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var systemId = $stateParams.systemId || 'designsafe.storage.default';
-            var filePath = $stateParams.filePath || Django.user;
-            DataBrowserService.apiParams.fileMgr = 'agave';
-            DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            DataBrowserService.apiParams.searchState = 'sharedDataSearch';
-            var queryString = $stateParams.query_string;
-            //if (/[^A-Za-z0-9]/.test(queryString)){
-            //  queryString = '"' + queryString + '"';
-            //}
-            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
-            return DataBrowserService.search(options);
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
+      }
+    })
+    .state('sharedDataSearch',{
+      url: '/shared-search/?query_string&offset&limit&shared',
+      controller: 'MyDataCtrl',
+      template: require('./templates/agave-search-data-listing.html'),
+      params: {
+        systemId: 'designsafe.storage.default',
+        filePath: '$SEARCHSHARED',
+        shared: 'true'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var systemId = $stateParams.systemId || 'designsafe.storage.default';
+          var filePath = $stateParams.filePath || Django.user;
+          DataBrowserService.apiParams.fileMgr = 'agave';
+          DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+          DataBrowserService.apiParams.searchState = 'sharedDataSearch';
+          var queryString = $stateParams.query_string;
+          //if (/[^A-Za-z0-9]/.test(queryString)){
+          //  queryString = '"' + queryString + '"';
+          //}
+          var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
+          return DataBrowserService.search(options);
+        }],
+        'auth': function($q) {
+          if (Django.context.authenticated) {
+            return true;
+          } else {
+            return $q.reject({
+              type: 'authn',
+              context: Django.context
+            });
           }
         }
       })
@@ -280,270 +309,271 @@
             }
           }
         }
-      })
-      .state('dropboxData', {
-        url: '/dropbox/{filePath:any}',
-        controller: 'ExternalDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/dropbox-data-listing.html',
-        params: {
-          filePath: '',
-          name: 'Dropbox',
-          customRootFilePath: 'dropbox/'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var filePath = $stateParams.filePath || '/';
-            DataBrowserService.apiParams.fileMgr = 'dropbox';
-            DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
-            DataBrowserService.apiParams.searchState = undefined;
-            return DataBrowserService.browse({path: filePath});
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
-          }
-        }
-      })
-      .state('googledriveData', {
-        url: '/googledrive/{filePath:any}',
-        controller: 'ExternalDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/googledrive-data-listing.html',
-        params: {
-          filePath: '',
-          name: 'Google Drive',
-          customRootFilePath: 'googledrive/'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var filePath = $stateParams.filePath || '/';
-            DataBrowserService.apiParams.fileMgr = 'googledrive';
-            DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
-            DataBrowserService.apiParams.searchState = undefined;
-            return DataBrowserService.browse({path: filePath});
-          }],
-          'auth': function($q) {
-            if (Django.context.authenticated) {
-              return true;
-            } else {
-              return $q.reject({
-                type: 'authn',
-                context: Django.context
-              });
-            }
-          }
-        }
-      })
-
-      /* Public */
-      .state('publicDataSearch',{
-        url: '/public-search/?query_string&offset&limit',
-        controller: 'PublicationDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/search-public-data-listing.html',
-        params: {
-          systemId: 'nees.public',
-          filePath: '$SEARCH'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var systemId = $stateParams.systemId || 'nees.public';
-            var filePath = $stateParams.filePath || '/';
-            DataBrowserService.apiParams.fileMgr = 'public';
-            DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = 'publicDataSearch';
-            var queryString = $stateParams.query_string;
-            //if (/[^A-Za-z0-9]/.test(queryString)){
-            //  queryString = '"' + queryString + '"';
-            //}
-            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
-            return DataBrowserService.search(options);
-          }],
-          'auth': function($q) {
-              return true;
-          }
-        }
-      })
-
-      .state('communityDataSearch',{
-        url: '/community-search/?query_string&offset&limit',
-        controller: 'CommunityDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
-        params: {
-          systemId: 'nees.public',
-          filePath: '$SEARCH'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var systemId = $stateParams.systemId || 'nees.public';
-            var filePath = $stateParams.filePath || '/';
-            DataBrowserService.apiParams.fileMgr = 'public';
-            DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = 'communityDataSearch';
-            var queryString = $stateParams.query_string;
-            //if (/[^A-Za-z0-9]/.test(queryString)){
-            //  queryString = '"' + queryString + '"';
-            //}
-            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
-            return DataBrowserService.search(options);
-          }],
-          'auth': function($q) {
-              return true;
-          }
-        }
-      })
-
-
-      .state('communityData', {
-        // url: '/community/',
-        // template: '<pre>local/communityData.html</pre>'
-        url: '/public/designsafe.storage.community/{filePath:any}',
-        controller: 'CommunityDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.community',
-          filePath: '/'
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var options = {
-              system: ($stateParams.systemId || 'designsafe.storage.community'),
-              path: ($stateParams.filePath || '/')
-            };
-            // if (options.path === '/') {
-              // options.path = Django.user;
-            // }
-            DataBrowserService.apiParams.fileMgr = 'community';
-            DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = 'communityDataSearch';
-            return DataBrowserService.browse(options);
-          }],
-          'auth': function($q) {
-              return true;
-          }
-        }
-      })
-      .state('publicData', {
-        url: '/public/nees.public/{filePath:any}',
-        controller: 'PublicationDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
-        params: {
-          systemId: 'nees.public',
-          filePath: ''
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            var systemId = $stateParams.systemId || 'nees.public';
-            var filePath = $stateParams.filePath || '/';
-            DataBrowserService.apiParams.fileMgr = 'public';
-            DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = 'publicDataSearch';
-            return DataBrowserService.browse({system: systemId, path: filePath});
-          }],
-          'auth': function($q) {
-              return true;
-          },
-          userAuth: ['UserService', function (UserService) {
-            return UserService.authenticate().then(function (resp) {
-              return true;
-            }, function (err) {
-              return false;
+      }
+    })
+    .state('dropboxData', {
+      url: '/dropbox/{filePath:any}',
+      controller: 'ExternalDataCtrl',
+      template: require('./templates/dropbox-data-listing.html'),
+      params: {
+        filePath: '',
+        name: 'Dropbox',
+        customRootFilePath: 'dropbox/'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var filePath = $stateParams.filePath || '/';
+          DataBrowserService.apiParams.fileMgr = 'dropbox';
+          DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
+          DataBrowserService.apiParams.searchState = undefined;
+          return DataBrowserService.browse({path: filePath});
+        }],
+        'auth': function($q) {
+          if (Django.context.authenticated) {
+            return true;
+          } else {
+            return $q.reject({
+              type: 'authn',
+              context: Django.context
             });
-          }]
+          }
         }
-      })
-      .state('publishedData', {
-        url: '/public/designsafe.storage.published/{filePath:any}',
-        controller: 'PublishedDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/published-data-listing.html',
-        params: {
-          systemId: 'designsafe.storage.published',
-          filePath: '',
-        },
-        resolve: {
-          'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService){
-            var systemId = $stateParams.systemId || 'designsafe.storage.published';
-            var filePath = $stateParams.filePath;
-            DataBrowserService.apiParams.fileMgr = 'published';
-            DataBrowserService.apiParams.baseUrl = '/api/public/files';
-            DataBrowserService.apiParams.searchState = 'publicDataSearch';
-            return DataBrowserService.browse({system: systemId, path: filePath});
-          }],
-          'auth': function($q){
-              return true;
-          },
-          userAuth: ['UserService', function (UserService) {
-            return UserService.authenticate().then(function (resp) {
-              return true;
-            }, function (err) {
-              return false;
+      }
+    })
+    .state('googledriveData', {
+      url: '/googledrive/{filePath:any}',
+      controller: 'ExternalDataCtrl',
+      template: require('./templates/googledrive-data-listing.html'),
+      params: {
+        filePath: '',
+        name: 'Google Drive',
+        customRootFilePath: 'googledrive/'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var filePath = $stateParams.filePath || '/';
+          DataBrowserService.apiParams.fileMgr = 'googledrive';
+          DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
+          DataBrowserService.apiParams.searchState = undefined;
+          return DataBrowserService.browse({path: filePath});
+        }],
+        'auth': function($q) {
+          if (Django.context.authenticated) {
+            return true;
+          } else {
+            return $q.reject({
+              type: 'authn',
+              context: Django.context
             });
-          }]
+          }
         }
-      })
-      .state('trainingMaterials', {
-        url: '/training/',
-        template: '<pre>local/trainingMaterials.html</pre>'
-      })
-    ;
+      }
+    })
 
-    $urlRouterProvider.otherwise(function($injector, $location) {
-      var $state = $injector.get('$state');
+    /* Public */
+    .state('publicDataSearch',{
+      url: '/public-search/?query_string&offset&limit',
+      controller: 'PublicationDataCtrl',
+      template: require('./templates/search-public-data-listing.html'),
+      params: {
+        systemId: 'nees.public',
+        filePath: '$SEARCH'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var systemId = $stateParams.systemId || 'nees.public';
+          var filePath = $stateParams.filePath || '/';
+          DataBrowserService.apiParams.fileMgr = 'public';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          DataBrowserService.apiParams.searchState = 'publicDataSearch';
+          var queryString = $stateParams.query_string;
+          //if (/[^A-Za-z0-9]/.test(queryString)){
+          //  queryString = '"' + queryString + '"';
+          //}
+          var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
+          return DataBrowserService.search(options);
+        }],
+        'auth': function($q) {
+            return true;
+        }
+      }
+    })
 
-      /* Default to MyData for authenticated users, PublicData for anonymous */
-      if (Django.context.authenticated) {
-        $state.go('myData', {
-          systemId: 'designsafe.storage.default',
-          filePath: Django.user
-        });
-      } else {
-        $state.go('publicData');
+    .state('communityDataSearch',{
+      url: '/community-search/?query_string&offset&limit',
+      controller: 'CommunityDataCtrl',
+      template: require('./templates/agave-search-data-listing.html'),
+      params: {
+        systemId: 'nees.public',
+        filePath: '$SEARCH'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var systemId = $stateParams.systemId || 'nees.public';
+          var filePath = $stateParams.filePath || '/';
+          DataBrowserService.apiParams.fileMgr = 'public';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          DataBrowserService.apiParams.searchState = 'communityDataSearch';
+          var queryString = $stateParams.query_string;
+          //if (/[^A-Za-z0-9]/.test(queryString)){
+          //  queryString = '"' + queryString + '"';
+          //}
+          var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
+          return DataBrowserService.search(options);
+        }],
+        'auth': function($q) {
+            return true;
+        }
+      }
+    })
+
+
+    .state('communityData', {
+      // url: '/community/',
+      // template: '<pre>local/communityData.html</pre>'
+      url: '/public/designsafe.storage.community/{filePath:any}',
+      controller: 'CommunityDataCtrl',
+      template: require('./templates/agave-data-listing.html'),
+      params: {
+        systemId: 'designsafe.storage.community',
+        filePath: '/'
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var options = {
+            system: ($stateParams.systemId || 'designsafe.storage.community'),
+            path: ($stateParams.filePath || '/')
+          };
+          // if (options.path === '/') {
+            // options.path = Django.user;
+          // }
+          DataBrowserService.apiParams.fileMgr = 'community';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          DataBrowserService.apiParams.searchState = 'communityDataSearch';
+          return DataBrowserService.browse(options);
+        }],
+        'auth': function($q) {
+            return true;
+        }
+      }
+    })
+    .state('publicData', {
+      url: '/public/nees.public/{filePath:any}',
+      controller: 'PublicationDataCtrl',
+      template: require('./templates/agave-public-data-listing.html'),
+      params: {
+        systemId: 'nees.public',
+        filePath: ''
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+          var systemId = $stateParams.systemId || 'nees.public';
+          var filePath = $stateParams.filePath || '/';
+          DataBrowserService.apiParams.fileMgr = 'public';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          DataBrowserService.apiParams.searchState = 'publicDataSearch';
+          return DataBrowserService.browse({system: systemId, path: filePath});
+        }],
+        'auth': function($q) {
+            return true;
+        },
+        userAuth: ['UserService', function (UserService) {
+          return UserService.authenticate().then(function (resp) {
+            return true;
+          }, function (err) {
+            return false;
+          });
+        }]
+      }
+    })
+    .state('publishedData', {
+      url: '/public/designsafe.storage.published/{filePath:any}',
+      controller: 'PublishedDataCtrl',
+      template: require('./templates/published-data-listing.html'),
+      params: {
+        systemId: 'designsafe.storage.published',
+        filePath: '',
+      },
+      resolve: {
+        'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService){
+          var systemId = $stateParams.systemId || 'designsafe.storage.published';
+          var filePath = $stateParams.filePath;
+          DataBrowserService.apiParams.fileMgr = 'published';
+          DataBrowserService.apiParams.baseUrl = '/api/public/files';
+          DataBrowserService.apiParams.searchState = 'publicDataSearch';
+          return DataBrowserService.browse({system: systemId, path: filePath});
+        }],
+        'auth': function($q){
+            return true;
+        },
+        userAuth: ['UserService', function (UserService) {
+          return UserService.authenticate().then(function (resp) {
+            return true;
+          }, function (err) {
+            return false;
+          });
+        }]
+      }
+    })
+    .state('trainingMaterials', {
+      url: '/training/',
+      template: '<pre>local/trainingMaterials.html</pre>'
+    })
+  ;
+
+  $urlRouterProvider.otherwise(function($injector, $location) {
+    var $state = $injector.get('$state');
+
+    /* Default to MyData for authenticated users, PublicData for anonymous */
+    if (Django.context.authenticated) {
+      $state.go('myData', {
+        systemId: 'designsafe.storage.default',
+        filePath: Django.user
+      });
+    } else {
+      $state.go('publicData');
+    }
+  });
+}
+
+module
+  .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', 'toastrConfig', config])
+  .run(['$rootScope', '$location', '$state', 'Django', function($rootScope, $location, $state, Django) {
+    $rootScope.$state = $state;
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
+      if (toState.name === 'myData' || toState.name === 'sharedData') {
+        var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
+        if (toState.name === 'myData' && !ownerPath) {
+          event.preventDefault();
+          $state.go('sharedData', toParams);
+        } else if (toState.name === 'sharedData' && ownerPath) {
+          event.preventDefault();
+          $state.go('myData', toParams);
+        }
       }
     });
-  }
 
-  module
-    .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', 'toastrConfig', config])
-    .run(['$rootScope', '$location', '$state', 'Django', function($rootScope, $location, $state, Django) {
-      $rootScope.$state = $state;
+    // $rootScope.$on('$stateChangeSuccess', function() {});
 
-      $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
-        if (toState.name === 'myData' || toState.name === 'sharedData') {
-          var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
-          if (toState.name === 'myData' && !ownerPath) {
-            event.preventDefault();
-            $state.go('sharedData', toParams);
-          } else if (toState.name === 'sharedData' && ownerPath) {
-            event.preventDefault();
-            $state.go('myData', toParams);
-          }
-        }
-      });
+    $rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
+      if (error.type === 'authn') {
+        var redirectUrl = $state.href(toState.name, toParams);
+        window.location = '/login/?next=' + redirectUrl;
+      }
+    });
+  }]);
 
-      // $rootScope.$on('$stateChangeSuccess', function() {});
+module
+  .config(['WSBusServiceProvider', function(WSBusServiceProvider){
 
-      $rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
-        if (error.type === 'authn') {
-          var redirectUrl = $state.href(toState.name, toParams);
-          window.location = '/login/?next=' + redirectUrl;
-        }
-      });
-    }]);
-
-  module
-    .config(['WSBusServiceProvider', function(WSBusServiceProvider){
-
-        WSBusServiceProvider.setUrl(
-            (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-            window.location.hostname +
-            (window.location.port ? ':' + window.location.port : '') +
-            '/ws/websockets?subscribe-broadcast&subscribe-user'
-        );
-	}]);
+      WSBusServiceProvider.setUrl(
+          (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+          window.location.hostname +
+          (window.location.port ? ':' + window.location.port : '') +
+          '/ws/websockets?subscribe-broadcast&subscribe-user'
+      );
+}]);
 // 	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
 // 	  WSBusService.init(WSBusService.url);
 //     }]);
@@ -553,4 +583,4 @@
 // 	  NotificationService.init();
 // }]);
 
-})(window, angular);
+

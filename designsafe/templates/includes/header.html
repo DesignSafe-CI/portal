@@ -18,7 +18,7 @@
             <a class="text-danger" title="API Session Not Available. Click for details." href="{% url 'designsafe_auth:agave_session_error' %}"><i class="fa fa-exclamation-triangle"></i><span class="sr-only">API Session Not Available. Click for details.</span></a>
           {% endif %}
         </span>
-        <span ng-controller="NotificationBadgeCtrl" id="id_user_notify" ng-include="'{% static 'designsafe/apps/notifications/html/badge.html' %}'">
+        <span ng-controller="NotificationBadgeCtrl" id="id_user_notify" ng-include="'{% static 'scripts/notifications/html/badge.html' %}'">
         </span>
         <div class="btn-group">
           <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>

@@ -10,7 +10,7 @@ export const ddGoogleDriveListing = function(window, angular) {
       restrict: 'E',
       transclude: true,
       replace: true,
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/dd-googledrive-listing.html',
+      template: require('../html/directives/dd-googledrive-listing.html'),
       scope: {
         browser: '=',
         onBrowse: '&',

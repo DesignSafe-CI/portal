@@ -295,7 +295,7 @@ export const dataBrowserService = function(window, angular, $, _) {
       }
 
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-copy.html',
+        template: require('../html/modals/data-browser-service-copy.html'),
         controller: ['$scope', '$uibModalInstance', 'FileListing', 'data', 'ProjectService',
                      function ($scope, $uibModalInstance, FileListing, data, ProjectService) {
 
@@ -513,7 +513,7 @@ export const dataBrowserService = function(window, angular, $, _) {
      */
     function mkdir () {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-mkdir.html',
+        template: require('../html/modals/data-browser-service-mkdir.html'),
         controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
           $scope.form = {
             folderName: 'Untitled_folder'
@@ -558,7 +558,7 @@ export const dataBrowserService = function(window, angular, $, _) {
       }
 
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-move.html',
+        template: require('../html/modals/data-browser-service-move.html'),
         controller: ['$scope', '$uibModalInstance', 'FileListing', 'files', 'initialDestination', 'ProjectService', function ($scope, $uibModalInstance, FileListing, files, initialDestination, ProjectService) {
 
           $scope.data = {
@@ -693,8 +693,8 @@ export const dataBrowserService = function(window, angular, $, _) {
      */
     function preview (file, listing) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
-        controller: ['$scope', 'DataBrowserService', '$state', '$uibModalInstance', '$sce', 'file', function ($scope, DataBrowserService, $state, $uibModalInstance, $sce, file) {
+        template: require('../html/modals/data-browser-service-preview.html'),
+        controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
           $scope.file = file;
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
@@ -899,7 +899,7 @@ export const dataBrowserService = function(window, angular, $, _) {
     function previewImages (folder) {
       var modal = $uibModal.open({
         windowClass: 'modal-full',
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview-images.html',
+        template: require('../html/modals/data-browser-service-preview-images.html'),
         controller: ['$scope', '$uibModalInstance', '$sce', 'folder','UserService', function ($scope, $uibModalInstance, $sce, folder) {
           $scope.folder = folder;
           var img_extensions = ['jpg', 'jpeg', 'png', 'tiff', 'gif'];
@@ -951,7 +951,7 @@ export const dataBrowserService = function(window, angular, $, _) {
      */
     function rename (file) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-rename.html',
+        template: require('../html/modals/data-browser-service-rename.html'),
         controller: ['$scope', '$uibModalInstance', 'file', function ($scope, $uibModalInstance, file) {
           $scope.form = {
             targetName: file.name
@@ -999,7 +999,7 @@ export const dataBrowserService = function(window, angular, $, _) {
       }
 
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-rm.html',
+        template: require('../html/modals/data-browser-service-rm.html'),
         controller: ['$scope', '$uibModalInstance', 'files', function ($scope, $uibModalInstance, files) {
           $scope.files = files;
 
@@ -1073,7 +1073,7 @@ export const dataBrowserService = function(window, angular, $, _) {
      */
     function share (file) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-share.html',
+        template: require('../html/modals/data-browser-service-share.html'),
         controller: ['$scope', '$uibModalInstance', 'Django', 'UserService', 'file', function ($scope, $uibModalInstance, Django, UserService, file) {
           $scope.data = {
             busy: true,
@@ -1247,7 +1247,7 @@ export const dataBrowserService = function(window, angular, $, _) {
      */
     function upload(directoryUpload, files) {
       var modal = $uibModal.open({
-        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-upload.html',
+        template: require('../html/modals/data-browser-service-upload.html'),
         controller: function ($scope, $q, $uibModalInstance, Modernizr, directoryUpload, destination, files) {
 
           $scope.data = {
@@ -1390,12 +1390,12 @@ export const dataBrowserService = function(window, angular, $, _) {
      * Open Preview Tree
      */
     function openPreviewTree(entityUuid, type){
-      var template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-tree.html';
+      var template = require('../html/modals/data-browser-preview-tree.html');
       if (type !== 'experimental'){
-          template = '/static/scripts/ng-designsafe/html/modals/data-browser-preview-' + type + '-tree.html';
+          template = require('../html/modals/data-browser-preview-simulation-tree.html');
       }
       var modal = $uibModal.open({
-        templateUrl: template,
+        template: template,
         controller:['$uibModalInstance', '$scope',
                     function($uibModalInstance, $scope){
           $scope.data = {};
@@ -1418,13 +1418,13 @@ export const dataBrowserService = function(window, angular, $, _) {
      * @return {HttpPromise}
      */
     function viewCategories (files, listing) {
-      var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-categories.html';
+      var template = require('../html/modals/data-browser-service-categories.html');
       var file = null;
       if (typeof files !== 'undefined'){
         file = files[0];
       }
       var modal = $uibModal.open({
-        templateUrl: template,
+        template: template,
         controller: ['$uibModalInstance', '$scope', 'file', 'ProjectEntitiesService',
                      function ($uibModalInstance, $scope, file, ProjectEntitiesService) {
           $scope.data = {file: file,
@@ -2098,7 +2098,7 @@ export const dataBrowserService = function(window, angular, $, _) {
      * @return {HttpPromise}
      */
     function viewMetadata (files, listing) {
-      var template = '/static/scripts/ng-designsafe/html/modals/data-browser-service-custom-tags.html';
+      var template = require('../html/modals/data-browser-service-custom-tags.html');
       var file = null;
       if (typeof files !== 'undefined'){
         file = files[0];
@@ -2115,10 +2115,10 @@ export const dataBrowserService = function(window, angular, $, _) {
       if (typeof file !== 'undefined' &&
          typeof file.metadata !== 'undefined' &&
          file.metadata.project !== 'undefined'){
-        template ='/static/scripts/ng-designsafe/html/modals/data-browser-service-published-metadata.html';
+        template = require('../html/modals/data-browser-service-published-metadata.html');
       }
       var modal = $uibModal.open({
-        templateUrl: template,
+        template: template,
         controller: ['$uibModalInstance', '$scope', 'file', 'ProjectEntitiesService',
                      function ($uibModalInstance, $scope, file, ProjectEntitiesService) {
           $scope.data = {file: file,

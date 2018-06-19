@@ -10,7 +10,7 @@ export const ddPublicListing = function(window, angular) {
       restrict: 'E',
       transclude: true,
       replace: true,
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/dd-public-listing.html',
+      template: require('../html/directives/dd-public-listing.html'),
       scope: {
         browser: '=',
         onBrowse: '&',

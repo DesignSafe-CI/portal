@@ -10,7 +10,7 @@ export const ddBreadcrumb = function(window, angular) {
       restrict: 'E',
       transclude: true,
       replace: true,
-      templateUrl: '/static/scripts/ng-designsafe/html/directives/dd-breadcrumb.html',
+      template: require('../html/directives/dd-breadcrumb.html'),
       scope: {
         listing: '=',
         skipRoot: '=',
