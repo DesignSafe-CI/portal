@@ -37,6 +37,13 @@
             to another execution system such as Stampede2, or submit a ticket for assistance.
         </p>
     </div>
+    <div class="lead alert alert-warning" ng-if="data.systemDown">
+        <h2>Application Unavailable</h2>
+        <p>
+            This application's execution system ({{data.app.executionSystem}}) is not currently accepting requests. Please try again later, 
+            or submit a ticket for assistance.
+        </p>
+    </div>
     <div class="messages">
         <div ng-repeat="message in data.messages" class="alert alert-{{message.type}}">
             <h4 ng-if="message.header" ng-bind-html="message.header"></h4>

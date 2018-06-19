@@ -55,11 +55,6 @@
         <div class="form-group required">
           <yamz-term term-id="h1550"><i class="fa fa-question-circle"></i></yamz-term>
           <label for="projecttype-id">Project Type:</label>
-          <p class="alert alert-info">
-            Only <strong>Experimental</strong>, <strong>Simulation</strong>, and <strong>Other</strong> project types can be published.<br />
-            We are working on implementing publication pipelines for the rest of the project types.<br/>
-            We can answer any questions through our <a href="/help">Ticketing system</a> or <a href="/community/slack-online-collaboration/"> Slack </a>.
-          </p>
           <select ng-options="projectType.label for projectType in projectTypes"
                   ng-model="form.projectType"
                   class="form-control"

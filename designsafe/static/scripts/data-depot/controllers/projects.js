@@ -3,7 +3,6 @@
   app.requires.push('django.context');
 
   app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
-    
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
@@ -97,12 +96,13 @@
     $scope.browser = DataBrowserService.state();
     $scope.browser.error = null;  //clears any potential lingering error messages.
     $scope.data.projects = [];
+    var offset = 0;
+    var limit = 100;
+    var page = 0;
 
     // release selected files on load
     DataBrowserService.deselect(DataBrowserService.state().selected);
-
-
-    ProjectService.list().then(function(projects) {
+    ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
@@ -137,6 +137,35 @@
       }
     };
 
+    $scope.scrollToTop = function () {
+      return;
+    };
+
+    $scope.scrollToBottom = function () {
+      offset = 0;
+
+      if ($scope.browser.loadingMore || $scope.browser.reachedEnd) {
+        return;
+      }
+      
+      $scope.browser.busyListingPage = true;
+      $scope.browser.loadingMore = true;
+      page += 1;
+      offset = limit * page;
+
+      ProjectService.list({offset: offset, limit: limit}).then(function (projects) {  
+        //This is making a listing call and adding it to the existing Project list
+        $scope.data.projects = $scope.data.projects.concat(_.map(projects, 
+          function (p) { p.href = $state.href('projects.view', { projectId: p.uuid }); return p; }));  
+        $scope.browser.busyListingPage = false;
+      });
+
+      $scope.browser.loadingMore = false;
+
+      if ($scope.data.projects.length < offset) {
+        $scope.browser.reachedEnd = true;
+      } 
+    };
   }]);
 
   app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', '$http', '$interval', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
@@ -261,6 +290,24 @@
       ProjectService.manageSimulations({'simulations': simulations,
                                         'project': $scope.data.project}).then(function (simulations) {
         $scope.data.simulations = simulations;
+      });
+    };
+
+    $scope.manageHybridSimulations = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      var hybridSimulationAttr = $scope.data.project.getRelatedAttrName(
+          'designsafe.project.hybrid_simulation'
+      );
+      var hybridSimulations = $scope.data.project[hybridSimulationAttr];
+      if (typeof hybridSimulations === 'undefined'){
+        $scope.data.project[hybridSimulationAttr] = [];
+        hybridSimulations = $scope.data.project[hybridSimulationAttr];
+      }
+      ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations,
+                                        'project': $scope.data.project}).then(function (simulations) {
+        $scope.data.hybridSimulations = hybridSimulations;
       });
     };
 

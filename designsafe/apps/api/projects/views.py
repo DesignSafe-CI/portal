@@ -28,7 +28,7 @@ from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.projects.models.agave.experimental import (
     ExperimentalProject, Experiment, ModelConfig,
     Event, Analysis, SensorList, Report)
-from designsafe.apps.projects.models.agave import simulation
+from designsafe.apps.projects.models.agave import simulation, hybrid_simulation
 from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
                                                                        Publication)
 logger = logging.getLogger(__name__)
@@ -103,7 +103,7 @@ class ProjectListingView(SecureMixin, BaseApiView):
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
     @profile_fn
-    def get(self, request, file_mgr_name=None, system_id=None):
+    def get(self, request, file_mgr_name=None, system_id=None, offset=None, limit=None):
         """
         Returns a list of Projects for the current user.
         :param request:
@@ -124,9 +124,11 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                 'path': 'Projects',
             }
         else:
-            projects = Project.list_projects(agave_client=ag)
+            offset = request.GET.get('offset', 0)
+            limit = request.GET.get('limit', 100)
+            projects = Project.list_projects(agave_client=ag, **{'offset':offset, 'limit':limit})
             data = {'projects': projects}
-
+            
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
     @profile_fn
@@ -261,7 +263,15 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.simulation.input': simulation.Input,
             'designsafe.project.simulation.output': simulation.Output,
             'designsafe.project.simulation.analysis': simulation.Analysis,
-            'designsafe.project.simulation.report': simulation.Report
+            'designsafe.project.simulation.report': simulation.Report,
+            'designsafe.project.hybrid_simulation': hybrid_simulation.HybridSimulation,
+            'designsafe.project.hybrid_simulation.global_model': hybrid_simulation.GlobalModel,
+            'designsafe.project.hybrid_simulation.coordinator': hybrid_simulation.Coordinator,
+            'designsafe.project.hybrid_simulation.sim_substructure': hybrid_simulation.SimSubstructure,
+            'designsafe.project.hybrid_simulation.exp_substructure': hybrid_simulation.ExpSubstructure,
+            'designsafe.project.hybrid_simulation.output': hybrid_simulation.Output,
+            'designsafe.project.hybrid_simulation.analysis': hybrid_simulation.Analysis,
+            'designsafe.project.hybrid_simulation.report': hybrid_simulation.Report
         }
 
         cls = clss.get(name)

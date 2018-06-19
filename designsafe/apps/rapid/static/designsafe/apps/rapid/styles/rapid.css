@@ -241,6 +241,10 @@ body {
   padding-bottom: 2px;
 }
 
+.event-listing {
+  cursor: pointer;
+}
+
 
 .filter-options {
   padding: 5px;
@@ -264,4 +268,8 @@ body {
 .form-group.required .control-label:after{
   content:"*";
   color:red;
+}
+
+.recon-event-details {
+  overflow-y: scroll;
 }
