@@ -72,7 +72,7 @@
             "appIcon": {
                 "type": "string",
                 "description": "The icon to associate with this app",
-                "enum": appIcons.unshift(null),
+                "enum": [''].concat(appIcons),
                 "title": "Icon"
             },
             "isPublic": {
@@ -225,7 +225,7 @@
                   "type": "string",
                   "description": "The icon to associate with this app",
                   "title": "Icon",
-                  "enum": appIcons.unshift(null)
+                  "enum": [''].concat(appIcons)
                 //   "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "shortDescription": {
@@ -1479,7 +1479,7 @@
         "helpURI": "http://agaveapi.co/documentation/tutorials/app-management-tutorial",
         "label": "Execute a command at a shell",
         "appCategory": "",
-        "appIcon": null,
+        "appIcon": "",
         "defaultNodeCount": 1,
         "defaultMaxRunTime": "01:00:00",
         "shortDescription": "This will execute whatever command you give in the command parameter",

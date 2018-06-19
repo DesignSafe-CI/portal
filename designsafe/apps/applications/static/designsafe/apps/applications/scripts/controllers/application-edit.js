@@ -47,7 +47,7 @@
             "appIcon": {
                 "type": "string",
                 "description": "The icon to associate with this app",
-                "enum": appIcons.unshift(null),
+                "enum": [''].concat(appIcons),
                 "title": "Icon"
             },
             "isPublic": {
@@ -199,7 +199,7 @@
                   "type": "string",
                   "description": "The icon to associate with this app",
                   "title": "Icon",
-                  "enum": appIcons.unshift(null)
+                  "enum": [''].concat(appIcons)
                 //   "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "shortDescription": {
@@ -1832,7 +1832,7 @@
                                         response.data.appIcon = response.data.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
                                         response.data.tags.splice(response.data.tags.indexOf(response.data.tags.filter(s => s.includes('appIcon'))[0]));
                                     } else {
-                                        $scope.editModel.definition.appIcon = null;
+                                        $scope.editModel.definition.appIcon = '';
                                     }
                                     $scope.model = angular.copy(response.data);
 
@@ -1947,7 +1947,7 @@
                   $scope.editModel.definition.appIcon = $scope.editModel.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
                   $scope.editModel.definition.tags.splice($scope.editModel.definition.tags.indexOf($scope.editModel.definition.tags.filter(s => s.includes('appIcon'))[0]));
               } else {
-                  $scope.editModel.definition.appIcon = null;
+                  $scope.editModel.definition.appIcon = '';
               }
               $scope.model = $scope.editModel.definition;
 
