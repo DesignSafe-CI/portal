@@ -32,15 +32,24 @@
               if (!appMeta.value.definition.label) {
                 appMeta.value.definition.label = appMeta.value.definition.id;
               }
-              // Apply app icon if available, and apply label for ordering
+              // Apply label for ordering
               appMeta.value.definition.orderBy = appMeta.value.definition.label;
-              appMeta.value.definition.icon = null;
-              icons.some(function (icon) {
-                if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
-                  appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
-                  return true;
-                }
-              });
+
+              // Parse app icon
+              if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+                appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+              }
+
+              // Remove this when all apps have moved icon to tags
+              if (appMeta.value.definition.icon == null) {
+                icons.some(function (icon) {
+                  if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
+                    appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
+                    return true;
+                  }
+                });
+              }
+              
               if (appMeta.value.definition.isPublic) {
                 // If App has no category, place in Simulation tab
                 // Check if category exists either as a metadata field, or in a tag. Moving forward, all categories will be moved to tags
