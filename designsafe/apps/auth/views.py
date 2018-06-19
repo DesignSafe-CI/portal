@@ -158,23 +158,20 @@ def agave_oauth_callback(request):
                 token = AgaveOAuthToken(**token_data)
                 token.user = user
             token.save()
-            ###Between 161-177 works with supertoken####
+
             login(request, user)
 
             ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
                        token=settings.AGAVE_SUPER_TOKEN)
             try:
                 ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                              filePath=user.username)   
+                              filePath=user.username)
             except HTTPError:
-                check_or_create_agave_home_dir.apply(args=(user.username,),queue='files')   
-                messages.error(
-                    request,
-                    'An Agave home directory has not been created for you yet.  Please try logging on again later. '
-                    'If this issue persists please submit a support ticket.'
-                )
-                logout(request)
-                return HttpResponseRedirect('https://designsafe.dev/')
+                body = {'action': 'mkdir', 'path': user.username}
+                ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                            filePath='',
+                            body=body)
+                check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')   
 
         else:
             messages.error(
