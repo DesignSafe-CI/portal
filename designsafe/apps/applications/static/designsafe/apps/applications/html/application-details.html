@@ -26,6 +26,10 @@
                     <td>Category</td>
                     <td>{{appMeta.value.definition.appCategory}}</td>
                   </tr>
+                  <tr ng-if="appMeta.value.definition.appIcon">
+                    <td>Icon</td>
+                    <td>{{appMeta.value.definition.appIcon}}</td>
+                  </tr>
                   <tr ng-if="appMeta.value.definition.shortDescription">
                     <td>Description</td>
                     <td>{{appMeta.value.definition.shortDescription}}</td>
@@ -69,6 +73,10 @@
                 <tr ng-if="appMeta.value.definition.appCategory">
                   <td>Category</td>
                   <td>{{appMeta.value.definition.appCategory}}</td>
+                </tr>
+                <tr ng-if="appMeta.value.definition.appIcon">
+                  <td>Icon</td>
+                  <td>{{appMeta.value.definition.appIcon}}</td>
                 </tr>
                  <tr>
                    <td>Public</td>
