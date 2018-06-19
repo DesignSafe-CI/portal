@@ -48,10 +48,13 @@ class Project(BaseMetadataResource):
         :param agave_client: agavepy.Agave: Agave API client instance
         :return:
         """
+        logger.info("******" * 100)
+        logger.info('list_projects')
         query = {
             'name': Project.NAME
         }
-        records = agave_client.meta.listMetadata(q=json.dumps(query), privileged=False)
+        records = agave_client.meta.listMetadata(q=json.dumps(
+            query), privileged=False, offset=getattr(kwargs, 'offset'), limit=getattr(kwargs, 'limit'))
         return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in records]
 
     @classmethod

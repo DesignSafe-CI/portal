@@ -3,7 +3,6 @@
   app.requires.push('django.context');
 
   app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
-    
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
@@ -102,7 +101,7 @@
     DataBrowserService.deselect(DataBrowserService.state().selected);
 
 
-    ProjectService.list().then(function(projects) {
+    ProjectService.list({offset:0, limit:5}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
@@ -147,12 +146,12 @@
       
       // Fixes file object when created through 'browseTrail' for project dirs
       //The code below won't work because of an unknown provider error:
-      ProjectService.list().then(function (systemList) {
+      /* ProjectService.list().then(function (systemList) {
         $scope.browser.systemList = systemList;
         $scope.browser.listing = systemList[0];
-      }); 
+      });  */
 
-      if ($scope.browser.system == 'designsafe.storage.projects') {
+      /* if ($scope.browser.system == 'designsafe.storage.projects') {
         if (file.path.split('/').length == 1) {
           file.system = $scope.browser.system;
         } else if (file.system.includes('project-')) {
@@ -160,9 +159,9 @@
         }
       }
       DataBrowserService.browse(file)
-        .then(function (listing) {
-          listing.path = listing.path.replace(/^\/*/, '');
-          $scope.browser.filesListing = listing;
+        .then(function (listing) { */
+        //  listing.path = listing.path.replace(/^\/*/, '');
+         /* $scope.browser.filesListing = listing;
           $scope.browser.filePath = $scope.browser.filesListing.path;
 
           // Set dirPath trail for wonky project file structure
@@ -182,7 +181,7 @@
           logger.log(err);
           $scope.data.error = 'Unable to list the selected data source: ' + error.statusText;
           $scope.data.loading = false;
-        }); 
+        }); */
       //the method below relies on currentState.listing.system and currentState.listing.path, which are null right now.
       DataBrowserService.scrollToBottom();
     };

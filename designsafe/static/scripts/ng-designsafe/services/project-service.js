@@ -94,10 +94,11 @@
 
     /**
      * Get a list of Projects for the current user
+     * @param {String} options The offset and limit variables
      * @returns {Project[]}
      */
-    service.list = function() {
-      return projectResource.get().then(function(resp) {
+    service.list = function(options) {
+      return projectResource.get({params:options}).then(function(resp) {
         return _.map(resp.data.projects, function(p) { return new ProjectModel(p); });
       });
     };

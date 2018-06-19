@@ -103,13 +103,15 @@ class ProjectListingView(SecureMixin, BaseApiView):
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
     @profile_fn
-    def get(self, request, file_mgr_name=None, system_id=None):
+    def get(self, request, file_mgr_name=None, system_id=None, offset=None, limit=None):
         """
         Returns a list of Projects for the current user.
         :param request:
         :return: A list of Projects to which the current user has access
         :rtype: JsonResponse
         """
+        logger.info("******" * 100)
+        logger.info('ProjectCollectionView')
         #raise HTTPError('Custom Error')
         ag = request.user.agave_oauth.client
 
@@ -126,6 +128,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         else:
             projects = Project.list_projects(agave_client=ag)
             data = {'projects': projects}
+            offset = request.GET.get('offset', 0)
+            limit = request.GET.get('limit', 100)
 
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
