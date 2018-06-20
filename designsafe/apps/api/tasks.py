@@ -795,9 +795,7 @@ def reindex_projects(self):
 
     in_loop = True
     offset = 0
-
     while in_loop:
-        logger.debug('performing listing...')
         listing = client.meta.listMetadata(q=json.dumps(query), offset=offset, limit=100)
         offset += 100
 
@@ -805,7 +803,6 @@ def reindex_projects(self):
             in_loop = False
         else:
             for project in listing:
-                logger.debug(project)
                 index_or_update_project.apply_async(args=[dict(project)], queue='api')
 
 @shared_task(bind=True, max_retries=5)
