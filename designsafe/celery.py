@@ -26,6 +26,10 @@ app.conf.update(
         'update_user_storages': {
             'task': 'designsafe.apps.search.tasks.update_search_index',
             'schedule': crontab(minute="*/15"),
+        },
+        'reindex_projects': {
+            'task': 'designsafe.apps.api.tasks.reindex_projects',
+            'schedule': crontab(hour="*/24")
         }
     }
 )

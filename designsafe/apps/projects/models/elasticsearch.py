@@ -30,6 +30,7 @@ class IndexedProject(DocType):
     value = Nested(
         properties={
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
+            'teamMember': Text(fields={'_exact': Keyword()}, multi=True),
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),
@@ -39,7 +40,8 @@ class IndexedProject(DocType):
             'ef': Text(analyzer='english'),
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
-                'href': Text(fields={'_exact':Keyword()})
+                'href': Text(fs={'_exact':Keyword()}),
+                'delete': Boolean()
             }),
             'pi': Text(fields={'_exact': Keyword()}),
             'awardNumber': Text(fields={'_exact': Keyword()})

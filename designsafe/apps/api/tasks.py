@@ -750,9 +750,13 @@ def set_project_id(self, project_uuid):
 
     index_or_update_project.apply_async(args=[dict(new_metadata)], queue='api')
 
-
 @shared_task(bind=True)
 def index_or_update_project(self, body):
+    """
+    Takes a dict of project metadata and either creates a new document in the 
+    des-projects index or updates the document if one already exists for that
+    project.
+    """
 
     toIndex = {key: value for key, value in body.iteritems() if key != '_links'}
 
@@ -766,25 +770,43 @@ def index_or_update_project(self, body):
     if res.hits.total == 0:
         # Create an ES record for the new metadata.
         # project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
-
         project_ES = IndexedProject(**toIndex)
         project_ES.save()
-
     elif res.hits.total == 1:
         # Update the record.
-
         doc = res[0]
         doc.update(**toIndex)
-
     else:
         # If we're here we've somehow indexed the same project multiple times. 
         # Delete all records and replace with the metadata passed to the task.
-        
         for doc in res:
             doc.delete()
-
         project_ES = IndexedProject(**toIndex) 
         project_ES.save()
+
+@shared_task(bind=True)
+def reindex_projects(self):
+    """
+    Performs a listing of all projects using the service account client, then 
+    indexes each project using the index_or_update_project task.
+    """
+    client = get_service_account_client()
+    query = {'name': 'designsafe.project'}
+
+    in_loop = True
+    offset = 0
+
+    while in_loop:
+        logger.debug('performing listing...')
+        listing = client.meta.listMetadata(q=json.dumps(query), offset=offset, limit=100)
+        offset += 100
+
+        if len(listing) == 0:
+            in_loop = False
+        else:
+            for project in listing:
+                logger.debug(project)
+                index_or_update_project.apply_async(args=[dict(project)], queue='api')
 
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):
