@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import AgaveOAuthToken, AgaveServiceStatus
-from agavepy.agave import Agave, AgaveException
+from agavepy.agave import Agave
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 import logging
 import os

@@ -8,7 +8,6 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
