@@ -499,7 +499,7 @@ def email_confirmation(request, code=None):
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     check_or_create_agave_home_dir.apply(args=(user["username"],))
-                    
+                    return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,
                                    'We were unable to activate your account. Please try '
