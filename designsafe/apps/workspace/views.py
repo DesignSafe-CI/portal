@@ -166,7 +166,7 @@ class ApiService(BaseApiView):
         :returns: application object.
         """
         app_id = self.request.GET.get('app_id')
-        agv = self.request.user.agave_oauth.client
+        agv = self.request.user.agave_oauth.client # need to mock this client
         if app_id:
             data = agv.apps.get(appId=app_id)
             lic_type = _app_license_type(app_id)
