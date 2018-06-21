@@ -663,7 +663,8 @@
             </div>
             <div class="value pull-right">
               <span class="value pull-right" ng-repeat="asoc in browser.project.value.associatedProjects">
-                {{asoc}}
+                <span ng-if="asoc.href">{{asoc.title}} -- <a href='{{asoc.href}}' target="_blank">{{asoc.href}}</a></span>
+                <span ng-if="!asoc.href">{{asoc.title}}</span>
               </span>
             </div>
           </div>
@@ -1506,7 +1507,8 @@
               </div>
               <div class="value pull-right">
                 <span class="value pull-right" ng-repeat="asoc in browser.project.value.associatedProjects">
-                  {{asoc}}
+                  <span ng-if="asoc.href">{{asoc.title}} -- <a href='{{asoc.href}}' target="_blank">{{asoc.href}}</a></span>
+                  <span ng-if="!asoc.href">{{asoc.title}}</span>
                 </span>
               </div>
             </div>
@@ -1924,7 +1926,8 @@
             </div>
             <div class="value pull-right">
               <span class="value pull-right" ng-repeat="asoc in browser.project.value.associatedProjects">
-                {{asoc}}
+                <span ng-if="asoc.href">{{asoc.title}} -- <a href='{{asoc.href}}' target="_blank">{{asoc.href}}</a></span>
+                <span ng-if="!asoc.href">{{asoc.title}}</span>
               </span>
             </div>
           </div>

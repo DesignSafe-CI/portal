@@ -246,6 +246,7 @@
       ProjectService.editProject($scope.data.project)
         .then(function (project) {
           $scope.data.project = project;
+          $state.reload();
         });
     };
 
@@ -327,13 +328,13 @@
       //DataBrowserService.state().showPreviewListing = true;
       $scope.previewHref = undefined;
       DataBrowserService.showPreview();
-      FileListing.get({'system': $scope.browser.listing.system,
-                       'name': 'projectimage.jpg',
-                       'path': '/projectimage.jpg'}).then(function(list){
-                        list.preview().then(function(data){
-                            $scope.previewHref = data.postit;
-                        });
-                      });
+      // FileListing.get({'system': $scope.browser.listing.system,
+      //                  'name': 'projectimage.jpg',
+      //                  'path': '/projectimage.jpg'}).then(function(list){
+      //                   list.preview().then(function(data){
+      //                       $scope.previewHref = data.postit;
+      //                   });
+      //                 });
     };
 
     function savePublication(){

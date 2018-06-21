@@ -76,27 +76,42 @@
                 Your project is tailored based on Project Type choice.
             </p>
       </div>
-      <div style="clear:both;">
+    <div style="clear:both;">
         <div class="well well-sm">
-          <div ng-if="form.associatedProjects.length">
-          <yamz-term term-id="h1554"><i class="fa fa-question-circle"></i></yamz-term>
-          <p> Associated Project - Link to Project <p>
-          <div ng-repeat="associatedProject in form.associatedProjects">
-              <div>
-                <input type="checkbox" ng-model="associatedProject.delete" /><span> {{associatedProject.title}} </span> - <span> <a href="{{associatedProject.href}}">{{associatedProject.href}}</a> </span>
-              </div>
-          </div>
-          <p class="help-block">Check associated projects to delete.</p>
-          </div>
-          <p> Associated Project - Link to Project <p>
-          <div class="form-group" ng-repeat="associatedProject in form.associatedProjectsAdded">
-              <input class="form-control" value="{{associatedProject.title}}" style="width:40%; display:inline-block;" ng-model="associatedProject.title"/> <i class="fa fa-link"></i> <input class="form-control" value="{{associatedProject.href}}" style="width:40%; display:inline-block;" ng-model="associatedProject.href"/>
-          </div>
-          <button class="btn btn-info btn-sm" ng-click="addAssociatedProject()">
-            <i class="fa fa-plus"></i> Add another
-          </button>
+            <yamz-term term-id="h1554">
+                <i class="fa fa-question-circle"></i>
+            </yamz-term>
+            <label> Associated Projects: </label>
+
+            <div ng-if="form.associatedProjects.length">
+                <!-- <span class="help-block">Check associated projects to delete.</span> -->
+                <div ng-repeat="associatedProject in form.associatedProjects">
+                    <div>
+                        <i class="fa fa-trash"></i>
+                        <input type="checkbox" ng-model="associatedProject.delete" style="margin-right:6px;"/>
+                        <span> {{associatedProject.title}} </span> -
+                        <span>
+                            <a href="{{associatedProject.href}}" target="_blank">{{associatedProject.href}}</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="form-group" ng-repeat="associatedProject in form.associatedProjectsAdded">
+                <input class="form-control" placeholder="Project Title" value="{{associatedProject.title}}" style="width:40%; display:inline-block;"
+                    ng-model="associatedProject.title" />
+                <i class="fa fa-link"></i>
+                <input class="form-control" placeholder="Link to Project" value="{{associatedProject.href}}" style="width:40%; display:inline-block;"
+                    ng-model="associatedProject.href" />
+            </div>
+            <button class="btn btn-info btn-sm" ng-click="addAssociatedProject()">
+                <i class="fa fa-plus"></i> Add another
+            </button>
+
         </div>
-      </div>
+    </div>
       <div style="clear:both;">
         <div class="form-group required">
           <label for="id-keywords">Keywords</label>
