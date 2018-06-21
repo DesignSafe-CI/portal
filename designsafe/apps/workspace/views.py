@@ -166,9 +166,13 @@ class ApiService(BaseApiView):
         :returns: application object.
         """
         app_id = self.request.GET.get('app_id')
+        # print app_id
         agv = self.request.user.agave_oauth.client # need to mock this client
         if app_id:
             data = agv.apps.get(appId=app_id)
+            # print "############# I am printing above data in views1"
+            # print data
+            # print "############# I am printing below data in views1"
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
@@ -220,6 +224,9 @@ class ApiService(BaseApiView):
         else:
             query = self.request.GET.get('q')
             data = agv.meta.listMetadata(q=query)
+        # print "############# I am printing above data in meta/views"
+        # print data
+        # print "############# I am printing below data in meta/views"
 
         return data
 

@@ -1,4 +1,3 @@
-import logging
 from django.test import TestCase, RequestFactory
 from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
@@ -10,7 +9,6 @@ import mock
 from mock import Mock
 
 
-logger = logging.getLogger(__name__)
 # class AttrDict(dict):
 
 #     def __getattr__(self, key):
@@ -21,26 +19,18 @@ logger = logging.getLogger(__name__)
 
 
 class TestWorkspace(TestCase):
-    fixtures = ['user-data.json', 'agave-oauth-token-data.json']
-    # def setUp(self):
-    #     user = get_user_model().objects.get(pk=2)
-    #     user.set_password('password')
-    #     user.save()
-    #     self.user = user
-
-    # def setUp(self):
-        # user = get_user_model().objects.get(username='ds_user')
-        # user.set_password('password')
-        # user.save()
-        #token = AgaveOAuthToken(
-        #    token_type="bearer",
-        #    scope="default",
-        #    access_token="1234fsf",
-        #    refresh_token="123123123",
-        #    expires_in=14400,
-        #    created=1523633447)
-        #token.user = user
-        #token.save()
+    def setUp(self):
+        User = get_user_model()
+        user = User.objects.create_user('test', 'test@test.com', 'test')
+        token = AgaveOAuthToken(
+           token_type="bearer",
+           scope="default",
+           access_token="1234fsf",
+           refresh_token="123123123",
+           expires_in=14400,
+           created=1523633447)
+        token.user = user
+        token.save()
 
     # def test_workspace_denies_anonymous(self):
     #     response = self.client.get('/rw/workspace/', follow=True)
@@ -65,64 +55,94 @@ class TestWorkspace(TestCase):
     #     license2 = _app_license_type("opensees-MP-2.5.0.6606u8")
     #     self.assertEqual(license2, None)
 
-    def view_to_test(self, view, request, *args, **kwargs):
-        view.request = request
-        view.args = args
-        view.kwargs = kwargs
-        return view
-        
-        
+# @mock.patch('agavepy.agave.Agave')
+# @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')          
 class WorkspaceViewtestCase(TestWorkspace):
-    def setUp(self):
-        user = get_user_model().objects.get(username='ds_user')
-        # user.set_password('password')
-        # user.save()
-        # token = AgaveOAuthToken(
-        #    token_type="bearer",
-        #    scope="default",
-        #    access_token="1234fsf",
-        #    refresh_token="123123123",
-        #    expires_in=14400,
-        #    created=1523633447)
-        # token.user = user
-        # token.save()
-        # user.agave_oauth = token
-        # user.agave_oauth.client = Mock()
-        self.user = user
+    # def setUp(self):
+    #     User = get_user_model()
+    #     user = User.objects.create_user('test', 'test@test.com', 'test')
+    #     token = AgaveOAuthToken(
+    #        token_type="bearer",
+    #        scope="default",
+    #        access_token="1234fsf",
+    #        refresh_token="123123123",
+    #        expires_in=14400,
+    #        created=1523633447)
+    #     token.user = user
+    #     token.save()
+
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_get_apps(self, agave_client, agave):
+    #     """Testing return of apps object'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.apps.get.return_value = {
+    #         "id": "test", 
+    #         "name": "test"
+    #     }
+    #     response = self.client.get('/rw/workspace/api/apps/?app_id=OpenseesMp-3.0.0.6709u2')
+    #     self.assertEqual(response.status_code, 200)
 
 
     @mock.patch('agavepy.agave.Agave')
-    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.refresh')
-    def test_get_apps(self, agave_refresh, agave):
-        """Testing get access to:
-            'PotreeConverter-0.1u5'
+    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    def test_get_meta(self, agave_client, agave):
+        """Testing '
         """
-        agave.return_value.apps.return_value.get.return_value = []
-        agave_refresh.return_value = None
-        self.user.agave_oauth.client.apps.get.return_value = 'app___get'
-        resource = None
-        app_version = None
-        #Create request
-        request = RequestFactory().get('/rw/workspace/api/apps/?app_id=OpenseesMp-3.0.0.6709u2')
-        request.user = self.user
-        #Initi view
-        test_view = ApiService()
-        #Setup view for testing
-        test_view = self.view_to_test(test_view, request,
-                                resource=resource, app_version=app_version)
-        res = ApiService.as_view()(request, 'apps')
-        logger.info('res: %s', res)
-       
-        self.assertEqual(res, True)
+        self.client.login(username='test', password='test')
+        agave_client.meta.get.return_value = [{
+            "id": "test", 
+            "name": "test"
+        }]
+        response = self.client.get('/rw/workspace/api/meta/?q={"$and":[{"name":"ds_apps"},{"value.definition.available":true}]}')
+        # print " ############### I am printing response:"
+        # print response
+        # print " ############### I am printing response above:"
+        self.assertEqual(response.status_code, 200)
+
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_get_jobs(self, agave_client, agave):
+    #     """Testing return '
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.jobs.get.return_value = {
+    #         "id": "test", 
+    #         "name": "test",
+    #         "archiveSystem": "designsafe.storage.default",
+    #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
+    #     }
+    #     response = self.client.get('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+    #     print " ############### I am printing response:"
+    #     print response
+    #     print " ############### I am printing response above:"
+    #     self.assertEqual(response.status_code, 200)
+
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_post_jobs(self, agave_client, agave):
+    #     """Testing return '
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.jobs.post.return_value = {
+    #         "id": "test", 
+    #         "name": "test",
+    #         "archiveSystem": "designsafe.storage.default",
+    #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
+    #     }
+    #     response = self.client.post('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+    #     print " ############### I am printing response:"
+    #     print response
+    #     print " ############### I am printing response above:"
+    #     self.assertEqual(response.status_code, 200)
 
 
 
 
 
 
-
-
-    # I guess the test below would be a a good end to end test
+    # I guess the tests below would be a a good end to end test
 
 
     #  def test_get(self):
