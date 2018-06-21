@@ -40,7 +40,7 @@ class IndexedProject(DocType):
             'ef': Text(analyzer='english'),
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
-                'href': Text(fs={'_exact':Keyword()}),
+                'href': Text(fields={'_exact':Keyword()}),
                 'delete': Boolean()
             }),
             'pi': Text(fields={'_exact': Keyword()}),
