@@ -18,8 +18,6 @@ import json
 import six
 import logging
 import urllib
-import io
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +200,7 @@ def call_api(request, service):
             put = json.loads(request.body)
             dir_path = put.get('file_path')
             system = put.get('system')
-            WorkspaceUtils.setup_identity_file(
+            data = WorkspaceUtils.setup_identity_file(
                 request.user.username,
                 agave,
                 system,
