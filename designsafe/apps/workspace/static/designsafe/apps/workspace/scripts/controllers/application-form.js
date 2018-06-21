@@ -15,8 +15,8 @@
     };
   }])
   .controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast',
-    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast) {
+    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast', 'Django',
+    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django) {
 
       $localStorage.systemChecks = {};
 
@@ -263,18 +263,32 @@
         }
       };
 
-      $scope.onLaunchNotebook = function(href) {
-        let file_path = '/SCEC_BBP_GMportal/Run_me.ipynb'; // app.file_path
-        let file_mgr_name = 'community';
+      $scope.onLaunchNotebook = function(path, jupyter_base_url='https://jupyter.designsafe-ci.org', copy=true) {
+        let file_path = path.split(/\/(.+)/)[1];
+        let file_mgr_name = 'community'; // path.split('/')[0];
         let system_id = 'designsafe.storage.community';
+
         $scope.data.launching = true;
-        Apps.copyNotebook(file_mgr_name, system_id, file_path)
-        .then(function(resp) {
-          $scope.data.launching = false;
-          window.open(`${href}/user/${resp.data.path.split('/')[1]}/notebooks/mydata/${resp.data.name}`,'').focus();
-          }, function (err) {
-            scope.data.launching = false;
-          });
+        if (copy) {
+          Apps.copyNotebook(file_mgr_name, system_id, file_path)
+            .then(function (resp) {
+              $scope.data.launching = false;
+              window.open(`${jupyter_base_url}/user/${Django.user}/notebooks/mydata/${resp.data.name}`, '').focus();
+            }, function (err) {
+              $scope.data.launching = false;
+            });
+        } else {
+          // create dir of parent folder in user's mydata
+          Apps.setupNotebook(file_path.split('/').slice(-2, -1)[0])
+            .then(function (resp) {
+              $scope.data.launching = false;
+              window.open(`${jupyter_base_url}/user/${Django.user}/notebooks/${path}`, '').focus();
+            }, function (err) {
+              console.log(err);
+              $scope.data.launching = false;
+            });
+        }
+        
       };
 
       function refocus() {

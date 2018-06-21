@@ -35,7 +35,8 @@
     'xeditable',
     'pascalprecht.translate',
     'ngStorage', 
-    'ngMaterial'
+    'ngMaterial',
+    'django.context'
   );
   angular.module('designsafe').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$urlRouterProvider', '$stateProvider', config]);
 

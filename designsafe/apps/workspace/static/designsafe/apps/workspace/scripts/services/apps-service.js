@@ -45,6 +45,17 @@
       });
     };
 
+    service.setupNotebook = function(file_path) {
+      return $http({
+        url: djangoUrl.reverse('designsafe_workspace:call_api', ['ipynb']),
+        method: 'PUT',
+        data: {
+          file_path: file_path,
+          system: 'designsafe.storage.default'
+        }
+      });
+    };
+
     service.formSchema = function(app) {
       /**
        * Generate a JSON.schema for the app ready for angular-schema-form

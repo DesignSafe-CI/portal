@@ -17,6 +17,8 @@ import json
 import six
 import logging
 import urllib
+import io
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +196,29 @@ def call_api(request, service):
                     data = agave.jobs.list(limit=limit, offset=offset)
             else:
                 return HttpResponse('Unexpected service: %s' % service, status=400)
+
+        elif service == 'ipynb':
+            put = json.loads(request.body)
+            dir_path = put.get('file_path')
+            system = put.get('system')
+
+            # Create directory
+            body = {
+                'action': 'mkdir',
+                'path': dir_path
+            }
+            result = agave.files.manage(systemId=system, filePath=request.user.username, body=body)
+
+            # Create .Identity file with user's username
+            with open('.Identity', 'w') as identity_file:
+                identity_file.write(str(request.user.username))
+
+            with open('.Identity', 'r') as identity_file:
+                data = agave.files.importData(systemId=system,
+                                            filePath='/{}/{}'.format(request.user.username, put.get('file_path')),
+                                            fileToUpload=identity_file,
+                                            fileName='.Identity')
+            os.remove('.Identity')
 
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
