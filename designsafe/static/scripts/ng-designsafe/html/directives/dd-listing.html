@@ -956,7 +956,7 @@
           </div>
           <div class="meta-row">
             <div class="attr pull-left">
-              <span>Description</span>
+              <span>Analysis Description</span>
               <span class="text-danger">*</span>
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
@@ -980,7 +980,8 @@
                 <span class="text-danger" ng-if="publicationCtrl.isMissing(analysis.value.referencedoi)">
                   <i class="fa fa-exclamation-circle"></i>
                 </span>
-                <span>{{analysis.value.reference}} {{analysis.value.referencedoi}}</span>
+                <span ng-if="analysis.value.referencedoi">{{analysis.value.reference}} -- {{analysis.value.referencedoi}}</span>
+                <span ng-if="!analysis.value.referencedoi">{{analysis.value.reference}}</span>
               </div>
             </div>
           <div class="meta-row">
@@ -1757,7 +1758,8 @@
                 <span class="text-danger" ng-if="publicationCtrl.isMissing(analysis.value.referencedoi)">
                   <i class="fa fa-exclamation-circle"></i>
                 </span>
-                <span>{{analysis.value.reference}} {{analysis.value.referencedoi}}</span>
+                <span ng-if="analysis.value.referencedoi">{{analysis.value.reference}} -- {{analysis.value.referencedoi}}</span>
+                <span ng-if="!analysis.value.referencedoi">{{analysis.value.reference}}</span>
               </div>
             </div>
             <div class="meta-row">

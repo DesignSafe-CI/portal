@@ -1262,21 +1262,27 @@
                 ];
           } else if ($scope.data.project.value.projectType === 'simulation'){
             $scope.ui.tagTypes = [
-                {label: 'Simulation Model',
-                 name: 'designsafe.project.simulation.model',
-                 yamzId: ''},
-                {label: 'Simulation Input',
-                 name: 'designsafe.project.simulation.input',
-                 yamzId: ''},
-                {label: 'Simulation Output',
-                 name: 'designsafe.project.simulation.output',
-                 yamzId: ''},
-                {label: 'Analysis',
-                 name: 'designsafe.project.simulation.analysis',
-                 yamzId: 'h1333'},
-                {label: 'Report',
-                 name: 'designsafe.project.simulation.report',
-                 yamzId: ''}
+                  {label: 'Simulation Model',
+                  name: 'designsafe.project.simulation.model',
+                  yamzId: ''},
+                  {label: 'Simulation Input',
+                  name: 'designsafe.project.simulation.input',
+                  yamzId: ''},
+                  {label: 'Simulation Output',
+                  name: 'designsafe.project.simulation.output',
+                  yamzId: ''},
+                  {label: 'Integrated Data Analysis',
+                  name: 'designsafe.project.simulation.analysis',
+                  yamzId: ''},
+                  {label: 'Integrated Report',
+                  name: 'designsafe.project.simulation.report',
+                  yamzId: ''},
+                  {label: 'Analysis',
+                  name: 'designsafe.project.analysis',
+                  yamzId: 'h1333'},
+                  {label: 'Report',
+                  name: 'designsafe.project.report',
+                  yamzId: ''},
                 ];
           } else if ($scope.data.project.value.projectType === 'hybrid_simulation'){
             $scope.ui.tagTypes = [

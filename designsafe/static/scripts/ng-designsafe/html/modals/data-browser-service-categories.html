@@ -388,7 +388,7 @@
                  ng-model="data.catForm.title"
                  required/>
         </div>
-        <div class="extra-form-inputs" ng-if="data.catForm.type === 'Analysis'">
+        <div class="extra-form-inputs" ng-if="data.catForm.type === 'Analysis' || data.catForm.type === 'Integrated Data Analysis'">
           <div style="display:inline-block; width:30%;">
             <label for="id-tag-reference" style="display:block">Reference Data</label>
             <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.catForm.reference">
@@ -457,7 +457,7 @@
                  required/>
         </div>
         <!-- Analysis Reference Data field start -->
-        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis' ">
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.analysis' || data.form.projectTagToAdd.name === 'designsafe.project.simulation.analysis' ">
             <div style="display:inline-block; width:30%;">
               <label for="id-tag-reference" style="display:block">Reference Data</label>
               <input class="form-control ng-pristine ng-valid ng-touched" value="" style="display:block;" name="tag-reference" id="id-ref-data" ng-model="data.form.projectTagToAdd.reference">

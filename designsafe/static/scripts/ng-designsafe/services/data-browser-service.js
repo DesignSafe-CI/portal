@@ -1599,18 +1599,18 @@
                 {label: 'Simulation Output',
                  name: 'designsafe.project.simulation.output',
                  yamzId: ''},
-                {label: 'Integrated Data Analysis',
+                {label: 'Analysis',
                  name: 'designsafe.project.simulation.analysis',
                  yamzId: ''},
-                {label: 'Integrated Report',
+                {label: 'Report',
                  name: 'designsafe.project.simulation.report',
                  yamzId: ''},
-                {label: 'Analysis',
-                 name: 'designsafe.project.analysis',
-                 yamzId: 'h1333'},
-                {label: 'Report',
-                 name: 'designsafe.project.report',
-                 yamzId: ''}
+                // {label: 'Analysis',
+                //  name: 'designsafe.project.analysis',
+                //  yamzId: 'h1333'},
+                // {label: 'Report',
+                //  name: 'designsafe.project.report',
+                //  yamzId: ''}
                 ];
           } else if (currentState.project.value.projectType === 'hybrid_simulation'){
             $scope.ui.tagTypes = [
