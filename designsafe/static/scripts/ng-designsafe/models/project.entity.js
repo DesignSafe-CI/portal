@@ -122,6 +122,11 @@
         'designsafe.project.simulation.output': {'tag': 'tag-red', 'text': 'ds-text-red'},
         'designsafe.project.simulation.analysis': {'tag': 'tag-light-blue', 'text': 'ds-text-light-blue'},
         'designsafe.project.simulation.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
+        'designsafe.project.hybrid_simulation.global_model': {'tag': 'tag-blue', 'text': 'ds-text-blue'},
+        'designsafe.project.hybrid_simulation.coordinator': {'tag': 'tag-green', 'text': 'ds-text-green'},
+        'designsafe.project.hybrid_simulation.sim_substructure': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
+        'designsafe.project.hybrid_simulation.exp_substructure': {'tag': 'tag-purple', 'text': 'ds-text-purple'},
+        'designsafe.project.hybrid_simulation.output': {'tag': 'tag-red', 'text': 'ds-text-red'},
     };
 
     ProjectEntity.prototype.cssClasses = function(){

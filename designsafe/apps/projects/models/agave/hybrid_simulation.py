@@ -68,6 +68,7 @@ class GlobalModel(RelatedEntity):
     )
     project = fields.RelatedObjectField(HybridSimulationProject)
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Coordinator(RelatedEntity):
     model_name = 'designsafe.project.hybrid_simulation.coordinator'

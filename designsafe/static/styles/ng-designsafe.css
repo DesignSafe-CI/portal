@@ -410,6 +410,14 @@ tr.experiment-deleted {
     color: black;
 }
 
+.ds-text-yellow {
+    color: #B59300;
+}
+
+.ds-text-purple {
+    color: #865AA7;
+}
+
 span.label.tag-yellow {
     border: 2px solid #B59300;
     color: black;
