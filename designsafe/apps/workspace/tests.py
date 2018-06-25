@@ -122,34 +122,36 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     print " ############### I am printing response above:"
     #     self.assertEqual(response.status_code, 301)
 
+# redirects but works
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_meta(self, agave_client, agave):
     #     """Testing return '
     #     """
     #     self.client.login(username='test', password='test')
-    #     agave_client.jobs.post.return_value = {
-    #         "id": "test", 
-    #         "name": "test",
-    #         "archiveSystem": "designsafe.storage.default",
-    #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
-    #     }
-    #     response = self.client.post('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+    #     agave_client.meta.addMetadata.return_value = {
+    #         "uuid": "test", 
+    #         "owner": "test"
+    #       }
+    #     response = self.client.post('/rw/workspace/api/meta/v2/data')
     #     print " ############### I am printing response:"
     #     print response
     #     print " ############### I am printing response above:"
-    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.status_code, 301)
 
-#getting sekizai error
+# redirects but works
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_delete_meta(self, agave_client, agave):
     #     """Testing delete_meta'
     #     """
     #     self.client.login(username='test', password='test')
-    #     agave_client.meta.deleteMetadata.return_value = None
-    #     response = self.client.delete('/rw/workspace/api/meta/?uuid=108257294897901080-242ac11e-0001-000')
-    #     self.assertEqual(response.status_code, 200)
+    #     agave_client.meta.deleteMetadata.return_value = {
+    #         "status" : "success",
+    #         "message" : None
+    #     }
+    #     response = self.client.delete('/rw/workspace/api/meta/v2/data/2831691864876248600-242ac11e-0001-012?pretty=true')
+    #     self.assertEqual(response.status_code, 301)
 
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
