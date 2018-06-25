@@ -36,9 +36,8 @@ class TestWorkspace(TestCase):
         User = get_user_model()
         u = User.objects.get(username="test")
         u.delete()
-        print ("The user is deleted")
+        # print ("The user is deleted")
         
-
 
     # def test_workspace_denies_anonymous(self):
     #     response = self.client.get('/rw/workspace/', follow=True)
@@ -78,7 +77,7 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.get('/rw/workspace/api/apps/?app_id=OpenseesMp-3.0.0.6709u2')
     #     self.assertEqual(response.status_code, 200)
 
-#will delete monitors?
+# will delete monitors?
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_get_monitors(self, agave_client, agave):
@@ -172,7 +171,7 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.get('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
     #     self.assertEqual(response.status_code, 200)
 
-#need to fix this on views
+#getting an error when trying to post-job from updated master as well
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_jobs(self, agave_client, agave):
@@ -190,6 +189,22 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     print response
     #     print " ############### I am printing response above:"
     #     self.assertEqual(response.status_code, 200)
+
+#redirects but runs
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_post_jobs(self, agave_client, agave):
+    #     """Testing return '
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.jobs.post.return_value = {
+    #         "id": "test", 
+    #         "name": "test",
+    #         "archiveSystem": "designsafe.storage.default",
+    #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
+    #     }
+    #     response = self.client.post('/rw/workspace/api/jobs/v2/4690860065901580776-242ac11b-0001-007')
+    #     self.assertEqual(response.status_code, 301)
 
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
