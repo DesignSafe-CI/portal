@@ -385,7 +385,7 @@ class ApiService(BaseApiView):
         """Gets details of job by job id and deletes job.
         
         :param service: jobs.
-        :returns: null HttpResponse object. # agavepy docs say response String
+        :returns: String
         """
         job_id = self.request.GET.get('job_id')
         agv = self.request.user.agave_oauth.client
