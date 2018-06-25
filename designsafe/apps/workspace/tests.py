@@ -32,16 +32,24 @@ class TestWorkspace(TestCase):
         token.user = user
         token.save()
 
+    def tearDown(self):
+        User = get_user_model()
+        u = User.objects.get(username="test")
+        u.delete()
+        print ("The user is deleted")
+        
+
+
     # def test_workspace_denies_anonymous(self):
     #     response = self.client.get('/rw/workspace/', follow=True)
     #     # print response.__dict__
     #     self.assertTrue(response.status_code >= 301 < 400)
         
-    # # def test_workspace_loads(self):
-    # #     self.client.login(username='test', password='test')
-    # #     response = self.client.get('/rw/workspace/')
-    # #     self.assertEqual(response.status_code, 200)
-    # #     self.assertTrue("Workspace" in response.content)
+    # def test_workspace_loads(self):
+    #     self.client.login(username='test', password='test')
+    #     response = self.client.get('/rw/workspace/')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTrue("Workspace" in response.content)
 
     # def test_app_license_type_matlab(self):
     #     license = _app_license_type("matlab-2.5.0.6606u8")
@@ -85,21 +93,35 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     self.assertEqual(response.status_code, 200)
 
 
-    @mock.patch('agavepy.agave.Agave')
-    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    def test_get_meta(self, agave_client, agave):
-        """Testing '
-        """
-        self.client.login(username='test', password='test')
-        agave_client.meta.get.return_value = [{
-            "id": "test", 
-            "name": "test"
-        }]
-        response = self.client.get('/rw/workspace/api/meta/?q={"$and":[{"name":"ds_apps"},{"value.definition.available":true}]}')
-        # print " ############### I am printing response:"
-        # print response
-        # print " ############### I am printing response above:"
-        self.assertEqual(response.status_code, 200)
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_get_meta(self, agave_client, agave):
+    #     """Testing '
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.meta.listMetadata.return_value = [{
+    #         "id": "test", 
+    #         "name": "test"
+    #     }]
+    #     response = self.client.get('/rw/workspace/api/meta/?q={"$and":[{"name":"ds_apps"},{"value.definition.available":true}]}')
+    #     self.assertEqual(response.status_code, 200)
+
+# need to fix this one - get meta else
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_get_meta(self, agave_client, agave):
+    #     """Testing '
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.meta.get.return_value = [{
+    #         "id": "test", 
+    #         "name": "test"
+    #     }]
+    #     response = self.client.get('/rw/workspace/api/meta/?app_id=41705986438196760-242ac11e-0001-012')
+    #     print " ############### I am printing response:"
+    #     print response
+    #     print " ############### I am printing response above:"
+    #     self.assertEqual(response.status_code, 200)
 
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
@@ -110,15 +132,17 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     agave_client.jobs.get.return_value = {
     #         "id": "test", 
     #         "name": "test",
-    #         "archiveSystem": "designsafe.storage.default",
-    #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
+    #         "archiveSystem": "test",
+    #         "archivePath": "test"
     #     }
+    #     agave_client.meta.listMetadata.return_value = [{
+    #         "id": "test", 
+    #         "name": "test"
+    #     }]
     #     response = self.client.get('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
-    #     print " ############### I am printing response:"
-    #     print response
-    #     print " ############### I am printing response above:"
     #     self.assertEqual(response.status_code, 200)
 
+#need to fix this on views
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_jobs(self, agave_client, agave):
@@ -137,7 +161,19 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     print " ############### I am printing response above:"
     #     self.assertEqual(response.status_code, 200)
 
-
+#need to fix null outcome
+    @mock.patch('agavepy.agave.Agave')
+    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    def test_delete_jobs(self, agave_client, agave):
+        """Testing return '
+        """
+        self.client.login(username='test', password='test')
+        agave_client.jobs.delete.return_value = None
+        response = self.client.delete('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+        print " ############### I am printing response:"
+        print response
+        print " ############### I am printing response above:"
+        self.assertEqual(response.status_code, 200)
 
 
 

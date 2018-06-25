@@ -14,6 +14,7 @@ from designsafe.apps.api.views import BaseApiView
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
+# import jsonify
 import json
 import six
 import logging
@@ -100,7 +101,13 @@ class ApiService(BaseApiView):
 
         logger.debug('handler: %s', handler)
         try:
-            data = handler(service) #self.get_apps('apps)
+            data = handler(service) #self.post_apps('apps)
+        except JobSubmitError as e:
+                data = e.json()
+                logger.error('Failed to submit job {0}'.format(data)) # this is the error is raising a 500
+                return HttpResponse(json.dumps(data),
+                                    content_type='application/json',
+                                    status=e.status_code)
         except HTTPError as e:
             logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
                 service, e.message))
@@ -208,13 +215,22 @@ class ApiService(BaseApiView):
         :returns: array of MetadataResponse object.
         """
         app_id = self.request.GET.get('app_id')
+        print " ############### I am printing above app_id:"
+        print app_id
+        print " ############### I am printing below app_id:"
         agv = self.request.user.agave_oauth.client
         if app_id:
             data = agv.meta.get(appId=app_id)
+            print " ############### I am printing above data:"
+            print data
+            print " ############### I am printing below data:"
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
             }
+            print " ############### I am printing above data after license:"
+            print data
+            print " ############### I am printing below data after license:"
             if lic_type is not None:
                 _, license_models = get_license_info()
                 license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
@@ -227,7 +243,7 @@ class ApiService(BaseApiView):
         # print "############# I am printing above data in meta/views"
         # print data
         # print "############# I am printing below data in meta/views"
-
+        print data
         return data
 
     def post_meta(self, service):
@@ -350,14 +366,7 @@ class ApiService(BaseApiView):
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
-            try:
-                data = submit_job(self.request, self.request.user.username, job_post)
-            except JobSubmitError as e:
-                data = e.json()
-                logger.error('Failed to submit job {0}'.format(data))
-                return HttpResponse(json.dumps(data),
-                                    content_type='application/json',
-                                    status=e.status_code)
+            data = submit_job(self.request, self.request.user.username, job_post) # was catching JobSubmitError
 
         # list jobs (via POST?)
         else:
@@ -376,7 +385,7 @@ class ApiService(BaseApiView):
         """Gets details of job by job id and deletes job.
         
         :param service: jobs.
-        :returns: null HttpResponse object.
+        :returns: null HttpResponse object. # agavepy docs say response String
         """
         job_id = self.request.GET.get('job_id')
         agv = self.request.user.agave_oauth.client
