@@ -9,7 +9,20 @@ from designsafe.apps.auth.views import agave_oauth_callback
 class LoginTestClass(TestCase):
   def setUp (self):
     User = get_user_model()
-    user = User.objects.create_user('test', 'test@test.com', 'test')
+
+    user_with_agave = User.objects.create_user('test_with_agave', 'test@test.com', 'test')
+    token = AgaveOAuthToken(
+        token_type="bearer",
+        scope="default",
+        access_token="1234abcd",
+        refresh_token="123123123",
+        expires_in=14400,
+        created=1523633447)
+    token.user = user
+    token.save()
+
+    user_without_agave = User.objects.create_user(
+        'test_without_agave', 'test@test.com', 'test')
     token = AgaveOAuthToken(
         token_type="bearer",
         scope="default",
@@ -24,13 +37,13 @@ class LoginTestClass(TestCase):
   def tearDown(self):
     return
     
-  @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+  """ @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
   @mock.patch('agavepy.agave.Agave')
-  def test_agave_file_listing(self, agave_client, agave):
+  def test_has_agave_file_listing(self, agave_client, agave):
     #agaveclient.return_value.files.list.return_value = [] // whatever the listing should look like
     #request.post.return_value = {} // some object that looks like a requests response
     
-    self.client.login(username='test', password='test')
+    self.client.login(username='test_with_agave', password='test')
 
     agave_client.files.list.return_value = {
         "name": ".",
@@ -60,7 +73,23 @@ class LoginTestClass(TestCase):
     
     resp = self.client.get('https://agave.designsafe-ci.org/files/v2/listings/designsafe.storage.default/test')
     print resp 
-    self.assertEqual(resp.status_code, 200)
+    self.assertEqual(resp.status_code, 200) """
+
+  @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+  @mock.patch('agavepy.agave.Agave')
+  def test_no_agave_file_listing(self, agave_client, agave):
+      self.client.login(username='test_without_agave', password='test')
+
+      agave_client.files.list.return_value = {
+          "status": "error", 
+          "message": "File/folder does not exist", 
+          "version": "test"
+          }
+
+      resp = self.client.get(
+          'https://agave.designsafe-ci.org/files/v2/listings/designsafe.storage.default//test')
+      print resp
+      self.assertEqual(resp.status_code, 200)
 
   """ def test_user_without_agave_homedir_gets_redirected(self, mock_client, mock_Agave):
 
