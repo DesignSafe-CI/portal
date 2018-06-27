@@ -82,11 +82,11 @@ class FileListingView(BaseApiView):
                                         offset=offset, limit=limit)
                 else:
                     query_string = request.GET.get('query_string')
+                    # Performing an Agave listing here prevents a race condition.
                     listing = fm.listing(system=system_id, file_path='/',
                                         offset=offset, limit=limit) 
-                    logger.debug(system_id)
-                    fmgr = ElasticFileManager()
-                    listing = fmgr.search_in_project(system_id, query_string,
+                    efmgr = ElasticFileManager()
+                    listing = efmgr.search_in_project(system_id, query_string,
                                 offset=offset, limit=limit)
                     logger.debug(listing)
                 return JsonResponse(listing,

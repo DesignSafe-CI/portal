@@ -63,7 +63,6 @@
             if (e === '$SEARCH') {
               e = ''
             }
-            console.log(filePath)
             $scope.data.navItems.push({
               label: e || DataBrowserService.state().project.value.title,
               href: $state.href('projects.view.data', {
@@ -183,7 +182,6 @@
     }
 
     ProjectService.get({uuid: projectId}).then(function (project) {
-      console.log('ProjectViewCtrl has retrieved project metadata.')
       $scope.data.project = project;
       DataBrowserService.state().project = project;
       DataBrowserService.state().loadingEntities = true;
@@ -957,10 +955,6 @@
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
-    //console.log(DataBrowserService.state())
-    //console.log($scope)
-    //console.log(DataBrowserService.state())
-    //console.log($scope.browser.project)
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath}, 
                               {'query_string': $state.params.query_string,
                               'searching': $state.params.searching})
@@ -1000,8 +994,6 @@
           });
         }
       }).then(function(){
-        console.log('ProjectDataCtrl is about to use the project metadata to display the listing. Printing $scope.browser.project...');
-        console.log($scope.browser.project);
         $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
           .then(function(resp){
               if (resp.data.project && resp.data.project.doi){

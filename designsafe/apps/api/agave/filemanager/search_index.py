@@ -410,6 +410,10 @@ class ElasticFileManager(BaseFileManager):
 
 
     def search_in_project(self, system, query_string, file_path=None, offset=0, limit=100):
+        """
+        Performs a search for files within a specific project.
+        """
+        
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
             if c.upper() not in ["AND", "OR", "NOT"]:
