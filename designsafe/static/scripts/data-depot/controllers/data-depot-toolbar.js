@@ -70,6 +70,9 @@
       viewMetadata: function () {
         DataBrowserService.viewMetadata($scope.browser.selected, $scope.browser.listing);
       },
+      showCitation: function () {
+        DataBrowserService.showCitation($scope.browser.selected, $scope.browser.listing);
+      },
       viewCategories: function() {
         DataBrowserService.viewCategories($scope.browser.selected, $scope.browser.listing);
       },
