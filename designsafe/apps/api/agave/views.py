@@ -69,14 +69,11 @@ class FileListingView(BaseApiView):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
-                try:
-                    searching = json.loads(request.GET.get('searching'))
-                except TypeError:
-                    searching = False
-                logger.debug(searching)
+                query_string = request.GET.get('query_string') 
+    
                 offset = int(request.GET.get('offset', 0))
                 limit = int(request.GET.get('limit', 100))
-                if not searching:
+                if (not query_string) or (query_string==""):
                     listing = fm.listing(system=system_id, file_path=file_path,
                                         offset=offset, limit=limit)
                 else:
