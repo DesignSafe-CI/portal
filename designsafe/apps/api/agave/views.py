@@ -69,7 +69,6 @@ class FileListingView(BaseApiView):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
-                
                 try:
                     searching = json.loads(request.GET.get('searching'))
                 except TypeError:

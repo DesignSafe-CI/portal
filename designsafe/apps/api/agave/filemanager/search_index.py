@@ -408,7 +408,6 @@ class ElasticFileManager(BaseFileManager):
         }
         return result
 
-
     def search_in_project(self, system, query_string, file_path=None, offset=0, limit=100):
         """
         Performs a search for files within a specific project.
