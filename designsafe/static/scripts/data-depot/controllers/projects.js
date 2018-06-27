@@ -69,7 +69,6 @@
                 projectId: toStateParams.projectId,
                 filePath: filePath,
                 projectTitle: DataBrowserService.state().project.value.title,
-                searching: '',
                 query_string: ''
               })
             });
@@ -956,8 +955,7 @@
       $scope.browser.busy = true;
     }
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath}, 
-                              {'query_string': $state.params.query_string,
-                              'searching': $state.params.searching})
+                              {'query_string': $state.params.query_string})
       .then(function () {
         $scope.browser = DataBrowserService.state();
         $scope.browser.busy = true;
