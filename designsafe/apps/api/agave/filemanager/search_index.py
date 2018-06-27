@@ -340,7 +340,7 @@ class ElasticFileManager(BaseFileManager):
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
-        search = search.filter(Q({'term': {'system._exact': system}}))
+        search = search.filter("term", system=system)
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
         res = search.execute()
@@ -413,7 +413,7 @@ class ElasticFileManager(BaseFileManager):
         """
         Performs a search for files within a specific project.
         """
-        
+
         split_query = query_string.split(" ")
         for i, c in enumerate(split_query):
             if c.upper() not in ["AND", "OR", "NOT"]:

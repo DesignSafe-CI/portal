@@ -43,7 +43,7 @@
         }
       }
 
-    
+      
       if (toStateParams.filePath) {
         if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({

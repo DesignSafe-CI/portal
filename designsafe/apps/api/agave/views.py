@@ -49,7 +49,7 @@ class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
     @profile_fn
-    def get(self, request, file_mgr_name, system_id=None, file_path=None, query_string=None):
+    def get(self, request, file_mgr_name, system_id=None, file_path=None):
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated:
                 return HttpResponseForbidden('Login required')
