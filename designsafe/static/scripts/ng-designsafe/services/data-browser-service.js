@@ -204,7 +204,7 @@
      * @param options.system
      * @param options.path
      */
-    function browse (options) {
+    function browse (options, params) {
       // resolve any ongoing requests
       if(req){
         req.stopper.resolve();
@@ -219,7 +219,12 @@
       currentState.busyListingPage = false;
       currentState.page = 0;
 
-      req = FileListing.get(options, apiParams); // stopper is returned here...
+      if (params) {
+        req = FileListing.get(options, apiParams, params); // stopper is returned here...
+      }
+      else {
+        req = FileListing.get(options, apiParams); // stopper is returned here... 
+      }
 
       var currentReq = req.then(function (listing) {
         select([], true);

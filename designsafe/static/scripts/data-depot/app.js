@@ -201,16 +201,20 @@
         }
       })
       .state('projects.view.data', {
-        url: '{filePath:any}',
+        url: '{filePath:any}?query_string&searching&offset&limit',
         controller: 'ProjectDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/project-data.html',
         params: {
-          projectTitle: ''
+          projectTitle: '',
+          query_string: '',
+          filePath: '/'
         },
         resolve: {
           'projectId': function($stateParams) { return $stateParams.projectId; },
           'filePath': function($stateParams) { return $stateParams.filePath || '/'; },
-          'projectTitle': function($stateParams) { return $stateParams.projectTitle; }
+          'projectTitle': function($stateParams) { return $stateParams.projectTitle; },
+          'searching': function($stateParams) { return $stateParams.query_string || ''; },
+          'query_string': function($stateParams) { return $stateParams.query_string || ''; }
         }
       })
       .state('projects.search', {

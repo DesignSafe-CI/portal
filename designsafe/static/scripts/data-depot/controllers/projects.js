@@ -43,7 +43,7 @@
         }
       }
 
-
+    
       if (toStateParams.filePath) {
         if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({
@@ -57,18 +57,21 @@
         } else {
           _.each(toStateParams.filePath.split('/'), function (e, i, l) {
             var filePath = l.slice(0, i + 1).join('/');
-            if (filePath === '') {
+            if (filePath === '' || filePath === '$SEARCH') {
               filePath = '/';
             }
             if (e === '$SEARCH') {
               e = ''
             }
+            console.log(filePath)
             $scope.data.navItems.push({
               label: e || DataBrowserService.state().project.value.title,
               href: $state.href('projects.view.data', {
                 projectId: toStateParams.projectId,
                 filePath: filePath,
-                projectTitle: DataBrowserService.state().project.value.title
+                projectTitle: DataBrowserService.state().project.value.title,
+                searching: '',
+                query_string: ''
               })
             });
           });
@@ -180,6 +183,7 @@
     }
 
     ProjectService.get({uuid: projectId}).then(function (project) {
+      console.log('ProjectViewCtrl has retrieved project metadata.')
       $scope.data.project = project;
       DataBrowserService.state().project = project;
       DataBrowserService.state().loadingEntities = true;
@@ -943,7 +947,7 @@
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$http', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-    DataBrowserService.apiParams.searchState = undefined;
+    DataBrowserService.apiParams.searchState = 'projects.view.data';
     $scope.browser = DataBrowserService.state();
     $scope.browser.listings = {};
     $scope.browser.ui = {};
@@ -953,8 +957,13 @@
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
-
-    DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
+    //console.log(DataBrowserService.state())
+    //console.log($scope)
+    //console.log(DataBrowserService.state())
+    //console.log($scope.browser.project)
+    DataBrowserService.browse({system: 'project-' + projectId, path: filePath}, 
+                              {'query_string': $state.params.query_string,
+                              'searching': $state.params.searching})
       .then(function () {
         $scope.browser = DataBrowserService.state();
         $scope.browser.busy = true;
@@ -991,6 +1000,8 @@
           });
         }
       }).then(function(){
+        console.log('ProjectDataCtrl is about to use the project metadata to display the listing. Printing $scope.browser.project...');
+        console.log($scope.browser.project);
         $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
           .then(function(resp){
               if (resp.data.project && resp.data.project.doi){

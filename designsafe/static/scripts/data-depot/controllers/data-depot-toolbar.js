@@ -93,7 +93,7 @@
       },
       search: function(){
         var state = $scope.apiParams.searchState;
-        $state.go(state, {'query_string': $scope.search.queryString,
+        $state.go(state, {'query_string': $scope.search.queryString, 'searching': true,
                    'systemId': $scope.browser.listing.system,
                    'filePath': '$SEARCH'});
       }

@@ -340,7 +340,7 @@ class ElasticFileManager(BaseFileManager):
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
-        search = search.filter("term", system=system)
+        search = search.filter(Q({'term': {'system._exact': system}}))
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
         res = search.execute()
@@ -392,6 +392,40 @@ class ElasticFileManager(BaseFileManager):
            
 
 
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result
+
+
+    def search_in_project(self, system, query_string, file_path=None, offset=0, limit=100):
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
+
+        logger.debug(query_string)
+
+        search = IndexedFile.search()
+        # search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
+        
+        # search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
+        search = search.filter(Q({'term': {'system._exact': system}}))
+        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
+        search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
         res = search.execute()
         children = []
         if res.hits.total:

@@ -49,7 +49,7 @@ class FileListingView(BaseApiView):
     """Main File Listing View. Used to list agave resources."""
 
     @profile_fn
-    def get(self, request, file_mgr_name, system_id=None, file_path=None):
+    def get(self, request, file_mgr_name, system_id=None, file_path=None, query_string=None):
         if file_mgr_name == AgaveFileManager.NAME:
             if not request.user.is_authenticated:
                 return HttpResponseForbidden('Login required')
@@ -69,10 +69,26 @@ class FileListingView(BaseApiView):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
+                
+                try:
+                    searching = json.loads(request.GET.get('searching'))
+                except TypeError:
+                    searching = False
+                logger.debug(searching)
                 offset = int(request.GET.get('offset', 0))
                 limit = int(request.GET.get('limit', 100))
-                listing = fm.listing(system=system_id, file_path=file_path,
-                                     offset=offset, limit=limit)
+                if not searching:
+                    listing = fm.listing(system=system_id, file_path=file_path,
+                                        offset=offset, limit=limit)
+                else:
+                    query_string = request.GET.get('query_string')
+                    listing = fm.listing(system=system_id, file_path='/',
+                                        offset=offset, limit=limit) 
+                    logger.debug(system_id)
+                    fmgr = ElasticFileManager()
+                    listing = fmgr.search_in_project(system_id, query_string,
+                                offset=offset, limit=limit)
+                    logger.debug(listing)
                 return JsonResponse(listing,
                                     encoder=AgaveJSONEncoder,
                                     safe=False)
