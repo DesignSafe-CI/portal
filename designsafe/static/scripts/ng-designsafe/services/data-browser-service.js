@@ -2492,7 +2492,6 @@
         resolve: {
           browser: currentState
         },
-        // scope: $scope
       });
     };
 

@@ -56,7 +56,7 @@
             <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!tests.canPreviewImages">
                 <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
             </button>
-            <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="browser.listing.system.startsWith('nees')" ng-click="ops.showCitation()" ng-disabled="!tests.canViewCitation">
+            <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="browser.listing.system.startsWith('nees')" ng-click="ops.showCitation()" ng-disabled="!tests.canViewCitation || browser.selected[0].name.includes('NEES')">
                 <i class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
             </button>
          </div>
