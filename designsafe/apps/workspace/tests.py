@@ -78,20 +78,6 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     # response = self.client.get('/rw/workspace/api/apps/v2/OpenseesMp-3.0.0.6709u2') this version is modeled after api call and returns a 301
     #     self.assertEqual(response.status_code, 200)
 
-# will delete monitors?
-    # @mock.patch('agavepy.agave.Agave')
-    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_get_monitors(self, agave_client, agave):
-    #     """Testing get_monitors'
-    #     """
-    #     self.client.login(username='test', password='test')
-    #     agave_client.apps.get.return_value = {
-    #         "id": "test", 
-    #         "name": "test"
-    #     }
-    #     response = self.client.get('/rw/workspace/api/apps/?app_id=OpenseesMp-3.0.0.6709u2')
-    #     self.assertEqual(response.status_code, 200)
-
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_get_meta(self, agave_client, agave):

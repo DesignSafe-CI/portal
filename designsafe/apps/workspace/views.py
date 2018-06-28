@@ -50,7 +50,7 @@ class ApiService(BaseApiView):
         """Calls GET method.
         
         :param request: the HttpRequest object.
-        :param service: the service called by user (apps, monitors, meta or jobs). 
+        :param service: the service called by user (apps, meta or jobs). 
         :returns: call to GET method on service (get_apps(), get_meta(), get_jobs()).
         """
         handler_name = 'get_{service}'.format(service=service)
@@ -197,14 +197,6 @@ class ApiService(BaseApiView):
                 data = agv.apps.list(publicOnly='true')
             else:
                 data = agv.apps.list()
-
-        return data
-
-    def get_monitors(self, service): # Should be deleted
-        """ """
-        target = self.request.GET.get('target')
-        ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
-        data = ds_admin_client.monitors.list(target=target)
 
         return data
 
