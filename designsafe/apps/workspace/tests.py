@@ -106,46 +106,46 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     self.assertEqual(response.status_code, 200)
 
 # redirects but works
-    # @mock.patch('agavepy.agave.Agave')
-    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_get_meta(self, agave_client, agave):
-    #     """Testing '
-    #     """
-    #     self.client.login(username='test', password='test')
-    #     agave_client.meta.get.return_value = [{
-    #         "id": "test", 
-    #         "name": "test"
-    #     }]
-    #     # response = self.client.get('/rw/workspace/api/meta/data={"$name":"test", "id":"test"}/?app_id=12345')
-    #     # response = self.client.get('/rw/workspace/api/meta/?data={"$name":"ds_apps"}/?app_id=12345')
-    #     response = self.client.get('/rw/workspace/api/meta/v2/data/12345') #  error:"list indices must be integers, not str" if remove v2/data
-    #     redirecting = response.redirect_chain
-    #     print " ############### I am printing response:"
-    #     print redirecting #AttributeError: 'HttpResponsePermanentRedirect' object has no attribute 'redirect_chain'
-    #     print " ############### I am printing response above:"
-    #     self.assertEqual(response.status_code, 200)
-
-# redirects but works
     @mock.patch('agavepy.agave.Agave')
     @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    def test_post_meta(self, agave_client, agave):
-        """Testing return '
+    def test_get_meta(self, agave_client, agave):
+        """Testing get_meta'
         """
         self.client.login(username='test', password='test')
-        agave_client.meta.addMetadata.return_value = {
-            "uuid": "test", 
-            "owner": "test"
-          }
-        # response = self.client.post('/rw/workspace/api/meta/v2/data', follow=True)
-        # response = self.client.post('/rw/workspace/api/meta/?body={"uuid":"test", "owner":"test"}') #  handler: <bound method ApiService.post_meta of <designsafe.apps.workspace.views.ApiService object at 0x7fbf03f0a490>>[DJANGO] ERROR 2018-06-27 14:26:56,001 views designsafe.apps.workspace.views.post:124: Failed to execute meta API call due to Exception=You cannot access body after reading from request's data stream
-        # response = self.client.post('/rw/workspace/api/meta/, {"uuid":"test", "owner":"test"}') # Not Found: /rw/workspace/api/meta/, {"uuid":"test", "owner":"test"}
-        # response = self.client.post('/rw/workspace/api/meta/uuid=test&owner=test') # Not Found: /rw/workspace/api/meta/uuid=test&owner=test
-        response = self.client.post('/rw/workspace/api/meta/?uuid=test&owner=test') # bound method, cannot access body after reading from request's data stream
+        agave_client.meta.get.return_value = [{
+            "id": "test", 
+            "name": "test"
+        }]
+        # response = self.client.get('/rw/workspace/api/meta/data={"$name":"test", "id":"test"}/?app_id=12345')
+        # response = self.client.get('/rw/workspace/api/meta/?data={"$name":"ds_apps"}/?app_id=12345')
+        response = self.client.get('/rw/workspace/api/meta/v2/data/12345') #  error_msm-> error:"list indices must be integers, not str" if remove v2/data
         # redirecting = response.redirect_chain
         # print " ############### I am printing response:"
-        # print redirecting
+        # print redirecting # error_msm-> AttributeError: 'HttpResponsePermanentRedirect' object has no attribute 'redirect_chain'
         # print " ############### I am printing response above:"
         self.assertEqual(response.status_code, 200)
+
+# redirects but works
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_post_meta(self, agave_client, agave):
+    #     """Testing post_meta'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.meta.addMetadata.return_value = {
+    #         "uuid": "test", 
+    #         "owner": "test"
+    #       }
+    #     response = self.client.post('/rw/workspace/api/meta/v2/data', follow=True) # error_msm->  Not Found: /rw/workspace/api/meta/v2/data/ - it is adding a back slash to the path that does not exist
+    #     # response = self.client.post('/rw/workspace/api/meta/?body={"uuid":"test", "owner":"test"}') #  error_msm-> handler: <bound method ApiService.post_meta of <designsafe.apps.workspace.views.ApiService object at 0x7fbf03f0a490>>[DJANGO] ERROR 2018-06-27 14:26:56,001 views designsafe.apps.workspace.views.post:124: Failed to execute meta API call due to Exception=You cannot access body after reading from request's data stream
+    #     # response = self.client.post('/rw/workspace/api/meta/, {"uuid":"test", "owner":"test"}') # error_msm-> Not Found: /rw/workspace/api/meta/, {"uuid":"test", "owner":"test"}
+    #     # response = self.client.post('/rw/workspace/api/meta/uuid=test&owner=test') # error_msm-> Not Found: /rw/workspace/api/meta/uuid=test&owner=test
+    #     # response = self.client.post('/rw/workspace/api/meta/?uuid=test&owner=test') # error_msm-> bound method, cannot access body after reading from request's data stream
+    #     redirecting = response.redirect_chain
+    #     print " ############### I am printing response:"
+    #     print redirecting
+    #     print " ############### I am printing response above:"
+    #     self.assertEqual(response.status_code, 200)
 
 # redirects but works
     # @mock.patch('agavepy.agave.Agave')
@@ -164,7 +164,7 @@ class WorkspaceViewtestCase(TestWorkspace):
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_get_jobs(self, agave_client, agave):
-    #     """Testing return '
+    #     """Testing get_jobs'
     #     """
     #     self.client.login(username='test', password='test')
     #     agave_client.jobs.get.return_value = {
@@ -184,7 +184,7 @@ class WorkspaceViewtestCase(TestWorkspace):
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_jobs(self, agave_client, agave):
-    #     """Testing return '
+    #     """Testing post_jobs'
     #     """
     #     self.client.login(username='test', password='test')
     #     agave_client.jobs.post.return_value = {
@@ -203,7 +203,7 @@ class WorkspaceViewtestCase(TestWorkspace):
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_jobs(self, agave_client, agave):
-    #     """Testing return '
+    #     """Testing post_jobs'
     #     """
     #     self.client.login(username='test', password='test')
     #     agave_client.jobs.post.return_value = {
@@ -228,7 +228,7 @@ class WorkspaceViewtestCase(TestWorkspace):
 
 
 
-    # I guess the tests below would be a a good end to end test
+    # I think the tests below would be good end to end test
 
 
     #  def test_get(self):

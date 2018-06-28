@@ -399,15 +399,15 @@ def process_notification(request, pk, **kwargs):
         
         :param request: the HttpRequest object.
         :param pk: primary key.
-        :returns: a redirect to target_path.???
+        :returns: a redirect to target_path with archive_id info???
         """
-    n = Notification.objects.get(pk=pk)
+    n = Notification.objects.get(pk=pk) #get notification 
     extra = n.extra_content
     logger.info('extra: {}'.format(extra))
-    archiveSystem = extra['archiveSystem']
-    archivePath = extra['archivePath']
+    archiveSystem = extra['archiveSystem'] # add info about archiveSystem
+    archivePath = extra['archivePath'] # add info about archivePath
 
-    archive_id = '%s/%s' % (archiveSystem, archivePath)
+    archive_id = '%s/%s' % (archiveSystem, archivePath) #set archive_id
 
     target_path = reverse('designsafe_data:data_depot') + 'agave/' + archive_id + '/'
 
