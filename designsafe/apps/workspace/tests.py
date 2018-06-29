@@ -171,7 +171,7 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     # print " ############### I am printing response above:"
     #     self.assertEqual(response.status_code, 301)
 
-    #returning empty string
+#returning empty string
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_meta_content(self, agave_client, agave):
@@ -211,9 +211,23 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.delete('/rw/workspace/api/meta/v2/data/2831691864876248600-242ac11e-0001-012?pretty=true')
     #     self.assertEqual(response.status_code, 301)
 
+# redirecting and does not get response
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_get_jobs(self, agave_client, agave):
+    # def test_delete_meta_content(self, agave_client, agave):
+    #     """Testing delete_meta content return'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.meta.deleteMetadata.return_value = {
+    #         "status" : "success",
+    #         "message" : None
+    #     }
+    #     response = self.client.delete('/rw/workspace/api/meta/v2/data/2831691864876248600-242ac11e-0001-012?pretty=true')
+    #     self.assertContains(response, '"status" : "success"')
+
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_get_jobs_status_code(self, agave_client, agave):
     #     """Testing get_jobs code status'
     #     """
     #     self.client.login(username='test', password='test')
@@ -230,26 +244,26 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.get('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
     #     self.assertEqual(response.status_code, 200)
 
-    # @mock.patch('agavepy.agave.Agave')
-    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_get_jobs_content(self, agave_client, agave):
-    #     """Testing get_jobs content return'
-    #     """
-    #     self.client.login(username='test', password='test')
-    #     agave_client.jobs.get.return_value = {
-    #         "id": "test", 
-    #         "name": "test",
-    #         "archiveSystem": "test",
-    #         "archivePath": "test"
-    #     }
-    #     agave_client.meta.listMetadata.return_value = [{
-    #         "id": "test", 
-    #         "name": "test"
-    #     }]
-    #     response = self.client.get('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
-    #     self.assertTrue(response.content, {"_embedded": {"metadata": [{"id": "test", "name": "test"}]}, 
-    #     "name": "test", "archiveSystem": "test", "archivePath": "test", 
-    #     "archiveUrl": "/data/browser/agave/test/test/", "id": "test"})
+    @mock.patch('agavepy.agave.Agave')
+    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    def test_get_jobs_content(self, agave_client, agave):
+        """Testing get_jobs content return'
+        """
+        self.client.login(username='test', password='test')
+        agave_client.jobs.get.return_value = {
+            "id": "test", 
+            "name": "test",
+            "archiveSystem": "test",
+            "archivePath": "test"
+        }
+        agave_client.meta.listMetadata.return_value = [{
+            "id": "test", 
+            "name": "test"
+        }]
+        response = self.client.get('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+        self.assertTrue(response.content, {"_embedded": {"metadata": [{"id": "test", "name": "test"}]}, 
+        "name": "test", "archiveSystem": "test", "archivePath": "test", 
+        "archiveUrl": "/data/browser/agave/test/test/", "id": "test"})
 
 #getting an error when trying to post-job from updated master as well
     # @mock.patch('agavepy.agave.Agave')
@@ -296,15 +310,15 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.delete('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
     #     self.assertEqual(response.status_code, 200)
 
-    @mock.patch('agavepy.agave.Agave')
-    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    def test_delete_jobs_content_return(self, agave_client, agave):
-        """Testing delete_jobs content return'
-        """
-        self.client.login(username='test', password='test')
-        agave_client.jobs.delete.return_value = None
-        response = self.client.delete('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
-        self.assertTrue(response.content, None)
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_delete_jobs_content_return(self, agave_client, agave):
+    #     """Testing delete_jobs content return'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.jobs.delete.return_value = None
+    #     response = self.client.delete('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+    #     self.assertTrue(response.content, None)
 
 
 
