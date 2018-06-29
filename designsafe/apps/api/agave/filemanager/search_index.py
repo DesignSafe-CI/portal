@@ -334,8 +334,6 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        logger.debug(query_string)
-
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         
@@ -380,7 +378,6 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        logger.debug(query_string)
         filters = Q('term', system="designsafe.storage.community") #| \
                   #Q('term', system="designsafe.storage.published") | \
                   #Q('term', system="designsafe.storage.community")
@@ -420,7 +417,6 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        logger.debug(query_string)
 
         search = IndexedFile.search()
         # search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))

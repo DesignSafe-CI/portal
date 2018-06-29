@@ -84,7 +84,6 @@ class FileListingView(BaseApiView):
                     efmgr = ElasticFileManager()
                     listing = efmgr.search_in_project(system_id, query_string,
                                 offset=offset, limit=limit)
-                    logger.debug(listing)
                 return JsonResponse(listing,
                                     encoder=AgaveJSONEncoder,
                                     safe=False)
