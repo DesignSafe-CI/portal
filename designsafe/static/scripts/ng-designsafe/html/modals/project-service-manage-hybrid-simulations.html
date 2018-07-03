@@ -33,7 +33,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat-start="simulation in data.simulations"
+              <tr ng-repeat-start="simulation in data.project.hybridsimulation_set"
                   ng-class="{'experiment-deleted': ui.simulations[simulation.uuid].deleted}">
                 <td>{{simulation.value.title}}</td>
                 <td ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</td>
@@ -416,7 +416,8 @@
                   </ul>
                 </li>
                 <li>
-                  <div class="tree-el">
+                  <div class="tree-el"
+                       ng-if="data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid]).length == 0">
                   <select
                           ng-options="entity as entity.value.title for entity in data.project.coordinator_set"
                           ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator">
@@ -435,7 +436,8 @@
               </ul>
             </li>
             <li>
-              <div class="tree-el">
+              <div class="tree-el"
+                   ng-if="data.project.getRelated('globalmodel_set', simulation.uuid).length == 0">
               <select 
                       ng-options="entity as entity.value.title for entity in data.project.globalmodel_set"
                       ng-model="form.updateSimulations[simulation.uuid].relGlobalModel">
