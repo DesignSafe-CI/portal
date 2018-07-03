@@ -1645,6 +1645,14 @@
         }
       },
 
+      filterHybridSimulations : function(simulations){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return simulations;
+        } else {
+          return $scope.browser.publication.hybridSimulations;
+        }
+      },
+
       filterEvents : function(events, exp){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
             return events;
@@ -1661,6 +1669,17 @@
           return models;
         } else {
           return _.filter($scope.browser.publication.models,
+            function(model){
+              return _.contains(model.associationIds, simulation.uuid);
+            });
+        }
+      },
+
+      filterGlobalModels : function(models, simulation){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return models;
+        } else {
+          return _.filter($scope.browser.publication.globalModels,
             function(model){
               return _.contains(model.associationIds, simulation.uuid);
             });
