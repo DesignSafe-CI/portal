@@ -3,7 +3,7 @@ import os
 if os.environ.get("PORTAL_TESTING", 'false').lower() == 'true':
     from .test_settings import *
 else:
-    print "WTF"*1000
+    print "NOT_IN_PORTAL_TESTING_"*100
     from .common import *
     from .celery_settings import *
     from .elasticsearch_settings import *

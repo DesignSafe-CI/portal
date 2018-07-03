@@ -253,6 +253,9 @@ class ApiService(BaseApiView):
             data = agv.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
         else:
             data = agv.meta.addMetadata(body=meta_post)
+            print " ############### I am printing above data after ADDMETADATA:"
+            print data
+            print " ############### I am printing below data after ADDMETADATA:"
 
         return data
 
@@ -267,6 +270,9 @@ class ApiService(BaseApiView):
 
         if meta_uuid:
             data = agv.meta.deleteMetadata(uuid=meta_uuid)
+            print " ############### I am printing above data after DELETEMETADATA:"
+            print data
+            print " ############### I am printing below data after DELETEMETADATA:"
 
         return data
 
