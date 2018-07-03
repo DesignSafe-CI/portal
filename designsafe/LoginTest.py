@@ -3,7 +3,6 @@ from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 import mock
-import json
 from designsafe.apps.auth.models import AgaveOAuthToken
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 from designsafe.apps.auth.views import agave_oauth_callback
@@ -25,9 +24,8 @@ class LoginTestClass(TestCase):
     token.save()
     self.rf = RequestFactory()
 
-    user_without_agave = User.objects.create_user(
-        'test_without_agave', 'test2@test.com', 'test')
-    """ token = AgaveOAuthToken(
+    user_without_agave = User.objects.create_user('test_without_agave', 'test2@test.com', 'test')
+    token = AgaveOAuthToken(
         token_type="bearer",
         scope="default",
         access_token="5555abcd",
@@ -35,13 +33,13 @@ class LoginTestClass(TestCase):
         expires_in=14400,
         created=1523633447)
     token.user = user_without_agave
-    token.save() """
+    token.save()
     
   
   def tearDown(self):
     return
     
-  @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+  """ @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
   @mock.patch('agavepy.agave.Agave')
   def test_has_agave_file_listing(self, agave_client, agave):
     #agaveclient.return_value.files.list.return_value = [] // whatever the listing should look like
@@ -63,31 +61,33 @@ class LoginTestClass(TestCase):
     resp = self.client.get('/api/agave/files/listing/agave/designsafe.storage.default/test', follow=True)
 
     self.assertEqual(resp.status_code, 200)
-    self.assertJSONEqual(resp.content, agave_client.files.list.return_value, msg='Agave homedir listing has unexpected values')
+    self.assertJSONEqual(resp.content, agave_client.files.list.return_value, msg='Agave homedir listing has unexpected values') """
 
-
-  '''@mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+  @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
   @mock.patch('agavepy.agave.Agave')
   def test_no_agave_file_listing(self, agave_client, agave):
-      self.client.login(username='test_without_agave', password='test')
-
-      agave_client.files.list.return_value = {
-          "status": "error", 
-          "message": "File/folder does not exist", 
-          "version": "test"
-          }
-      
-      request_without_agave = self.rf.get(
-        reverse('designsafe_auth:agave_oauth_callback'))
-      request_without_agave.get.return_value = {
-        'state': 'test',
-        'session': {'auth_state': 'test'},
-        'code': 'test'
-        }
-
-      resp = agave_oauth_callback(request_without_agave.POST)
-      print resp
-      self.assertEqual(resp.status_code, 200)'''
+    self.client.login(username='test_without_agave', password='test')
+    session = self.client.session
+    session['auth_state'] = 'test'
+    session.save()
+    
+    request_without_agave = self.client.post("/auth/agave/callback/?state=test&code=test", follow = True)
+    print 'Initial Query Status: ' + str(request_without_agave.status_code)
+    """ request_without_agave.get.return_value = {
+      'state': 'test',
+      'session': {'auth_state': 'test'},
+      'code': 'test'
+      } """
+    
+    """ agave_client.files.list.return_value = {
+        "status": "error", 
+        "message": "File/folder does not exist", 
+        "version": "test"
+        } """
+        
+    resp = agave_oauth_callback(request_without_agave)
+    print 'Oauth Callback Status: ' + str(resp)
+    self.assertEqual(resp.status_code, 200)
 
   """ def test_user_without_agave_homedir_gets_redirected(self, mock_client, mock_Agave):
 
