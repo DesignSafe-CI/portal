@@ -163,12 +163,22 @@ class ProjectSitemap(sitemaps.Sitemap):
                 break
 
         for proj in projects['children']:
-            subpath = {
-                'root' : reverse('designsafe_data:data_depot'),
-                'project' : proj['project'],
-                'system' : proj['system']
-            }
-            projPath.append('{root}public/{system}/{project}'.format(**subpath))
+            if 'project' in proj:
+                # projects
+                subpath = {
+                    'root' : reverse('designsafe_data:data_depot'),
+                    'project' : proj['project'],
+                    'system' : proj['system']
+                }
+                projPath.append('{root}public/{system}/{project}'.format(**subpath))
+            else:
+                # nees projects
+                subpath = {
+                    'root' : reverse('designsafe_data:data_depot'),
+                    'project' : proj['path'],
+                    'system' : proj['systemId']
+                }
+                projPath.append('{root}public/{system}/{project}'.format(**subpath))
 
         return projPath
 
