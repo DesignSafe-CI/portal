@@ -326,16 +326,15 @@
                                   <span class="sr-only">Delete</span>
                               </button>
                           </div>
-                    <ul class="hybrid-sim-coord-output">
+                  <ul class="hybrid-sim-coord-output">
                     <li
-                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
                             <span class="label tag-red tree-el">Simulation Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
                             <button class="btn btn-xsm btn-link"
                                     ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
                                                                     globalModels: globalModel.uuid,
-                                                                    coordinators: coordinator.uuid,
                                                                     simSubstructures: substructure.uuid})">
                                 <i class="fa fa-times-circle fa-2" style="color:black;"></i>
                                 <span class="sr-only">Delete</span>
@@ -353,7 +352,6 @@
                                     {project:data.project.uuid,
                                      hybridSimulations: simulation.uuid,
                                      globalModels: globalModel.uuid,
-                                     coordinators: coordinator.uuid,
                                      simSubstructures: substructure.uuid})"
                                     title="Add Coordinator Output">
                                 <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
@@ -395,6 +393,39 @@
                                   <span class="sr-only">Delete</span>
                               </button>
                           </div>
+                  <ul class="hybrid-sim-exp-output">
+                    <li
+                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        <div class="tree-el">
+                            <span class="label tag-red tree-el">Event Output</span>
+                            <span class="tag-title">{{output.value.title}}</span>
+                            <button class="btn btn-xsm btn-link"
+                                    ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
+                                                                    globalModels: globalModel.uuid,
+                                                                    expSubstructures: substructure.uuid})">
+                                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                <span class="sr-only">Delete</span>
+                            </button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="tree-el">
+                            <select ng-options="entity as entity.value.title for entity in data.project.output_set"
+                                    ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput">
+                                <option value="">Add Event Output</option>
+                            </select>
+                            <button class="btn btn-sm btn-link"
+                                    ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput,
+                                    {project:data.project.uuid,
+                                     hybridSimulations: simulation.uuid,
+                                     globalModels: globalModel.uuid,
+                                     expSubstructures: substructure.uuid})"
+                                    title="Add Coordinator Output">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                            </button>
+                        </div>
+                    </li>
+                  </ul>
                       </li>
                       <li>
                           <div class="tree-el">
