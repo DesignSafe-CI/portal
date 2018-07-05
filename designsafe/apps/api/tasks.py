@@ -748,7 +748,7 @@ def set_project_id(self, project_uuid):
     new_metadata = service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
     logger.debug('updated id record=%s', id_meta['uuid'])
 
-    index_or_update_project.apply_async(args=[project_uuid], queue='api')
+    index_or_update_project.apply_async(args=[project.uuid], queue='api')
 
 @shared_task(bind=True)
 def index_or_update_project(self, uuid):
