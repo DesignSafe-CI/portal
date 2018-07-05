@@ -30,7 +30,6 @@ class IndexedProject(DocType):
     value = Nested(
         properties={
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
-            'teamMember': Text(fields={'_exact': Keyword()}, multi=True),
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),

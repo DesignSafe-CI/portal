@@ -748,21 +748,30 @@ def set_project_id(self, project_uuid):
     new_metadata = service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
     logger.debug('updated id record=%s', id_meta['uuid'])
 
-    index_or_update_project.apply_async(args=[dict(new_metadata)], queue='api')
+    index_or_update_project.apply_async(args=[project_uuid], queue='api')
 
 @shared_task(bind=True)
-def index_or_update_project(self, body):
+def index_or_update_project(self, uuid):
     """
-    Takes a dict of project metadata and either creates a new document in the 
+    Takes a project UUID and either creates a new document in the 
     des-projects index or updates the document if one already exists for that
     project.
     """
+    from designsafe.apps.api.projects.models import Project
 
-    toIndex = {key: value for key, value in body.iteritems() if key != '_links'}
+    client = get_service_account_client()
+    project_model = Project(client)
+
+    project = project_model.search({'uuid': uuid}, client)[0]
+    project_meta = project.to_dict()
+
+
+    toIndex = {key: value for key, value in project_meta.iteritems() if key != '_links'}
+    toIndex['value'] = {key: value for key, value in project_meta['value'].iteritems() if key != 'teamMember'}
 
     project_search = IndexedProject.search().filter(
         Q({'term': 
-            {'uuid._exact': body['uuid']}
+            {'uuid._exact': uuid}
         })
     )
     res = project_search.execute()
@@ -803,7 +812,7 @@ def reindex_projects(self):
             in_loop = False
         else:
             for project in listing:
-                index_or_update_project.apply_async(args=[dict(project)], queue='api')
+                index_or_update_project.apply_async(args=[project.uuid], queue='api')
 
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):

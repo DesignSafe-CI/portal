@@ -90,7 +90,7 @@ def call_api(request, service):
                 if meta_uuid:
                     del meta_post['uuid']
                     data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
-                    index_or_update_project.apply_async(args=[dict(data)], queue='api')
+                    index_or_update_project.apply_async(args=[meta_uuid], queue='api')
                 else:
                     data = agave.meta.addMetadata(body=meta_post)
             elif request.method == 'DELETE':

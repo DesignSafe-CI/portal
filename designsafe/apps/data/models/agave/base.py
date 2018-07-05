@@ -450,7 +450,7 @@ class Model(object):
             ret = agave_client.meta.updateMetadata(uuid=self.uuid, body=body)
             logger.debug(ret)
             logger.debug(type(ret))
-            tasks.index_or_update_project.apply_async(args=[dict(ret)], queue='api')
+            tasks.index_or_update_project.apply_async(args=[self.uuid], queue='api')
         
         self.update(**ret)
         return ret

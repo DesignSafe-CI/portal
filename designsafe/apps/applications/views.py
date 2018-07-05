@@ -308,7 +308,7 @@ def call_api(request, service):
                                 }
                             })
                             data = agave.meta.updateMetadata(body=body, uuid=uuid)
-                            index_or_update_project.apply_async(args=[dict(data)], queue='api')
+                            index_or_update_project.apply_async(args=[uuid], queue='api')
                     else:
                         if uuid:
                             metrics.info('agave.meta.updateMetadata uuid', extra={
@@ -319,7 +319,7 @@ def call_api(request, service):
                                 }
                             })
                             data = agave.meta.updateMetadata(uuid=uuid, body=body)
-                            index_or_update_project.apply_async(args=[dict(data)], queue='api')
+                            index_or_update_project.apply_async(args=[uuid], queue='api')
                         else:
                             metrics.info('agave.meta.addMetadata', extra={
                                 'operation': 'agave.meta.listMetadata',
