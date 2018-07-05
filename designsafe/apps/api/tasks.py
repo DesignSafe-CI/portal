@@ -761,13 +761,11 @@ def index_or_update_project(self, uuid):
 
     client = get_service_account_client()
     project_model = Project(client)
-
     project = project_model.search({'uuid': uuid}, client)[0]
     project_meta = project.to_dict()
 
-
-    toIndex = {key: value for key, value in project_meta.iteritems() if key != '_links'}
-    toIndex['value'] = {key: value for key, value in project_meta['value'].iteritems() if key != 'teamMember'}
+    to_index = {key: value for key, value in project_meta.iteritems() if key != '_links'}
+    to_index['value'] = {key: value for key, value in project_meta['value'].iteritems() if key != 'teamMember'}
 
     project_search = IndexedProject.search().filter(
         Q({'term': 
@@ -779,18 +777,18 @@ def index_or_update_project(self, uuid):
     if res.hits.total == 0:
         # Create an ES record for the new metadata.
         # project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
-        project_ES = IndexedProject(**toIndex)
+        project_ES = IndexedProject(**to_index)
         project_ES.save()
     elif res.hits.total == 1:
         # Update the record.
         doc = res[0]
-        doc.update(**toIndex)
+        doc.update(**to_index)
     else:
         # If we're here we've somehow indexed the same project multiple times. 
         # Delete all records and replace with the metadata passed to the task.
         for doc in res:
             doc.delete()
-        project_ES = IndexedProject(**toIndex) 
+        project_ES = IndexedProject(**to_index) 
         project_ES.save()
 
 @shared_task(bind=True)
