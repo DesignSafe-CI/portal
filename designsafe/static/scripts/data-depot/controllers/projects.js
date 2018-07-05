@@ -1455,6 +1455,60 @@
         }
       },
 
+      selectAllHybridSimFiles : function(ent){
+        var listing = {};
+
+        // show inputs selected
+        _.each($scope.browser.project.coordinator_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add inputs
+            _addToSimLists(set);
+          }
+        });
+        // show substructure selected
+        _.each($scope.browser.project.simsubstructure_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+        // show substructure selected
+        _.each($scope.browser.project.expsubstructure_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+        // show outputs selected
+        _.each($scope.browser.project.output_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+
+        // add model
+        _addToSimLists(ent);
+        
+        // show model/report/analysis selected
+        if (ent._displayName == "Global Model" || ent._displayName == "Report" || ent._displayName == "Analysis") {
+          listing[ent.uuid] = $scope.browser.listings[ent.uuid];
+        }
+
+        // if there are already selected files do not deselect them when selecting more
+        if (Object.keys($scope.browser.publication.filesSelected).length === 0) {
+          $scope.browser.publication.filesSelected = listing;
+        } else {
+          _.map(listing, function(i){
+            Object.assign($scope.browser.publication.filesSelected, listing);
+          });
+        }
+      },
+
       selectAllSimFiles : function(ent){
         var listing = {};
 
@@ -1491,6 +1545,19 @@
             Object.assign($scope.browser.publication.filesSelected, listing);
           });
         }
+      },
+
+      selectFileForHybridSimPublication : function(ent, file, sim){
+        if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
+          $scope.browser.publication.filesSelected[ent.uuid] = [];
+        }
+        // include simulation when adding a file associated with a model
+        if (ent._displayName == "Global Model"){
+          _addToSimLists(sim);
+        }
+        // show file as selected
+        $scope.browser.publication.filesSelected[ent.uuid].push(file);
+        _addToSimLists(ent);
       },
 
       selectFileForSimPublication : function(ent, file, sim){
@@ -1543,6 +1610,37 @@
           });
           _.each($scope.browser.project.output_set, function (set) {
             if (set.value.modelConfigs.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          delete $scope.browser.publication.filesSelected[ent.uuid];
+        }
+        _removeFromSimLists(ent);
+      },
+
+      deselectAllHybridSimFiles : function(ent){
+        if ($scope.browser.publication.filesSelected[ent.uuid] !== 'undefined'){
+          _.each($scope.browser.project.coordinator_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.simsubstructure_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.expsubstructure_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.output_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
               delete $scope.browser.publication.filesSelected[set.uuid];
               _removeFromSimLists(set);
             }
@@ -1720,6 +1818,18 @@
         }
       },
 
+      filterHybridSimAnalysis : function(analysis){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(analysis, function(anl){
+            return !anl.value.hybridSimulations.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.analysiss, function(anl){
+            return !anl.value.hybridSimulations.length;
+          });
+        }
+      },
+
       filterSimReports : function(reports){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
           return _.filter(reports, function(rpt){
@@ -1728,6 +1838,18 @@
         } else {
           return _.filter($scope.browser.publication.reports, function(rpt){
             return !rpt.value.simOutputs.length;
+          });
+        }
+      },
+
+      filterHybridSimReports : function(reports){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(reports, function(rpt){
+            return !rpt.value.hybridSimulations.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.reports, function(rpt){
+            return !rpt.value.hybridSimulations.length;
           });
         }
       },
