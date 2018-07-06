@@ -1491,11 +1491,20 @@
           }
         });
 
+        // show global_model selected
+        _.each($scope.browser.project.globalmodel_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+
         // add model
         _addToSimLists(ent);
         
         // show model/report/analysis selected
-        if (ent._displayName == "Global Model" || ent._displayName == "Report" || ent._displayName == "Analysis") {
+        if (ent._displayName == "Report" || ent._displayName == "Analysis") {
           listing[ent.uuid] = $scope.browser.listings[ent.uuid];
         }
 
@@ -1747,7 +1756,7 @@
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
           return simulations;
         } else {
-          return $scope.browser.publication.hybridSimulations;
+          return $scope.browser.publication.hybrid_simulations;
         }
       },
 
@@ -1777,7 +1786,7 @@
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
           return models;
         } else {
-          return _.filter($scope.browser.publication.globalModels,
+          return _.filter($scope.browser.publication.global_models,
             function(model){
               return _.contains(model.associationIds, simulation.uuid);
             });
