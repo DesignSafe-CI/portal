@@ -93,6 +93,9 @@ class ApiService(BaseApiView):
         :returns: call to POST method on service (post_meta(), post_jobs()).
         """
         handler_name = 'post_{service}'.format(service=service)
+        print ("************printing above handler name **************")
+        print handler_name
+        print ("************printing below handler name **************")
         try:
             handler = getattr(self, handler_name)
         except AttributeError as exc:
@@ -101,7 +104,10 @@ class ApiService(BaseApiView):
 
         logger.debug('handler: %s', handler)
         try:
-            data = handler(service) #self.post_apps('apps)
+            data = handler(service)
+            print ("************printing above handler data **************")
+            print data
+            print ("************printing below handler data **************")
         except JobSubmitError as e:
                 data = e.json()
                 logger.error('Failed to submit job {0}'.format(data)) # this is the error is raising a 500
@@ -121,7 +127,7 @@ class ApiService(BaseApiView):
                                 status=400)
         except Exception as e:
             logger.error('Failed to execute {0} API call due to Exception={1}'.format(
-                service, e))
+                service, e), exc_info=True)
             return HttpResponse(
                 json.dumps({'status': 'error', 'message': '{}'.format(e.message)}),
                 content_type='application/json', status=400)
@@ -177,9 +183,7 @@ class ApiService(BaseApiView):
         agv = self.request.user.agave_oauth.client # need to mock this client
         if app_id:
             data = agv.apps.get(appId=app_id)
-            # print "############# I am printing above data in views1"
-            # print data
-            # print "############# I am printing below data in views1"
+
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
@@ -232,10 +236,9 @@ class ApiService(BaseApiView):
         else:
             query = self.request.GET.get('q')
             data = agv.meta.listMetadata(q=query)
-        # print "############# I am printing above data in meta/views"
-        # print data
-        # print "############# I am printing below data in meta/views"
+        print "############# I am printing above data in meta/views"
         print data
+        print "############# I am printing below data in meta/views"
         return data
 
     def post_meta(self, service):
@@ -244,7 +247,10 @@ class ApiService(BaseApiView):
         :param service: meta.
         :returns: A single Metadata object.
         """
-        meta_post = json.loads(self.request.body)
+        meta_post = self.request.POST.dict() # changed json.loads(self.request.body) for request.POST.dict()
+        print " ############### I am printing above META_POST:"
+        print meta_post
+        print " ############### I am printing below META_POST:"
         meta_uuid = meta_post.get('uuid')
         agv = self.request.user.agave_oauth.client
 
@@ -313,6 +319,9 @@ class ApiService(BaseApiView):
         :returns: A single job object.
         """
         job_post = json.loads(self.request.body)
+        print " ############### I am printing above JOB_POST_REQUEST_BODY:" #runs
+        print job_post
+        print " ############### I am printing below JOB_POST_REQUEST_BODY:" #runs
         job_id = job_post.get('job_id')
         agv = self.request.user.agave_oauth.client
 
@@ -326,6 +335,9 @@ class ApiService(BaseApiView):
             # cleaning archive path value
             if 'archivePath' in job_post:
                 parsed = urlparse(job_post['archivePath'])
+                print " ############### I am printing above parsed path:" #does not run, ok, bc ['archivePath'] does not exist in job_post
+                print parsed
+                print " ############### I am printing below parsed path:"
                 if parsed.path.startswith('/'):
                     # strip leading '/'
                     archive_path = parsed.path[1:]
@@ -346,8 +358,15 @@ class ApiService(BaseApiView):
                         self.request.user.username,
                         datetime.now().strftime('%Y-%m-%d'))
 
+                print " ############### I am printing above job_post['archivePath']:" #runs
+                print "############### PRINTING JOB_POST ARCHIVEPATH:" + job_post['archivePath'] + "JOB_POST ARCHIVEPATH ENDS" #runs after calling submit_job
+                print " ############### I am printing below job_post['archivePath']:" #does NOT run imediately/ runs 10 min latter
+
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
+            print " ############### I am printing imediately above lic_type:" #does not run imediately / #prints 10 min latter
+            print lic_type
+            print " ############### I am printing imediately below lic_type:" #does NOT run imediately / #prints 10 min latter
             if lic_type is not None:
                 _, license_models = get_license_info()
                 license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
@@ -358,13 +377,16 @@ class ApiService(BaseApiView):
             if job_post['inputs']:
                 for key, value in six.iteritems(job_post['inputs']):
                     parsed = urlparse(value)
+                    print " ############### I am printing above urlparse:" # prints 10 min latter
+                    print parsed
+                    print " ############### I am printing below urlparse:" #prints 10 min latter
                     if parsed.scheme:
                         job_post['inputs'][key] = '{}://{}{}'.format(
                             parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
                     else:
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
-            data = submit_job(self.request, self.request.user.username, job_post) # was catching JobSubmitError
+            data = submit_job(self.request, self.request.user.username, job_post) # catches JobSubmitError
 
         # list jobs (via POST?)
         else:

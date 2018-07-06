@@ -188,51 +188,50 @@ class WorkspaceViewtestCase(TestWorkspace):
     #         "name": "test"
     #     }))
 
-# redirects but works
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_post_meta_status_code(self, agave_client, agave):
-    #     """Testing post_meta code status'
+    #     """Testing post_meta status code'
     #     """
     #     self.client.login(username='test', password='test')
-    #     agave_client.meta.addMetadata.return_value = AttrDict({
-    #         "uuid": "test", 
-    #         "owner": "test"
-    #       })
-    #     # response = self.client.post('/rw/workspace/api/meta/v2/data', follow=True) # error_msm->  Not Found: /rw/workspace/api/meta/v2/data/ - it is adding a back slash to the path that does not exist
-    #     response = self.client.post('/rw/workspace/api/meta/?body={"uuid":"test", "owner":"test"}') #  error_msm-> handler: <bound method ApiService.post_meta of <designsafe.apps.workspace.views.ApiService object at 0x7fbf03f0a490>>[DJANGO] ERROR 2018-06-27 14:26:56,001 views designsafe.apps.workspace.views.post:124: Failed to execute meta API call due to Exception=You cannot access body after reading from request's data stream
-    #     # response = self.client.post('/rw/workspace/api/meta/ {"uuid":"test", "owner":"test"}') # error_msm-> Not Found: /rw/workspace/api/meta/, {"uuid":"test", "owner":"test"}
-    #     # response = self.client.post('/rw/workspace/api/meta/uuid=test&owner=test') # error_msm-> Not Found: /rw/workspace/api/meta/uuid=test&owner=test
-    #     # response = self.client.post('/rw/workspace/api/meta?uuid=test&owner=test') # error_msm-> 301
-    #     # response = self.client.post('/rw/workspace/api/meta?body="shortDescription": "Convert pointclouds to Potree format"') # error_msm-> 301
-    #     # redirecting = response.redirect_chain
-    #     # print " ############### I am printing response:"
-    #     # print redirecting
-    #     # print " ############### I am printing response above:"
-    #     self.assertEqual(response.status_code, 200)
-
-#cannot find file
-    # @mock.patch('agavepy.agave.Agave')
-    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_post_meta_content(self, agave_client, agave):
-    #     """Testing post_meta content return'
-    #     """
-    #     self.client.login(username='test', password='test')
-    #     agave_client.meta.addMetadata.return_value = AttrDict({
+    #     agave_client.meta.addMetadata.return_value = {
     #         "status" : "success",
     #         "message" : None
-    #       })
-    # #     # response = self.client.post('/rw/workspace/api/meta/v2/data', follow=True) # error_msm->  Not Found: /rw/workspace/api/meta/v2/data/ - it is adding a back slash to the path that does not exist
-    #     # response = self.client.post('/rw/workspace/api/meta/?body={"uuid":"test", "owner":"test"}') #  error_msm-> handler: <bound method ApiService.post_meta of <designsafe.apps.workspace.views.ApiService object at 0x7fbf03f0a490>>[DJANGO] ERROR 2018-06-27 14:26:56,001 views designsafe.apps.workspace.views.post:124: Failed to execute meta API call due to Exception=You cannot access body after reading from request's data stream
-    # #     # response = self.client.post('/rw/workspace/api/meta/ {"uuid":"test", "owner":"test"}') # error_msm-> Not Found: /rw/workspace/api/meta/, {"uuid":"test", "owner":"test"}
-    # #     # response = self.client.post('/rw/workspace/api/meta?uuid=test&owner=test') # error_msm-> 301
-    #     with open('meta.json') as myfile:
-    #         response = self.client.post('/rw/workspace/api/meta/', {'attachment': myfile})
-    #     # redirecting = response.redirect_chain
-    #     # print " ############### I am printing response:"
-    #     # print redirecting
-    #     # print " ############### I am printing response above:"
-    #     self.assertEqual(response.content, {
+    #       }
+    #     response = self.client.post('/rw/workspace/api/meta/?body={"title": "Example Metadata"}')
+    #     self.assertEquals(response.status_code, 200)
+
+    @mock.patch('agavepy.agave.Agave')
+    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    def test_post_meta_response(self, agave_client, agave):
+        """Testing post_meta response'
+        """
+        self.client.login(username='test', password='test')
+        agave_client.meta.addMetadata.return_value = {
+            "uuid": "test", 
+            "owner": "test"
+          }
+        response = self.client.post('/rw/workspace/api/meta/?body={"title": "Example Metadata"}')
+        json_res = response.json()
+        self.assertTrue(json_res, {
+            "uuid": "test", 
+            "title": "Example Metadata"
+          })
+
+#sekizai
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_post_meta_status_code_updateMetadata(self, agave_client, agave):
+    #     """Testing post_meta status code using updateMetadata'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.meta.updateMetadata.return_value = {
+    #         "status" : "success",
+    #         "message" : None
+    #       }
+    #     response = self.client.post('/rw/workspace/api/meta/?uuid=12345&body={"title": "Example Metadata"}', follow=True)
+    #     json_res = response.json()
+    #     self.assertTrue(json_res, {
     #         "status" : "success",
     #         "message" : None
     #       })
@@ -248,10 +247,10 @@ class WorkspaceViewtestCase(TestWorkspace):
     #         "status" : "success",
     #         "message" : None
     #     })
-    #     response = self.client.delete('/rw/workspace/api/meta/?uuid=2831691864876248600-242ac11e-0001-012?pretty=true')
+    #     response = self.client.delete('/rw/workspace/api/meta/?uuid=2831691864876248600-242ac11e-0001-012')
     #     self.assertEqual(response.status_code, 200)
 
-# redirecting and does not get response
+# sekizai
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
     # def test_delete_meta_content(self, agave_client, agave):
@@ -262,8 +261,8 @@ class WorkspaceViewtestCase(TestWorkspace):
     #         "status" : "success",
     #         "message" : None
     #     })
-    #     response = self.client.delete('/rw/workspace/api/meta/v2/data/12345')
-    #     # response = self.client.delete('/rw/workspace/api/meta/?uuid=12345')
+    #     # response = self.client.delete('/rw/workspace/api/meta/v2/data/12345')
+    #     response = self.client.delete('/rw/workspace/api/meta/?uuid=12345')
     #     self.assertEqual(response, {"status" : "success"})
 
     # @mock.patch('agavepy.agave.Agave')
@@ -285,26 +284,26 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.get('/rw/workspace/api/jobs/?job_id=12345')
     #     self.assertEqual(response.status_code, 200)
 
-    @mock.patch('agavepy.agave.Agave')
-    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    def test_get_jobs_content_return(self, agave_client, agave):
-        """Testing get_jobs content return'
-        """
-        self.client.login(username='test', password='test')
-        agave_client.jobs.get.return_value = {
-            "id": "test", 
-            "name": "test",
-            "archiveSystem": "test",
-            "archivePath": "test"
-        }
-        agave_client.meta.listMetadata.return_value = [{
-            "id": "test", 
-            "name": "test"
-        }]
-        response = self.client.get('/rw/workspace/api/jobs/?job_id=12345')
-        self.assertTrue(response.content, {"_embedded": {"metadata": [{"id": "test", "name": "test"}]}, 
-        "name": "test", "archiveSystem": "test", "archivePath": "test", 
-        "archiveUrl": "/data/browser/agave/test/test/", "id": "test"})
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_get_jobs_content_return(self, agave_client, agave):
+    #     """Testing get_jobs content return'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.jobs.get.return_value = {
+    #         "id": "test", 
+    #         "name": "test",
+    #         "archiveSystem": "test",
+    #         "archivePath": "test"
+    #     }
+    #     agave_client.meta.listMetadata.return_value = [{
+    #         "id": "test", 
+    #         "name": "test"
+    #     }]
+    #     response = self.client.get('/rw/workspace/api/jobs/?job_id=12345')
+    #     self.assertTrue(response.content, {"_embedded": {"metadata": [{"id": "test", "name": "test"}]}, 
+    #     "name": "test", "archiveSystem": "test", "archivePath": "test", 
+    #     "archiveUrl": "/data/browser/agave/test/test/", "id": "test"})
 
 #getting an error when trying to post-job from updated master as well
     # @mock.patch('agavepy.agave.Agave')
@@ -313,12 +312,12 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     """Testing post_jobs'
     #     """
     #     self.client.login(username='test', password='test')
-    #     agave_client.jobs.post.return_value = {
+    #     agave_client.jobs.post.return_value = AttrDict({
     #         "id": "test", 
     #         "name": "test",
     #         "archiveSystem": "designsafe.storage.default",
     #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
-    #     }
+    #     })
     #     response = self.client.post('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
     #     print " ############### I am printing response:"
     #     print response
