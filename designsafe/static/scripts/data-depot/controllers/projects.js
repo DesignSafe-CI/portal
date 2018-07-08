@@ -180,7 +180,7 @@
       return resp;
     }
 
-    ProjectService.get({uuid: projectId}).then(function (project) {
+    $scope.browser.projectServicePromise = ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
       DataBrowserService.state().project = project;
       DataBrowserService.state().loadingEntities = true;
@@ -954,6 +954,9 @@
     if (typeof $scope.browser !== 'undefined'){
       $scope.browser.busy = true;
     }
+
+    $scope.browser.projectServicePromise.then(function() {
+
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath}, 
                               {'query_string': $state.params.query_string})
       .then(function () {
@@ -1009,6 +1012,8 @@
               $scope.browser.busyListing = false;
           });
       });
+    
+    })
     
     var setFilesDetails = function(filePaths){
       filePaths = _.uniq(filePaths);
