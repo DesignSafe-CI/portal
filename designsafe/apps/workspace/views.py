@@ -10,6 +10,7 @@ from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.tasks import index_or_update_project
+from designsafe.apps.workspace import utils as WorkspaceUtils
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -201,25 +202,12 @@ def call_api(request, service):
             put = json.loads(request.body)
             dir_path = put.get('file_path')
             system = put.get('system')
-
-            # Create directory
-            body = {
-                'action': 'mkdir',
-                'path': dir_path
-            }
-            result = agave.files.manage(systemId=system, filePath=request.user.username, body=body)
-
-            # Create .Identity file with user's username
-            with open('.Identity', 'w') as identity_file:
-                identity_file.write(str(request.user.username))
-
-            with open('.Identity', 'r') as identity_file:
-                data = agave.files.importData(systemId=system,
-                                            filePath='/{}/{}'.format(request.user.username, put.get('file_path')),
-                                            fileToUpload=identity_file,
-                                            fileName='.Identity')
-            os.remove('.Identity')
-
+            WorkspaceUtils.setup_identity_file(
+                request.user.username,
+                agave,
+                system,
+                dir_path
+            )
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:
