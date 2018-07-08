@@ -956,7 +956,6 @@
     }
 
     $scope.browser.projectServicePromise.then(function() {
-
     DataBrowserService.browse({system: 'project-' + projectId, path: filePath}, 
                               {'query_string': $state.params.query_string})
       .then(function () {
@@ -968,51 +967,51 @@
           filePath: $scope.browser.listing.path,
           projectTitle: projectTitle
         });
-        _.each($scope.browser.listing.children, function (child) {
-          child.href = $state.href('projects.view.data', {
-            projectId: projectId,
-            filePath: child.path,
-            projectTitle: projectTitle
+          _.each($scope.browser.listing.children, function (child) {
+            child.href = $state.href('projects.view.data', {
+              projectId: projectId,
+              filePath: child.path,
+              projectTitle: projectTitle
+            });
           });
-        });
-        if (typeof $scope.browser.loadingEntities !== 'undefined' &&
-            !$scope.browser.loadingEntities){
-          var entities = $scope.browser.project.getAllRelatedObjects();
-          _.each($scope.browser.listing.children, function(child){
-            child.setEntities(DataBrowserService.state().project.uuid, entities);
-          });
-        } else {
-          $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
-            if (!newVal){
-              var entities = $scope.browser.project.getAllRelatedObjects();
-              _.each($scope.browser.listing.children, function(child){
-                child.setEntities($scope.browser.project.uuid, entities);
-              });
-              //var _state = DataBrowserService.state();
-              //_state.project.setupAllRels();
-              //$scope.browser = _state;
-            }
-          });
-        }
-      }).then(function(){
-        $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
-          .then(function(resp){
-              if (resp.data.project && resp.data.project.doi){
-                  $scope.browser.project.doi = resp.data.project.doi;
-                  DataBrowserService.state().project.doi = resp.data.project.doi;
-              } 
-              if (resp.data.project && resp.data.status){
-                $scope.browser.project.publicationStatus = resp.data.status;
-                DataBrowserService.state().project.publicationStatus = resp.data.status;
+          if (typeof $scope.browser.loadingEntities !== 'undefined' &&
+              !$scope.browser.loadingEntities){
+            var entities = $scope.browser.project.getAllRelatedObjects();
+            _.each($scope.browser.listing.children, function(child){
+              child.setEntities(DataBrowserService.state().project.uuid, entities);
+            });
+          } else {
+            $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
+              if (!newVal){
+                var entities = $scope.browser.project.getAllRelatedObjects();
+                _.each($scope.browser.listing.children, function(child){
+                  child.setEntities($scope.browser.project.uuid, entities);
+                });
+                //var _state = DataBrowserService.state();
+                //_state.project.setupAllRels();
+                //$scope.browser = _state;
               }
-              $scope.browser.busy = false;
-              $scope.browser.busyListing = false;
-          }, function(){
-              $scope.browser.busy = false;
-              $scope.browser.busyListing = false;
-          });
-      });
-    
+            });
+          }
+        }).then(function(){
+          $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
+            .then(function(resp){
+                if (resp.data.project && resp.data.project.doi){
+                    $scope.browser.project.doi = resp.data.project.doi;
+                    DataBrowserService.state().project.doi = resp.data.project.doi;
+                } 
+                if (resp.data.project && resp.data.status){
+                  $scope.browser.project.publicationStatus = resp.data.status;
+                  DataBrowserService.state().project.publicationStatus = resp.data.status;
+                }
+                $scope.browser.busy = false;
+                $scope.browser.busyListing = false;
+            }, function(){
+                $scope.browser.busy = false;
+                $scope.browser.busyListing = false;
+            });
+        });
+      
     })
     
     var setFilesDetails = function(filePaths){
