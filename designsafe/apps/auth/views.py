@@ -107,7 +107,7 @@ def agave_oauth_callback(request):
     http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
     """
     state = request.GET.get('state')
-
+    
     if request.session['auth_state'] != state:
         msg = (
             'OAuth Authorization State mismatch!? auth_state=%s '
@@ -166,12 +166,13 @@ def agave_oauth_callback(request):
             try:
                 ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
                               filePath=user.username)
-            except HTTPError:
-                body = {'action': 'mkdir', 'path': user.username}
-                ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                            filePath='',
-                            body=body)
-                check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')   
+            except HTTPError as e:
+                if e.response.status_code == 404:
+                    body = {'action': 'mkdir', 'path': user.username}
+                    ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                                filePath='',
+                                body=body)
+                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')   
 
         else:
             messages.error(
