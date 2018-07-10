@@ -126,7 +126,9 @@
         'designsafe.project.hybrid_simulation.coordinator': {'tag': 'tag-green', 'text': 'ds-text-green'},
         'designsafe.project.hybrid_simulation.sim_substructure': {'tag': 'tag-yellow', 'text': 'ds-text-yellow'},
         'designsafe.project.hybrid_simulation.exp_substructure': {'tag': 'tag-purple', 'text': 'ds-text-purple'},
-        'designsafe.project.hybrid_simulation.output': {'tag': 'tag-red', 'text': 'ds-text-red'},
+        'designsafe.project.hybrid_simulation.global_model_output': {'tag': 'tag-red', 'text': 'ds-text-red'},
+        'designsafe.project.hybrid_simulation.exp_output': {'tag': 'tag-red', 'text': 'ds-text-red'},
+        'designsafe.project.hybrid_simulation.sim_output': {'tag': 'tag-red', 'text': 'ds-text-red'},
         'designsafe.project.hybrid_simulation.analysis': {'tag': 'tag-light-blue', 'text': 'ds-text-light-blue'},
         'designsafe.project.hybrid_simulation.report': {'tag': 'tag-black', 'text': 'ds-text-black'},
     };
