@@ -269,7 +269,9 @@ class ProjectMetaLookupMixin(object):
             'designsafe.project.hybrid_simulation.coordinator': hybrid_simulation.Coordinator,
             'designsafe.project.hybrid_simulation.sim_substructure': hybrid_simulation.SimSubstructure,
             'designsafe.project.hybrid_simulation.exp_substructure': hybrid_simulation.ExpSubstructure,
-            'designsafe.project.hybrid_simulation.output': hybrid_simulation.Output,
+            'designsafe.project.hybrid_simulation.global_model_output': hybrid_simulation.GlobalModelOutput,
+            'designsafe.project.hybrid_simulation.exp_output': hybrid_simulation.ExpOutput,
+            'designsafe.project.hybrid_simulation.sim_output': hybrid_simulation.SimOutput,
             'designsafe.project.hybrid_simulation.analysis': hybrid_simulation.Analysis,
             'designsafe.project.hybrid_simulation.report': hybrid_simulation.Report
         }

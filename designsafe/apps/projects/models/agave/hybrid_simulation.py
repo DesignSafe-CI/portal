@@ -109,16 +109,46 @@ class ExpSubstructure(RelatedEntity):
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
-class Output(RelatedEntity):
-    model_name = 'designsafe.project.hybrid_simulation.output'
+# class Output(RelatedEntity):
+#    model_name = 'designsafe.project.hybrid_simulation.output'
+#    title = fields.CharField('Title', max_length=512)
+#    description = fields.CharField('Description', max_length=1024, default='')
+#    project = fields.RelatedObjectField(HybridSimulationProject)
+#    hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
+#    global_models = fields.RelatedObjectField(GlobalModel)
+#    coordinators = fields.RelatedObjectField(Coordinator)
+#    exp_substructures = fields.RelatedObjectField(ExpSubstructure)
+#    sim_substructures = fields.RelatedObjectField(SimSubstructure)
+#    files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class GlobalModelOutput(RelatedEntity):
+    model_name = 'designsafe.project.hybrid_simulation.global_model_output'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(HybridSimulationProject)
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     global_models = fields.RelatedObjectField(GlobalModel)
     coordinators = fields.RelatedObjectField(Coordinator)
-    exp_substructures = fields.RelatedObjectField(ExpSubstructure)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class SimOutput(RelatedEntity):
+    model_name = 'designsafe.project.hybrid_simulation.sim_output'
+    title = fields.CharField('Title', max_length=512)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(HybridSimulationProject)
+    hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
+    coordinators = fields.RelatedObjectField(Coordinator)
     sim_substructures = fields.RelatedObjectField(SimSubstructure)
+    files = fields.RelatedObjectField(FileModel, multiple=True)
+
+class ExpOutput(RelatedEntity):
+    model_name = 'designsafe.project.hybrid_simulation.exp_output'
+    title = fields.CharField('Title', max_length=512)
+    description = fields.CharField('Description', max_length=1024, default='')
+    project = fields.RelatedObjectField(HybridSimulationProject)
+    hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
+    coordinators = fields.RelatedObjectField(Coordinator)
+    exp_substructures = fields.RelatedObjectField(ExpSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
 class Analysis(RelatedEntity):
