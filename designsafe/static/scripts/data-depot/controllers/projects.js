@@ -51,7 +51,8 @@
             href: $state.href('projects.view.data', {
               projectId: toStateParams.projectId,
               filePath: '/',
-              projectTitle: DataBrowserService.state().project.value.title
+              projectTitle: DataBrowserService.state().project.value.title,
+              query_string: ''
             })
           });
         } else {
@@ -83,7 +84,8 @@
           href: $state.href('projects.view.data', {
             projectId: toStateParams.projectId,
             filePath: '/',
-            projectTitle: getTitle(toStateParams, $scope.data.projects)
+            projectTitle: getTitle(toStateParams, $scope.data.projects),
+            query_string: ''
           })
         });
       }
