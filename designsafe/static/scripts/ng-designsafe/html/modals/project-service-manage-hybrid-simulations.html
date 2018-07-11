@@ -513,6 +513,12 @@
       <div class="add-extra-category-content well well-sm"
            style="padding-bottom:10px; margin-bottom:10px;" ng-if="ui.showExtraCat">
       <form>
+          <div style="display:block; width:100%"
+               ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
+              <p>
+              <i class="fa fa-star"></i> Saving an <strong>Output</strong> category creates 3 syncronized categories: <strong>Coordinator Output</strong>, <strong>Simulation Output</strong>, and <strong>Event Output</strong>
+              </p>
+          </div>
         <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
@@ -539,48 +545,29 @@
          </div>
 
         </div>
-        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.simulation.model'">
-         <div style="display:inline-block; width:30%">
-          <label for="id-app-ver" style="display:block">Application & Version</label>
-          <div custom-select="item.name as item.label for item in ui.simModel.apps"
-               ng-model="data.form.projectTagToAdd.applicationVersion">
-            <yamz-term term-id="{{item.yamzId}}">
-              <i class="fa fa-question-circle"></i>
-            </yamz-term><span>{{item.label}}</span>
-          </div>
-          <input type="text" class="form-control" style="width:90%; display:inline-block;" 
-                 ng-model="data.form.projectTagToAdd.applicationVersionOther"
-                 ng-if="data.form.simModel.app === 'Other'"/>
-         </div>
-         <div style="display:inline-block; width:45%">
-          <label for="id-app-desc" style="display:block">Application Description</label>
-          <input class="form-control" style="width:90%; display:inline-block;"
-                 name="tag-title" id="id-app-desc"
-                 ng-model="data.form.projectTagToAdd.applicationVersionDesc"/>
-         </div>
-
-         <div style="display:inline-block; width:30%">
-          <label for="id-nhtype" style="display:block">Natural Hazard Type</label>
-          <div custom-select="item.name as item.label for item in ui.simModel.NHType"
-               ng-model="data.form.projectTagToAdd.nhType">
-            <yamz-term term-id="{{item.yamzId}}">
-              <i class="fa fa-question-circle"></i>
-            </yamz-term><span>{{item.label}}</span>
-          </div>
-          <input type="text" class="form-control" style="width:90%; display:inline-block;" 
-                 ng-model="data.form.projectTagToAdd.nhTypeOther"
-                 ng-if="data.form.simModel.NHType === 'Other'"/>
-         </div>
-         <div style="display:inline-block; width:45%">
-          <label for="id-app-desc" style="display:block">SimulatedSystem</label>
-          <input class="form-control" style="width:90%; display:inline-block;"
-                 name="tag-title" id="id-app-desc"
-                 ng-model="data.form.projectTagToAdd.simulatedSystem"/>
-         </div>
-
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Coordinator Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.coordinatorDesc">
+                </textarea>
+            </div>
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Simulation Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.simulationDesc">
+                </textarea>
+            </div>
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Event Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.eventDesc">
+                </textarea>
+            </div>
         </div>
         <!-- Extra form fields for categories END -->
-        <div style="display:inline-block; width:90%; padding-top:5px;">
+        <div style="display:inline-block; width:90%; padding-top:5px;"
+             ng-if="data.form.projectTagToAdd.name !== 'designsafe.project.hybrid_simulation.output'">
           <textarea style="width:100%;" placeholder="Description"
         ng-model="data.form.projectTagToAdd.description">
         </textarea>

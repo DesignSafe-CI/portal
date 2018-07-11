@@ -500,31 +500,97 @@
             var name = nameComps[nameComps.length-1];
             $scope.ui.addingTag = true;
             entity.description = entity.description || '';
-            if (typeof $scope.data.files !== 'undefined'){
-              entity.filePaths = _.map($scope.data.files,
-                                     function(file){
-                                      return file.path;
-                                     });
-            }
+            //if (typeof $scope.data.files !== 'undefined'){
+            //  entity.filePaths = _.map($scope.data.files,
+            //                         function(file){
+            //                          return file.path;
+            //                         });
+            //}
             $scope.ui.addingTag = true;
-            ProjectEntitiesService.create({data: {
-                uuid: $scope.data.project.uuid,
-                name: entity.name,
-                entity: entity
-            }})
-            .then(
-               function(resp){
-                 $scope.data.form.projectTagToAdd = {optional:{}};
-                 //currentState.project.addEntity(resp);
-                 $scope.data.project.addEntity(resp);
-                 $scope.ui.error = false;
-                 $scope.ui.addingTag = false;
-               },
-               function(err){
-                 $scope.ui.error = true;
-                 $scope.error = err;
-               }
-           );
+            var post_process = function(resp){
+                $scope.data.form.projectTagToAdd = {optional:{}};
+                //currentState.project.addEntity(resp);
+                $scope.data.project.addEntity(resp);
+                $scope.ui.error = false;
+                $scope.ui.addingTag = false;
+              };
+
+            if (entity.name === 'designsafe.project.hybrid_simulation.output'){
+                var tasks = [];
+                var coordinatorDesc = entity.coordinatorDesc;
+                delete entity.coordinatorDesc;
+                var simulationDesc = entity.simulationDesc;
+                delete entity.simulationDesc;
+                var eventDesc = entity.eventDesc;
+                delete entity.eventDesc;
+
+                entity.name = 'designsafe.project.hybrid_simulation.coordinator_output';
+                entity.description = coordinatorDesc;
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: entity
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.simulation_output';
+                entity.description = siulationDesc;
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: entity
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.event_output';
+                entity.description = eventDesc;
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: entity
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+                $q.all(tasks);
+            } else {
+              ProjectEntitiesService.create({data: {
+                  uuid: $scope.data.project.uuid,
+                  name: entity.name,
+                  entity: entity
+              }})
+              .then(post_process,
+                 function(err){
+                   $scope.ui.error = true;
+                   $scope.error = err;
+                 }
+              );
+            }
           };
 
         }],

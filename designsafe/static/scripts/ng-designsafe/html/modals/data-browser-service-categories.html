@@ -520,10 +520,31 @@
                  name="tag-title" id="id-app-desc"
                  ng-model="data.form.projectTagToAdd.simulatedSystem"/>
          </div>
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Coordinator Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.coordinatorDesc">
+                </textarea>
+            </div>
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Simulation Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.simulationDesc">
+                </textarea>
+            </div>
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Event Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.eventDesc">
+                </textarea>
+            </div>
+        </div>
 
         </div>
         <!-- Extra form fields for categories END -->
-        <div style="display:inline-block; width:90%;">
+        <div style="display:inline-block; width:90%;"
+             ng-if="data.form.projectTagToAdd.name !== 'designsafe.project.hybrid_simulation.output'">
           <label for="id-tag-description" style="display:block">Description</label>
           <textarea style="width:100%;" ng-model="data.form.projectTagToAdd.description">
         </textarea>
