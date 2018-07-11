@@ -121,8 +121,8 @@ class ExpSubstructure(RelatedEntity):
 #    sim_substructures = fields.RelatedObjectField(SimSubstructure)
 #    files = fields.RelatedObjectField(FileModel, multiple=True)
 
-class GlobalModelOutput(RelatedEntity):
-    model_name = 'designsafe.project.hybrid_simulation.global_model_output'
+class CoordinatorOutput(RelatedEntity):
+    model_name = 'designsafe.project.hybrid_simulation.coordinator_output'
     title = fields.CharField('Title', max_length=512)
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(HybridSimulationProject)
