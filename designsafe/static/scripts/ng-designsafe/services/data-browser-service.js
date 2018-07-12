@@ -1893,36 +1893,111 @@
             var name = nameComps[nameComps.length-1];
             $scope.ui.addingTag = true;
             entity.description = entity.description || '';
-            if (typeof $scope.data.files !== 'undefined'){
-              entity.filePaths = _.map($scope.data.files,
-                                     function(file){
-                                      return file.path;
-                                     });
-            }
+            //if (typeof $scope.data.files !== 'undefined'){
+            //  entity.filePaths = _.map($scope.data.files,
+            //                         function(file){
+            //                          return file.path;
+            //                         });
+            //}
             
             // using entity.name to place the object
             // what if we route the name if it is a normal report?
-            $scope.ui.addingTag = true;
-            ProjectEntitiesService.create({data: {
-                uuid: currentState.project.uuid,
-                name: entity.name,
-                entity: entity
-            }})
-            .then(
-               function(resp){
-                 $scope.data.form.projectTagToAdd = {optional:{}};
-                 currentState.project.addEntity(resp);
+            var post_process = function(resp){
+                $scope.data.form.projectTagToAdd = {optional:{}};
+                $scope.data.project.addEntity(resp);
                  _setFileEntities();
                  _setEntities();
-                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-                 $scope.ui.error = false;
-                 $scope.ui.addingTag = false;
-               },
-               function(err){
-                 $scope.ui.error = true;
-                 $scope.error = err;
-               }
-           );
+                $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+                $scope.ui.error = false;
+                $scope.ui.addingTag = false;
+              };
+            $scope.ui.addingTag = true;
+
+            if (entity.name === 'designsafe.project.hybrid_simulation.output'){
+                var tasks = [];
+                var coordinatorDesc = entity.coordinatorDesc;
+                delete entity.coordinatorDesc;
+                var simulationDesc = entity.simulationDesc;
+                delete entity.simulationDesc;
+                var eventDesc = entity.eventDesc;
+                delete entity.eventDesc;
+
+                entity.name = 'designsafe.project.hybrid_simulation.coordinator_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.coordinator_output',
+                              title: entity.title,
+                              description: coordinatorDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.sim_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.sim_output',
+                              title: entity.title,
+                              description: simulationDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.exp_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.exp_output',
+                              title: entity.title,
+                              description: eventDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+                $q.all(tasks);
+            } else {
+                ProjectEntitiesService.create({data: {
+                    uuid: currentState.project.uuid,
+                    name: entity.name,
+                    entity: entity
+                }})
+                .then(post_process,
+                   function(err){
+                     $scope.ui.error = true;
+                     $scope.error = err;
+                   }
+               );
+            }
           };
         }],
         size: 'lg',

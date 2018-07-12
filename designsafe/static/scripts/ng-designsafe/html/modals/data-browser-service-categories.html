@@ -127,6 +127,18 @@
                    ng-class="{'fa-lock': isEntityLocked(coordinator)}" class="fa"></i>
                 </button>
               </div>
+              <h5 style=font-weight:normal;">Coordinator Output</h5>
+              <div ng-repeat="output in data.project.coordinatoroutput_set"
+                   style="width:100%; padding-bottom:5px;">
+                  <button class="btn" style="background:none;"
+                          ng-click="toggleProjectTag(output)">
+                      <span ng-class="{'selected': isProjectTagSel(output)}"
+                          class="label tag-red">&nbsp;</span>
+                    <span class="tag-title">{{output.value.title}}</span>
+                    <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                       ng-class="{'fa-lock': isEntityLocked(coordinator)}" class="fa"></i>
+                  </button>
+              </div>
           </div>
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Numerical (Simulation) Substructure</h5>
@@ -141,6 +153,18 @@
                    ng-class="{'fa-lock': isEntityLocked(substructure)}" class="fa"></i>
                 </button>
               </div>
+              <h5 style=font-weight:normal;">Simulation Output</h5>
+              <div ng-repeat="output in data.project.simoutput_set"
+                   style="width:100%; padding-bottom:5px;">
+                  <button class="btn" style="background:none;"
+                          ng-click="toggleProjectTag(output)">
+                  <span ng-class="{'selected': isProjectTagSel(output)}"
+                          class="label tag-red">&nbsp;</span>
+                    <span class="tag-title">{{output.value.title}}</span>
+                    <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                       ng-class="{'fa-lock': isEntityLocked(coordinator)}" class="fa"></i>
+                  </button>
+              </div>
           </div>
           <div class="col-xs-3">
               <h5 style="font-weight:normal;">Physical (Experimental) Substructure</h5>
@@ -154,6 +178,18 @@
                 <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
                    ng-class="{'fa-lock': isEntityLocked(substructure)}" class="fa"></i>
                 </button>
+              </div>
+              <h5 style=font-weight:normal;">Event Output</h5>
+              <div ng-repeat="output in data.project.expoutput_set"
+                   style="width:100%; padding-bottom:5px;">
+                  <button class="btn" style="background:none;"
+                          ng-click="toggleProjectTag(output)">
+                  <span ng-class="{'selected': isProjectTagSel(output)}"
+                          class="label tag-red">&nbsp;</span>
+                    <span class="tag-title">{{output.value.title}}</span>
+                    <i data-toggle="tooltip" title="This category has been inherited from a parent directory. This category can only be removed in the parent directory"
+                       ng-class="{'fa-lock': isEntityLocked(coordinator)}" class="fa"></i>
+                  </button>
               </div>
           </div>
         </div>
@@ -520,6 +556,7 @@
                  name="tag-title" id="id-app-desc"
                  ng-model="data.form.projectTagToAdd.simulatedSystem"/>
          </div>
+        </div>
         <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
             <div style="display: inline-block; width:100%">
                 <label for="id-sim-desc" style="display:block">Coordinator Description</label>
@@ -541,7 +578,6 @@
             </div>
         </div>
 
-        </div>
         <!-- Extra form fields for categories END -->
         <div style="display:inline-block; width:90%;"
              ng-if="data.form.projectTagToAdd.name !== 'designsafe.project.hybrid_simulation.output'">

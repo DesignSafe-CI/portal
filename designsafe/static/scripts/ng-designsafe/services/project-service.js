@@ -525,13 +525,16 @@
                 delete entity.eventDesc;
 
                 entity.name = 'designsafe.project.hybrid_simulation.coordinator_output';
-                entity.description = coordinatorDesc;
                 tasks.push(
                   ProjectEntitiesService.create({
                       data: {
                           uuid: $scope.data.project.uuid,
                           name: entity.name,
-                          entity: entity
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.coordinator_output',
+                              title: entity.title,
+                              description: coordinatorDesc
+                          }
                       }
                   }).then(
                       post_process,
@@ -542,14 +545,18 @@
                   )
                 );
 
-                entity.name = 'designsafe.project.hybrid_simulation.simulation_output';
-                entity.description = siulationDesc;
+                entity.name = 'designsafe.project.hybrid_simulation.sim_output';
+                entity.description = simulationDesc;
                 tasks.push(
                   ProjectEntitiesService.create({
                       data: {
                           uuid: $scope.data.project.uuid,
                           name: entity.name,
-                          entity: entity
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.sim_output',
+                              title: entity.title,
+                              description: simulationDesc
+                          }
                       }
                   }).then(
                       post_process,
@@ -560,14 +567,18 @@
                   )
                 );
 
-                entity.name = 'designsafe.project.hybrid_simulation.event_output';
+                entity.name = 'designsafe.project.hybrid_simulation.exp_output';
                 entity.description = eventDesc;
                 tasks.push(
                   ProjectEntitiesService.create({
                       data: {
                           uuid: $scope.data.project.uuid,
                           name: entity.name,
-                          entity: entity
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.exp_output',
+                              title: entity.title,
+                              description: eventDesc
+                          }
                       }
                   }).then(
                       post_process,
