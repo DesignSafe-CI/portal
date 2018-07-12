@@ -15,8 +15,8 @@
     };
   }])
   .controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast', 'Django',
-    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django) {
+    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast', 'Django', 'ProjectService',
+    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
 
       $localStorage.systemChecks = {};
 
@@ -33,6 +33,10 @@
       Jobs.getWebhookUrl().then(function(response) {
         $scope.webhookUrl = response.data;
       });
+
+      ProjectService.list({offset: 0, limit: 500}).then(function(resp) {
+        $scope.projectList = resp
+      })
 
       $scope.$on('launch-app', function(e, app) {
         $scope.error = '';
@@ -152,7 +156,7 @@
               appId: $scope.data.app.id,
               archive: true,
               inputs: {},
-              parameters: {},
+              parameters: {projects: $scope.projectList},
               notifications: [
                 /*
                 {
@@ -207,6 +211,7 @@
           };
 
           /* copy form model to disconnect from $scope */
+          $scope.form.model.parameters.projects = $scope.projectList
           _.extend(jobData, angular.copy($scope.form.model));
 
           /* remove falsy input/parameter */
@@ -231,8 +236,9 @@
           if (_.has(jobData, 'nodeCount')) {
             jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
           }
-
+          
           $scope.data.submitting = true;
+          console.log(jobData)
           Jobs.submit(jobData).then(
             function(resp) {
               $scope.data.submitting = false;
