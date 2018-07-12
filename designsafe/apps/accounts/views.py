@@ -541,11 +541,38 @@ def departments_json(request):
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def mailing_list_subscription(request, list_name):
     subscribers = ['"Name","Email"']
+
     try:
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
             Q(**{"notification_preferences__{}".format(list_name): True}))
-        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'), u.email.encode('utf-8')) for u in su)
+        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'),\
+        u.email.encode('utf-8')) for u in su)
+
+    except TypeError as e:
+        logger.warning('Invalid list name: {}'.format(list_name))
+    return HttpResponse('\n'.join(subscribers), content_type='text/csv')
+
+@permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
+def user_report(request, list_name):
+    subscribers = ['"UserName","Bio","Website","Orcid_id","Professional Level","Research Activities","NH_interests"']
+    try:
+        professional_profile_user_list = DesignSafeProfile.objects.all()
+        notification_list = get_user_model().objects.filter(
+            Q(notification_preferences__isnull=True) |
+            Q(**{"notification_preferences__{}".format(list_name): True}))
+        for profile_user in professional_profile_user_list:
+            # user_profile = TASUser(username=profile_user.user)
+            if profile_user.user in notification_list:
+                subscribers.append(
+                    '"{0}","{1}","{2}","{3}","{4}","{5}","{6}"'.format(
+                        profile_user.user,\
+                        profile_user.bio.encode('utf-8') if profile_user.bio else profile_user.bio,\
+                        profile_user.website.encode('utf-8') if profile_user.website else profile_user.website,\
+                        profile_user.orcid_id.encode('utf-8') if profile_user.orcid_id else profile_user.orcid_id,\
+                        profile_user.professional_level,\
+                        profile_user.research_activities,\
+                        profile_user.nh_interests))
     except TypeError as e:
         logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
