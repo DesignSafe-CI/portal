@@ -155,7 +155,7 @@
                      ng-click="openPreviewTree()($event, coordinator.uuid)">
                     {{coordinator.value.title}}
                   </a>
-                  <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('output_set',
+                  <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('coordinatoroutput_set',
                                                                [simulation.uuid, model.uuid, coordinator.uuid])">
                     <a ng-class="output.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, output.uuid)">
                       {{output.value.title}}
@@ -172,8 +172,8 @@
                          ng-click="openPreviewTree()($event, substructure.uuid)">
                           {{substructure.value.title}}
                       </a>
-                      <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('output_set',
-                                                                   [simulation.uuid, model.uuid, coordinator.uuid, substructure.uuid])">
+                      <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('simoutput_set',
+                                                                   [simulation.uuid, model.uuid, substructure.uuid])">
                         <a ng-class="output.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, output.uuid)">
                         {{output.value.title}}
                         </a>
@@ -190,8 +190,8 @@
                          ng-click="openPreviewTree()($event, substructure.uuid)">
                           {{substructure.value.title}}
                       </a>
-                      <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('output_set',
-                                                                   [simulation.uuid, model.uuid, coordinator.uuid, substructure.uuid])">
+                      <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('expoutput_set',
+                                                                   [simulation.uuid, model.uuid, substructure.uuid])">
                         <a ng-class="output.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, output.uuid)">
                         {{output.value.title}}
                         </a>
@@ -285,7 +285,7 @@
                           </td>
                         </tr>
                         <tr style="background:#fff; border:none;"
-                            ng-repeat="output in browser.project.getRelated('output_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
+                            ng-repeat="output in browser.project.getRelated('coordinatoroutput_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
 
                            <td colspan="4">
                             <div class="entity-preview-header" id="details-{{output.uuid}}">
@@ -357,7 +357,7 @@
                                       </td>
                                     </tr>
                                     <tr style="background:#fff; border:none;"
-                                        ng-repeat="output in browser.project.getRelated('output_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'">
+                                        ng-repeat="output in browser.project.getRelated('simoutput_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'">
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
@@ -433,7 +433,7 @@
                                       </td>
                                     </tr>
                                     <tr style="background:#fff; border:none;"
-                                        ng-repeat="output in browser.project.getRelated('output_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'">
+                                        ng-repeat="output in browser.project.getRelated('expoutput_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'">
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
@@ -933,7 +933,7 @@
                         <span class="text-danger">*</span>
                     </div>
                     <div class="value pull-right">
-                        <span ng-repeat="output in browser.project.getRelated('output_set', [sim.uuid, coordinator.uuid])"
+                        <span ng-repeat="output in browser.project.getRelated('coordinatoroutput_set', [sim.uuid, coordinator.uuid])"
                               style="display:block; color:#D04348;">
                             <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.title)">
                                 <i class="fa fa-exclamation-circle"></i>
@@ -976,7 +976,7 @@
                         <span class="text-danger">*</span>
                     </div>
                     <div class="value pull-right">
-                        <span ng-repeat="output in browser.project.getRelated('output_set', [sim.uuid, substructure.uuid])"
+                        <span ng-repeat="output in browser.project.getRelated('simoutput_set', [sim.uuid, substructure.uuid])"
                               style="display:block; color:#D04348;">
                             <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.title)">
                                 <i class="fa fa-exclamation-circle"></i>
@@ -1019,7 +1019,7 @@
                         <span class="text-danger">*</span>
                     </div>
                     <div class="value pull-right">
-                        <span ng-repeat="output in browser.project.getRelated('output_set', [sim.uuid, substructure.uuid])"
+                        <span ng-repeat="output in browser.project.getRelated('expoutput_set', [sim.uuid, substructure.uuid])"
                               style="display:block; color:#D04348;">
                             <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.title)">
                                 <i class="fa fa-exclamation-circle"></i>
