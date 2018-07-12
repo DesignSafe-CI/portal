@@ -1716,6 +1716,9 @@
           $scope.data.catForm = {};
 
           $scope.isProjectTagSel = function(entity){
+            if (typeof entity === 'undefined'){
+                return;
+            }
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
               return true;
             } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
@@ -2232,6 +2235,9 @@
           $scope.data.form.projectTagToAdd = {optional:{}};
 
           $scope.isProjectTagSel = function(entity){
+            if (typeof entity === 'undefined'){
+                return;
+            }
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
               return true;
             } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
