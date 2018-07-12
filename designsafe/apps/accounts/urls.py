@@ -24,6 +24,9 @@ urlpatterns = [
     url(r'^mailing-list/(?P<list_name>.*)/$', views.mailing_list_subscription,
         name='mailing_list_subscription'),
 
+    url(r'^user-report/(?P<list_name>.*)/$', views.user_report,
+        name='user_report'),
+
     url(r'^terms-conditions/$', views.termsandconditions, name="terms_conditions"),
 ]
 
