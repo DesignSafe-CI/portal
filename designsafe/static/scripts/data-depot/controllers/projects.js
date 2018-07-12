@@ -365,8 +365,8 @@
       var simReports = pub.reports;
       // hybrid
       var hybridSimulation = pub.hybrid_simulations;
-      var hybridAnalysis = pub.analysisList;
-      var hybridReports = pub.reportsList;
+      // var hybridAnalysis = pub.analysisList;
+      // var hybridReports = pub.reportsList;
 
 
       var publicationMessages = [];
@@ -385,7 +385,15 @@
         "analysisReq": ['title', 'description'],
       };
 
-      //completes checklist
+      /**
+       * completes project checklist using the following:
+       * 
+       * dataType - models, sensors, structures, outputs etc...
+       * prjType - metadata key in $scope.state.publication
+       * clKeyName - string for checklist label (returned to user in error log)
+       * exp - a single experiment/simulation/hybrid
+       * iterator - for indexing checklist
+       */
       function fillChecklist(dataType, prjType, clKeyName, exp, iterator){
         checklist[prjType+iterator][clKeyName] = false;
         dataType.forEach(function(ent){
@@ -422,46 +430,22 @@
         experimentsList.forEach(function (exp) {
           var title = experimentsList[i].value.title;
 
-          checklist['experiment'+i] = {};
-          checklist['experiment'+i].name = title;
-          checklist['experiment'+i].category = 'experiment';
+          checklist['experiments'+i] = {};
+          checklist['experiments'+i].name = title;
+          checklist['experiments'+i].category = 'experiment';
 
-          
           //model configs
-          checklist['experiment'+i].model = false;
-          models.forEach(function(mod){
-            mod.value.experiments.forEach(function(mid) {
-              if (exp.uuid == mid) {
-                checklist['experiment'+i].model = true;
-              }
-            });
-          });
-          
+          fillChecklist(models, 'experiments', 'model', exp, i);
           //sensor data
-          checklist['experiment'+i].sensor = false;
-          sensors.forEach(function(sen) {
-            sen.value.experiments.forEach(function(sid) {
-              if (exp.uuid == sid) {
-                checklist['experiment'+i].sensor = true;
-              }
-            });
-          });
-
+          fillChecklist(sensors, 'experiments', 'sensor', exp, i);
           //event data
-          checklist['experiment'+i].event = false;
-          events.forEach(function(evt) {
-            evt.value.experiments.forEach(function(eid) {
-              if (exp.uuid == eid) {
-                checklist['experiment'+i].event = true;
-              }
-            });
-          });
+          fillChecklist(events, 'experiments', 'event', exp, i);
 
           requirements.experimentReq.forEach(function (req) {
             if (exp.value[req] == '' || exp.value[req] == []) {
-              checklist['experiment'+i][req] = false;
+              checklist['experiments'+i][req] = false;
             } else {
-              checklist['experiment'+i][req] = true;
+              checklist['experiments'+i][req] = true;
             }
           });
           i++;
@@ -477,64 +461,40 @@
         var inputs = pub.inputs;
         var outputs = pub.outputs;
 
-
         if (simSimulations === undefined || simSimulations == '') {
           return;
         } else {
-          simSimulations.forEach(function (sim) {
+          simSimulations.forEach(function (exp) {
             var title = simSimulations[i].value.title;
 
-            checklist['simulation'+i] = {};
-            checklist['simulation'+i].name = title;
-            checklist['simulation'+i].category = 'simulation';
+            checklist['simulations'+i] = {};
+            checklist['simulations'+i].name = title;
+            checklist['simulations'+i].category = 'simulation';
             
             //models
             if (models === undefined) {
-              checklist['simulation'+i].model = false;
+              checklist['simulations'+i].model = false;
             } else {
-              checklist['simulation'+i].model = false;
-              models.forEach(function(mod){
-                mod.value.simulations.forEach(function(mid) {
-                  if (sim.uuid == mid) {
-                    checklist['simulation'+i].model = true;
-                  }
-                });
-              });
+              fillChecklist(models, 'simulations', 'model', exp, i);
             }
-
             //inputs
             if (inputs === undefined) {
-              checklist['simulation'+i].input = false;
+              checklist['simulations'+i].input = false;
             } else {
-              checklist['simulation'+i].input = false;
-              inputs.forEach(function(ipt) {
-                ipt.value.simulations.forEach(function(iid) {
-                  if (sim.uuid == iid) {
-                    checklist['simulation'+i].input = true;
-                  }
-                });
-              });
+              fillChecklist(inputs, 'simulations', 'input', exp, i);
             }
-
             //outputs
             if (outputs === undefined) {
-              checklist['simulation'+i].output = false;  
+              checklist['simulations'+i].output = false;  
             } else {
-              checklist['simulation'+i].output = false;
-              outputs.forEach(function(opt) {
-                opt.value.simulations.forEach(function(oid) {
-                  if (sim.uuid == oid) {
-                    checklist['simulation'+i].output = true;
-                  }
-                });
-              });
+              fillChecklist(outputs, 'simulations', 'output', exp, i);
             }
 
             requirements.simulationReq.forEach(function (req) {
-              if (sim.value[req] == '' || sim.value[req] == []) {
-                checklist['simulation'+i][req] = false;
+              if (exp.value[req] == '' || exp.value[req] == []) {
+                checklist['simulations'+i][req] = false;
               } else {
-                checklist['simulation'+i][req] = true;
+                checklist['simulations'+i][req] = true;
               }
             });
             i++;
@@ -557,7 +517,7 @@
         if (hybridSimulation === undefined || hybridSimulation == '') {
           return;
         } else {
-          hybridSimulation.forEach(function (hsim) {
+          hybridSimulation.forEach(function (exp) {
             var title = hybridSimulation[i].value.title;
 
             checklist['hybridSimulations'+i] = {};
@@ -568,75 +528,35 @@
             if (globalModel === undefined) {
               checklist['hybridSimulations'+i].global_model = false;
             } else {
-              fillChecklist(globalModel, 'hybridSimulations', 'global_model', hsim, i);
-              // checklist['hybrid'+i].global_model = false;
-              // globalModel.forEach(function(mod){
-              //   mod.value.hybridSimulations.forEach(function(mid) {
-              //     if (hsim.uuid == mid) {
-              //       checklist['hybrid'+i].global_model = true;
-              //     }
-              //   });
-              // });
+              fillChecklist(globalModel, 'hybridSimulations', 'global_model', exp, i);
             }
-
             //sim coordinator
             if (simCoordinator === undefined) {
               checklist['hybridSimulations'+i].coordinator = false;
             } else {
-              checklist['hybridSimulations'+i].coordinator = false;
-              simCoordinator.forEach(function(cor) {
-                cor.value.hybridSimulations.forEach(function(corid) {
-                  if (hsim.uuid == corid) {
-                    checklist['hybridSimulations'+i].coordinator = true;
-                  }
-                });
-              });
+              fillChecklist(simCoordinator, 'hybridSimulations', 'coordinator', exp, i);
             }
-
             //sim substructure
             if (simSubstructure === undefined) {
               checklist['hybridSimulations'+i].simulation_substructure = false;
             } else {
-              checklist['hybridSimulations'+i].simulation_substructure = false;
-              simSubstructure.forEach(function(sub) {
-                sub.value.hybridSimulations.forEach(function(subid) {
-                  if (hsim.uuid == subid) {
-                    checklist['hybridSimulations'+i].simulation_substructure = true;
-                  }
-                });
-              });
+              fillChecklist(simSubstructure, 'hybridSimulations', 'simulation_substructure', exp, i);
             }
-
             //exp substructure
             if (expSubstructure === undefined) {
               checklist['hybridSimulations'+i].experiment_substructure = false;
             } else {
-              checklist['hybridSimulations'+i].experiment_substructure = false;
-              expSubstructure.forEach(function(sub) {
-                sub.value.hybridSimulations.forEach(function(subid) {
-                  if (hsim.uuid == subid) {
-                    checklist['hybridSimulations'+i].experiment_substructure = true;
-                  }
-                });
-              });
+              fillChecklist(expSubstructure, 'hybridSimulations', 'experiment_substructure', exp, i);
             }
-
             //hybrid outputs
             if (hybridOutputs === undefined) {
               checklist['hybridSimulations'+i].output = false;  
             } else {
-              checklist['hybridSimulations'+i].output = false;
-              hybridOutputs.forEach(function(opt) {
-                opt.value.hybridSimulations.forEach(function(oid) {
-                  if (hsim.uuid == oid) {
-                    checklist['hybridSimulations'+i].output = true;
-                  }
-                });
-              });
+              fillChecklist(hybridOutputs, 'hybridSimulations', 'output', exp, i);
             }
 
             requirements.hybridReq.forEach(function (req) {
-              if (hsim.value[req] == '' || hsim.value[req] == []) {
+              if (exp.value[req] == '' || exp.value[req] == []) {
                 checklist['hybridSimulations'+i][req] = false;
               } else {
                 checklist['hybridSimulations'+i][req] = true;
@@ -728,37 +648,31 @@
         return;
       }
 
-      // call these conditionally
       projectRequirements();
-      experimentRequirements();
-      simulationRequirements();
-      hybridSimRequirements();
       analysisRequirements();
       reportRequirements();
 
-      //check for missing metadata blocks
       var allow = true;
       if (projData.projectType == "experimental") {
-        if (Object.keys(checklist).includes('experiment0') !== true) {
+        experimentRequirements();
+        if (Object.keys(checklist).includes('experiments0') !== true) {
           publicationMessages.push({title: "Project", message: "Your project must include an experiment."});
           allow = false;
         }
-        // if (Object.keys(checklist).includes('analysis0') !== true) {
-        //   publicationMessages.push({title: "Project", message: "Your project must include an analysis."});
-        //   allow = false;
-        // }
       } else if (projData.projectType == "simulation") {
-        if (Object.keys(checklist).includes('simulation0') !== true) {
+        simulationRequirements();
+        if (Object.keys(checklist).includes('simulations0') !== true) {
           publicationMessages.push({title: "Project", message: "Your project must include a simulation."});
           allow = false;
         }
       } else if (projData.projectType == "hybrid_simulation") {
+        hybridSimRequirements();
         if (Object.keys(checklist).includes('hybridSimulations0') !== true) {
           publicationMessages.push({title: "Project", message: "Your project must include a hybrid simulation."});
           allow = false;
         }
       }
-
+        
       // return messages for missing fields
       i = 0;
       Object.values(checklist).forEach(function(exp) {
