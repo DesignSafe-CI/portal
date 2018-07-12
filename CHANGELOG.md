@@ -4,6 +4,18 @@
 
 Improvements:
 
+- Citation Preview in Publish Area....
+- Video banner for preview modals.
+
+Fixes:
+
+- Breadcrumbs fix within project search.
+- Hybrid Outputs models.
+
+## v2.7.0-20180701
+
+Improvements:
+
 - Project indexing.
 - Add app icons to application tray.
 - SCEC jupyter notebook creates a specific folder and file before launching.
