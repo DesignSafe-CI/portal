@@ -281,7 +281,7 @@
                   </div>
                   <ul class="hybrid-sim-coord-output">
                     <li
-                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="output in data.project.getRelated('coordinatoroutput_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
                             <span class="label tag-red tree-el">Coordinator Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
@@ -296,7 +296,7 @@
                     </li>
                     <li>
                         <div class="tree-el">
-                            <select ng-options="entity as entity.value.title for entity in data.project.output_set"
+                            <select ng-options="entity as entity.value.title for entity in data.project.coordinatoroutput_set"
                                     ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimOutput">
                                 <option value="">Add Coordinator Output</option>
                             </select>
@@ -328,7 +328,7 @@
                           </div>
                   <ul class="hybrid-sim-coord-output">
                     <li
-                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="output in data.project.getRelated('simoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
                             <span class="label tag-red tree-el">Simulation Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
@@ -343,7 +343,7 @@
                     </li>
                     <li>
                         <div class="tree-el">
-                            <select ng-options="entity as entity.value.title for entity in data.project.output_set"
+                            <select ng-options="entity as entity.value.title for entity in data.project.simoutput_set"
                                     ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput">
                                 <option value="">Add Simulation Output</option>
                             </select>
@@ -395,7 +395,7 @@
                           </div>
                   <ul class="hybrid-sim-exp-output">
                     <li
-                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="output in data.project.getRelated('expoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
                             <span class="label tag-red tree-el">Event Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
@@ -410,7 +410,7 @@
                     </li>
                     <li>
                         <div class="tree-el">
-                            <select ng-options="entity as entity.value.title for entity in data.project.output_set"
+                            <select ng-options="entity as entity.value.title for entity in data.project.expoutput_set"
                                     ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput">
                                 <option value="">Add Event Output</option>
                             </select>

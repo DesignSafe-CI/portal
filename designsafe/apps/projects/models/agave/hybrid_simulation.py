@@ -137,7 +137,7 @@ class SimOutput(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(HybridSimulationProject)
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
-    coordinators = fields.RelatedObjectField(Coordinator)
+    global_models = fields.RelatedObjectField(GlobalModel)
     sim_substructures = fields.RelatedObjectField(SimSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
@@ -147,7 +147,7 @@ class ExpOutput(RelatedEntity):
     description = fields.CharField('Description', max_length=1024, default='')
     project = fields.RelatedObjectField(HybridSimulationProject)
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
-    coordinators = fields.RelatedObjectField(Coordinator)
+    global_models = fields.RelatedObjectField(GlobalModel)
     exp_substructures = fields.RelatedObjectField(ExpSubstructure)
     files = fields.RelatedObjectField(FileModel, multiple=True)
 
