@@ -354,14 +354,20 @@
 
     function checkMetadata(){
       var projData = $scope.data.project.value;
+      var pub = $scope.state.publication;
       // experimental
-      var experimentsList = $scope.state.publication.experimentsList;
-      var analysisList = $scope.state.publication.analysisList;
-      var reportsList = $scope.state.publication.reportsList;
+      var experimentsList = pub.experimentsList;
+      var analysisList = pub.analysisList;
+      var reportsList = pub.reportsList;
       // simulation
-      var simSimulations = $scope.state.publication.simulations;
-      var simAnalysis = $scope.state.publication.analysiss;
-      var simReports = $scope.state.publication.reports;
+      var simSimulations = pub.simulations;
+      var simAnalysis = pub.analysiss;
+      var simReports = pub.reports;
+      // hybrid
+      var hybridSimulation = pub.hybrid_simulations;
+      var hybridAnalysis = pub.analysisList;
+      var hybridReports = pub.reportsList;
+
 
       var publicationMessages = [];
       var checklist = {
@@ -372,11 +378,24 @@
       var requirements = {
         "projectReq": ['title', 'projectType', 'description', 'awardNumber', 'keywords'],
         "experimentReq": ['title', 'experimentType', 'experimentalFacility', 'description', 'authors'],
-        "simulationReq": ['title', 'authors', 'description', 'simulationType'], // add referenced data section..
+        "simulationReq": ['title', 'authors', 'description', 'simulationType'],
+        "hybridReq": ['title', 'authors', 'description', 'simulationType', 'simulationTypeOther'],
         "otherReq": [],
         "reportReq": ['title'],
         "analysisReq": ['title', 'description'],
       };
+
+      //completes checklist
+      function fillChecklist(dataType, prjType, clKeyName, exp, iterator){
+        checklist[prjType+iterator][clKeyName] = false;
+        dataType.forEach(function(ent){
+          ent.value[prjType].forEach(function(entId) {
+            if (exp.uuid == entId) {
+              checklist[prjType+iterator][clKeyName] = true;
+            }
+          });
+        });
+      }
 
       //check project requirements
       function projectRequirements(){
@@ -395,7 +414,7 @@
       //check experiment requirements
       function experimentRequirements(){
         var i = 0;
-        //TODO: check for descriptions within models/sensors/events
+        
         var models = $scope.data.project.modelconfig_set;
         var sensors = $scope.data.project.sensorlist_set;
         var events = $scope.data.project.event_set;
@@ -453,10 +472,10 @@
       //check simulation requirements
       function simulationRequirements(){
         var i = 0;
-        //TODO: add check to definition for models/inputs/outputs
-        var models = $scope.state.publication.models;
-        var inputs = $scope.state.publication.inputs;
-        var outputs = $scope.state.publication.outputs;
+        
+        var models = pub.models;
+        var inputs = pub.inputs;
+        var outputs = pub.outputs;
 
 
         if (simSimulations === undefined || simSimulations == '') {
@@ -516,6 +535,111 @@
                 checklist['simulation'+i][req] = false;
               } else {
                 checklist['simulation'+i][req] = true;
+              }
+            });
+            i++;
+          });
+        }
+        return;
+      }
+
+      //check hybrid simulation requirements
+      function hybridSimRequirements(){
+        var i = 0;
+        
+        var globalModel = pub.global_models;
+        var simCoordinator = pub.coordinators;
+        var simSubstructure = pub.sim_substructures;
+        var expSubstructure = pub.exp_substructures;
+        var hybridOutputs = pub.outputs;
+
+
+        if (hybridSimulation === undefined || hybridSimulation == '') {
+          return;
+        } else {
+          hybridSimulation.forEach(function (hsim) {
+            var title = hybridSimulation[i].value.title;
+
+            checklist['hybridSimulations'+i] = {};
+            checklist['hybridSimulations'+i].name = title;
+            checklist['hybridSimulations'+i].category = 'hybrid';
+            
+            //global model
+            if (globalModel === undefined) {
+              checklist['hybridSimulations'+i].global_model = false;
+            } else {
+              fillChecklist(globalModel, 'hybridSimulations', 'global_model', hsim, i);
+              // checklist['hybrid'+i].global_model = false;
+              // globalModel.forEach(function(mod){
+              //   mod.value.hybridSimulations.forEach(function(mid) {
+              //     if (hsim.uuid == mid) {
+              //       checklist['hybrid'+i].global_model = true;
+              //     }
+              //   });
+              // });
+            }
+
+            //sim coordinator
+            if (simCoordinator === undefined) {
+              checklist['hybridSimulations'+i].coordinator = false;
+            } else {
+              checklist['hybridSimulations'+i].coordinator = false;
+              simCoordinator.forEach(function(cor) {
+                cor.value.hybridSimulations.forEach(function(corid) {
+                  if (hsim.uuid == corid) {
+                    checklist['hybridSimulations'+i].coordinator = true;
+                  }
+                });
+              });
+            }
+
+            //sim substructure
+            if (simSubstructure === undefined) {
+              checklist['hybridSimulations'+i].simulation_substructure = false;
+            } else {
+              checklist['hybridSimulations'+i].simulation_substructure = false;
+              simSubstructure.forEach(function(sub) {
+                sub.value.hybridSimulations.forEach(function(subid) {
+                  if (hsim.uuid == subid) {
+                    checklist['hybridSimulations'+i].simulation_substructure = true;
+                  }
+                });
+              });
+            }
+
+            //exp substructure
+            if (expSubstructure === undefined) {
+              checklist['hybridSimulations'+i].experiment_substructure = false;
+            } else {
+              checklist['hybridSimulations'+i].experiment_substructure = false;
+              expSubstructure.forEach(function(sub) {
+                sub.value.hybridSimulations.forEach(function(subid) {
+                  if (hsim.uuid == subid) {
+                    checklist['hybridSimulations'+i].experiment_substructure = true;
+                  }
+                });
+              });
+            }
+
+            //hybrid outputs
+            if (hybridOutputs === undefined) {
+              checklist['hybridSimulations'+i].output = false;  
+            } else {
+              checklist['hybridSimulations'+i].output = false;
+              hybridOutputs.forEach(function(opt) {
+                opt.value.hybridSimulations.forEach(function(oid) {
+                  if (hsim.uuid == oid) {
+                    checklist['hybridSimulations'+i].output = true;
+                  }
+                });
+              });
+            }
+
+            requirements.hybridReq.forEach(function (req) {
+              if (hsim.value[req] == '' || hsim.value[req] == []) {
+                checklist['hybridSimulations'+i][req] = false;
+              } else {
+                checklist['hybridSimulations'+i][req] = true;
               }
             });
             i++;
@@ -604,10 +728,11 @@
         return;
       }
 
-      
+      // call these conditionally
       projectRequirements();
       experimentRequirements();
       simulationRequirements();
+      hybridSimRequirements();
       analysisRequirements();
       reportRequirements();
 
@@ -625,6 +750,11 @@
       } else if (projData.projectType == "simulation") {
         if (Object.keys(checklist).includes('simulation0') !== true) {
           publicationMessages.push({title: "Project", message: "Your project must include a simulation."});
+          allow = false;
+        }
+      } else if (projData.projectType == "hybrid_simulation") {
+        if (Object.keys(checklist).includes('hybridSimulations0') !== true) {
+          publicationMessages.push({title: "Project", message: "Your project must include a hybrid simulation."});
           allow = false;
         }
       }
