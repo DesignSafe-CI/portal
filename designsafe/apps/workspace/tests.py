@@ -201,22 +201,22 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     response = self.client.post('/rw/workspace/api/meta/?body={"title": "Example Metadata"}')
     #     self.assertEquals(response.status_code, 200)
 
-    @mock.patch('agavepy.agave.Agave')
-    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    def test_post_meta_response(self, agave_client, agave):
-        """Testing post_meta response'
-        """
-        self.client.login(username='test', password='test')
-        agave_client.meta.addMetadata.return_value = {
-            "uuid": "test", 
-            "owner": "test"
-          }
-        response = self.client.post('/rw/workspace/api/meta/?body={"title": "Example Metadata"}')
-        json_res = response.json()
-        self.assertTrue(json_res, {
-            "uuid": "test", 
-            "title": "Example Metadata"
-          })
+    # @mock.patch('agavepy.agave.Agave')
+    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    # def test_post_meta_response(self, agave_client, agave):
+    #     """Testing post_meta response'
+    #     """
+    #     self.client.login(username='test', password='test')
+    #     agave_client.meta.addMetadata.return_value = {
+    #         "uuid": "test", 
+    #         "owner": "test"
+    #       }
+    #     response = self.client.post('/rw/workspace/api/meta/?body={"title": "Example Metadata"}')
+    #     json_res = response.json()
+    #     self.assertTrue(json_res, {
+    #         "uuid": "test", 
+    #         "title": "Example Metadata"
+    #       })
 
 #sekizai
     # @mock.patch('agavepy.agave.Agave')
@@ -306,23 +306,23 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     "archiveUrl": "/data/browser/agave/test/test/", "id": "test"})
 
 #getting an error when trying to post-job from updated master as well
-    # @mock.patch('agavepy.agave.Agave')
-    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_post_jobs(self, agave_client, agave):
-    #     """Testing post_jobs'
-    #     """
-    #     self.client.login(username='test', password='test')
-    #     agave_client.jobs.post.return_value = AttrDict({
-    #         "id": "test", 
-    #         "name": "test",
-    #         "archiveSystem": "designsafe.storage.default",
-    #         "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
-    #     })
-    #     response = self.client.post('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
-    #     print " ############### I am printing response:"
-    #     print response
-    #     print " ############### I am printing response above:"
-    #     self.assertEqual(response.status_code, 200)
+    @mock.patch('agavepy.agave.Agave')
+    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    def test_post_jobs(self, agave_client, agave):
+        """Testing post_jobs'
+        """
+        self.client.login(username='test', password='test')
+        agave_client.jobs.post.return_value = AttrDict({
+            "id": "test", 
+            "name": "test",
+            "archiveSystem": "designsafe.storage.default",
+            "archivePath": "letaniaf/archive/jobs/2018-06-13/post_job_test_data_only-4690860065901580776-242ac11b-0001-007"
+        })
+        response = self.client.post('/rw/workspace/api/jobs/?job_id=4690860065901580776-242ac11b-0001-007')
+        print " ############### I am printing response:"
+        print response
+        print " ############### I am printing response above:"
+        self.assertEqual(response.status_code, 200)
 
 #redirects but runs
     # @mock.patch('agavepy.agave.Agave')
