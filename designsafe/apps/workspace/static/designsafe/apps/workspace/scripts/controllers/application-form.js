@@ -34,10 +34,6 @@
         $scope.webhookUrl = response.data;
       });
 
-      ProjectService.list({offset: 0, limit: 500}).then(function(resp) {
-        $scope.projectList = resp
-      })
-
       $scope.$on('launch-app', function(e, app) {
         $scope.error = '';
 
@@ -156,7 +152,7 @@
               appId: $scope.data.app.id,
               archive: true,
               inputs: {},
-              parameters: {projects: $scope.projectList},
+              parameters: {},
               notifications: [
                 /*
                 {
@@ -210,8 +206,13 @@
               ]
           };
 
+          if ($scope.data.app.tags.includes('VNC')) {
+            ProjectService.list({ offset: 0, limit: 500 }).then(function (resp) {
+              jobData.parameters.projects = resp;
+            });
+          }
+
           /* copy form model to disconnect from $scope */
-          $scope.form.model.parameters.projects = $scope.projectList
           _.extend(jobData, angular.copy($scope.form.model));
 
           /* remove falsy input/parameter */
@@ -238,7 +239,6 @@
           }
           
           $scope.data.submitting = true;
-          console.log(jobData)
           Jobs.submit(jobData).then(
             function(resp) {
               $scope.data.submitting = false;
