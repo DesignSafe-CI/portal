@@ -93,9 +93,7 @@ class ApiService(BaseApiView):
         :returns: call to POST method on service (post_meta(), post_jobs()).
         """
         handler_name = 'post_{service}'.format(service=service)
-        print ("************printing above handler name **************")
-        print handler_name
-        print ("************printing below handler name **************")
+    
         try:
             handler = getattr(self, handler_name)
         except AttributeError as exc:
@@ -211,22 +209,15 @@ class ApiService(BaseApiView):
         :returns: array of MetadataResponse object.
         """
         app_id = self.request.GET.get('app_id')
-        print " ############### I am printing above app_id:"
-        print app_id
-        print " ############### I am printing below app_id:"
         agv = self.request.user.agave_oauth.client
         if app_id:
             data = agv.meta.get(appId=app_id)
-            print " ############### I am printing above data:"
-            print data
-            print " ############### I am printing below data:"
+    
             lic_type = _app_license_type(app_id)
             data['license'] = {
                 'type': lic_type
             }
-            print " ############### I am printing above data after license:"
-            print data
-            print " ############### I am printing below data after license:"
+    
             if lic_type is not None:
                 _, license_models = get_license_info()
                 license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
@@ -236,9 +227,7 @@ class ApiService(BaseApiView):
         else:
             query = self.request.GET.get('q')
             data = agv.meta.listMetadata(q=query)
-        print "############# I am printing above data in meta/views"
-        print data
-        print "############# I am printing below data in meta/views"
+
         return data
 
     def post_meta(self, service):
@@ -259,9 +248,7 @@ class ApiService(BaseApiView):
             data = agv.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
         else:
             data = agv.meta.addMetadata(body=meta_post)
-            print " ############### I am printing above data after ADDMETADATA:"
-            print data
-            print " ############### I am printing below data after ADDMETADATA:"
+          
 
         return data
 
@@ -318,7 +305,14 @@ class ApiService(BaseApiView):
         :param service: jobs.
         :returns: A single job object.
         """
-        job_post = json.loads(self.request.body)
+        job_post_query_dict = self.request.POST.dict()
+        
+        #converting multikey dictionary to regular dictionary
+        for key, values in job_post_query_dict.items():
+            job_post_query_dict_key = key
+            job_post = json.loads(job_post_query_dict_key)
+       
+
         job_id = job_post.get('job_id')
         agv = self.request.user.agave_oauth.client
 
