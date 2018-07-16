@@ -319,9 +319,6 @@ class ApiService(BaseApiView):
         :returns: A single job object.
         """
         job_post = json.loads(self.request.body)
-        print " ############### I am printing above JOB_POST_REQUEST_BODY:" #runs
-        print job_post
-        print " ############### I am printing below JOB_POST_REQUEST_BODY:" #runs
         job_id = job_post.get('job_id')
         agv = self.request.user.agave_oauth.client
 
@@ -335,9 +332,6 @@ class ApiService(BaseApiView):
             # cleaning archive path value
             if 'archivePath' in job_post:
                 parsed = urlparse(job_post['archivePath'])
-                print " ############### I am printing above parsed path:" #does not run, ok, bc ['archivePath'] does not exist in job_post
-                print parsed
-                print " ############### I am printing below parsed path:"
                 if parsed.path.startswith('/'):
                     # strip leading '/'
                     archive_path = parsed.path[1:]
@@ -358,15 +352,8 @@ class ApiService(BaseApiView):
                         self.request.user.username,
                         datetime.now().strftime('%Y-%m-%d'))
 
-                print " ############### I am printing above job_post['archivePath']:" #runs
-                print "############### PRINTING JOB_POST ARCHIVEPATH:" + job_post['archivePath'] + "JOB_POST ARCHIVEPATH ENDS" #runs after calling submit_job
-                print " ############### I am printing below job_post['archivePath']:" #does NOT run imediately/ runs 10 min latter
-
             # check for running licensed apps
             lic_type = _app_license_type(job_post['appId'])
-            print " ############### I am printing imediately above lic_type:" #does not run imediately / #prints 10 min latter
-            print lic_type
-            print " ############### I am printing imediately below lic_type:" #does NOT run imediately / #prints 10 min latter
             if lic_type is not None:
                 _, license_models = get_license_info()
                 license_model = filter(lambda x: x.license_type == lic_type, license_models)[0]
@@ -377,9 +364,6 @@ class ApiService(BaseApiView):
             if job_post['inputs']:
                 for key, value in six.iteritems(job_post['inputs']):
                     parsed = urlparse(value)
-                    print " ############### I am printing above urlparse:" # prints 10 min latter
-                    print parsed
-                    print " ############### I am printing below urlparse:" #prints 10 min latter
                     if parsed.scheme:
                         job_post['inputs'][key] = '{}://{}{}'.format(
                             parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
