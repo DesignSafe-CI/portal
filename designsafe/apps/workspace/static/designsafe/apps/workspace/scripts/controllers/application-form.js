@@ -206,12 +206,6 @@
               ]
           };
 
-          if ($scope.data.app.tags.includes('VNC')) {
-            ProjectService.list({ offset: 0, limit: 500 }).then(function (resp) {
-              jobData.parameters.projects = resp;
-            });
-          }
-
           /* copy form model to disconnect from $scope */
           _.extend(jobData, angular.copy($scope.form.model));
 
@@ -237,31 +231,52 @@
           if (_.has(jobData, 'nodeCount')) {
             jobData.processorsPerNode = jobData.nodeCount * ($scope.data.app.defaultProcessorsPerNode / $scope.data.app.defaultNodeCount);
           }
-          
-          $scope.data.submitting = true;
-          Jobs.submit(jobData).then(
-            function(resp) {
-              $scope.data.submitting = false;
-              $rootScope.$broadcast('job-submitted', resp.data);
-              $scope.data.messages.push({
-                type: 'success',
-                header: 'Job Submitted Successfully',
-                body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
-              });
-              $scope.resetForm();
-              refocus();
-            }, function(err) {
-              $scope.data.submitting = false;
-              $scope.data.messages.push({
-                type: 'danger',
-                header: 'Job Submit Failed',
-                body: 'Your job submission failed with the following message:<br>' +
-                      '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
-                      'Please try again. If this problem persists, please ' +
-                      '<a href="/help" target="_blank">submit a support ticket</a>.'
-              });
-              refocus();
+
+          $scope.jobReady = true;
+          if ($scope.data.app.tags.includes('VNC')) {
+            $scope.jobReady = false;
+            ProjectService.list({ offset: 0, limit: 500 }).then(function (resp) {
+              if (resp.length > 0) {
+                angular.forEach(resp, function (project, key) {
+                  resp[key] = project.uuid;
+                });
+                jobData.parameters.project_uuids = resp;
+              }
+              $scope.jobReady = true;
             });
+          }
+
+          $scope.data.submitting = true;
+
+          // wait for projects listing to return
+          $scope.$watch('jobReady', function(readyStatus) {
+            if (readyStatus) {
+              Jobs.submit(jobData).then(
+                function(resp) {
+                  $scope.data.submitting = false;
+                  $rootScope.$broadcast('job-submitted', resp.data);
+                  $scope.data.messages.push({
+                    type: 'success',
+                    header: 'Job Submitted Successfully',
+                    body: 'Your job <em>' + resp.data.name + '</em> has been submitted. Monitor its status on the right.'
+                  });
+                  $scope.resetForm();
+                  refocus();
+                }, function(err) {
+                  $scope.data.submitting = false;
+                  $scope.data.messages.push({
+                    type: 'danger',
+                    header: 'Job Submit Failed',
+                    body: 'Your job submission failed with the following message:<br>' +
+                    '<em>' + (err.data.message || 'Unexpected error') + '</em><br>' +
+                    'Please try again. If this problem persists, please ' +
+                    '<a href="/help" target="_blank">submit a support ticket</a>.'
+                  });
+                  refocus();
+                });
+            }
+          });
+          
         }
         else {
           // set a variable so we can show an error message when form is not valid
