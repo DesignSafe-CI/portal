@@ -119,21 +119,19 @@
             }
 
             // Parse app icon from tags for agave apps, or from metadata field for html apps
-            appMeta.value.definition.icon = null;
+            appMeta.value.definition.appIcon = null;
             if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
-              appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
-            } else if (appMeta.value.definition.hasOwnProperty('appIcon')) {
-              appMeta.value.definition.icon = appMeta.value.definition.appIcon;
+              appMeta.value.definition.appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
             } else (
               appIcons.some(function (icon) {
                 if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
-                  appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
+                  appMeta.value.definition.appIcon = appMeta.value.definition.orderBy = icon;
                   return true;
                 }
               })
             );
-            if (appMeta.value.definition.icon == '') {
-              appMeta.value.definition.icon = null;
+            if (appMeta.value.definition.appIcon == '') {
+              appMeta.value.definition.appIcon = null;
             }
 
             if (appMeta.value.definition.isPublic){

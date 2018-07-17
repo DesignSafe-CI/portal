@@ -1476,6 +1476,7 @@
                             $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appCategory'))[0]));
                         }
                         $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
+                        delete $scope.model.appCategory;
                     }
                     // Add formatted icon entry to tags, and replace old icon if it exists
                     if ($scope.model.hasOwnProperty('appIcon')) {
@@ -1483,6 +1484,7 @@
                             $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appIcon'))[0]));
                         }
                         $scope.model.tags.push(`appIcon:${$scope.model.appIcon}`);
+                        delete $scope.model.appIcon;
                     }
                   Apps.createApp($scope.model)
                     .then(
