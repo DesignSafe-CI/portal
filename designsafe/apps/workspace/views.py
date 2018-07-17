@@ -150,12 +150,23 @@ def call_api(request, service):
                     # url encode inputs
                     if job_post['inputs']:
                         for key, value in six.iteritems(job_post['inputs']):
-                            parsed = urlparse(value)
-                            if parsed.scheme:
-                                job_post['inputs'][key] = '{}://{}{}'.format(
-                                    parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                            if type(value) == list:
+                                inputs = []
+                                for val in value:
+                                    parsed = urlparse(val)
+                                    if parsed.scheme:
+                                        inputs.append('{}://{}{}'.format(
+                                            parsed.scheme, parsed.netloc, urllib.quote(parsed.path)))
+                                    else:
+                                        inputs.append(urllib.quote(parsed.path))
+                                job_post['inputs'][key] = inputs
                             else:
-                                job_post['inputs'][key] = urllib.quote(parsed.path)
+                                parsed = urlparse(value)
+                                if parsed.scheme:
+                                    job_post['inputs'][key] = '{}://{}{}'.format(
+                                        parsed.scheme, parsed.netloc, urllib.quote(parsed.path))
+                                else:
+                                    job_post['inputs'][key] = urllib.quote(parsed.path)
 
                     try:
                         data = submit_job(request, request.user.username, job_post)
