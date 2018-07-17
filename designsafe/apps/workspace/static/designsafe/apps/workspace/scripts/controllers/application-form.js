@@ -238,9 +238,9 @@
             ProjectService.list({ offset: 0, limit: 500 }).then(function (resp) {
               if (resp.length > 0) {
                 angular.forEach(resp, function (project, key) {
-                  resp[key] = project.uuid;
+                  resp[key] = `${project.uuid},${project.value.projectId}`;
                 });
-                jobData.parameters.project_uuids = resp;
+                jobData.parameters._userProjects = resp;
               }
               $scope.jobReady = true;
             });
@@ -249,7 +249,7 @@
           $scope.data.submitting = true;
 
           // wait for projects listing to return
-          $scope.$watch('jobReady', function(readyStatus) {
+          var unregister = $scope.$watch('jobReady', function(readyStatus) {
             if (readyStatus) {
               Jobs.submit(jobData).then(
                 function(resp) {
@@ -274,6 +274,7 @@
                   });
                   refocus();
                 });
+              unregister();
             }
           });
           
