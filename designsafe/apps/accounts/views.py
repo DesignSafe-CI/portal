@@ -5,13 +5,14 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
+from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
@@ -551,8 +552,6 @@ def mailing_list_subscription(request, list_name):
 
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def user_report(request, list_name):
-    # from designsafe.apps.accounts.tasks import create_report
-    # create_report.apply_async()
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment;filename="users_report_test.csv"'
@@ -561,17 +560,13 @@ def user_report(request, list_name):
     writer.writerow(["UserName","Bio","Website","Orcid_id","Professional Level",\
             "Research Activities","NH_interests","Ethnicity","Gender"])
 
-    # subscribers = []
-    # try:
     professional_profile_user_list = DesignSafeProfile.objects.all()
     notification_list = get_user_model().objects.filter(
         Q(notification_preferences__isnull=True) |
         Q(**{"notification_preferences__{}".format(list_name): True}))
     for profile_user in professional_profile_user_list:
-        # user_profile = TASUser(username=profile_user.user)
         if profile_user.user in notification_list:
             writer.writerow([profile_user.user,\
-            # logger.debug('printing first profile_user_in_loop:{}'.format(user_profile.phone)
                 
                 profile_user.bio.encode('utf-8') if profile_user.bio else profile_user.bio,\
                 profile_user.website.encode('utf-8') if profile_user.website else profile_user.website,\
@@ -579,78 +574,18 @@ def user_report(request, list_name):
                 profile_user.professional_level,\
                 profile_user.research_activities,\
                 profile_user.nh_interests,\
-                # user_profile.email,\
-                # user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,\
-                # user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,\
-                # user_profile.institution.encode('utf-8') if user_profile.institution else user_profile.institution,\
-                # user_profile.phone.encode('utf-8') if user_profile.phone else user_profile.phone,\
-                # user_profile.country,\ #country of residency
                 profile_user.ethnicity,\
                 profile_user.gender,\
-                # user_profile.citizenship,\ #country of citizenship
-            #         ))
                 ])
 
-    # except TypeError as e:
-    #     logger.warning('Invalid list name: {}'.format(list_name))
+    create_report.apply_async(
+                args=(
+                    profile_user.user
+                )
+            )
+ 
     return response
 
-# class Echo:
-#     """An object that implements just the write method of the file-like
-#     interface. Streams user_report that otherwise takes a long time to 
-#     generate dropping the connection that will otherwise timed out while the server was generating the response
-#     """
-#     def write(self, value):
-#         """Write the value by returning it, instead of storing in a buffer."""
-#         return value
-
-# @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
-# def user_report(request, list_name):
-#     # from designsafe.apps.accounts.tasks import create_report
-#     # create_report.apply_async()
-
-#     subscribers = ['"UserName","Bio","Website","Orcid_id","Professional Level",\
-#             "Research Activities","NH_interests","Ethnicity","Gender"']
-#     logger.debug('I AM PRITNING SUBSCRIBERS: {}'.format(subscribers))
-#     # try:
-#     professional_profile_user_list = DesignSafeProfile.objects.all()
-#     notification_list = get_user_model().objects.filter(
-#         Q(notification_preferences__isnull=True) |
-#         Q(**{"notification_preferences__{}".format(list_name): True}))
-#     for profile_user in professional_profile_user_list:
-#         # user_profile = TASUser(username=profile_user.user)
-#         if profile_user.user in notification_list:
-#             # logger.debug('printing first profile_user_in_loop:{}'.format(user_profile.phone))
-#             subscribers.append(
-#                 '"{0}"'.format(
-#                     profile_user.user
-#                     # profile_user.bio.encode('utf-8') if profile_user.bio else profile_user.bio,\
-#                     # profile_user.website.encode('utf-8') if profile_user.website else profile_user.website,\
-#                     # profile_user.orcid_id.encode('utf-8') if profile_user.orcid_id else profile_user.orcid_id,\
-#                     # profile_user.professional_level,\
-#                     # profile_user.research_activities,\
-#                     # profile_user.nh_interests,\
-#                     # user_profile.email,\
-#                     # user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,\
-#                     # user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,\
-#                     # user_profile.institution.encode('utf-8') if user_profile.institution else user_profile.institution,\
-#                     # user_profile.phone.encode('utf-8') if user_profile.phone else user_profile.phone,\
-#                     # user_profile.country,\ #country of residency
-#                     # profile_user.ethnicity,\
-#                     # profile_user.gender,\
-#                     # user_profile.citizenship,\ #country of citizenship
-#                     ))
-
-#     # except TypeError as e:
-#     #     logger.warning('Invalid list name: {}'.format(list_name))
-#     pseudo_buffer = Echo()
-#     writer = csv.writer(pseudo_buffer)
-#     response = StreamingHttpResponse((writer.writerows(subscribers)), 
-#         content_type="text/csv")
-#     response['Content-Disposition'] = 'attachment; filename="user_report.csv"'
-#     return response
-#     # return HttpResponse('\n'.join(subscribers), content_type='text/csv')
-   
 
 def termsandconditions(request):
     context = {
