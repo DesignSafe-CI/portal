@@ -33,7 +33,7 @@
                     <th style="border-top:none; width:25%;">DOI</th>
                     <td style="border-top:none; width:75%;">{{project.doi}}
                       <button class="btn btn-info btn-sm pull-right"
-                              ng-click="showCitation(project)">Citation
+                              ng-click="showCitation(project, browser.publication)">Citation
                       </button>
                     <td>
                   </tr>
@@ -266,7 +266,7 @@
                               </td>
                               <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
                                 <button class="btn btn-info btn-sm"
-                                        ng-click="showCitation(experiment)">Citation
+                                        ng-click="showCitation(experiment, browser.publication)">Citation
                                 </button>
                               </td>
                             </tr>
@@ -537,8 +537,7 @@
               </p>
               <div>
                 <button class="btn btn-info btn-sm"
-                        ng-click="showCitation(analysis)">Citation
-                </button>
+                        ng-click="showCitation(analysis, browser.publication)">Citation </button>
               </div>
             </div>
             <table  class="table table-bordered table-striped"
@@ -676,7 +675,7 @@
             </div>
             <div>
               <button class="btn btn-info btn-sm pull-right"
-                      ng-click="showCitation(simulation)">Citation
+                      ng-click="showCitation(simulation, browser.publication)">Citation
               </button>
             </div>
           </div>

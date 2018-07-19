@@ -399,7 +399,7 @@
         });
     };
 
-    $scope.showCitation = function(ent){
+    $scope.showCitation = function(ent, pub){
       $uibModal.open({
         templateUrl: '/static/scripts/data-depot/templates/view-citations.html',
         controller: ['$sce', '$uibModalInstance', 'browser', function($sce, $uibModalInstance, browser){
@@ -415,6 +415,12 @@
               $ctrl.data.publication = browser.listing;
           } else {
               $ctrl.data.publication = browser.publication;
+          }
+          var citationDate = '';
+          if (typeof pub === 'undefined') {
+              citationDate = ent.created.split('-')[0];
+          } else {
+              citationDate = pub.created.split('-')[0];
           }
           var publishers = _.filter($ctrl.data.publication.users, function(usr){
               if (ent.name === 'designsafe.project' || ent.name === 'designsafe.project.analysis'){
@@ -451,7 +457,7 @@
                 ' author = {' + authors + '} \n' +
                 ' title = {' + ent.value.title + '} \n' +
                 ' publisher = {DesignSafe-CI} \n' +
-                ' year = {2017} \n' +
+                ' year = {' + citationDate + '} \n' +
                 ' note = {' + ent.value.description + '} \n' +
                 '}';
         } else if ($ctrl.ui.style === 'Endnote'){
@@ -460,7 +466,7 @@
 				'%A ' + authors + '\n' +
 				'%T ' + ent.value.title + '\n' +
 				'%I DesignSafe-CI\n' +
-				'%D 2017\n'; 
+				'%D ' + citationDate + '\n'; 
         }
       };
 		$ctrl.close = function(){
@@ -478,7 +484,7 @@
           doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
           $window.open(doiurl);
         };
-      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
+      $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
       $ctrl.getCitation();
     }],
     size: 'md',
