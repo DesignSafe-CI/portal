@@ -5,6 +5,10 @@ import os
 # import json
 from elasticsearch_dsl.query import Q
 from designsafe.apps.data.models.elasticsearch import IndexedFile
+from django.conf import settings
+import magic
+import json
+import re
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -95,6 +99,49 @@ class FileManager(object):
         # logger.debug('search :%s', json.dumps(search.to_dict(), indent=2))
         return res, search
 
+    @staticmethod
+    def mimetype_lookup(file_object, debug_mode):
+        if debug_mode == True:
+            # In local dev, corral isn't mounted so we have to download the file to get its mimetype.
+            import requests
+            href = file_object['_links']['self']['href']
+            header = {"Authorization": "Bearer " + settings.AGAVE_SUPER_TOKEN}
+            u = requests.get(href, headers=header)
+            if u.status_code == 200:
+                mimeType = magic.from_buffer(u.content, mime=True)
+            elif json.loads(u.content)['message'] == 'Directory downloads not supported':
+                mimeType =  'text/directory'
+            else:
+                raise requests.HTTPError
+            return mimeType
+
+        else:
+            # In dev/prod, Corral is mounted and we can use the absolute path to get the mimetype.
+            SYSTEM_ID_PATHS = [
+                {'regex': r'^designsafe.storage.default$',
+                'path': '/corral-repl/projects/NHERI/shared'},
+                {'regex': r'^designsafe.storage.community$',
+                'path': '/corral-repl/projects/NHERI/community'},
+                {'regex': r'^designsafe.storage.published$',
+                'path': '/corral-repl/projects/NHERI/published'},
+                {'regex': r'^project\-',
+                'path': '/corral-repl/projects/NHERI/projects'}
+            ]
+            for mapping in SYSTEM_ID_PATHS:
+                if re.search(mapping['regex'], file_object['system']):
+                    base_path = mapping['path']
+                    if mapping['regex'] == r'^project\-':
+                        base_path += '/' + file_object['system'][8:] 
+                    break
+
+            filePath = base_path + file_object['path']
+            if os.path.isdir(filePath):
+                mimeType = 'text/directory'
+            else:
+                mimeType = magic.from_file(filePath, mime=True)
+
+            return mimeType
+   
     def index(self, file_object, pems):
         """Indexes an Agave response file object (json) to an IndexedFile"""
         res, search = self.get(file_object.system,
@@ -115,7 +162,7 @@ class FileManager(object):
                 lastModified=file_object.lastModified.isoformat(),
                 length=file_object.length,
                 format=file_object.format,
-                mimeType=file_object.mimeType,
+                mimeType=FileManager.mimetype_lookup(file_object, settings.DEBUG),
                 type=file_object.type,
                 system=file_object.system,
             )
