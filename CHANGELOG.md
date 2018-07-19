@@ -1,5 +1,52 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.0-20180701
+
+Improvements:
+
+- Citation Preview in Publish Area....
+- Video banner for preview modals.
+
+Fixes:
+
+- Breadcrumbs fix within project search.
+- Hybrid Outputs models.
+
+## v2.7.0-20180701
+
+Improvements:
+
+- Project indexing.
+- Add app icons to application tray.
+- SCEC jupyter notebook creates a specific folder and file before launching.
+- Search in My Projects.
+- Hybrid Simulation publication pipeline.
+
+Fixes:
+
+- Associated projects.
+- Nees projects not loading.
+- Remove integrate analysis and report.
+- Show spinner in My Projects on search/navigation.
+- Ensue project data is retrieved before doing anything else.
+
+## v20180601
+
+Fixes:
+
+- Loading spinners across data browsers.
+- Publications breadcrumbs.
+- My Projects pagination.
+
+Improvements:
+
+- Refresh files listing in Workspace.
+- Hybrid Simulation data model.
+- Execution Systems Monitor.
+- EZID download link on publications.
+- Search in My Projects.
+- `ProcessorsPerNode` option in app.
+
 ## v2.6.10
 
 Fixes:

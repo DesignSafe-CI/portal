@@ -69,10 +69,21 @@ class FileListingView(BaseApiView):
                                                      user_context=request.user.username)
                 return JsonResponse(listing)
             else:
+                query_string = request.GET.get('query_string') 
+    
                 offset = int(request.GET.get('offset', 0))
                 limit = int(request.GET.get('limit', 100))
-                listing = fm.listing(system=system_id, file_path=file_path,
-                                     offset=offset, limit=limit)
+                if (not query_string) or (query_string==""):
+                    listing = fm.listing(system=system_id, file_path=file_path,
+                                        offset=offset, limit=limit)
+                else:
+                    query_string = request.GET.get('query_string')
+                    # Performing an Agave listing here prevents a race condition.
+                    listing = fm.listing(system=system_id, file_path='/',
+                                        offset=offset, limit=limit) 
+                    efmgr = ElasticFileManager()
+                    listing = efmgr.search_in_project(system_id, query_string,
+                                offset=offset, limit=limit)
                 return JsonResponse(listing,
                                     encoder=AgaveJSONEncoder,
                                     safe=False)
@@ -565,12 +576,15 @@ class FileSearchView(View):
             system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
 
         fmgr = ElasticFileManager()
-        if not request.GET.get('shared', False):
+        if not (request.GET.get('shared', False) or request.GET.get('projects', False)):
             listing = fmgr.search(system_id, request.user.username, query_string,
                                 offset=offset, limit=limit)
-        else:
+        elif request.GET.get('shared', False):
             listing = fmgr.search_shared(system_id, request.user.username, query_string,
                                          offset=offset, limit=limit)
+        elif request.GET.get('projects', False):
+            listing = fmgr.search_projects(request.user.username, query_string,
+                                offset=offset, limit=limit)
 
         return JsonResponse(listing)
 

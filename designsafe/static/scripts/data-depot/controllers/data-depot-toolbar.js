@@ -70,6 +70,9 @@
       viewMetadata: function () {
         DataBrowserService.viewMetadata($scope.browser.selected, $scope.browser.listing);
       },
+      showCitation: function () {
+        DataBrowserService.showCitation($scope.browser.selected, $scope.browser.listing);
+      },
       viewCategories: function() {
         DataBrowserService.viewCategories($scope.browser.selected, $scope.browser.listing);
       },
@@ -95,7 +98,7 @@
         var state = $scope.apiParams.searchState;
         $state.go(state, {'query_string': $scope.search.queryString,
                    'systemId': $scope.browser.listing.system,
-                   'filePath': '$SEARCH'});
+                   'filePath': '/'});
       }
     };
   }]);

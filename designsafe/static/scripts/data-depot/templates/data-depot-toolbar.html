@@ -12,7 +12,7 @@
     </div>
     <div class="btn-toolbar btn-toolbar-right" role="toolbar" aria-label="Data Browser Toolbar">
         <form class="navbar-form navbar-left" ng-submit="ops.search()" style="display:flex" 
-            ng-hide="['Dropbox', 'My Projects', 'Box', 'Google Drive', 'Project View', 'Project Data View'].includes(placeholder())">
+            ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View'].includes(placeholder())">
             <input class="form-control" style="width:240px;" placeholder="Find in {{ placeholder() }}" ng-model="search.queryString">
             <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
         </form>
@@ -55,6 +55,9 @@
             </button>
             <button class="btn btn-sm btn-default" title="Preview Images" ng-click="ops.previewImages()" ng-disabled="!tests.canPreviewImages">
                 <i class="fa fa-photo"></i><span style="display:block;">Preview Images</span>
+            </button>
+            <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="browser.listing.system.startsWith('nees')" ng-click="ops.showCitation()" ng-disabled="!tests.canViewCitation || browser.selected[0].name.includes('NEES')">
+                <i class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
             </button>
          </div>
          <div class="btn-group">

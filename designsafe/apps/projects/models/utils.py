@@ -15,7 +15,7 @@ def lookup_model(entity):
     project_type = 'experimental'
     if len(comps) == 2:
         project_type, ename = comps
-    elif entity_name == "simulation":
+    elif entity_name in ["simulation", "hybrid_simulation"]:
         project_type = ename = entity_name
     else:
         ename = entity['name'].rsplit('.', 1)[1].lower()
@@ -25,7 +25,7 @@ def lookup_model(entity):
         modules = [experimental, simulation, hybrid_simulation, rapid]
     else:
         switch = {'experimental': [experimental], 'simulation': [simulation],
-                  'hybrid': [hybrid_simulation], 'rapid': [rapid]}
+                  'hybrid_simulation': [hybrid_simulation], 'rapid': [rapid]}
         modules = switch[project_type]
 
     name_comps = ename.split('_')

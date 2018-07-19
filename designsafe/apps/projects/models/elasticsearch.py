@@ -19,29 +19,31 @@ logger = logging.getLogger(__name__)
 
 @python_2_unicode_compatible
 class IndexedProject(DocType):
-    uuid = String(fields={'_exact': Keyword()})
-    schemaId = String(fields={'_exact': Keyword()})
-    internalUsername = String(fields={'_exact': Keyword()})
-    associationIds = String(fields={'_exact': Keyword()}, multi=True)
+    uuid = Text(fields={'_exact': Keyword()})
+    schemaId = Text(fields={'_exact': Keyword()})
+    internalUsername = Text(fields={'_exact': Keyword()})
+    associationIds = Text(fields={'_exact': Keyword()}, multi=True)
     lastUpdated = Date()
-    name = String(fields={'_exact': Keyword()})
+    name = Text(fields={'_exact': Keyword()})
     created = Date()
-    owner = String(fields={'_exact': Keyword()})
+    owner = Text(fields={'_exact': Keyword()})
     value = Nested(
         properties={
-            'teamMembers': String(fields={'_exact': Keyword()}, multi=True),
-            'coPis': String(fields={'_exact': Keyword()}, multi=True),
-            'projectType': String(fields={'_exact': Keyword()}, analyzer='english'),
+            'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
+            'coPis': Text(fields={'_exact': Keyword()}, multi=True),
+            'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),
-            'projectId': String(fields={'_exact': Keyword()}),
+            'projectId': Text(fields={'_exact': Keyword()}),
             'title': Text(analyzer='english'),
             'keywords': Text(analyzer='english'),
+            'ef': Text(analyzer='english'),
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
-                'href': Text(fields={'_exact':Keyword()})
+                'href': Text(fields={'_exact':Keyword()}),
+                'delete': Boolean()
             }),
-            'pi': String(fields={'_exact': Keyword()}),
-            'awardNumber': String(fields={'_exact': Keyword()})
+            'pi': Text(fields={'_exact': Keyword()}),
+            'awardNumber': Text(fields={'_exact': Keyword()})
         })
 
     class Meta:

@@ -5,6 +5,7 @@ import json
 import re
 import logging
 import datetime
+from designsafe.apps.api import tasks
 
 logger = logging.getLogger(__name__)
 
@@ -447,6 +448,10 @@ class Model(object):
         else:
             logger.debug('Updating Metadata: %s, with: %s', self.uuid, body)
             ret = agave_client.meta.updateMetadata(uuid=self.uuid, body=body)
+            logger.debug(ret)
+            logger.debug(type(ret))
+            tasks.index_or_update_project.apply_async(args=[self.uuid], queue='api')
+        
         self.update(**ret)
         return ret
 

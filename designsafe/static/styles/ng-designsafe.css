@@ -410,6 +410,36 @@ tr.experiment-deleted {
     color: black;
 }
 
+.ds-text-yellow {
+    color: #B59300;
+}
+
+.ds-text-purple {
+    color: #865AA7;
+}
+
+span.label.tag-yellow {
+    border: 2px solid #B59300;
+    color: black;
+}
+
+span.label.tag-yellow.selected {
+    border: 2px solid #B59300;
+    background: #B59300;
+    color: white;
+}
+
+span.label.tag-purple {
+    border: 2px solid #865AA7;
+    color: black;
+}
+
+span.label.tag-purple.selected {
+    border: 2px solid #865AA7;
+    background: #865AA7;
+    color: white;
+}
+
 span.label.tag-light-blue {
     border: 2px solid #5BC0DE;
     color: black;
@@ -480,6 +510,10 @@ span.tag-title {
     word-break: break-word;
     white-space: normal;
     text-align: left;
+}
+
+.data-model-tree ul ul.hybrid-sim-coord-output li {
+    margin-left:30px;
 }
 
 .data-model-tree ul, .data-model-tree li {
@@ -680,4 +714,75 @@ a[ng-click]:hover {
   border-right:1px solid black;
   border-top:1px solid black;
   border-bottom:1px solid black;
+}
+
+/**
+*
+* Application Icons Font
+*
+**/
+
+@font-face {
+font-family: 'DesignSafe-Apps';
+    src: url('/static/fonts/DesignSafe-App-Icons.ttf') format('truetype');        
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon-letter {
+    font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 6vw;
+    line-height: 1.2;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+    font-family: 'DesignSafe-Apps';
+    font-style: normal;
+    font-size: 5vw;
+    speak: none;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+            font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.icon-compress:before {
+    content: "\e909";
+}
+.icon-extract:before {
+    content: "\e90a";
+}
+.icon-matlab:before {
+    content: "\e90b";
+}
+.icon-paraview:before {
+    content: "\e903";
+}
+.icon-hazmapper:before {
+    content: "\e904";
+}
+.icon-jupyter:before {
+    content: "\e905";
+}
+.icon-adcirc:before {
+    content: "\e906";
+    font-size: 4vw;
+}
+.icon-qgis:before {
+    content: "\e907";
+}
+i[class^="icon-ls"][class$="dyna"]:before, 
+i[class^="icon-ls-pre/post"]:before,
+.icon-ls-dyna:before {
+    content: "\e908";
+}
+.icon-visit:before {
+    content: "\e902";
+}
+.icon-openfoam:before {
+    content: "\e900";
+}
+.icon-opensees:before {
+    content: "\e901";
 }

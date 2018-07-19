@@ -4,6 +4,8 @@ import six
 import json
 from itertools import takewhile
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from designsafe.apps.api.projects.models import Project
 from elasticsearch import TransportError, ConnectionTimeout
 from elasticsearch_dsl.query import Q
 from elasticsearch_dsl import Search, DocType
@@ -332,8 +334,6 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        logger.debug(query_string)
-
         search = IndexedFile.search()
         search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
         
@@ -378,7 +378,6 @@ class ElasticFileManager(BaseFileManager):
         
         query_string = " ".join(split_query)
 
-        logger.debug(query_string)
         filters = Q('term', system="designsafe.storage.community") #| \
                   #Q('term', system="designsafe.storage.published") | \
                   #Q('term', system="designsafe.storage.community")
@@ -404,6 +403,83 @@ class ElasticFileManager(BaseFileManager):
             'children': children,
             'permissions': 'READ'
         }
+        return result
+
+    def search_in_project(self, system, query_string, file_path=None, offset=0, limit=100):
+        """
+        Performs a search for files within a specific project.
+        """
+
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
+
+
+        search = IndexedFile.search()
+        # search = search.filter("nested", path="permissions", query=Q("term", permissions__username=username))
+        
+        # search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
+        search = search.filter(Q({'term': {'system._exact': system}}))
+        # search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
+        search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
+        res = search.execute()
+        children = []
+        if res.hits.total:
+            children = [Object(wrap=o).to_dict() for o in search[offset:limit]]
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system,
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+        return result
+
+    def search_projects(self, username, query_string, file_path=None, offset=0, limit=100):
+        user = get_user_model().objects.get(username=username)
+        ag = user.agave_oauth.client
+
+        projects = Project.list_projects(agave_client=ag)
+
+        split_query = query_string.split(" ")
+        for i, c in enumerate(split_query):
+            if c.upper() not in ["AND", "OR", "NOT"]:
+                split_query[i] = "*" + c + "*"
+        
+        query_string = " ".join(split_query)
+
+        children = []
+        for project in projects:
+
+            search = IndexedFile.search()\
+                .query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])\
+                .filter(Q({'term': {'system._exact': 'project-' + project.uuid}}))\
+                .extra(from_=offset, size=limit)
+            
+            res = search.execute()
+            
+            if res.hits.total:
+                for o in search[offset:limit]:
+                    child = Object(wrap=o).to_dict()
+                    child.update({'title': project.title})
+                    children.append(child)
+
+        result = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': 'designsafe.projects',
+            'type': 'dir',
+            'children': children,
+            'permissions': 'READ'
+        }
+
         return result
 
     def search_shared(self, system, username, query_string,

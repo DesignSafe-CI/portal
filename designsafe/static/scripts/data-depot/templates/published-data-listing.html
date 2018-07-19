@@ -33,7 +33,7 @@
                     <th style="border-top:none; width:25%;">DOI</th>
                     <td style="border-top:none; width:75%;">{{project.doi}}
                       <button class="btn btn-info btn-sm pull-right"
-                              ng-click="showCitation(project, browser.publication)">Citation
+                              ng-click="onCitation(project)">Citation
                       </button>
                     <td>
                   </tr>
@@ -140,12 +140,12 @@
         </thead>
 
         <tbody>
-        <tr ng-if="!browser.busyListing"
-            ng-repeat="item in browser.listing.children"
-            ng-click="onSelect($event, item)"
-            ng-class="{'ds-data-selected': item._ui.selected}"
-        >
-            <td>
+          <tr ng-if="!browser.busyListing"
+          ng-repeat="item in browser.listing.children"
+          ng-click="onSelect($event, item)"
+          ng-class="{'ds-data-selected': item._ui.selected}"
+          >
+          <td>
                 <i class="fa {{ item.icon() }}"></i>
                 <a ng-href="{{ item.href }}" ng-click="onBrowse($event, item)">
                     {{ item.name }}
@@ -266,7 +266,7 @@
                               </td>
                               <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
                                 <button class="btn btn-info btn-sm"
-                                        ng-click="showCitation(experiment, browser.publication)">Citation
+                                        ng-click="onCitation(experiment)">Citation
                                 </button>
                               </td>
                             </tr>
@@ -537,7 +537,8 @@
               </p>
               <div>
                 <button class="btn btn-info btn-sm"
-                        ng-click="showCitation(analysis, browser.publication)">Citation </button>
+                        ng-click="onCitation(analysis)">Citation
+                </button>
               </div>
             </div>
             <table  class="table table-bordered table-striped"
@@ -675,7 +676,7 @@
             </div>
             <div>
               <button class="btn btn-info btn-sm pull-right"
-                      ng-click="showCitation(simulation, browser.publication)">Citation
+                      ng-click="onCitation(simulation)">Citation
               </button>
             </div>
           </div>

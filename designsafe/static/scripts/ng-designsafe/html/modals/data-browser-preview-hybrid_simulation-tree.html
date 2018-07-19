@@ -1,0 +1,130 @@
+<div class="modal-header">
+  <h3 class="modal-title">
+    Hybrid Simulation Preview Tree
+    </h3>
+</div>
+<div class="modal-body">
+    <div class="data-model-tree data-model-preview-tree">
+    <!-- TREE START -->
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="simulation in data.project.hybridsimulation_set | orderBy: 'value.title'"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
+            <div style="display:inline-block;">
+              <div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('report_set', simulation.uuid).length">
+                    <span class="label tag-black" 
+                          ng-class="{'selected': data.project.getRelated('report_set', simulation.uuid, 'simulations')[0].uuid === data.entityUuid}">Simulation Report</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('report_set', simulation.uuid, 'simulations')[0].value.title}}
+                    </span>
+                </div>
+              </div>
+              <div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('analysis_set', simulation.uuid).length">
+                    <span class="label tag-light-blue"
+                          ng-class="{'selected': data.project.getRelated('analysis_set', simulation.uuid, 'simulations')[0].uuid === data.entityUuid}">Simulation Analysis</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('analysis_set', simulation.uuid, 'hybridSimulations')[0].value.title}}
+                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="globalModel in data.project.getRelated('globalmodel_set', simulation.uuid) | orderBy: 'value.title'">
+              <div class="tree-el">
+              <span class="label tag-blue"
+                    ng-class="{'selected': modelConfig.uuid === data.entityUuid}">Global Model</span>
+              <span class="tag-title">{{globalModel.value.title}}</span>
+              </div>
+              <ul class="sensor-list-ul">
+                <li class="tree-container"
+                    ng-repeat="coordinator in data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid]) | orderBy: 'value.title'">
+                  <div class="tree-el">  
+                  <span class="label tag-green"
+                        ng-class="{'selected': simInput.uuid === data.entityUuid}">Master Simulation Coordinator</span>
+                  <span class="tag-title">{{coordinator.value.title}}</span>
+                  </div>
+                  <ul style="margin-left:10px;">
+                    <li 
+                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                      <div class="tree-el">
+                      <span class="label tag-red tree-el"
+                            ng-class="{'selected': output.uuid === data.entityUuid}">Numerical (Simulations) Output</span>
+                      <span class="tag-title">{{output.value.title}}</span>
+                      </div>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li 
+                        ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                      <div class="tree-el">
+                      <span class="label tag-yellow tree-el"
+                            ng-class="{'selected': substructure.uuid === data.entityUuid}">Numerical (Simulation) Substructure</span>
+                      <span class="tag-title">{{substructure.value.title}}</span>
+                      </div>
+                      <ul>
+                        <li 
+                            ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                          <div class="tree-el">
+                          <span class="label tag-red tree-el"
+                                ng-class="{'selected': output.uuid === data.entityUuid}">simulation Output</span>
+                          <span class="tag-title">{{output.value.title}}</span>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <ul>
+                    <li 
+                        ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                      <div class="tree-el">
+                      <span class="label tag-purple tree-el"
+                            ng-class="{'selected': substructure.uuid === data.entityUuid}">Physical (Experimental) Substructure</span>
+                      <span class="tag-title">{{substructure.value.title}}</span>
+                      </div>
+                      <ul>
+                        <li 
+                            ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                          <div class="tree-el">
+                          <span class="label tag-red tree-el"
+                                ng-class="{'selected': output.uuid === data.entityUuid}">simulation Output</span>
+                          <span class="tag-title">{{output.value.title}}</span>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    <!-- TREE END -->
+
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="label tag-light-blue"
+                ng-class="{'selected': analysis.uuid === data.entityUuid}">Analysis</span>
+          <span class="ul-title">{{analysis.value.title}}</span>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+
+
+</div>
+<div class="modal-footer">
+  <button class="pull-right btn btn-sm btn-default" ng-click="cancel()">Close</button>
+</div>

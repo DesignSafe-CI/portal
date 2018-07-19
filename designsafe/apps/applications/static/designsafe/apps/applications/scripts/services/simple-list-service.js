@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('designsafe').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
+  angular.module('designsafe').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', 'appIcons', function($http, $q, $translate, djangoUrl, appIcons) {
 
     var SimpleList = function(){
       this.selected = null,
@@ -112,6 +112,30 @@
 
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
+
+            // If label is undefined, set as id
+            if (!appMeta.value.definition.label) {
+              appMeta.value.definition.label = appMeta.value.definition.id;
+            }
+
+            // Parse app icon from tags for agave apps, or from metadata field for html apps
+            appMeta.value.definition.icon = null;
+            if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+              appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+            } else if (appMeta.value.definition.hasOwnProperty('appIcon')) {
+              appMeta.value.definition.icon = appMeta.value.definition.appIcon;
+            } else (
+              appIcons.some(function (icon) {
+                if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
+                  appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
+                  return true;
+                }
+              })
+            );
+            if (appMeta.value.definition.icon == '') {
+              appMeta.value.definition.icon = null;
+            }
+
             if (appMeta.value.definition.isPublic){
               self.lists['Public'].push(
                 appMeta

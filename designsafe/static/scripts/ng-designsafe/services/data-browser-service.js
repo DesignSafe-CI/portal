@@ -162,7 +162,7 @@
      * Tests for the DataBrowser actions allowed on the given file(s) from the current listing.
      *
      * @param {FileListing|FileListing[]} files Files to test
-     * @return {{canDownload: {boolean}, canPreview: {boolean}, canViewMetadata: {boolean}, canShare: {boolean}, canCopy: {boolean}, canMove: {boolean}, canRename: {boolean}, canTrash: {boolean}, canDelete: {boolean}}}
+     * @return {{canDownload: {boolean}, canPreview: {boolean}, canViewCitation: {boolean}, canViewMetadata: {boolean}, canShare: {boolean}, canCopy: {boolean}, canMove: {boolean}, canRename: {boolean}, canTrash: {boolean}, canDelete: {boolean}}}
      */
     function allowedActions (files) {
       if (! Array.isArray(files)) {
@@ -174,10 +174,12 @@
       tests.canPreview = files.length === 1 && hasPermission('READ', files);
       tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
       tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
+      tests.canViewCitation = files.length >= 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-      tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
-      tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
+      // There are errors being thrown by the following two tests
+      // tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
+      // tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name); //??
       tests.canViewCategories = true;
 
       var trashPath = _trashPath();
@@ -204,7 +206,7 @@
      * @param options.system
      * @param options.path
      */
-    function browse (options) {
+    function browse (options, params) {
       // resolve any ongoing requests
       if(req){
         req.stopper.resolve();
@@ -219,7 +221,12 @@
       currentState.busyListingPage = false;
       currentState.page = 0;
 
-      req = FileListing.get(options, apiParams); // stopper is returned here...
+      if (params) {
+        req = FileListing.get(options, apiParams, params); // stopper is returned here...
+      }
+      else {
+        req = FileListing.get(options, apiParams); // stopper is returned here... 
+      }
 
       var currentReq = req.then(function (listing) {
         select([], true);
@@ -245,7 +252,6 @@
         currentState.reachedEnd = false;
         return $q.reject(err);
       });
-
       return currentReq;
     }
 
@@ -726,7 +732,7 @@
                         // set video source and mimetype
                         document.getElementById("videoPlayer").src=vid;
                         document.getElementById("videoPlayer").setAttribute('type', `video/${fileExt}`);
-                      };
+                      }
                     };
                     oReq.onerror = function() {
                       $scope.previewError = err.data;
@@ -1600,11 +1606,35 @@
                 {label: 'Simulation Output',
                  name: 'designsafe.project.simulation.output',
                  yamzId: ''},
-                {label: 'Integrated Data Analysis',
+                {label: 'Analysis',
                  name: 'designsafe.project.simulation.analysis',
                  yamzId: ''},
-                {label: 'Integrated Report',
+                {label: 'Report',
                  name: 'designsafe.project.simulation.report',
+                 yamzId: ''},
+                // {label: 'Analysis',
+                //  name: 'designsafe.project.analysis',
+                //  yamzId: 'h1333'},
+                // {label: 'Report',
+                //  name: 'designsafe.project.report',
+                //  yamzId: ''}
+                ];
+          } else if (currentState.project.value.projectType === 'hybrid_simulation'){
+            $scope.ui.tagTypes = [
+                {label: 'Global Model',
+                 name: 'designsafe.project.hybrid_simulation.global_model',
+                 yamzId: ''},
+                {label: 'Coordinator',
+                 name: 'designsafe.project.hybrid_simulation.coordinator',
+                 yamzId: ''},
+                {label: 'Simulation Substructure',
+                 name: 'designsafe.project.hybrid_simulation.sim_substructure',
+                 yamzId: ''},
+                {label: 'Experimental Substructure',
+                 name: 'designsafe.project.hybrid_simulation.exp_substructure',
+                 yamzId: ''},
+                {label: 'Output',
+                 name: 'designsafe.project.hybrid_simulation.output',
                  yamzId: ''},
                 {label: 'Analysis',
                  name: 'designsafe.project.analysis',
@@ -1686,6 +1716,9 @@
           $scope.data.catForm = {};
 
           $scope.isProjectTagSel = function(entity){
+            if (typeof entity === 'undefined'){
+                return;
+            }
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
               return true;
             } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
@@ -1863,36 +1896,111 @@
             var name = nameComps[nameComps.length-1];
             $scope.ui.addingTag = true;
             entity.description = entity.description || '';
-            if (typeof $scope.data.files !== 'undefined'){
-              entity.filePaths = _.map($scope.data.files,
-                                     function(file){
-                                      return file.path;
-                                     });
-            }
+            //if (typeof $scope.data.files !== 'undefined'){
+            //  entity.filePaths = _.map($scope.data.files,
+            //                         function(file){
+            //                          return file.path;
+            //                         });
+            //}
             
             // using entity.name to place the object
             // what if we route the name if it is a normal report?
-            $scope.ui.addingTag = true;
-            ProjectEntitiesService.create({data: {
-                uuid: currentState.project.uuid,
-                name: entity.name,
-                entity: entity
-            }})
-            .then(
-               function(resp){
-                 $scope.data.form.projectTagToAdd = {optional:{}};
-                 currentState.project.addEntity(resp);
+            var post_process = function(resp){
+                $scope.data.form.projectTagToAdd = {optional:{}};
+                $scope.data.project.addEntity(resp);
                  _setFileEntities();
                  _setEntities();
-                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-                 $scope.ui.error = false;
-                 $scope.ui.addingTag = false;
-               },
-               function(err){
-                 $scope.ui.error = true;
-                 $scope.error = err;
-               }
-           );
+                $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+                $scope.ui.error = false;
+                $scope.ui.addingTag = false;
+              };
+            $scope.ui.addingTag = true;
+
+            if (entity.name === 'designsafe.project.hybrid_simulation.output'){
+                var tasks = [];
+                var coordinatorDesc = entity.coordinatorDesc;
+                delete entity.coordinatorDesc;
+                var simulationDesc = entity.simulationDesc;
+                delete entity.simulationDesc;
+                var eventDesc = entity.eventDesc;
+                delete entity.eventDesc;
+
+                entity.name = 'designsafe.project.hybrid_simulation.coordinator_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.coordinator_output',
+                              title: entity.title,
+                              description: coordinatorDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.sim_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.sim_output',
+                              title: entity.title,
+                              description: simulationDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.exp_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.exp_output',
+                              title: entity.title,
+                              description: eventDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+                $q.all(tasks);
+            } else {
+                ProjectEntitiesService.create({data: {
+                    uuid: currentState.project.uuid,
+                    name: entity.name,
+                    entity: entity
+                }})
+                .then(post_process,
+                   function(err){
+                     $scope.ui.error = true;
+                     $scope.error = err;
+                   }
+               );
+            }
           };
         }],
         size: 'lg',
@@ -2088,23 +2196,23 @@
             });
             };
 
-		  $scope.doSaveMetadata = function($event) {
-			$event.preventDefault();
-			$uibModalInstance.close($scope.data);
-		  };
+            $scope.doSaveMetadata = function($event) {
+            $event.preventDefault();
+            $uibModalInstance.close($scope.data);
+            };
 
-		  $scope.isMarkedDeleted = function(tag){
-			return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
-		  };
+            $scope.isMarkedDeleted = function(tag){
+            return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
+            };
 
-		  $scope.toggleTag = function(tag){
-			var id = $scope.data.form.tagsToDelete.indexOf(tag);
-			if (id > -1){
-			  $scope.data.form.tagsToDelete.splice(id, 1);
-			} else {
-			  $scope.data.form.tagsToDelete.push(tag);
-			}
-		  };
+            $scope.toggleTag = function(tag){
+            var id = $scope.data.form.tagsToDelete.indexOf(tag);
+            if (id > -1){
+              $scope.data.form.tagsToDelete.splice(id, 1);
+            } else {
+              $scope.data.form.tagsToDelete.push(tag);
+            }
+            };
 
           /**
            * Cancel and close upload dialog.
@@ -2127,6 +2235,9 @@
           $scope.data.form.projectTagToAdd = {optional:{}};
 
           $scope.isProjectTagSel = function(entity){
+            if (typeof entity === 'undefined'){
+                return;
+            }
             if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
               return true;
             } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
@@ -2285,6 +2396,187 @@
     }
 
 
+    var showCitation = function (ent) {
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-citations.html',
+        controller: ['$sce', '$window', '$uibModalInstance', function ($sce, $window, $uibModalInstance) {
+
+          var browser = currentState;
+          var $ctrl = this;
+          $ctrl.data = {};
+          $ctrl.ui = {};
+          $ctrl.ui.style = 'BibTeX';
+          $ctrl.ui.styles = ['BibTeX', 'Endnote'];
+          var authors = '';
+          var ieeeAuthors = '';
+
+          var neesCitation = function (prj) {
+            $http.get('/api/projects/publication/' + prj[0].meta.projectId)
+            .then(function (resp) {
+              
+              prj = resp.data.project;
+              $ctrl.data.prj = prj;
+              $ctrl.data.publication = resp.data;
+
+              var publishers = _.filter($ctrl.data.publication.users, function (usr) {
+                if (prj.name === 'designsafe.project' || prj.name === 'designsafe.project.analysis') {
+                  return _.contains($ctrl.data.publication.project.value.coPis, usr.username) ||
+                    usr.username === $ctrl.data.publication.project.value.pi;
+                } else {
+                  return _.contains(prj.value.authors, usr.username);
+                }
+              });
+              if (typeof prj.value.projectType !== 'undefined' && prj.value.projectType === 'other') {
+                publishers = $ctrl.data.publication.users;
+              }
+              publishers = _.sortBy(publishers, function (p) {
+                if (typeof p._ui[prj.uuid] !== 'undefined') {
+                  return p._ui[prj.uuid];
+                } else {
+                  return p._ui.order;
+                }
+              });
+              _.each(publishers, function (usr, index, list) {
+                var str = usr.last_name + ', ' + usr.first_name;
+                if (index < list.length - 1) {
+                  authors += str + ' and ';
+                  ieeeAuthors += str + '; ';
+                } else {
+                  authors += str;
+                  ieeeAuthors += str;
+                }
+              });
+              $ctrl.getCitation = function () {
+                if ($ctrl.ui.style === 'BibTeX') {
+                  $ctrl.data.citation =
+                    '@misc{dataset, \n' +
+                    ' author = {' + authors + '} \n' +
+                    ' title = {' + prj.value.title + '} \n' +
+                    ' publisher = {DesignSafe-CI} \n' +
+                    ' year = {2017} \n' +
+                    ' note = {' + prj.value.description + '} \n' +
+                    '}';
+                } else if ($ctrl.ui.style === 'Endnote') {
+                  $ctrl.data.citation =
+                    '%0 Generic \n' +
+                    '%A ' + authors + '\n' +
+                    '%T ' + prj.value.title + '\n' +
+                    '%I DesignSafe-CI\n' +
+                    '%D 2017\n';
+                }
+              };
+              $ctrl.close = function () {
+                $uibModalInstance.dismiss('Close');
+              };
+              $ctrl.downloadCitation = function () {
+                var doi = $ctrl.data.prj.doi;
+                doi = doi.slice(4);
+                var doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
+                $window.open(doiurl);
+              };
+              $ctrl.navEzid = function () {
+                var doi = $ctrl.data.prj.doi;
+                var doiurl = "https://ezid.cdlib.org/id/" + doi;
+                $window.open(doiurl);
+              };
+    
+              // display everything...
+              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
+              $ctrl.getCitation();
+            });
+          };
+
+
+
+          if (browser.listing.system === 'nees.public') {
+            neesCitation(ent);
+          } else {
+            $ctrl.data.ent = ent;
+
+            if (browser.listing.project) {
+              $ctrl.data.publication = browser.listing;
+            } else {
+              $ctrl.data.publication = browser.publication;
+            }
+            var publishers = _.filter($ctrl.data.publication.users, function (usr) {
+              if (ent.name === 'designsafe.project' || ent.name === 'designsafe.project.analysis' || ent[0]) {
+                return _.contains($ctrl.data.publication.project.value.coPis, usr.username) ||
+                  usr.username === $ctrl.data.publication.project.value.pi;
+              } else {
+                return _.contains(ent.value.authors, usr.username);
+              }
+            });
+            if (typeof ent.value.projectType !== 'undefined' && ent.value.projectType === 'other') {
+              publishers = $ctrl.data.publication.users;
+            }
+            publishers = _.sortBy(publishers, function (p) {
+              if (typeof p._ui[ent.uuid] !== 'undefined') {
+                return p._ui[ent.uuid];
+              } else {
+                return p._ui.order;
+              }
+            });
+            _.each(publishers, function (usr, index, list) {
+              var str = usr.last_name + ', ' + usr.first_name;
+              if (index < list.length - 1) {
+                authors += str + ' and ';
+                ieeeAuthors += str + '; ';
+              } else {
+                authors += str;
+                ieeeAuthors += str;
+              }
+            });
+
+            $ctrl.getCitation = function () {
+              if ($ctrl.ui.style === 'BibTeX') {
+                $ctrl.data.citation =
+                  '@misc{dataset, \n' +
+                  ' author = {' + authors + '} \n' +
+                  ' title = {' + ent.value.title + '} \n' +
+                  ' publisher = {DesignSafe-CI} \n' +
+                  ' year = {2017} \n' +
+                  ' note = {' + ent.value.description + '} \n' +
+                  '}';
+              } else if ($ctrl.ui.style === 'Endnote') {
+                $ctrl.data.citation =
+                  '%0 Generic \n' +
+                  '%A ' + authors + '\n' +
+                  '%T ' + ent.value.title + '\n' +
+                  '%I DesignSafe-CI\n' +
+                  '%D 2017\n';
+              }
+            };
+            $ctrl.close = function () {
+              $uibModalInstance.dismiss('Close');
+            };
+            $ctrl.downloadCitation = function () {
+              var doi = $ctrl.data.ent.doi;
+              doi = doi.slice(4);
+              var doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
+              $window.open(doiurl);
+            };
+            $ctrl.navEzid = function () {
+              var doi = $ctrl.data.ent.doi;
+              var doiurl = "https://ezid.cdlib.org/id/" + doi;
+              $window.open(doiurl);
+            };
+
+            // display everything...
+            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
+            $ctrl.getCitation();
+          }
+
+
+        }],
+        size: 'md',
+        controllerAs: '$ctrl',
+        resolve: {
+          browser: currentState
+        },
+      });
+    };
+
+
     /**
      * @callback subscribeCallback
      * @param {object} $event
@@ -2405,6 +2697,7 @@
       FileEvents: FileEvents,
       state: state,
       apiParameters: apiParameters,
+      currentState: currentState,
 
       /* data/files functions */
       allowedActions: allowedActions,
@@ -2431,6 +2724,7 @@
       trash: trash,
       upload: upload,
       viewMetadata: viewMetadata,
+      showCitation: showCitation,
       viewCategories: viewCategories,
 
       /* events */

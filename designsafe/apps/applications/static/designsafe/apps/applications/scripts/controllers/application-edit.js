@@ -1,7 +1,7 @@
 (function(window, angular, $, _) {
   "use strict";
   angular.module('designsafe').controller('ApplicationEditCtrl',
-      ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', function ($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, SimpleList, MultipleList, AppsWizard, Django, appCategories) {
+      ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', 'appIcons', function ($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, SimpleList, MultipleList, AppsWizard, Django, appCategories, appIcons) {
 
       /****** customForm *********/
       $scope.customSchema = {
@@ -43,6 +43,12 @@
                 "description": "Categorization for this app if made public",
                 "enum": appCategories,
                 "title": "Category"
+            },
+            "appIcon": {
+                "type": "string",
+                "description": "The icon to associate with this app",
+                "enum": [''].concat(appIcons),
+                "title": "Icon"
             },
             "isPublic": {
               "title": "Public",
@@ -117,6 +123,13 @@
                 }
             }
         },
+        {
+            "key": "appIcon",
+            "type": "select",
+            ngModelOptions: {
+                updateOnDefault: true
+            },
+        },
         "isPublic",
         {
           "key": "html",
@@ -182,11 +195,12 @@
                   "enum": appCategories,
                   "title": "Category"
               },
-              "icon": {
+              "appIcon": {
                   "type": "string",
-                  "description": "The icon url to associate with this app",
+                  "description": "The icon to associate with this app",
                   "title": "Icon",
-                  "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
+                  "enum": [''].concat(appIcons)
+                //   "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "shortDescription": {
                   "type": "string",
@@ -649,6 +663,13 @@
                                   return value ? true : false;
                               }
                           }
+                      },
+                      {
+                          "key": "appIcon",
+                          "type": "select",
+                          ngModelOptions: {
+                              updateOnDefault: true
+                          },
                       },
                       "shortDescription",
                       "longDescription",
@@ -1456,6 +1477,13 @@
                         }
                         $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
                     }
+                    // Add formatted icon entry to tags, and replace old icon if it exists
+                    if ($scope.model.hasOwnProperty('appIcon')) {
+                        if ($scope.model.tags.filter(s => s.includes('appIcon')) !== undefined && $scope.model.tags.filter(s => s.includes('appIcon')).length != 0) {
+                            $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appIcon'))[0]));
+                        }
+                        $scope.model.tags.push(`appIcon:${$scope.model.appIcon}`);
+                    }
                   Apps.createApp($scope.model)
                     .then(
                       function(response){
@@ -1488,6 +1516,10 @@
                                             // Define appCategory if it exists in tags
                                             if (appMeta.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
                                                 appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                            }
+                                            // Define appIcon if it exists in tags
+                                            if (appMeta.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+                                                appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
                                             }
                                             $scope.appMeta = appMeta;
 
@@ -1524,6 +1556,10 @@
                                             // Define appCategory if it exists in tags
                                             if (appMeta.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
                                                 appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                            }
+                                            // Define appIcon if it exists in tags
+                                            if (appMeta.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+                                                appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
                                             }
                                             $scope.appMeta = appMeta;
 
@@ -1567,6 +1603,7 @@
                   metadata.value.definition = {};
                   metadata.value.definition.id = $scope.customModel.label+ '-' + $scope.customModel.version;
                   metadata.value.definition.appCategory = $scope.customModel.appCategory;
+                  metadata.value.definition.appIcon = $scope.customModel.appIcon;
                   metadata.value.type = $translate.instant('apps_metadata_custom');
                   _.extend(metadata.value.definition, angular.copy($scope.customModel));
 
@@ -1790,6 +1827,13 @@
                                         response.data.appCategory = response.data.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
                                         response.data.tags.splice(response.data.tags.indexOf(response.data.tags.filter(s => s.includes('appCategory'))[0]));
                                     }
+                                    // Define appIcon if it exists in tags, and remove from tags displayed to user to prevent multiple Icons
+                                    if (response.data.tags.filter(s => s.includes('appIcon')) !== undefined && response.data.tags.filter(s => s.includes('appIcon')).length != 0) {
+                                        response.data.appIcon = response.data.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                        response.data.tags.splice(response.data.tags.indexOf(response.data.tags.filter(s => s.includes('appIcon'))[0]));
+                                    } else {
+                                        $scope.editModel.definition.appIcon = '';
+                                    }
                                     $scope.model = angular.copy(response.data);
 
                                     Apps.getSystems()
@@ -1897,6 +1941,13 @@
               if ($scope.editModel.definition.tags.filter(s => s.includes('appCategory')) !== undefined && $scope.editModel.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
                   $scope.editModel.definition.appCategory = $scope.editModel.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
                   $scope.editModel.definition.tags.splice($scope.editModel.definition.tags.indexOf($scope.editModel.definition.tags.filter(s => s.includes('appCategory'))[0]));
+              }
+              // Define appIcon if it exists in tags, and remove from tags displayed to user to prevent multiple Icons
+              if ($scope.editModel.definition.tags.filter(s => s.includes('appIcon')) !== undefined && $scope.editModel.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+                  $scope.editModel.definition.appIcon = $scope.editModel.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                  $scope.editModel.definition.tags.splice($scope.editModel.definition.tags.indexOf($scope.editModel.definition.tags.filter(s => s.includes('appIcon'))[0]));
+              } else {
+                  $scope.editModel.definition.appIcon = '';
               }
               $scope.model = $scope.editModel.definition;
 

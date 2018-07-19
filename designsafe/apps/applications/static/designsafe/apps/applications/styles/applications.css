@@ -282,3 +282,16 @@ hr{
 .material-card.info .card-bottom a{
   color: rgba(255, 255, 255, 0.9);
 }
+
+.icon-letter {
+  font-size: 65px;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-size: 42px;
+}
+
+.card-body h3 {
+  margin-top: 0px;
+}

@@ -15,8 +15,8 @@
     };
   }])
   .controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast',
-    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast) {
+    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast', 'Django',
+    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django) {
 
       $localStorage.systemChecks = {};
 
@@ -25,6 +25,7 @@
         submitting: false,
         needsLicense: false,
         unavailable: false,
+        systemDown: false,
         app: null,
         form: {}
       };
@@ -73,7 +74,13 @@
               //     });
 
               $scope.data.app = resp.data;
-              $scope.resetForm();
+                
+              Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
+                var heartbeatStatus = response.data.heartbeat.status;
+                $scope.data.systemDown = (heartbeatStatus == false);
+                $scope.resetForm();
+              });
+
             });
           } else if (app.value.type === 'html'){
                 $scope.data.type = app.value.type;
@@ -87,6 +94,8 @@
         $scope.form = { model: {}, readonly: ($scope.data.needsLicense || $scope.data.unavailable)};
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [];
+        //reset formValid, var is used for invalid form msg
+        $scope.data.formValid = [];
 
         /* inputs */
         var items = [];
@@ -98,7 +107,7 @@
         }
         $scope.form.form.push({
           type: 'fieldset',
-          readonly: ($scope.data.needsLicense || $scope.data.unavailable),
+          readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
           title: 'Inputs',
           items: items
         });
@@ -112,17 +121,18 @@
         }
         if ($scope.data.app.parallelism == "PARALLEL") {
           items.push('nodeCount');
+          // items.push('processorsPerNode');
         }
         $scope.form.form.push({
           type: 'fieldset',
-          readonly: ($scope.data.needsLicense || $scope.data.unavailable),
+          readonly: ($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown),
           title: 'Job details',
           items: items
         });
 
         /* buttons */
         items = [];
-        if (!($scope.data.needsLicense || $scope.data.unavailable)) {
+        if (!($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown)) {
           items.push({type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary'});
         }
         items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
@@ -136,6 +146,8 @@
         $scope.data.messages = [];
         $scope.$broadcast('schemaFormValidate');
         if (form.$valid) {
+          //set formValid to true, var is used for invalid error msg
+          $scope.data.formValid = true;
           var jobData = {
               appId: $scope.data.app.id,
               archive: true,
@@ -245,20 +257,38 @@
               refocus();
             });
         }
+        else {
+          // set a variable so we can show an error message when form is not valid
+          $scope.data.formValid = false;
+        }
       };
 
-      $scope.onLaunchNotebook = function(href) {
-        let file_path = '/SCEC_BBP_GMportal/Run_me.ipynb'; // app.file_path
-        let file_mgr_name = 'community';
+      $scope.onLaunchNotebook = function(path, jupyter_base_url='https://jupyter.designsafe-ci.org', copy=true) {
+        let file_path = path.split(/\/(.+)/)[1];
+        let file_mgr_name = 'community'; // path.split('/')[0];
         let system_id = 'designsafe.storage.community';
+
         $scope.data.launching = true;
-        Apps.copyNotebook(file_mgr_name, system_id, file_path)
-        .then(function(resp) {
-          $scope.data.launching = false;
-          window.open(`${href}/user/${resp.data.path.split('/')[1]}/notebooks/mydata/${resp.data.name}`,'').focus();
-          }, function (err) {
-            scope.data.launching = false;
-          });
+        if (copy) {
+          Apps.copyNotebook(file_mgr_name, system_id, file_path)
+            .then(function (resp) {
+              $scope.data.launching = false;
+              window.open(`${jupyter_base_url}/user/${Django.user}/notebooks/mydata/${resp.data.name}`, '').focus();
+            }, function (err) {
+              $scope.data.launching = false;
+            });
+        } else {
+          // create dir of parent folder in user's mydata
+          Apps.setupNotebook(file_path.split('/').slice(-2, -1)[0])
+            .then(function (resp) {
+              $scope.data.launching = false;
+              window.open(`${jupyter_base_url}/user/${Django.user}/notebooks/${path}`, '').focus();
+            }, function (err) {
+              console.log(err);
+              $scope.data.launching = false;
+            });
+        }
+        
       };
 
       function refocus() {

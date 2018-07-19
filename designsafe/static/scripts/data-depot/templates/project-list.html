@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <div class="ds-table-display-wrapper">
+  <div class="ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="scrollToBottom()()" data-scroll-top="scrollToTop()()" data-bottom-height="0">
     <table class="table table-bordered table-striped" style="background-color: #fff;">
         <thead>
         <th>Project title</th>
@@ -9,7 +9,7 @@
 
         <tbody>
         <tr ng-repeat="project in data.projects"
-            ng-if="data.projects"
+            ng-if="data.projects && ! browser.busyListing"
             ng-click="onSelect($event, project);"
             ng-class="{'ds-data-selected': project.selected}"
         >
@@ -21,25 +21,34 @@
             </td>
             <td>
                 <ds-user username="project.value.pi" format="name-username">
-                    {{ project.value.pi }}
+                    {{ project.value.pi }} 
                 </ds-user>
             </td>
             <td>
                 {{ project.lastUpdated|date:"short" }}
             </td>
         </tr>
+        <tr ng-if="browser.busyListingPage">
+            <td>
+                <span class="bg-info text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                </span>
+            </td>
+        </tr>
         </tbody>
         <caption>
-          <div ng-if="ui.busy"
-               style="padding:10px; font-size:large; with:100%;"
+          <div ng-if="ui.busy || browser.busy"
+               style="padding:10px; font-size:large; width:100%;"
                class="bg-info">
             <span>
               <i class="fa fa-spinner fa-spin"></i> Loading...
            </span>
           </div>
-          <div ng-if="! browser.busy && browser.error" class="text-center">
-            <p class="alert alert-danger" ng-bind-html="browser.error.message || browser.error | toTrusted"></p>
-        </div>
+        <div ng-if="! browser.busy && browser.error" class="text-center">
+            <div class="alert alert-danger">
+                <div ng-if="browser.error.message" ng-bind-html="browser.error.message"></div>
+                <div ng-if="!browser.error.message"> Something went wrong </div>
+            </div>
         </caption>
     </table>
 </div>

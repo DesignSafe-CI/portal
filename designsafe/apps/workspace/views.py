@@ -9,6 +9,8 @@ from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.common.decorators import profile as profile_fn
+from designsafe.apps.api.tasks import index_or_update_project
+from designsafe.apps.workspace import utils as WorkspaceUtils
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -89,6 +91,7 @@ def call_api(request, service):
                 if meta_uuid:
                     del meta_post['uuid']
                     data = agave.meta.updateMetadata(uuid=meta_uuid, body=meta_post)
+                    index_or_update_project.apply_async(args=[meta_uuid], queue='api')
                 else:
                     data = agave.meta.addMetadata(body=meta_post)
             elif request.method == 'DELETE':
@@ -193,6 +196,16 @@ def call_api(request, service):
             else:
                 return HttpResponse('Unexpected service: %s' % service, status=400)
 
+        elif service == 'ipynb':
+            put = json.loads(request.body)
+            dir_path = put.get('file_path')
+            system = put.get('system')
+            data = WorkspaceUtils.setup_identity_file(
+                request.user.username,
+                agave,
+                system,
+                dir_path
+            )
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:

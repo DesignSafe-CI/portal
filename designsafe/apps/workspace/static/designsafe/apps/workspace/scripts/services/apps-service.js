@@ -45,6 +45,17 @@
       });
     };
 
+    service.setupNotebook = function(file_path) {
+      return $http({
+        url: djangoUrl.reverse('designsafe_workspace:call_api', ['ipynb']),
+        method: 'PUT',
+        data: {
+          file_path: file_path,
+          system: 'designsafe.storage.default'
+        }
+      });
+    };
+
     service.formSchema = function(app) {
       /**
        * Generate a JSON.schema for the app ready for angular-schema-form
@@ -165,7 +176,7 @@
       };
 
       schema.properties.nodeCount = {
-        title: 'Node Count (optional)',
+        title: 'Node Count',
         description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
         type: 'integer',
         enum: Array.from(Array(12).keys()).map(i => i + 1),
@@ -179,6 +190,16 @@
             };
           })
         }
+      };
+
+      schema.properties.processorsPerNode = {
+        title: 'Processors Per Node',
+        description: `Number of process cores per node. Default is ${app.defaultProcessorsPerNode}.`,
+        type: 'integer',
+        default: app.defaultProcessorsPerNode,
+        minimum: 1,
+        maximum: app.defaultProcessorsPerNode,
+        validationMessage: `Must be an integer between 1 and ${app.defaultProcessorsPerNode}.`
       };
 
       schema.properties.archivePath = {

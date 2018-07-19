@@ -3,10 +3,14 @@
   app.requires.push('django.context');
 
   app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
-
+    $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-    DataBrowserService.apiParams.searchState = undefined;
+    DataBrowserService.apiParams.searchState = 'projects.search';
+
+    //DataBrowserService.currentListing = 'new listing thing.'
+
+
 
     // release selected files
     DataBrowserService.deselect(DataBrowserService.state().selected);
@@ -21,6 +25,7 @@
     };
         
 
+    
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
@@ -40,28 +45,32 @@
 
 
       if (toStateParams.filePath) {
-        
         if (toStateParams.filePath === '/') {
           $scope.data.navItems.push({
             label: DataBrowserService.state().project.value.title,
             href: $state.href('projects.view.data', {
               projectId: toStateParams.projectId,
               filePath: '/',
-              projectTitle: DataBrowserService.state().project.value.title
+              projectTitle: DataBrowserService.state().project.value.title,
+              query_string: ''
             })
           });
         } else {
           _.each(toStateParams.filePath.split('/'), function (e, i, l) {
             var filePath = l.slice(0, i + 1).join('/');
-            if (filePath === '') {
+            if (filePath === '' || filePath === '$SEARCH') {
               filePath = '/';
+            }
+            if (e === '$SEARCH') {
+              e = ''
             }
             $scope.data.navItems.push({
               label: e || DataBrowserService.state().project.value.title,
               href: $state.href('projects.view.data', {
                 projectId: toStateParams.projectId,
                 filePath: filePath,
-                projectTitle: DataBrowserService.state().project.value.title
+                projectTitle: DataBrowserService.state().project.value.title,
+                query_string: ''
               })
             });
           });
@@ -75,7 +84,8 @@
           href: $state.href('projects.view.data', {
             projectId: toStateParams.projectId,
             filePath: '/',
-            projectTitle: getTitle(toStateParams, $scope.data.projects)
+            projectTitle: getTitle(toStateParams, $scope.data.projects),
+            query_string: ''
           })
         });
       }
@@ -86,14 +96,16 @@
   app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
     $scope.ui = {};
     $scope.ui.busy = true;
+    $scope.browser = DataBrowserService.state();
+    $scope.browser.error = null;  //clears any potential lingering error messages.
     $scope.data.projects = [];
-
+    var offset = 0;
+    var limit = 100;
+    var page = 0;
 
     // release selected files on load
     DataBrowserService.deselect(DataBrowserService.state().selected);
-
-
-    ProjectService.list().then(function(projects) {
+    ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
     });
@@ -128,6 +140,35 @@
       }
     };
 
+    $scope.scrollToTop = function () {
+      return;
+    };
+
+    $scope.scrollToBottom = function () {
+      offset = 0;
+
+      if ($scope.browser.loadingMore || $scope.browser.reachedEnd) {
+        return;
+      }
+      
+      $scope.browser.busyListingPage = true;
+      $scope.browser.loadingMore = true;
+      page += 1;
+      offset = limit * page;
+
+      ProjectService.list({offset: offset, limit: limit}).then(function (projects) {  
+        //This is making a listing call and adding it to the existing Project list
+        $scope.data.projects = $scope.data.projects.concat(_.map(projects, 
+          function (p) { p.href = $state.href('projects.view', { projectId: p.uuid }); return p; }));  
+        $scope.browser.busyListingPage = false;
+      });
+
+      $scope.browser.loadingMore = false;
+
+      if ($scope.data.projects.length < offset) {
+        $scope.browser.reachedEnd = true;
+      } 
+    };
   }]);
 
   app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', '$http', '$interval', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
@@ -141,7 +182,7 @@
       return resp;
     }
 
-    ProjectService.get({uuid: projectId}).then(function (project) {
+    $scope.browser.projectServicePromise = ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
       DataBrowserService.state().project = project;
       DataBrowserService.state().loadingEntities = true;
@@ -208,6 +249,7 @@
       ProjectService.editProject($scope.data.project)
         .then(function (project) {
           $scope.data.project = project;
+          $state.reload();
         });
     };
 
@@ -255,6 +297,24 @@
       });
     };
 
+    $scope.manageHybridSimulations = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      var hybridSimulationAttr = $scope.data.project.getRelatedAttrName(
+          'designsafe.project.hybrid_simulation'
+      );
+      var hybridSimulations = $scope.data.project[hybridSimulationAttr];
+      if (typeof hybridSimulations === 'undefined'){
+        $scope.data.project[hybridSimulationAttr] = [];
+        hybridSimulations = $scope.data.project[hybridSimulationAttr];
+      }
+      ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations,
+                                        'project': $scope.data.project}).then(function (simulations) {
+        $scope.data.hybridSimulations = hybridSimulations;
+      });
+    };
+
     $scope.dateString = function(s){
       var d = Date(s);
       return d;
@@ -271,13 +331,13 @@
       //DataBrowserService.state().showPreviewListing = true;
       $scope.previewHref = undefined;
       DataBrowserService.showPreview();
-      FileListing.get({'system': $scope.browser.listing.system,
-                       'name': 'projectimage.jpg',
-                       'path': '/projectimage.jpg'}).then(function(list){
-                        list.preview().then(function(data){
-                            $scope.previewHref = data.postit;
-                        });
-                      });
+      // FileListing.get({'system': $scope.browser.listing.system,
+      //                  'name': 'projectimage.jpg',
+      //                  'path': '/projectimage.jpg'}).then(function(list){
+      //                   list.preview().then(function(data){
+      //                       $scope.previewHref = data.postit;
+      //                   });
+      //                 });
     };
 
     function savePublication(){
@@ -886,7 +946,7 @@
   app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$http', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-    DataBrowserService.apiParams.searchState = undefined;
+    DataBrowserService.apiParams.searchState = 'projects.view.data';
     $scope.browser = DataBrowserService.state();
     $scope.browser.listings = {};
     $scope.browser.ui = {};
@@ -897,7 +957,9 @@
       $scope.browser.busy = true;
     }
 
-    DataBrowserService.browse({system: 'project-' + projectId, path: filePath})
+    $scope.browser.projectServicePromise.then(function() {
+    DataBrowserService.browse({system: 'project-' + projectId, path: filePath}, 
+                              {'query_string': $state.params.query_string})
       .then(function () {
         $scope.browser = DataBrowserService.state();
         $scope.browser.busy = true;
@@ -907,51 +969,53 @@
           filePath: $scope.browser.listing.path,
           projectTitle: projectTitle
         });
-        _.each($scope.browser.listing.children, function (child) {
-          child.href = $state.href('projects.view.data', {
-            projectId: projectId,
-            filePath: child.path,
-            projectTitle: projectTitle
+          _.each($scope.browser.listing.children, function (child) {
+            child.href = $state.href('projects.view.data', {
+              projectId: projectId,
+              filePath: child.path,
+              projectTitle: projectTitle
+            });
           });
-        });
-        if (typeof $scope.browser.loadingEntities !== 'undefined' &&
-            !$scope.browser.loadingEntities){
-          var entities = $scope.browser.project.getAllRelatedObjects();
-          _.each($scope.browser.listing.children, function(child){
-            child.setEntities(DataBrowserService.state().project.uuid, entities);
-          });
-        } else {
-          $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
-            if (!newVal){
-              var entities = $scope.browser.project.getAllRelatedObjects();
-              _.each($scope.browser.listing.children, function(child){
-                child.setEntities($scope.browser.project.uuid, entities);
-              });
-              //var _state = DataBrowserService.state();
-              //_state.project.setupAllRels();
-              //$scope.browser = _state;
-            }
-          });
-        }
-      }).then(function(){
-        $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
-          .then(function(resp){
-              if (resp.data.project && resp.data.project.doi){
-                  $scope.browser.project.doi = resp.data.project.doi;
-                  DataBrowserService.state().project.doi = resp.data.project.doi;
-              } 
-              if (resp.data.project && resp.data.status){
-                $scope.browser.project.publicationStatus = resp.data.status;
-                DataBrowserService.state().project.publicationStatus = resp.data.status;
+          if (typeof $scope.browser.loadingEntities !== 'undefined' &&
+              !$scope.browser.loadingEntities){
+            var entities = $scope.browser.project.getAllRelatedObjects();
+            _.each($scope.browser.listing.children, function(child){
+              child.setEntities(DataBrowserService.state().project.uuid, entities);
+            });
+          } else {
+            $scope.$watch('browser.loadingEntities', function(newVal, oldVal){
+              if (!newVal){
+                var entities = $scope.browser.project.getAllRelatedObjects();
+                _.each($scope.browser.listing.children, function(child){
+                  child.setEntities($scope.browser.project.uuid, entities);
+                });
+                //var _state = DataBrowserService.state();
+                //_state.project.setupAllRels();
+                //$scope.browser = _state;
               }
-              $scope.browser.busy = false;
-              $scope.browser.busyListing = false;
-          }, function(){
-              $scope.browser.busy = false;
-              $scope.browser.busyListing = false;
-          });
-      });
-
+            });
+          }
+        }).then(function(){
+          $http.get('/api/projects/publication/' + $scope.browser.project.value.projectId)
+            .then(function(resp){
+                if (resp.data.project && resp.data.project.doi){
+                    $scope.browser.project.doi = resp.data.project.doi;
+                    DataBrowserService.state().project.doi = resp.data.project.doi;
+                } 
+                if (resp.data.project && resp.data.status){
+                  $scope.browser.project.publicationStatus = resp.data.status;
+                  DataBrowserService.state().project.publicationStatus = resp.data.status;
+                }
+                $scope.browser.busy = false;
+                $scope.browser.busyListing = false;
+            }, function(){
+                $scope.browser.busy = false;
+                $scope.browser.busyListing = false;
+            });
+        });
+      
+    })
+    
     var setFilesDetails = function(filePaths){
       filePaths = _.uniq(filePaths);
       var p = $q(function(resolve, reject){
@@ -1155,7 +1219,7 @@
         $scope.browser.publication[attrName] = [];
       }
       $scope.browser.publication[attrName].push(ent);
-      $scope.browser.publication[attrName] = _.uniq($scope.browser.publication[attrName], function(e){return e.uuid});
+      $scope.browser.publication[attrName] = _.uniq($scope.browser.publication[attrName], function(e){return e.uuid;});
     }
 
     function _removeFromLists(ent, evt){
@@ -1393,23 +1457,130 @@
         }
       },
 
-      selectAllSimFiles : function(ent){
-        var listing = [];
-        try {
-            listing = $scope.browser.listings[ent.uuid];
-        } catch(e){
-            _addToSimLists(ent);
-            return;
-        }
-        $scope.browser.publication.filesSelected[ent.uuid] = listing;
+      selectAllHybridSimFiles : function(ent){
+        var listing = {};
+
+        // show inputs selected
+        _.each($scope.browser.project.coordinator_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add inputs
+            _addToSimLists(set);
+          }
+        });
+        // show substructure selected
+        _.each($scope.browser.project.simsubstructure_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+        // show substructure selected
+        _.each($scope.browser.project.expsubstructure_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+        // show outputs selected
+        _.each($scope.browser.project.output_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+
+        // show global_model selected
+        _.each($scope.browser.project.globalmodel_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+
+        // add model
         _addToSimLists(ent);
+        
+        // show model/report/analysis selected
+        if (ent._displayName == "Report" || ent._displayName == "Analysis") {
+          listing[ent.uuid] = $scope.browser.listings[ent.uuid];
+        }
+
+        // if there are already selected files do not deselect them when selecting more
+        if (Object.keys($scope.browser.publication.filesSelected).length === 0) {
+          $scope.browser.publication.filesSelected = listing;
+        } else {
+          _.map(listing, function(i){
+            Object.assign($scope.browser.publication.filesSelected, listing);
+          });
+        }
       },
 
-      selectFileForSimPublication : function(ent, file){
+      selectAllSimFiles : function(ent){
+        var listing = {};
+
+        // show inputs selected
+        _.each($scope.browser.project.input_set, function (set) {
+          if (set.value.modelConfigs.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add inputs
+            _addToSimLists(set);
+          }
+        });
+        // show outputs selected
+        _.each($scope.browser.project.output_set, function (set) {
+          if (set.value.modelConfigs.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+
+        // add model
+        _addToSimLists(ent);
+        
+        // show model/report/analysis selected
+        if (ent._displayName == "Model" || ent._displayName == "Report" || ent._displayName == "Analysis") {
+          listing[ent.uuid] = $scope.browser.listings[ent.uuid];
+        }
+
+        // if there are already selected files do not deselect them when selecting more
+        if (Object.keys($scope.browser.publication.filesSelected).length === 0) {
+          $scope.browser.publication.filesSelected = listing;
+        } else {
+          _.map(listing, function(i){
+            Object.assign($scope.browser.publication.filesSelected, listing);
+          });
+        }
+      },
+
+      selectFileForHybridSimPublication : function(ent, file, sim){
         if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
           $scope.browser.publication.filesSelected[ent.uuid] = [];
         }
-        $scope.browser.publication.filesSelected[ent.uuid].push(file)
+        // include simulation when adding a file associated with a model
+        if (ent._displayName == "Global Model"){
+          _addToSimLists(sim);
+        }
+        // show file as selected
+        $scope.browser.publication.filesSelected[ent.uuid].push(file);
+        _addToSimLists(ent);
+      },
+
+      selectFileForSimPublication : function(ent, file, sim){
+        if (typeof $scope.browser.publication.filesSelected[ent.uuid] === 'undefined'){
+          $scope.browser.publication.filesSelected[ent.uuid] = [];
+        }
+        // include simulation when adding a file associated with a model
+        if (ent._displayName == "Model"){
+          _addToSimLists(sim);
+        }
+        // show file as selected
+        $scope.browser.publication.filesSelected[ent.uuid].push(file);
         _addToSimLists(ent);
       },
 
@@ -1442,9 +1613,52 @@
 
       deselectAllSimFiles : function(ent){
         if ($scope.browser.publication.filesSelected[ent.uuid] !== 'undefined'){
+          _.each($scope.browser.project.input_set, function (set) {
+            if (set.value.modelConfigs.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.output_set, function (set) {
+            if (set.value.modelConfigs.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
           delete $scope.browser.publication.filesSelected[ent.uuid];
         }
-        _removeFromSimLists(ent)
+        _removeFromSimLists(ent);
+      },
+
+      deselectAllHybridSimFiles : function(ent){
+        if ($scope.browser.publication.filesSelected[ent.uuid] !== 'undefined'){
+          _.each($scope.browser.project.coordinator_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.simsubstructure_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.expsubstructure_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.output_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          delete $scope.browser.publication.filesSelected[ent.uuid];
+        }
+        _removeFromSimLists(ent);
       },
 
       deselectAllFiles : function(ent, evt){
@@ -1516,12 +1730,12 @@
         }
       },
 
-      deselectFileForSimPublication : function(ent, file){
-        _.reject($scope.browser.publication.filesSelected[ent.uuid],
-            function(f){ return f.uuid() === file.uuid()});
-        if (!$scope.browser.publication.filesSelected[ent.uuid].length){
-          _removeFromSimLists(ent);
+      deselectFileForSimPublication : function(ent, file, sim){
+        if (ent._displayName == "Model"){
+          _removeFromSimLists(sim);
         }
+        delete $scope.browser.publication.filesSelected[ent.uuid];
+        _removeFromSimLists(ent);
       },
 
       filterExperiments : function(experiments){
@@ -1537,6 +1751,14 @@
           return simulations;
         } else {
           return $scope.browser.publication.simulations;
+        }
+      },
+
+      filterHybridSimulations : function(simulations){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return simulations;
+        } else {
+          return $scope.browser.publication.hybrid_simulations;
         }
       },
 
@@ -1556,6 +1778,17 @@
           return models;
         } else {
           return _.filter($scope.browser.publication.models,
+            function(model){
+              return _.contains(model.associationIds, simulation.uuid);
+            });
+        }
+      },
+
+      filterGlobalModels : function(models, simulation){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return models;
+        } else {
+          return _.filter($scope.browser.publication.global_models,
             function(model){
               return _.contains(model.associationIds, simulation.uuid);
             });
@@ -1596,6 +1829,18 @@
         }
       },
 
+      filterHybridSimAnalysis : function(analysis){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(analysis, function(anl){
+            return !anl.value.hybridSimulations.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.analysiss, function(anl){
+            return !anl.value.hybridSimulations.length;
+          });
+        }
+      },
+
       filterSimReports : function(reports){
         if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
           return _.filter(reports, function(rpt){
@@ -1604,6 +1849,18 @@
         } else {
           return _.filter($scope.browser.publication.reports, function(rpt){
             return !rpt.value.simOutputs.length;
+          });
+        }
+      },
+
+      filterHybridSimReports : function(reports){
+        if(!$scope.browser.publishPipeline || $scope.browser.publishPipeline === 'select'){
+          return _.filter(reports, function(rpt){
+            return !rpt.value.hybridSimulations.length;
+          });
+        } else {
+          return _.filter($scope.browser.publication.reports, function(rpt){
+            return !rpt.value.hybridSimulations.length;
           });
         }
       },
@@ -1649,6 +1906,94 @@
     };
 
     $scope.publicationCtrl = _publicationCtrl;
+  }]);
+
+  app.controller('ProjectSearchCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
+
+    $scope.browser = DataBrowserService.state();
+    $scope.searchState = DataBrowserService.apiParams.searchState;
+
+    if (! $scope.browser.error) {
+      $scope.browser.listing.href = $state.href('myData', {
+        system: $scope.browser.listing.system,
+        filePath: $scope.browser.listing.path
+      });
+      _.each($scope.browser.listing.children, function (child) {
+        child.href = $state.href('projects.view.data', {
+          projectId: child.system.slice(8),
+          filePath: child.path,
+          //projectTitle: projectTitle
+        });
+        child.project_href = $state.href('projects.view', {
+          projectId: child.system.slice(8),
+        });
+      });
+    }
+
+    $scope.data = {
+      user: Django.user
+    };
+
+    $scope.projSearch = true
+
+    $scope.scrollToTop = function(){
+      DataBrowserService.scrollToTop();
+    };
+    $scope.scrollToBottom = function(){
+      DataBrowserService.scrollToBottom();
+    };
+
+    $scope.resolveBreadcrumbHref = function (trailItem) {
+      return $state.href('myData', {systemId: $scope.browser.listing.system, filePath: trailItem.path});
+    };
+
+    $scope.onBrowseProject = function($event, file) {
+      $event.preventDefault();
+      $event.stopPropagation();
+
+      $state.go('projects.view.data', {projectId: file.system.slice(8)})
+    }
+
+    $scope.onBrowseData = function ($event, file) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      if (typeof(file.type) !== 'undefined' && file.type !== 'dir' && file.type !== 'folder') {
+        DataBrowserService.preview(file, $scope.browser.listing);
+      } else {
+        $state.go('projects.view.data', {projectId: file.system.slice(8), filePath: file.path});
+      }
+    };
+
+    $scope.onSelect = function($event, file) {
+      $event.stopPropagation();
+
+      if ($event.ctrlKey || $event.metaKey) {
+        var selectedIndex = $scope.browser.selected.indexOf(file);
+        if (selectedIndex > -1) {
+          DataBrowserService.deselect([file]);
+        } else {
+          DataBrowserService.select([file]);
+        }
+      } else if ($event.shiftKey && $scope.browser.selected.length > 0) {
+        var lastFile = $scope.browser.selected[$scope.browser.selected.length - 1];
+        var lastIndex = $scope.browser.listing.children.indexOf(lastFile);
+        var fileIndex = $scope.browser.listing.children.indexOf(file);
+        var min = Math.min(lastIndex, fileIndex);
+        var max = Math.max(lastIndex, fileIndex);
+        DataBrowserService.select($scope.browser.listing.children.slice(min, max + 1));
+      } else if( typeof file._ui !== 'undefined' &&
+                 file._ui.selected){
+        DataBrowserService.deselect([file]);
+      } else {
+        DataBrowserService.select([file], true);
+      }
+    };
+
+    $scope.onDetail = function($event, file) {
+      $event.stopPropagation();
+      DataBrowserService.preview(file, $scope.browser.listing);
+    };
 
   }]);
+
 })(window, angular);

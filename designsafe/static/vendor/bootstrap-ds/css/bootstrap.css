@@ -2314,6 +2314,13 @@ th {
 .table-bordered {
   border: 1px solid #dddddd;
 }
+.table-meta td:nth-child(1) {
+  width: 40%;
+}
+.table-meta td:nth-child(2),
+.table-meta td:nth-child(3){
+  width: 20%;
+} 
 .table-bordered > thead > tr > th,
 .table-bordered > tbody > tr > th,
 .table-bordered > tfoot > tr > th,

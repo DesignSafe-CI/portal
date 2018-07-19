@@ -35,8 +35,9 @@
                         <a href="#"
                            ng-click="browseTrail($event, $index)">{{dirElem}}</a>
                      </span>
+                     <span ng-if="dirElem!=='' && $first">/</span>
                       <span ng-repeat-end
-                            ng-if="!$last">/</span>
+                            ng-if="!$last && !$first">/</span>
                 </caption>
                 <thead>
                 <th>File name</th>

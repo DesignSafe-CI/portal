@@ -231,69 +231,6 @@ md-grid-tile:active {
     margin-top: 1em;
 }
 
-@font-face {
-font-family: 'designsafe-workspace';
-    src: url('../fonts/WorkSpaceIcons.ttf') format('truetype');        
-    font-weight: normal;
-    font-style: normal;
-}
-
-.icon-letter {
-    font-family: futura-pt, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 6vw;
-    line-height: 1.2;
-}
-
-[class^="icon-"]:before,
-[class*=" icon-"]:before {
-    font-family: 'designsafe-workspace';
-    font-style: normal;
-    font-size: 5vw;
-    speak: none;
-    font-weight: normal;
-    -webkit-font-smoothing: antialiased;
-            font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-}
-
-.icon-compress:before {
-    content: "\e909";
-}
-.icon-extract:before {
-    content: "\e90a";
-}
-.icon-matlab:before {
-    content: "\e90b";
-}
-.icon-paraview:before {
-    content: "\e903";
-}
-.icon-hazmapper:before {
-    content: "\e904";
-}
-.icon-jupyter:before {
-    content: "\e905";
-}
-.icon-adcirc:before {
-    content: "\e906";
-    font-size: 4vw;
-}
-.icon-qgis:before {
-    content: "\e907";
-}
-i[class^="icon-ls"][class$="dyna"]:before, i[class^="icon-ls-pre/post"]:before {
-    content: "\e908";
-}
-.icon-visit:before {
-    content: "\e902";
-}
-.icon-openfoam:before {
-    content: "\e900";
-}
-.icon-opensees:before {
-    content: "\e901";
-}
-
 @media (max-width: 992px) {
     .app-version {
         display: none;

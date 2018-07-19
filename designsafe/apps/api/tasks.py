@@ -14,6 +14,8 @@ from requests.exceptions import HTTPError
 
 from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.projects.models.elasticsearch import IndexedProject
+from elasticsearch_dsl.query import Q
 
 logger = logging.getLogger(__name__)
 
@@ -743,8 +745,72 @@ def set_project_id(self, project_uuid):
     project.save(service)
     logger.debug('updated project id=%s', project.uuid)
     id_meta['value']['id'] = project_id
-    service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
+    new_metadata = service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
     logger.debug('updated id record=%s', id_meta['uuid'])
+
+    index_or_update_project.apply_async(args=[project.uuid], queue='api')
+
+@shared_task(bind=True)
+def index_or_update_project(self, uuid):
+    """
+    Takes a project UUID and either creates a new document in the 
+    des-projects index or updates the document if one already exists for that
+    project.
+    """
+    from designsafe.apps.api.projects.models import Project
+
+    client = get_service_account_client()
+    project_model = Project(client)
+    project = project_model.search({'uuid': uuid}, client)[0]
+    project_meta = project.to_dict()
+
+    to_index = {key: value for key, value in project_meta.iteritems() if key != '_links'}
+    to_index['value'] = {key: value for key, value in project_meta['value'].iteritems() if key != 'teamMember'}
+
+    project_search = IndexedProject.search().filter(
+        Q({'term': 
+            {'uuid._exact': uuid}
+        })
+    )
+    res = project_search.execute()
+
+    if res.hits.total == 0:
+        # Create an ES record for the new metadata.
+        # project_info_args = {key:value for key,value in project_info.iteritems() if key != '_links'}
+        project_ES = IndexedProject(**to_index)
+        project_ES.save()
+    elif res.hits.total == 1:
+        # Update the record.
+        doc = res[0]
+        doc.update(**to_index)
+    else:
+        # If we're here we've somehow indexed the same project multiple times. 
+        # Delete all records and replace with the metadata passed to the task.
+        for doc in res:
+            doc.delete()
+        project_ES = IndexedProject(**to_index) 
+        project_ES.save()
+
+@shared_task(bind=True)
+def reindex_projects(self):
+    """
+    Performs a listing of all projects using the service account client, then 
+    indexes each project using the index_or_update_project task.
+    """
+    client = get_service_account_client()
+    query = {'name': 'designsafe.project'}
+
+    in_loop = True
+    offset = 0
+    while in_loop:
+        listing = client.meta.listMetadata(q=json.dumps(query), offset=offset, limit=100)
+        offset += 100
+
+        if len(listing) == 0:
+            in_loop = False
+        else:
+            for project in listing:
+                index_or_update_project.apply_async(args=[project.uuid], queue='api')
 
 @shared_task(bind=True, max_retries=5)
 def copy_publication_files_to_corral(self, project_id):

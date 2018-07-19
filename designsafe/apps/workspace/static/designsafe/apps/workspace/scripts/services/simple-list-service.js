@@ -1,6 +1,6 @@
 (function(window, angular, $, _) {
   "use strict";
-  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', function ($http, $q, djangoUrl, appCategories) {
+  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', 'appIcons', function ($http, $q, djangoUrl, appCategories, appIcons) {
 
     var SimpleList = function(){
       this.selected = null;
@@ -22,9 +22,6 @@
             self.lists[tab] = [];
           });
 
-          // Current list of apps with an Icon, maybe move this to agave metadata record
-          const icons = ['compress', 'extract', 'matlab', 'paraview', 'hazmapper', 'jupyter', 'adcirc', 'qgis', 'ls-dyna', 'ls-pre/post', 'visit', 'openfoam', 'opensees'];
-
           angular.forEach(response.data, function(appMeta){
             self.map[appMeta.value.definition.id] = appMeta;
             if (appMeta.value.definition.available) {
@@ -32,18 +29,30 @@
               if (!appMeta.value.definition.label) {
                 appMeta.value.definition.label = appMeta.value.definition.id;
               }
-              // Apply app icon if available, and apply label for ordering
+              // Apply label for ordering
               appMeta.value.definition.orderBy = appMeta.value.definition.label;
+
+              // Parse app icon from tags for agave apps, or from metadata field for html apps
               appMeta.value.definition.icon = null;
-              icons.some(function (icon) {
-                if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
-                  appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
-                  return true;
-                }
-              });
+              if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+                appMeta.value.definition.icon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+              } else if (appMeta.value.definition.hasOwnProperty('appIcon')) {
+                appMeta.value.definition.icon = appMeta.value.definition.appIcon;
+              } else (
+                appIcons.some(function (icon) {
+                  if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
+                    appMeta.value.definition.icon = appMeta.value.definition.orderBy = icon;
+                    return true;
+                  }
+                })
+              );
+              if (appMeta.value.definition.icon == '') {
+                appMeta.value.definition.icon = null;
+              }
+              
               if (appMeta.value.definition.isPublic) {
                 // If App has no category, place in Simulation tab
-                // Check if category exists either as a metadata field, or in a tag. Moving forward, all categories will be moved to tags
+                // Check if category exists either as a metadata field, or in a tag
                 var appCategory = 'Simulation';
                 if (appMeta.value.definition.hasOwnProperty('appCategory')) {
                   appCategory = appMeta.value.definition.appCategory;

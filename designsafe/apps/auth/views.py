@@ -6,11 +6,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import AgaveOAuthToken, AgaveServiceStatus
+from agavepy.agave import Agave
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
 import logging
 import os
 import requests
 import time
+from requests import HTTPError
+
 
 
 logger = logging.getLogger(__name__)
@@ -104,7 +107,7 @@ def agave_oauth_callback(request):
     http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
     """
     state = request.GET.get('state')
-
+    
     if request.session['auth_state'] != state:
         msg = (
             'OAuth Authorization State mismatch!? auth_state=%s '
@@ -146,6 +149,7 @@ def agave_oauth_callback(request):
         token_data['created'] = int(time.time())
         # log user in
         user = authenticate(backend='agave', token=token_data['access_token'])
+        
         if user:
             try:
                 token = user.agave_oauth
@@ -156,23 +160,20 @@ def agave_oauth_callback(request):
             token.save()
 
             login(request, user)
-            if user.last_login is not None:
-                msg_tmpl = 'Login successful. Welcome back, %s %s!'
-            else:
-                msg_tmpl = 'Login successful. Welcome to DesignSafe, %s %s!'
-            messages.success(
-                request,
-                msg_tmpl % (
-                    user.first_name,
-                    user.last_name
-                )
-            )
-            check_or_create_agave_home_dir.apply_async(
-                args=(
-                    user.username,
-                ),
-                queue='files'
-            )
+
+            ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                       token=settings.AGAVE_SUPER_TOKEN)
+            try:
+                ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                              filePath=user.username)
+            except HTTPError as e:
+                if e.response.status_code == 404:
+                    body = {'action': 'mkdir', 'path': user.username}
+                    ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
+                                filePath='',
+                                body=body)
+                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')   
+
         else:
             messages.error(
                 request,
@@ -184,13 +185,11 @@ def agave_oauth_callback(request):
         if 'error' in request.GET:
             error = request.GET['error']
             logger.warning('Authorization failed: %s' % error)
-
         messages.error(
             request, 'Authentication failed! Did you forget your password? '
                      '<a href="%s">Click here</a> to reset your password.' %
                      reverse('designsafe_accounts:password_reset'))
         return HttpResponseRedirect(reverse('designsafe_auth:login'))
-
     if 'next' in request.session:
         next_uri = request.session.pop('next')
         return HttpResponseRedirect(next_uri)

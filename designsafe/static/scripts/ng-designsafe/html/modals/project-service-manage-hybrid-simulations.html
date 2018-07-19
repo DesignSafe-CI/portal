@@ -1,0 +1,606 @@
+<div class="modal-header" style="border:none; text-align:center;">
+    <h4 class="modal-title" style="border:nonel">
+        Manage Hybrid Simulations
+    </h4>
+    <a href="https://www.youtube.com/watch?v=74z5jdVvNfg&index=5&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-cricle"></i> Learn More
+    </a>
+    <p class="alert alert-info">
+        To delete a Simulation, you must first remove all entities related to it. After this, removing an simulation is safe.
+    </p>
+</div>
+<div class="modal-body">
+    <div ng-if="data.busy">
+        <p class="lead">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading simulations data...
+        </p>
+    </div>
+    <div ng-if="! data.busy && data.error">
+        <p class="alert alert-danger lead">
+            {{ data.error }}
+        </p>
+    </div>
+    <div ng-if="! (data.busy || data.error)" class='experiments-listing'>
+        <div class='existing-experiments-listing'>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>
+                Simulation Title</th>
+                <th>Simulation Type</th>
+                <th style="width:15px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat-start="simulation in data.project.hybridsimulation_set"
+                  ng-class="{'experiment-deleted': ui.simulations[simulation.uuid].deleted}">
+                <td>{{simulation.value.title}}</td>
+                <td ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</td>
+                <td ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</td>
+                <td><button class="btn btn-sm btn-link"
+                            ng-click="toggleDeleteSimulation(simulation.uuid)"
+                            alt="Mark simulation for deletion">
+                    <i class="fa text-danger" ng-class="{'fa-mail-reply': ui.simulations[simulations.uuid].deleted, 'fa-times-circle': !ui.simulations[simulation.uuid].deleted}"></i>
+                    <span class="sr-only">Delete</span>
+                    <button class="btn btn-sm btn-link"
+                            ng-click="editSim(simulation)">
+                            Edit <i class="fa fa-pencil-square-o"></i>
+                    </button>
+              </tr>
+              <tr ng-repeat-end style="border-bottom:2px solid black;"
+                  ng-class="{'experiment-deleted': ui.simulations[simulations.uuid].deleted}">
+                <td colspan="5">{{simulation.value.description}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-sm btn-danger"
+                  ng-click="removeSimulations()"
+                  alt="Remove simulations marked as deleted"
+                  ng-disabled="form.deleteSimulations.length==0">
+                  Remove simulations
+          </button>
+          <div class="experiment-add-form well well-sm"
+                ng-if="ui.showEditSimulationForm">
+          <form name='editForm'>
+                <button class="btn btn-sm btn-link pull-right"
+                        ng-click="ui.showEditSimulationForm = false"
+                        title="Close">
+                        <i class="fa fa-times"></i>
+                </button>
+                <p>Edit Simulation(s):</p>
+                <div class="form-group">
+                  <label for="id-sim-title" style="display:block">Title</label>
+                  <input class="form-control" name="exp-title" id="id-exp-title"
+                       ng-model="editSimForm.title" required/>
+                </div>
+                <div class="form-group">
+                  <label for="id-sim-type" style="display:block">Simulation Type</label>
+                  <input class="form-control" disabled ng-model="editSimForm.simulationType" id="id-exp-facility"/>
+                </div>
+                <div class="form-group" ng-if="editSimForm.simulationType == 'Other'">
+                  <input class="form-control" ng-model="editSimForm.simulationTypeOther" id="id-exp-facility"/>
+                </div>
+                <div class="form-group">
+                  <label for="id-sim-desc">Description</label> 
+                  <textarea style="width:100%; height:3em;" placeholder="Description"
+                            ng-model="editSimForm.description" id="id-sim-desc" required>
+                </textarea>
+                </div>
+              <div class="alert alert-danger" ng-show="editForm.$invalid"><p class="lead" style="text-align:center; font-size:16px">You have missing metadata fields.</p></div>
+                <button class="btn btn-info btn-sm"
+                        ng-click="saveEditSimulation()"
+                      ng-disabled="editForm.$invalid"
+                      ng-hide="ui.savingEditSim">
+                    <span ng-if="!ui.savingEditSim">
+                    <i class="fa fa-check"></i> Save Simulation
+                    </span>
+              </button>
+                    <span style="padding: 9px;"
+                          class="bg-info text-info"
+                          ng-if="ui.savingEditSim">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </span>
+            </div>
+        </form>
+
+          </div>
+        </div>
+        <button class="btn btn-info"
+                ng-click="ui.showAddSimulationForm = true;"
+                ng-if="!ui.showAddSimulationForm">
+                <i class="fa fa-plus"></i> Add Simulation
+        </button>
+      <form name='addForm'>
+            <div class="well well-sm"
+                 ng-if="ui.showAddSimulationForm">
+                 <button class="btn btn-link pull-right"
+                         ng-click="ui.showAddSimulationForm = false;"
+                         title="Close">
+                 <i class="fa fa-times"></i>
+                 </button>
+                <p>Add Hybrid Simulation:</p>
+                <!--<div class="form-group" ng-repeat="add in form.addCoPis">-->
+              <div class="form-group required">
+                <label for="add-sim-title">Hybrid Simulation Title </label>
+                  <input type="text" class="form-control" id="add-sim-title"
+                       ng-model="form.addSimulation[0].title" required/>
+                </div>
+              <div class="form-group required">
+                <label for="add-sim-type">Hybrid Simulation Type </label>
+                  <select ng-options="type.name as type.label for type in ui.simulationTypes"
+                          class="form-control"
+                          ng-model="form.addSimulation[0].simulationType"
+                        id="add-sim-type"
+                        required>
+                  </select>
+                  <input type="text" class="form-control" id="add-exp-type-other"
+                        placeholder="Custom Simulation Type"
+                        ng-model="form.addSimulation[0].simulationTypeOther"
+                      ng-if="form.addSimulation[0].simulationType == 'Other'"
+                      required/>
+                </div>
+                <div class="form-group required">
+                  <label for="add-sim-desc">Description</label>
+                  <textarea style="height:3em;"
+                            class="form-control"
+                            id="add-sim-desc"
+                            ng-model="form.addSimulation[0].description" required></textarea>
+                </div>
+              <div class="alert alert-danger" ng-show="addForm.$invalid"><p class="lead" style="text-align:center; font-size:16px">Please fill out all required fields before saving.</p></div>
+              <button class="btn btn-info btn-sm" ng-click="saveSimulation($event)" ng-disabled="addForm.$invalid">
+                    <i class="fa fa-check"></i> Save Simulation
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="data-model-tree" style="border-top:1px solid lightgray;">
+     <div style="text-align:center;">
+     <h4 style="text-align:center;"> Relate Categories to Simulations </h4>
+    <a href="https://www.youtube.com/watch?v=O3KDlgbz9jA&index=6&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+      <i class="fa fa-question-circle"></i> Learn More
+    </a>
+     </div>
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="simulation in data.project.hybridsimulation_set | orderBy: 'value.title'"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>
+            <div style="display:inline-block;">
+              <div>
+                <button class="btn btn-sm btn-link"
+                        style="margin-left:5px; padding:0; display:inline-block;"
+                        ng-click="ui.showAddSimReport[simulation.uuid] = true"
+                        ng-if="!ui.showAddSimReport[simulation.uuid] &&
+                               !data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length">
+                        <i class="fa fa-plus-square"></i> Add Simulation Report
+                </button>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="ui.showAddSimReport[simulation.uuid] && 
+                               !data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length">
+                  <select
+                          ng-options="report as report.value.title for report in data.project.report_set"
+                          ng-model="form.updateSimulations[simulation.uuid].relProject">
+                          <option value="">Add Simulation Report</option>
+                  </select>
+                  <button class="btn btn-sm btn-link"
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relProject,
+                                              {simulations: simulation.uuid});
+                                    ui.showAddSimReport[simulation.uuid]=false"
+                          title="Add Report">
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                  </button>
+                </div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('report_set', simulation.uuid).length">
+                    <span class="label tag-black">Simulation Report</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('report_set', simulation.uuid, 'hybridSimulations')[0].value.title}}
+                    </span>
+                    <button class="btn btn-xsm btn-link"
+                            style="display:inline-block;"
+                            ng-if="data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length"
+                            ng-click="delRelEntity(data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations')[0],
+                                                  {simulations: simulation.uuid})">
+                      <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                      <span class="sr-only">Delete</span>
+                    </button>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-link"
+                        style="margin-left:5px; padding:0; display:inline-block;"
+                        ng-click="ui.showAddSimAnalysis[simulation.uuid] = true"
+                        ng-if="!ui.showAddSimAnalysis[simulation.uuid] &&
+                               !data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length">
+                        <i class="fa fa-plus-square"></i> Add Simulation Analysis
+                </button>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="ui.showAddSimAnalysis[simulation.uuid] && 
+                               !data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length">
+                  <select
+                          ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
+                          ng-model="form.updateSimulations[simulation.uuid].relSimAnalysis">
+                          <option value="">Add Simulation Analysis</option>
+                  </select>
+                  <button class="btn btn-sm btn-link"
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relSimAnalysis,
+                                              {hybridSimulations: simulation.uuid});
+                                    ui.showAddSimAnalysis[simulation.uuid]=false"
+                          title="Add Report">
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                  </button>
+                </div>
+                <div style="margin-left:5px; display:inline-block;"
+                     ng-if="data.project.getRelated('analysis_set', simulation.uuid).length">
+                    <span class="label tag-black">Simulation Analysis</span>
+                    <span class="tab-title">
+                    {{data.project.getRelated('analysis_set', simulation.uuid, 'hybridSimulations')[0].value.title}}
+                    </span>
+                    <button class="btn btn-xsm btn-link"
+                            style="display:inline-block;"
+                            ng-if="data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length"
+                            ng-click="delRelEntity(data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations')[0],
+                                                  {simulations: simulation.uuid})">
+                      <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                      <span class="sr-only">Delete</span>
+                    </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul class="model-config-ul">
+            <li class="tree-container"
+                ng-repeat="globalModel in data.project.getRelated('globalmodel_set', simulation.uuid) | orderBy: 'value.title'">
+              <div class="tree-el">
+              <span class="label tag-blue">Global Model</span>
+              <span class="tag-title">{{globalModel.value.title}}</span>
+              <button class="btn btn-xsm btn-link"
+                      ng-if="data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid] ).length === 0"
+                      ng-click="delRelEntity(globalModel,{hybridSimulations: simulation.uuid})">
+                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                <span class="sr-only">Delete</span>
+              </button>
+              </div>
+              <ul class="sensor-list-ul">
+                <li class="tree-container"
+                    ng-repeat="coordinator in data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid]) | orderBy: 'value.title'">
+                  <div class="tree-el">  
+                  <span class="label tag-green">Master Simulator Coordinator</span>
+                  <span class="tag-title">{{coordinator.value.title}}</span>
+                  <button class="btn btn-xsm btn-link"
+                          ng-if="data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]).length === 0 && 
+                          data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]).length === 0 && 
+                          data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]).length === 0"
+                          ng-click="delRelEntity(coordinator, {hybridSimulations: simulation.uuid,
+                                                            globalModels: globalModel.uuid})">
+                    <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                    <span class="sr-only">Delete</span>
+                  </button>
+                  </div>
+                  <ul class="hybrid-sim-coord-output">
+                    <li
+                        ng-repeat="output in data.project.getRelated('coordinatoroutput_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                        <div class="tree-el">
+                            <span class="label tag-red tree-el">Coordinator Output</span>
+                            <span class="tag-title">{{output.value.title}}</span>
+                            <button class="btn btn-xsm btn-link"
+                                    ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
+                                                                    globalModels: globalModel.uuid,
+                                                                    coordinators: coordinator.uuid})">
+                                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                <span class="sr-only">Delete</span>
+                            </button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="tree-el">
+                            <select ng-options="entity as entity.value.title for entity in data.project.coordinatoroutput_set"
+                                    ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimOutput">
+                                <option value="">Add Coordinator Output</option>
+                            </select>
+                            <button class="btn btn-sm btn-link"
+                                    ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimOutput,
+                                    {project:data.project.uuid,
+                                     hybridSimulations: simulation.uuid,
+                                     globalModels: globalModel.uuid,
+                                     coordinators: coordinator.uuid})"
+                                    title="Add Coordinator Output">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                            </button>
+                        </div>
+                    </li>
+                  </ul>
+                  <ul>
+                      <li 
+                           ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
+                          <div class="tree-el">
+                              <span class="label tag-yellow tree-el">Numerical (Simulation) Substructure</span>
+                              <span class="tag-title">{{substructure.value.title}}</span>
+                              <button class="btn btn-xsm btn-link"
+                                      ng-click="delRelEntity(substructure, {hybridSimulations: simulation.uuid,
+                                                                            globalModels: globalModel.uuid,
+                                                                            coordinators: coordinator.uuid})">
+                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                  <span class="sr-only">Delete</span>
+                              </button>
+                          </div>
+                  <ul class="hybrid-sim-coord-output">
+                    <li
+                        ng-repeat="output in data.project.getRelated('simoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        <div class="tree-el">
+                            <span class="label tag-red tree-el">Simulation Output</span>
+                            <span class="tag-title">{{output.value.title}}</span>
+                            <button class="btn btn-xsm btn-link"
+                                    ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
+                                                                    globalModels: globalModel.uuid,
+                                                                    simSubstructures: substructure.uuid})">
+                                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                <span class="sr-only">Delete</span>
+                            </button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="tree-el">
+                            <select ng-options="entity as entity.value.title for entity in data.project.simoutput_set"
+                                    ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput">
+                                <option value="">Add Simulation Output</option>
+                            </select>
+                            <button class="btn btn-sm btn-link"
+                                    ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput,
+                                    {project:data.project.uuid,
+                                     hybridSimulations: simulation.uuid,
+                                     globalModels: globalModel.uuid,
+                                     simSubstructures: substructure.uuid})"
+                                    title="Add Coordinator Output">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                            </button>
+                        </div>
+                    </li>
+                  </ul>
+
+                      </li>
+                      <li>
+                          <div class="tree-el">
+                              <select ng-options="entity as entity.value.title for entity in data.project.simsubstructure_set"
+                                      ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure">
+                                  <option value="">Add Simulation Substructure</option>
+                              </select>
+                              <button class="btn btn-sm btn-link"
+                                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure,
+                                      {project:data.project.uuid,
+                                      hybridSimulations: simulation.uuid,
+                                      globalModels: globalModel.uuid,
+                                      coordinators: coordinator.uuid})"
+                                      title="Add Simulation Substructure">
+                                  <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                              </button>
+                          </div>
+                      </li>
+                  </ul>
+                  <ul>
+                      <li 
+                           ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
+                          <div class="tree-el">
+                              <span class="label tag-purple tree-el">Physical (Experimental) Substructure</span>
+                              <span class="tag-title">{{substructure.value.title}}</span>
+                              <button class="btn btn-xsm btn-link"
+                                      ng-click="delRelEntity(substructure, {hybridSimulations: simulation.uuid,
+                                                                            globalModels: globalModel.uuid,
+                                                                            coordinators: coordinator.uuid})">
+                                  <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                  <span class="sr-only">Delete</span>
+                              </button>
+                          </div>
+                  <ul class="hybrid-sim-exp-output">
+                    <li
+                        ng-repeat="output in data.project.getRelated('expoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                        <div class="tree-el">
+                            <span class="label tag-red tree-el">Event Output</span>
+                            <span class="tag-title">{{output.value.title}}</span>
+                            <button class="btn btn-xsm btn-link"
+                                    ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
+                                                                    globalModels: globalModel.uuid,
+                                                                    expSubstructures: substructure.uuid})">
+                                <i class="fa fa-times-circle fa-2" style="color:black;"></i>
+                                <span class="sr-only">Delete</span>
+                            </button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="tree-el">
+                            <select ng-options="entity as entity.value.title for entity in data.project.expoutput_set"
+                                    ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput">
+                                <option value="">Add Event Output</option>
+                            </select>
+                            <button class="btn btn-sm btn-link"
+                                    ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput,
+                                    {project:data.project.uuid,
+                                     hybridSimulations: simulation.uuid,
+                                     globalModels: globalModel.uuid,
+                                     expSubstructures: substructure.uuid})"
+                                    title="Add Coordinator Output">
+                                <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                            </button>
+                        </div>
+                    </li>
+                  </ul>
+                      </li>
+                      <li>
+                          <div class="tree-el">
+                              <select ng-options="entity as entity.value.title for entity in data.project.expsubstructure_set"
+                                      ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relExpSubstructure">
+                                  <option value="">Add Experimental Substructure</option>
+                              </select>
+                              <button class="btn btn-sm btn-link"
+                                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relExpSubstructure,
+                                      {project:data.project.uuid,
+                                      hybridSimulations: simulation.uuid,
+                                      globalModels: globalModel.uuid,
+                                      coordinators: coordinator.uuid})"
+                                      title="Add Simulation Substructure">
+                                  <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
+                              </button>
+                          </div>
+                      </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="tree-el"
+                       ng-if="data.project.getRelated('coordinator_set', [simulation.uuid, globalModel.uuid]).length == 0">
+                  <select
+                          ng-options="entity as entity.value.title for entity in data.project.coordinator_set"
+                          ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator">
+                          <option value="">Add Coordinator</option>
+                  </select>
+                  <button class="btn btn-sm btn-link"
+                          ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator,
+                                              {project:data.project.uuid,
+                                               hybridSimulations: simulation.uuid,
+                                               globalModels: globalModel.uuid})"
+                          title="Add Coordinator">
+                    <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+                  </button>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="tree-el"
+                   ng-if="data.project.getRelated('globalmodel_set', simulation.uuid).length == 0">
+              <select 
+                      ng-options="entity as entity.value.title for entity in data.project.globalmodel_set"
+                      ng-model="form.updateSimulations[simulation.uuid].relGlobalModel">
+                      <option value="">Add Global Model</option>
+              </select>
+              <button class="btn btn-sm btn-link"
+                      ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relGlobalModel,
+                                          {project: data.project.uuid,
+                                           hybridSimulations: simulation.uuid})"
+                      title="Add Global Model">
+                <i class="fa fa-plus-circle fa-2"></i><span> Save</span>
+              </button>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="experiments-ul">
+        <li class="tree-container"
+            ng-repeat="analysis in filterProjectOnlyRelatedAnalysis(data.project.analysis_set) | orderBy: analysis.value.title"
+            style="border:none;">
+          <div class="tree-el">  
+          <span class="label tag-light-blue">Analysis </span>
+          <span class="ul-title">{{analysis.value.title}}</span>
+          <button class="btn btn-xsm btn-link"
+                  ng-click="removeAnalysis(analysis.uuid)">
+            <i class="fa fa-times-circle" style="color:black;"></i>
+            <span class="sr-only">Delete</span>
+          </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="add-extra-category" style="padding:10px;">
+      <button class="btn btn-info"
+              ng-click="ui.showExtraCat=true"
+              ng-if="!ui.showExtraCat">
+        <i class="fa fa-plus"></i> Add Category
+      </button> 
+      <div class="add-extra-category-content well well-sm"
+           style="padding-bottom:10px; margin-bottom:10px;" ng-if="ui.showExtraCat">
+      <form>
+          <div style="display:block; width:100%"
+               ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
+              <p>
+              <i class="fa fa-star"></i> Saving an <strong>Output</strong> category creates 3 syncronized categories: <strong>Coordinator Output</strong>, <strong>Simulation Output</strong>, and <strong>Event Output</strong>
+              </p>
+          </div>
+        <div style="display:inline-block; width:30%">
+          <label for="id-tag-type" style="display:block">Type</label>
+          <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
+               ng-model="data.form.projectTagToAdd.name">
+            <yamz-term term-id="{{item.yamzId}}">
+              <i class="fa fa-question-circle"></i>
+            </yamz-term><span>{{item.label}}</span>
+          </div>
+        </div>
+        <div style="display:inline-block; width:45%;">
+          <label for="id-tag-title" style="display:block">Title</label>
+          <input class="form-control" style="width:90%; display:inline-block;"
+                 name="tag-title" id="id-tag-title"
+                 ng-model="data.form.projectTagToAdd.title"/>
+        </div>
+        <!-- Extra form fields for categories start -->
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.coordinator' ||
+                    data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.sim_substructure'">
+          <div style="display:inline-block; width:30%">
+            <label for="id-app-ver" style="display:block">Application & Version</label>
+            <input type="text" class="form-control" style="width:90%; display:inline-block;" 
+                   name="id-app-ver" id="id-app-ver"
+                   ng-model="data.form.projectTagToAdd.applicationVersion"/>
+         </div>
+
+        </div>
+        <div class="extra-form-inputs" ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Coordinator Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.coordinatorDesc">
+                </textarea>
+            </div>
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Simulation Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.simulationDesc">
+                </textarea>
+            </div>
+            <div style="display: inline-block; width:100%">
+                <label for="id-sim-desc" style="display:block">Event Description</label>
+                <textarea style="width:100%" placeholder="Description"
+                          ng-model="data.form.projectTagToAdd.eventDesc">
+                </textarea>
+            </div>
+        </div>
+        <!-- Extra form fields for categories END -->
+        <div style="display:inline-block; width:90%; padding-top:5px;"
+             ng-if="data.form.projectTagToAdd.name !== 'designsafe.project.hybrid_simulation.output'">
+          <textarea style="width:100%;" placeholder="Description"
+        ng-model="data.form.projectTagToAdd.description">
+        </textarea>
+        </div>
+        <div style="width:100%; height:20px">
+          <button class="btn btn-sm btn-info"
+                  ng-click="addProjectTag()"
+                  ng-disabled="ui.addingTag">
+                <i class="fa fa-check"></i>
+                    Save Category
+
+        <span style="display:block;padding: 9px;"
+              class="bg-info text-info"
+              ng-if="ui.addingTag">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </span>
+          </button>
+        </div>
+          <div class="alert alert-danger" ng-if="ui.error">
+            {{data.error}}
+          </div>
+      </form>
+      </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-default" type="button" ng-click="cancel()">Close</button>
+        <!--
+        <button ng-disabled="data.busy || data.error" class="btn btn-primary"
+                type="button" ng-click="saveExperiments($event)">
+            Save
+        </button>
+        -->
+    </div>
+</div>

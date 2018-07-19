@@ -37,6 +37,13 @@
             to another execution system such as Stampede2, or submit a ticket for assistance.
         </p>
     </div>
+    <div class="lead alert alert-warning" ng-if="data.systemDown">
+        <h2>Application Unavailable</h2>
+        <p>
+            This application's execution system ({{data.app.executionSystem}}) is not currently accepting requests. Please try again later, 
+            or submit a ticket for assistance.
+        </p>
+    </div>
     <div class="messages">
         <div ng-repeat="message in data.messages" class="alert alert-{{message.type}}">
             <h4 ng-if="message.header" ng-bind-html="message.header"></h4>
@@ -56,6 +63,11 @@
           sf-model="form.model"
           sf-options="{ supressPropertyTitles: true }"
           ng-submit="!data.submitting && onSubmit(appForm)"></form>
+    
+    <!-- error message for when form is invalid -->
+    <div ng-if="data.formValid === false">
+        Please enter a value for all required fields, shown in red above.
+    </div>
 
     <div ng-if="data.submitting">
         <span class="label label-info">
