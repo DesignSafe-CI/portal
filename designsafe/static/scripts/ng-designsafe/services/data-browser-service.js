@@ -2396,7 +2396,7 @@
     }
 
 
-    var showCitation = function (ent) {
+    var showCitation = function (ent, pub) {
       $uibModal.open({
         templateUrl: '/static/scripts/data-depot/templates/view-citations.html',
         controller: ['$sce', '$window', '$uibModalInstance', function ($sce, $window, $uibModalInstance) {
@@ -2409,6 +2409,12 @@
           $ctrl.ui.styles = ['BibTeX', 'Endnote'];
           var authors = '';
           var ieeeAuthors = '';
+          var citationDate = '';
+          if (typeof pub === 'undefined'){
+            citationDate = ent.created.split('-')[0];
+          } else {
+            citationDate = pub.created.split('-')[0];
+          }
 
           var neesCitation = function (prj) {
             $http.get('/api/projects/publication/' + prj[0].meta.projectId)
@@ -2453,7 +2459,7 @@
                     ' author = {' + authors + '} \n' +
                     ' title = {' + prj.value.title + '} \n' +
                     ' publisher = {DesignSafe-CI} \n' +
-                    ' year = {2017} \n' +
+                    ' year = {' + citationDate + '} \n' +
                     ' note = {' + prj.value.description + '} \n' +
                     '}';
                 } else if ($ctrl.ui.style === 'Endnote') {
@@ -2462,7 +2468,7 @@
                     '%A ' + authors + '\n' +
                     '%T ' + prj.value.title + '\n' +
                     '%I DesignSafe-CI\n' +
-                    '%D 2017\n';
+                    '%D ' + citationDate + '\n';
                 }
               };
               $ctrl.close = function () {
@@ -2481,7 +2487,7 @@
               };
     
               // display everything...
-              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
+              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
               $ctrl.getCitation();
             });
           };
