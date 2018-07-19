@@ -100,22 +100,7 @@ class FileManager(object):
         return res, search
 
     @staticmethod
-    def mimetype_lookup(file_object, debug_mode=True):
-        """
-        Obtain a file's mimetype given an Agave response file object.
-
-        When developing locally, (DEBUG==True) we can't assume that Corral is 
-        mounted so w have to download the file to memory in order to pass its 
-        bytecode to python-magic. In staging/prod where Corral is mounted, we
-        build up the absolute path of the file and pass that to python-magic to
-        get the mimetype.
-
-        :param agave.py.agve.AttrDict file_object: Agave file object to look up.
-        :param bool debug_mode: True if Debug mode is active; False otherwise.
-
-        :return string mimeType: The mimetype to index with Elasticsearch.
-
-        """
+    def mimetype_lookup(file_object, debug_mode):
         if debug_mode == True:
             # In local dev, corral isn't mounted so we have to download the file to get its mimetype.
             import requests
