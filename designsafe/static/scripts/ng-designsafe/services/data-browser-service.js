@@ -2540,7 +2540,7 @@
                   ' author = {' + authors + '} \n' +
                   ' title = {' + ent.value.title + '} \n' +
                   ' publisher = {DesignSafe-CI} \n' +
-                  ' year = {2017} \n' +
+                  ' year = {' + citationDate + '} \n' +
                   ' note = {' + ent.value.description + '} \n' +
                   '}';
               } else if ($ctrl.ui.style === 'Endnote') {
@@ -2549,7 +2549,7 @@
                   '%A ' + authors + '\n' +
                   '%T ' + ent.value.title + '\n' +
                   '%I DesignSafe-CI\n' +
-                  '%D 2017\n';
+                  '%D ' + citationDate + '\n';
               }
             };
             $ctrl.close = function () {
@@ -2568,7 +2568,7 @@
             };
 
             // display everything...
-            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (2017), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
+            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + dateCitation + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
             $ctrl.getCitation();
           }
 
