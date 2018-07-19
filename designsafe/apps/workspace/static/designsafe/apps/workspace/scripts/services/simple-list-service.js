@@ -64,7 +64,6 @@
                 } else if (appCategory == 'Data Collections') {
                   self.lists['Partner Data Apps'].push(appMeta);
                 } else {
-                  console.log(`No app category ${appCategory} found for ${appMeta.value.definition.id}.`);
                   self.lists['Simulation'].push(appMeta);
                 }
               } else {

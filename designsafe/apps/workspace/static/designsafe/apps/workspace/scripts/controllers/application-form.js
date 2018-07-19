@@ -284,7 +284,6 @@
               $scope.data.launching = false;
               window.open(`${jupyter_base_url}/user/${Django.user}/notebooks/${path}`, '').focus();
             }, function (err) {
-              console.log(err);
               $scope.data.launching = false;
             });
         }
