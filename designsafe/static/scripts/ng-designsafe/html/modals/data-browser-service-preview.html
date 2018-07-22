@@ -82,7 +82,10 @@
             <i class="fa fa-send"></i> Share
         </button>
 
-        <button class="btn btn-sm btn-default" ng-click="openInJupyter()">Open In Jupyter</button>
+        <!-- ng-show="isJupyter"  or ng-if="tests.canOpenOnJupyter" or ng-if="isJupyter" and class="fa fa-file-image-o"-->
+        <button class="btn btn-sm btn-default" ng-show="isJupyter()" ng-click="openInJupyter()">
+            <i class="fa fa-file-image-o"></i></i> Open In Jupyter
+        </button>
 
         <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
             <i class="fa fa-trash"></i> Move to Trash

@@ -167,6 +167,7 @@
     function allowedActions (files) {
       if (! Array.isArray(files)) {
         files = [files];
+        // file = files.slice(0, 1);
       }
 
       var tests = {};
@@ -813,6 +814,16 @@
             $uibModalInstance.dismiss();
           };
 
+          $scope.isJupyter = function () {
+            let fileExtension = file.name.split('.').pop();
+            return fileExtension == 'ipynb';
+            // if (fileExtension == 'ipynb') {
+            //   return true;
+            // } else {
+            //   return false;
+            // }   
+          };
+
           $scope.openInJupyter = function () {
             let str = file.href;
             let sep = file.system;
@@ -820,7 +831,7 @@
             if(sep === 'default'){
               sep = `data/browser/agave/designsafe.storage.default/%2F${Django.user}`;
               str = 'mydata/' + str.substring(str.indexOf(sep) + sep.length);
-            }else{
+            } else {
               str = str.substring(str.indexOf(sep));
             }
             let finalStr = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${str}`;
