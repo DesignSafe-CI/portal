@@ -49,6 +49,7 @@
                             ng-options="tag.label group by tag.tagType
                                         for tag in entity.tagsAsOptions"
                             ng-model="data.fileSubTags[entity.uuid][file.uuid()]">
+                      <option value="">-- Optional --</option>
                     </select>
                     <span style="font-weight:bold;"
                           ng-if="isFileSubTagValid(file, entity)">{{entity.getFileSubTag(file).tag}}</span>
@@ -63,7 +64,7 @@
                   <td>
                     <button class="btn btn-sm btn-link"
                             title="Delete category from file"
-                            ng-click="unrelateFile(file, entity)">
+                            ng-click="removeFileSubTag(entity, file)">
                         <i class="fa fa-times"></i> Remove
                     </button>
                   </td>
