@@ -167,7 +167,6 @@
     function allowedActions (files) {
       if (! Array.isArray(files)) {
         files = [files];
-        // file = files.slice(0, 1);
       }
 
       var tests = {};
@@ -696,7 +695,7 @@
     function preview (file, listing) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
+        controller: ['$scope', 'DataBrowserService', '$state', '$uibModalInstance', '$sce', 'file', function ($scope, DataBrowserService, $state, $uibModalInstance, $sce, file) {
           $scope.file = file;
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
@@ -814,29 +813,37 @@
             $uibModalInstance.dismiss();
           };
 
-          $scope.isJupyter = function () {
-            let fileExtension = file.name.split('.').pop();
-            return fileExtension == 'ipynb';
-            // if (fileExtension == 'ipynb') {
-            //   return true;
-            // } else {
-            //   return false;
-            // }   
+          $scope.isJupyter = function () { //check if strings for googledrive and box are correct
+            let designsafePath = file.href;
+              if (designsafePath.includes('dropbox') || designsafePath.includes('google') || designsafePath.includes('box')) {
+                return false;
+              } else {
+                let fileExtension = file.name.split('.').pop();
+              return fileExtension == 'ipynb'; 
+              }
           };
 
-          $scope.openInJupyter = function () {
-            let str = file.href;
-            let sep = file.system;
-            sep = sep.slice(19);
-            if(sep === 'default'){
-              sep = `data/browser/agave/designsafe.storage.default/%2F${Django.user}`;
-              str = 'mydata/' + str.substring(str.indexOf(sep) + sep.length);
+          $scope.openInJupyter = function() {
+            let filePath = file.path; //get complete file path
+            if (filePath.includes(Django.user)) { //if path includes username
+              let lenghtUserName = Django.user.length;
+              var pathToFile = filePath.substring(lenghtUserName + 2); //remove user name and use path
             } else {
-              str = str.substring(str.indexOf(sep));
+              var pathToFile = filePath; //otherwise use that path
             }
-            let finalStr = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${str}`;
-            window.open(finalStr);
-          };              
+            let specificLocation = $state.current.name; //get location
+            if (specificLocation === 'myData' || specificLocation === 'communityData' || specificLocation === 'published') { //???does it happen to all locations???
+              specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1)); // add title case
+            } else if (specificLocation.includes('projects')) {
+              let prjNumber = DataBrowserService.state().project.value.projectId
+              specificLocation = 'projects/' + prjNumber;
+            }
+            let fileLocation = specificLocation + "/" + pathToFile; //add location to path
+            let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`; //add jupyter to path
+            // console.log('final str ' + jupyterPath)
+            window.open(jupyterPath);
+          };
+            
 
         }],
         size: 'lg',
