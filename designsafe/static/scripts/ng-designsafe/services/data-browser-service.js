@@ -1548,6 +1548,29 @@
               $scope.ui.busy = false;
             });
             };
+          $scope.removeFileSubTag = function(entity, file){
+            $scope.ui.busy = true;
+            for (var tagType in entity.value.tags || {}){
+              for (var tag in entity.value.tags[tagType]){
+                var values = entity.value.tags[tagType][tag];
+                _.forEach(values, function(val){
+                    if (_.contains(val.file, file.uuid())){
+                        val.file = [];
+                        val.desc = '';
+                    }
+                });
+              }
+            }
+            ProjectEntitiesService.update(
+                {data: {uuid: entity.uuid, entity:entity}}
+            ).then(function(e){
+              var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+              ent.update(e);
+              _setFileEntities();
+              _setEntities();
+              $scope.ui.busy = false;
+            });
+          };
 
           $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
 
