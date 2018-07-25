@@ -58,6 +58,31 @@ class HybridSimulation(RelatedEntity):
     project = fields.RelatedObjectField(HybridSimulationProject)
 
 
+class GlobalModelTags(MetadataModel):
+    _is_nested = True
+    assembly_document = fields.ListField(
+        'Assembly Document',
+        list_cls=DataTag
+    )
+    drawings = fields.ListField(
+        'Assembly Document',
+        list_cls=DataTag
+    )
+    photos = fields.ListField(
+        'Assembly Document',
+        list_cls=DataTag
+    )
+    model_configuration = fields.ListField(
+        'Assembly Document',
+        list_cls=DataTag
+    )
+
+
+class GlobalModelGeneralTags(MetadataModel):
+    _is_nested = True
+    general = fields.NestedObjectField(GlobalModelTags)
+
+
 class GlobalModel(RelatedEntity):
     model_name = 'designsafe.project.hybrid_simulation.global_model'
     title = fields.CharField('Title', max_length=1024)
@@ -69,6 +94,33 @@ class GlobalModel(RelatedEntity):
     project = fields.RelatedObjectField(HybridSimulationProject)
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    tags = fields.NestedObjectField(GlobalModelGeneralTags)
+
+
+class CoordinatorTags(MetadataModel):
+    _is_nested = True
+    load = fields.ListField(
+        'Load',
+        list_cls=DataTag
+    )
+    simulation_model = fields.ListField(
+        'Simulation Model',
+        list_cls=DataTag
+    )
+    simulation_script = fields.ListField(
+        'Simulation Script',
+        list_cls=DataTag
+    )
+    simulation_input = fields.ListField(
+        'Simulation Input',
+        list_cls=DataTag
+    )
+
+
+class CoordinatorGeneralTags(MetadataModel):
+    _is_nested = True
+    general = fields.NestedObjectField(CoordinatorTags)
+
 
 class Coordinator(RelatedEntity):
     model_name = 'designsafe.project.hybrid_simulation.coordinator'
@@ -83,6 +135,25 @@ class Coordinator(RelatedEntity):
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     global_models = fields.RelatedObjectField(GlobalModel)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    tags = fields.NestedObjectField(CoordinatorGeneralTags)
+
+
+class SimSubstructureTags(MetadataModel):
+    _is_nested = True
+    simulation_model = fields.ListField(
+        'Simulation Model',
+        list_cls=DataTag
+    )
+    connectivity_file = fields.ListField(
+        'Connectivity File',
+        list_cls=DataTag
+    )
+
+
+class SimSubstructureGeneralTags(MetadataModel):
+    _is_nested = True
+    general = fields.NestedObjectField(SimSubstructureTags)
+
 
 class SimSubstructure(RelatedEntity):
     model_name = 'designsafe.project.hybrid_simulation.sim_substructure'
@@ -98,6 +169,22 @@ class SimSubstructure(RelatedEntity):
     global_models = fields.RelatedObjectField(GlobalModel)
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    tags = fields.NestedObjectField(SimSubstructureGeneralTags)
+
+class ExpSubstructureTags(MetadataModel):
+    _is_nested = True
+    model_configuration = fields.ListField(
+        'Model Configuration',
+        list_cls=DataTag
+    )
+    sensor_information = fields.ListField(
+        'Sensor Information',
+        list_cls=DataTag
+    )
+
+class ExpSubstructureGeneralTags(MetadataModel):
+    _is_nested = True
+    general = fields.NestedObjectField(ExpSubstructureTags)
 
 class ExpSubstructure(RelatedEntity):
     model_name = 'designsafe.project.hybrid_simulation.exp_substructure'
@@ -108,6 +195,7 @@ class ExpSubstructure(RelatedEntity):
     global_models = fields.RelatedObjectField(GlobalModel)
     coordinators = fields.RelatedObjectField(Coordinator)
     files = fields.RelatedObjectField(FileModel, multiple=True)
+    tags = fields.NestedObjectField(ExpSubstructureGeneralTags)
 
 # class Output(RelatedEntity):
 #    model_name = 'designsafe.project.hybrid_simulation.output'
