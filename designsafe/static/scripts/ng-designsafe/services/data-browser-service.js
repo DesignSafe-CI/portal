@@ -832,11 +832,15 @@
               var pathToFile = filePath; //otherwise use that path
             }
             let specificLocation = $state.current.name; //get location
+            console.log("first location " + specificLocation)
             if (specificLocation === 'myData' || specificLocation === 'communityData' || specificLocation === 'published') { //???does it happen to all locations???
               specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1)); // add title case
             } else if (specificLocation.includes('projects')) {
-              let prjNumber = DataBrowserService.state().project.value.projectId
+              let prjNumber = DataBrowserService.state().project.value.projectId;
               specificLocation = 'projects/' + prjNumber;
+            } else if (specificLocation === 'publishedData') {
+              specificLocation = 'Published';
+              console.log("from else if " + specificLocation)
             }
             let fileLocation = specificLocation + "/" + pathToFile; //add location to path
             let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`; //add jupyter to path
