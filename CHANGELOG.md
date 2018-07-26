@@ -1,5 +1,23 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.0-20180703
+
+Improvements:
+
+- Hybrid Sim metadata check
+
+Fixes:
+
+- Hybrid Sim
+
+## v2.7.0-20180702
+
+Fixes:
+
+- Hybrid Sim
+- Citations
+- Breadcrumbs
+
 ## v2.7.0-20180701
 
 Improvements:
