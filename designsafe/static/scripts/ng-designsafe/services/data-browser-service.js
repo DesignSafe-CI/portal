@@ -824,26 +824,24 @@
           };
 
           $scope.openInJupyter = function() {
-            let filePath = file.path; //get complete file path
+            let filePath = file.path; //gets complete file path
             if (filePath.includes(Django.user)) { //if path includes username
               let lenghtUserName = Django.user.length;
-              var pathToFile = filePath.substring(lenghtUserName + 2); //remove user name and use path
+              var pathToFile = filePath.substring(lenghtUserName + 2); //removes user name and use path
             } else {
-              var pathToFile = filePath; //otherwise use that path
+              var pathToFile = filePath; //otherwise uses that path
             }
-            let specificLocation = $state.current.name; //get location
-            console.log("first location " + specificLocation)
-            if (specificLocation === 'myData' || specificLocation === 'communityData' || specificLocation === 'published') { //???does it happen to all locations???
-              specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1)); // add title case
+            let specificLocation = $state.current.name; //gets location
+            if (specificLocation === 'myData' || specificLocation === 'communityData') {
+              specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1)); // uppercases first letter
             } else if (specificLocation.includes('projects')) {
               let prjNumber = DataBrowserService.state().project.value.projectId;
               specificLocation = 'projects/' + prjNumber;
             } else if (specificLocation === 'publishedData') {
               specificLocation = 'Published';
-              console.log("from else if " + specificLocation)
             }
-            let fileLocation = specificLocation + "/" + pathToFile; //add location to path
-            let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`; //add jupyter to path
+            let fileLocation = specificLocation + "/" + pathToFile; //adds location to path
+            let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`; //adds jupyter to path
             // console.log('final str ' + jupyterPath)
             window.open(jupyterPath);
           };
