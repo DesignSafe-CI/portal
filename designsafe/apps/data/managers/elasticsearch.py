@@ -105,8 +105,8 @@ class FileManager(object):
         Obtain a file's mimetype given an Agave response file object.
 
         When developing locally, (DEBUG==True) we can't assume that Corral is 
-        mounted so w have to download the file to memory in order to pass its 
-        bytecode to python-magic. In staging/prod where Corral is mounted, we
+        mounted so we have to download the file to memory in order to pass its 
+        content to python-magic. In staging/prod where Corral is mounted, we
         build up the absolute path of the file and pass that to python-magic to
         get the mimetype.
 
@@ -134,13 +134,13 @@ class FileManager(object):
             # In dev/prod, Corral is mounted and we can use the absolute path to get the mimetype.
             SYSTEM_ID_PATHS = [
                 {'regex': r'^designsafe.storage.default$',
-                'path': '/corral-repl/projects/NHERI/shared'},
+                'path': '/corral-repl/tacc/NHERI/shared'},
                 {'regex': r'^designsafe.storage.community$',
-                'path': '/corral-repl/projects/NHERI/community'},
+                'path': '/corral-repl/tacc/NHERI/community'},
                 {'regex': r'^designsafe.storage.published$',
-                'path': '/corral-repl/projects/NHERI/published'},
+                'path': '/corral-repl/tacc/NHERI/published'},
                 {'regex': r'^project\-',
-                'path': '/corral-repl/projects/NHERI/projects'}
+                'path': '/corral-repl/tacc/NHERI/projects'}
             ]
             for mapping in SYSTEM_ID_PATHS:
                 if re.search(mapping['regex'], file_object['system']):
