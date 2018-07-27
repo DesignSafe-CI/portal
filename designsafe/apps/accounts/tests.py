@@ -84,28 +84,6 @@ class AccountsTests(TestCase):
         self.assertNotContains(
             resp, '"{0}","{1}"'.format(ds_user.get_full_name(), ds_user.email))
 
-    def test_user_report_access(self):
-        """
-        Access to user report restricted to users with view_notification_subscribers
-        permission.
-        :return:
-        """
-        url = reverse('designsafe_accounts:user_report',
-                      args=('announcements',))
-
-        self.client.login(username='ds_user', password='user/password')
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 403)
-        self.client.logout()
-        user = get_user_model().objects.get(pk=2)
-        perm = Permission.objects.get(codename='view_notification_subscribers')
-        user.user_permissions.add(perm)
-
-        self.client.login(username='ds_user', password='user/password')
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, '"Website","Orcid_id"')
-
     def test_professional_profile_manage(self):
         url = reverse('designsafe_accounts:manage_pro_profile')
         self.client.login(username='ds_admin', password='admin/password')
