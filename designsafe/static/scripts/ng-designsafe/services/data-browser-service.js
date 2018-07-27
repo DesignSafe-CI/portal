@@ -41,7 +41,8 @@
       page: 0,
       showMainListing: true,
       showPreviewListing: false,
-      ui: {}
+      ui: {},
+      filters: [true, true, true, true, true]
     };
 
     var efs = {
@@ -851,6 +852,42 @@
       //         }
       //       );
       // }})
+
+      return modal.result;
+    }
+
+    /**
+     *
+     * @param {FileListing} folder
+     * @return {Promise}
+     */
+    function searchFilters (search_obj, prop_scope) {
+      var modal = $uibModal.open({
+
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-filters.html',
+        controller: ['$scope', '$state', '$uibModalInstance', '$sce', 'search_obj', 'UserService', 'DataBrowserService', function ($scope, $state, $uibModalInstance, $sce, prop_scope, UserService, DataBrowserService) {
+
+          $scope.browser = DataBrowserService.state();
+
+          $scope.checked = $scope.browser.filters
+      
+          $scope.change = function() {
+            console.log('did change')
+            console.log($scope.checked)
+            //search_obj($scope.checked)
+          }
+
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss();
+            //$state.reload()
+          };
+
+        }],
+        resolve: {
+          search_obj: function() { return search_obj; },
+          prop_scope: prop_scope
+        }
+      });
 
       return modal.result;
     }
@@ -2716,6 +2753,7 @@
       move: move,
       preview: preview,
       previewImages: previewImages,
+      searchFilters: searchFilters,
       rename: rename,
       rm: rm,
       search: search,

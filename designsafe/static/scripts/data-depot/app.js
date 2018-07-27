@@ -63,7 +63,7 @@
         }
       })
       .state('dataSearch',{
-        url: '/agave-search/?query_string&offset&limit',
+        url: '/agave-search/?query_string&filters&offset&limit',
         controller: 'MyDataCtrl',
         templateUrl: '/static/scripts/data-depot/templates/agave-search-data-listing.html',
         params: {
@@ -77,11 +77,12 @@
             DataBrowserService.apiParams.fileMgr = 'agave';
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
             DataBrowserService.apiParams.searchState = 'dataSearch';
-            var queryString = $stateParams.query_string;
+            var queryString = $stateParams.query_string || "";
+            var filters = $stateParams.filters;
             //if (/[^A-Za-z0-9]/.test(queryString)){
             //  queryString = '"' + queryString + '"';
             //}
-            var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
+            var options = {system: $stateParams.systemId, query_string: queryString, filters: filters, offset: $stateParams.offset, limit: $stateParams.limit};
             return DataBrowserService.search(options);
           }],
           'auth': function($q) {

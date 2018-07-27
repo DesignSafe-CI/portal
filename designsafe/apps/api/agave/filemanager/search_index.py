@@ -2,6 +2,7 @@ import logging
 import os
 import six
 import json
+from operator import ior
 from itertools import takewhile
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -314,7 +315,7 @@ class ElasticFileManager(BaseFileManager):
         return result
 
     def search(self, system, username, query_string,
-               file_path=None, offset=0, limit=100):
+               file_path=None, offset=0, limit=100, filters=None):
         """
         Executes a search in for files belonging to the logged-in user and 
         returns a result dict to be passed to the front-end.
@@ -341,6 +342,24 @@ class ElasticFileManager(BaseFileManager):
         search = search.filter("term", system=system)
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
         search = search.query("query_string", query=query_string, fields=["name", "name._exact", "keywords"])
+        logger.debug(filters)
+
+
+        filter_queries = [
+            Q({'wildcard': {'mimeType': 'image/*'}}),
+            Q({'wildcard': {'mimeType': 'video/*'}}),
+            Q({'wildcard': {'mimeType': 'audio/*'}}),
+            Q({'term': {'mimeType': 'text/directory'}}), 
+        ]
+        filter_queries.append(~reduce(ior, filter_queries))
+        filter_query = reduce(ior, [filter_queries[i] for i, v in enumerate(filters) if v])
+        # other_files_query = ~reduce(ior, filter_queries) if filters[-1] else None 
+        
+        # if filters[-1]:
+        #     other_files_query = ~reduce(ior, filter_queries)
+        #     search = search.filter(filter_query | other_files_query)
+        # else:
+        search = search.filter(filter_query)
         res = search.execute()
         children = []
         if res.hits.total:

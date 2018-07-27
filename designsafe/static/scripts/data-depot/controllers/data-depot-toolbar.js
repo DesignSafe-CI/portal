@@ -4,13 +4,15 @@
 
   app.controller('DataDepotToolbarCtrl', ['$scope', '$state', '$uibModal', 'Django', 'DataBrowserService', 'UserService', function ($scope, $state, $uibModal, Django, DataBrowserService, UserService) {
     $scope.$state = $state;
-    $scope.search = {queryString : ''};
+    
     $scope.browser = DataBrowserService.state();
+    $scope.search = {queryString : '', filters: $scope.browser.filters};
     $scope.UserService = UserService;
 
     $scope.placeholder = function() {
       var stateNames = {
         'myData':'My Data',
+        'dataSearch': 'My Data',
         'projects.list':'My Projects',
         'sharedData':'Shared Data',
         'boxData':'Box',
@@ -43,6 +45,11 @@
      */
     function updateToolbar() {
       $scope.tests = DataBrowserService.allowedActions($scope.browser.selected);
+    }
+
+    function updateFilters(filters) {
+      $scope.search.filters = filters
+      console.log($scope.search)
     }
 
     /* Set initial toolbar status */
@@ -94,9 +101,15 @@
       rm: function () {
         DataBrowserService.rm($scope.browser.selected);
       },
+      searchFilters: function() {
+        DataBrowserService.searchFilters(updateFilters)
+      },
       search: function(){
+        console.log($scope.browser.listing.system)
+        console.log(JSON.stringify($scope.search.filters))
         var state = $scope.apiParams.searchState;
         $state.go(state, {'query_string': $scope.search.queryString,
+                   'filters': JSON.stringify($scope.search.filters),
                    'systemId': $scope.browser.listing.system,
                    'filePath': '/'});
       }

@@ -15,6 +15,7 @@
             ng-hide="['Dropbox', 'Box', 'Google Drive', 'Project View'].includes(placeholder())">
             <input class="form-control" style="width:240px;" placeholder="Find in {{ placeholder() }}" ng-model="search.queryString">
             <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search"></i> </button>
+            <button type="button" ng-click="ops.searchFilters()"   ng-show="placeholder() == 'My Data'"class="btn btn-default" style="clear: right;"> <i class="fa fa-filter"></i> </button>
         </form>
         <div class="btn-group">
             <button class="btn btn-sm btn-default" title="Categorize"

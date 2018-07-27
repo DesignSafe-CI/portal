@@ -4,10 +4,16 @@
 <div class="modal-body">
     <form>
         <div class="form-group">
-            <label for="id-target-name">Images (PNG, JPEG, TIFF)</label>
-            <input type="checkbox" ng-model="checked[0]" ng-change="change()">
+            <label for="id-target-name">Images</label>
+            <input type="checkbox" ng-model="checked[0]" ng-change="change()"><br>
+            <label for="id-target-name">Videos</label>
+            <input type="checkbox" ng-model="checked[1]" ng-change="change()"><br>
+            <label for="id-target-name">Audio</label>
+            <input type="checkbox" ng-model="checked[2]" ng-change="change()"><br>
             <label for="id-target-name">Folders</label>
-            <input type="checkbox" ng-model="checked[1]" ng-change="change()">
+            <input type="checkbox" ng-model="checked[3]" ng-change="change()"><br>
+            <label for="id-target-name">All Other Files</label>
+            <input type="checkbox" ng-model="checked[4]" ng-change="change()">
         </div>
         <div class="text-right">
             <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>

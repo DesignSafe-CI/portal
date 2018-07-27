@@ -89,7 +89,6 @@ class FileListingView(BaseApiView):
                                     safe=False)
         return HttpResponseBadRequest()
 
-
 class FileMediaView(View):
 
     @profile_fn
@@ -568,17 +567,30 @@ class FileSearchView(View):
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 100))
         query_string = request.GET.get('query_string')
-        
-        if file_mgr_name != ElasticFileManager.NAME or not query_string:
-            return HttpResponseBadRequest()
+        filters = request.GET.get('filters')
+        filters = json.loads(filters)
+        logger.debug(query_string)
 
         if system_id is None:
             system_id = ElasticFileManager.DEFAULT_SYSTEM_ID
 
+        if file_mgr_name != ElasticFileManager.NAME or not query_string:
+            # return HttpResponseBadRequest()
+            listing = {
+            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
+            'name': '$SEARCH',
+            'path': '/$SEARCH',
+            'system': system_id,
+            'type': 'dir',
+            'children': [],
+            'permissions': 'READ'
+            }
+            return JsonResponse(listing)
+
         fmgr = ElasticFileManager()
         if not (request.GET.get('shared', False) or request.GET.get('projects', False)):
             listing = fmgr.search(system_id, request.user.username, query_string,
-                                offset=offset, limit=limit)
+                                offset=offset, limit=limit, filters=filters)
         elif request.GET.get('shared', False):
             listing = fmgr.search_shared(system_id, request.user.username, query_string,
                                          offset=offset, limit=limit)
