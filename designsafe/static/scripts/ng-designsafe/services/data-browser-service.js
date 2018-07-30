@@ -813,9 +813,16 @@
             $uibModalInstance.dismiss();
           };
 
-          $scope.isJupyter = function () { //check if strings for googledrive and box are correct
+          $scope.notInJupyterTree = function () {
             let designsafePath = file.href;
-              if (designsafePath.includes('dropbox') || designsafePath.includes('google') || designsafePath.includes('box')) {
+            if (designsafePath.includes('dropbox') || designsafePath.includes('googledrive') || designsafePath.includes('box') || designsafePath.includes('shared')) {
+              return true;
+            }
+          };
+
+          $scope.isJupyter = function () {
+            let designsafePath = file.href;
+              if ($scope.notInJupyterTree()) {
                 return false;
               } else {
                 let fileExtension = file.name.split('.').pop();
@@ -824,25 +831,24 @@
           };
 
           $scope.openInJupyter = function() {
-            let filePath = file.path; //gets complete file path
-            if (filePath.includes(Django.user)) { //if path includes username
+            let filePath = file.path;
+            if (filePath.includes(Django.user)) {
               let lenghtUserName = Django.user.length;
-              var pathToFile = filePath.substring(lenghtUserName + 2); //removes user name and use path
+              var pathToFile = filePath.substring(lenghtUserName + 2);
             } else {
-              var pathToFile = filePath; //otherwise uses that path
+              var pathToFile = filePath;
             }
-            let specificLocation = $state.current.name; //gets location
+            let specificLocation = $state.current.name;
             if (specificLocation === 'myData' || specificLocation === 'communityData') {
-              specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1)); // uppercases first letter
+              specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1));
             } else if (specificLocation.includes('projects')) {
               let prjNumber = DataBrowserService.state().project.value.projectId;
               specificLocation = 'projects/' + prjNumber;
             } else if (specificLocation === 'publishedData') {
               specificLocation = 'Published';
             }
-            let fileLocation = specificLocation + "/" + pathToFile; //adds location to path
-            let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`; //adds jupyter to path
-            // console.log('final str ' + jupyterPath)
+            let fileLocation = specificLocation + "/" + pathToFile;
+            let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`;
             window.open(jupyterPath);
           };
             
