@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase, RequestFactory
 from django.urls import resolve, reverse
 from django.contrib.auth import get_user_model
@@ -323,16 +324,19 @@ class WorkspaceViewtestCase(TestWorkspace):
     #     # print " ############### I am printing response above:"
     #     self.assertEquals(response.status_code, 200)
 
+    @mock.patch('designsafe.apps.workspace.tasks.submit_job') #attempt to mock task
     # @mock.patch('agavepy.agave.Agave')
-    # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
-    # def test_post_jobs_content(self, agave_client, agave):
-    #     """Testing post_jobs content'
-    #     """
-    #     self.client.login(username='test', password='test')
-    #     agave_client.jobs.post.return_value = {"status": "PENDING", "inputs": {"test"}}
-    #     response = self.client.post('/rw/workspace/api/jobs/?body={"title": "Example New_job"}')
-    #     json_res = response.json
-    #     self.assertTrue(json_res, {"status": "PENDING", "inputs": {"testDirectory"}})
+    @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    def test_post_jobs_content(self, agave_client, submit_job):
+        """Testing post_jobs content'
+        """
+        print submit_job
+        self.client.login(username='test', password='test')
+        agave_client.jobs.submit.return_value = {"status": "ok"}
+        submit_job.return_value = {"status": "ok"}
+        response = self.client.post('/rw/workspace/api/jobs/', json.dumps({"appId":"opensees-SP-2.5.0.6606u7","archive":"true","inputs":{"inputDirectory":"agave://designsafe.storage.default/mock/examples/opensees/FreefieldAnalysisEffective"},"parameters":{"inputScript":"freeFieldEffective.tcl"},"notifications":[{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"PENDING"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"QUEUED"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"SUBMITTING"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"PROCESSING_INPUTS"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"STAGED"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"RUNNING"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"KILLED"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"FAILED"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"STOPPED"},{"url":"https://designsafeci-dev.tacc.utexas.edu//api/notifications/wh/jobs/","event":"FINISHED"}],"nodeCount":1,"processorsPerNode":16,"maxRunTime":"02:00:00","name":"adasda"}), content_type="application/json")
+        json_res = response.json
+        self.assertTrue(json_res, {"status": "PENDING", "inputs": {"testDirectory"}})
     
     # @mock.patch('agavepy.agave.Agave')
     # @mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')

@@ -43,11 +43,14 @@ def submit_job(request, username, job_post):
 
     """
     logger.info('Submitting job for user=%s: %s' % (username, job_post))
-
+    print "JJJJ"*100
     try:
         user = get_user_model().objects.get(username=username)
+        print user
         agave = user.agave_oauth.client
+        print agave * 100
         response = agave.jobs.submit(body=job_post)
+        print response
         logger.debug('Job Submission Response: {}'.format(response))
 
         # watch job status

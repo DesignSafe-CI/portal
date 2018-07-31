@@ -93,7 +93,6 @@ class ApiService(BaseApiView):
         :returns: call to POST method on service (post_meta(), post_jobs()).
         """
         handler_name = 'post_{service}'.format(service=service)
-    
         try:
             handler = getattr(self, handler_name)
         except AttributeError as exc:
@@ -305,12 +304,13 @@ class ApiService(BaseApiView):
         :param service: jobs.
         :returns: A single job object.
         """
-        job_post_query_dict = self.request.POST.dict()
-        
+        job_post= json.loads(self.request.body)
+        print job_post
         #converting multikey dictionary to regular dictionary
-        for key, values in job_post_query_dict.items():
-            job_post_query_dict_key = key
-            job_post = json.loads(job_post_query_dict_key)
+        # for key, values in job_post_query_dict.items():
+        #     job_post_query_dict_key = key
+        #     job_post = json.loads(job_post_query_dict_key)
+            
        
 
         job_id = job_post.get('job_id')
@@ -365,13 +365,6 @@ class ApiService(BaseApiView):
                         job_post['inputs'][key] = urllib.quote(parsed.path)
 
             data = submit_job(self.request, self.request.user.username, job_post) # catches JobSubmitError
-
-        # list jobs (via POST?)
-        else:
-            limit = self.request.GET.get('limit', 10)
-            offset = self.request.GET.get('offset', 0)
-            data = agv.jobs.list(limit=limit, offset=offset)
-
         return data
 
     # else:
