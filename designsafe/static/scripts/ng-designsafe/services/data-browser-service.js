@@ -808,7 +808,6 @@
           $scope.rm = function() {
             rm(file);
           };
-
           $scope.close = function () {
             $uibModalInstance.dismiss();
           };
@@ -822,12 +821,12 @@
 
           $scope.isJupyter = function () {
             let designsafePath = file.href;
-              if ($scope.notInJupyterTree()) {
-                return false;
-              } else {
-                let fileExtension = file.name.split('.').pop();
+            if ($scope.notInJupyterTree()) {
+              return false;
+            } else {
+              let fileExtension = file.name.split('.').pop();
               return fileExtension == 'ipynb'; 
-              }
+            }
           };
 
           $scope.openInJupyter = function() {
@@ -850,9 +849,7 @@
             let fileLocation = specificLocation + "/" + pathToFile;
             let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`;
             window.open(jupyterPath);
-          };
-            
-
+          }; 
         }],
         size: 'lg',
         resolve: {
