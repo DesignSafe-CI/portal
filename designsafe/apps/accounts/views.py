@@ -553,8 +553,7 @@ def mailing_list_subscription(request, list_name):
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def user_report(request, list_name):
 
-    # response = HttpResponse(content_type='text/csv')
-    # response['Content-Disposition'] = 'attachment;filename="users_report_test.csv"'
+  
 
     # writer = csv.writer(response)
     # writer.writerow(["UserEmail","FirstName","LastName","PhoneNumber","Institution",\
@@ -596,16 +595,16 @@ def user_report(request, list_name):
     #             profile_user.gender,\
     #             ])
 
+    # django_user = request.user
+    # user_profile = TASUser(username=request.user.username)
 
-    # user = get_user_model.objects.get(username=username) # am I gonna use user?
     create_report.apply_async(
                 args=(
-                    profile_user.user
+                    (django_user)
                 )
             )
  
     # return response
-
 
 def termsandconditions(request):
     context = {
