@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { communityDataCtrl } from './controllers/community';
 import { dataDepotNavCtrl } from './controllers/data-depot-nav';
 import {dataDepotNewCtrl } from './controllers/data-depot-new'
-import { dataDepotToolbarCtrl } from './controllers/data-depot-toolbar'
+import { DataDepotToolbarComponent } from './controllers/data-depot-toolbar'
 import { externalDataCtrl } from './controllers/external-data';
 import { mainCtrl } from './controllers/main';
 import { myDataCtrl } from '../data-depot/controllers/my-data';
@@ -18,9 +18,7 @@ import { sharedData } from '../data-depot/controllers/shared-data';
 communityDataCtrl(window, angular);
 dataDepotNavCtrl(window, angular);
 dataDepotNewCtrl(window, angular);
-dataDepotToolbarCtrl(window, angular);
-dataDepotToolbarCtrl(window, angular);
-externalDataCtrl(window, angular);
+//dataDepotToolbarCtrl(window, angular);
 externalDataCtrl(window, angular);
 mainCtrl(window, angular);
 myDataCtrl(window, angular, _);
@@ -28,6 +26,8 @@ projectsController(window, angular);
 publicationDataCtrl(window, angular);
 publishedDataCtrl(window, angular);
 sharedData(window, angular);
+
+angular.module('designsafe').component('ddtoolbar', DataDepotToolbarComponent)
 
 export var module = angular.module('designsafe');
 module.requires.push(
