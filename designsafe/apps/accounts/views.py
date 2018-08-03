@@ -553,6 +553,27 @@ def mailing_list_subscription(request, list_name):
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def user_report(request, list_name):
 
+    # logger.info("I am priting from views on Friday")
+    # username = request.user
+    # user = get_user_model().objects.get(username=username)
+    # user_profile = user.profile
+    # logger.debug("here is user profile:{}".format(user_profile))
+    # my_bio = user_profile.bio.encode('utf-8') if user_profile.bio else user_profile.bio
+    # logger.debug("here is the bio: {}".format(my_bio))
+    # logger.debug("I am passed bio priting")  
+
+
+    
+    logger.info("I am priting from views on Friday morning")
+    username = request.user
+    user_profile = TASUser(username=username)
+    logger.debug("here is user profile:{}".format(user_profile))
+    my_last_name = user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName
+    logger.debug("here is the last name: {}".format(my_last_name))
+    my_first_name = user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName
+    logger.debug("here is the first name: {}".format(my_first_name))
+    logger.debug("I got to last line") 
+
   
 
     # writer = csv.writer(response)
@@ -598,11 +619,11 @@ def user_report(request, list_name):
     # django_user = request.user
     # user_profile = TASUser(username=request.user.username)
 
-    create_report.apply_async(
-                args=(
-                    (django_user)
-                )
-            )
+    # create_report.apply_async(
+    #             args=(
+    #                 (django_user)
+    #             )
+    #         )
  
     # return response
 

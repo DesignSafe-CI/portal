@@ -15,30 +15,28 @@ logger = logging.getLogger(__name__)
 
 @shared_task(default_retry_delay=1*30, max_retries=3)
 def create_report(username):
-
-    user_profile = TASUser(username=username)
    
 
     try:
-        
-        logger.info(
-            "Creating user report for user=%s on "
-            "default storage systemId=%s",
-            username,
-            settings.AGAVE_STORAGE_SYSTEM
-        )
-        csv_file = StringIO.StringIO()
-        writer = csv.writer(csv_file)
-        writer.writerow(["UserEmail","FirstName","LastName","PhoneNumber",\
-            "Institution","UserName","Country","Citizenship"])
-        if username == user_profile:
-            writer.writerow([user_profile.email,\
-                user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,\
-                user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,\
-                user_profile.phone.encode('utf-8') if user_profile.phone else user_profile.phone,\
-                user_profile.institution.encode('utf-8') if user_profile.institution else user_profile.institution,\
-                user_profile.country,\
-                user_profile.citizenship])       
+        # # this code works to get attributes values out of the DesignsafeProfile class
+        # logger.info("I am priting from tasks on Friday")
+        # user = get_user_model().objects.get(username=username)
+        # user_profile = user.profile
+        # logger.debug("here is user profile:{}".format(user_profile))
+        # my_bio = user_profile.bio.encode('utf-8') if user_profile.bio else user_profile.bio
+        # logger.debug("here is the bio: {}".format(my_bio))
+        # logger.debug("I am passed bio priting")
+        # 
+
+        # # this code works to get attributes values out of the TASUser class
+        logger.info("I am priting from tasks on Friday morning")
+        user_profile = TASUser(username=username)
+        logger.debug("here is user profile:{}".format(user_profile))
+        my_last_name = user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName
+        logger.debug("here is the last name: {}".format(my_last_name))
+        my_first_name = user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName
+        logger.debug("here is the first name: {}".format(my_first_name))
+        logger.debug("I got to last line")    
 
 
         ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
