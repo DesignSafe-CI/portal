@@ -129,5 +129,6 @@ class SearchView(BaseApiView):
         search = search.query(Q('bool', must=[Q({'prefix': {'path._exact': username}})]))
         search = search.filter("term", system='designsafe.storage.default')
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(username)}})]))
+        search = search.extra(from_=offset, size=limit)
         logger.info(search.to_dict())
         return search
