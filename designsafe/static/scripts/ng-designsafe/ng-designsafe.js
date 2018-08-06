@@ -106,8 +106,9 @@ import { applicationEditCtrl } from '../applications/controllers/application-edi
 import { applicationSystemsRoleCtrl } from '../applications/controllers/application-systems-role';
 */
 
+import '../search'
 
-export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel']).config(['$httpProvider', function($httpProvider) {
+export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel', 'ds-search']).config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';

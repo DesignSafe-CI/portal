@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container">
-  <div ng-controller="SearchCtrl as vm" ng-include="'{% static '/scripts/search/html/search.html' %}'">
+    <site-search></site-search>
   {{message}}
   </div>
 </div>
@@ -15,15 +15,6 @@
   <script type="text/javascript" src="{% static 'vendor/angular-sanitize/angular-sanitize.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
   <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock 'js' %}
-<script type="text/javascript" src="{% static 'build/search.bundle.js' %}"></script>
-<!--
-<script type="text/javascript" src="{% static 'designsafe/apps/search/scripts/app.js' %}"></script>
-<script type="text/javascript" src="{% static 'designsafe/apps/search/scripts/service.js' %}"></script>
-<script type="text/javascript" src="{% static 'designsafe/apps/search/scripts/directive.js' %}"></script>
--->
 {% endaddtoblock %}
 
 {% endblock %}
