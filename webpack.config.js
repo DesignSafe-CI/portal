@@ -15,7 +15,7 @@ module.exports = {
       "./designsafe/static/build/bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
       "./designsafe/static/build/dd.bundle.js": "./designsafe/static/scripts/data-depot/app.js",
       "./designsafe/static/build/workspace.bundle.js": "./designsafe/static/scripts/workspace/app.js",
-      "./designsafe/static/build/search.bundle.js": "./designsafe/static/scripts/search/app.js",
+      //"./designsafe/static/build/search.bundle.js": "./designsafe/static/scripts/search/index.js",
       "./designsafe/static/build/dashboard.bundle.js": "./designsafe/static/scripts/dashboard/index.js",
       "./designsafe/static/build/applications.bundle.js": "./designsafe/static/scripts/applications/app.js",
       "./designsafe/static/build/notifications.bundle.js": "./designsafe/static/scripts/notifications/app.js"

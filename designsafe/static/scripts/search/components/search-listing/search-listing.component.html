@@ -1,0 +1,42 @@
+<div>
+        <!-- Files -->
+        <div ng-if='$ctrl.data.doc_type === "file" || $ctrl.data.doc_type=="object"'>
+            <span class="label label-default"> File </span>
+            <span class="label label-primary"> {{$ctrl.data.length | bytes }} </span>
+            <h4> <a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{ $ctrl.data.path }}" target="_self"> {{$ctrl.data.name}} </a> </h4>
+            <p> {{$ctrl.data.path}} </p>
+            <span class="label label-primary" ng-if='$ctrl.data.lastModified' style="background-color:#5b4d92"> {{ $ctrl.data.lastModified | date:'short'}} </span>
+            <hr>
+        </div>
+        <!--  Web Content -->
+        <div ng-if='$ctrl.data.doc_type === "modelresult" && $ctrl.data.highlight'>
+          <span class="label label-default"> Web Content </span>
+          <p>
+            <h4><a ng-href="{{$ctrl.data.url || '/'}}" target="_self"> {{$ctrl.data.title}} </a></h4>
+          </p>
+          <div ng-repeat = "hit in $ctrl.data.highlight.body">
+            <p ng-bind-html = "hit"> </p>
+          </div>
+          <hr>
+        </div>
+        <!-- Publications -->
+        <div ng-if="$ctrl.data.doc_type === 'publication'">
+          <span class="label label-success"> Publication </span>
+          <!-- This is for designsafe projects -->
+          <div ng-if="$ctrl.data.projectId">
+            <h4><a ng-href="/data/browser/public/designsafe.storage.published/{{$ctrl.data.projectId}}"  target="_self"> {{$ctrl.data.project.value.title}} </a> </h4>
+            <strong> Project Type: </strong> {{$ctrl.data.project.value.projectType}}
+            <p> {{$ctrl.data.project.value.description}} </p>
+            <span class="label label-primary"> Created: {{$ctrl.data.created | date:'short'}} </span>
+          </div>
+          <!-- This is for old nees projects -->
+          <div ng-if="!$ctrl.data.projectId">
+            <h4><a ng-href="/data/browser/public/{{$ctrl.data.system}}/{{$ctrl.data.name}}"  target="_self"> {{$ctrl.data.title}} </a> </h4>
+            <p> {{$ctrl.data.description}} </p>
+            <span class="label label-primary"> Created: {{$ctrl.data.startDate | date:'short'}} </span>
+          </div>
+          <hr>
+        </div>
+      
+      </div>
+      
