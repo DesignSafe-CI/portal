@@ -25,6 +25,7 @@ import { ddSharedListing } from './directives/dd-shared-listing';
 import { metadataListing } from './directives/metadata-listing';
 import { myDataBrowser } from './directives/my-data-browser';
 import { ngDesignsafeDirectives } from './directives/ng-designsafe-directives';
+import { ddProjectSearchListing } from './directives/dd-project-search-listing';
 
 //import controllers from ./controllers
 import { notifications } from './controllers/notifications';
@@ -134,6 +135,7 @@ metadataListing(window, angular);
 myDataBrowser(window, angular);
 myDataBrowser(window, angular);
 ngDesignsafeDirectives(angular, $);
+ddProjectSearchListing(window, angular);
 
 //Add controllers from ./controllers.
 notifications(window, angular, $);

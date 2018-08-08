@@ -1,7 +1,7 @@
 /**
  *
  */
-(function(window, angular) {
+export const ddProjectSearchListing = function(window, angular) {
 
     var module = angular.module('designsafe');
   
@@ -26,5 +26,5 @@
       };
     });
   
-  })(window, angular);
+  }
   
