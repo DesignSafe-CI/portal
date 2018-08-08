@@ -64,7 +64,7 @@ import { project } from './models/project';
 //wsProvider();
 
 //data depot controllers
-/*
+
 import { communityDataCtrl } from '../data-depot/controllers/community';
 import { dataDepotNavCtrl } from '../data-depot/controllers/data-depot-nav';
 import {dataDepotNewCtrl } from '../data-depot/controllers/data-depot-new'
@@ -77,6 +77,7 @@ import { publicationDataCtrl } from '../data-depot/controllers/publications';
 import { publishedDataCtrl } from '../data-depot/controllers/published';
 import { sharedData } from '../data-depot/controllers/shared-data';
 
+/*
 //dashboard
 import { dashboardCtrl } from '../dashboard/controllers/dashboardCtrl';
 import { agave2ds } from '../dashboard/filters/filters';
@@ -107,9 +108,9 @@ import { applicationSystemsRoleCtrl } from '../applications/controllers/applicat
 */
 
 import '../search'
-//import '../data-depot'
+import '../data-depot'
 
-export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel', 'ds-search']).config(['$httpProvider', function($httpProvider) {
+export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel', 'ds-search', 'ds-data']).config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -169,13 +170,11 @@ project(window, angular, $, _);
 
 //add providers
 //add data depot controllers
-/*
+
 communityDataCtrl(window, angular);
 dataDepotNavCtrl(window, angular);
 dataDepotNewCtrl(window, angular);
-dataDepotToolbarCtrl(window, angular);
-dataDepotToolbarCtrl(window, angular);
-externalDataCtrl(window, angular);
+//dataDepotToolbarCtrl(window, angular)
 externalDataCtrl(window, angular);
 mainCtrl(window, angular);
 myDataCtrl(window, angular, _);
@@ -183,4 +182,4 @@ projectsController(window, angular);
 publicationDataCtrl(window, angular);
 publishedDataCtrl(window, angular);
 sharedData(window, angular);
-*/
+

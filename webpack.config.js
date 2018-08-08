@@ -13,7 +13,7 @@ module.exports = {
       "./designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
       "./designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
       "./designsafe/static/build/bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
-      "./designsafe/static/build/dd.bundle.js": "./designsafe/static/scripts/data-depot/app.js",
+      //"./designsafe/static/build/dd.bundle.js": "./designsafe/static/scripts/data-depot/app.js",
       "./designsafe/static/build/workspace.bundle.js": "./designsafe/static/scripts/workspace/app.js",
       //"./designsafe/static/build/search.bundle.js": "./designsafe/static/scripts/search/index.js",
       "./designsafe/static/build/dashboard.bundle.js": "./designsafe/static/scripts/dashboard/index.js",

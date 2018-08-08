@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
-
-
+console.log('index get.')
+/*
 import { communityDataCtrl } from './controllers/community';
 import { dataDepotNavCtrl } from './controllers/data-depot-nav';
 import {dataDepotNewCtrl } from './controllers/data-depot-new'
@@ -15,6 +15,7 @@ import { publicationDataCtrl } from '../data-depot/controllers/publications';
 import { publishedDataCtrl } from '../data-depot/controllers/published';
 import { sharedData } from '../data-depot/controllers/shared-data';
 
+
 communityDataCtrl(window, angular);
 dataDepotNavCtrl(window, angular);
 dataDepotNewCtrl(window, angular);
@@ -26,10 +27,11 @@ projectsController(window, angular);
 publicationDataCtrl(window, angular);
 publishedDataCtrl(window, angular);
 sharedData(window, angular);
+*/
 
 
-let module = angular.module('designsafe');
-module.requires.push(
+let ddModule = angular.module('ds-data', []);
+ddModule.requires.push(
   'ui.router',
   'djng.urls', //TODO: djng
   'ui.bootstrap',
@@ -44,10 +46,11 @@ module.requires.push(
 
 import { DataBrowserServicePreviewComponent } from './components/modals/data-browser-service-preview/data-browser-service-preview.component'
 //components
-module.component('ddtoolbar', DataDepotToolbarComponent)
+ddModule.component('ddtoolbar', DataDepotToolbarComponent)
 
 //modals
-module.component('preview', DataBrowserServicePreviewComponent)
+import { DataDepotToolbarComponent } from './components/data-depot-toolbar/data-depot-toolbar.component'
+ddModule.component('preview', DataBrowserServicePreviewComponent)
 
 function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 
@@ -542,7 +545,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
   });
 }
 
-module
+ddModule
   .config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', 'toastrConfig', config])
   .run(['$rootScope', '$location', '$state', 'Django', function($rootScope, $location, $state, Django) {
     $rootScope.$state = $state;
@@ -571,7 +574,7 @@ module
     });
   }]);
 
-module
+ddModule
   .config(['WSBusServiceProvider', function(WSBusServiceProvider){
 
       WSBusServiceProvider.setUrl(
@@ -591,4 +594,4 @@ module
 // }]);
 
 
-export default module
+export default ddModule
