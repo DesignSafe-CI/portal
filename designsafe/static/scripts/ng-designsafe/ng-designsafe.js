@@ -26,6 +26,7 @@ import { metadataListing } from './directives/metadata-listing';
 import { myDataBrowser } from './directives/my-data-browser';
 import { ngDesignsafeDirectives } from './directives/ng-designsafe-directives';
 import { ddProjectSearchListing } from './directives/dd-project-search-listing';
+import { ddAltmetrics } from './directives/dd-altmetrics';
 
 //import controllers from ./controllers
 import { notifications } from './controllers/notifications';
@@ -136,6 +137,7 @@ myDataBrowser(window, angular);
 myDataBrowser(window, angular);
 ngDesignsafeDirectives(angular, $);
 ddProjectSearchListing(window, angular);
+ddAltmetrics(window, angular);
 
 //Add controllers from ./controllers.
 notifications(window, angular, $);
