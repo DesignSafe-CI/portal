@@ -1,4 +1,4 @@
-(function(window, angular) {
+export function ddAltmetrics(window, angular) {
 
   var module = angular.module('designsafe');
 
@@ -54,4 +54,4 @@
       }
     };
   }]);
-})(window, angular);
+}
