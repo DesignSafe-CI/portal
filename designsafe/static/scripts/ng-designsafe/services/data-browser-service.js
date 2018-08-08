@@ -1,11 +1,13 @@
 export function nbv($window) { //from http://jameshill.io/articles/angular-third-party-injection-pattern/
-  if($window.nbv){
+  if ($window.nbv) {
     //Delete nbv from window so it's not globally accessible.
     //  We can still get at it through _thirdParty however, more on why later
     $window._thirdParty = $window._thirdParty || {};
     $window._thirdParty.nbv = $window.nbv;
-    try { delete $window.nbv; } catch (e) {$window.nbv = undefined;
-    /*<IE8 doesn't do delete of window vars, make undefined if delete error*/}
+    try { delete $window.nbv; } catch (e) {
+    $window.nbv = undefined;
+      /*<IE8 doesn't do delete of window vars, make undefined if delete error*/
+  }
   }
   var nbv = $window._thirdParty.nbv;
   return nbv;
@@ -14,7 +16,6 @@ export function nbv($window) { //from http://jameshill.io/articles/angular-third
 export function DataBrowserService($rootScope, $http, $q, $uibModal,
                   $state, Django, FileListing, Logging,
                   SystemsService, nbv, ProjectEntitiesService) {
-
   var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
   /**
@@ -135,7 +136,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
   /**
     Checks to see if there is a folder in the selected listings. If so, download
     is not available.
-
     @param {FileListing|FileListing[]} files Files to test
     @return {boolean}
   */
@@ -157,7 +157,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       if (! Array.isArray(files)) {
         files = [files];
       }
-
       var tests = {};
       tests.canDownload = files.length >= 1 && hasPermission('READ', files) && (!(containsFolder(files)));
       tests.canPreview = files.length === 1 && hasPermission('READ', files) && !['publicData'].includes($state.current.name);
@@ -177,28 +176,15 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       return tests;
     }
 
-    var tests = {};
-    tests.canDownload = files.length >= 1 && hasPermission('READ', files) && (!(containsFolder(files)));
-    tests.canPreview = files.length === 1 && hasPermission('READ', files);
-    tests.canPreviewImages = files.length >= 1 && hasPermission('READ', files) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
-    tests.canViewMetadata = files.length >= 1 && hasPermission('READ', files);
-    tests.canShare = files.length === 1 && $state.current.name === 'myData';
-    tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-    tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
-    tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
-    tests.canViewCategories = true;
-
-    var trashPath = _trashPath();
-    tests.canTrash = ($state.current.name === 'myData' || $state.current.name === 'projects.view.data') && files.length >= 1 && currentState.listing.path !== trashPath && ! _.some(files, function(sel) { return isProtected(sel); });
-    tests.canDelete = $state.current.name === 'myData' && files.length >= 1 && currentState.listing.path === trashPath;
-
-    return tests;
-  }
-
   function showListing(){
     currentState.showMainListing = true;
     currentState.showPreviewListing = false;
   }
+
+    function showPreview(){
+      currentState.showMainListing = false;
+      currentState.showPreviewListing = true;
+    }
 
     var req;
     /**
@@ -214,19 +200,13 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         req = null;
       }
 
-  var req;
-  /**
-   *
-   * @param options
-   * @param options.system
-   * @param options.path
-   */
-  function browse (options) {
-    // resolve any ongoing requests
-    if(req){
-      req.stopper.resolve();
-      req = null;
-    }
+      currentState.busy = true;
+      currentState.busyListing = true;
+      currentState.error = null;
+      currentState.loadingMore = true;
+      currentState.reachedEnd = false;
+      currentState.busyListingPage = false;
+      currentState.page = 0;
 
       if (params) {
         req = FileListing.get(options, apiParams, params); // stopper is returned here...
@@ -235,9 +215,8 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         req = FileListing.get(options, apiParams); // stopper is returned here... 
       }
 
-      // keep spinning if user navigates from original selection
-      // or stop spinning after displaying error message
-      if(err.data) {
+      var currentReq = req.then(function (listing) {
+        select([], true);
         currentState.busy = false;
         currentState.busyListing = false;
         currentState.loadingMore = false;
@@ -262,33 +241,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       });
       return currentReq;
     }
-
-    /**
-     *
-     * @param options
-     * @param options.system
-     * @param options.path
-     * @param options.page
-     */
-    function browsePage (options) {
-      currentState.busy = true;
-      currentState.busyListingPage = true;
-      currentState.error = null;
-      var limit = 100;
-      var offset = 0;
-      if (options.page){
-        offset += limit * options.page;
-      }
-      currentState.busyListing = false;
-      currentState.listing = null;
-      currentState.error = err.data;
-      currentState.loadingMore = false;
-      currentState.reachedEnd = false;
-      return $q.reject(err);
-    });
-
-    return currentReq;
-  }
 
   /**
    *
@@ -741,7 +693,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     /*
   function preview (file, listing) {
     var modal = $uibModal.open({
-      template: require('../html/modals/data-browser-service-preview.html'),
+        templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
       controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
         $scope.file = file;
         if (typeof listing !== 'undefined' &&
@@ -779,7 +731,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
                       // set video source and mimetype
                       document.getElementById("videoPlayer").src=vid;
                       document.getElementById("videoPlayer").setAttribute('type', `video/${fileExt}`);
-                    };
+                      }
                   };
                   oReq.onerror = function() {
                     $scope.previewError = err.data;
@@ -809,10 +761,13 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
                       var blob = new Blob([oReq.response], {type: "application/json"});
                       var reader = new FileReader();
 
-                        // set video source and mimetype
-                        document.getElementById("videoPlayer").src=vid;
-                        document.getElementById("videoPlayer").setAttribute('type', `video/${fileExt}`);
-                      }
+                        reader.onload = function(e){
+                          var content = JSON.parse(e.target.result);
+                          var target = $('.nbv-preview')[0];
+                          nbv.render(content, target);
+                    };
+
+                        reader.readAsText(blob);
                     };
 
                     oReq.send();
@@ -898,9 +853,7 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
 
     return modal.result;
   }
-
   */
-
   /**
    *
    * @param {FileListing} folder
@@ -1536,6 +1489,64 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             var equal = function(val){
                 return val === file.uuid();
             };
+              var predicate = function(item){
+                  return _.findIndex(item.file, equal) > -1;
+              };
+              for (var t in tags){
+                  for(var st in tags[t]){
+                      var _tag = _.find(tags[t][st], predicate);
+                      if (_tag){
+                          tag = {tag: st, desc: _tag.desc};
+                      }
+                  }
+              }
+              return tag;
+          };
+
+          $scope.saveFileTags = function(){
+            var sttasks = [];
+            var updateFn = function(e){
+                        var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                        ent.update(e);
+                        };
+            for (var euuid in $scope.data.fileSubTags){
+              var sts = $scope.data.fileSubTags[euuid] || [];
+              var entity = currentState.project.getRelatedByUuid(euuid);
+              for (var fuuid in sts){
+                if (sts[fuuid] == 'none'){
+                  continue;
+                }
+                if (typeof entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] !== 'undefined' &&
+                    _.isArray(entity.value.tags[sts[fuuid].tagType][sts[fuuid].name])){
+
+                  if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
+                        {file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]});
+                  } else {
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
+                        {file: [fuuid]});
+                  }
+                } else {
+                  if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]}];
+                  } else {
+                    entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid]}];
+                  }
+                }
+
+                sttasks.push(ProjectEntitiesService.update(
+                        {data: {uuid: entity.uuid, entity:entity}}).then(updateFn));
+                }
+              }
+            $scope.ui.busy = true;
+            $q.all(sttasks).then(function(resps){
+              $scope.data.fileSubTags = [];
+              _setFileEntities();
+              _setEntities();
+              $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+              $scope.ui.busy = false;
+            });
+            };
           $scope.removeFileSubTag = function(entity, file){
             $scope.ui.busy = true;
             for (var tagType in entity.value.tags || {}){
@@ -1739,328 +1750,17 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
             } else if ( _.findWhere($scope.ui.parentEntities, {uuid: entity.uuid})){
               return true;
             }
-            return tag;
-        };
-
-        $scope.saveFileTags = function(){
-          var sttasks = [];
-          var updateFn = function(e){
-                      var ent = $scope.data.project.getRelatedByUuid(e.uuid);
-                      ent.update(e);
-                      };
-          for (var euuid in $scope.data.fileSubTags){
-            var sts = $scope.data.fileSubTags[euuid] || [];
-            var entity = currentState.project.getRelatedByUuid(euuid);
-            for (var fuuid in sts){
-              if (sts[fuuid] == 'none'){
-                continue;
-              }
-              if (typeof entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] !== 'undefined' &&
-                  _.isArray(entity.value.tags[sts[fuuid].tagType][sts[fuuid].name])){
-
-                if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
-                  entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
-                      {file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]});
-                } else {
-                  entity.value.tags[sts[fuuid].tagType][sts[fuuid].name].push(
-                      {file: [fuuid]});
-                }
-              } else {
-                if ($scope.data.fileSubTagsDesc[euuid] && $scope.data.fileSubTagsDesc[euuid][fuuid]){
-                  entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid], desc: $scope.data.fileSubTagsDesc[euuid][fuuid]}];
-                } else {
-                  entity.value.tags[sts[fuuid].tagType][sts[fuuid].name] = [{file: [fuuid]}];
-                }
-              }
-
-              sttasks.push(ProjectEntitiesService.update(
-                      {data: {uuid: entity.uuid, entity:entity}}).then(updateFn));
-              }
-            }
-          $scope.ui.busy = true;
-          $q.all(sttasks).then(function(resps){
-            $scope.data.fileSubTags = [];
-            _setFileEntities();
-            _setEntities();
-            $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-            $scope.ui.busy = false;
-          });
-          };
-
-        $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-
-    $scope.doSaveMetadata = function($event) {
-    $event.preventDefault();
-    $uibModalInstance.close($scope.data);
-    };
-
-    $scope.isMarkedDeleted = function(tag){
-    return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
-    };
-
-    $scope.toggleTag = function(tag){
-    var id = $scope.data.form.tagsToDelete.indexOf(tag);
-    if (id > -1){
-      $scope.data.form.tagsToDelete.splice(id, 1);
-    } else {
-      $scope.data.form.tagsToDelete.push(tag);
-    }
-    };
-
-        /**
-         * Cancel and close upload dialog.
-         */
-        $scope.cancel = function () {
-          $uibModalInstance.dismiss('cancel');
-        };
-
-        $scope.ui.addingTag = false;
-        if (currentState.project.value.projectType === 'experimental'){
-          $scope.ui.tagTypes = [
-              {label: 'Model Config',
-                name: 'designsafe.project.model_config',
-                yamzId: 'h1312'},
-              {label: 'Sensor Info',
-                name: 'designsafe.project.sensor_list',
-                yamzId: 'h1557'},
-              {label: 'Event',
-                name: 'designsafe.project.event',
-                yamzId: 'h1253'},
-              {label: 'Analysis',
-                name: 'designsafe.project.analysis',
-                yamzId: 'h1333'},
-              {label: 'Report',
-                name: 'designsafe.project.report',
-                yamzId: ''}
-              ];
-        } else if (currentState.project.value.projectType === 'simulation'){
-          $scope.ui.tagTypes = [
-              {label: 'Simulation Model',
-                name: 'designsafe.project.simulation.model',
-                yamzId: ''},
-              {label: 'Simulation Input',
-                name: 'designsafe.project.simulation.input',
-                yamzId: ''},
-              {label: 'Simulation Output',
-                name: 'designsafe.project.simulation.output',
-                yamzId: ''},
-              {label: 'Integrated Data Analysis',
-                name: 'designsafe.project.simulation.analysis',
-                yamzId: ''},
-              {label: 'Integrated Report',
-                name: 'designsafe.project.simulation.report',
-                yamzId: ''},
-              {label: 'Analysis',
-                name: 'designsafe.project.analysis',
-                yamzId: 'h1333'},
-              {label: 'Report',
-                name: 'designsafe.project.report',
-                yamzId: ''}
-              ];
-        }
-        $scope.ui.simModel = {};
-        $scope.ui.simModel.apps = [
-          {label: 'ADDCIRC',
-            name: 'ADDCIRC',
-            yamzId: '' },
-          {label: 'Abaqus',
-            name: 'Abaqus',
-            yamzId: ''},
-          {label: 'Atena',
-            name: 'Atena',
-            yamzId: ''},
-          {label: 'ClawPack/GeoClaw',
-            name: 'ClawPack/GeoClaw',
-            yamzId: ''},
-          {label: 'Diana',
-            name: 'Diana',
-            yamzId: ''},
-          {label: 'ETABS',
-            name: 'ETABS',
-            yamzId: ''},
-          {label: 'FUNWAVE',
-            name: 'FUNWAVE',
-            yamzId: ''},
-          {label: 'FLUENT/ANSYS',
-            name: 'FLUENT/ANSYS',
-            yamzId: ''},
-          {label: 'LS-Dyna',
-            name: 'LS-Dyna',
-            yamzId: ''},
-          {label: 'OpenFoam',
-            name: 'OpenFoam',
-            yamzId: ''},
-          {label: 'OpenSees',
-            name: 'OpenSees',
-            yamzId: ''},
-          {label: 'PERFORM',
-            name: 'PERFORM',
-            yamzId: ''},
-          {label: 'SAP',
-            name: 'SAP',
-            yamzId: ''},
-          {label: 'SWAN',
-            name: 'SWAN',
-            yamzId: ''},
-          {label: 'Other',
-            name: 'Other',
-            yamzId: ''},
-        ];
-        $scope.ui.simModel.NHType = [
-          {label: 'Earthquake',
-            name: 'Earthquake',
-            yamzId: '' },
-          {label: 'Flood',
-            name: 'Flood',
-            yamzId: '' },
-          {label: 'Landslide',
-            name: 'Landslide',
-            yamzId: '' },
-          {label: 'Tornado',
-            name: 'Tornado',
-            yamzId: '' },
-          {label: 'Tsunami',
-            name: 'Tsunami',
-            yamzId: '' },
-          {label: 'Other',
-            name: 'Other',
-            yamzId: '' },
-        ];
-        $scope.data.form.projectTagToAdd = {optional:{}};
-        $scope.data.catForm = {};
-
-        $scope.isProjectTagSel = function(entity){
-          if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
-            return true;
-          } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
             return false;
-          } else if ( _.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
-            return true;
-          } else if ( _.findWhere($scope.ui.parentEntities, {uuid: entity.uuid})){
-            return true;
+        };
+
+          $scope.isProjectTagDirectlyRelated = function(entity){
+            for(var fi = 0; fi < files.length; fi++){
+              if (entity.isRelatedToFile(files[fi])){
+                  return true;
+        }
           }
           return false;
         };
-
-          $scope.addProjectTag = function(){  // Error is here...
-            var entity = $scope.data.form.projectTagToAdd;
-            var nameComps = entity.name.split('.');
-            var name = nameComps[nameComps.length-1];
-            $scope.ui.addingTag = true;
-            entity.description = entity.description || '';
-            //if (typeof $scope.data.files !== 'undefined'){
-            //  entity.filePaths = _.map($scope.data.files,
-            //                         function(file){
-            //                          return file.path;
-            //                         });
-            //}
-            
-            // using entity.name to place the object
-            // what if we route the name if it is a normal report?
-            var post_process = function(resp){
-                $scope.data.form.projectTagToAdd = {optional:{}};
-                $scope.data.project.addEntity(resp);
-                 _setFileEntities();
-                 _setEntities();
-                $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-                $scope.ui.error = false;
-                $scope.ui.addingTag = false;
-              };
-            $scope.ui.addingTag = true;
-
-            if (entity.name === 'designsafe.project.hybrid_simulation.output'){
-                var tasks = [];
-                var coordinatorDesc = entity.coordinatorDesc;
-                delete entity.coordinatorDesc;
-                var simulationDesc = entity.simulationDesc;
-                delete entity.simulationDesc;
-                var eventDesc = entity.eventDesc;
-                delete entity.eventDesc;
-
-                entity.name = 'designsafe.project.hybrid_simulation.coordinator_output';
-                tasks.push(
-                  ProjectEntitiesService.create({
-                      data: {
-                          uuid: $scope.data.project.uuid,
-                          name: entity.name,
-                          entity: {
-                              name: 'designsafe.project.hybrid_simulation.coordinator_output',
-                              title: entity.title,
-                              description: coordinatorDesc
-                          }
-                      }
-                  }).then(
-                      post_process,
-                      function(err){
-                          $scope.ui.error = true;
-                          $scope.error = err;
-                      }
-                  )
-                );
-
-                entity.name = 'designsafe.project.hybrid_simulation.sim_output';
-                tasks.push(
-                  ProjectEntitiesService.create({
-                      data: {
-                          uuid: $scope.data.project.uuid,
-                          name: entity.name,
-                          entity: {
-                              name: 'designsafe.project.hybrid_simulation.sim_output',
-                              title: entity.title,
-                              description: simulationDesc
-                          }
-                      }
-                  }).then(
-                      post_process,
-                      function(err){
-                          $scope.ui.error = true;
-                          $scope.error = err;
-                      }
-                  )
-                );
-
-                entity.name = 'designsafe.project.hybrid_simulation.exp_output';
-                tasks.push(
-                  ProjectEntitiesService.create({
-                      data: {
-                          uuid: $scope.data.project.uuid,
-                          name: entity.name,
-                          entity: {
-                              name: 'designsafe.project.hybrid_simulation.exp_output',
-                              title: entity.title,
-                              description: eventDesc
-                          }
-                      }
-                  }).then(
-                      post_process,
-                      function(err){
-                          $scope.ui.error = true;
-                          $scope.error = err;
-                      }
-                  )
-                );
-                $q.all(tasks);
-            } else {
-                ProjectEntitiesService.create({data: {
-                    uuid: currentState.project.uuid,
-                    name: entity.name,
-                    entity: entity
-                }})
-                .then(post_process,
-                   function(err){
-                     $scope.ui.error = true;
-                     $scope.error = err;
-                   }
-               );
-            }
-          };
-        }],
-        size: 'lg',
-        resolve: {
-          'file': function() { return file; },
-          'form': function() { return {metadataTags: ''}; },
-        }
-      });
 
         $scope.isEntityLocked = function(entity){
           return $scope.isProjectTagSel(entity) && !$scope.isProjectTagDirectlyRelated(entity) &&
@@ -2160,56 +1860,37 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           );
         };
 
-            $scope.doSaveMetadata = function($event) {
-            $event.preventDefault();
-            $uibModalInstance.close($scope.data);
+          $scope.openEditCategory = function(){
+              var cat = $scope.data.newFileProjectTags[0];
+              $scope.data.catForm = {
+                  entity: cat,
+                  type: cat._displayName,
+                  title: cat.value.title,
+                  reference: cat.value.reference,
+                  referencedoi: cat.value.referencedoi,
+                  description: cat.value.description
             };
-
-            $scope.isMarkedDeleted = function(tag){
-            return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
-            };
-
-            $scope.toggleTag = function(tag){
-            var id = $scope.data.form.tagsToDelete.indexOf(tag);
-            if (id > -1){
-              $scope.data.form.tagsToDelete.splice(id, 1);
-            } else {
-              $scope.data.form.tagsToDelete.push(tag);
-            }
-            };
-
-          /**
-           * Cancel and close upload dialog.
-           */
-          $scope.cancel = function () {
-            $uibModalInstance.dismiss('cancel');
+              $scope.ui.showEditCategory = true;
           };
 
-          $scope.ui.addingTag = false;
-          $scope.ui.tagTypes = [
-              {label: 'Model Config',
-               name: 'designsafe.project.model_config'},
-              {label: 'Sensor Info',
-               name: 'designsafe.project.sensor_list'},
-              {label: 'Event',
-               name: 'designsafe.project.event'},
-              {label: 'Analysis',
-               name: 'designsafe.project.analysis'}
-              ];
-          $scope.data.form.projectTagToAdd = {optional:{}};
-
-          $scope.isProjectTagSel = function(entity){
-            if (typeof entity === 'undefined'){
-                return;
-            }
-            if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
-              return true;
-            } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
-              return false;
-            } else if ( _.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
-              return true;
-            }
-            return false;
+          $scope.saveEditCategory = function(){
+              var cat = $scope.data.catForm.entity;
+              cat.value.title = $scope.data.catForm.title;
+              cat.value.reference = $scope.data.catForm.reference;
+              cat.value.referencedoi= $scope.data.catForm.referencedoi;
+              cat.value.description = $scope.data.catForm.description;
+              $scope.ui.editFormSaving = true;
+              ProjectEntitiesService.update({data: {
+                                        uuid: cat.uuid,
+                                        entity: cat
+                                      }}).then(function(e){
+                                          var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                                          ent.update(e);
+                                          $scope.ui.editFormSaving = false;
+                                          $scope.data.catForm = {};
+                                          $scope.ui.showEditCategory = false;
+                                          return e;
+                                      });
           };
 
         $scope.deleteCategory = function(){
@@ -2237,36 +1918,111 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           var name = nameComps[nameComps.length-1];
           $scope.ui.addingTag = true;
           entity.description = entity.description || '';
-          if (typeof $scope.data.files !== 'undefined'){
-            entity.filePaths = _.map($scope.data.files,
-                                    function(file){
-                                    return file.path;
-                                    });
-          }
+            //if (typeof $scope.data.files !== 'undefined'){
+            //  entity.filePaths = _.map($scope.data.files,
+            //                         function(file){
+            //                          return file.path;
+            //                         });
+            //}
           
           // using entity.name to place the object
           // what if we route the name if it is a normal report?
-          $scope.ui.addingTag = true;
-          ProjectEntitiesService.create({data: {
-              uuid: currentState.project.uuid,
-              name: entity.name,
-              entity: entity
-          }})
-          .then(
-              function(resp){
+            var post_process = function(resp){
                 $scope.data.form.projectTagToAdd = {optional:{}};
-                currentState.project.addEntity(resp);
+                $scope.data.project.addEntity(resp);
                 _setFileEntities();
                 _setEntities();
                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
                 $scope.ui.error = false;
                 $scope.ui.addingTag = false;
-              },
+              };
+          $scope.ui.addingTag = true;
+
+            if (entity.name === 'designsafe.project.hybrid_simulation.output'){
+                var tasks = [];
+                var coordinatorDesc = entity.coordinatorDesc;
+                delete entity.coordinatorDesc;
+                var simulationDesc = entity.simulationDesc;
+                delete entity.simulationDesc;
+                var eventDesc = entity.eventDesc;
+                delete entity.eventDesc;
+
+                entity.name = 'designsafe.project.hybrid_simulation.coordinator_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.coordinator_output',
+                              title: entity.title,
+                              description: coordinatorDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+              function(err){
+                $scope.ui.error = true;
+                $scope.error = err;
+              }
+                  )
+          );
+
+                entity.name = 'designsafe.project.hybrid_simulation.sim_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.sim_output',
+                              title: entity.title,
+                              description: simulationDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+
+                entity.name = 'designsafe.project.hybrid_simulation.exp_output';
+                tasks.push(
+                  ProjectEntitiesService.create({
+                      data: {
+                          uuid: $scope.data.project.uuid,
+                          name: entity.name,
+                          entity: {
+                              name: 'designsafe.project.hybrid_simulation.exp_output',
+                              title: entity.title,
+                              description: eventDesc
+                          }
+                      }
+                  }).then(
+                      post_process,
+                      function(err){
+                          $scope.ui.error = true;
+                          $scope.error = err;
+                      }
+                  )
+                );
+                $q.all(tasks);
+            } else {
+          ProjectEntitiesService.create({data: {
+              uuid: currentState.project.uuid,
+              name: entity.name,
+              entity: entity
+          }})
+                .then(post_process,
               function(err){
                 $scope.ui.error = true;
                 $scope.error = err;
               }
           );
+            }
         };
       }],
       size: 'lg',
@@ -2470,6 +2226,197 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     $scope.isMarkedDeleted = function(tag){
     return $scope.data.form.tagsToDelete.indexOf(tag) > -1;
     };
+
+            $scope.toggleTag = function(tag){
+            var id = $scope.data.form.tagsToDelete.indexOf(tag);
+            if (id > -1){
+              $scope.data.form.tagsToDelete.splice(id, 1);
+            } else {
+              $scope.data.form.tagsToDelete.push(tag);
+            }
+            };
+
+          /**
+           * Cancel and close upload dialog.
+           */
+          $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+          };
+
+          $scope.ui.addingTag = false;
+          $scope.ui.tagTypes = [
+              {label: 'Model Config',
+               name: 'designsafe.project.model_config'},
+              {label: 'Sensor Info',
+               name: 'designsafe.project.sensor_list'},
+              {label: 'Event',
+               name: 'designsafe.project.event'},
+              {label: 'Analysis',
+               name: 'designsafe.project.analysis'}
+              ];
+          $scope.data.form.projectTagToAdd = {optional:{}};
+
+          $scope.isProjectTagSel = function(entity){
+            if (typeof entity === 'undefined'){
+                return;
+            }
+            if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
+              return true;
+            } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
+              return false;
+            } else if ( _.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
+              return true;
+            }
+            return false;
+          };
+
+          $scope.toggleProjectTag = function(entity){
+            if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
+              $scope.data.newFileProjectTags = _.reject($scope.data.newFileProjectTags,
+                                                        function(e){
+                                                          if (e.uuid === entity.uuid){
+                                                            return true;
+                                                          } else {
+                                                            return false;
+                                                          }
+                                                        });
+            } else if (_.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
+                if(_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
+                  $scope.data.projectTagsToUnrelate = _.reject(
+                        $scope.data.projectTagsToUnrelate, function(e){
+                          if(e.uuid === entity.uuid){ return true; }
+                          else { return false; }
+                        });
+                } else {
+                  $scope.data.projectTagsToUnrelate.push(entity);
+                }
+            } else {
+              $scope.data.newFileProjectTags = [entity];
+            }
+          };
+
+          $scope.saveRelations = function(){
+            var tasks = [];
+            _.each($scope.data.projectTagsToUnrelate, function(entity){
+              entity.associationIds = _.difference(entity.associationIds, $scope.data.fileUuids);
+              entity.value.files = _.difference(entity.value.files, $scope.data.fileUuids);
+              tasks.push(ProjectEntitiesService.update({data: {
+                                                            uuid: entity.uuid,
+                                                            entity: entity}
+                                                      }).then(function(e){
+                                                      var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                                                      ent.update(e);
+                                                      return e;
+                                                      }));
+
+            });
+           _.each($scope.data.newFileProjectTags, function(entity){
+              entity.associationIds = entity.associationIds.concat($scope.data.fileUuids);
+              entity.value.files = entity.value.files.concat($scope.data.fileUuids);
+              tasks.push(ProjectEntitiesService.update({data:{
+                                                          uuid: entity.uuid,
+                                                          entity: entity}
+                                                      }).then(function(e){
+                                                      var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+                                                      ent.update(e);
+                                                      return e;
+                                                      }));
+           });
+           $scope.ui.busy = true;
+           $q.all(tasks).then(
+             function(e){
+               $scope.data.newFileProjectTags = [];
+               $scope.data.projectTagsToUnrelate = [];
+               _setFileEntities();
+               _setEntities();
+               $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+               $scope.ui.busy = false;
+             }, function(er){
+               $scope.ui.busy = false;
+               $scope.ui.error = er;
+             }
+           );
+          };
+
+          $scope.addProjectTag = function(){
+            var newTag = $scope.data.form.projectTagToAdd;
+            var nameComps = newTag.tagType.split('.');
+            var name = nameComps[nameComps.length-1];
+            var entity = {};
+            entity.name = newTag.tagType;
+            if (name === 'event'){
+              entity.eventType = newTag.tagAttribute;
+            } else if (name === 'analysis'){
+              entity.analysisType = newTag.tagAttribute;
+            } else if (name === 'sensor_list'){
+              entity.sensorListType = newTag.tagAttibute;
+            } else if (name === 'model_config'){
+              entity.coverage = newTag.tagAttribute;
+            }
+            for (var attr in $scope.data.form.projectTagToAdd.optional){
+              entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
+            }
+            $scope.ui.addingTag = true;
+            entity.title = newTag.tagTitle;
+            entity.description = newTag.tagDescription || '';
+            if (typeof $scope.data.files !== 'undefined'){
+              entity.filePaths = _.map($scope.data.files,
+                                     function(file){
+                                      return file.path;
+                                     });
+            }
+            $scope.ui.addingTag = true;
+            ProjectEntitiesService.create({data: {
+                uuid: currentState.project.uuid,
+                name: newTag.tagType,
+                entity: entity
+            }})
+            .then(
+               function(resp){
+                 $scope.data.form.projectTagToAdd = {optional:{}};
+                 currentState.project.addEntity(resp);
+                 _setFileEntities();
+                 _setEntities();
+                 $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
+                 $scope.ui.error = false;
+                 $scope.ui.addingTag = false;
+               },
+               function(err){
+                 $scope.ui.error = true;
+                 $scope.error = err;
+               }
+           );
+          };
+        }],
+        size: 'lg',
+        resolve: {
+          'file': function() { return file; },
+          'form': function() { return {metadataTags: ''}; },
+        }
+      });
+
+      return modal.result.then(function(data){
+        var file = data.file;
+        var form = data.form;
+        var metaObj = {
+          keywords: file.keywords || []
+        };
+        if (form.metadataTags) {
+          metaObj.keywords = metaObj.keywords.concat(form.metadataTags.split(','));
+        }
+        if (form.tagsToDelete.length){
+          metaObj.keywords = metaObj.keywords.filter(function(value){
+            return form.tagsToDelete.indexOf(value) < 0;
+          });
+        }
+        currentState.busy = true;
+        file.updateMeta({'metadata': metaObj}).then(function(file_resp){
+          //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
+          currentState.busy = false;
+        });
+      });
+    }
+
 
     var showCitation = function (ent, pub) {
       $uibModal.open({
@@ -2685,212 +2632,12 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       var handler = $rootScope.$on('DataBrowserService::Event', callback);
       scope.$on('$destroy', handler);
     }
-    };
 
-        /**
-         * Cancel and close upload dialog.
-         */
-        $scope.cancel = function () {
-          $uibModalInstance.dismiss('cancel');
-        };
-
-        $scope.ui.addingTag = false;
-        $scope.ui.tagTypes = [
-            {label: 'Model Config',
-              name: 'designsafe.project.model_config'},
-            {label: 'Sensor Info',
-              name: 'designsafe.project.sensor_list'},
-            {label: 'Event',
-              name: 'designsafe.project.event'},
-            {label: 'Analysis',
-              name: 'designsafe.project.analysis'}
-            ];
-        $scope.data.form.projectTagToAdd = {optional:{}};
-
-        $scope.isProjectTagSel = function(entity){
-          if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
-            return true;
-          } else if (_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
-            return false;
-          } else if ( _.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
-            return true;
-          }
-          return false;
-        };
-
-        $scope.toggleProjectTag = function(entity){
-          if (_.findWhere($scope.data.newFileProjectTags, {uuid: entity.uuid})){
-            $scope.data.newFileProjectTags = _.reject($scope.data.newFileProjectTags,
-                                                      function(e){
-                                                        if (e.uuid === entity.uuid){
-                                                          return true;
-                                                        } else {
-                                                          return false;
-                                                        }
-                                                      });
-          } else if (_.findWhere($scope.data.fileProjectTags, {uuid: entity.uuid})){
-              if(_.findWhere($scope.data.projectTagsToUnrelate, {uuid: entity.uuid})){
-                $scope.data.projectTagsToUnrelate = _.reject(
-                      $scope.data.projectTagsToUnrelate, function(e){
-                        if(e.uuid === entity.uuid){ return true; }
-                        else { return false; }
-                      });
-              } else {
-                $scope.data.projectTagsToUnrelate.push(entity);
-              }
-          } else {
-            $scope.data.newFileProjectTags = [entity];
-          }
-        };
-
-        $scope.saveRelations = function(){
-          var tasks = [];
-          _.each($scope.data.projectTagsToUnrelate, function(entity){
-            entity.associationIds = _.difference(entity.associationIds, $scope.data.fileUuids);
-            entity.value.files = _.difference(entity.value.files, $scope.data.fileUuids);
-            tasks.push(ProjectEntitiesService.update({data: {
-                                                          uuid: entity.uuid,
-                                                          entity: entity}
-                                                    }).then(function(e){
-                                                    var ent = $scope.data.project.getRelatedByUuid(e.uuid);
-                                                    ent.update(e);
-                                                    return e;
-                                                    }));
-
-          });
-          _.each($scope.data.newFileProjectTags, function(entity){
-            entity.associationIds = entity.associationIds.concat($scope.data.fileUuids);
-            entity.value.files = entity.value.files.concat($scope.data.fileUuids);
-            tasks.push(ProjectEntitiesService.update({data:{
-                                                        uuid: entity.uuid,
-                                                        entity: entity}
-                                                    }).then(function(e){
-                                                    var ent = $scope.data.project.getRelatedByUuid(e.uuid);
-                                                    ent.update(e);
-                                                    return e;
-                                                    }));
-          });
-          $scope.ui.busy = true;
-          $q.all(tasks).then(
-            function(e){
-              $scope.data.newFileProjectTags = [];
-              $scope.data.projectTagsToUnrelate = [];
-              _setFileEntities();
-              _setEntities();
-              $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-              $scope.ui.busy = false;
-            }, function(er){
-              $scope.ui.busy = false;
-              $scope.ui.error = er;
-            }
-          );
-        };
-
-        $scope.addProjectTag = function(){
-          var newTag = $scope.data.form.projectTagToAdd;
-          var nameComps = newTag.tagType.split('.');
-          var name = nameComps[nameComps.length-1];
-          var entity = {};
-          entity.name = newTag.tagType;
-          if (name === 'event'){
-            entity.eventType = newTag.tagAttribute;
-          } else if (name === 'analysis'){
-            entity.analysisType = newTag.tagAttribute;
-          } else if (name === 'sensor_list'){
-            entity.sensorListType = newTag.tagAttibute;
-          } else if (name === 'model_config'){
-            entity.coverage = newTag.tagAttribute;
-          }
-          for (var attr in $scope.data.form.projectTagToAdd.optional){
-            entity[attr] = $scope.data.form.projectTagToAdd.optional[attr];
-          }
-          $scope.ui.addingTag = true;
-          entity.title = newTag.tagTitle;
-          entity.description = newTag.tagDescription || '';
-          if (typeof $scope.data.files !== 'undefined'){
-            entity.filePaths = _.map($scope.data.files,
-                                    function(file){
-                                    return file.path;
-                                    });
-          }
-          $scope.ui.addingTag = true;
-          ProjectEntitiesService.create({data: {
-              uuid: currentState.project.uuid,
-              name: newTag.tagType,
-              entity: entity
-          }})
-          .then(
-              function(resp){
-                $scope.data.form.projectTagToAdd = {optional:{}};
-                currentState.project.addEntity(resp);
-                _setFileEntities();
-                _setEntities();
-                $scope.ui.parentEntities = currentState.project.getParentEntity($scope.data.files);
-                $scope.ui.error = false;
-                $scope.ui.addingTag = false;
-              },
-              function(err){
-                $scope.ui.error = true;
-                $scope.error = err;
-              }
-          );
-        };
-      }],
-      size: 'lg',
-      resolve: {
-        'file': function() { return file; },
-        'form': function() { return {metadataTags: ''}; },
-      }
-    });
-
-    return modal.result.then(function(data){
-      var file = data.file;
-      var form = data.form;
-      var metaObj = {
-        keywords: file.keywords || []
-      };
-      if (form.metadataTags) {
-        metaObj.keywords = metaObj.keywords.concat(form.metadataTags.split(','));
-      }
-      if (form.tagsToDelete.length){
-        metaObj.keywords = metaObj.keywords.filter(function(value){
-          return form.tagsToDelete.indexOf(value) < 0;
-        });
-      }
-      currentState.busy = true;
-      file.updateMeta({'metadata': metaObj}).then(function(file_resp){
-        //notify(FileEvents.FILE_META_UPDATED, FileEventsMsg.FILE_META_UPDATED, file_resp);
-        currentState.busy = false;
-      });
-    });
-  }
-
-
-  /**
-   * @callback subscribeCallback
-   * @param {object} $event
-   * @param {object} eventData
-   * @param {FileEvents} eventData.type
-   * @param {object} eventData.context
-   */
-  /**
-   *
-   * @param {object} scope
-   * @param {subscribeCallback} callback
-   */
-  /*
-  function subscribe(scope, callback) {
-    var handler = $rootScope.$on('DataBrowserService::Event', callback);
-    scope.$on('$destroy', handler);
-  }
-  /*
   /**
    *
    * @param {FileEvents} eventType The event
    * @param {object} eventContext The object/context of the event. The value of this parameter depends on the `eventType`
    */
-
-    /*
   function notify(eventType, eventMsg, eventContext) {
     $rootScope.$emit('DataBrowserService::Event', {
       type: eventType,
@@ -2898,7 +2645,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       msg: eventMsg
     });
   }
-  */
 
   function scrollToTop(){
     return;
@@ -2930,54 +2676,6 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       });
   }
 
-    return {
-      /* properties */
-      FileEvents: FileEvents,
-      state: state,
-      apiParameters: apiParameters,
-      currentState: currentState,
-
-      /* data/files functions */
-      allowedActions: allowedActions,
-      browse: browse,
-      browsePage: browsePage,
-      scrollToTop: scrollToTop,
-      scrollToBottom: scrollToBottom,
-      copy: copy,
-      deselect: deselect,
-      // details: details,
-      download: download,
-      getFileManagers: getFileManagers,
-      hasPermission: hasPermission,
-      isProtected: isProtected,
-      mkdir: mkdir,
-      move: move,
-      preview: preview,
-      previewImages: previewImages,
-      rename: rename,
-      rm: rm,
-      search: search,
-      select: select,
-      share: share,
-      trash: trash,
-      upload: upload,
-      viewMetadata: viewMetadata,
-      showCitation: showCitation,
-      viewCategories: viewCategories,
-
-      /* events */
-      subscribe: subscribe,
-      notify: notify,
-      apiParams: apiParams,
-      showListing: showListing,
-      showPreview: showPreview,
-      openPreviewTree: openPreviewTree,
-
-      /* projects */
-      selectProjects: selectProjects,
-      deselectProjects: deselectProjects,
-      toggleProjects: toggleProjects,
-    };
 
 /**
  *
@@ -3038,6 +2736,7 @@ function toggleProjects(projects, reset) {
     FileEvents: FileEvents,
     state: state,
     apiParameters: apiParameters,
+    currentState: currentState,
 
     /* data/files functions */
     allowedActions: allowedActions,
@@ -3064,6 +2763,7 @@ function toggleProjects(projects, reset) {
     trash: trash,
     upload: upload,
     viewMetadata: viewMetadata,
+    showCitation: showCitation,
     viewCategories: viewCategories,
 
     /* events */

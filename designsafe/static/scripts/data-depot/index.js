@@ -198,6 +198,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
             });
           }
         }
+        }
       })
       .state('projects', {
         abstract:true,
@@ -318,7 +319,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
             }
           }
         }
-      }
     })
     .state('dropboxData', {
       url: '/dropbox/{filePath:any}',
