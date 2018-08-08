@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { communityDataCtrl } from './controllers/community';
 import { dataDepotNavCtrl } from './controllers/data-depot-nav';
 import {dataDepotNewCtrl } from './controllers/data-depot-new'
-import { DataDepotToolbarComponent } from './controllers/data-depot-toolbar'
+import { DataDepotToolbarComponent } from './components/data-depot-toolbar/data-depot-toolbar.component'
 import { externalDataCtrl } from './controllers/external-data';
 import { mainCtrl } from './controllers/main';
 import { myDataCtrl } from '../data-depot/controllers/my-data';
@@ -27,9 +27,8 @@ publicationDataCtrl(window, angular);
 publishedDataCtrl(window, angular);
 sharedData(window, angular);
 
-angular.module('designsafe').component('ddtoolbar', DataDepotToolbarComponent)
 
-export var module = angular.module('designsafe');
+let module = angular.module('designsafe');
 module.requires.push(
   'ui.router',
   'djng.urls', //TODO: djng
@@ -42,6 +41,13 @@ module.requires.push(
   'ui.customSelect',
   'ngSanitize'
 );
+
+import { DataBrowserServicePreviewComponent } from './components/modals/data-browser-service-preview/data-browser-service-preview.component'
+//components
+module.component('ddtoolbar', DataDepotToolbarComponent)
+
+//modals
+module.component('preview', DataBrowserServicePreviewComponent)
 
 function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 
@@ -542,6 +548,7 @@ module
     $rootScope.$state = $state;
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
+      console.log('statechangestart happened')
       if (toState.name === 'myData' || toState.name === 'sharedData') {
         var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
         if (toState.name === 'myData' && !ownerPath) {
@@ -584,3 +591,4 @@ module
 // }]);
 
 
+export default module

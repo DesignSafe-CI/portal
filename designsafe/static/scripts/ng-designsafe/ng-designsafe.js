@@ -31,7 +31,7 @@ import { notifications } from './controllers/notifications';
 //import { mainCtrl } from '../data-depot/controllers/main';
 
 //import service from ./services
-import { dataBrowserService } from './services/data-browser-service';
+import { DataBrowserService, nbv } from './services/data-browser-service';
 import { dataService } from './services/data-service';
 import { fileListing } from './services/file-listing';
 import { loggingService } from './services/logging-service';
@@ -107,6 +107,7 @@ import { applicationSystemsRoleCtrl } from '../applications/controllers/applicat
 */
 
 import '../search'
+//import '../data-depot'
 
 export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel', 'ds-search']).config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -138,7 +139,14 @@ notifications(window, angular, $);
 //mainCtrl(window, angular);
 
 //Add services
-dataBrowserService(window, angular, $, _);
+//dataBrowserService(window, angular, $, _);
+
+ngDesignsafe.factory('nbv', nbv)
+ngDesignsafe.factory('DataBrowserService', ['$rootScope', '$http', '$q',
+                                        '$uibModal', '$state', 'Django',
+                                        'FileListing', 'Logging', 'SystemsService', 'nbv',
+                                        'ProjectEntitiesService', DataBrowserService])
+
 projectService(window, angular, _)
 dataService(window, angular, $, _);
 fileListing(window, angular, $, _);

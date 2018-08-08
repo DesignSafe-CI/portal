@@ -3,7 +3,6 @@ import searchTemplate from './search.component.html';
 class SearchCtrl {
 
     constructor($location, $window, searchService, Logging, djangoUrl, Django) {
-        console.log($location.search())
         this.searchService = searchService
         this.$window = $window
         this.user = Django.user;
