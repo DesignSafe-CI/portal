@@ -52,16 +52,18 @@ def create_report(username, list_name):
                     designsafe_user.profile.website.encode('utf-8') if designsafe_user.profile.website else designsafe_user.profile.website,\
                     designsafe_user.profile.orcid_id.encode('utf-8') if designsafe_user.profile.orcid_id else designsafe_user.profile.orcid_id,\
                     designsafe_user.profile.professional_level,\
-                    designsafe_user.profile.research_activities,\
-                    designsafe_user.profile.nh_interests,\
+                    # making queryset into list
+                    list(designsafe_user.profile.research_activities.all()) if designsafe_user.profile.research_activities.all() else None,\
+                    list(designsafe_user.profile.nh_interests.all()) if designsafe_user.profile.nh_interests.all() else None,\
                     designsafe_user.profile.ethnicity,\
                     designsafe_user.profile.gender,\
                     user_profile.citizenship,\
                 ])
 
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token=settings.AGAVE_SUPER_TOKEN)
-        setattr(csv_file, 'name', 'user_report.csv')
+
+        # ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+        #            token=settings.AGAVE_SUPER_TOKEN)
+        # setattr(csv_file, 'name', 'user_report.csv')
         #ag.files.importData(
         #    filePath=username,
         #    fileName='user_report.csv',
