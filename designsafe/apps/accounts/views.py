@@ -553,35 +553,6 @@ def mailing_list_subscription(request, list_name):
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def user_report(request, list_name):
 
-    # list_of_users = []
-
-    # writer = csv.writer(response)
-    # writer.writerow(["UserEmail","FirstName","LastName","PhoneNumber","Institution",\
-    #         "UserName","Country","Bio","Website","Orcid_id","Professional Level",\
-    #         "Research Activities","NH_interests","Ethnicity","Gender"])
-
-   
-
-    # professional_profile_user_list = DesignSafeProfile.objects.all()
-    # notification_list = get_user_model().objects.filter(
-    #     Q(notification_preferences__isnull=True) |
-    #     Q(**{"notification_preferences__{}".format(list_name): True}))
-    # for user in notification_list:
-    #     list_of_users.append(user)
-    
-    #     if profile_user.user in notification_list:
-    #         writer.writerow([profile_user.user,\
-                
-    #             profile_user.bio.encode('utf-8') if profile_user.bio else profile_user.bio,\
-    #             profile_user.website.encode('utf-8') if profile_user.website else profile_user.website,\
-    #             profile_user.orcid_id.encode('utf-8') if profile_user.orcid_id else profile_user.orcid_id,\
-    #             profile_user.professional_level,\
-    #             profile_user.research_activities,\
-    #             profile_user.nh_interests,\
-    #             profile_user.ethnicity,\
-    #             profile_user.gender,\
-    #             ])
-
     django_user = request.user
 
     create_report.apply_async(

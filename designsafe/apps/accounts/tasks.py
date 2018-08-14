@@ -60,17 +60,16 @@ def create_report(username, list_name):
                     user_profile.citizenship,\
                 ])
 
-
-        # ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-        #            token=settings.AGAVE_SUPER_TOKEN)
-        # setattr(csv_file, 'name', 'user_report.csv')
-        #ag.files.importData(
-        #    filePath=username,
-        #    fileName='user_report.csv',
-        #    systemId=settings.AGAVE_STORAGE_SYSTEM,
-        #    fileToUpload=csv_file
-        #    )
-        logger.debug('report contents: %s', csv_file.getvalue())
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token=settings.AGAVE_SUPER_TOKEN)
+        setattr(csv_file, 'name', 'user_report.csv')
+        ag.files.importData(
+           filePath=username,
+           fileName='user_report.csv',
+           systemId=settings.AGAVE_STORAGE_SYSTEM,
+           fileToUpload=csv_file
+           )
+        # logger.debug('report contents: %s', csv_file.getvalue())
         csv_file.close()
 
     except (HTTPError, AgaveException):
