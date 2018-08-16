@@ -62,6 +62,7 @@ services:
     image: nginx
     volumes:
       - ../nginx/nginx.debug.conf:/etc/nginx/nginx.conf
+      - ../RAMP/google136a59fe45020610.html:/var/www/designsafe-ci.org/static/google136a59fe45020610.html
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
       - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
       - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
