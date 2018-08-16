@@ -372,24 +372,33 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         #TODO: This should also run on a task
         for username in team_members_to_add+co_pis_to_add:
             collab_users = get_user_model().objects.filter(username=username)
-            collab_users = []
+            collab_users = list(collab_users)
             if collab_users:
                 collab_user = collab_users[0]
                 try:
-                    collab_user.profile.send_mail(
-                        "[Designsafe-CI] You have been added to a project!",
-                        "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
+                    collab_user.profile.send_mail(subject="You have been added to a DesignSafe project!",\
+                        message= "Hi {}, you have been added to the project {}".format(collab_user, title=prj.title),\
+                        from_email="announce@designsafe-ci.org <announce@designsafe-ci.org>",\
+                        recipient_list=collab_users,\
+                        fail_silently=False,\
+                        )
                 except DesignSafeProfile.DoesNotExist as err:
                     logger.info("Could not send email to user %s", collab_user)
-                    body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
-                        url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
-                    send_mail(
-                        "[Designsafe-CI] You have been added to a project!",
-                        body,
-                        settings.DEFAULT_FROM_EMAIL,
-                        [collab_user.email],
-                        html_message=body)
+
+                #     collab_user.profile.send_mail(
+                #         "[Designsafe-CI] You have been added to a project!",
+                #         "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
+                #         url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
+                # except DesignSafeProfile.DoesNotExist as err:
+                #     logger.info("Could not send email to user %s", collab_user)
+                #     body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
+                #         url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
+                #     send_mail(
+                #         "[Designsafe-CI] You have been added to a project!",
+                #         body,
+                #         settings.DEFAULT_FROM_EMAIL,
+                #         [collab_user.email],
+                #         html_message=body)
                     #logger.exception(err)
 
         return JsonResponse(project.collaborators)
