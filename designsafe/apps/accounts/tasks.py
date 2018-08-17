@@ -42,26 +42,26 @@ def create_report(username, list_name):
             if hasattr(designsafe_user, "profile"):
 
                 # order of items required by user
-                writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,\
-                    user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,\
-                    user_profile.email,\
-                    user_profile.phone,\
-                    user_profile.institutionId,\
-                    designsafe_user.profile.professional_level,\
-                    designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,\
+                writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,
+                    user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,
+                    user_profile.email,
+                    user_profile.phone,
+                    user_profile.institutionId,
+                    designsafe_user.profile.professional_level,
+                    designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
                     # making queryset into list
-                    list(designsafe_user.profile.nh_interests.all()) if designsafe_user.profile.nh_interests.all() else None,\
-                    list(designsafe_user.profile.research_activities.all()) if designsafe_user.profile.research_activities.all() else None,\
-                    user_profile,\
-                    designsafe_user.profile.ethnicity,\
-                    designsafe_user.profile.gender,\
-                    user_profile.country,\
-                    user_profile.citizenship,\
-                    designsafe_user.date_joined,\
+                    list(designsafe_user.profile.nh_interests.all()) if designsafe_user.profile.nh_interests.all() else None,
+                    list(designsafe_user.profile.research_activities.all()) if designsafe_user.profile.research_activities.all() else None,
+                    user_profile,
+                    designsafe_user.profile.ethnicity,
+                    designsafe_user.profile.gender,
+                    user_profile.country,
+                    user_profile.citizenship,
+                    designsafe_user.date_joined
                 ])
 
-        # ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-        #            token=settings.AGAVE_SUPER_TOKEN)
+        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                   token=settings.AGAVE_SUPER_TOKEN)
         # setattr(csv_file, 'name', 'user_report.csv')
         # ag.files.importData(
         #    filePath=username,

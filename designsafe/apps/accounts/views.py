@@ -550,6 +550,7 @@ def mailing_list_subscription(request, list_name):
         logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
 
+
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def user_report(request, list_name):
 
@@ -560,8 +561,8 @@ def user_report(request, list_name):
                     (django_user.username, list_name)
                 )
             )
- 
-    # return response
+    # return render_to_response('designsafe/apps/accounts/generating_user_report.html')
+
 
 def termsandconditions(request):
     context = {
