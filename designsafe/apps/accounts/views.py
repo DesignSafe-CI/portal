@@ -556,12 +556,13 @@ def user_report(request, list_name):
 
     django_user = request.user
 
-    create_report.apply_async(
+    report = create_report.apply_async(
                 args=(
                     (django_user.username, list_name)
                 )
             )
     # return render_to_response('designsafe/apps/accounts/generating_user_report.html')
+    return HttpResponse(report, content_type='text/csv')
 
 
 def termsandconditions(request):
