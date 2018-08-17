@@ -77,7 +77,17 @@ services:
       - 443:443
     container_name: des_nginx
     hostname: des_nginx
-
+  
+  smtp:
+    image: designsafeci/portal:local
+    ports:
+      - 1025:1025
+    command: "python -m smtpd -n -c DebuggingServer 0.0.0.0:1025"
+    container_name: smtp
+    hostname: smtp
+    environment:
+      - PYTHONUNBUFFERED=1
+  
   django:
     image: designsafeci/portal:local
     env_file: ../env_files/designsafe.env
@@ -87,6 +97,7 @@ services:
       - rabbitmq:rabbitmq
       - redis:redis
       - elasticsearch:elasticsearch
+      - smtp:smtp
     volumes:
       - ../../.:/srv/www/designsafe
       - /corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
