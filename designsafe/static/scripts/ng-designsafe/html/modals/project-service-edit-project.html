@@ -21,8 +21,8 @@
                     select-on-focus
                     required>
         </div>
-        <div class="form-group">
-            <label for="id_pi">PI</label>
+        <div class="form-group required">
+            <label for="id_pi">PI:</label>
             <input type="text" class="form-control" id="id_pi" ng-model="form.pi"
                    placeholder="Lookup PI by name or email address"
                    autocomplete="off" uib-typeahead="user for user in searchUsers($viewValue)"
@@ -30,13 +30,13 @@
                    typeahead-no-results="noResults"
                    typeahead-input-formatter="formatSelection($result)"
                    typeahead-template-url="local/share_user_search_result.html"
-            >
+                   required>
             <span class="text-muted" ng-show="searching"><i class="fa fa-spinner fa-spin"></i> Searching for PI...</span>
             <div ng-show="noResults">
                 <i class="fa fa-remove"></i> No results.
             </div>
             <p class="help-block">
-                This value can be updated later on.
+                This value can be changed later on.
             </p>
         </div>
       </div>
@@ -129,6 +129,7 @@
                     placeholder="Create a description of your project..."
                     required />
         </div>
+        <div class="alert alert-warning" ng-show="form.pi === '' && form.pi.username === undefined"><p class="lead" style="text-align:center">The PI you have supplied is not a registerd user.</p></div>
         <div class="alert alert-danger" ng-show="projForm.$invalid"><p class="lead" style="text-align:center">Please fill out all required fields before saving.</p></div>
         <!-- <div class="form-group">
             <label for="image-id">Image:</label> <code>projectimage.jpg</code>
@@ -139,7 +140,7 @@
       </div>
         <div class="text-right" ng-if="!ui.busy">
             <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
-            <button class="btn btn-primary" type="submit" ng-click="save($event)" ng-disabled="projForm.$invalid">Save Project</button>
+            <button class="btn btn-primary" type="submit" ng-click="save($event)" ng-disabled="projForm.$invalid || noResults">Save Project</button>
         </div>
         <div ng-if="ui.busy">
             <p class="lead">

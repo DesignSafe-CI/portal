@@ -1805,39 +1805,43 @@
           };
 
           $scope.save = function () {
-            $scope.ui.busy = true;
             var projectData = {
               title: $scope.form.title,
               awardNumber: $scope.form.awardNumber,
               description: $scope.form.description,
               projectId: $scope.form.projectId
             };
-            if ($scope.form.pi && $scope.form.pi.username){
-              projectData.pi = $scope.form.pi.username;
-            }
 
-            //if (typeof $scope.form.experimentalFacility !== 'undefined'){
-            //  projectData.experimentalFacility = $scope.form.experimentalFacility;
-            //}
-            if (typeof $scope.form.projectType.id !== 'undefined'){
-              projectData.projectType = $scope.form.projectType.id;
+            if ($scope.form.pi.username === undefined) {
+              $scope.form.pi = '';
+            } else {
+              $scope.ui.busy = true;
+              if ($scope.form.pi && $scope.form.pi.username){
+                projectData.pi = $scope.form.pi.username;
+              }
+              //if (typeof $scope.form.experimentalFacility !== 'undefined'){
+              //  projectData.experimentalFacility = $scope.form.experimentalFacility;
+              //}
+              if (typeof $scope.form.projectType.id !== 'undefined'){
+                projectData.projectType = $scope.form.projectType.id;
+              }
+              if ($scope.form.uuid && $scope.form.uuid) {
+                projectData.uuid = $scope.form.uuid;
+              }
+              if (typeof $scope.form.associatedProjectsAdded !== 'undefined'){
+                $scope.form.associatedProjectsAdded = _.filter($scope.form.associatedProjectsAdded, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
+                projectData.associatedProjects = $scope.form.associatedProjects || [];
+                projectData.associatedProjects = _.filter(projectData.associatedProjects, function(associatedProject){ return !associatedProject.delete; });
+                projectData.associatedProjects = projectData.associatedProjects.concat($scope.form.associatedProjectsAdded);
+              }
+              if (typeof $scope.form.keywords !== 'undefined'){
+                projectData.keywords = $scope.form.keywords;
+              }
+              service.save(projectData).then(function (project) {
+                $uibModalInstance.close(project);
+                $scope.ui.busy = false;
+              });
             }
-            if ($scope.form.uuid && $scope.form.uuid) {
-              projectData.uuid = $scope.form.uuid;
-            }
-            if (typeof $scope.form.associatedProjectsAdded !== 'undefined'){
-               $scope.form.associatedProjectsAdded = _.filter($scope.form.associatedProjectsAdded, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
-               projectData.associatedProjects = $scope.form.associatedProjects || [];
-               projectData.associatedProjects = _.filter(projectData.associatedProjects, function(associatedProject){ return !associatedProject.delete; });
-               projectData.associatedProjects = projectData.associatedProjects.concat($scope.form.associatedProjectsAdded);
-            }
-            if (typeof $scope.form.keywords !== 'undefined'){
-              projectData.keywords = $scope.form.keywords;
-            }
-            service.save(projectData).then(function (project) {
-              $uibModalInstance.close(project);
-              $scope.ui.busy = false;
-            });
           };
         }],
         resolve: {
