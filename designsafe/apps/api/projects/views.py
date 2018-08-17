@@ -380,7 +380,7 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
                         ("Hi {}, you have been added to the project {}.\n",
                          "You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.\n",
                          "<This is a programmatically generated message. Do NOT reply to this message.>\n",
-                         "Thanks, The DesignSafe-CI team").format(collab_user, project.title))
+                         "Thanks, The DesignSafe-CI team".format(collab_user, project.title)))
                 except DesignSafeProfile.DoesNotExist as err:
                     logger.info("Could not send email to user %s", collab_user)
 
