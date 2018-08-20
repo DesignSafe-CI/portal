@@ -57,15 +57,13 @@ def create_report(username, list_name):
                     designsafe_user.profile.gender,
                     user_profile.country,
                     user_profile.citizenship,
-                    designsafe_user.date_joined
+                    designsafe_user.date_joined.date()
                 ])
 
         User = get_user_model()
         u = User.objects.get(username=username)
         client = u.agave_oauth.client
 
-        # ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-        #            token=settings.AGAVE_SUPER_TOKEN)
         setattr(csv_file, 'name', 'user_report.csv')
         client.files.importData(
            filePath=username,
@@ -73,7 +71,7 @@ def create_report(username, list_name):
            systemId=settings.AGAVE_STORAGE_SYSTEM,
            fileToUpload=csv_file
            )
-        # logger.debug('report contents: %s', csv_file.getvalue())
+
         csv_file.close()
 
     except (HTTPError, AgaveException):
