@@ -3,6 +3,12 @@
 </div>
 <div class="modal-body">
     <div class="thumbnail">
+        <div ng-if="notInJupyterTree()">
+            <div class="alert alert-warning">
+                <p class="lead">Unsupported file path</p>
+                <p>If you want to open this file from DesignSafe you have to copy it to MyData or to a project.</p>
+            </div>
+        </div>
         <div class="text-center nbv-preview">
             <div ng-if="busy && prevVideo">
                 <div class="alert alert-warning">
@@ -80,6 +86,10 @@
 
         <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
             <i class="fa fa-send"></i> Share
+        </button>
+
+        <button class="btn btn-sm btn-default" ng-show="isJupyter()" ng-click="openInJupyter()">
+            <i class="fa fa-file-image-o"></i></i> Open In Jupyter
         </button>
 
         <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
