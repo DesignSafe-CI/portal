@@ -1,5 +1,18 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.0-20180801
+
+Improvements:
+
+- Hybrid Simulation updates.
+- "Open in Jupyter" for notebooks.
+- Add link to retrieve forgotten username.
+
+Fixes:
+
+- PI is required to create a project.
+- Fixed pagination on My Data.
+
 ## v2.7.0-20180703
 
 Improvements:
