@@ -556,12 +556,19 @@ def user_report(request, list_name):
 
     django_user = request.user
 
-    create_report.apply(
+    create_report.apply_async(
                 args=(
                     (django_user.username, list_name)
                 )
             )
-    return render_to_response('designsafe/apps/accounts/generating_user_report.html')
+
+    context = {
+        'title': 'Generating Report',
+    }
+
+    # return render_to_response('designsafe/apps/accounts/generating_user_report.html')
+    return render(request, 'designsafe/apps/accounts/generating_user_report.html', context)
+    # return HttpResponseRedirect('/designsafe-ci.org/data/browser/agave/designsafe.storage.default/')
 
 
 def termsandconditions(request):

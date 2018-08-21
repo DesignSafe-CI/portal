@@ -41,6 +41,8 @@ def create_report(username, list_name):
             designsafe_user = get_user_model().objects.get(username=user)
             if hasattr(designsafe_user, "profile"):
 
+                
+
                 # order of items required by user
                 writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,
                     user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,
@@ -50,7 +52,7 @@ def create_report(username, list_name):
                     designsafe_user.profile.professional_level,
                     designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
                     # making queryset into list
-                    list(designsafe_user.profile.nh_interests.all()) if designsafe_user.profile.nh_interests.all() else None,
+                    [interest['description'] for interest in designsafe_user.profile.nh_interests.all().values('description') if designsafe_user.profile.nh_interests],
                     list(designsafe_user.profile.research_activities.all()) if designsafe_user.profile.research_activities.all() else None,
                     user_profile,
                     designsafe_user.profile.ethnicity,
@@ -64,14 +66,14 @@ def create_report(username, list_name):
         u = User.objects.get(username=username)
         client = u.agave_oauth.client
 
-        setattr(csv_file, 'name', 'user_report.csv')
-        client.files.importData(
-           filePath=username,
-           fileName='user_report.csv',
-           systemId=settings.AGAVE_STORAGE_SYSTEM,
-           fileToUpload=csv_file
-           )
-
+        # setattr(csv_file, 'name', 'user_report.csv')
+        # client.files.importData(
+        #    filePath=username,
+        #    fileName='user_report.csv',
+        #    systemId=settings.AGAVE_STORAGE_SYSTEM,
+        #    fileToUpload=csv_file
+        #    )
+        logger.debug('report contents: %s', csv_file.getvalue())
         csv_file.close()
 
     except (HTTPError, AgaveException):
