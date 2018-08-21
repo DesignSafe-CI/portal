@@ -142,7 +142,7 @@
               </div>
           </div>
           <div class="col-xs-3">
-              <h5 style="font-weight:normal;">Numerical (Simulation) Substructure</h5>
+              <h5 style="font-weight:normal;">Simulation Substructure</h5>
               <div ng-repeat="substructure in data.project.simsubstructure_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -168,7 +168,7 @@
               </div>
           </div>
           <div class="col-xs-3">
-              <h5 style="font-weight:normal;">Physical (Experimental) Substructure</h5>
+              <h5 style="font-weight:normal;">Experimental Substructure</h5>
               <div ng-repeat="substructure in data.project.expsubstructure_set"
                    style="width:100%; padding-bottom:5px;">
                 <button class="btn" style="background:none;"
@@ -180,7 +180,7 @@
                    ng-class="{'fa-lock': isEntityLocked(substructure)}" class="fa"></i>
                 </button>
               </div>
-              <h5 style=font-weight:normal;">Event Output</h5>
+              <h5 style=font-weight:normal;">Experiment Output</h5>
               <div ng-repeat="output in data.project.expoutput_set"
                    style="width:100%; padding-bottom:5px;">
                   <button class="btn" style="background:none;"
@@ -477,6 +477,14 @@
          style="margin-top:10px; margin-bottom:10px; padding-bottom:20px; border-bottom:1px solid lightgray">
       <h3>Add Category</h3>
       <form name='addCategoryForm'>
+          <div style="display:block; width:100%"
+               ng-if="data.form.projectTagToAdd.name === 'designsafe.project.hybrid_simulation.output'">
+              <p>
+              <i class="fa fa-star"></i> Saving an <strong>Output</strong> category creates 3 syncronized categories: <strong>Coordinator Output</strong>, <strong>Simulation Output</strong>, and <strong>Experiment Output</strong><br />
+              The title entered will be the same across all 3 categories.<br />
+              If you only want to create one output category, save all 3, then delete the undesired categories.
+              </p>
+          </div>
         <div style="display:inline-block; width:30%">
           <label for="id-tag-type" style="display:block">Type</label>
           <div custom-select="item.name as item.label for item in ui.tagTypes | filter: { label: $searchTerm}"
