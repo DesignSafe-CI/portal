@@ -695,7 +695,7 @@
     function preview (file, listing) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/data-browser-service-preview.html',
-        controller: ['$scope', '$uibModalInstance', '$sce', 'file', function ($scope, $uibModalInstance, $sce, file) {
+        controller: ['$scope', 'DataBrowserService', '$state', '$uibModalInstance', '$sce', 'file', function ($scope, DataBrowserService, $state, $uibModalInstance, $sce, file) {
           $scope.file = file;
           if (typeof listing !== 'undefined' &&
               typeof listing.metadata !== 'undefined' &&
@@ -808,11 +808,48 @@
           $scope.rm = function() {
             rm(file);
           };
-
           $scope.close = function () {
             $uibModalInstance.dismiss();
           };
 
+          $scope.notInJupyterTree = function () {
+            let designsafePath = file.href;
+            if (designsafePath.includes('dropbox') || designsafePath.includes('googledrive') || designsafePath.includes('box') || designsafePath.includes('shared')) {
+              return true;
+            }
+          };
+
+          $scope.isJupyter = function () {
+            let designsafePath = file.href;
+            if ($scope.notInJupyterTree()) {
+              return false;
+            } else {
+              let fileExtension = file.name.split('.').pop();
+              return fileExtension == 'ipynb'; 
+            }
+          };
+
+          $scope.openInJupyter = function() {
+            let filePath = file.path;
+            if (filePath.includes(Django.user)) {
+              let lenghtUserName = Django.user.length;
+              var pathToFile = filePath.substring(lenghtUserName + 2);
+            } else {
+              var pathToFile = filePath;
+            }
+            let specificLocation = $state.current.name;
+            if (specificLocation === 'myData' || specificLocation === 'communityData') {
+              specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1));
+            } else if (specificLocation.includes('projects')) {
+              let prjNumber = DataBrowserService.state().project.value.projectId;
+              specificLocation = 'projects/' + prjNumber;
+            } else if (specificLocation === 'publishedData') {
+              specificLocation = 'Published';
+            }
+            let fileLocation = specificLocation + "/" + pathToFile;
+            let jupyterPath = `http://jupyter.designsafe-ci.org/user/${Django.user}/notebooks/${fileLocation}`;
+            window.open(jupyterPath);
+          }; 
         }],
         size: 'lg',
         resolve: {

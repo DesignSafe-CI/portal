@@ -65,15 +65,19 @@ class GlobalModelTags(MetadataModel):
         list_cls=DataTag
     )
     drawings = fields.ListField(
-        'Assembly Document',
+        'Drawings',
         list_cls=DataTag
     )
     photos = fields.ListField(
-        'Assembly Document',
+        'Photos',
         list_cls=DataTag
     )
     model_configuration = fields.ListField(
-        'Assembly Document',
+        'Model Configuration',
+        list_cls=DataTag
+    )
+    model_component = fields.ListField(
+        'Model Component',
         list_cls=DataTag
     )
 
@@ -179,6 +183,10 @@ class ExpSubstructureTags(MetadataModel):
     )
     sensor_information = fields.ListField(
         'Sensor Information',
+        list_cls=DataTag
+    )
+    model_component = fields.ListField(
+        'Model Component',
         list_cls=DataTag
     )
 
