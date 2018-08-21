@@ -40,8 +40,9 @@ def create_report(username, list_name):
             user_profile = TASUser(username=user)
             designsafe_user = get_user_model().objects.get(username=user)
             if hasattr(designsafe_user, "profile"):
-
                 
+                nh_interests = designsafe_user.profile.nh_interests.all().values('description')
+                research_acticities = designsafe_user.profile.research_activities.all().values('description')
 
                 # order of items required by user
                 writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,
@@ -51,9 +52,8 @@ def create_report(username, list_name):
                     user_profile.institutionId,
                     designsafe_user.profile.professional_level,
                     designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
-                    # making queryset into list
-                    [interest['description'] for interest in designsafe_user.profile.nh_interests.all().values('description') if designsafe_user.profile.nh_interests],
-                    list(designsafe_user.profile.research_activities.all()) if designsafe_user.profile.research_activities.all() else None,
+                    [interest['description'].encode('utf-8') for interest in nh_interests if nh_interests],
+                    [activity['description'].encode('utf-8') for activity in research_acticities if research_activities],
                     user_profile,
                     designsafe_user.profile.ethnicity,
                     designsafe_user.profile.gender,
