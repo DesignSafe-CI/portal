@@ -1,10 +1,11 @@
 import logging
 # import datetime
 import os
-# import urllib2
+import urllib2
 # import json
 from elasticsearch_dsl.query import Q
 from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.api.agave import get_service_account_client
 from django.conf import settings
 import magic
 import json
@@ -119,15 +120,20 @@ class FileManager(object):
         if debug_mode == True:
             # In local dev, corral isn't mounted so we have to download the file to get its mimetype.
             import requests
-            href = file_object['_links']['self']['href']
-            header = {"Authorization": "Bearer " + settings.AGAVE_SUPER_TOKEN}
-            u = requests.get(href, headers=header)
-            if u.status_code == 200:
-                mimeType = magic.from_buffer(u.content, mime=True)
-            elif json.loads(u.content)['message'] == 'Directory downloads not supported':
-                mimeType =  'text/directory'
-            else:
-                raise requests.HTTPError
+            client = get_service_account_client()
+            system = file_object['system']
+            path = file_object['path']
+
+            try:
+                f = client.files.download(systemId=system, filePath=path)
+                mimeType = magic.from_buffer(f.content, mime=True)
+            except requests.HTTPError as e:
+                if e.response.status_code == 501:
+                    # This is a 'not implemented' error that should only get thrown for directories.
+                    mimeType =  'text/directory'
+                elif e.response.status_code == 404:
+                    # The file cannot be retrieved.
+                    raise requests.HTTPError
             return mimeType
 
         else:
