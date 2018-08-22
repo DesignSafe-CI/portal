@@ -83,9 +83,10 @@ class Command(BaseCommand):
             if remote_host.startswith('http://') \
                 or remote_host.startswith('https://'):
                 hosts = [remote_host]
+                body['source']['remote'] = {'host': '{}:9200'.format(hosts[0])}
             else:
                 hosts = settings.ES_CONNECTIONS.get(remote_host, {}).get('hosts', [])
-            body['source']['remote'] = {'host': 'http://{}:9200'.format(hosts[0])}
+                body['source']['remote'] = {'host': 'http://{}:9200'.format(hosts[0])}
         else:
             hosts = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
 

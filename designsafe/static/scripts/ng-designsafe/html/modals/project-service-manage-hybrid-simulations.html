@@ -3,7 +3,7 @@
         Manage Hybrid Simulations
     </h4>
     <a href="https://www.youtube.com/watch?v=74z5jdVvNfg&index=5&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
-      <i class="fa fa-question-cricle"></i> Learn More
+      <i class="fa fa-question-cricle"></i> Learn More ?
     </a>
     <p class="alert alert-info">
         To delete a Simulation, you must first remove all entities related to it. After this, removing an simulation is safe.
@@ -109,7 +109,7 @@
         <button class="btn btn-info"
                 ng-click="ui.showAddSimulationForm = true;"
                 ng-if="!ui.showAddSimulationForm">
-                <i class="fa fa-plus"></i> Add Simulation
+                <i class="fa fa-plus"></i> Add Hybrid Simulation
         </button>
       <form name='addForm'>
             <div class="well well-sm"
@@ -174,7 +174,7 @@
                         ng-click="ui.showAddSimReport[simulation.uuid] = true"
                         ng-if="!ui.showAddSimReport[simulation.uuid] &&
                                !data.project.getRelated('report_set', simulation.uuid, 'hybrid_simulations').length">
-                        <i class="fa fa-plus-square"></i> Add Simulation Report
+                        <i class="fa fa-plus-square"></i> Add Hybrid Simulation Report
                 </button>
                 <div style="margin-left:5px; display:inline-block;"
                      ng-if="ui.showAddSimReport[simulation.uuid] && 
@@ -182,7 +182,7 @@
                   <select
                           ng-options="report as report.value.title for report in data.project.report_set"
                           ng-model="form.updateSimulations[simulation.uuid].relProject">
-                          <option value="">Add Simulation Report</option>
+                          <option value="">Add Hybrid Simulation Report</option>
                   </select>
                   <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relProject,
@@ -214,7 +214,7 @@
                         ng-click="ui.showAddSimAnalysis[simulation.uuid] = true"
                         ng-if="!ui.showAddSimAnalysis[simulation.uuid] &&
                                !data.project.getRelated('analysis_set', simulation.uuid, 'hybrid_simulations').length">
-                        <i class="fa fa-plus-square"></i> Add Simulation Analysis
+                        <i class="fa fa-plus-square"></i> Add Hybrid Simulation Analysis
                 </button>
                 <div style="margin-left:5px; display:inline-block;"
                      ng-if="ui.showAddSimAnalysis[simulation.uuid] && 
@@ -222,7 +222,7 @@
                   <select
                           ng-options="analysis as analysis.value.title for analysis in data.project.analysis_set"
                           ng-model="form.updateSimulations[simulation.uuid].relSimAnalysis">
-                          <option value="">Add Simulation Analysis</option>
+                          <option value="">Add Hybrid Simulation Analysis</option>
                   </select>
                   <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateSimulations[simulation.uuid].relSimAnalysis,
@@ -345,7 +345,7 @@
                         <div class="tree-el">
                             <select ng-options="entity as entity.value.title for entity in data.project.simoutput_set"
                                     ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput">
-                                <option value="">Add Simulation Output</option>
+                                <option value="">Add Hybrid Simulation Output</option>
                             </select>
                             <button class="btn btn-sm btn-link"
                                     ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput,
@@ -365,7 +365,7 @@
                           <div class="tree-el">
                               <select ng-options="entity as entity.value.title for entity in data.project.simsubstructure_set"
                                       ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure">
-                                  <option value="">Add Simulation Substructure</option>
+                                  <option value="">Add Hybrid Simulation Substructure</option>
                               </select>
                               <button class="btn btn-sm btn-link"
                                       ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure,
@@ -373,7 +373,7 @@
                                       hybridSimulations: simulation.uuid,
                                       globalModels: globalModel.uuid,
                                       coordinators: coordinator.uuid})"
-                                      title="Add Simulation Substructure">
+                                      title="Add Hybrid Simulation Substructure">
                                   <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
                               </button>
                           </div>
@@ -439,7 +439,7 @@
                                       hybridSimulations: simulation.uuid,
                                       globalModels: globalModel.uuid,
                                       coordinators: coordinator.uuid})"
-                                      title="Add Simulation Substructure">
+                                      title="Add Hybrid Simulation Substructure">
                                   <i class="fa fa-plus-circle fa-2"></i><span> Save </span>
                               </button>
                           </div>

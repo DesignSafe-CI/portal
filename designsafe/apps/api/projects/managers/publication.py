@@ -384,6 +384,49 @@ def simulation_reserve_xml(publication, simulation, created):
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
+def hybrid_simulation_reserve_xml(publication, simulation, created):
+    sim = simulation['value']
+    xml_obj = _simulation_required_xml(
+                publication['users'],
+                simulation,
+                created
+            )
+    now = dateutil.parser.parse(created)
+    if not simulation.get('doi', ''):
+        reserve_res = _reserve_doi(
+            xml_obj,
+            ENTITY_TARGET_BASE.format(
+                project_id=publication['project']['value']['projectId'],
+                entity_uuid=simulation['uuid']
+            )
+        )
+        doi, ark = reserve_res.split('|')
+    else:
+        doi = simulation.get('doi')
+        ark = simulation.get('doi')
+
+    doi = doi.strip()
+    ark = ark.strip()
+    identifier = xml_obj.find('identifier')
+    identifier.text = doi
+    resource = xml_obj
+    subjects = ET.SubElement(resource, 'subjects')
+    sim_type = ET.SubElement(subjects, 'subject')
+    sim_type.text = sim['simulationType'].title()
+    entities = (
+        simulation.get('global_models', []) +
+        simulation.get('coordinators', []) +
+        simulation.get('sim_substructures', []) + 
+        simulation.get('exp_substructures', [])
+    )
+
+    for entity in entities:
+        ent_sub = ET.SubElement(subjects, 'subject')
+        ent_sub.text = entity['value']['title']
+
+    _update_doi(doi, xml_obj)
+    return (doi, ark, xml_obj)
+
 
 def project_reserve_xml(publication):
     project_body = publication['project']
@@ -518,6 +561,24 @@ def reserve_publication(publication, analysis_doi=False):
     elif publication['project']['value']['projectType'].lower() == 'simulation':
         for sim in publication.get('simulations', []):
             sim_doi, sim_ark, sim_xml = simulation_reserve_xml(
+                    publication,
+                    sim,
+                    publication['created']
+            )
+            logger.debug('sim_doi: %s', sim_doi)
+            logger.debug('sim_ark: %s', sim_ark)
+            logger.debug('sim_xml: %s', sim_xml)
+            add_related(sim_xml, [proj_doi])
+            sim_dois.append(sim_doi)
+            sim['doi'] = sim_doi
+            xmls[sim_doi] = sim_xml
+        add_related(proj_xml, sim_dois)
+        for _doi in [proj_doi] + sim_dois:
+            logger.debug('DOI: %s', _doi)
+            _update_doi(_doi, xmls[_doi], status='public')
+    elif publication['project']['value']['projectType'].lower() == 'hybrid_simulation':
+        for sim in publication.get('hybrid_simulations', []):
+            sim_doi, sim_ark, sim_xml = hybrid_simulation_reserve_xml(
                     publication,
                     sim,
                     publication['created']

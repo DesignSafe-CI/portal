@@ -50,6 +50,18 @@
               _.each($scope.browser.publication.models, getFileObjs);
               _.each($scope.browser.publication.outputs, getFileObjs);
               _.each($scope.browser.publication.reports, getFileObjs);
+          } else if ($scope.browser.publication.project.value.projectType === 'hybrid_simulation'){
+              _.each($scope.browser.publication.analysiss, getFileObjs);
+              _.each($scope.browser.publication.reports, getFileObjs);
+
+              _.each($scope.browser.publication.coordinators, getFileObjs);
+              _.each($scope.browser.publication.coordinator_outputs, getFileObjs);
+              _.each($scope.browser.publication.exp_substructures, getFileObjs);
+              _.each($scope.browser.publication.exp_outputs, getFileObjs);
+              _.each($scope.browser.publication.sim_substructures, getFileObjs);
+              _.each($scope.browser.publication.sim_outputs, getFileObjs);
+              _.each($scope.browser.publication.global_models, getFileObjs);
+              _.each($scope.browser.publication.hybrid_simulations, getFileObjs);
           }
 
         $scope.ui.loadingProjectMeta = false;
@@ -313,6 +325,38 @@
     $scope.viewSimulationRelations = function(uuid){
       $uibModal.open({
         templateUrl: '/static/scripts/data-depot/templates/view-simulation-relations.html',
+        controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
+            var $ctrl = this;
+            $ctrl.data = {};
+            if (browser.listing.project){
+                $ctrl.data.publication = browser.listing;
+            } else {
+                $ctrl.data.publication = browser.publication;
+            }
+            $ctrl.data.selectedUuid = uuid;
+            $ctrl.isSelected = function(entityUuid){
+                if (entityUuid ===$ctrl.data.selectedUuid){
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            $ctrl.close = function(){
+                $uibModalInstance.dismiss('close');
+            };
+        }],
+        controllerAs: '$ctrl',
+        resolve: {
+            browser: $scope.browser
+        },
+        scope: $scope,
+        size: 'lg'
+      });
+    };
+
+    $scope.viewHybridSimulationRelations = function(uuid){
+      $uibModal.open({
+        templateUrl: '/static/scripts/data-depot/templates/view-hybrid-simulation-relations.html',
         controller: ['$uibModalInstance', 'browser', function($uibModalInstance, browser){
             var $ctrl = this;
             $ctrl.data = {};

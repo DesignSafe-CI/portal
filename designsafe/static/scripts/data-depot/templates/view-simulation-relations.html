@@ -15,7 +15,7 @@
                 <div style="margin-left:5px; display:inline-block;"
                      ng-if="getRelated('report_set', false, simulation.uuid).length">
                     <span class="label tag-black" 
-                          ng-class="{'selected': getRelated('reports', false, simulation.uuid)[0].uuid === $ctrl.data.selectedyUuid}">
+                          ng-class="{'selected': getRelated('reports', false, simulation.uuid)[0].uuid === $ctrl.data.selectedUuid}">
                             Simulation Report
                     </span>
                     <span class="tab-title">
@@ -27,7 +27,7 @@
                 <div style="margin-left:5px; display:inline-block;"
                      ng-if="getRelated('analysiss', false, simulation.uuid).length">
                     <span class="label tag-light-blue"
-                          ng-class="{'selected': getRelated('analysiss', false, simulation.uuid)[0].uuid === $ctrl.data.selectedyUuid}">
+                          ng-class="{'selected': getRelated('analysiss', false, simulation.uuid)[0].uuid === $ctrl.data.selectedUuid}">
                         Simulation Analysis
                     </span>
                     <span class="tab-title">
