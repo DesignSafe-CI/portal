@@ -1,14 +1,13 @@
 import logging
 # import datetime
 import os
-import urllib2
+# import urllib2
 # import json
 from elasticsearch_dsl.query import Q
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.api.agave import get_service_account_client
 from django.conf import settings
 import magic
-import json
 import re
 
 # pylint: disable=invalid-name
