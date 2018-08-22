@@ -1,5 +1,15 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.0-20280802
+
+Improvements:
+
+- Correctly indexing mimetypes on Elasticsearch.
+
+Fixes:
+
+- Hybrid Simulation Published view.
+
 ## v2.7.0-20180801
 
 Improvements:
