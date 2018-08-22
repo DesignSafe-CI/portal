@@ -548,12 +548,6 @@
             } else {
               fillChecklist(expSubstructure, 'hybridSimulations', 'experiment_substructure', exp, i);
             }
-            //hybrid outputs
-            if (hybridOutputs === undefined) {
-              checklist['hybridSimulations'+i].output = false;  
-            } else {
-              fillChecklist(hybridOutputs, 'hybridSimulations', 'output', exp, i);
-            }
 
             requirements.hybridReq.forEach(function (req) {
               if (exp.value[req] == '' || exp.value[req] == []) {
@@ -968,6 +962,47 @@
         _.each(publication.outputs, getFileObjs);
         _.each(publication.reports, getFileObjs);
         _.each(publication.simulations, getFileObjs);
+      } else if ($scope.state.project.value.projectType == 'hybrid_simulation'){
+        delete publication.eventsList;
+        delete publication.modelConfigs;
+        delete publication.sensorLists;
+        delete publication.analysisList;
+        delete publication.reportsList;
+        delete publication.experimentsList;
+        publication.analysiss = _.uniq(publication.analysiss, function(e){ return e.uuid; });
+        publication.reports = _.uniq(publication.reports, function(e){ return e.uuid; });
+
+        publication.coordinators = _.uniq(publication.coordinators, function(e){ return e.uuid; });
+        publication.coordinator_outputs = _.uniq(publication.coordinator_outputs, function(e){ return e.uuid; });
+        publication.exp_substructures = _.uniq(publication.exp_substructures, function(e){ return e.uuid; });
+        publication.exp_outputs = _.uniq(publication.exp_outputs, function(e){ return e.uuid; });
+        publication.sim_substructures = _.uniq(publication.sim_substructures, function(e){ return e.uuid; });
+        publication.sim_outputs = _.uniq(publication.sim_outputs, function(e){ return e.uuid; });
+        publication.global_models = _.uniq(publication.global_models, function(e){ return e.uuid; });
+        publication.hybrid_simulations = _.uniq(publication.hybrid_simulations, function(e){ return e.uuid; });
+        function getFileObjs(ent){
+          var selectedFiles = $scope.state.publication.filesSelected[ent.uuid];
+          var files = _.map(selectedFiles, function(file){
+                  return {
+                      'path': file.path,
+                      'type': file.type,
+                      'length': file.length,
+                      'name': file.name
+                  };
+          });
+          ent.fileObjs = files;
+        }
+        _.each(publication.analysiss, getFileObjs);
+        _.each(publication.reports, getFileObjs);
+
+        _.each(publication.coordinators, getFileObjs);
+        _.each(publication.coordinator_outputs, getFileObjs);
+        _.each(publication.exp_substructures, getFileObjs);
+        _.each(publication.exp_outputs, getFileObjs);
+        _.each(publication.sim_substructures, getFileObjs);
+        _.each(publication.sim_outputs, getFileObjs);
+        _.each(publication.global_models, getFileObjs);
+        _.each(publication.hybrid_simulations, getFileObjs);
       }
       if (typeof status === 'undefined' || status === null){
         status = 'publishing';
