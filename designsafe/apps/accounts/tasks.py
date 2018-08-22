@@ -41,10 +41,15 @@ def create_report(username, list_name):
             designsafe_user = get_user_model().objects.get(username=user)
             if hasattr(designsafe_user, "profile"):
                 
-                nh_interests = designsafe_user.profile.nh_interests.all().values('description')
-                research_acticities = designsafe_user.profile.research_activities.all().values('description')
+                #making nh_interests QuerySet into list
+                interests = designsafe_user.profile.nh_interests.all().values('description')
+                nh_interests = [interest['description'].encode('utf-8') for interest in interests]
+                
+                #making research_activities QuerySet into list
+                activities = designsafe_user.profile.research_activities.all().values('description')
+                research_activities = [activity['description'].encode('utf-8') for activity in activities]
 
-                # order of items required by user
+                # order of items as required by user
                 writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,
                     user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName,
                     user_profile.email,
@@ -52,8 +57,8 @@ def create_report(username, list_name):
                     user_profile.institutionId,
                     designsafe_user.profile.professional_level,
                     designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
-                    [interest['description'].encode('utf-8') for interest in nh_interests if nh_interests],
-                    [activity['description'].encode('utf-8') for activity in research_acticities if research_activities],
+                    nh_interests if nh_interests else None,
+                    research_activities if research_activities else None,
                     user_profile,
                     designsafe_user.profile.ethnicity,
                     designsafe_user.profile.gender,
@@ -66,14 +71,14 @@ def create_report(username, list_name):
         u = User.objects.get(username=username)
         client = u.agave_oauth.client
 
-        # setattr(csv_file, 'name', 'user_report.csv')
-        # client.files.importData(
-        #    filePath=username,
-        #    fileName='user_report.csv',
-        #    systemId=settings.AGAVE_STORAGE_SYSTEM,
-        #    fileToUpload=csv_file
-        #    )
-        logger.debug('report contents: %s', csv_file.getvalue())
+        setattr(csv_file, 'name', 'user_report.csv')
+        client.files.importData(
+           filePath=username,
+           fileName='user_report.csv',
+           systemId=settings.AGAVE_STORAGE_SYSTEM,
+           fileToUpload=csv_file
+           )
+       
         csv_file.close()
 
     except (HTTPError, AgaveException):

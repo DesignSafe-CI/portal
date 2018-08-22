@@ -566,9 +566,7 @@ def user_report(request, list_name):
         'title': 'Generating Report',
     }
 
-    # return render_to_response('designsafe/apps/accounts/generating_user_report.html')
     return render(request, 'designsafe/apps/accounts/generating_user_report.html', context)
-    # return HttpResponseRedirect('/designsafe-ci.org/data/browser/agave/designsafe.storage.default/')
 
 
 def termsandconditions(request):
