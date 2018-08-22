@@ -356,8 +356,8 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
         
         ag = get_service_account_client()
         project = BaseProject.manager().get(ag, uuid=project_id)
+        project_title = project.title
         project.manager().set_client(ag)
-        #TODO: This should run on a task
         project.add_team_members(team_members_to_add)
         project.add_co_pis(co_pis_to_add)
         tasks.check_project_files_meta_pems.apply_async(args=[project.uuid ], queue='api')
@@ -369,38 +369,13 @@ class ProjectCollaboratorsView(SecureMixin, BaseApiView):
             queue='api'
         )
 
-        #TODO: This should also run on a task
-        for username in team_members_to_add+co_pis_to_add:
-            collab_users = get_user_model().objects.filter(username=username)
-            if collab_users:
-                for collab_user in collab_users:
-                    logger.debug('this is the user:'.format(collab_user))
-                    try:
-                        collab_user.profile.send_mail("You have been added to a DesignSafe project!", '''\
-                            Hi {},
-                            You have been added to the project {}.
-                            You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.
-                            <This is a programmatically generated message. Do NOT reply to this message.>
-                            Thanks, The DesignSafe-CI team"\
-                            '''.format(collab_user.get_full_name(), project.title))
-                    except DesignSafeProfile.DoesNotExist as err:
-                        logger.info("Could not send email to user %s", collab_user)
-
-                    #     collab_user.profile.send_mail(
-                    #         "[Designsafe-CI] You have been added to a project!",
-                    #         "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
-                    #         url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,))))
-                    # except DesignSafeProfile.DoesNotExist as err:
-                    #     logger.info("Could not send email to user %s", collab_user)
-                    #     body = "<p>You have been added to the project <em> {title} </em> as PI</p><p>You can visit the project using this url <a href=\"{url}\">{url}</a>".format(title=project.title,
-                    #         url=request.build_absolute_uri(reverse('designsafe_data:data_depot') + '/projects/%s/' % (project.uuid,)))
-                    #     send_mail(
-                    #         "[Designsafe-CI] You have been added to a project!",
-                    #         body,
-                    #         settings.DEFAULT_FROM_EMAIL,
-                    #         [collab_user.email],
-                    #         html_message=body)
-                    #     logger.exception(err)
+        tasks.email_collaborator_added_to_project.apply_async(
+            args=[
+                project_title,
+                team_members_to_add,
+                co_pis_to_add
+            ]
+        )
 
         return JsonResponse(project.collaborators)
 
