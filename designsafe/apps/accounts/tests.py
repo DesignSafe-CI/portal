@@ -104,7 +104,7 @@ class AccountsTests(TestCase):
         self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, '"Website","Orcid_id"')
+        self.assertContains(resp, 'Generating User Report')
 
     def test_professional_profile_manage(self):
         url = reverse('designsafe_accounts:manage_pro_profile')
