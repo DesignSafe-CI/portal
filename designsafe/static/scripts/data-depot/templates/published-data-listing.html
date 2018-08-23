@@ -936,7 +936,7 @@
     <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
       <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
               style="width:100%">
-        Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+        Hybrid Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
       </button>
       <div id="data-{{simulation.uuid}}" class="collapse"
            ng-class="{'in': $index==0}">
@@ -956,7 +956,7 @@
               <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> (Appears when published)
             </div>
             <div>
-              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Type: </span>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Hybrid Simulation Type: </span>
               <span ng-if="simulation.value.simulationType !== 'Other'">{{simulation.value.simulationType}}</span>
               <span ng-if="simulation.value.simulationType === 'Other'">{{simulation.value.simulationTypeOther}}</span>
             </div>
@@ -967,6 +967,23 @@
               <span ng-repeat="user in filterUsers(simulation.value.authors,
                                browser.publication.users) | orderBy: ['_ui.order', 'last_name']" > {{user.last_name}}, {{user.first_name}};
               </span>
+            </div>
+            <div ng-if="getRelated('analysiss', false, simulation.uuid).length">
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Analysis: </span>
+              <a ng-href="#data-{{getRelated('analysiss', false, simulation.uuid)[0].uuid}}">
+                {{getRelated('analysiss', false, simulation.uuid)[0].value.title}}
+              </a>
+            </div>
+            <div ng-if="getRelated('reports', false, simulation.uuid).length">
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Report: </span>
+              <a ng-href="#data-{{getRelated('reports', false, simulation.uuid)[0].uuid}}">
+                {{getRelated('reports', false, simulation.uuid)[0].value.title}}
+              </a>
+            </div>
+            <div>
+              <button class="btn btn-info btn-sm pull-right"
+                      ng-click="onCitation(simulation, browser.publication)">Citation
+              </button>
             </div>
 
           </div>

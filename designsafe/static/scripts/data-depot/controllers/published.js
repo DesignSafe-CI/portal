@@ -443,8 +443,8 @@
         });
     };
 
-    $scope.onCitation = function(file) {
-      DataBrowserService.showCitation(file);
+    $scope.onCitation = function(ent, pub) {
+      DataBrowserService.showCitation(ent, pub);
     };
 
 }]);

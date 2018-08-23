@@ -1693,7 +1693,7 @@
                 {label: 'Experimental Substructure',
                  name: 'designsafe.project.hybrid_simulation.exp_substructure',
                  yamzId: ''},
-                {label: 'Output',
+                {label: 'Outputs',
                  name: 'designsafe.project.hybrid_simulation.output',
                  yamzId: ''},
                 {label: 'Analysis',
@@ -2469,22 +2469,13 @@
           $ctrl.ui.styles = ['BibTeX', 'Endnote'];
           var authors = '';
           var ieeeAuthors = '';
-          var citationDate = '';
+          var citationYear = '';
                     
           if (typeof pub === 'undefined'){
-            try { citationDate = ent.created.split('T')[0]; }
-            catch(err) {
-              citationDate = '[publication date]';
-              console.error(err);
-            }
+              citationYear = ent.created.split('-')[0];
           } else {
-            try { citationDate = ent[0].meta.dateOfPublication.split('T')[0]; }
-            catch(err) {
-              citationDate = '[publication date]';
-              console.error(err);
-            }
+              citationYear = pub.created.split('-')[0];
           }
-
           var neesCitation = function (prj) {
             $http.get('/api/projects/publication/' + prj[0].meta.projectId)
             .then(function (resp) {
@@ -2528,7 +2519,7 @@
                     ' author = {' + authors + '} \n' +
                     ' title = {' + prj.value.title + '} \n' +
                     ' publisher = {DesignSafe-CI} \n' +
-                    ' year = {' + citationDate + '} \n' +
+                    ' year = {' + citationYear + '} \n' +
                     ' note = {' + prj.value.description + '} \n' +
                     '}';
                 } else if ($ctrl.ui.style === 'Endnote') {
@@ -2537,7 +2528,7 @@
                     '%A ' + authors + '\n' +
                     '%T ' + prj.value.title + '\n' +
                     '%I DesignSafe-CI\n' +
-                    '%D ' + citationDate + '\n';
+                    '%D ' + citationYear + '\n';
                 }
               };
               $ctrl.close = function () {
@@ -2556,7 +2547,7 @@
               };
     
               // display everything...
-              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
+              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationYear + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
               $ctrl.getCitation();
             });
           };
@@ -2609,7 +2600,7 @@
                   ' author = {' + authors + '} \n' +
                   ' title = {' + ent.value.title + '} \n' +
                   ' publisher = {DesignSafe-CI} \n' +
-                  ' year = {' + citationDate + '} \n' +
+                  ' year = {' + citationYear + '} \n' +
                   ' note = {' + ent.value.description + '} \n' +
                   '}';
               } else if ($ctrl.ui.style === 'Endnote') {
@@ -2618,7 +2609,7 @@
                   '%A ' + authors + '\n' +
                   '%T ' + ent.value.title + '\n' +
                   '%I DesignSafe-CI\n' +
-                  '%D ' + citationDate + '\n';
+                  '%D ' + citationYear + '\n';
               }
             };
             $ctrl.close = function () {
@@ -2637,7 +2628,7 @@
             };
 
             // display everything...
-            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
+            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationYear + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
             $ctrl.getCitation();
           }
 
