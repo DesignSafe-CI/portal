@@ -2470,10 +2470,19 @@
           var authors = '';
           var ieeeAuthors = '';
           var citationDate = '';
+                    
           if (typeof pub === 'undefined'){
-            citationDate = ent.created.split('-')[0];
+            try { citationDate = ent.created.split('T')[0]; }
+            catch(err) {
+              citationDate = '[publication date]';
+              console.error(err);
+            }
           } else {
-            citationDate = pub.created.split('-')[0];
+            try { citationDate = ent[0].meta.dateOfPublication.split('T')[0]; }
+            catch(err) {
+              citationDate = '[publication date]';
+              console.error(err);
+            }
           }
 
           var neesCitation = function (prj) {
@@ -2628,7 +2637,7 @@
             };
 
             // display everything...
-            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + dateCitation + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
+            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
             $ctrl.getCitation();
           }
 
