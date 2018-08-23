@@ -1,6 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
-## v2.7.0-20280802
+## v2.7.0-20180803
+
+Fixes:
+
+- Publication citations.
+- Publication tree modal.
+- Hybrid Sim drop down select labels.
+
+## v2.7.0-20180802
 
 Improvements:
 
