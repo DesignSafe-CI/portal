@@ -19,7 +19,6 @@ import logging
 import json
 import re
 from termsandconditions.models import TermsAndConditions
-import csv
 
 logger = logging.getLogger(__name__)
 
@@ -543,7 +542,7 @@ def mailing_list_subscription(request, list_name):
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
             Q(**{"notification_preferences__{}".format(list_name): True}))
-        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'),\
+        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'),
         u.email.encode('utf-8')) for u in su)
 
     except TypeError as e:
