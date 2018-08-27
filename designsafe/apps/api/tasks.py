@@ -979,3 +979,22 @@ def set_facl_project(self, project_uuid, usernames):
         }
         res = client.jobs.submit(body=job_body)
         logger.debug('set facl project: {}'.format(res))
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def email_collaborator_added_to_project(self, project_title, team_members_to_add, co_pis_to_add):
+
+    for username in team_members_to_add + co_pis_to_add:
+        collab_users = get_user_model().objects.filter(username=username)
+        if collab_users:
+            for collab_user in collab_users:
+                logger.debug('this is the user:'.format(collab_user))
+                try:
+                    collab_user.profile.send_mail("You have been added to a DesignSafe project!", '''\
+                        Hi {},
+                        You have been added to the project {}.
+                        You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.
+                        <This is a programmatically generated message. Do NOT reply to this message.>
+                        Thanks, The DesignSafe-CI team"\
+                        '''.format(collab_user.get_full_name(), project_title))
+                except DesignSafeProfile.DoesNotExist as err:
+                    logger.info("Could not send email to user %s", collab_user)
