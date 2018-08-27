@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.0 (20180804)
+
+Improvements:
+
+- Send email to users added to a project using Celery.
+
 ## v2.7.0-20180803
 
 Fixes:
