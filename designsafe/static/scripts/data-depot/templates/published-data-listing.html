@@ -33,7 +33,7 @@
                     <th style="border-top:none; width:25%;">DOI</th>
                     <td style="border-top:none; width:75%;">{{project.doi}}
                       <button class="btn btn-info btn-sm pull-right"
-                              ng-click="onCitation(project, browser.publication)">Citation
+                              ng-click="onCitation(browser.publication, project)">Citation
                       </button>
                     <td>
                   </tr>
@@ -267,7 +267,7 @@
                               </td>
                               <td style="border-top:none; padding-top:0px; padding-bottom:5px;">
                                 <button class="btn btn-info btn-sm"
-                                        ng-click="onCitation(experiment, browser.publication)">Citation
+                                        ng-click="onCitation(browser.publication, experiment)">Citation
                                 </button>
                               </td>
                             </tr>
@@ -538,7 +538,7 @@
               </p>
               <div>
                 <button class="btn btn-info btn-sm"
-                        ng-click="onCitation(analysis, browser.publication)">Citation
+                        ng-click="onCitation(browser.publication, analysis)">Citation
                 </button>
               </div>
             </div>
@@ -677,7 +677,7 @@
             </div>
             <div>
               <button class="btn btn-info btn-sm pull-right"
-                      ng-click="onCitation(simulation, browser.publication)">Citation
+                      ng-click="onCitation(browser.publication, simulation)">Citation
               </button>
             </div>
           </div>
@@ -982,7 +982,7 @@
             </div>
             <div>
               <button class="btn btn-info btn-sm pull-right"
-                      ng-click="onCitation(simulation, browser.publication)">Citation
+                      ng-click="onCitation(browser.publication, simulation)">Citation
               </button>
             </div>
 
