@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.1-20180805
+
+Fixes:
+
+- Hybrid Sim Wording.
+- Citation date.
+
 ## v2.7.0 (20180804)
 
 Improvements:
