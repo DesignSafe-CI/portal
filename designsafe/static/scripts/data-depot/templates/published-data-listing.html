@@ -929,7 +929,7 @@
   </div>
 </div> <!-- Simulation published view close -->
 
-<div ng-if="project.value.projectType == 'hybrid_simulation' && filePathComps.length <= 1">  <!-- hybrid simulation publishe dview -->
+<div ng-if="project.value.projectType == 'hybrid_simulation' && filePathComps.length <= 1">  <!-- hybrid simulation published view -->
 
 <div ng-repeat="simulation in browser.publication.hybrid_simulations | orderBy: 'value.title'">
 
@@ -969,13 +969,13 @@
               </span>
             </div>
             <div ng-if="getRelated('analysiss', false, simulation.uuid).length">
-              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Analysis: </span>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Hybrid Simulation Analysis: </span>
               <a ng-href="#data-{{getRelated('analysiss', false, simulation.uuid)[0].uuid}}">
                 {{getRelated('analysiss', false, simulation.uuid)[0].value.title}}
               </a>
             </div>
             <div ng-if="getRelated('reports', false, simulation.uuid).length">
-              <span style="font-weight:bold; display:inline-block; width:150px;"> Simulation Report: </span>
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Hybrid Simulation Report: </span>
               <a ng-href="#data-{{getRelated('reports', false, simulation.uuid)[0].uuid}}">
                 {{getRelated('reports', false, simulation.uuid)[0].value.title}}
               </a>
@@ -1240,7 +1240,7 @@
       <button class="btn btn-default btn-sm ds-text-blue" data-toggle="collapse" data-target="#data-{{analysis.uuid}}"
               style="width:100%">
         <span ng-if="!analysis.value.simulations.length">Analysis {{analysis.value.title}} </span>
-        <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
+        <span ng-if="analysis.value.simulations.length">Hybrid Simulation Analysis {{analysis.value.title}} </span>
         <i class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{analysis.uuid}}" class="collapse in">
@@ -1311,6 +1311,6 @@
     </div>
   </div>
 
-</div> <!-- Hybrid Simulation publish view close-->
+</div> <!-- Hybrid Simulation published view close-->
 
 </div><!-- Cosing published View -->
