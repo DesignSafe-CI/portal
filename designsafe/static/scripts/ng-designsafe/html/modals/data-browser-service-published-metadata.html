@@ -1,10 +1,10 @@
-<div class="modal-header">
+<!-- <div class="modal-header">
     <h3 class="modal-title">Metadata</h3>
 </div>
-<div class="modal-body">
+<div class="modal-body"> -->
 <h3>{{data.file.metadata.project.title}}</h3>
-<uib-tabset active="active">
-    <uib-tab index="0" heading="Project">
+<!-- <uib-tabset active="active">
+    <uib-tab index="0" heading="Project"> -->
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -106,13 +106,13 @@
                 </tbody>
             </table>
         </div>
-    </uib-tab>
+    <!-- </uib-tab>
     <uib-tab index="$index + 1" ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" disable="tab.disabled">
         {{tab.content}}
     </uib-tab>
     <uib-tab index="3">
         <uib-tab-heading>Experiments
-        </uib-tab-heading>
+        </uib-tab-heading> -->
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -121,6 +121,9 @@
                         <th class="col-lg-10"></th>
                     </tr>
                 </thead>
+                <div style="width:100%;">
+                    <p><strong>Experiment</strong></p>
+                </div>
                 <tbody ng-repeat="experiment in data.file.metadata.experiments | orderBy: nameOrder">
                     <tr>
                         <td class="col-lg-2">{{experiment.name}}</td>
@@ -267,6 +270,6 @@
                 </tbody>
             </table>
         </div>
-    </uib-tab>
-</uib-tabset>
+    <!-- </uib-tab>
+</uib-tabset> -->
 </div>
