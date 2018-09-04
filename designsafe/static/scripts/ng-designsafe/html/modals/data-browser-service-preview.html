@@ -2,45 +2,15 @@
     <h3 class="modal-title">File Preview: {{ file.name }}</h3>
 </div>
 <div class="modal-body">
-    <div class="thumbnail">
+    <div>
         <div ng-if="notInJupyterTree()">
             <div class="alert alert-warning">
                 <p class="lead">Unsupported file path</p>
                 <p>If you want to open this file from DesignSafe you have to copy it to MyData or to a project.</p>
             </div>
         </div>
-        <div class="text-center nbv-preview">
-            <div ng-if="busy && prevVideo">
-                <div class="alert alert-warning">
-                    <p class="lead">Video Preview</p>
-                    <p>Large video files will take longer to load, and some codecs are not supported.</p>
-                </div>
-            </div>
-            <div ng-if="busy">
-                <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
-            </div>
-            <div ng-if="! busy && previewError">
-                <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
-                <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
-            </div>
-            <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && previewHref">
-                    <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" id="loading_ind"></i>
-                <iframe class="embed-responsive-item" ng-src="{{ previewHref }}" id="framepreview"></iframe>
-                <script type="text/javascript">
-                    $('#framepreview').on('load', function() {
-                        $('#loading_ind').hide();
-                    }).on('error', function() {
-                        $('#loading_ind').hide();
-                        $(this).hide().after('<p class="alert alert-danger">Unable to display preview.</p>');
-                    });
-                </script>
-            </div>
-            <div class="embed-responsive embed-responsive-4by3" ng-if="!busy && prevVideo">
-                <video class="embed-responsive-item" id="videoPlayer" controls autoplay src="" type=""></video>
-            </div>
-        </div>
         <div class="caption">
-            <table class="table table-bordered">
+            <table class="table-preview">
                 <tbody>
                 <tr>
                     <th>File name</th>
@@ -63,10 +33,10 @@
             </table>
         </div>
     </div>
-    <div class="actions text-center">
-        <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
+    <div class="table-preview actions text-center">
+        <!-- <button class="btn btn-sm btn-default" ng-if="tests.canViewMetadata" ng-click="viewMetadata()">
             <i class="fa fa-tags"></i>Tag
-        </button>
+        </button> -->
 
         <button class="btn btn-sm btn-default" ng-if="tests.canRename" ng-click="rename()">
             <i class="fa fa-pencil"></i> Rename
@@ -84,21 +54,51 @@
             <i class="fa fa-cloud-download"></i> Download
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
+        <!-- <button class="btn btn-sm btn-default" ng-if="tests.canShare" ng-click="share()">
             <i class="fa fa-send"></i> Share
-        </button>
+        </button> -->
 
         <button class="btn btn-sm btn-default" ng-show="isJupyter()" ng-click="openInJupyter()">
             <i class="fa fa-file-image-o"></i></i> Open In Jupyter
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
+        <!-- <button class="btn btn-sm btn-default" ng-if="tests.canTrash" ng-click="trash()">
             <i class="fa fa-trash"></i> Move to Trash
-        </button>
+        </button> -->
 
         <button class="btn btn-sm btn-danger" ng-if="tests.canDelete" ng-click="rm()">
             <i class="fa fa-trash"></i> Delete
         </button>
+    </div>
+    <div class="text-center nbv-preview">
+        <div ng-if="busy && prevVideo">
+            <div class="alert alert-warning">
+                <p class="lead">Video Preview</p>
+                <p>Large video files will take longer to load, and some codecs are not supported.</p>
+            </div>
+        </div>
+        <div ng-if="busy">
+            <i class="fa fa-spinner fa-spin" style="font-size:150px"></i>
+        </div>
+        <div ng-if="! busy && previewError">
+            <div class="alert alert-warning"><p class="lead">{{ previewError }}</p></div>
+            <i class="fa {{ file.icon() }}" style="font-size:150px"></i>
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="! busy && previewHref">
+                <i class="fa fa-spinner fa-spin" style="font-size:150px;line-height:400px" id="loading_ind"></i>
+            <iframe class="embed-responsive-item" ng-src="{{ previewHref }}" id="framepreview"></iframe>
+            <script type="text/javascript">
+                $('#framepreview').on('load', function() {
+                    $('#loading_ind').hide();
+                }).on('error', function() {
+                    $('#loading_ind').hide();
+                    $(this).hide().after('<p class="alert alert-danger">Unable to display preview.</p>');
+                });
+            </script>
+        </div>
+        <div class="embed-responsive embed-responsive-4by3" ng-if="!busy && prevVideo">
+            <video class="embed-responsive-item" id="videoPlayer" controls autoplay src="" type=""></video>
+        </div>
     </div>
 </div>
 <div class="modal-footer">

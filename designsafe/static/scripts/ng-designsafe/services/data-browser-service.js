@@ -177,9 +177,8 @@
       tests.canViewCitation = files.length >= 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-      // There are errors being thrown by the following two tests
-      // tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
-      // tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name); //??
+      tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
+      tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
       tests.canViewCategories = true;
 
       var trashPath = _trashPath();
