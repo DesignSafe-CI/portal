@@ -2314,6 +2314,21 @@ th {
 .table-bordered {
   border: 1px solid #dddddd;
 }
+.table-preview {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+.table-preview > thead > tr > th,
+.table-preview > tbody > tr > th,
+.table-preview > tfoot > tr > th,
+.table-preview > thead > tr > td,
+.table-preview > tbody > tr > td,
+.table-preview > tfoot > tr > td {
+  padding: 4px;
+  line-height: 1.3;
+  border: 1px solid #dddddd;
+}
 .table-meta td:nth-child(1) {
   width: 40%;
 }
