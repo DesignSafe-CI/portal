@@ -2554,10 +2554,11 @@
                 var doiurl = "https://ezid.cdlib.org/id/" + doi;
                 $window.open(doiurl);
               };
-    
+              
               // display everything...
               $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
-              $ctrl.getCitation();
+              $ctrl.doiurl = "https://ezid.cdlib.org/id/" + $ctrl.data.prj.doi;
+              // $ctrl.getCitation();
             });
           };
 
@@ -2638,7 +2639,8 @@
 
             // display everything...
             $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + pub.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + pub.doi);
-            $ctrl.getCitation();
+            $ctrl.doiurl = "https://ezid.cdlib.org/id/" + prj.doi;
+            // $ctrl.getCitation();
           }
 
 
