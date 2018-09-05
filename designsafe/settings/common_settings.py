@@ -527,6 +527,11 @@ GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', Fa
 # Google Site Verification
 #
 GOOGLE_SITE_VERIFICATION_ID = os.environ.get('GOOGLE_SITE_VERIFICATION_ID', False)
+
+# RAMP Verification
+#
+RAMP_VERIFICATION_ID = os.environ.get('RAMP_VERIFICATION_ID', False)
+
 ###
 # Agave Integration
 #
