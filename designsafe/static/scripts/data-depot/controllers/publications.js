@@ -49,14 +49,11 @@
     };
 
     $scope.onBrowse = function($event, file) {
-      console.log('I am printing from on browser publications.js')
       $event.preventDefault();
       $event.stopPropagation();
 
       var systemId = file.system || file.systemId;
-      console.log (systemId)
       var filePath;
-      console.log(filePath)
       if (file.path == '/'){
         filePath = file.path + file.name;
       } else {
@@ -66,12 +63,14 @@
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         if (file.system === 'nees.public'){
-          // DataBrowserService.viewMetadata([file], $scope.browser.listing);
-          $state.go('publicData', {systemId: file.system, filePath: file.path});
-          // designsafe.dev/data/browser/public/nees.public//NEES-2006-0202.groups
+          // $state.go('publicData', {systemId: file.system, filePath: file.path});
+          DataBrowserService.viewMetadata([file], $scope.browser.listing);
+          // by changing the $state.go of publicData for the DataBrowserService above
+          // when you click the name of a Ness project under published it redirects you the metadata we want. It loads however as a modal,
+          // we want take the content of this modal and pass it as a regular html. In order to do this you will most likely have to create a new controller.
+         
         } else {
           $state.go('publishedData', {systemId: file.system, filePath: file.path});
-          // designsafe.dev/data/browser/public/designsafe.storage.published//PRJ-2056
         }
       }
     };
@@ -123,7 +122,6 @@
     };
 
     $scope.renderName = function(file){
-      console.log('I am printing from publications.js')
       if (typeof file.metadata === 'undefined' ||
           file.metadata === null ||
           _.isEmpty(file.metadata)){

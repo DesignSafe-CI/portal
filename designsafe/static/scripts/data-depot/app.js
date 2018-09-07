@@ -430,10 +430,7 @@
       .state('publicData', {
         url: '/public/nees.public/{filePath:any}',
         controller: 'PublicationDataCtrl',
-        // templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
-        templateUrl: '/static/scripts/data-depot/templates/nees-project-metadata.html',
-        // templateUrl: '/static/scripts/data-depot/templates/data-published-metadata-copy.html',
-
+        templateUrl: '/static/scripts/data-depot/templates/agave-public-data-listing.html',
         params: {
           systemId: 'nees.public',
           filePath: ''
