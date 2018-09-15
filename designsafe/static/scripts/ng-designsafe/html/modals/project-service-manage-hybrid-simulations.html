@@ -315,7 +315,7 @@
                       <li 
                            ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
-                              <span class="label tag-yellow tree-el">Numerical (Simulation) Substructure</span>
+                              <span class="label tag-yellow tree-el">Numerical Substructure</span>
                               <span class="tag-title">{{substructure.value.title}}</span>
                               <button class="btn btn-xsm btn-link"
                                       ng-click="delRelEntity(substructure, {hybridSimulations: simulation.uuid,
@@ -344,7 +344,7 @@
                         <div class="tree-el">
                             <select ng-options="entity as entity.value.title for entity in data.project.simoutput_set"
                                     ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput">
-                                <option value="">Add Hybrid Simulation Output</option>
+                                <option value="">Add Simulation Output</option>
                             </select>
                             <button class="btn btn-sm btn-link"
                                     ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relSimOutput,
@@ -364,7 +364,7 @@
                           <div class="tree-el">
                               <select ng-options="entity as entity.value.title for entity in data.project.simsubstructure_set"
                                       ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure">
-                                  <option value="">Add Hybrid Simulation Substructure</option>
+                                  <option value="">Add Simulation Substructure</option>
                               </select>
                               <button class="btn btn-sm btn-link"
                                       ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid].relSimSubstructure,
@@ -382,7 +382,7 @@
                       <li 
                            ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
-                              <span class="label tag-purple tree-el">Physical (Experimental) Substructure</span>
+                              <span class="label tag-purple tree-el">Experimental Substructure</span>
                               <span class="tag-title">{{substructure.value.title}}</span>
                               <button class="btn btn-xsm btn-link"
                                       ng-click="delRelEntity(substructure, {hybridSimulations: simulation.uuid,
@@ -396,7 +396,7 @@
                     <li
                         ng-repeat="output in data.project.getRelated('expoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                         <div class="tree-el">
-                            <span class="label tag-red tree-el">Event Output</span>
+                            <span class="label tag-red tree-el">Experimental Output</span>
                             <span class="tag-title">{{output.value.title}}</span>
                             <button class="btn btn-xsm btn-link"
                                     ng-click="delRelEntity(output, {hybridSimulations: simulation.uuid,
@@ -411,7 +411,7 @@
                         <div class="tree-el">
                             <select ng-options="entity as entity.value.title for entity in data.project.expoutput_set"
                                     ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput">
-                                <option value="">Add Event Output</option>
+                                <option value="">Add Experimental Output</option>
                             </select>
                             <button class="btn btn-sm btn-link"
                                     ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid][coordinator.uuid][substructure.uuid].relExpOutput,
@@ -451,7 +451,7 @@
                   <select
                           ng-options="entity as entity.value.title for entity in data.project.coordinator_set"
                           ng-model="form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator">
-                          <option value="">Add Coordinator</option>
+                          <option value="">Add Master Simulation Coordinator</option>
                   </select>
                   <button class="btn btn-sm btn-link"
                           ng-click="saveRelEntity(form.updateSimulations[simulation.uuid][globalModel.uuid].relCoordinator,
