@@ -14,7 +14,6 @@ from pytas.http import TASClient
 import re
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 ELIGIBLE = 'Eligible'
@@ -299,7 +298,8 @@ class UserRegistrationForm(forms.Form):
     """
     firstName = forms.CharField(label='First name')
     lastName = forms.CharField(label='Last name')
-    email = forms.EmailField()
+    email = forms.EmailField(label='Email')
+    confirmEmail = forms.CharField(label='Confirm Email')
     phone = forms.CharField()
     institutionId = forms.ChoiceField(
         label='Institution', choices=(),
@@ -363,14 +363,26 @@ class UserRegistrationForm(forms.Form):
         lastName = self.cleaned_data.get('lastName')
         password = self.cleaned_data.get('password')
         confirmPassword = self.cleaned_data.get('confirmPassword')
+        email = self.cleaned_data.get('email')
+        confirmEmail = self.cleaned_data.get('confirmEmail')
 
-        if username and firstName and lastName and password and confirmPassword:
+        if username and firstName and lastName and password and confirmPassword and email and confirmEmail:
+
             valid, error_message = check_password_policy(self.cleaned_data,
                                                          password,
                                                          confirmPassword)
             if not valid:
                 self.add_error('password', error_message)
                 self.add_error('confirmPassword', '')
+                raise forms.ValidationError(error_message)
+
+
+            if email != confirmEmail:  
+                valid = False         
+                error_message = 'The email provided does not match the confirmation.' 
+            if not valid:
+                self.add_error('email', error_message)
+                self.add_error('confirmEmail', '')
                 raise forms.ValidationError(error_message)
 
     def save(self, source='DesignSafe', pi_eligibility=INELIGIBLE):

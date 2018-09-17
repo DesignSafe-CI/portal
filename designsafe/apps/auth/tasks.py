@@ -1,9 +1,11 @@
 from django.conf import settings
+from django.core.mail import send_mail
 from agavepy.agave import Agave, AgaveException
 from designsafe.apps.api.data.agave.filemanager import FileManager
 from celery import shared_task
+
 from requests import HTTPError
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model 
 import logging
 
 
@@ -71,3 +73,12 @@ def check_or_create_agave_home_dir(username):
                          extra={'user': username,
                                 'systemId': settings.AGAVE_STORAGE_SYSTEM})
 
+
+@shared_task(default_retry_delay=1*30, max_retries=3)
+def new_user_alert(username):
+    user = get_user_model().objects.get(username=username)
+    send_mail('New User in DesignSafe, need Slack', 'Username: ' + user.username + '\n' + 
+                                                    'Email: ' + user.email + '\n' +
+                                                    'Name: ' + user.first_name + ' ' + user.last_name + '\n' + 
+                                                    'Id: ' + str(user.id) + '\n',
+              settings.DEFAULT_FROM_EMAIL, [settings.NEW_ACCOUNT_ALERT_EMAIL],)    
