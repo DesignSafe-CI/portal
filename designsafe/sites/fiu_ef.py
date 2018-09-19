@@ -1,2 +1,2 @@
-from designsafe.common_settings import *
+from designsafe.settings import *
 SITE_ID=2
