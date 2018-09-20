@@ -12,8 +12,10 @@
                 <ddtoolbar></ddtoolbar>
                 <div class="row">
                     <div class="col-sm-3 col-md-2">
-                        <div ng-controller="DataDepotNewCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-new.html" %}'"></div>
-                        <div ng-controller="DataDepotNavCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-nav.html" %}'"></div>
+                        
+                        <div ng-controller="DataDepotNewCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-new.html" %}'"></div> 
+                        <ddnav></ddnav>
+                        <!-- <div ng-controller="DataDepotNavCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-nav.html" %}'"></div> -->
                     </div>
                     <div class="col-sm-9 col-md-10">
                         <ui-view></ui-view>

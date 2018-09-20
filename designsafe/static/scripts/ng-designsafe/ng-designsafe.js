@@ -88,7 +88,7 @@ import { agaveService } from '../dashboard/services/agave-service';
 //search
 import { searchDirective } from '../search/directive';
 import { searchService } from '../search/service';
-
+*/
 //workspace
 import { applicationFormCtrl } from '../workspace/controllers/application-form';
 import { applicationTrayCtrl } from '../workspace/controllers/application-tray';
@@ -107,7 +107,7 @@ import { workspaceSystemsService } from '../workspace/services/systems-service';
 import { applicationAddCtrl } from '../applications/controllers/application-add';
 import { applicationEditCtrl } from '../applications/controllers/application-edit';
 import { applicationSystemsRoleCtrl } from '../applications/controllers/application-systems-role';
-*/
+
 
 import '../search';
 import '../data-depot';

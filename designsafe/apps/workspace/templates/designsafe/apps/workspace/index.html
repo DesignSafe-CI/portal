@@ -52,11 +52,15 @@
 <script type="text/javascript" src="{% static 'vendor/filesaver/FileSaver.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-xeditable/dist/js/xeditable.js' %}"></script>
+<script src="{% static 'vendor/angular-ui-codemirror/ui-codemirror.js' %}"></script>
 {% endaddtoblock %}
 
-{% addtoblock 'js' %}
-<script src="{% static 'build/workspace.bundle.js' %}"></script>
+{% addtoblock "js" %}
+<script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
 <script src="{% static 'scripts/workspace/directives/asf-agave-file-picker.js' %}"></script>
+<script src="{% static 'build/applications.bundle.js' %}"></script>
+<script src="{% static 'build/workspace.bundle.js' %}"></script>
+{% endaddtoblock %}
 <!--
 <script src="{% static 'designsafe/apps/workspace/scripts/app.js' %}"></script>
 <script src="{% static 'designsafe/apps/workspace/scripts/controllers/workspace-panel.js' %}"></script>
@@ -73,6 +77,6 @@
 <script src="{% static 'designsafe/apps/workspace/scripts/directives/asf-agave-file-picker.js' %}"></script>
 <script src="{% static 'designsafe/apps/workspace/scripts/providers/translations.js' %}"></script>
 -->
-{% endaddtoblock %}
+
 
 {% endblock %}
