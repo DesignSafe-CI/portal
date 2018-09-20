@@ -48,9 +48,18 @@ import { DataBrowserServicePreviewComponent } from './components/modals/data-bro
 //components
 ddModule.component('ddtoolbar', DataDepotToolbarComponent)
 
+import { DataDepotNavComponent } from './components/data-depot-nav/data-depot-nav.component'
+ddModule.component('ddnav', DataDepotNavComponent)
+
+import { DataBrowserServiceMoveComponent } from './components/modals/data-browser-service-move/data-browser-service-move.component'
+//console.log(DataBrowserServiceMoveComponent)
+ddModule.component('move', DataBrowserServiceMoveComponent)
+
 //modals
 import { DataDepotToolbarComponent } from './components/data-depot-toolbar/data-depot-toolbar.component'
 ddModule.component('preview', DataBrowserServicePreviewComponent)
+
+
 
 function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 

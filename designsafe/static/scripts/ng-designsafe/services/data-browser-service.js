@@ -546,6 +546,14 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     }
 
     var modal = $uibModal.open({
+      component: 'move',
+      resolve: {
+        files: () => files,
+        initialDestination: () => initialDestination
+      }
+    })
+    /*
+    var modal = $uibModal.open({
       template: require('../html/modals/data-browser-service-move.html'),
       controller: ['$scope', '$uibModalInstance', 'FileListing', 'files', 'initialDestination', 'ProjectService', function ($scope, $uibModalInstance, FileListing, files, initialDestination, ProjectService) {
 
@@ -651,13 +659,19 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
         initialDestination: function () { return initialDestination; }
       }
     });
-
+    */
+   console.log(modal.result)
+   modal.result.then(x => console.log(x))
     return modal.result.then(
       function (result) {
+
+        console.log(result) 
+        
         currentState.busy = true;
         //if (result.system !== files[0].system){
         //  return $q.when(files);
         //}
+
         var movePromises = _.map(files, function (f) {
           return f.move({system: result.system, path: result.path}).then(function (result) {
             deselect([f]);
@@ -669,10 +683,12 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
           currentState.busy = false;
           return results;
         });
-      }
-    );
+      
+      } 
+    )
   }
 
+  
 
   /**
    *
