@@ -32,15 +32,16 @@ def create_report(username, list_name):
         csv_file = StringIO.StringIO()
         writer = csv.writer(csv_file)
         writer.writerow(["Last Name","First Name","Email","Phone Number","Institution ID",\
-            "Professional Level","Bio","NH_interests","Research Activities","Username",\
+            "Title", "Professional Level","Bio","NH_interests","Research Activities","Username",\
             "Ethnicity","Gender","Country of residence","Citizenship","Date Account Created",\
             ])
 
         for user in notification_list:
             user_profile = TASUser(username=user)
             designsafe_user = get_user_model().objects.get(username=user)
+            
             if hasattr(designsafe_user, "profile"):
-                
+
                 #making nh_interests QuerySet into list
                 interests = designsafe_user.profile.nh_interests.all().values('description')
                 nh_interests = [interest['description'].encode('utf-8') for interest in interests]
@@ -55,6 +56,7 @@ def create_report(username, list_name):
                     user_profile.email,
                     user_profile.phone,
                     user_profile.institutionId,
+                    user_profile.title,
                     designsafe_user.profile.professional_level,
                     designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
                     nh_interests if nh_interests else None,
@@ -67,9 +69,8 @@ def create_report(username, list_name):
                     designsafe_user.date_joined.date()
                 ])
 
-        User = get_user_model()
-        u = User.objects.get(username=username)
-        client = u.agave_oauth.client
+        User = get_user_model().objects.get(username=username)
+        client = User.agave_oauth.client
 
         setattr(csv_file, 'name', 'user_report.csv')
         client.files.importData(
