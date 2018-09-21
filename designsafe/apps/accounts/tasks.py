@@ -52,10 +52,10 @@ def create_report(username, list_name):
 
                 # order of items as required by user
                 writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,
-                    user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName, # delete these if statements.
+                    user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName, 
                     user_profile.email,
                     user_profile.phone,
-                    user_profile.institution.encode('ascii', 'ignore'),
+                    user_profile.institution.encode('utf-8'),
                     user_profile.title,
                     designsafe_user.profile.professional_level,
                     designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
