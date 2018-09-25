@@ -119,9 +119,8 @@
         } else {
           items.push('maxRunTime', 'name', 'archivePath');
         }
-        if ($scope.data.app.parallelism == "PARALLEL") {
+        if ($scope.data.app.parallelism == 'PARALLEL' && !$scope.data.app.tags.includes('hideNodeCount')) {
           items.push('nodeCount');
-          // items.push('processorsPerNode');
         }
         $scope.form.form.push({
           type: 'fieldset',
