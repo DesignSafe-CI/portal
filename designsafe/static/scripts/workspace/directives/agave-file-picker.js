@@ -1,7 +1,7 @@
 export function agaveFilePicker(window, angular, $, _) {
   "use strict";
 
-  angular.module('designsafe').directive('agaveFilePicker', function() {
+  angular.module('workspace').directive('agaveFilePicker', function() {
     return {
       restrict: 'EA',
       require: 'ngModel',

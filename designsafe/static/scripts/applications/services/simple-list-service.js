@@ -5,6 +5,7 @@ export function appsSimpleListService(window, angular, $, _) {
     var SimpleList = function(){
       this.selected = null,
       this.lists = {},
+      this.hello = 'hello2'
       this.map = {}
     };
 

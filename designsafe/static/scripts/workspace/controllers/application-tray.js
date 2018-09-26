@@ -1,24 +1,4 @@
-export function applicationTrayCtrl(window, angular, $, _) {
-  "use strict";
-  angular.module('designsafe')
-  
-  .directive('focusout', ['$parse', function($parse) {
-    return {
-      compile: function($element, attr) {
-        var fn = $parse(attr.focusout);
-        return function handler(scope, element) {
-          element.on('focusout', function(event) {
-            scope.$apply(function() {
-              fn(scope, {$event:event});
-            });
-          });
-        };
-      }
-    };
-  }])
-  
-  .controller('ApplicationTrayCtrl',
-    ['$location', '$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$state', '$stateParams', '$translate', 'Apps', 'SimpleList', 'MultipleList', '$mdToast', function(
+function ApplicationTrayCtrl(
       $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, $mdToast) {
       $scope.tabs = [];
 
@@ -148,6 +128,5 @@ export function applicationTrayCtrl(window, angular, $, _) {
         }
       });
 
-    }]);
-
-  }
+    }
+export default ApplicationTrayCtrl

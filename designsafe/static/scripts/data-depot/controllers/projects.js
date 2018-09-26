@@ -1,5 +1,5 @@
 export function projectsController(window, angular) {
-  var app = angular.module('designsafe');
+  var app = angular.module('ds-data');
   app.requires.push('django.context');
 
   app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {

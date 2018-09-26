@@ -12,10 +12,8 @@
     </div>
 </div>
 
-<div class="container" role="main" id="workspace">
-  <div ng-controller="ApplicationTrayCtrl"
-       ng-include="'{% static "/scripts/workspace/html/application-tray.html" %}'"
-       class="workspace-panel-tabs"></div>
+<div class="container" role="main" id="workspace" ng-app="workspace">
+  <div><apptray></apptray></div>
   <div class="workspace-panel-container">
     <div ng-controller="DataBrowserCtrl"
          ng-include="'{% static "/scripts/workspace/html/data-browser.html" %}'"
@@ -58,25 +56,7 @@
 {% addtoblock "js" %}
 <script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
 <script src="{% static 'scripts/workspace/directives/asf-agave-file-picker.js' %}"></script>
-<script src="{% static 'build/applications.bundle.js' %}"></script>
 <script src="{% static 'build/workspace.bundle.js' %}"></script>
 {% endaddtoblock %}
-<!--
-<script src="{% static 'designsafe/apps/workspace/scripts/app.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/controllers/workspace-panel.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/controllers/application-tray.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/controllers/application-form.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/controllers/jobs-status.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/controllers/data-browser.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/services/systems-service.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/services/apps-service.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/services/jobs-service.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/services/simple-list-service.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/services/multiple-list-service.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/directives/agave-file-picker.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/directives/asf-agave-file-picker.js' %}"></script>
-<script src="{% static 'designsafe/apps/workspace/scripts/providers/translations.js' %}"></script>
--->
-
 
 {% endblock %}

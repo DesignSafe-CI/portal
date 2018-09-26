@@ -9,7 +9,7 @@ import { SearchService } from './services/search.service';
 
 //export var module = angular.module('designsafe');
 
-let searchModule = angular.module('ds-search', [])
+let searchModule = angular.module('ds-search', ['designsafe'])
 
 searchModule.requires.push(
   'ngSanitize'

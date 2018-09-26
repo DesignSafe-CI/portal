@@ -1,23 +1,5 @@
-export function applicationFormCtrl(window, angular, $) {
-  "use strict";
-  angular.module('designsafe')
-  .directive('compile', ['$compile', function ($compile) {
-    return function (scope, element, attrs) {
-      scope.$watch(
-        function (scope) {
-          return scope.$eval(attrs.compile);
-        },
-        function (value) {
-          element.html(value);
-          $compile(element.contents())(scope);
-        }
-      );
-    };
-  }])
-  .controller('ApplicationFormCtrl',
-    ['$scope', '$rootScope', '$localStorage', '$location', '$anchorScroll', '$translate', 'Apps', 'Jobs', 'Systems', '$mdToast', 'Django', 'ProjectService',
-    function($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
-
+function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
+      'nginject';
       $localStorage.systemChecks = {};
 
       $scope.data = {
@@ -256,5 +238,6 @@ export function applicationFormCtrl(window, angular, $) {
         $rootScope.$broadcast('close-app', $scope.data.app.id);
         closeApp();
       };
-    }]);
-}
+    }
+
+export default ApplicationFormCtrl

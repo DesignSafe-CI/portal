@@ -1,5 +1,5 @@
 export function myDataCtrl(window, angular, _) {
-  var app = angular.module('designsafe');
+  var app = angular.module('ds-data');
   app.requires.push('django.context');
 
   app.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {

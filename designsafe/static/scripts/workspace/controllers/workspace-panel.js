@@ -1,7 +1,4 @@
-export function workspacePanelCtrl(window, angular, $) {
-  "use strict";
-  angular.module('designsafe').controller('WorkspacePanelCtrl',
-    ['$scope', function($scope) {
+function WorkspacePanelCtrl($scope) {
 
     $scope.panel = {
       collapsed: false
@@ -21,5 +18,5 @@ export function workspacePanelCtrl(window, angular, $) {
 
 
 
-  }]);
-}
+  }
+export default WorkspacePanelCtrl

@@ -1,5 +1,5 @@
 export function externalDataCtrl(window, angular) {
-  var app = angular.module('designsafe');
+  var app = angular.module('ds-data');
   app.requires.push('django.context');
 
   app.controller('ExternalDataCtrl', ['$scope', '$state', 'Django',

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
+<div class="container" ng-app="ds-search">
     <site-search></site-search>
   {{message}}
   </div>
@@ -15,6 +15,7 @@
   <script type="text/javascript" src="{% static 'vendor/angular-sanitize/angular-sanitize.js' %}"></script>
   <script type="text/javascript" src="{% static 'vendor/underscore/underscore.js' %}"></script>
   <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
+  <script type="text/javascript" src="{% static 'build/search.bundle.js' %}"></script>
 {% endaddtoblock %}
 
 {% endblock %}

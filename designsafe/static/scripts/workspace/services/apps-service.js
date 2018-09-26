@@ -1,6 +1,4 @@
-export function appsService(window, angular, $, _) {
-  "use strict";
-  angular.module('designsafe').factory('Apps', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
+export function appsService($http, $q, $translate, djangoUrl) {
 
     var service = {};
 
@@ -204,6 +202,4 @@ export function appsService(window, angular, $, _) {
     };
 
     return service;
-  }]);
-
-}
+  }

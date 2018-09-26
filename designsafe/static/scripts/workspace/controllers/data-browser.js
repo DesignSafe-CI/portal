@@ -1,7 +1,4 @@
-export function dataBrowserCtrl(window, angular, $) {
-  "use strict";
-  angular.module('designsafe').controller('DataBrowserCtrl',
-    ['$scope', '$controller', '$rootScope', 'Systems', 'logger', 'DataBrowserService', function($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
+function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
 
             if ($(window).width() < 992) {
                 $scope.panel.collapsed = true;
@@ -240,5 +237,5 @@ export function dataBrowserCtrl(window, angular, $) {
       $scope.data.system = systemList[0];
       $scope.dataSourceUpdated();
     });
-  }]);
-}
+  }
+export default DataBrowserCtrl;

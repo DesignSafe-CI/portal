@@ -1,6 +1,4 @@
-export function jobsService(window, angular, $, _) {
-  "use strict";
-  angular.module('designsafe').factory('Jobs', ['$http', 'djangoUrl', function($http, djangoUrl) {
+export function jobsService($http, djangoUrl) {
     var service = {};
 
     service.list = function(options) {
@@ -27,5 +25,4 @@ export function jobsService(window, angular, $, _) {
     };
 
     return service;
-  }]);
-}
+  }

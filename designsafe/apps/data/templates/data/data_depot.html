@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
     <div class="container">
-        <div>
+        <div ng-app="ds-data">
             <div ng-controller="MainCtrl" style="position: relative;">
                 <!-- <div ng-controller="DataDepotToolbarCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-toolbar.html" %}'"></div> -->
                 <ddtoolbar></ddtoolbar>
@@ -42,7 +42,7 @@
 
     {% addtoblock "js" %}
 
-    <!-- <script type="text/javascript" src="{% static 'build/dd.bundle.js' %}"></script> -->
+    <script type="text/javascript" src="{% static 'build/dd.bundle.js' %}"></script>
         <!---
         <script type="text/javascript" src="{% static 'scripts/data-depot/app.js' %}"></script>
         
