@@ -623,7 +623,7 @@
   </div>
 </div>
 
-<div ng-if="project.value.projectType == 'simulation' && filePathComps.length <= 1">  <!-- simulation publishe dview -->
+<div ng-if="project.value.projectType == 'simulation' && filePathComps.length <= 1">  <!-- simulation published view -->
 
   <div ng-repeat="simulation in browser.publication.simulations | orderBy: 'value.title'" style="#fff;">
     <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
