@@ -63,12 +63,7 @@
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         if (file.system === 'nees.public'){
-          // $state.go('publicData', {systemId: file.system, filePath: file.path});
-          DataBrowserService.viewMetadata([file], $scope.browser.listing);
-          // by changing the $state.go of publicData for the DataBrowserService above
-          // when you click the name of a Ness project under published it redirects you the metadata we want. It loads however as a modal,
-          // we want take the content of this modal and pass it as a regular html. In order to do this you will most likely have to create a new controller.
-         
+          $state.go('publishedNeesData', {systemId: file.system, filePath: file.path});
         } else {
           $state.go('publishedData', {systemId: file.system, filePath: file.path});
         }
