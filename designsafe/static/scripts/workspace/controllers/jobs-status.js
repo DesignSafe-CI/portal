@@ -1,7 +1,4 @@
-export function jobsStatusCtrl(window, angular, $) {
-  "use strict";
-  angular.module('designsafe').controller('JobsStatusCtrl',
-  ['$scope', '$controller', '$rootScope', '$uibModal', 'djangoUrl', 'Jobs', 'logger', 'NotificationService', function($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
+export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djangoUrl, Jobs, logger, NotificationService) {
 
     NotificationService.processors.web = {
       process: function (msg) {
@@ -101,10 +98,9 @@ export function jobsStatusCtrl(window, angular, $) {
     });
 
 
-  }]);
+  }
 
-  angular.module('designsafe').controller('JobDetailsModalCtrl',
-    [ '$scope', '$uibModalInstance','$http', 'Jobs', 'job', 'djangoUrl', 'logger', function($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
+export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
 
     $scope.job = job;
 
@@ -137,13 +133,11 @@ export function jobsStatusCtrl(window, angular, $) {
       });
     };
 
-  }]);
+  }
 
-  angular.module('designsafe').controller('VNCJobDetailsModalCtrl', function($scope, $uibModalInstance, msg) {
+export function VNCJobDetailsModalCtrl($scope, $uibModalInstance, msg) {
     $scope.msg = msg;
     $scope.dismiss = function() {
       $uibModalInstance.dismiss('cancel');
     };
-  });
-
-}
+  }

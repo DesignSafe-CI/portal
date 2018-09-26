@@ -1,0 +1,39 @@
+<div>
+        <p ng-show="error" class="alert alert-danger">{{error}}</p>
+        <div class="app-wrapper" ng-if="$ctrl.requesting">
+            <div class="app text-center">
+                <div class="app-icon"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+                <div class="app-title">Loading...</div>
+                <div class="app-version">&nbsp;</div>
+            </div>
+        </div>
+        <uib-tabset id="workspace-tabs" ng-show="!$ctrl.requesting" active="$ctrl.activeTab">
+            
+          <uib-tab class="workspace-tab" ng-repeat="tab in $ctrl.tabs" focusout="$ctrl.showApps($event, tab)">
+            <uib-tab-heading>
+              <h3 class="workspace-tab-title">{{tab.title}} [{{tab.count}}]</h3>
+            </uib-tab-heading>
+    
+            <div ng-show="!tab.edit" class="apps-tray">
+              <md-grid-list md-cols="6" md-row-height="3:2" md-gutter="0px">
+                <md-grid-tile ng-repeat="app in tab.content | orderBy: 'value.definition.orderBy'"
+                     ng-click="$ctrl.launchApp(app, tab)"
+                     ng-class="{'app-active': $ctrl.data.activeApp.value.definition.id==app.value.definition.id}">
+                  <div class="app text-center">
+                    <md-grid-tile-header class="app-header">
+                      <h5 class="app-title">{{app.value.definition.label}}</h5>
+                    </md-grid-tile-header>
+                    <div class="app-icon">
+                      <i ng-if="app.value.definition.appIcon" class="icon-{{app.value.definition.appIcon}}"></i>
+                      <span ng-if="!app.value.definition.appIcon" class="icon-letter">{{app.value.definition.label[0].toUpperCase()}}</span>
+                    </div>
+                    <!-- <div class="app-version">{{app.value.definition.version}}</div>  -->
+                  </div>
+                </md-grid-tile>
+              </md-grid-list>
+            </div>
+          </uib-tab>
+        </uib-tabset>
+    </div>
+
+    

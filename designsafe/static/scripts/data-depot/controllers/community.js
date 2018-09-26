@@ -1,5 +1,5 @@
 export function communityDataCtrl(window, angular) {
-  var app = angular.module('designsafe');
+  var app = angular.module('ds-data');
   app.requires.push('django.context');
 
   app.controller('CommunityDataCtrl', ['$scope', '$state', 'Django',

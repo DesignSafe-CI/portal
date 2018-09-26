@@ -22,6 +22,7 @@
   // }
 
   $('#search_button').on('keypress click', function (ev) {
+    ev.preventDefault();
     var searchstring = $('#searchfield').val();
     if (ev.which === 13 || ev.type === 'click') {
       window.location = '/search?q=' + searchstring;

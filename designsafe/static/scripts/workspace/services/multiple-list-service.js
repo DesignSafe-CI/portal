@@ -1,6 +1,4 @@
-export function multipleListService(window, angular, $, _) {
-  "use strict";
-  angular.module('designsafe').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+export function multipleListService($http, $q, djangoUrl) {
 
     var MultipleList = function() {
           this.lists = [];
@@ -94,6 +92,4 @@ export function multipleListService(window, angular, $, _) {
     };
 
     return MultipleList;
-  }]);
-
-}
+  }

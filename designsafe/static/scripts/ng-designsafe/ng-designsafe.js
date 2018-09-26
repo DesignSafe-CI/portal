@@ -65,19 +65,6 @@ import { project } from './models/project';
 //notificationsProvider();
 //wsProvider();
 
-//data depot controllers
-
-import { communityDataCtrl } from '../data-depot/controllers/community';
-import { dataDepotNavCtrl } from '../data-depot/controllers/data-depot-nav';
-import {dataDepotNewCtrl } from '../data-depot/controllers/data-depot-new'
-import { dataDepotToolbarCtrl } from '../data-depot/controllers/data-depot-toolbar'
-import {externalDataCtrl } from '../data-depot/controllers/external-data';
-import { mainCtrl } from '../data-depot/controllers/main';
-import { myDataCtrl } from '../data-depot/controllers/my-data';
-import { projectsController } from '../data-depot/controllers/projects';
-import { publicationDataCtrl } from '../data-depot/controllers/publications';
-import { publishedDataCtrl } from '../data-depot/controllers/published';
-import { sharedData } from '../data-depot/controllers/shared-data';
 
 /*
 //dashboard
@@ -97,11 +84,11 @@ import { jobsStatusCtrl } from '../workspace/controllers/jobs-status';
 import { workspacePanelCtrl } from '../workspace/controllers/workspace-panel';
 import {agaveFilePicker } from '../workspace/directives/agave-file-picker';
 import { translateProvider } from '../workspace/providers/translations';
-import { appsService } from '../workspace/services/apps-service';
-import { jobsService } from '../workspace/services/jobs-service';
-import { multipleListService } from '../workspace/services/multiple-list-service';
-import { simpleListService } from '../workspace/services/simple-list-service';
-import { workspaceSystemsService } from '../workspace/services/systems-service';
+//import { appsService } from '../workspace/services/apps-service';
+//import { jobsService } from '../workspace/services/jobs-service';
+//import { multipleListService } from '../workspace/services/multiple-list-service';
+
+//import { workspaceSystemsService } from '../workspace/services/systems-service';
 
 //applications
 import { applicationAddCtrl } from '../applications/controllers/application-add';
@@ -112,7 +99,7 @@ import { applicationSystemsRoleCtrl } from '../applications/controllers/applicat
 import '../search';
 import '../data-depot';
 
-export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel', 'ds-search', 'ds-data'])
+export const ngDesignsafe = angular.module('designsafe', ['ng.modernizr', 'djng.urls', 'slickCarousel'])
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
@@ -174,17 +161,5 @@ projectEntity(window, angular, $, _);
 project(window, angular, $, _);
 
 //add providers
-//add data depot controllers
 
-communityDataCtrl(window, angular);
-dataDepotNavCtrl(window, angular);
-dataDepotNewCtrl(window, angular);
-//dataDepotToolbarCtrl(window, angular)
-externalDataCtrl(window, angular);
-mainCtrl(window, angular);
-myDataCtrl(window, angular, _);
-projectsController(window, angular);
-publicationDataCtrl(window, angular);
-publishedDataCtrl(window, angular);
-sharedData(window, angular);
 

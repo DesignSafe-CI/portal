@@ -1,5 +1,5 @@
 export function publicationDataCtrl(window, angular) {
-  var app = angular.module('designsafe');
+  var app = angular.module('ds-data');
   app.requires.push('django.context');
 
   app.controller('PublicationDataCtrl', ['$scope', '$state', 'Django',

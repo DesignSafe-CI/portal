@@ -3,9 +3,7 @@
  * lookup right now, but it will be nicer to go ahead and code against this service
  * rather than having stubs all over the place.
  */
-export function workspaceSystemsService(window, angular, $, _) {
-  'use strict';
-  angular.module('designsafe').factory('Systems', ['$q', '$http', 'djangoUrl', function($q, $http, djangoUrl) {
+export function workspaceSystemsService($q, $http, djangoUrl) {
     var service = {};
 
     var systemsList = [
@@ -112,5 +110,4 @@ export function workspaceSystemsService(window, angular, $, _) {
     }
 
     return service;
-  }]);
-}
+  }

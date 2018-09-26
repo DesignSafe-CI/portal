@@ -1,14 +1,13 @@
-export function simpleListService(window, angular, $, _) {
-  "use strict";
-  angular.module('designsafe').factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appCategories', 'appIcons', function ($http, $q, djangoUrl, appCategories, appIcons) {
-
+export function simpleListService ($http, $q, djangoUrl, appCategories, appIcons) {
+    'ngInclude';
     var SimpleList = function(){
       this.selected = null;
       this.lists = {};
+      this.hello = 'hi';
       this.map = {};
       this.tabs = appCategories.concat(['My Apps']);
     };
-
+    
     SimpleList.prototype.getDefaultLists = function(query) {
       var self = this;
       var deferred = $q.defer();
@@ -80,8 +79,6 @@ export function simpleListService(window, angular, $, _) {
       );
       return deferred.promise;
     };
-
+    
     return SimpleList;
-  }]);
-
-}
+  }
