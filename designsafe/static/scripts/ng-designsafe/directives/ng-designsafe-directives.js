@@ -1,9 +1,5 @@
-export const ngDesignsafeDirectives = function(angular, $){
-  "use strict";
 
-  var mod = angular.module('designsafe');
-
-  mod.directive('fileModel', ['$parse',function ($parse) {
+export function fileModel($parse) {
     return {
       restrict: 'A',
       link: function(scope, element, attrs) {
@@ -21,9 +17,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  }]);
+  };
 
-  mod.directive('spinnerOnLoad', function () {
+  export function spinnerOnLoad() {
     return {
       restrict: 'A',
       link: function (scope, element) {
@@ -37,9 +33,9 @@ export const ngDesignsafeDirectives = function(angular, $){
       }
     };
 
-  });
+  }
 
-  mod.directive('httpSrc', ['$http', function ($http) {
+export function httpSrc($http) {
    return {
       restrict: 'A',
       link: function (scope, element, attrs) {
@@ -66,9 +62,9 @@ export const ngDesignsafeDirectives = function(angular, $){
           });
       }
     };
-  }]);
+  }
 
-  mod.directive('accessfiles', function() {
+ export function accessfiles() {
     return {
       scope: {
         accessfiles: '='
@@ -82,9 +78,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  });
+  }
 
-  mod.directive('selectOnFocus', function() {
+  export function selectOnFocus() {
     return {
       restrict: 'A',
       link: function(scope, element, attrs) {
@@ -93,9 +89,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  });
+  }
 
-  mod.directive('dsDataDraggable', function() {
+export function dsDataDraggable() {
     function dragStart(e) {
       var ele = this;
       ele.style.opacity = '0.4';
@@ -125,9 +121,9 @@ export const ngDesignsafeDirectives = function(angular, $){
       el.addEventListener('drop', onDrop);
     }
     return dataDraggable;
-  });
+  }
 
-  mod.directive('dsDraggable', function() {
+export function dsDraggable() {
 
     return {
       restrict: 'A',
@@ -193,9 +189,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  });
+  }
 
-  mod.directive('dsInfiniteScroll', function(){
+export function dsInfiniteScroll(){
     return {
       restrict: 'A',
       scope: {
@@ -218,9 +214,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  });
+  }
 
-  mod.directive('dsUser', ['UserService', function(UserService) {
+  export function dsUser(UserService) {
     return {
       restrict: 'EA',
       scope: {
@@ -256,9 +252,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  }]);
+  }
 
-  mod.directive('dsFixTop', function ($window) {
+ export function dsFixTop($window) {
     var $win = angular.element($window); // wrap window object as jQuery object
 
     return {
@@ -279,9 +275,9 @@ export const ngDesignsafeDirectives = function(angular, $){
         });
       }
     };
-  });
+  }
 
-  mod.directive('yamzTerm', ['$http', function($http){
+  export function yamzTerm($http){
     return {
         restrict: 'EA',
         scope: {
@@ -326,6 +322,4 @@ export const ngDesignsafeDirectives = function(angular, $){
           });
         }
     };
-  }]);
-
-}
+  }

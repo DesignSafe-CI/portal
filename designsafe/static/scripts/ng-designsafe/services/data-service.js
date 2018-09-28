@@ -1,9 +1,4 @@
-export const dataService = function(window, angular, $, _) {
-  "use strict";
-
-  var module = angular.module('designsafe');
-
-  module.factory('DataService', ['$rootScope', '$http', '$q', 'djangoUrl', 'Logging', function($rootScope, $http, $q, djangoUrl, Logging) {
+export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataService');
 
@@ -287,7 +282,4 @@ export const dataService = function(window, angular, $, _) {
 
     return service;
 
-  }]);
-
-
-}
+  }

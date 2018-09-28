@@ -1,9 +1,4 @@
-export const project = function(window, angular, $, _) {
-  "use strict";
-
-  var module = angular.module('designsafe');
-
-  module.factory('ProjectModel', ['Logging', function(Logging) {
+export function ProjectModel(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.ProjetModel');
     var Project = function(data){
       var self = this;
@@ -239,5 +234,4 @@ export const project = function(window, angular, $, _) {
     };
 
     return Project;
-  }]);
-}
+  }

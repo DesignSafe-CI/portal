@@ -1,6 +1,4 @@
-export const notificationFactory = function(window, angular) {
-  angular.module('designsafe')
-    .factory('notificationFactory', ['$http', 'djangoUrl', function($http, djangoUrl) {
+export function notificationFactory($http, djangoUrl) {
       var service = {};
 
       service.list = function() {
@@ -13,5 +11,4 @@ export const notificationFactory = function(window, angular) {
 
       return service;
     }
-  ])
-}
+  

@@ -1,11 +1,7 @@
 /**
  *
  */
-export const metadataListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('metadataListing', function() {
+export function metadataListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -19,6 +15,4 @@ export const metadataListing = function(window, angular) {
         onDetail: '&'
       }
     };
-  });
-
-}
+  }

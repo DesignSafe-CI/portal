@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddDropboxListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddDropboxListing', function() {
+export function ddDropboxListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -18,6 +14,4 @@ export const ddDropboxListing = function(window, angular) {
         onDetail: '&'
       }
     };
-  });
-
-}
+  }

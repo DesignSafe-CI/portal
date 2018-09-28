@@ -1,10 +1,4 @@
-export const projectEntityService = function(window, angular, _, undefined) {
-  "use strict";
-
-  var mod = angular.module('designsafe');
-  mod.requires.push('django.context', 'httpi');
-
-  mod.factory('ProjectEntitiesService', ['httpi', '$interpolate', '$q', '$uibModal', 'Logging', 'ProjectEntityModel', function(httpi, $interpolate, $q, $uibModal, Logging, ProjectEntityModel) {
+export function ProjectEntitiesService(httpi, $interpolate, $q, $uibModal, Logging, ProjectEntityModel) {
 
     var logger = Logging.getLogger('DataDepot.ProjectService');
 
@@ -81,5 +75,4 @@ export const projectEntityService = function(window, angular, _, undefined) {
     };
 
     return service;
-  }]);
-}
+  }

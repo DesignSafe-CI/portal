@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddPublicSearchListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddPublicSearchListing', function() {
+export function ddPublicSearchListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -20,6 +16,4 @@ export const ddPublicSearchListing = function(window, angular) {
         renderName: '&'
       }
     };
-  });
-
-}
+  }

@@ -1,6 +1,4 @@
-export function userService(window, angular) {
-  angular.module('designsafe')
-    .service('UserService', ['$http', '$q', 'djangoUrl', 'Logging', function($http, $q, djangoUrl, Logging) {
+export function UserService($http, $q, djangoUrl, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.UserService');
 
@@ -64,5 +62,4 @@ export function userService(window, angular) {
       });
     };
 
-  }]);
-}
+  }

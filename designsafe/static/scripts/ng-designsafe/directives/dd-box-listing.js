@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddBoxListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddBoxListing', function() {
+export function ddBoxListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -18,6 +14,4 @@ export const ddBoxListing = function(window, angular) {
         onDetail: '&'
       }
     };
-  });
-
-}
+  }

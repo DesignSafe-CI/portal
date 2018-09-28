@@ -1,9 +1,4 @@
-export const fileListing = function(window, angular, $, _) {
-  "use strict";
-
-  var module = angular.module('designsafe');
-
-  module.factory('FileListing', ['$http', '$q', 'Logging', function($http, $q, Logging) {
+export function FileListing($http, $q, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.FileListing');
     var stopper = $q.defer(); // defer to prevent overlapping requests
@@ -591,6 +586,4 @@ export const fileListing = function(window, angular, $, _) {
       init: init
     };
 
-  }]);
-
-}
+  }

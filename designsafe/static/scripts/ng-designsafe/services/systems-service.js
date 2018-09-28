@@ -1,10 +1,4 @@
-export const systemsService = function(window, angular, $, _) {
-  "use strict";
-
-  var module = angular.module('designsafe');
-  module.requires.push('django.context');
-
-  function SystemsService($rootScope, $http, $q, $uibModal, $state, Django, FileListing, Logging){
+export function SystemsService($rootScope, $http, $q, $uibModal, $state, Django, FileListing, Logging){
     var logger = Logging.getLogger('ngDesignsafe.SystemsService');
     var _baseUrl = '/api/agave/systems/';
 
@@ -44,7 +38,4 @@ export const systemsService = function(window, angular, $, _) {
     return service;
   }
 
-  module
-    .factory('SystemsService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django',
-                                'FileListing', 'Logging', SystemsService]);
-}
+

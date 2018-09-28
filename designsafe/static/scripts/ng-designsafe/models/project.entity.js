@@ -1,9 +1,4 @@
-export const projectEntity = function(window, angular, $, _) {
-  "use strict";
-
-  var module = angular.module('designsafe');
-
-  module.factory('ProjectEntityModel', ['Logging', function(Logging) {
+export function ProjectEntityModel(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.ProjectEntityModel');
 
     function _camelCaseToTitle(str){
@@ -301,5 +296,4 @@ export const projectEntity = function(window, angular, $, _) {
     };
 
     return ProjectEntity;
-  }]);
-}
+  }

@@ -1,8 +1,4 @@
-export function ddAltmetrics(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddAltmetrics', ['$sce','$filter',function ($sce,$filter,$scope) {
+export function ddAltmetrics($sce,$filter,$scope) {
     return {
       restrict: 'EA',
       scope: { publication: '='},
@@ -53,5 +49,4 @@ export function ddAltmetrics(window, angular) {
         });
       }
     };
-  }]);
-}
+  }
