@@ -1,10 +1,4 @@
-export function externalDataCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('ExternalDataCtrl', ['$scope', '$state', 'Django',
-                                      'DataBrowserService',
-                  function ($scope, $state, Django, DataBrowserService) {
+export function ExternalDataCtrl($scope, $state, Django, DataBrowserService) {
   $scope.browser = DataBrowserService.state();
 
   if (! $scope.browser.error){
@@ -80,7 +74,7 @@ export function externalDataCtrl(window, angular) {
       DataBrowserService.preview(file, $scope.browser.listing);
     };
 
-  }]);
+  }
 
 
 //   app.controller('DropboxDataCtrl', ['$scope', '$state', 'Django',
@@ -162,4 +156,4 @@ export function externalDataCtrl(window, angular) {
 //     };
 
 //   }]);
-}
+

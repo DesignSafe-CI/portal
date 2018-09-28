@@ -1,10 +1,4 @@
-export function publicationDataCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('PublicationDataCtrl', ['$scope', '$state', 'Django',
-                                         'DataBrowserService',
-                 function ($scope, $state, Django, DataBrowserService) {
+export function PublicationDataCtrl($scope, $state, Django, DataBrowserService) {
 
   $scope.browser = DataBrowserService.state();
   $scope.state = {
@@ -139,5 +133,4 @@ export function publicationDataCtrl(window, angular) {
       return file.name;
     };
 
-  }]);
-}
+  }

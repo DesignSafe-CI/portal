@@ -1,8 +1,4 @@
-export function dataDepotNavCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('DataDepotNavCtrl', ['$scope', '$rootScope', '$state', 'Django', function($scope, $rootScope, $state, Django) {
+export function DataDepotNavCtrl($scope, $rootScope, $state, Django) {
 
     $scope.routerItems = [];
     $scope.$state = $state;
@@ -114,5 +110,4 @@ export function dataDepotNavCtrl(window, angular) {
       }
     };
 
-  }]);
-}
+  }

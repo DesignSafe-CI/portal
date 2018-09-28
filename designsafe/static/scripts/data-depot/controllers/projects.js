@@ -1,8 +1,4 @@
-export function projectsController(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('ProjectRootCtrl', ['$scope', '$state', 'DataBrowserService', function ($scope, $state, DataBrowserService) {
+export function ProjectRootCtrl($scope, $state, DataBrowserService) {
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
@@ -91,9 +87,9 @@ export function projectsController(window, angular) {
       }
     });
     //$state.go('projects.list');
-  }]);
+  }
 
-  app.controller('ProjectListingCtrl', ['$scope', '$state', 'DataBrowserService', 'Django', 'ProjectService', function ($scope, $state, DataBrowserService, Django, ProjectService) {
+  export function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectService) {
     $scope.ui = {};
     $scope.ui.busy = true;
     $scope.browser = DataBrowserService.state();
@@ -169,9 +165,9 @@ export function projectsController(window, angular) {
         $scope.browser.reachedEnd = true;
       } 
     };
-  }]);
+  }
 
-  app.controller('ProjectViewCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'ProjectEntitiesService', 'DataBrowserService', 'projectId', 'FileListing', '$uibModal', '$q', '$http', '$interval', function ($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
+  export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
@@ -1077,9 +1073,9 @@ export function projectsController(window, angular) {
         });
     };
 
-  }]);
+  }
 
-  app.controller('ProjectDataCtrl', ['$scope', '$state', 'Django', 'ProjectService', 'DataBrowserService', 'projectId', 'filePath', 'projectTitle', 'FileListing', 'UserService', '$uibModal', '$http', '$q', function ($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
+  export function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = 'projects.view.data';
@@ -2042,9 +2038,9 @@ export function projectsController(window, angular) {
     };
 
     $scope.publicationCtrl = _publicationCtrl;
-  }]);
+  }
 
-  app.controller('ProjectSearchCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
+  export function ProjectSearchCtrl($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
     $scope.searchState = DataBrowserService.apiParams.searchState;
@@ -2130,5 +2126,4 @@ export function projectsController(window, angular) {
       DataBrowserService.preview(file, $scope.browser.listing);
     };
 
-  }]);
-}
+  }

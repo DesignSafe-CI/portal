@@ -1,6 +1,3 @@
-export function mainCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.controller('MainCtrl', ['$scope', 'DataBrowserService', function ($scope, DataBrowserService) {
+export function MainCtrl($scope, DataBrowserService) {
     $scope.browser = DataBrowserService.state();
-  }]);
-}
+  }

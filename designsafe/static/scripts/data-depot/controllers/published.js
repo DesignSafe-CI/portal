@@ -1,11 +1,4 @@
-export function publishedDataCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('PublishedDataCtrl', ['$scope', '$state', 'Django', '$window',
-                                     'DataBrowserService', 'FileListing',
-                                     '$uibModal','$http', '$stateParams',
-                 function ($scope, $state, Django, $window, DataBrowserService,
+export function PublishedDataCtrl($scope, $state, Django, $window, DataBrowserService,
                            FileListing, $uibModal, $http, $stateParams) {
   $scope.filePathComps = _.compact($stateParams.filePath.split('/'));
   $scope.browser = DataBrowserService.state();
@@ -447,5 +440,4 @@ export function publishedDataCtrl(window, angular) {
         DataBrowserService.showCitation(publication, project);
     };
 
-}]);
 }
