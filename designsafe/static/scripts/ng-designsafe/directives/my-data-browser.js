@@ -1,6 +1,4 @@
-export const myDataBrowser = function(window, angular) {
-  angular.module('designsafe').directive('myDataBrowser',  ['DataBrowserService', 'UserService', 'FileListing', 'ProjectService',
-  function (DataBrowserService, UserService, FileListing, ProjectService) {
+export function myDataBrowser(DataBrowserService, UserService, FileListing, ProjectService) {
     return {
       restrict: 'E',
       scope: {
@@ -246,5 +244,4 @@ export const myDataBrowser = function(window, angular) {
 
       },
     };
-  }]);
-}
+  }

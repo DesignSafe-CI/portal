@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddListing', function() {
+export function ddListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -22,6 +18,4 @@ export const ddListing = function(window, angular) {
         publicationCtrl: '='
       }
     };
-  });
-
-}
+  }

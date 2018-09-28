@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddSearchListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddSearchListing', function() {
+export function ddSearchListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -18,6 +14,4 @@ export const ddSearchListing = function(window, angular) {
         onDetail: '&'
       }
     };
-  });
-
-}
+  }

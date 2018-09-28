@@ -1,9 +1,4 @@
-export const dataBrowserFilters = function(window, angular, $, _) {
-
-  var mod = angular.module('designsafe');
-
-
-  mod.filter('dsFileUrl', [function() {
+export function dsFileUrl() {
     return function(file, baseHref) {
       if (typeof file === 'undefined'){
         return "";
@@ -31,9 +26,9 @@ export const dataBrowserFilters = function(window, angular, $, _) {
 
       return path;
     };
-  }]);
+  }
 
-  mod.filter('dsFileDisplayName', [function() {
+  export function dsFileDisplayName() {
     return function(file){
       var displayName = file.name;
       if (typeof file.metadata === 'undefined'){
@@ -47,9 +42,9 @@ export const dataBrowserFilters = function(window, angular, $, _) {
       }
       return displayName;
     };
-  }]);
+  }
 
-  mod.filter('dsListingDisplayName', [function(){
+  export function dsListingDisplayName(){
     return function(item){
       if (typeof item.metadata === 'undefined'){
         return item.name;
@@ -66,9 +61,9 @@ export const dataBrowserFilters = function(window, angular, $, _) {
         return item.name;
       }
     };
-  }]);
-
-  mod.filter('dsTrailDisplayName', [function(){
+  }
+  
+  export function dsTrailDisplayName(){
     return function(item){
       if (typeof item.project === 'undefined'){
         return item.name;
@@ -83,9 +78,9 @@ export const dataBrowserFilters = function(window, angular, $, _) {
         return item.name;
       }
     };
-  }]);
+  }
 
-  mod.filter('dsSharedFilePath', [function(){
+  export function dsSharedFilePath(){
     return function(path, listing){
       if (typeof listing === 'undefined' ||
           !listing || listing === null){
@@ -105,6 +100,4 @@ export const dataBrowserFilters = function(window, angular, $, _) {
       var retPath = path.replace(re, '');
       return retPath;
     };
-  }]);
-
-}
+  }

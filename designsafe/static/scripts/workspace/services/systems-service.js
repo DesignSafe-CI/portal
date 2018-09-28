@@ -101,11 +101,11 @@ export function workspaceSystemsService($q, $http, djangoUrl) {
           return $http.get("https://portal.tacc.utexas.edu/commnq/lonestar5.tacc.utexas.edu/summary.json", 
           {headers: {'X-Requested-With': undefined, 'Authorization': undefined}});
           break;
-
+          
           default:
-            return new Promise(function(resolve, reject) {
-              resolve({'data': {'heartbeat': {'status': true}}});
-            })
+          let deferred = $q.defer()
+          deferred.resolve({'data': {'heartbeat': {'status': true}}})
+          return deferred.promise
       }
     }
 

@@ -1,7 +1,4 @@
-export const ngDesignsafeFilters = function(window, angular) {
-  var mod = angular.module('designsafe');
-
-  mod.filter('bytes', function() {
+  export function bytes() {
     return function(bytes, precision) {
       if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
       if (typeof precision === 'undefined') precision = 1;
@@ -9,18 +6,18 @@ export const ngDesignsafeFilters = function(window, angular) {
       var number = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
       return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
     };
-  });
+  }
 
-  mod.filter('keys', function() {
+  export function keys() {
     return function(obj) {
       if (typeof obj === 'object') {
         return Object.keys(obj);
       }
       return [];
     };
-  });
+  }
 
-  mod.filter('length', function() {
+  export function length() {
     return function(obj) {
       if (typeof obj === 'object') {
         if (obj instanceof Array) {
@@ -35,12 +32,10 @@ export const ngDesignsafeFilters = function(window, angular) {
       }
       return 0;
     };
-  });
+  }
 
-  mod.filter('toTrusted', function ($sce) {
+  export function toTrusted($sce) {
     return function (value) {
         return $sce.trustAsHtml(value);
     };
-  });
-
-}
+  }

@@ -1,6 +1,4 @@
-export const ticketsService = function(window, angular) {
-  angular.module('designsafe')
-    .service('TicketsService', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
+export function TicketsService($http, $q, djangoUrl) {
 
     /**
      * Get user by username
@@ -15,5 +13,4 @@ export const ticketsService = function(window, angular) {
     };
 
 
-  }]);
-}
+  }

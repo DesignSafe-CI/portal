@@ -28,12 +28,17 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
             Apps.get(app.value.definition.id).then(function(resp) {
 
               $scope.data.app = resp.data;
-                
+              console.log(resp.data)
+              //$scope.resetForm();
+              
               Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
                 var heartbeatStatus = response.data.heartbeat.status;
                 $scope.data.systemDown = (heartbeatStatus == false);
+                console.log('resetting form')
                 $scope.resetForm();
               });
+              
+
             });
           } else if (app.value.type === 'html') {
             $scope.data.type = app.value.type;
@@ -64,6 +69,8 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
           title: 'Inputs',
           items: items
         });
+
+        console.log($scope.form)
 
         /* job details */
         items = [];

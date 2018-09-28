@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddSharedListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddSharedListing', function() {
+export function ddSharedListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -19,6 +15,4 @@ export const ddSharedListing = function(window, angular) {
         showFullPath: '&'
       }
     };
-  });
-
-}
+  }

@@ -1,6 +1,3 @@
-export const loggingService = function(window, angular) {
-  "use strict";
-
   window.__DEBUG__ = window.__DEBUG__ || true;
 
   /**
@@ -19,7 +16,7 @@ export const loggingService = function(window, angular) {
    *
    * @constructor
    */
-  function LoggingServiceProvider() {
+  export function LoggingServiceProvider() {
     this.$get = function($http, djangoUrl) {
 
       var _logLevels = {
@@ -108,6 +105,4 @@ export const loggingService = function(window, angular) {
     };
   }
 
-  angular.module('designsafe').provider('Logging', LoggingServiceProvider);
 
-}

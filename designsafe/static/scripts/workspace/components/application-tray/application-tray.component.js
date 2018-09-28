@@ -26,7 +26,6 @@ class AppTrayCtrl {
         this.tabs = [];
 
         this.simpleList = new this.SimpleList();
-        console.log(this.simpleList)
         this.data = {
             activeApp: null,
             publicOnly: false,
@@ -71,8 +70,6 @@ class AppTrayCtrl {
 
         this.simpleList.getDefaultLists(query)
             .then( (response) => {
-                console.log('simplelist response')
-                console.log(response)
                 deferred.resolve(response);
             })
             .catch( (response) => {
@@ -93,7 +90,7 @@ class AppTrayCtrl {
         this.error = '';
         this.requesting = true;
         this.tabs = [];
-        console.log(this.$stateParams.appId)
+    
         if (this.$stateParams.appId) {
             this.Apps.getMeta(this.$stateParams.appId)
                 .then(
@@ -125,8 +122,7 @@ class AppTrayCtrl {
 
         this.addDefaultTabs({ "$and": [{ "name": `${this.$translate.instant('apps_metadata_name')}` }, { "value.definition.available": true }] })
             .then( response => {
-                console.log('adding default')
-                console.log(this.simpleList.tabs)
+    
                 this.simpleList.tabs.forEach((element) => {
                     this.tabs.push(
                         {
@@ -139,6 +135,7 @@ class AppTrayCtrl {
                 this.activeTab = null;
                 this.requesting = false;
             });
+
     };
 
 

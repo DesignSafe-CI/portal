@@ -1,11 +1,7 @@
 /**
  *
  */
-export const ddGoogleDriveListing = function(window, angular) {
-
-  var module = angular.module('designsafe');
-
-  module.directive('ddGoogleDriveListing', function() {
+export function ddGoogleDriveListing() {
     return {
       restrict: 'E',
       transclude: true,
@@ -18,6 +14,4 @@ export const ddGoogleDriveListing = function(window, angular) {
         onDetail: '&'
       }
     };
-  });
-
-}
+  }
