@@ -9,8 +9,11 @@
         </p>
     </div>
 </div>
-<select ng-if="data.bin" ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin">
-</select>
+<div ng-if="data.bin" class="app-dropdown">
+    <div>Select a version of <b>{{data.bin.value.definition.label}}</b> from the dropdown:</div>
+    <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications">
+    </select>
+</div>
 <div ng-if="data.type === 'html' && data.app">
   <p compile="data.app"></p>
   <div ng-if="data.launching">

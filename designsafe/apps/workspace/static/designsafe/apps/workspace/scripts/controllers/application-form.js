@@ -49,7 +49,7 @@
           $rootScope.$broadcast('close-app', $scope.data.app.id);
         }
         if (app.applications) {
-          $scope.data.bin = app.applications;
+          $scope.data.bin = app;
           return;
         } else if (!app.binned) {
           $scope.data.bin = $scope.data.selectedApp =null;
