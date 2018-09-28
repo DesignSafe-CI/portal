@@ -3,6 +3,7 @@ import angular from 'angular';
 import _ from 'underscore';
 console.log('index get.')
 
+/*
 import { communityDataCtrl } from './controllers/community';
 import { dataDepotNavCtrl } from './controllers/data-depot-nav';
 import {dataDepotNewCtrl } from './controllers/data-depot-new'
@@ -14,13 +15,12 @@ import { projectsController } from '../data-depot/controllers/projects';
 import { publicationDataCtrl } from '../data-depot/controllers/publications';
 import { publishedDataCtrl } from '../data-depot/controllers/published';
 import { sharedData } from '../data-depot/controllers/shared-data';
+*/
 
+import './components';
+import './controllers';
 
-
-
-
-
-let ddModule = angular.module('ds-data', ['designsafe']);
+let ddModule = angular.module('ds-data', ['designsafe', 'dd.components', 'dd.controllers']);
 ddModule.requires.push(
   'ui.router',
   'djng.urls', //TODO: djng
@@ -33,23 +33,6 @@ ddModule.requires.push(
   'ui.customSelect',
   'ngSanitize'
 );
-
-import { DataBrowserServicePreviewComponent } from './components/modals/data-browser-service-preview/data-browser-service-preview.component'
-//components
-ddModule.component('ddtoolbar', DataDepotToolbarComponent)
-
-import { DataDepotNavComponent } from './components/data-depot-nav/data-depot-nav.component'
-ddModule.component('ddnav', DataDepotNavComponent)
-
-import { DataBrowserServiceMoveComponent } from './components/modals/data-browser-service-move/data-browser-service-move.component'
-//console.log(DataBrowserServiceMoveComponent)
-ddModule.component('move', DataBrowserServiceMoveComponent)
-
-//modals
-import { DataDepotToolbarComponent } from './components/data-depot-toolbar/data-depot-toolbar.component'
-ddModule.component('preview', DataBrowserServicePreviewComponent)
-
-
 
 function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
 
@@ -592,10 +575,9 @@ ddModule
 // 	  NotificationService.init();
 // }]);
 
+/*
 communityDataCtrl(window, angular);
-//dataDepotNavCtrl(window, angular);
 dataDepotNewCtrl(window, angular);
-//dataDepotToolbarCtrl(window, angular);
 externalDataCtrl(window, angular);
 mainCtrl(window, angular);
 myDataCtrl(window, angular, _);
@@ -603,5 +585,5 @@ projectsController(window, angular);
 publicationDataCtrl(window, angular);
 publishedDataCtrl(window, angular);
 sharedData(window, angular);
-
+*/
 export default ddModule

@@ -1,8 +1,4 @@
-export function sharedData(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('SharedDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
+export function SharedDataCtrl($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
 
@@ -86,5 +82,4 @@ export function sharedData(window, angular) {
       $event.stopPropagation();
       DataBrowserService.preview(file, $scope.browser.listing);
     };
-  }]);
-}
+  }

@@ -1,10 +1,4 @@
-export function communityDataCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('CommunityDataCtrl', ['$scope', '$state', 'Django',
-                                         'DataBrowserService',
-                 function ($scope, $state, Django, DataBrowserService) {
+export function CommunityDataCtrl($scope, $state, Django, DataBrowserService) {
 
   $scope.browser = DataBrowserService.state();
   $scope.state = {
@@ -120,5 +114,4 @@ export function communityDataCtrl(window, angular) {
       return file.name;
     };
 
-  }]);
-}
+  }

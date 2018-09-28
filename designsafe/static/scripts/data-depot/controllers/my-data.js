@@ -1,8 +1,4 @@
-export function myDataCtrl(window, angular, _) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', function ($scope, $state, Django, DataBrowserService) {
+export function MyDataCtrl($scope, $state, Django, DataBrowserService) {
 
     $scope.browser = DataBrowserService.state();
     $scope.searchState = DataBrowserService.apiParams.searchState;
@@ -72,5 +68,4 @@ export function myDataCtrl(window, angular, _) {
       DataBrowserService.preview(file, $scope.browser.listing);
     };
 
-  }]);
-}
+  }

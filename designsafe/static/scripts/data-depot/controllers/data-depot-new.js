@@ -1,8 +1,4 @@
-export function dataDepotNewCtrl(window, angular) {
-  var app = angular.module('ds-data');
-  app.requires.push('django.context');
-
-  app.controller('DataDepotNewCtrl', ['$scope', '$state', '$sce', 'Django', 'ProjectService', 'DataBrowserService', function($scope, $state, $sce, Django, ProjectService, DataBrowserService) {
+export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, DataBrowserService) {
 
     $scope.test = {
       enabled: Django.context.authenticated,
@@ -64,7 +60,4 @@ export function dataDepotNewCtrl(window, angular) {
     
     $scope.popoverHTML = $sce.trustAsHtml(popoverHTML);
 
-  }]);
-
-
-}
+  }
