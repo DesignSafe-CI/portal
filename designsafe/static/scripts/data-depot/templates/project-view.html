@@ -171,7 +171,8 @@
         <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
           <strong>The following categories do not have associated data:</strong>
           <div ng-repeat="missing in state.missing">
-            <span>The category "{{missing.model}}" within the {{missing.type}} "{{missing.title}}" has no categorized files.</span>
+            <span ng-if="missing.model">The category "{{missing.model}}" within the {{missing.type}} "{{missing.title}}" has no categorized files.</span>
+            <span ng-if="!missing.model"> A category for {{missing.missingSet}} has not been created.  </span>
           </div>
           <a href="https://www.youtube.com/watch?v=AZFwNNRj-MI&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
             <i class="fa fa-question-circle"></i> Learn More

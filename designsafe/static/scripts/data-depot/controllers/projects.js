@@ -325,8 +325,9 @@
       project to check for missing files. If there is no categorized files
       within the "_set" we will return a notification to the user.
       */
-      function checkPrjModel(model, modelRelation, prjset, prjtype) {
+      function checkPrjModel(model, modelRelation, prjset, prjtype, setname) {
         if (model === undefined || model.length == 0) {
+          missing.push({'missingSet': setname});
           return;
         }
         model.forEach(function(m) {
@@ -349,23 +350,23 @@
       }
 
       if (ptype == 'simulation') {
-        checkPrjModel(proj.model_set, 'simulations', proj.simulation_set, 'simulation');
-        checkPrjModel(proj.output_set, 'simulations', proj.simulation_set, 'simulation');
-        checkPrjModel(proj.input_set, 'simulations', proj.simulation_set, 'simulation');
-        checkPrjModel(proj.analysis_set, 'simulations', proj.simulation_set, 'simulation');
-        checkPrjModel(proj.report_set, 'simulations', proj.simulation_set, 'simulation');
+        checkPrjModel(proj.model_set, 'simulations', proj.simulation_set, 'simulation', 'model');
+        checkPrjModel(proj.output_set, 'simulations', proj.simulation_set, 'simulation', 'simulation output');
+        checkPrjModel(proj.input_set, 'simulations', proj.simulation_set, 'simulation', 'simulation input');
+        // checkPrjModel(proj.analysis_set, 'simulations', proj.simulation_set, 'simulation', 'analysis');
+        // checkPrjModel(proj.report_set, 'simulations', proj.simulation_set, 'simulation', 'report');
       } else if (ptype == 'experimental') {
-        checkPrjModel(proj.modelconfig_set, 'experiments', proj.experiment_set, 'experiment');
-        checkPrjModel(proj.event_set, 'experiments', proj.experiment_set, 'experiment');
-        checkPrjModel(proj.sensorlist_set, 'experiments', proj.experiment_set, 'experiment');
-        checkPrjModel(proj.analysis_set, 'experiments', proj.experiment_set, 'experiment');
-        checkPrjModel(proj.report_set, 'experiments', proj.experiment_set, 'experiment');
+        checkPrjModel(proj.modelconfig_set, 'experiments', proj.experiment_set, 'experiment', 'model configuration');
+        checkPrjModel(proj.event_set, 'experiments', proj.experiment_set, 'experiment', 'event');
+        checkPrjModel(proj.sensorlist_set, 'experiments', proj.experiment_set, 'experiment', 'sensor list');
+        // checkPrjModel(proj.analysis_set, 'experiments', proj.experiment_set, 'experiment', 'analysis');
+        // checkPrjModel(proj.report_set, 'experiments', proj.experiment_set, 'experiment', 'report');
       } else if (ptype == 'hybrid_simulation') {
-        checkPrjModel(proj.globalmodel_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
-        checkPrjModel(proj.coordinator_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
-        checkPrjModel(proj.expsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
-        checkPrjModel(proj.simsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
-        checkPrjModel(proj.expoutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
+        checkPrjModel(proj.globalmodel_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'global model');
+        checkPrjModel(proj.coordinator_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'master simulation coordinator');
+        checkPrjModel(proj.expsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'experimental substructure');
+        checkPrjModel(proj.simsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'simulation substructure');
+        checkPrjModel(proj.expoutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'output set');
       }
       $scope.browser.missing = missing;
     };
