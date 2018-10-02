@@ -1,4 +1,4 @@
-<div ng-if="!data.app">
+<div ng-if="!data.app && !data.bin">
     <div class="jumbotron">
         <h1>Select an app</h1>
         <p>Select an application from the tray above.</p>
@@ -9,6 +9,8 @@
         </p>
     </div>
 </div>
+<select ng-if="data.bin" ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin">
+</select>
 <div ng-if="data.type === 'html' && data.app">
   <p compile="data.app"></p>
   <div ng-if="data.launching">
