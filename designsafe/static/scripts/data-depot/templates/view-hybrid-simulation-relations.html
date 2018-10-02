@@ -6,7 +6,7 @@
     <!-- TREE START -->
     <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="simulation in $ctrl.data.publication.hybrid_simulations | orderBy: 'value.title'"
+            ng-repeat="simulation in $ctrl.data.publication.hybrid_simulations | orderBy: ['_ui.order', 'value.title']"
             style="border:none;">
           <div class="tree-el">  
               <span class="ul-title"> <strong>{{simulation.value.title}}</strong> </span>

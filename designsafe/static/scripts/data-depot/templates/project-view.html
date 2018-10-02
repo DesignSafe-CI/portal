@@ -168,6 +168,15 @@
         </div>
 
         </div>
+        <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
+          <strong>The following categories do not have associated data:</strong>
+          <div ng-repeat="missing in state.missing">
+            <span>The category "{{missing.model}}" within the {{missing.type}} "{{missing.title}}" has no categorized files.</span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=AZFwNNRj-MI&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+            <i class="fa fa-question-circle"></i> Learn More
+          </a>
+        </div>
 
         <div style="text-align:center;"
              ng-class="{'pull-right': !state.publishPipeline}">

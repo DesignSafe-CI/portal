@@ -6,7 +6,7 @@
     <div class="data-model-tree data-model-preview-tree">
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="experiment in $ctrl.data.publication.experimentsList | orderBy: value.title"
+            ng-repeat="experiment in $ctrl.data.publication.experimentsList | orderBy: ['_ui.order', 'value.title']"
             style="border:none;">
           <div class="tree-el">
           <span class="ul-title"> <strong>{{experiment.value.title}}</strong> </span>

@@ -315,6 +315,61 @@
       });
     };
 
+    $scope.checkEmptyCategories = function(){
+      var missing = [];
+      var ptype = $scope.data.project.value.projectType;
+      var proj = $scope.data.project;
+
+      /*
+      This function will reach into each supplied model or "_set" within the
+      project to check for missing files. If there is no categorized files
+      within the "_set" we will return a notification to the user.
+      */
+      function checkPrjModel(model, modelRelation, prjset, prjtype) {
+        if (model === undefined || model.length == 0) {
+          return;
+        }
+        model.forEach(function(m) {
+          if (m.value.files.length === 0) {
+            m.value[modelRelation].forEach(function(mr){
+              prjset.forEach(function(p){
+                if (p.uuid == mr) {
+                  var ptitle = p.value.title;
+                  var modeltitle = m.value.title;
+                  var obj = {};
+                  obj.title = ptitle;
+                  obj.model = modeltitle;
+                  obj.type = prjtype;
+                  missing.push(obj);
+                }
+              });
+            });
+          }
+        });
+      }
+
+      if (ptype == 'simulation') {
+        checkPrjModel(proj.model_set, 'simulations', proj.simulation_set, 'simulation');
+        checkPrjModel(proj.output_set, 'simulations', proj.simulation_set, 'simulation');
+        checkPrjModel(proj.input_set, 'simulations', proj.simulation_set, 'simulation');
+        checkPrjModel(proj.analysis_set, 'simulations', proj.simulation_set, 'simulation');
+        checkPrjModel(proj.report_set, 'simulations', proj.simulation_set, 'simulation');
+      } else if (ptype == 'experimental') {
+        checkPrjModel(proj.modelconfig_set, 'experiments', proj.experiment_set, 'experiment');
+        checkPrjModel(proj.event_set, 'experiments', proj.experiment_set, 'experiment');
+        checkPrjModel(proj.sensorlist_set, 'experiments', proj.experiment_set, 'experiment');
+        checkPrjModel(proj.analysis_set, 'experiments', proj.experiment_set, 'experiment');
+        checkPrjModel(proj.report_set, 'experiments', proj.experiment_set, 'experiment');
+      } else if (ptype == 'hybrid_simulation') {
+        checkPrjModel(proj.globalmodel_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
+        checkPrjModel(proj.coordinator_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
+        checkPrjModel(proj.expsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
+        checkPrjModel(proj.simsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
+        checkPrjModel(proj.expoutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation');
+      }
+      $scope.browser.missing = missing;
+    };
+
     $scope.dateString = function(s){
       var d = Date(s);
       return d;
@@ -329,6 +384,7 @@
     $scope.showPreview = function(){
       //DataBrowserService.state().showMainListing = false;
       //DataBrowserService.state().showPreviewListing = true;
+      $scope.checkEmptyCategories();
       $scope.previewHref = undefined;
       DataBrowserService.showPreview();
       // FileListing.get({'system': $scope.browser.listing.system,
