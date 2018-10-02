@@ -121,7 +121,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_REDIRECT_URL = '/account/'
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
 CACHES = {
   'default': {
@@ -235,7 +235,7 @@ LANGUAGES = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/designsafe-ci.org/static/'
+STATIC_ROOT = '/srv/www/designsafe/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'designsafe', 'static'),
     ('vendor', os.path.join(BASE_DIR, 'node_modules'))
@@ -308,7 +308,7 @@ CKEDITOR_SETTINGS = {
 #    'djangocms_style': 'djangocms_style.migrations_django',
 #}
 
-LOGIN_URL = '/login/'
+LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
 DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
