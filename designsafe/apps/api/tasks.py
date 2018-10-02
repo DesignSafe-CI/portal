@@ -854,7 +854,7 @@ def copy_publication_files_to_corral(self, project_id):
         else:
             try:
                 if not os.path.isdir(os.path.dirname(local_dst_path)):
-                    os.mkdir(os.path.dirname(local_dst_path))
+                    os.mkdirs(os.path.dirname(local_dst_path))
 
                 shutil.copy(local_src_path, local_dst_path)
             except OSError as exc:
