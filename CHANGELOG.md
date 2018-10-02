@@ -6,6 +6,7 @@ Improvements:
 
 - Remove `nodeCount` parameter in front end.
 - Add email notification for new users.
+- Add user report for admins.
 
 Fixes:
 
