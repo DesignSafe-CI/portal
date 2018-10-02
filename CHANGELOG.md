@@ -5,6 +5,7 @@
 Improvements:
 
 - Remove `nodeCount` parameter in front end.
+- Add email notification for new users.
 
 Fixes:
 
