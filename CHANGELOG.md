@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v2.7.1-20180901
+## v2.7.1-20180902
 
 Improvements:
 
