@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.1-20180901
+
+Improvements:
+
+- Remove `nodeCount` parameter in front end.
+
 ## v2.7.1-20180805
 
 Fixes:
