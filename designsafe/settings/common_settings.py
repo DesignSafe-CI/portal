@@ -247,7 +247,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     #'pipeline.finders.PipelineFinder',
 )
-MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
+MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
 DJANGOCMS_PICTURE_TEMPLATES = [

@@ -834,6 +834,7 @@ def copy_publication_files_to_corral(self, project_id):
     filepaths = list(set(filepaths))
     filepaths = sorted(filepaths)
     base_path = ''.join(['/', publication.projectId])
+    os.chmod('/corral-repl/tacc/NHERI/published', 0755)
     prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
     if not os.path.isdir(prefix_dest):
         os.mkdir(prefix_dest)
@@ -847,6 +848,12 @@ def copy_publication_files_to_corral(self, project_id):
             try:
                 #os.mkdir(local_dst_path)
                 shutil.copytree(local_src_path, local_dst_path)
+                for root, dirs, files in os.walk(local_dst_path):
+                    for d in dirs:
+                        os.chmod(os.path.join(root, d), 0555)
+                    for f in files:
+                        os.chmod(os.path.join(root, f), 0444)
+                os.chmod(local_dst_path, 0555)
             except OSError as exc:
                 logger.info(exc)
             except IOError as exc:
@@ -855,55 +862,21 @@ def copy_publication_files_to_corral(self, project_id):
             try:
                 if not os.path.isdir(os.path.dirname(local_dst_path)):
                     os.mkdirs(os.path.dirname(local_dst_path))
+                for root, dirs, files in os.walk(os.path.dirname(local_dst_path)):
+                    for d in dirs:
+                        os.chmod(os.path.join(root, d), 0555)
+                    for f in files:
+                        os.chmod(os.path.join(root, f), 0444)
 
                 shutil.copy(local_src_path, local_dst_path)
+                os.chmod(local_dst_path, 0444)
             except OSError as exc:
                 logger.info(exc)
             except IOError as exc:
                 logger.info(exc)
 
-    #for filepath in filepaths:
-    #    filepath = filepath.strip('/')
-    #    logger.info('Copying: {}'.format(filepath))
-    #    path_comps = filepath.split('/')
-    #    parent_path = os.path.join(*path_comps[:-1])
-    #    try:
-    #        file_obj = BaseFileResource.\
-    #                      listing(system=proj_system,
-    #                                  path=filepath,
-    #                                  agave_client=service)
-    #        if file_obj.type == 'dir':
-    #            logger.info('path is a directory, ensuring path exists')
-    #            base_obj = BaseFileResource.\
-    #                         ensure_path(service,
-    #                                     settings.PUBLISHED_SYSTEM,
-    #                                     os.path.join(base_path, parent_path))
-    #        else:
-    #            logger.info('path is a file, ensuring parent path exists')
-    #            base_obj = BaseFileResource.\
-    #                         ensure_path(service,
-    #                                     settings.PUBLISHED_SYSTEM,
-    #                                     os.path.join(base_path, parent_path))
-    #        base_obj.import_data(file_obj.system, file_obj.path)
-    #    except Exception as err:
-    #        logger.error('Error when copying data to published: %s. %s', filepath, err)
-    #        local_src_path = '{}/{}'.format(prefix_src, file_obj.path)
-    #        local_dst_path = '{}/{}'.format(prefix_dest, file_obj.path)
-    #        logger.info('Trying to copy: %s to %s', local_src_path, local_dst_path)
-    #        if os.path.isdir(local_src_path):
-    #            shutil.copytree(local_src_path, local_dst_path)
-    #        else:
-    #            shutil.copy(local_src_path, local_dst_path)
-    #        #self.retry(exc=err)
-
-    #try: 
-    #    image = BaseFileResource.\
-    #              listing(system=proj_system,
-    #                      path='projectimage.jpg',
-    #                      agave_client=service)
-    #    base_dir.import_data(image.system, image.path)
-    #except HTTPError as err:
-    #    logger.debug('No project image')
+    os.chmod(prefix_dest, 0555)
+    os.chmod('/corral-repl/tacc/NHERI/published', 0555)
     save_to_fedora.apply_async(args=[project_id])
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
@@ -961,6 +934,7 @@ def save_to_fedora(self, project_id):
                 url = ''.join([fedora_project_base, _path])
                 #logger.debug('creating: %s', _path)
                 requests.put(url)
+
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc)
         raise self.retry(exc=exc)
