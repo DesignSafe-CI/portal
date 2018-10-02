@@ -6,6 +6,10 @@ Improvements:
 
 - Remove `nodeCount` parameter in front end.
 
+Fixes:
+
+- Licenses names for publication.
+
 ## v2.7.1-20180805
 
 Fixes:
