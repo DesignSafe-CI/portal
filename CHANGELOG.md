@@ -7,6 +7,7 @@ Improvements:
 - Remove `nodeCount` parameter in front end.
 - Add email notification for new users.
 - Add user report for admins.
+- Add drop down selector for different versions of the same app.
 
 Fixes:
 
