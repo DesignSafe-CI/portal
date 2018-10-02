@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.1-20180903
+
+Fixes:
+
+- Publication tasks.
+- Hybrid Sim tree CSS.
+- Publication search results.
+
 ## v2.7.1-20180902
 
 Improvements:
