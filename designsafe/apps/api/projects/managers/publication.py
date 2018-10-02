@@ -591,4 +591,6 @@ def reserve_publication(publication, analysis_doi=False):
         for _doi in [proj_doi] + sim_dois:
             logger.debug('DOI: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
+    else:
+        _update_doi(proj_doi, xmls[proj_doi], status='public')
     return publication
