@@ -107,7 +107,16 @@ class SearchView(BaseApiView):
 
 
     def search_published(self, q, offset, limit):
-        query = Q('bool', must=[Q('query_string', query=q)])
+        query = Q(
+            'bool',
+            must=[
+                Q('query_string', query=q),
+            ],
+            must_not=[
+                Q('term', status='unpublished'),
+                Q('term', status='saved')
+            ]
+        )
 
         search = Search(index="des-publications_legacy,des-publications")\
             .query(query)\
