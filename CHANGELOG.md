@@ -11,6 +11,7 @@ Improvements:
 Fixes:
 
 - Licenses names for publication.
+- File toolbar pems checking.
 
 ## v2.7.1-20180805
 
