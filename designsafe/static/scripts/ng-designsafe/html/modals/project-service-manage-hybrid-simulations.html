@@ -311,7 +311,7 @@
                         </div>
                     </li>
                   </ul>
-                  <ul>
+                  <ul class="hybrid-sim-substr">
                       <li 
                            ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
@@ -378,7 +378,7 @@
                           </div>
                       </li>
                   </ul>
-                  <ul>
+                  <ul class="hybrid-sim-substr">
                       <li 
                            ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
