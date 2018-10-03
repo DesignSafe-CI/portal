@@ -1,4 +1,4 @@
-<div ng-if="!data.app && !data.bin">
+<div ng-if="!data.app">
     <div class="jumbotron">
         <h1>Select an app</h1>
         <p>Select an application from the tray above.</p>
@@ -8,11 +8,6 @@
             Paraview and VisIt.
         </p>
     </div>
-</div>
-<div ng-if="data.bin" class="app-dropdown">
-    <div>Select a version of <b>{{data.bin.value.definition.label}}</b> from the dropdown:</div>
-    <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications">
-    </select>
 </div>
 <div ng-if="data.type === 'html' && data.app">
   <p compile="data.app"></p>

@@ -512,12 +512,8 @@ span.tag-title {
     text-align: left;
 }
 
-.data-model-tree ul ul.hybrid-sim-substr {
-    border-top:0;
-}
-
-.data-model-tree ul ul.hybrid-sim-substr > li {
-    border-bottom:0;
+.data-model-tree ul ul.hybrid-sim-coord-output li {
+    margin-left:30px;
 }
 
 .data-model-tree ul, .data-model-tree li {
@@ -789,13 +785,4 @@ i[class^="icon-ls-pre/post"]:before,
 }
 .icon-opensees:before {
     content: "\e901";
-}
-
-/* App Dropdown */
-.app-dropdown {
-    padding-bottom: 1em;
-}
-
-.app-dropdown > div {
-    padding-bottom: 2px;
 }

@@ -27,78 +27,36 @@
         unavailable: false,
         systemDown: false,
         app: null,
-        form: {},
-        bin: null,
-        selectedApp: null
+        form: {}
       };
 
       Jobs.getWebhookUrl().then(function(response) {
         $scope.webhookUrl = response.data;
       });
 
-      $scope.$watch('data.selectedApp', function (app) {
-        if (app) {
-          $scope.$broadcast('launch-app', app);
-        }
-      });
-
-      $scope.$on('launch-app', function (e, app) {
+      $scope.$on('launch-app', function(e, app) {
         $scope.error = '';
 
         if ($scope.data.app) {
           $rootScope.$broadcast('close-app', $scope.data.app.id);
         }
-        if (app.applications) {
-          $scope.data.bin = app;
-          return;
-        } else if (!app.binned) {
-          $scope.data.bin = $scope.data.selectedApp =null;
-        }
 
-        if (app.value.type === 'agave') {
-          $scope.data.type = app.value.type;
-          Apps.get(app.value.definition.id).then(
-            function (resp) {
-              // check app execution system
-              // Systems.getMonitor(resp.data.executionSystem)
-              //   .then(
-              //     function(response){
-              //       if (response.data.length > 0){
-              //           // perform check only when monitor is active
-              //           if (response.data[0].active){
-              //             if (response.data[0].lastSuccess !== null){
-              //               var currentDate = new Date();
-              //               var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
-              //               var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
-
-              //               if (diff > response.data[0].frequency){
-              //                 $mdToast.show($mdToast.simple()
-              //                 .content($translate.instant('error_system_monitor'))
-              //                 .toastClass('warning')
-              //                 .parent($("#toast-container")));
-              //               }
-              //             } else {
-              //               $mdToast.show($mdToast.simple()
-              //               .content($translate.instant('error_system_monitor'))
-              //               .toastClass('warning')
-              //               .parent($("#toast-container")));
-              //             }
-              //         }
-              //       }
-              //     });
+          if (app.value.type === 'agave'){
+            $scope.data.type = app.value.type;
+            Apps.get(app.value.definition.id).then(function(resp) {
 
               $scope.data.app = resp.data;
-
-              Systems.getSystemStatus(resp.data.executionSystem).then(function (response) {
+                
+              Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
                 var heartbeatStatus = response.data.heartbeat.status;
                 $scope.data.systemDown = (heartbeatStatus == false);
                 $scope.resetForm();
               });
             });
-        } else if (app.value.type === 'html') {
-          $scope.data.type = app.value.type;
-          $scope.data.app = app.value.definition.html;
-        }
+          } else if (app.value.type === 'html') {
+            $scope.data.type = app.value.type;
+            $scope.data.app = app.value.definition.html;
+          }
       });
 
       $scope.resetForm = function() {

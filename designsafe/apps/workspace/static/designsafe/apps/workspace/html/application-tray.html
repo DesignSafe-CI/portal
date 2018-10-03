@@ -23,8 +23,8 @@
                   <h5 class="app-title">{{app.value.definition.label}}</h5>
                 </md-grid-tile-header>
                 <div class="app-icon">
-                  <i ng-if="app.value.definition.appIcon" class="icon-{{app.value.definition.appIcon | lowercase}}"></i>
-                  <span ng-if="!app.value.definition.appIcon" class="icon-letter">{{app.value.definition.label[0] | uppercase}}</span>
+                  <i ng-if="app.value.definition.appIcon" class="icon-{{app.value.definition.appIcon}}"></i>
+                  <span ng-if="!app.value.definition.appIcon" class="icon-letter">{{app.value.definition.label[0].toUpperCase()}}</span>
                 </div>
                 <!-- <div class="app-version">{{app.value.definition.version}}</div> -->
               </div>
