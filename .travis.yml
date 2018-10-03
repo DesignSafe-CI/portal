@@ -1,0 +1,31 @@
+language: python
+sudo: required
+dist: trusty
+cache: pip
+python:
+    - "2.7"
+os:
+    - linux
+install: npm install && pip install -r requirements.txt
+jobs:
+    include:
+        - stage: "flake8"
+          name: "flake8"
+          script: flake8 designsafe
+        - stage: "pylint"
+          name: "pylint"
+          script: pylint designsafe
+        - stage: "pydocstyle"
+          name: "pydocstyle"
+          script: pydocstyle designsafe
+        - stage: "eslint"
+          name: "eslint"
+          script: eslint designsafe/static/scripts
+        - stage: "Backend unit tests"
+          name: "Backend unit tests"
+          script:
+            - coverage run --branch --source="designsafe" manage.py test --pattern=tests.py
+            - codecov
+        - stage: "Frontend unit tests"
+          name: "Frontend unit tests"
+          script: npm run-script test
