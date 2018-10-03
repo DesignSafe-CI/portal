@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.3
+
+Fixes:
+
+- Do not decode response from EZID to avoid encoding issues.
+
 ## v2.7.2 (v2.7.2-20181002)
 
 Fixes:
