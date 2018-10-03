@@ -6,7 +6,9 @@ python:
     - "2.7"
 os:
     - linux
-install: npm install && pip install -r requirements.txt
+install:
+    - npm install
+    - pip install -r requirements.txt
 jobs:
     include:
         - stage: "linters"
