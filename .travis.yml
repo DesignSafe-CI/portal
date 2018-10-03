@@ -9,23 +9,19 @@ os:
 install: npm install && pip install -r requirements.txt
 jobs:
     include:
-        - stage: "flake8"
+        - stage: "linters"
           name: "flake8"
           script: flake8 designsafe
-        - stage: "pylint"
           name: "pylint"
           script: pylint designsafe
-        - stage: "pydocstyle"
           name: "pydocstyle"
           script: pydocstyle designsafe
-        - stage: "eslint"
           name: "eslint"
           script: eslint designsafe/static/scripts
-        - stage: "Backend unit tests"
+        - stage: "unit tests"
           name: "Backend unit tests"
           script:
             - coverage run --branch --source="designsafe" manage.py test --pattern=tests.py
             - codecov
-        - stage: "Frontend unit tests"
           name: "Frontend unit tests"
           script: npm run-script test
