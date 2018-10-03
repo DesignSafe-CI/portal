@@ -39,8 +39,12 @@ def _unescape(s):
                   lambda m: chr(int(m.group(1), 16)), s)
 
 def parse_response(res):
-    response = dict(tuple(_unescape(v).strip() for v in l.split(":", 1)) \
-                          for l in res.decode("UTF-8").splitlines())
+    response = dict(
+        tuple(
+            _unescape(v).strip() for v in l.split(":", 1)
+        )
+        for l in res.splitlines()
+    )
     return response
 
 def _escape(s, key=True):
