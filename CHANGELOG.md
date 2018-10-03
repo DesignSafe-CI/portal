@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.2
+
+Fixes:
+
+- Rollback apps version dropdown.
+
 ## v2.7.1
 
 Release to Prod
