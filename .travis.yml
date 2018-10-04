@@ -18,7 +18,7 @@ matrix:
           env: TEST_CMD="npm run-script test"
           stage: test
         - name: "coverage"
-          env: TEST_CMD="coverage run --branch --source='designsafe' manage.py test --pattern=test.py && codecov"
+          env: TEST_CMD="coverage run --branch --source='designsafe' manage.py test --settings=designsafe.settings.test_settings --pattern=tests.py && codecov"
           stage: test
         allow_failures:
         - name: "Flake8"
