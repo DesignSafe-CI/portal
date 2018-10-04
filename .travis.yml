@@ -7,7 +7,7 @@ python:
 os:
     - linux
 install:
-    - npm install --only=dev
+    - npm install
     - pip install -r requirements.txt
 stages:
     - lint
@@ -30,7 +30,7 @@ matrix:
           env: TEST_CMD="pydocstyle designsafe"
           stage: lint
         - name: "eslint"
-          env: TEST_CMD="eslint designsafe/static/scripts"
+          env: TEST_CMD="npm run-script lint"
           stage: lint
     allow_failures:
         - name: "Flake8"
