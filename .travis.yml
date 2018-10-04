@@ -51,5 +51,5 @@ matrix:
           env: TEST_CMD="npm run-script lint"
           stage: lint
 before_script:
-    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/example\./}; done;
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
 script: $TEST_CMD
