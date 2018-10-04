@@ -39,7 +39,18 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.2",
     "webpack": "^3.11.0",
-    "webpack-livereload-plugin": "^0.10.0"
+    "webpack-livereload-plugin": "^0.10.0",
+    "angular": "^1.6.9",
+    "angular-animate": "^1.4.8",
+    "angular-aria": "^1.4.8",
+    "angular-material": "^1.1.5",
+    "angular-messages": "^1.4.8",
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0",
+    "eslint-config-recommended": "^4.0.0",
+    "marked": "^0.3.6",
+    "modernizr": "^3.3.1",
+    "prismjs": "1.6.0"
   },
   "dependencies": {
     "angular": "^1.6.9",
