@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal)
+[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal) 
+[![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
 # DesignSafe-CI Portal
 
 ## Prequisites for running the portal application
