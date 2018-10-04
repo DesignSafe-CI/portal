@@ -51,6 +51,9 @@
                 var heartbeatStatus = response.data.heartbeat.status;
                 $scope.data.systemDown = (heartbeatStatus == false);
                 $scope.resetForm();
+              }).catch(function (err) {
+                // No record of heartbeat for system, show form anyway
+                $scope.resetForm();
               });
             });
           } else if (app.value.type === 'html') {
