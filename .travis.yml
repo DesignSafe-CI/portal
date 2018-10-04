@@ -1,7 +1,12 @@
 language: python
 sudo: required
+addons:
+    chrome: stable
 dist: trusty
-cache: pip
+cache:
+    pip: true
+    directories:
+    - node_modules
 python:
     - "2.7"
 os:
@@ -43,7 +48,7 @@ matrix:
           env: TEST_CMD="pydocstyle designsafe"
           stage: lint
         - name: "eslint"
-          env: TEST_CMD="eslint designsafe/static/scripts"
+          env: TEST_CMD="npm run-script lint"
           stage: lint
 
 script: $TEST_CMD
