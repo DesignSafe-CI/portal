@@ -43,35 +43,7 @@
 
           if (app.value.type === 'agave'){
             $scope.data.type = app.value.type;
-            Apps.get(app.value.definition.id).then(
-              function(resp) {
-              // check app execution system
-              // Systems.getMonitor(resp.data.executionSystem)
-              //   .then(
-              //     function(response){
-              //       if (response.data.length > 0){
-              //           // perform check only when monitor is active
-              //           if (response.data[0].active){
-              //             if (response.data[0].lastSuccess !== null){
-              //               var currentDate = new Date();
-              //               var monitorLastSuccessDate = Date.parse(response.data[0].lastSuccess);
-              //               var diff = Math.abs((currentDate - monitorLastSuccessDate) / 60000);
-
-              //               if (diff > response.data[0].frequency){
-              //                 $mdToast.show($mdToast.simple()
-              //                 .content($translate.instant('error_system_monitor'))
-              //                 .toastClass('warning')
-              //                 .parent($("#toast-container")));
-              //               }
-              //             } else {
-              //               $mdToast.show($mdToast.simple()
-              //               .content($translate.instant('error_system_monitor'))
-              //               .toastClass('warning')
-              //               .parent($("#toast-container")));
-              //             }
-              //         }
-              //       }
-              //     });
+            Apps.get(app.value.definition.id).then(function(resp) {
 
               $scope.data.app = resp.data;
                 
@@ -80,11 +52,10 @@
                 $scope.data.systemDown = (heartbeatStatus == false);
                 $scope.resetForm();
               });
-
             });
-          } else if (app.value.type === 'html'){
-                $scope.data.type = app.value.type;
-                $scope.data.app = app.value.definition.html;
+          } else if (app.value.type === 'html') {
+            $scope.data.type = app.value.type;
+            $scope.data.app = app.value.definition.html;
           }
       });
 
@@ -119,9 +90,8 @@
         } else {
           items.push('maxRunTime', 'name', 'archivePath');
         }
-        if ($scope.data.app.parallelism == "PARALLEL") {
+        if ($scope.data.app.parallelism == 'PARALLEL' && !$scope.data.app.tags.includes('hideNodeCount')) {
           items.push('nodeCount');
-          // items.push('processorsPerNode');
         }
         $scope.form.form.push({
           type: 'fieldset',
@@ -149,61 +119,16 @@
           //set formValid to true, var is used for invalid error msg
           $scope.data.formValid = true;
           var jobData = {
-              appId: $scope.data.app.id,
-              archive: true,
-              inputs: {},
-              parameters: {},
-              notifications: [
-                /*
-                {
-                  url: "http://90370984.ngrok.io/api/notifications/wh/jobs/",
-                  event: "*",
-                  persistent: true
-                },
-                */
-                
-                {
-                  url: $scope.webhookUrl,
-                  event: "PENDING",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "QUEUED",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "SUBMITTING",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "PROCESSING_INPUTS",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "STAGED",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "RUNNING",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "KILLED",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "FAILED",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "STOPPED",
-                },
-                {
-                  url: $scope.webhookUrl,
-                  event: "FINISHED",
-                }
-                
-              ]
+            appId: $scope.data.app.id,
+            archive: true,
+            inputs: {},
+            parameters: {},
+            notifications: ['PENDING', 'QUEUED', 'SUBMITTING', 'PROCESSING_INPUTS', 'STAGED', 'KILLED', 'FAILED', 'STOPPED', 'FINISHED'].map(
+              e => ({
+                url: $scope.webhookUrl,
+                event: e
+              })
+            )
           };
 
           /* copy form model to disconnect from $scope */

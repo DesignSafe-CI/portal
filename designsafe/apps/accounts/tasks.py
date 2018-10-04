@@ -37,6 +37,7 @@ def create_report(username, list_name):
             ])
 
         for user in notification_list:
+<<<<<<< HEAD
             if user.username.encode('utf-8') == 'EF-UF':
                 continue
             try:
@@ -76,6 +77,40 @@ def create_report(username, list_name):
                                 user.username.encode('utf-8') + '"',])
                 continue
                 
+=======
+            user_profile = TASUser(username=user)
+            designsafe_user = get_user_model().objects.get(username=user)
+            
+            if hasattr(designsafe_user, "profile"):
+
+                #making nh_interests QuerySet into list
+                interests = designsafe_user.profile.nh_interests.all().values('description')
+                nh_interests = [interest['description'].encode('utf-8') for interest in interests]
+                
+                #making research_activities QuerySet into list
+                activities = designsafe_user.profile.research_activities.all().values('description')
+                research_activities = [activity['description'].encode('utf-8') for activity in activities]
+
+                # order of items as required by user
+                writer.writerow([user_profile.lastName.encode('utf-8') if user_profile.lastName else user_profile.lastName,
+                    user_profile.firstName.encode('utf-8') if user_profile.firstName else user_profile.firstName, 
+                    user_profile.email,
+                    user_profile.phone,
+                    user_profile.institution.encode('utf-8'),
+                    user_profile.title,
+                    designsafe_user.profile.professional_level,
+                    designsafe_user.profile.bio.encode('utf-8') if designsafe_user.profile.bio else designsafe_user.profile.bio,
+                    nh_interests if nh_interests else None,
+                    research_activities if research_activities else None,
+                    user_profile,
+                    designsafe_user.profile.ethnicity,
+                    designsafe_user.profile.gender,
+                    user_profile.country,
+                    user_profile.citizenship,
+                    designsafe_user.date_joined.date()
+                ])
+
+>>>>>>> c47da39b4a0d095799f46b8a18198f2173234ab2
         User = get_user_model().objects.get(username=username)
         client = User.agave_oauth.client
 

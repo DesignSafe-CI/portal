@@ -53,10 +53,10 @@
                   </div>
                   <ul style="margin-left:10px;">
                     <li 
-                        ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
+                        ng-repeat="output in data.project.getRelated('coordinatoroutput_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-red tree-el"
-                            ng-class="{'selected': output.uuid === data.entityUuid}">Numerical (Simulations) Output</span>
+                            ng-class="{'selected': output.uuid === data.entityUuid}">Coordinator Output</span>
                       <span class="tag-title">{{output.value.title}}</span>
                       </div>
                     </li>
@@ -66,15 +66,15 @@
                         ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-yellow tree-el"
-                            ng-class="{'selected': substructure.uuid === data.entityUuid}">Numerical (Simulation) Substructure</span>
+                            ng-class="{'selected': substructure.uuid === data.entityUuid}">Numerical Substructure</span>
                       <span class="tag-title">{{substructure.value.title}}</span>
                       </div>
                       <ul>
                         <li 
-                            ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                            ng-repeat="output in data.project.getRelated('simoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                           <div class="tree-el">
                           <span class="label tag-red tree-el"
-                                ng-class="{'selected': output.uuid === data.entityUuid}">simulation Output</span>
+                                ng-class="{'selected': output.uuid === data.entityUuid}">Numerical Output</span>
                           <span class="tag-title">{{output.value.title}}</span>
                           </div>
                         </li>
@@ -86,15 +86,15 @@
                         ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-purple tree-el"
-                            ng-class="{'selected': substructure.uuid === data.entityUuid}">Physical (Experimental) Substructure</span>
+                            ng-class="{'selected': substructure.uuid === data.entityUuid}">Experimental Substructure</span>
                       <span class="tag-title">{{substructure.value.title}}</span>
                       </div>
                       <ul>
                         <li 
-                            ng-repeat="output in data.project.getRelated('output_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
+                            ng-repeat="output in data.project.getRelated('expoutput_set', [simulation.uuid, globalModel.uuid, substructure.uuid]) | orderBy: '_ui.order'">
                           <div class="tree-el">
                           <span class="label tag-red tree-el"
-                                ng-class="{'selected': output.uuid === data.entityUuid}">simulation Output</span>
+                                ng-class="{'selected': output.uuid === data.entityUuid}">Experimental Output</span>
                           <span class="tag-title">{{output.value.title}}</span>
                           </div>
                         </li>

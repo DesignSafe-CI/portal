@@ -422,6 +422,7 @@ EMAIL_HOST_USER = os.environ.get('SMTP_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@designsafe-ci.org')
 MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe-ci.org')
+NEW_ACCOUNT_ALERT_EMAIL = os.environ.get('NEW_ACCOUNT_ALERT_EMAIL', 'no-reply@designsafe-ci.org')
 
 ###
 # Terms and Conditions
@@ -527,6 +528,11 @@ GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', Fa
 # Google Site Verification
 #
 GOOGLE_SITE_VERIFICATION_ID = os.environ.get('GOOGLE_SITE_VERIFICATION_ID', False)
+
+# RAMP Verification
+#
+RAMP_VERIFICATION_ID = os.environ.get('RAMP_VERIFICATION_ID', False)
+
 ###
 # Agave Integration
 #

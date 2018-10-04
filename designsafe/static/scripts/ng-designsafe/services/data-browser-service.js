@@ -177,9 +177,9 @@
       tests.canViewCitation = files.length >= 1 && hasPermission('READ', files);
       tests.canShare = files.length === 1 && $state.current.name === 'myData';
       tests.canCopy = files.length >= 1 && hasPermission('READ', files);
-      // There are errors being thrown by the following two tests
+      // following two tests do not work...
       // tests.canMove = files.length >= 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
-      // tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name); //??
+      // tests.canRename = files.length === 1 && hasPermission('WRITE', [currentState.listing].concat(files)) && !['dropboxData', 'boxData', 'googledriveData'].includes($state.current.name);
       tests.canViewCategories = true;
 
       var trashPath = _trashPath();
@@ -2469,13 +2469,22 @@
           $ctrl.ui.styles = ['BibTeX', 'Endnote'];
           var authors = '';
           var ieeeAuthors = '';
-          var citationYear = '';
+          var citationDate = '';
                     
-          if (typeof pub === 'undefined'){
-              citationYear = ent.created.split('-')[0];
+          if (pub.doi){
+            try { citationDate = ent.created.split('T')[0]; }
+            catch(err) {
+              citationDate = '[publication date]';
+              console.error(err);
+            }
           } else {
-              citationYear = pub.created.split('-')[0];
+            try { citationDate = ent[0].meta.dateOfPublication.split('T')[0]; }
+            catch(err) {
+              citationDate = '[publication date]';
+              console.error(err);
+            }
           }
+
           var neesCitation = function (prj) {
             $http.get('/api/projects/publication/' + prj[0].meta.projectId)
             .then(function (resp) {
@@ -2519,7 +2528,7 @@
                     ' author = {' + authors + '} \n' +
                     ' title = {' + prj.value.title + '} \n' +
                     ' publisher = {DesignSafe-CI} \n' +
-                    ' year = {' + citationYear + '} \n' +
+                    ' year = {' + citationDate + '} \n' +
                     ' note = {' + prj.value.description + '} \n' +
                     '}';
                 } else if ($ctrl.ui.style === 'Endnote') {
@@ -2528,7 +2537,7 @@
                     '%A ' + authors + '\n' +
                     '%T ' + prj.value.title + '\n' +
                     '%I DesignSafe-CI\n' +
-                    '%D ' + citationYear + '\n';
+                    '%D ' + citationDate + '\n';
                 }
               };
               $ctrl.close = function () {
@@ -2545,10 +2554,11 @@
                 var doiurl = "https://ezid.cdlib.org/id/" + doi;
                 $window.open(doiurl);
               };
-    
+              
               // display everything...
-              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationYear + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
-              $ctrl.getCitation();
+              $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
+              $ctrl.doiurl = "https://ezid.cdlib.org/id/" + $ctrl.data.prj.doi;
+              // $ctrl.getCitation();
             });
           };
 
@@ -2565,14 +2575,14 @@
               $ctrl.data.publication = browser.publication;
             }
             var publishers = _.filter($ctrl.data.publication.users, function (usr) {
-              if (ent.name === 'designsafe.project' || ent.name === 'designsafe.project.analysis' || ent[0]) {
+              if (pub.name === 'designsafe.project' || pub.name === 'designsafe.project.analysis' || pub[0]) {
                 return _.contains($ctrl.data.publication.project.value.coPis, usr.username) ||
                   usr.username === $ctrl.data.publication.project.value.pi;
               } else {
-                return _.contains(ent.value.authors, usr.username);
+                return _.contains(pub.value.authors, usr.username);
               }
             });
-            if (typeof ent.value.projectType !== 'undefined' && ent.value.projectType === 'other') {
+            if (typeof pub.value.projectType !== 'undefined' && pub.value.projectType === 'other') {
               publishers = $ctrl.data.publication.users;
             }
             publishers = _.sortBy(publishers, function (p) {
@@ -2598,18 +2608,18 @@
                 $ctrl.data.citation =
                   '@misc{dataset, \n' +
                   ' author = {' + authors + '} \n' +
-                  ' title = {' + ent.value.title + '} \n' +
+                  ' title = {' + pub.value.title + '} \n' +
                   ' publisher = {DesignSafe-CI} \n' +
-                  ' year = {' + citationYear + '} \n' +
-                  ' note = {' + ent.value.description + '} \n' +
+                  ' year = {' + citationDate + '} \n' +
+                  ' note = {' + pub.value.description + '} \n' +
                   '}';
               } else if ($ctrl.ui.style === 'Endnote') {
                 $ctrl.data.citation =
                   '%0 Generic \n' +
                   '%A ' + authors + '\n' +
-                  '%T ' + ent.value.title + '\n' +
+                  '%T ' + pub.value.title + '\n' +
                   '%I DesignSafe-CI\n' +
-                  '%D ' + citationYear + '\n';
+                  '%D ' + citationDate + '\n';
               }
             };
             $ctrl.close = function () {
@@ -2628,8 +2638,9 @@
             };
 
             // display everything...
-            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationYear + '), "' + ent.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + ent.doi);
-            $ctrl.getCitation();
+            $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + pub.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + pub.doi);
+            $ctrl.doiurl = "https://ezid.cdlib.org/id/" + pub.doi;
+            // $ctrl.getCitation();
           }
 
 
