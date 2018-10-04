@@ -8,6 +8,7 @@ from django.conf import settings
 import datetime
 import dateutil.parser
 import requests
+import chardet
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ def format_req(metadata):
             value = f.read()
             f.close()
         value = _escape(value, False)
-        anvl.append("%s: %s" % (key, value))
+        anvl.append("{key}: {value}".format(key=key, value=value))
     return "\n".join(anvl)
 
 def _reserve_doi(xml_obj, target):
