@@ -887,7 +887,6 @@ def save_publication(self, project_id):
         pub = Publication(project_id=project_id)
         publication = PublicationManager.reserve_publication(pub.to_dict())
         pub.update(**publication)
-        copy_publication_files_to_corral.apply_async(args=[pub.projectId],queue="files")
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)

@@ -8,6 +8,7 @@ from django.conf import settings
 import datetime
 import dateutil.parser
 import requests
+import chardet
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,16 @@ def format_req(metadata):
             f.close()
         value = _escape(value, False)
         anvl.append("%s: %s" % (key, value))
-    return "\n".join(anvl)
+    ret = ''
+    for anv in anvl:
+        try:
+            ret += '\n'.join([anv])
+        except UnicodeError:
+            encoding = chardet.detect(anv)['encoding']
+            anv = anv.decode(encoding)
+            ret += '\n'.join([anv])
+    logger.debug(ret)
+    return ret
 
 def _reserve_doi(xml_obj, target):
     xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")

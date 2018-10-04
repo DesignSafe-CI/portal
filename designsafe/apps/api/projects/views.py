@@ -2,6 +2,7 @@
 import copy
 import logging
 import json
+from celery import group
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
@@ -69,10 +70,20 @@ class PublicationView(BaseApiView):
         pub = PublicationManager().save_publication(
             data['publication'], status)
         if data.get('status', 'save').startswith('publish'):
-            tasks.save_publication.apply_async(
-                args=[pub.projectId],
-                queue='files',
-                countdown=60)
+            group(
+                tasks.save_publication.s(
+                    pub.projectId
+                ).set(
+                    queue='files',
+                    countdown=60
+                ),
+                tasks.copy_publication_files_to_corral.s(
+                    pub.projectId
+                ).set(
+                    queue='files',
+                    countdown=60
+                )
+            ).apply_async()
         return JsonResponse({'status': 200,
                              'response': {
                                  'message': 'Your publication has been '

@@ -9,16 +9,22 @@ os:
 install:
     - npm install
     - pip install -r requirements.txt
-jobs:
+stages:
+    - lint
+    - test
+matrix:
     include:
-        - stage: "linters"
-          script:
-              - flake8 designsafe
-              - pylint designsafe
-              - pydocstyle designsafe
-              - eslint designsafe/static/scripts
-        - stage: "unit tests"
-          script:
-            - coverage run --branch --source="designsafe" manage.py test --pattern=tests.py
-            - codecov
-            - npm run-script test
+        - name: "Flake8"
+          env: TEST_CMD=flake8 designsafe
+        - name: "pylint"
+          env: TEST_CMD=pylint designsafe
+        - name: "pydocstyle"
+          env: TEST_CMD=pydocstyle designsafe
+        - name: "eslint"
+          env: TEST_CMD=eslint designsafe/static/scripts
+        - name: "npm test"
+          env: TEST_CMD=npm run-script test
+        - name: "coverage"
+          env: TEST_CMD=coverage run --branch --source="designsafe" manage.py test --pattern=test.py && codecov
+
+script: $TEST_CMD
