@@ -76,20 +76,18 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['Chrome_without_sandbox'],
+    browsers : ['Chrome', 'ChromeHeadless', 'ChromeHeadlessNoSandbox'],
     plugins : [
             'karma-chrome-launcher',
-            'karma-firefox-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter'
             ],
 
     reporters: ['progress', 'html'],
     customLaunchers: {
-        Chrome_without_sandbox: {
-            base: 'Chrome',
+        ChromeHeadlessNoSandbox: {
+            base: 'ChromeHeadless',
             flags: ['--no-sandbox'],
-            displayName: 'Chorme w/o sandbox'
         }
     }
   });
