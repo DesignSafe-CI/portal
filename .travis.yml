@@ -15,16 +15,22 @@ stages:
 matrix:
     include:
         - name: "Flake8"
-          env: TEST_CMD=flake8 designsafe
+          env: TEST_CMD="flake8 designsafe"
+          stage: lint
         - name: "pylint"
-          env: TEST_CMD=pylint designsafe
+          env: TEST_CMD="pylint designsafe"
+          stage: lint
         - name: "pydocstyle"
-          env: TEST_CMD=pydocstyle designsafe
+          env: TEST_CMD="pydocstyle designsafe"
+          stage: lint
         - name: "eslint"
-          env: TEST_CMD=eslint designsafe/static/scripts
+          env: TEST_CMD="eslint designsafe/static/scripts"
+          stage: lint
         - name: "npm test"
-          env: TEST_CMD=npm run-script test
+          env: TEST_CMD="npm run-script test"
+          stage: test
         - name: "coverage"
-          env: TEST_CMD=coverage run --branch --source="designsafe" manage.py test --pattern=test.py && codecov
+          env: TEST_CMD="coverage run --branch --source="designsafe" manage.py test --pattern=test.py && codecov"
+          stage: test
 
 script: $TEST_CMD
