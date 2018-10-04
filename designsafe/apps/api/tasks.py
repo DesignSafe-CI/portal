@@ -847,6 +847,8 @@ def copy_publication_files_to_corral(self, project_id):
         if os.path.isdir(local_src_path):
             try:
                 #os.mkdir(local_dst_path)
+                if not os.path.isdir(os.path.dirname(local_dst_path)):
+                    os.makedirs(os.path.dirname(local_dst_path))
                 shutil.copytree(local_src_path, local_dst_path)
                 for root, dirs, files in os.walk(local_dst_path):
                     for d in dirs:
@@ -861,7 +863,7 @@ def copy_publication_files_to_corral(self, project_id):
         else:
             try:
                 if not os.path.isdir(os.path.dirname(local_dst_path)):
-                    os.mkdirs(os.path.dirname(local_dst_path))
+                    os.makedirs(os.path.dirname(local_dst_path))
                 for root, dirs, files in os.walk(os.path.dirname(local_dst_path)):
                     for d in dirs:
                         os.chmod(os.path.join(root, d), 0555)

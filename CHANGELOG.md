@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.5
+
+Fixes:
+
+- Error when creating recursive directories for publication
+
 ## v2.7.4
 
 Fixes:
