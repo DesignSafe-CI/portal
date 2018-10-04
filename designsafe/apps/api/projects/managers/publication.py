@@ -63,13 +63,7 @@ def format_req(metadata):
             value = f.read()
             f.close()
         value = _escape(value, False)
-        anvl.append("%s: %s" % (key, value))
-    processed = []
-    for anv in anvl:
-        encoding = chardet.detect(anv)['encoding']
-        if encoding.lower() != 'utf-8':
-            anv = anv.decode(encoding)
-        processed.append(anv)
+        anvl.append("{key}: {value}".format(key=key, value=value))
     return "\n".join(anvl)
 
 def _reserve_doi(xml_obj, target):
