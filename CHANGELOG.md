@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.4
+
+Fixes:
+
+- Correct EF settings import.
+- Recon portal fix for event listing.
+- Better string handling when processing publications.
+
 ## v2.7.3
 
 Fixes:
