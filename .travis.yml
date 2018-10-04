@@ -23,7 +23,9 @@ matrix:
           env: TEST_CMD="npm run-script test"
           stage: test
         - name: "coverage"
-          env: TEST_CMD="coverage run --branch --source='designsafe' manage.py test --settings=designsafe.settings.test_settings --pattern=tests.py && codecov"
+          env:
+              - TEST_CMD="coverage run --branch --source='designsafe' manage.py test --settings=designsafe.settings.test_settings --pattern=tests.py"
+              - COV=1
           stage: test
         - name: "Flake8"
           env: TEST_CMD="flake8 designsafe"
@@ -53,3 +55,5 @@ matrix:
 before_script:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
 script: $TEST_CMD
+after_script:
+    - if [ "$COV" -eq "1" ]; then codecov; fi
