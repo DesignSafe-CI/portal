@@ -18,7 +18,7 @@ ignore-patterns=
 #init-hook=
 
 # Use multiple processes to speed up Pylint.
-jobs=1
+jobs=2
 
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
@@ -133,7 +133,7 @@ disable=print-statement,
         xreadlines-attribute,
         deprecated-sys-function,
         exception-escape,
-        comprehension-escape
+        comprehension-escape,
         line-too-long
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -159,7 +159,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 # Set the output format. Available formats are text, parseable, colorized, json
 # and msvs (visual studio).You can also give a reporter class, eg
 # mypackage.mymodule.MyReporterClass.
-output-format=text
+output-format=colorized
 
 # Tells whether to display a full report or only the messages
 reports=no
@@ -455,10 +455,10 @@ variable-naming-style=snake_case
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args=5
+max-args=7
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=12
 
 # Maximum number of boolean expressions in a if statement
 max-bool-expr=5
@@ -490,6 +490,7 @@ min-public-methods=2
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,
                       __new__,
+                      __str__,
                       setUp
 
 # List of member names, which should be excluded from the protected access
