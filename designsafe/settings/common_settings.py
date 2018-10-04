@@ -121,7 +121,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_REDIRECT_URL = '/account/'
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
 CACHES = {
   'default': {
@@ -235,7 +235,7 @@ LANGUAGES = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/designsafe-ci.org/static/'
+STATIC_ROOT = '/srv/www/designsafe/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'designsafe', 'static'),
     ('vendor', os.path.join(BASE_DIR, 'node_modules'))
@@ -247,7 +247,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     #'pipeline.finders.PipelineFinder',
 )
-MEDIA_ROOT = '/var/www/designsafe-ci.org/media/'
+MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
 DJANGOCMS_PICTURE_TEMPLATES = [
@@ -308,7 +308,7 @@ CKEDITOR_SETTINGS = {
 #    'djangocms_style': 'djangocms_style.migrations_django',
 #}
 
-LOGIN_URL = '/login/'
+LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
 DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
@@ -422,6 +422,7 @@ EMAIL_HOST_USER = os.environ.get('SMTP_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@designsafe-ci.org')
 MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe-ci.org')
+NEW_ACCOUNT_ALERT_EMAIL = os.environ.get('NEW_ACCOUNT_ALERT_EMAIL', 'no-reply@designsafe-ci.org')
 
 ###
 # Terms and Conditions

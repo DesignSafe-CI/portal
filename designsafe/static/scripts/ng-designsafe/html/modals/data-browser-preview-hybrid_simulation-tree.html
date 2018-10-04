@@ -51,7 +51,7 @@
                         ng-class="{'selected': simInput.uuid === data.entityUuid}">Master Simulation Coordinator</span>
                   <span class="tag-title">{{coordinator.value.title}}</span>
                   </div>
-                  <ul style="margin-left:10px;">
+                  <ul>
                     <li 
                         ng-repeat="output in data.project.getRelated('coordinatoroutput_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
@@ -61,8 +61,8 @@
                       </div>
                     </li>
                   </ul>
-                  <ul>
-                    <li 
+                  <ul style="border-top:0;">
+                    <li style="border-bottom:0;"
                         ng-repeat="substructure in data.project.getRelated('simsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-yellow tree-el"
@@ -81,8 +81,8 @@
                       </ul>
                     </li>
                   </ul>
-                  <ul>
-                    <li 
+                  <ul style="border-top:0;">
+                    <li style="border-bottom:0;"
                         ng-repeat="substructure in data.project.getRelated('expsubstructure_set', [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'">
                       <div class="tree-el">
                       <span class="label tag-purple tree-el"

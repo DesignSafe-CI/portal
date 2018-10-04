@@ -5,9 +5,10 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
+
 from .models import AgaveOAuthToken, AgaveServiceStatus
 from agavepy.agave import Agave
-from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
+from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
 import logging
 import os
 import requests
@@ -157,6 +158,7 @@ def agave_oauth_callback(request):
             except ObjectDoesNotExist:
                 token = AgaveOAuthToken(**token_data)
                 token.user = user
+                new_user_alert.apply_async(args=(user.username,))
             token.save()
 
             login(request, user)
@@ -172,8 +174,8 @@ def agave_oauth_callback(request):
                     ag.files.manage(systemId=settings.AGAVE_STORAGE_SYSTEM,
                                 filePath='',
                                 body=body)
-                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')   
-
+                    check_or_create_agave_home_dir.apply_async(args=(user.username,),queue='files')
+                    
         else:
             messages.error(
                 request,

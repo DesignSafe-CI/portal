@@ -1,0 +1,24 @@
+language: python
+sudo: required
+dist: trusty
+cache: pip
+python:
+    - "2.7"
+os:
+    - linux
+install:
+    - npm install
+    - pip install -r requirements.txt
+jobs:
+    include:
+        - stage: "linters"
+          script:
+              - flake8 designsafe
+              - pylint designsafe
+              - pydocstyle designsafe
+              - eslint designsafe/static/scripts
+        - stage: "unit tests"
+          script:
+            - coverage run --branch --source="designsafe" manage.py test --pattern=tests.py
+            - codecov
+            - npm run-script test

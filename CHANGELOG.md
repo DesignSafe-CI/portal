@@ -1,5 +1,43 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.3
+
+Fixes:
+
+- Do not decode response from EZID to avoid encoding issues.
+
+## v2.7.2 (v2.7.2-20181002)
+
+Fixes:
+
+- Rollback apps version dropdown.
+
+## v2.7.1
+
+Release to Prod
+
+## v2.7.1-20180903
+
+Fixes:
+
+- Publication tasks.
+- Hybrid Sim tree CSS.
+- Publication search results.
+
+## v2.7.1-20180902
+
+Improvements:
+
+- Remove `nodeCount` parameter in front end.
+- Add email notification for new users.
+- Add user report for admins.
+- Add drop down selector for different versions of the same app.
+
+Fixes:
+
+- Licenses names for publication.
+- File toolbar pems checking.
+
 ## v2.7.1-20180805
 
 Fixes:

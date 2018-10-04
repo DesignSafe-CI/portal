@@ -45,5 +45,4 @@ RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/ve
 
 RUN python manage.py collectstatic -c --traceback --noinput
 
-RUN chown -R tg458981:G-816877 /var/www/designsafe-ci.org
 RUN chown -R tg458981:G-816877 /srv/www/designsafe

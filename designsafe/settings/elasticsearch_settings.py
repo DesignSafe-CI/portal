@@ -11,6 +11,8 @@ HAYSTACK_CONNECTIONS = {
 ES_CONNECTIONS = {
     'default': {
         'hosts': [
+            'designsafe-es01.tacc.utexas.edu',
+            'designsafe-es02.tacc.utexas.edu',
         ],
     },
     'staging': { #dev/qa

@@ -12,6 +12,7 @@ from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
 from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
+from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
@@ -536,14 +537,36 @@ def departments_json(request):
 @permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
 def mailing_list_subscription(request, list_name):
     subscribers = ['"Name","Email"']
+
     try:
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
             Q(**{"notification_preferences__{}".format(list_name): True}))
-        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'), u.email.encode('utf-8')) for u in su)
+        subscribers += list('"{0}","{1}"'.format(u.get_full_name().encode('utf-8'),
+        u.email.encode('utf-8')) for u in su)
+
     except TypeError as e:
         logger.warning('Invalid list name: {}'.format(list_name))
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
+
+
+@permission_required('designsafe_accounts.view_notification_subscribers', raise_exception=True)
+def user_report(request, list_name):
+
+    django_user = request.user
+
+    create_report.apply_async(
+                args=(
+                    (django_user.username, list_name)
+                )
+            )
+
+    context = {
+        'title': 'Generating Report',
+    }
+
+    return render(request, 'designsafe/apps/accounts/generating_user_report.html', context)
+
 
 def termsandconditions(request):
     context = {

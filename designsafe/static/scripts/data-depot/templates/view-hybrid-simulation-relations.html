@@ -60,13 +60,13 @@
                         </div>
                     </li>
                   </ul>
-                  <ul>
-                      <li 
+                  <ul style="border-top:0;">
+                      <li style="border-bottom:0;"
                            ng-repeat="substructure in getRelated('sim_substructures', false, [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
                               <span class="label tag-yellow tree-el"
                     ng-class="{'selected': substructure.uuid === $ctrl.data.selectedUuid}">
-                                  Numerical (Simulation) Substructure</span>
+                                  Numerical Substructure</span>
                               <span class="tag-title">{{substructure.value.title}}</span>
                           </div>
                   <ul class="hybrid-sim-coord-output">
@@ -82,12 +82,12 @@
                   </ul>
                       </li>
                   </ul>
-                  <ul>
-                      <li 
+                  <ul style="border-top:0;">
+                      <li style="border-bottom;0;"
                            ng-repeat="substructure in getRelated('exp_substructures', false, [simulation.uuid, globalModel.uuid, coordinator.uuid]) | orderBy: '_ui.order'"> 
                           <div class="tree-el">
                               <span class="label tag-purple tree-el"
-                    ng-class="{'selected': substructure.uuid === $ctrl.data.selectedUuid}">Physical (Experimental) Substructure</span>
+                    ng-class="{'selected': substructure.uuid === $ctrl.data.selectedUuid}">Experimental Substructure</span>
                               <span class="tag-title">{{substructure.value.title}}</span>
                           </div>
                   <ul class="hybrid-sim-exp-output">

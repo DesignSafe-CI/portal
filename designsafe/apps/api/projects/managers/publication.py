@@ -39,8 +39,12 @@ def _unescape(s):
                   lambda m: chr(int(m.group(1), 16)), s)
 
 def parse_response(res):
-    response = dict(tuple(_unescape(v).strip() for v in l.split(":", 1)) \
-                          for l in res.decode("UTF-8").splitlines())
+    response = dict(
+        tuple(
+            _unescape(v).strip() for v in l.split(":", 1)
+        )
+        for l in res.splitlines()
+    )
     return response
 
 def _escape(s, key=True):
@@ -441,7 +445,6 @@ def project_reserve_xml(publication):
         ark = project_body.get('doi')
     doi = doi.strip()
     ark = ark.strip()
-    logger.debug('doi: %s', doi)
     identifier = xml_obj.find('identifier')
     identifier.text = doi
 
@@ -455,7 +458,7 @@ def project_reserve_xml(publication):
     institutions = publication['institutions']
     contributors = ET.SubElement(resource, 'contributors')
     for institution in institutions:
-        if institution.get('label', None) is None:
+        if not institution.get('label', None):
             continue
 
         contrib = ET.SubElement(contributors, 'contributor')
@@ -485,7 +488,6 @@ def project_reserve_xml(publication):
     rights = ET.SubElement(rights_list, 'rights')
     rights.attrib['rightsURI'] = 'http://opendatacommons.org/licenses/by/1-0/'
     rights.text = 'ODC-BY 1.0'
-    logger.debug(pretty_print(xml_obj))
     _update_doi(doi, xml_obj)
     return (doi, ark, xml_obj)
 
@@ -504,7 +506,6 @@ def add_related(xml_obj, dois):
 
 def publish_project(doi, xml_obj):
     #doi, ark, xml_obj = _project_publish_xml(publication)
-    logger.debug(pretty_print(xml_obj))
     xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
     metadata = {'_status': 'public', 'datacite': xml_str}
     res = requests.post('{}/id/{}'.format(BASE_URI, doi),
@@ -594,4 +595,6 @@ def reserve_publication(publication, analysis_doi=False):
         for _doi in [proj_doi] + sim_dois:
             logger.debug('DOI: %s', _doi)
             _update_doi(_doi, xmls[_doi], status='public')
+    else:
+        _update_doi(proj_doi, xmls[proj_doi], status='public')
     return publication

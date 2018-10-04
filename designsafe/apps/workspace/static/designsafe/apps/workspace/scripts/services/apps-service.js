@@ -192,16 +192,6 @@
         }
       };
 
-      schema.properties.processorsPerNode = {
-        title: 'Processors Per Node',
-        description: `Number of process cores per node. Default is ${app.defaultProcessorsPerNode}.`,
-        type: 'integer',
-        default: app.defaultProcessorsPerNode,
-        minimum: 1,
-        maximum: app.defaultProcessorsPerNode,
-        validationMessage: `Must be an integer between 1 and ${app.defaultProcessorsPerNode}.`
-      };
-
       schema.properties.archivePath = {
         title: 'Job output archive location (optional)',
         description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
