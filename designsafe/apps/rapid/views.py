@@ -63,14 +63,9 @@ def get_event_types(request):
 
 def get_events(request):
     s = RapidNHEvent.search()
-    try:
-        results = s.sort("-event_date").execute(ignore_cache=True)
-    except (TransportError, ConnectionTimeout) as err:
-        if getattr(err, 'status_code', 500) == 404:
-            raise
-        results = s.sort("-event_date").execute(ignore_cache=True)
-
-    out = [h.to_dict() for h in results.hits]
+    s = s.sort("-event_date")
+    total = s.count()
+    out = [h.to_dict() for h in s[0:total]]
     return JsonResponse(out, safe=False)
 
 
@@ -86,16 +81,9 @@ def admin(request):
                  })
 
     s = RapidNHEvent.search()
-    try:
-        results = s.execute(ignore_cache=True)
-    except (TransportError, ConnectionTimeout) as err:
-        if getattr(err, 'status_code', 500) == 404:
-            raise
-        results = s.execute(ignore_cache=True)
-
-
-
-
+    s = s.sort("-event_date")
+    total = s.count()
+    results = [h for h in s[0:total]]
     context = {}
     context["rapid_events"] = results
     return render(request, 'designsafe/apps/rapid/admin.html', context)
