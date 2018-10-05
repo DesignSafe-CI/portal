@@ -85,7 +85,7 @@
     };
 
     $(document).on('scroll', window.throttle(activateSection, 100));
-    activateSection();
+    //activateSection();
   }
 
 })(window, jQuery);

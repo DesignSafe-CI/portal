@@ -1,16 +1,34 @@
 'use strict';
 
 describe('ApplicationTrayCtrl', function() {
-
-  beforeEach(module('designsafe'));
-
-  describe('ApplicationTrayCtrl controller', function() {
-
-    it('should ....', inject(function($rootScope, $controller, $q, $timeout, $uibModal, $translate, Apps, SimpleList, MultipleList) {
-      spyOn(Apps, 'list').and.callFake(function() {
-        return {
-          then: function(callback) {
-            return callback({data:[
+    var $rootScope, $controller, $q, $timeout, $uibModal, Apps, SimpleList, MultipleList, scope, ctrl;
+    beforeEach(angular.mock.module("designsafe"));
+    beforeEach(function(){
+        angular.module("django.context", []).constant("Django", {user:"test_user"});
+        angular.mock.inject(
+            function(
+                _$rootScope_,
+                _$controller_,
+                _$q_,
+                _$timeout_,
+                _$uibModal_,
+                _Apps_,
+                _SimpleList_,
+                _MultipleList_
+            ){
+                $rootScope = _$rootScope_;
+                $controller = _$controller_;
+                $q = _$q_;
+                $timeout = _$timeout_;
+                $uibModal = _$uibModal_;
+                Apps = _Apps_;
+                SimpleList = _SimpleList_;
+                MultipleList = _MultipleList_;
+        });
+    });
+    beforeEach(inject(function($controller, $rootScope){
+        scope = $rootScope.$new();
+        var callbackResponse = {data:[
               {
                 "name": "ds_app_list",
                 "created": "2016-06-27T16:33:02.796-05:00",
@@ -27,30 +45,31 @@ describe('ApplicationTrayCtrl', function() {
                 "internalUsername": null,
                 "uuid": "5026667269377355290-242ac1110-0001-012"
               }
-            ]});
-          }
-        };
-      });
-
-      var scope = $rootScope.$new();
-      var ctrl = $controller('ApplicationTrayCtrl', {
+            ]};
+        spyOn(Apps, 'list').and.callFake(function(){
+            return {
+                then: function(callback){
+                    return callback(callbackResponse);
+                }
+            }
+        });
+      ctrl = $controller('ApplicationTrayCtrl', {
         $scope: scope,
         $rootScope: $rootScope,
         $q: $q,
         $timeout: $timeout,
         $uibModal: $uibModal,
-        $translate: $translate,
         Apps: Apps,
         SimpleList: SimpleList,
         MultipleList: MultipleList
       });
-
-      expect(ctrl).toBeDefined();
-      expect(scope.data.publicOnly).toBe(false);
-      // expect(Apps.list).toHaveBeenCalled();
-      // expect(scope.simpleList.lists['test_list'].length).toBe(3);
-      // expect(scope.simpleList.lists['test_list'][0].label).toBe('shell-runner-two-0.1.0');
     }));
 
-  });
+    it("Should define controller", function(){
+        expect(ctrl).toBeDefined();
+    });
+
+    it("Should see data as private", function(){
+        expect(scope.data.publicOnly).toBe(false);
+    });
 });

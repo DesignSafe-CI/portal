@@ -10,6 +10,7 @@ settings.json
 # don't track webpack's bundles
 designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.*
 designsafe/static/styles/base.*
+/static
 
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env

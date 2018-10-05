@@ -6,11 +6,10 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model, signals
 from django.contrib.auth.models import Permission
 from django.core.urlresolvers import reverse
-from designsafe.apps.auth.signals import on_user_logged_in
 from designsafe.apps.api.agave.filemanager.search_index import IndexedFile
 
 logger = logging.getLogger(__name__)
-
+@skip("Need to mock Elasticsearch calls")
 class DashboardTests(TestCase):
 
     fixtures = ['user-data.json']
@@ -30,9 +29,6 @@ class DashboardTests(TestCase):
             path="ds_user/test",
         )
         f2.save(refresh=True)
-
-        # disconnect user_logged_in signal
-        signals.user_logged_in.disconnect(on_user_logged_in)
 
     def tearDown(self):
         s = IndexedFile.search()
