@@ -96,7 +96,7 @@ module.exports = function(config){
     reporters: ['progress', 'coverage', 'html'],
     coverageReporter: {
         reporters: [
-            {type:'json', subdir: '.'},
+            {type:'lcov', subdir: '.'},
         ]
     },
     customLaunchers: {
