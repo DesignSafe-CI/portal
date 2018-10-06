@@ -37,7 +37,7 @@
           </div>
           <ul class="model-config-ul">
             <li class="tree-container"
-                ng-repeat="modelConfig in data.project.getRelated('model_set', simulation.uuid) | orderBy: modelConfig.value.title">
+                ng-repeat="modelConfig in data.project.getRelated('model_set', simulation.uuid) | orderBy: 'value.title'">
               <div class="tree-el">
               <span class="label tag-blue"
                     ng-class="{'selected': modelConfig.uuid === data.entityUuid}">Simulation Model</span>
@@ -45,7 +45,7 @@
               </div>
               <ul class="sensor-list-ul">
                 <li class="tree-container"
-                    ng-repeat="simInput in data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid]) | orderBy: simInput.value.title">
+                    ng-repeat="simInput in data.project.getRelated('input_set', [simulation.uuid, modelConfig.uuid]) | orderBy: 'value.title'">
                   <div class="tree-el">  
                   <span class="label tag-green"
                         ng-class="{'selected': simInput.uuid === data.entityUuid}">Simulation Input</span>
@@ -93,7 +93,7 @@
 
       <ul class="experiments-ul">
         <li class="tree-container"
-            ng-repeat="analysis in data.project.analysis_set | orderBy: analysis.value.title"
+            ng-repeat="analysis in data.project.analysis_set | orderBy: 'value.title'"
             style="border:none;">
           <div class="tree-el">  
           <span class="label tag-light-blue"

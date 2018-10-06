@@ -147,7 +147,7 @@
                 </a>
               </div>
               <div>
-                <div ng-repeat="coordinator in browser.project.getRelated('coordinator_set', [model.uuid])">
+                <div ng-repeat="coordinator in browser.project.getRelated('coordinator_set', [model.uuid]) | orderBy: ['_ui.order', 'value.title']">
                     <div style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                     padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
                   <a ng-class="coordinator.cssClasses()['text']"
@@ -156,14 +156,14 @@
                     {{coordinator.value.title}}
                   </a>
                   <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('coordinatoroutput_set',
-                                                               [simulation.uuid, model.uuid, coordinator.uuid])">
+                                                               [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: ['_ui.order', 'value.title']">
                     <a ng-class="output.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, output.uuid)">
                       {{output.value.title}}
                     </a>
                   </div>
                     </div>
                   <div ng-repeat="substructure in browser.project.getRelated('simsubstructure_set',
-                                  [simulation.uuid, model.uuid, coordinator.uuid])"
+                                  [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: ['_ui.order', 'value.title']"
                        style="margin-top:10px;">
                     <div style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                     padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
@@ -173,7 +173,7 @@
                           {{substructure.value.title}}
                       </a>
                       <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('simoutput_set',
-                                                                   [simulation.uuid, model.uuid, substructure.uuid])">
+                                                                   [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: ['_ui.order', 'value.title']">
                         <a ng-class="output.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, output.uuid)">
                         {{output.value.title}}
                         </a>
@@ -181,7 +181,7 @@
                     </div>
                   </div>
                   <div ng-repeat="substructure in browser.project.getRelated('expsubstructure_set',
-                                  [simulation.uuid, model.uuid, coordinator.uuid])"
+                                  [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: ['_ui.order', 'value.title']"
                        style="margin-top:10px;">
                     <div style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                     padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
@@ -191,7 +191,7 @@
                           {{substructure.value.title}}
                       </a>
                       <div style="display:inline-block" ng-repeat="output in browser.project.getRelated('expoutput_set',
-                                                                   [simulation.uuid, model.uuid, substructure.uuid])">
+                                                                   [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: ['_ui.order', 'value.title']">
                         <a ng-class="output.cssClasses()['text']" href="" ng-click="openPreviewTree()($event, output.uuid)">
                         {{output.value.title}}
                         </a>
@@ -252,7 +252,7 @@
                   </tr>
                   <tr class="simulation-coordinator"
                       style="background:#fff; border:none;"
-                      ng-repeat="coordinator in browser.project.getRelated('coordinator_set', [simulation.uuid, model.uuid]) | orderBy: 'value.title'">
+                      ng-repeat="coordinator in browser.project.getRelated('coordinator_set', [simulation.uuid, model.uuid]) | orderBy: ['_ui.order', 'value.title']">
                    <td colspan="4">
                     <div class="entity-preview-header" id="details-{{coordinator.uuid}}">
                       <button class="btn btn-default btn-sm" ng-class="simInput.cssClasses()['text']"
@@ -285,7 +285,7 @@
                           </td>
                         </tr>
                         <tr style="background:#fff; border:none;"
-                            ng-repeat="output in browser.project.getRelated('coordinatoroutput_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
+                            ng-repeat="output in browser.project.getRelated('coordinatoroutput_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: ['_ui.order', 'value.title']">
 
                            <td colspan="4">
                             <div class="entity-preview-header" id="details-{{output.uuid}}">
@@ -324,7 +324,7 @@
                         </tr>
                         <tr class="simulation-simsubstructure"
                             style="background:#fff; border:none;"
-                            ng-repeat="substructure in browser.project.getRelated('simsubstructure_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
+                            ng-repeat="substructure in browser.project.getRelated('simsubstructure_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: ['_ui.order', 'value.title']">
                             <td colspan="6">
                                 <div class="entity-preview-header" id="details-{{substructure.uuid}}">
                                   <button class="btn btn-default btn-sm" ng-class="substructure.cssClasses()['text']"
@@ -357,7 +357,7 @@
                                       </td>
                                     </tr>
                                     <tr style="background:#fff; border:none;"
-                                        ng-repeat="output in browser.project.getRelated('simoutput_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'">
+                                        ng-repeat="output in browser.project.getRelated('simoutput_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: ['_ui.order', 'value.title']">
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
@@ -400,7 +400,7 @@
                         </tr>
                         <tr class="simulation-simsubstructure"
                             style="background:#fff; border:none;"
-                            ng-repeat="substructure in browser.project.getRelated('expsubstructure_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: 'value.title'">
+                            ng-repeat="substructure in browser.project.getRelated('expsubstructure_set', [simulation.uuid, model.uuid, coordinator.uuid]) | orderBy: ['_ui.order', 'value.title']">
                             <td colspan="6">
                                 <div class="entity-preview-header" id="details-{{substructure.uuid}}">
                                   <button class="btn btn-default btn-sm" ng-class="substructure.cssClasses()['text']"
@@ -433,7 +433,7 @@
                                       </td>
                                     </tr>
                                     <tr style="background:#fff; border:none;"
-                                        ng-repeat="output in browser.project.getRelated('expoutput_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: 'value.title'">
+                                        ng-repeat="output in browser.project.getRelated('expoutput_set', [simulation.uuid, model.uuid, substructure.uuid]) | orderBy: ['_ui.order', 'value.title']">
 
                                        <td colspan="4">
                                         <div class="entity-preview-header" id="details-{{output.uuid}}">
@@ -1229,7 +1229,7 @@
                 </a>
               </div>
               <div>
-                <div ng-repeat="simInput in browser.project.getRelated('input_set', [model.uuid])"
+                <div ng-repeat="simInput in browser.project.getRelated('input_set', [model.uuid]) | orderBy: 'value.title'"
                      style="border-radius:5px; border-left:1px solid black; border-right:1px solid black;
                             padding:0px 0px 3px 3px; margin: 3px 0px 0px 0px; width:90%;">
                   <a ng-class="simInput.cssClasses()['text']"
@@ -1305,7 +1305,7 @@
                   </tr>
                   <tr class="simulation-input"
                       style="background:#fff; border:none;"
-                      ng-repeat="simInput in browser.project.getRelated('input_set', [model.uuid])">
+                      ng-repeat="simInput in browser.project.getRelated('input_set', [model.uuid]) | orderBy: ['value.title']">
                    <td colspan="4">
                     <div class="entity-preview-header" id="details-{{simInput.uuid}}">
                       <button class="btn btn-default btn-sm" ng-class="simInput.cssClasses()['text']"
