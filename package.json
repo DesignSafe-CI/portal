@@ -9,7 +9,7 @@
     "build": "webpack --config webpack.config.js",
     "dev": "webpack --progress --colors --watch --config webpack.config.js",
     "lint": "./node_modules/.bin/eslint designsafe/static/scripts/**/*.js",
-    "report-coverage": "codecov"
+    "report-coverage": "./node_modules/.bin/codecov"
   },
   "author": "Matthew R Hanlon <mrhanlon@tacc.utexas.edu>",
   "contributors": [

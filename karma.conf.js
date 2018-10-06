@@ -86,13 +86,17 @@ module.exports = function(config){
     plugins : [
             'karma-chrome-launcher',
             'karma-jasmine',
-            'karma-jasmine-html-reporter'
+            'karma-jasmine-html-reporter',
+            'karma-coverage',
             ],
-
+    processor: {
+        './designsafe/apps/**/*.js': ['coverage'],
+        './designsafe/static/scripts/**/*.js': ['coverage']
+    },
     reporters: ['progress', 'coverage'],
     coverageReporter: {
         reporters: [
-            {type:'lcov', subdir: '.', dir: '.'},
+            {type:'lcov', subdir: 'report-lcov'},
         ]
     },
     customLaunchers: {
