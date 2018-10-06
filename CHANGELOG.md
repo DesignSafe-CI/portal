@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.6
+
+Fixes:
+
+- Notifications on publication workflow.
+- Sorting of entities.
+
 ## v2.7.5
 
 Fixes:
