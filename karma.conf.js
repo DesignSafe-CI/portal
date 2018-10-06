@@ -89,14 +89,14 @@ module.exports = function(config){
             'karma-jasmine-html-reporter',
             'karma-coverage',
             ],
-    processor: {
+    preprocessors: {
         './designsafe/apps/**/*.js': ['coverage'],
         './designsafe/static/scripts/**/*.js': ['coverage']
     },
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress', 'coverage', 'html'],
     coverageReporter: {
         reporters: [
-            {type:'lcov', subdir: 'report-lcov'},
+            {type:'json', subdir: '.'},
         ]
     },
     customLaunchers: {
