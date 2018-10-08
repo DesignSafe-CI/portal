@@ -28,13 +28,11 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
             Apps.get(app.value.definition.id).then(function(resp) {
 
               $scope.data.app = resp.data;
-              console.log(resp.data)
               //$scope.resetForm();
               
               Systems.getSystemStatus(resp.data.executionSystem).then(function(response) {
                 var heartbeatStatus = response.data.heartbeat.status;
                 $scope.data.systemDown = (heartbeatStatus == false);
-                console.log('resetting form')
                 $scope.resetForm();
               }).catch(function (err) {
                 // No record of heartbeat for system, show form anyway
@@ -72,8 +70,6 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
           title: 'Inputs',
           items: items
         });
-
-        console.log($scope.form)
 
         /* job details */
         items = [];
