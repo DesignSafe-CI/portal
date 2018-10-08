@@ -3,7 +3,6 @@ import DataBrowserServicePreviewTemplate from './data-browser-service-preview.co
 class DataBrowserServicePreviewCtrl {
 
     constructor($sce, DataBrowserService) {
-        console.log('in preview.')
         this.$sce = $sce
         this.DataBrowserService = DataBrowserService
     }
@@ -28,7 +27,6 @@ class DataBrowserServicePreviewCtrl {
         file.preview().then(
             (data) => {
                 this.previewHref = this.$sce.trustAs('resourceUrl', data.href);
-                console.log(this.previewHref.toString())
                 this.busy = false;
             },
             (err) => {
