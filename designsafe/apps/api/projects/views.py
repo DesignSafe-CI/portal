@@ -128,8 +128,9 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         if system_id:
             projects = Project.list_projects(agave_client=ag, **{'path': '', 'type': 'dir', 'system': system_id})
             for p in projects:
-                p.path = p.uuid
+                p.path = ''
                 p.name = p.value['title']
+                p.system = 'project-{}'.format(p.uuid)
             data = {
                 'children': projects,
                 'path': 'Projects',
