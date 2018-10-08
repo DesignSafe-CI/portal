@@ -2,6 +2,22 @@
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
+import * as angular_animate from 'angular-animate';
+import * as ui_bootstrap from 'angular-ui-bootstrap';
+import * as ui_router from 'angular-ui-router';
+import * as ng_translate from 'angular-translate';
+import * as angular_sanitize from 'angular-sanitize';
+import * as angular_toaster from 'angular-toastr';
+import * as angular_aria from 'angular-aria';
+import * as angular_cookies from 'angular-cookies';
+import * as tether from 'tether';
+import * as angular_material from 'angular-material';
+import * as angular_messages from 'angular-messages';
+import * as slick_carousel from 'slick-carousel';
+import * as angular_slick_carousel from 'angular-slick-carousel';
+import * as ngstorage from 'ngstorage';
+
+
 
 import './services';
 import './directives';
