@@ -30,7 +30,7 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%;">DOI</th>
-                    <td style="border-top:none; width:75%;">(Appears here when published)
+                    <td style="border-top:none; width:75%;">(Appears only in published view)
                     <!--
                       <button class="btn btn-info btn-sm pull-right"
                               ng-click="showCitation(project)">Citation
@@ -49,7 +49,7 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%">Date of Publication</th>
-                    <td style="border-top:none; width:75%">(Appears here when published)</td>
+                    <td style="border-top:none; width:75%">(Appears only in published view)</td>
                   </tr>
                 </tbody>
               </table>
@@ -72,7 +72,7 @@
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%">Project Type</th>
-                    <td style="border-top:none; width:75%"><span style="text-transform:capitalize">{{data.project.value.projectType}}</span></td>
+                    <td style="border-top:none; width:75%"><span style="text-transform:capitalize" >{{data.project.value.projectType.replace('_', ' ')}}</span></td>
                   </tr>
                 </tbody>
               </table>
