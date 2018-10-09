@@ -1,136 +1,163 @@
 sudo: required
 addons:
-    chrome: stable
+  chrome: stable
 dist: trusty
 cache:
-    pip: true
-    directories:
-    - node_modules
-    - static
+  pip: true
+  directories:
+  - node_modules
+  - static
 python:
-    - "2.7"
+- '2.7'
 os:
-    - linux
+- linux
 stages:
-    - lint
-    - test
+- lint
+- test
 matrix:
-    include:
-        - name: "npm test"
-          language: python
-          python:
-              - "2.7"
-          stage: test
-          install:
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-              - npm install
-              - npm install -g codecov
-          script:
-              - npm run test
-          after_script:
-              - npm run report-coverage
-        - name: "unittests"
-          language: python
-          python:
-              - "2.7"
-          stage: test
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - coverage run --branch --source='designsafe' manage.py test --settings=designsafe.settings.test_settings --pattern=tests.py -v2
-          after_script:
-              - coverage xml
-              - codecov
-        - name: "Flake8"
-          language: python
-          python:
-              - "2.7"
-          stage: lint
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - flake8 designsafe
-        - name: "pylint"
-          language: python
-          python:
-              - "2.7"
-          stage: lint
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - pylint designsafe
-        - name: "pydocstyle"
-          language: python
-          python:
-              - "2.7"
-          stage: lint
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - pydocstyle designsafe
-        - name: "eslint"
-          language: node_js
-          node_js:
-              - "node"
-          stage: lint
-          install:
-              - npm install sync-exec
-              - npm install
-          script:
-              - npm run-script lint
-    allow_failures:
-        - name: "Flake8"
-          language: python
-          python:
-              - "2.7"
-          stage: lint
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - flake8 designsafe
-        - name: "pylint"
-          language: python
-          python:
-              - "2.7"
-          stage: lint
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - pylint designsafe
-        - name: "pydocstyle"
-          language: python
-          python:
-              - "2.7"
-          stage: lint
-          install: 
-              - pip install -r requirements.txt
-              - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./}; done;
-              - ./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular* -i babel* -i rxjs > /dev/null
-          script:
-              - pydocstyle designsafe
-        - name: "eslint"
-          language: node_js
-          node_js:
-              - "node"
-          stage: lint
-          install:
-              - npm install sync-exec
-              - npm install
-          script:
-              - npm run-script lint
+  include:
+  - name: npm test
+    language: python
+    python:
+    - '2.7'
+    stage: test
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    - npm install
+    - npm install -g codecov
+    script:
+    - npm run test
+    after_script:
+    - npm run report-coverage
+  - name: unittests
+    language: python
+    python:
+    - '2.7'
+    stage: test
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - coverage run --branch --source='designsafe' manage.py test --settings=designsafe.settings.test_settings
+      --pattern=tests.py -v2
+    after_script:
+    - coverage xml
+    - codecov
+  - name: Flake8
+    language: python
+    python:
+    - '2.7'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - flake8 designsafe
+  - name: pylint
+    language: python
+    python:
+    - '2.7'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - pylint designsafe
+  - name: pydocstyle
+    language: python
+    python:
+    - '2.7'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - pydocstyle designsafe
+  - name: eslint
+    language: node_js
+    node_js:
+    - node
+    stage: lint
+    install:
+    - npm install sync-exec
+    - npm install
+    script:
+    - npm run-script lint
+  allow_failures:
+  - name: Flake8
+    language: python
+    python:
+    - '2.7'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - flake8 designsafe
+  - name: pylint
+    language: python
+    python:
+    - '2.7'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - pylint designsafe
+  - name: pydocstyle
+    language: python
+    python:
+    - '2.7'
+    stage: lint
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
+      -i babel* -i rxjs > /dev/null"
+    script:
+    - pydocstyle designsafe
+  - name: eslint
+    language: node_js
+    node_js:
+    - node
+    stage: lint
+    install:
+    - npm install sync-exec
+    - npm install
+    script:
+    - npm run-script lint
 before_script:
-    - df -h
+- df -h
+dd:
+  secure: YPZr/QQtINzDHUAlAXgUwVSbBMqwzsxLgl2VK+v7LtJ8/P6P34Nq9usdbVg2m2j8rzUyYXEWnJTiTanOq2qHhVJKMyACEeHP1hH1gOncMhFcRg3GZkTr3pABpnMrdzfeeHpS1HTQ1yQRcdBf8Oq7cTayk+gqZWOHk+7fueTnwUcwsJW/H1KOmKycUUr0ZqHX9XDzF1NvwMz5aIIkSFE7Aqo0gBatoJHryzzzFK7/79oWeDaYA/tYpmkKpbMbzIom3C6BLuBKzIiG3E2OZBk35fdv5uhQhPVpOoFtxurclcDGP/dswBRNcK5SImkgDP53G2gQgGLLAy20kSE4B0ZtjsP31G9ODJH57U8BD4yny8PJyVJAmzTpxp4JH9AmEmihgCB73v1r/iTBpzoHmwuaNj8jyraEA+E6zhfbTsOwJemte23Fif9gjPJvKDvV7s4+ZEY9Mb0fBefUFLE0KiKfXn0KHG47BzHfPDEgEdblQWBf8kmapZHZoKBCZwCLFZ9v6t7Qsso6NvwMbCPlwDomi7ldRjhsI+T1DtARo6ASrvk/xgKswp0AYjeS/ovjRCOVHW+KsQPVLYothVHHSZb1fd8wsfYDFTTuQcXYyn0mWGUPEKGG9sAgdni2jc9F+T+7yg6XE86AefUrZ04Xh7aRsrhkMQMZUrMPSQH+f7VjZlM=
