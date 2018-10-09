@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v2.7.7
+
+Fixes:
+
+- Correctly construct project path when using for job.
+
 ## v2.7.6
 
 Fixes:
