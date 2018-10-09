@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model, signals
-from designsafe.apps.auth.signals import on_user_logged_in
 from unittest import skip
 import mock
 import requests_mock
@@ -26,13 +25,13 @@ class AnonymousViewTests(TestCase):
         requested_url = reverse('djangoRT:mytickets')
         resp = self.client.get(requested_url)
         expected_redirect = reverse('login') + '?next=' + requested_url
-        self.assertRedirects(resp, expected_redirect)
+        self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_detail(self):
         requested_url = reverse('djangoRT:ticketdetail', args=[999])
         resp = self.client.get(requested_url)
         expected_redirect = reverse('login') + '?next=' + requested_url
-        self.assertRedirects(resp, expected_redirect)
+        self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_create(self):
         resp = self.client.get(reverse('djangoRT:ticketcreate'))
@@ -51,19 +50,19 @@ class AnonymousViewTests(TestCase):
         requested_url = reverse('djangoRT:ticketreply', args=[999])
         resp = self.client.get(requested_url)
         expected_redirect = reverse('login') + '?next=' + requested_url
-        self.assertRedirects(resp, expected_redirect)
+        self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_close(self):
         requested_url = reverse('djangoRT:ticketclose', args=[999])
         resp = self.client.get(requested_url)
         expected_redirect = reverse('login') + '?next=' + requested_url
-        self.assertRedirects(resp, expected_redirect)
+        self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_attachment(self):
         requested_url = reverse('djangoRT:ticketattachment', args=[999, 1001])
         resp = self.client.get(requested_url)
         expected_redirect = reverse('login') + '?next=' + requested_url
-        self.assertRedirects(resp, expected_redirect)
+        self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
 
 class AuthenticatedViewTests(TestCase):
@@ -77,7 +76,6 @@ class AuthenticatedViewTests(TestCase):
         user.save()
 
         # disconnect user_logged_in signal
-        signals.user_logged_in.disconnect(on_user_logged_in)
 
     def test_index(self):
         """

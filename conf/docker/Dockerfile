@@ -43,6 +43,6 @@ RUN npm install
 
 RUN mkdir -p  designsafe/static/cascade/css/fonts/ && cp -R designsafe/static/vendor/bootstrap/fonts/* designsafe/static/cascade/css/fonts/.
 
-RUN python manage.py collectstatic -c --traceback --noinput
+RUN python manage.py collectstatic -c --traceback --noinput --ignore=demo
 
 RUN chown -R tg458981:G-816877 /srv/www/designsafe

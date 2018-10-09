@@ -50,16 +50,15 @@
     <script src="{% static 'vendor/jquery/dist/jquery.js' %}"></script>
     <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.js' %}"></script>
     <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
-    <script src="{% static 'vendor/d3/d3.min.js' %}"></script>
+    <script src="{% static 'vendor/d3/dist/d3.min.js' %}"></script>
 
     <script src="{% static 'scripts/utils.js' %}"></script>
     <script src="{% static 'scripts/dateinput.js' %}"></script>
-    <script src="{% static 'scripts/navbar.js' %}"></script>
 
     <script src="{% static 'vendor/angular/angular.js' %}"></script>
     <script src="{% static 'vendor/angular-cookies/angular-cookies.min.js' %}"></script>
     <script src="{% static 'vendor/tether/dist/js/tether.min.js' %}"></script>
-    <script src="{% static 'vendor/angular-bootstrap/ui-bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/angular-ui-bootstrap/dist/ui-bootstrap.js' %}"></script>
     <script src="{% static 'vendor/angular-sanitize/angular-sanitize.min.js' %}"></script>
     <script src="{% static 'vendor/angular-toastr/dist/angular-toastr.tpls.min.js' %}"></script>
     <script src="{% static 'vendor/angular-aria/angular-aria.min.js' %}"></script>
@@ -70,10 +69,9 @@
     <script type="text/javascript" src="{% static 'vendor/slick-carousel/slick/slick.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/angular-slick-carousel/dist/angular-slick.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script>
-    <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'vendor/angular-ui-bootstrap/dist/ui-bootstrap.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>
-
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
@@ -87,7 +85,7 @@
 
     <script type="text/javascript" src="{% static 'scripts/logging/logger.js' %}"></script>
 
-    <script src="{% static 'vendor/angular-httpi/build/httpi.min.js' %}"></script>
+    <script src="{% static 'vendor/httpi/build/httpi.min.js' %}"></script>
 
     {% block scripts %}{% endblock %}
     {% render_block "js" %}
@@ -126,6 +124,7 @@
         <script type="text/javascript" src="{% static 'nbviewer/lib/nbv.js' %}"></script>
         <script type="text/javascript" src="{% static 'vendor/prismjs/prism.js' %}"></script>
         <script type="text/javascript" src="{% static 'vendor/marked/lib/marked.js' %}"></script>
+        <script src="{% static 'scripts/navbar.js' %}"></script>
 		<!-- DATA BROWSER DIRECTIVES/SERVICES -->
 
     <script type="text/javascript">
