@@ -17,6 +17,14 @@
         params: {'q': query}
       }).then(
         function(response){
+
+          function tagIncludesParam (definition, param) {
+            return definition.tags &&
+              Array.isArray(definition.tags) &&
+              definition.tags.filter(s => s.includes(`${param}:`))[0] &&
+              definition.tags.filter(s => s.includes(`${param}:`))[0].split(':')[1]
+          }
+
           var appsByCategory = {};
           angular.forEach(self.tabs, function(tab) {
             appsByCategory[tab] = [];
@@ -32,7 +40,7 @@
               appMeta.value.definition.orderBy = appMeta.value.definition.label;
 
               // Parse app icon from tags for agave apps, or from metadata field for html apps
-              if (appMeta.value.definition.tags && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
+              if (tagIncludesParam(appMeta.value.definition, 'appIcon')) {
                 const appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
 
                 // Use icon for binning of apps, with '_icon-letter' appended to denote the icon will be a letter, not a true icon
@@ -58,10 +66,10 @@
               // Place app in category
               if (appMeta.value.definition.isPublic) {
                 // Check if category exists either as a metadata field, or in a tag
-                var appCategory = '';
+                let appCategory;
                 if (appMeta.value.definition.appCategory) {
                   appCategory = appMeta.value.definition.appCategory;
-                } else if (appMeta.value.definition.tags && appMeta.value.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
+                } else if (tagIncludesParam(appMeta.value.definition, 'appCategory')) {
                   appCategory = appMeta.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
                 }
 
