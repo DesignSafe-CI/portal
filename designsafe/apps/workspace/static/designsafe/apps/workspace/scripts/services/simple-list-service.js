@@ -145,7 +145,7 @@
                                 if (appMeta.value.definition.appIcon && appMeta.value.definition.appIcon.includes('_icon-letter')) {
                                     delete appMeta.value.definition.appIcon;
                                 }
-                                self.lists[appCategory].push(appMeta)
+                                self.lists[appCategory].push(appMeta);
                             }
                         });
                     }
@@ -161,4 +161,4 @@
 
         return SimpleList;
     }]);
-})(window, angular, jQuery, _);
+})(window, angular, _);
