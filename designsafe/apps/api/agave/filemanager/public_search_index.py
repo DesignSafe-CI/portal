@@ -145,7 +145,7 @@ class Publication(object):
             related_objs = (
                 dict_obj.get('modelConfigs', []) +
                 dict_obj.get('analysisList', []) +
-                dict_obj.get('sensorsList', []) +
+                dict_obj.get('sensorLists', []) +
                 dict_obj.get('eventsList', []) +
                 dict_obj.get('reportsList', [])
             )
