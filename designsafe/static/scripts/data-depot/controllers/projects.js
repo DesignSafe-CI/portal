@@ -5,24 +5,19 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = 'projects.search';
 
-    //DataBrowserService.currentListing = 'new listing thing.'
-
-
-
+    // DataBrowserService.currentListing = 'new listing thing.'
     // release selected files
     DataBrowserService.deselect(DataBrowserService.state().selected);
     $scope.data = {
       navItems: [],
       projects: []
     };
-    
 
-    $scope.stateReload = function() { 
+    $scope.stateReload = function() {
       $state.reload();
     };
-        
 
-    
+
     $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
@@ -1556,12 +1551,19 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
       },
 
       isMissing: function(ent){
-        if (typeof(ent) == 'object') {
+        if (ent instanceof Array) {
+          if (ent.length < 1) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        if (ent instanceof Object) {
           if (Object.keys(ent).length < 1) {
             return true;
           } else {
             return false;
-        }
+          }
         }
         if (ent === '' || ent === undefined) {
           return true;

@@ -858,11 +858,11 @@
               </a>
             </div>
             <div class="value pull-right">
+              <span class="text-danger" ng-if="publicationCtrl.isMissing(sim.value.authors)">
+                <i class="fa fa-exclamation-circle"></i>
+              </span>
               <div ng-repeat="user in publicationCtrl.filterUsers(sim.value.authors,
                                         browser.publication.users) | orderBy: ['_ui.order', 'last_name']">
-                <span class="text-danger" ng-if="publicationCtrl.isMissing(user.first_name)">
-                  <i class="fa fa-exclamation-circle"></i>
-                </span>
                 <span>
                   {{user.last_name}}, {{user.first_name}}
                 </span>
@@ -900,9 +900,6 @@
                 </span>
                 {{model.value.title}}
                 <div style="color: black;">
-                  <span class="text-danger" ng-if="publicationCtrl.isMissing(model.value.description)">
-                    <i class="fa fa-exclamation-circle"></i>
-                  </span>
                   {{model.value.description}}
                 </div>
               </span>
@@ -940,9 +937,6 @@
                             </span>
                             {{output.value.title}}
                             <div style="color:black;">
-                                <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.description)">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                </span>
                                 {{output.value.description}}
                             </div>
                         </span>
@@ -983,9 +977,6 @@
                             </span>
                             {{output.value.title}}
                             <div style="color:black;">
-                                <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.description)">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                </span>
                                 {{output.value.description}}
                             </div>
                         </span>
@@ -1026,9 +1017,6 @@
                             </span>
                             {{output.value.title}}
                             <div style="color:black;">
-                                <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.description)">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                </span>
                                 {{output.value.description}}
                             </div>
                         </span>
@@ -1834,11 +1822,11 @@
               </a>
             </div>
             <div class="value pull-right">
+              <span class="text-danger" ng-if="publicationCtrl.isMissing(sim.value.authors)">
+                <i class="fa fa-exclamation-circle"></i>
+              </span>
               <div ng-repeat="user in publicationCtrl.filterUsers(sim.value.authors,
                                         browser.publication.users) | orderBy: ['_ui.order', 'last_name']">
-                <span class="text-danger" ng-if="publicationCtrl.isMissing(user.first_name)">
-                  <i class="fa fa-exclamation-circle"></i>
-                </span>
                 <span>
                   {{user.last_name}}, {{user.first_name}}
                 </span>
@@ -1876,9 +1864,6 @@
                 </span>
                 {{model.value.title}}
                 <div style="color: black;">
-                  <span class="text-danger" ng-if="publicationCtrl.isMissing(model.value.description)">
-                    <i class="fa fa-exclamation-circle"></i>
-                  </span>
                   {{model.value.description}}
                 </div>
               </span>
@@ -1901,9 +1886,6 @@
                 </span>
                 {{simInput.value.title}}
                 <div style="color: black;">
-                  <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(simInput.value.description)">
-                    <i class="fa fa-exclamation-circle"></i>
-                  </span> -->
                   {{simInput.value.description}}
                 </div>
               </span>
@@ -1926,19 +1908,15 @@
                 </span>
                 {{simOutput.value.title}}
                 <div style="color: black;">
-                  <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(simOutput.value.description)">
-                    <i class="fa fa-exclamation-circle"></i>
-                  </span> -->
                   {{simOutput.value.description}}
                 </div>
               </span>
               <br/>
             </div>
           </div>
-          <div class="meta-row">
+          <!-- <div class="meta-row">
             <div class="attr pull-left">
               <span>Integrated Data Analysis</span>
-              <!-- <span class="text-danger">*</span> -->
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
               </a>
@@ -1946,17 +1924,11 @@
             <div class="value pull-right">
               <span ng-repeat="intAnalysis in browser.project.analysis_set"
                 style="display:block;">
-                <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(intAnalysis.value.title)">
-                  <i class="fa fa-exclamation-circle"></i>
-                </span> -->
                 <span ng-if="!publicationCtrl.isMissing(intAnalysis.value.simOutputs)">{{intAnalysis.value.title}}</span>
                 <div style="color: black;">
-                  <span class="text-danger" ng-if="publicationCtrl.isMissing(intAnalysis.value.description)">
-                    <i class="fa fa-exclamation-circle"></i>
-                  </span>
                   <span ng-if="!publicationCtrl.isMissing(intAnalysis.value.simOutputs)">{{intAnalysis.value.description}}</span>
                 </div>
-                <!-- List asociated sim output with each analysis... -->
+                
               </span>
               <br/>
             </div>
@@ -1964,7 +1936,6 @@
           <div class="meta-row">
             <div class="attr pull-left">
               <span>Integrated Reports</span>
-              <!-- <span class="text-danger">*</span> -->
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
               </a>
@@ -1972,9 +1943,6 @@
             <div class="value pull-right">
               <span ng-repeat="intReport in browser.project.report_set"
                 style="display:block;">
-                <!-- <span class="text-danger" ng-if="publicationCtrl.isMissing(intReport.value.title) && !publicationCtrl.isMissing(intReport.value.simOutputs)">
-                  <i class="fa fa-exclamation-circle"></i>
-                </span> -->
                 <span ng-if="!publicationCtrl.isMissing(intReport.value.simOutputs)">{{intReport.value.title}}</span>
                 <div style="color: black;">
                   <span class="text-danger" ng-if="publicationCtrl.isMissing(intReport.value.description) && !publicationCtrl.isMissing(intReport.value.simOutputs)">
@@ -1982,11 +1950,11 @@
                   </span>
                   <span ng-if="!publicationCtrl.isMissing(intReport.value.simOutputs)">{{intReport.value.description}}</span>
                 </div>
-                <!-- List asociated sim output with each report... -->
+                
               </span>
               <br/>
             </div>
-          </div>
+          </div> -->
           <div class="meta-row">
             <div class="attr pull-left">
               <span>Date of Publication</span>
@@ -2675,12 +2643,12 @@
                 </a>
               </div>
               <div class="value pull-right">
+                <span class="text-danger" ng-if="publicationCtrl.isMissing(exp.value.authors)">
+                  <i class="fa fa-exclamation-circle"></i>
+                </span>
                 <div ng-repeat="user in publicationCtrl.filterUsers(exp.value.authors,
                               browser.publication.users) | orderBy: ['_ui.order', 'last_name']">
                   <span>
-                    <span class="text-danger" ng-if="publicationCtrl.isMissing(user.first_name)">
-                      <i class="fa fa-exclamation-circle"></i>
-                    </span>
                     {{user.last_name}}, {{user.first_name}}
                   </span>
                 </div>
@@ -2713,9 +2681,6 @@
                   </span>
                   {{model_config.value.title}}
                   <div style="color: black;">
-                    <span class="text-danger" ng-if="publicationCtrl.isMissing(model_config.value.description)">
-                      <i class="fa fa-exclamation-circle"></i>
-                    </span>
                     {{model_config.value.description}}
                   </div>
                 </span>
@@ -2737,9 +2702,6 @@
                   </span>
                   {{sensor_list.value.title}}
                   <div style="color: black;">
-                    <span class="text-danger" ng-if="publicationCtrl.isMissing(sensor_list.value.description)">
-                      <i class="fa fa-exclamation-circle"></i>
-                    </span>
                     {{sensor_list.value.description}}
                   </div>
                 </span>
@@ -2761,9 +2723,6 @@
                   </span>
                   {{event.value.title}}
                   <div style="color: black;">
-                    <span class="text-danger" ng-if="publicationCtrl.isMissing(event.value.description)">
-                      <i class="fa fa-exclamation-circle"></i>
-                    </span>
                     {{event.value.description}}
                   </div>
                 </span>
@@ -2867,7 +2826,6 @@
             <div class="meta-row">
               <div class="attr pull-left">
                 <span>Report Description</span>
-                <span class="text-danger">*</span>
                 <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                   <i class="fa fa-pencil-square-o"></i> Edit
                 </a>
