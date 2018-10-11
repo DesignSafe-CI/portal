@@ -1,4 +1,3 @@
-//TODO: djng
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
@@ -18,7 +17,7 @@ import * as angular_slick_carousel from 'angular-slick-carousel';
 import * as ngstorage from 'ngstorage';
 
 
-
+import './providers';
 import './services';
 import './directives';
 import './filters';

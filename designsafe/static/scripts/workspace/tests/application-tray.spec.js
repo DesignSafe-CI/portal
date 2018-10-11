@@ -1,5 +1,3 @@
-'use strict';
-
 describe('ApplicationTrayCtrl', function() {
     var $rootScope, $controller, $q, $timeout, $uibModal, Apps, SimpleList, MultipleList, scope, ctrl;
     beforeEach(angular.mock.module("designsafe"));

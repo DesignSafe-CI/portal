@@ -79,59 +79,6 @@ export function simpleListService ($http, $q, djangoUrl, appCategories, appIcons
               }
             }
           });
-          
-          /* Bin applications where multiple apps share the same icon, e.g. OpenSees or ADCIRC */
-          angular.forEach(self.tabs, function (tab) {
-            self.lists[tab] = [];
-          });
-
-          /* Loop through apps categorized into lists to create sublists of binned apps */
-          for (const [appCategory, contents] of Object.entries(appsByCategory)) {
-            var bins = {};
-            angular.forEach(contents, function(appMeta) {
-              if (appMeta.value.definition.appIcon) {
-                const appIcon = appMeta.value.definition.appIcon;
-                let map = Object.assign({binned: true}, appMeta);
-                bins[appIcon] = bins[appIcon] ? bins[appIcon].concat(map) : bins[appIcon] = [map];
-              }
-            });
-
-            /* Remove bins with only one app */
-            angular.forEach(bins, function (apps, bin) {
-              if (apps.length == 1) {
-                delete bins[bin];
-              }
-            });
-
-            /* For each binned app type, create a psuedo appMeta, bin_meta, to store tile information
-            and the binned app list */
-            var bin_meta = {};
-            angular.forEach(contents, function (appMeta) {
-              if (bins[appMeta.value.definition.appIcon]) {
-                var meta = {
-                  applications: bins[appMeta.value.definition.appIcon],
-                  value: {
-                    definition: {
-                      appIcon: appMeta.value.definition.appIcon.includes('_icon-letter') ? null : appMeta.value.definition.appIcon,
-                      label: appMeta.value.definition.appIcon,
-                      id: `${appMeta.value.definition.appIcon}::${appCategory}`,
-                      orderBy: appMeta.value.definition.appIcon
-                    }
-                  }
-                }
-                if (!bin_meta[appMeta.value.definition.appIcon]) {
-                  self.lists[appCategory].push(meta)
-                  bin_meta[appMeta.value.definition.appIcon] = true;
-                }
-              } else {
-                // If icon is an icon-letter, delete icon
-                if (appMeta.value.definition.appIcon && appMeta.value.definition.appIcon.includes('_icon-letter')) {
-                  delete appMeta.value.definition.appIcon;
-                }
-                self.lists[appCategory].push(appMeta)
-              }
-            });
-          }
 
           deferred.resolve(self);
         },
