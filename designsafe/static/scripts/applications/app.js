@@ -3,6 +3,8 @@ import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
 
+import './services/apps-wizard-service';
+
 import { applicationAddCtrl } from './controllers/application-add';
 import { applicationEditCtrl } from './controllers/application-edit';
 import { applicationSystemsRoleCtrl } from './controllers/application-systems-role';

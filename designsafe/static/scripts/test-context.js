@@ -1,7 +1,13 @@
 import angular from 'angular';
 
 import mocks from 'angular-mocks';
-import * as main from './ng-designsafe/ng-designsafe';
+import './ng-designsafe/ng-designsafe';
+import './data-depot';
+import './workspace/app';
+import './search';
+import './dashboard';
+import './applications/app';
+import './notifications/app';
 
 let context = require.context('.', true, /\.spec\.js/);
 

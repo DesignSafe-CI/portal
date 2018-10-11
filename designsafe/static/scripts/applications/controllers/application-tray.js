@@ -2,7 +2,6 @@ export function applicationTrayCtrl(window, angular, $, _) {
   "use strict";
   angular.module('designsafe').controller('ApplicationTrayCtrl',
     ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'SimpleList', 'MultipleList', 'Django', 'toastr', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, SimpleList, MultipleList, Django, toastr) {
-
       $scope.tabs = [];
       $scope.simpleList = new SimpleList();
 

@@ -24,14 +24,15 @@ module.exports = function(config){
         './node_modules/angular-translate/dist/angular-translate.js',
         './node_modules/angular-aria/angular-aria.js',
         './node_modules/angular-animate/angular-animate.js',
-        './node_modules/angular-material/angular-material.js',
         './node_modules/angular-toastr/dist/angular-toastr.tpls.min.js',
         './node_modules/angular-cookies/angular-cookies.js',
         './node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js',
         './node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
+        './node_modules/angular-ui-codemirror/src/ui-codemirror.js', 
         './node_modules/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js',
         './node_modules/angular-xeditable/dist/js/xeditable.js',
         './node_modules/angular-slick-carousel/dist/angular-slick.min.js',
+        './node_modules/angular-material/angular-material.js',
         './designsafe/static/vendor/httpi/build/httpi.min.js',
         './node_modules/angular-ui-router/release/angular-ui-router.js',
         './designsafe/static/vendor/js-custom-select/js/customSelect.js',
@@ -44,7 +45,7 @@ module.exports = function(config){
 
         './designsafe/static/scripts/ng-designsafe/modules/notifications-module.js',
         './designsafe/static/scripts/ng-designsafe/modules/ws-module.js',
-        './designsafe/static/scripts/ng-designsafe/providers/**/*.js',
+        './designsafe/static/scripts/ng-designsafe/providers/ws-provider.js',
         './designsafe/static/scripts/logging/logger.js',
         './designsafe/apps/signals/static/designsafe/apps/signals/scripts/module.js',
 
@@ -61,19 +62,21 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['ChromeHeadless', 'ChromeHeadlessNoSandbox'],
+    browsers : ['ChromeHeadlessNoSandbox'],
     plugins : [
             'karma-webpack',
             'karma-chrome-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
             'karma-coverage',
+            'karma-spec-reporter',
+            'karma-sourcemap-loader',
             ],
     preprocessors: {
-        './designsafe/static/scripts/test-context.js': ['webpack'],
-        './designsafe/static/scripts/**/*.spec.js': ['webpack']
+        './designsafe/static/scripts/test-context.js': ['webpack', 'sourcemap', 'coverage'],
+        './designsafe/static/scripts/**/*.spec.js': ['webpack', 'sourcemap', 'coverage']
     },
-    reporters: ['progress', 'coverage', 'html'],
+    reporters: ['progress', 'coverage', 'spec'],
     coverageReporter: {
         reporters: [
             {type:'lcov', subdir: '.'},

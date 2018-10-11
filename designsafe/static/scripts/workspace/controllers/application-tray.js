@@ -1,7 +1,5 @@
-function ApplicationTrayCtrl(
-      $location, $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, $mdToast) {
-      $scope.tabs = [];
-
+function WorkspaceAppTrayCtrl(
+      $scope, $rootScope, $q, $timeout, $uibModal, $state, $stateParams, $translate, Apps, SimpleList, MultipleList, $mdToast) {
       $scope.simpleList = new SimpleList();
 
       $scope.addDefaultTabs = function (query) {
@@ -20,12 +18,6 @@ function ApplicationTrayCtrl(
         return deferred.promise;
       };
 
-      $scope.data = {
-        activeApp: null,
-        publicOnly: false,
-        type: null
-      };
-
       function closeApp(label) {
         $rootScope.$broadcast('close-app', label);
         $scope.data.activeApp = null;
@@ -41,6 +33,11 @@ function ApplicationTrayCtrl(
         $scope.error = '';
         $scope.requesting = true;
         $scope.tabs = [];
+        $scope.data = {
+          activeApp: null,
+          publicOnly: false,
+          type: null
+        };
 
         if ($stateParams.appId){
           Apps.getMeta($stateParams.appId)
@@ -129,4 +126,4 @@ function ApplicationTrayCtrl(
       });
 
     }
-export default ApplicationTrayCtrl
+export default WorkspaceAppTrayCtrl

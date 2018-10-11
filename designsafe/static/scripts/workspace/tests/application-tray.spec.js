@@ -1,6 +1,20 @@
-describe('ApplicationTrayCtrl', function() {
-    var $rootScope, $controller, $q, $timeout, $uibModal, Apps, SimpleList, MultipleList, scope, ctrl;
+describe('WorkspaceAppTrayCtrl', function() {
+    var $rootScope,
+        $controller,
+        $q,
+        $timeout,
+        $uibModal,
+        $state,
+        $stateParams,
+        $translate,
+        $mdToast,
+        Apps,
+        SimpleList,
+        MultipleList,
+        scope,
+        ctrl;
     beforeEach(angular.mock.module("designsafe"));
+    beforeEach(angular.mock.module("workspace"));
     beforeEach(function(){
         angular.module("django.context", []).constant("Django", {user:"test_user"});
         angular.mock.inject(
@@ -10,18 +24,26 @@ describe('ApplicationTrayCtrl', function() {
                 _$q_,
                 _$timeout_,
                 _$uibModal_,
+                _$state_,
+                _$stateParams_,
+                _$translate_,
                 _Apps_,
                 _SimpleList_,
-                _MultipleList_
+                _MultipleList_,
+                _$mdToast_
             ){
                 $rootScope = _$rootScope_;
                 $controller = _$controller_;
                 $q = _$q_;
                 $timeout = _$timeout_;
                 $uibModal = _$uibModal_;
+                $state = _$state_;
+                $stateParams = _$stateParams_;
+                $translate = _$translate_;
                 Apps = _Apps_;
                 SimpleList = _SimpleList_;
                 MultipleList = _MultipleList_;
+                $mdToast = _$mdToast_;
         });
     });
     beforeEach(inject(function($controller, $rootScope){
@@ -51,15 +73,19 @@ describe('ApplicationTrayCtrl', function() {
                 }
             }
         });
-      ctrl = $controller('ApplicationTrayCtrl', {
+      ctrl = $controller('WorkspaceAppTrayCtrl', {
         $scope: scope,
         $rootScope: $rootScope,
         $q: $q,
         $timeout: $timeout,
         $uibModal: $uibModal,
+        $state: $state,
+        $stateParams: $stateParams,
+        $translate: $translate,
         Apps: Apps,
         SimpleList: SimpleList,
-        MultipleList: MultipleList
+        MultipleList: MultipleList,
+        $mdToast: $mdToast
       });
     }));
 
