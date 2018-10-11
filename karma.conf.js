@@ -62,7 +62,7 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['ChromeHeadlessNoSandbox'],
+    browsers : ['ChromeHeadless', 'ChromeHeadlessNoSandbox'],
     plugins : [
             'karma-webpack',
             'karma-chrome-launcher',
