@@ -93,6 +93,7 @@ module.exports = function(config){
             flags: ['-headless']
         }
     },
-    webpack: testConfig
+    webpack: testConfig,
+    browserNoActivityTimeout: 10000
   });
 };
