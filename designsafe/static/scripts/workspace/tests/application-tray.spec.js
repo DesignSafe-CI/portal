@@ -13,7 +13,6 @@ describe('WorkspaceAppTrayCtrl', function() {
         MultipleList,
         scope,
         ctrl;
-    beforeEach(angular.mock.module("designsafe"));
     beforeEach(angular.mock.module("workspace"));
     beforeEach(function(){
         angular.module("django.context", []).constant("Django", {user:"test_user"});
