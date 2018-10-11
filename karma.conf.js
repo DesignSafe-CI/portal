@@ -62,10 +62,11 @@ module.exports = function(config){
 
     frameworks: ['jasmine'],
 
-    browsers : ['ChromeHeadless', 'ChromeHeadlessNoSandbox'],
+    browsers : ['FirefoxHeadless', 'ChromeHeadlessNoSandbox'],
     plugins : [
             'karma-webpack',
             'karma-chrome-launcher',
+            'karma-firefox-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
             'karma-coverage',
@@ -86,6 +87,10 @@ module.exports = function(config){
         ChromeHeadlessNoSandbox: {
             base: 'ChromeHeadless',
             flags: ['--no-sandbox'],
+        },
+        FirefoxHeadless: {
+            base: 'Firefox',
+            flags: ['-headless']
         }
     },
     webpack: testConfig
