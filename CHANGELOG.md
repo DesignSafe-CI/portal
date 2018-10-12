@@ -1,5 +1,14 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181003
+
+Improvements:
+
+- Travis CI setup
+- Codecov setup
+- Codeclimate setup
+- ES6 Setup
+
 ## v2.7.7
 
 Fixes:
