@@ -248,7 +248,6 @@ STATICFILES_DIRS = [
     ('vendor/tv4', os.path.join(BASE_DIR, 'node_modules', 'tv4')),
     ('vendor/objectpath', os.path.join(BASE_DIR, 'node_modules', 'objectpath')),
     ('vendor/angular-schema-form', os.path.join(BASE_DIR, 'node_modules', 'angular-schema-form')),
-    ('vendor/angular-schema-form-ui-codemirror', os.path.join(BASE_DIR, 'node_modules', 'angular-schema-form-ui-codemirror')),
     ('vendor/filesaver', os.path.join(BASE_DIR, 'node_modules', 'filesaver')),
     ('vendor/angular-ui-codemirror', os.path.join(BASE_DIR, 'node_modules', 'angular-ui-codemirror')),
     ('vendor/codemirror', os.path.join(BASE_DIR, 'node_modules', 'codemirror')),
