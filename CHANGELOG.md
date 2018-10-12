@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181006
+
+Fixes:
+
+- Fix workspace template URL
+
 ## v3.0.0-20181005
 
 Fixes:
