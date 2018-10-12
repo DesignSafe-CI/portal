@@ -94,6 +94,6 @@ module.exports = function(config){
         }
     },
     webpack: testConfig,
-    browserNoActivityTimeout: 10000
+    browserNoActivityTimeout: 100000
   });
 };
