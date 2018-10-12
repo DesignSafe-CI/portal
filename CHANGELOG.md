@@ -2,6 +2,12 @@
 
 ## v3.0.0-20181003
 
+Fixes:
+
+- Remove unnecessary Django `static` usage.
+
+## v3.0.0-20181003
+
 Improvements:
 
 - Travis CI setup
