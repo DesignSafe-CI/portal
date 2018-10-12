@@ -1,6 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
-## v3.0.0-20181003
+## v3.0.0-20181004
+
+Fixes:
+
+- Add angular-schema-form-ui-codemirror to repo
+
+## v3.0.0-20181004
 
 Fixes:
 
