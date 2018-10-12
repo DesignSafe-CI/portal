@@ -27,8 +27,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i *babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     - npm install
     - npm install -g codecov
     script:
@@ -45,8 +44,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - coverage run --branch --source='designsafe' manage.py test --settings=designsafe.settings.test_settings
       --pattern=tests.py -v2
@@ -63,8 +61,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - flake8 designsafe
   - name: pylint
@@ -77,8 +74,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - pylint designsafe
   - name: pydocstyle
@@ -91,8 +87,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - pydocstyle designsafe
   - name: eslint
@@ -116,8 +111,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - flake8 designsafe
   - name: pylint
@@ -130,8 +124,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - pylint designsafe
   - name: pydocstyle
@@ -144,8 +137,7 @@ matrix:
     - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
       done;
     - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
-      --link -i cms -i admin -i djangocms_text_ckeditor -i node_modules -i angular*
-      -i babel* -i rxjs -i karma -i webpack > /dev/null"
+      --link -i demo > /dev/null"
     script:
     - pydocstyle designsafe
   - name: eslint
