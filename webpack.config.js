@@ -64,15 +64,15 @@ module.exports = {
     new ExtractTextPlugin("./designsafe/static/styles/base.css"),
     new ngAnnotatePlugin({add:true}),
     new LiveReloadPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: './designsafe/static/build/vendor.bundle.js',
-      //minChunks: 2,
-      minChunks (module) {
-        return module.context &&
-               module.context.indexOf('node_modules') >= 0;
-      }
-    }),
+    //new webpack.optimize.CommonsChunkPlugin({
+    //  name: 'vendor',
+    //  filename: './designsafe/static/build/vendor.bundle.js',
+    //  //minChunks: 2,
+    //  minChunks (module) {
+    //    return module.context &&
+    //           module.context.indexOf('node_modules') >= 0;
+    //  }
+    //}),
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
       $: 'jquery',

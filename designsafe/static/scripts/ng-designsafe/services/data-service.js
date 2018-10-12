@@ -1,3 +1,5 @@
+
+import _ from 'underscore';
 export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.DataService');

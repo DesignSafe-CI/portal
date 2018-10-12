@@ -1,3 +1,4 @@
+import _ from 'underscore';
 export function ProjectModel(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.ProjetModel');
     var Project = function(data){

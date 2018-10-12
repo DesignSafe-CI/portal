@@ -43,7 +43,6 @@
     {% include 'includes/footer.html' %}
     <!-- scripts -->
     <script src="https://www.google.com/recaptcha/api.js"></script>
-    <script src="{% static 'vendor/underscore/underscore.js' %}"></script>
 
     <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
     <script src="{% static 'vendor/jquery/dist/jquery.js' %}"></script>
@@ -55,42 +54,12 @@
     <script src="{% static 'scripts/dateinput.js' %}"></script>
 
     <script src="{% static 'vendor/angular/angular.js' %}"></script>
-    <!-- <script src="{% static 'vendor/angular-cookies/angular-cookies.min.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/tether/dist/js/tether.min.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-bootstrap/ui-bootstrap.js' %}"></script> -->
-    
-    <!-- <script src="{% static 'vendor/angular-sanitize/angular-sanitize.min.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-toastr/dist/angular-toastr.tpls.min.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-aria/angular-aria.min.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-material/angular-material.min.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-messages/angular-messages.min.js' %}"></script> -->
-    <script src="{% static 'vendor/angular-animate/angular-animate.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
-    <!-- <script type="text/javascript" src="{% static 'vendor/slick-carousel/slick/slick.min.js' %}"></script> -->
-    <!-- <script type="text/javascript" src="{% static 'vendor/angular-slick-carousel/dist/angular-slick.min.js' %}"></script> -->
-    <!-- <script type="text/javascript" src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script> -->
-
-    <!-- <script src="{% static 'vendor/ngstorage/ngStorage.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-translate/angular-translate.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-cookies/angular-cookies.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/underscore/underscore.js' %}"></script> -->
-    <!-- <script src="{% static 'vendor/angular-ui-router/release/angular-ui-router.min.js' %}"></script> -->
     <script src="{% static 'vendor/js-custom-select/js/customSelect.js' %}"></script>
     
-    <!-- <script type="text/javascript" src="{% static 'vendor/angular-bootstrap/ui-bootstrap.js' %}"></script> -->
-    
     <script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>
-    <script type="text/javascript" src="{% static 'build/vendor.bundle.js' %}"></script>
+    <!--<script type="text/javascript" src="{% static 'build/vendor.bundle.js' %}"></script>-->
     <script type="text/javascript" src="{% static 'build/bundle.js' %}"></script>
-    <!--
-    <script type="text/javascript" src="{% static 'scripts/ng-designsafe/ng-designsafe.js' %}"></script>
-    <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/ng-designsafe-directives.js' %}"></script>
-    <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
-    
-    <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
-    <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/tickets-service.js' %}"></script>
-    -->
-    <!-- <script type="text/javascript" src="{% static 'scripts/ng-designsafe/controllers/notifications.js' %}"></script> -->
 
     <script type="text/javascript" src="{% static 'scripts/logging/logger.js' %}"></script>
 
@@ -98,38 +67,6 @@
 
     {% block scripts %}{% endblock %}
     {% render_block "js" %}
-    <!--
-
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-search-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-project-search-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-shared-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-public-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-public-search-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-box-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-dropbox-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-googledrive-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-breadcrumb.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/metadata-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/my-data-browser.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/directives/dd-altmetrics.js' %}"></script>
-
-
-
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/data-browser-filters.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/filters/ng-designsafe-filters.js' %}"></script>
-
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/user-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/logging-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/file-listing.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/data-browser-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/models/project.entity.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/models/project.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/project-entity-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/project-service.js' %}"></script>
-        <script type="text/javascript" src="{% static 'scripts/ng-designsafe/services/systems-service.js' %}"></script>
-        -->
         <script type="text/javascript" src="{% static 'nbviewer/lib/nbv.js' %}"></script>
         <script type="text/javascript" src="{% static 'vendor/prismjs/prism.js' %}"></script>
         <script type="text/javascript" src="{% static 'vendor/marked/lib/marked.js' %}"></script>

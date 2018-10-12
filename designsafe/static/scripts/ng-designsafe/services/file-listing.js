@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export function FileListing($http, $q, Logging) {
 
     var logger = Logging.getLogger('ngDesignSafe.FileListing');

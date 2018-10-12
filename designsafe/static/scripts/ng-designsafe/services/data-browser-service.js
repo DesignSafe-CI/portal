@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export function nbv($window) { //from http://jameshill.io/articles/angular-third-party-injection-pattern/
   if ($window.nbv) {
     //Delete nbv from window so it's not globally accessible.
@@ -660,13 +662,9 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       }
     });
     */
-   console.log(modal.result)
-   modal.result.then(x => console.log(x))
     return modal.result.then(
       function (result) {
 
-        console.log(result) 
-        
         currentState.busy = true;
         //if (result.system !== files[0].system){
         //  return $q.when(files);

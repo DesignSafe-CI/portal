@@ -5,12 +5,14 @@ export function TicketsService($http, $q, djangoUrl) {
      * @param {string} username the username of the user to look up
      * @returns {Promise}
      */
-    this.get = function (username) {
+    function get(username) {
       return $http.get('/help/tickets?fmt=json')
         .then(function (resp) {
           return resp.data;
         });
     };
-
+    return {
+        get: get
+    };
 
   }

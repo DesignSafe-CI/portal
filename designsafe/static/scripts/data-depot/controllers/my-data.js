@@ -1,4 +1,19 @@
-export function MyDataCtrl($scope, $state, Django, DataBrowserService) {
+import _ from 'underscore';
+
+/**
+ * Controller for My Data
+ *
+ * @param {Object} $scope
+ * @param {Object} $state
+ * @param {Object} Django
+ * @param {Object} DataBrowserService
+ */
+export function MyDataCtrl(
+    $scope,
+    $state,
+    Django,
+    DataBrowserService
+) {
 
     $scope.browser = DataBrowserService.state();
     $scope.searchState = DataBrowserService.apiParams.searchState;

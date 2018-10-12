@@ -1,3 +1,4 @@
+import _ from 'underscore';
 export function ProjectEntityModel(Logging) {
     var logger = Logging.getLogger('ngDesignSafe.ProjectEntityModel');
 

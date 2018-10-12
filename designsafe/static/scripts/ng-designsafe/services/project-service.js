@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
 
     var logger = Logging.getLogger('DataDepot.ProjectService');

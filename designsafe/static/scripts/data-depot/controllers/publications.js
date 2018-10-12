@@ -1,3 +1,4 @@
+import _ from 'underscore';
 export function PublicationDataCtrl($scope, $state, Django, DataBrowserService) {
 
   $scope.browser = DataBrowserService.state();

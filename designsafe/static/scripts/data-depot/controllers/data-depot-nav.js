@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export function DataDepotNavCtrl($scope, $rootScope, $state, Django) {
 
     $scope.routerItems = [];

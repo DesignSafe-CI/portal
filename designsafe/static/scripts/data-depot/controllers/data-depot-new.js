@@ -1,3 +1,4 @@
+import _ from 'underscore';
 export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, DataBrowserService) {
 
     $scope.test = {

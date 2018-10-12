@@ -174,12 +174,12 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       .state('projects', {
         abstract:true,
         controller: 'ProjectRootCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-root.html'
+        template: require('./templates/project-root.html')
       })
       .state('projects.list', {
         url: '/projects/',
         controller: 'ProjectListingCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-list.html',
+        template: require('./templates/project-list.html'),
         params: {
           systemId: 'designsafe.storage.default'
         },
@@ -205,7 +205,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
         url: '/projects/{projectId}/',
         abstract: true,
         controller: 'ProjectViewCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-view.html',
+        template: require('./templates/project-view.html'),
         resolve: {
           'projectId': function($stateParams) { return $stateParams.projectId; }
         }
@@ -213,7 +213,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       .state('projects.view.data', {
         url: '{filePath:any}?query_string&offset&limit',
         controller: 'ProjectDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-data.html',
+        template: require('./templates/project-data.html'),
         params: {
           projectTitle: '',
           query_string: '',
@@ -229,7 +229,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       .state('projects.search', {
         url: '/project-search/?query_string&offset&limit&projects',
         controller: 'ProjectSearchCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/project-search.html',
+        template: require('./templates/project-search.html'),
         params: {
           systemId: 'designsafe.storage.default',
           filePath: ''
@@ -260,12 +260,12 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       })
       .state('myPublications', {
         url: '/my-publications/{publicationId}}/{fileId:any}/',
-        templateUrl: '/static/scripts/data-depot/templates/enhanced-data-listing.html'
+        templateUrl: './data-depot/templates/enhanced-data-listing.html'
       })
       .state('boxData', {
         url: '/box/{filePath:any}',
         controller: 'ExternalDataCtrl',
-        templateUrl: '/static/scripts/data-depot/templates/box-data-listing.html',
+        template: require('./templates/box-data-listing.html'),
         params: {
           filePath: '',
           name: 'Box',

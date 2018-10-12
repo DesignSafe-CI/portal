@@ -19,7 +19,7 @@ ddControllers.controller('DataDepotNavCtrl', DataDepotNavCtrl);
 ddControllers.controller('DataDepotNewCtrl', DataDepotNewCtrl);
 ddControllers.controller('ExternalDataCtrl', ExternalDataCtrl);
 ddControllers.controller('MainCtrl', MainCtrl);
-ddControllers.controller('MyDataCtrl', MyDataCtrl);
+ddControllers.controller('MyDataCtrl', ['$scope', '$state', 'Django', 'DataBrowserService', MyDataCtrl]);
 
 ddControllers.controller('ProjectDataCtrl', ProjectDataCtrl);
 ddControllers.controller('ProjectListingCtrl', ProjectListingCtrl);

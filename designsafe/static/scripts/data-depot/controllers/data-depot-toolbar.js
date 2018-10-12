@@ -1,3 +1,4 @@
+import _ from 'underscore';
 /*
 export function dataDepotToolbarCtrl(window, angular) {
   var app = angular.module('designsafe');

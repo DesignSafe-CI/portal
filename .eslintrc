@@ -14,7 +14,9 @@
         "consistent-return" : 2,
         "indent"            : [1, 4],
         "no-else-return"    : 1,
-        "space-unary-ops"   : 2 
+        "space-unary-ops"   : 2,
+        "max-len"           : 0,
+        "arrow-parens"      : [1, "as-needed"],
     },
     "globals": {
         "_": false,

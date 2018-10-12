@@ -1,3 +1,4 @@
+import _ from 'underscore';
 export function PublishedDataCtrl($scope, $state, Django, $window, DataBrowserService,
                            FileListing, $uibModal, $http, $stateParams) {
   $scope.filePathComps = _.compact($stateParams.filePath.split('/'));

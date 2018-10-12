@@ -1,3 +1,4 @@
+import _ from 'underscore';
 export function ProjectRootCtrl($scope, $state, DataBrowserService) {
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
