@@ -1,6 +1,6 @@
 # DesignSafe-CI Portal Release Notes
 
-## v3.0.0-20181004
+## v3.0.0-20181005
 
 Fixes:
 
