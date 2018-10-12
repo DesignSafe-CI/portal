@@ -1,6 +1,4 @@
-(function(){
-  'use strict';
-  function NotificationService($rootScope, logger, toastr, djangoUrl, $http, $mdToast) {
+function NotificationService($rootScope, logger, toastr, djangoUrl, $http, $mdToast) {
       var processors = {};
 
       function renderLink(msg){
@@ -112,14 +110,11 @@
 
   }
 
-  function NotificationServiceProvider($injector){
+  export function NotificationServiceProvider($injector){
       // var configURL = '';
       this.$get = ['$rootScope', 'logger', 'toastr', 'djangoUrl', '$http', '$mdToast', NotificationBusHelper];
       function NotificationBusHelper($rootScope, logger, toastr, djangoUrl, $http, $mdToast){
           return new NotificationService($rootScope, logger, toastr, djangoUrl, $http, $mdToast);
       }
   }
-
-  angular.module('ds.notifications').provider('NotificationService', NotificationServiceProvider);
-
-})();
+  //angular.module('ds.notifications').provider('NotificationService', NotificationServiceProvider);

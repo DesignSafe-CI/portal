@@ -44,8 +44,6 @@ module.exports = function(config){
         './static/djng/**/*.js',
 
         './designsafe/static/scripts/ng-designsafe/modules/notifications-module.js',
-        './designsafe/static/scripts/ng-designsafe/modules/ws-module.js',
-        './designsafe/static/scripts/ng-designsafe/providers/ws-provider.js',
         './designsafe/static/scripts/logging/logger.js',
         './designsafe/apps/signals/static/designsafe/apps/signals/scripts/module.js',
 
@@ -94,6 +92,7 @@ module.exports = function(config){
         }
     },
     webpack: testConfig,
-    browserNoActivityTimeout: 100000
+    browserNoActivityTimeout: 100000,
+    browserDisconnectTolerance: 2,
   });
 };

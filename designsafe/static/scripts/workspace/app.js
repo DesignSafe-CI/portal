@@ -3,19 +3,41 @@ import angular from 'angular';
 import _ from 'underscore';
 
 
-import {agaveFilePicker } from '../workspace/directives/agave-file-picker';
-import { translateProvider } from '../workspace/providers/translations';
+import {agaveFilePicker} from '../workspace/directives/agave-file-picker';
+import {translateProvider} from '../workspace/providers/translations';
 
-import workspaceDirectives from './directives';
-import workspaceServices from './services';
-import workspaceComponents from './components';
-import workspaceControllers from './controllers';
+import './directives';
+import './services';
+import './components';
+import './controllers';
 
 
-  let workspaceModule = angular.module('workspace', ['workspace.directives', 'workspace.services', 'workspace.components', 'workspace.controllers'])
+let workspaceModule = angular.module(
+    'workspace', [
+        'workspace.directives',
+        'workspace.services',
+        'workspace.components',
+        'workspace.controllers',
+    ]
+);
 
-  function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $urlRouterProvider, $stateProvider) {
-
+/** Config function to setup module
+ *
+ * @param {Object} WSBusServiceProvider
+ * @param {Object} NotificationServiceProvider
+ * @param {Object} $interpolateProvider
+ * @param {Object} $httpProvider
+ * @param {Object} $urlRouterProvider
+ * @param {Object} $stateProvider
+ */
+function config(
+    WSBusServiceProvider,
+    NotificationServiceProvider,
+    $interpolateProvider,
+    $httpProvider,
+    $urlRouterProvider,
+    $stateProvider
+) {
     WSBusServiceProvider.setUrl(
         (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
         window.location.hostname +
@@ -25,20 +47,20 @@ import workspaceControllers from './controllers';
 
     $urlRouterProvider.otherwise('/');
 
-    $stateProvider
-      .state('tray', {
-          url: '/:appId',
-          component: 'apptray'
-      })
-
-  }
+    $stateProvider.state(
+        'tray', {
+            url: '/:appId',
+            component: 'apptray',
+        }
+    );
+}
 
 agaveFilePicker(window, angular, $, _);
 translateProvider(angular);
 
-  angular.module('workspace').requires.push(
+angular.module('workspace').requires.push(
     'ngCookies',
-    'djng.urls',  //TODO: djng
+    'djng.urls',
     'ui.bootstrap',
     'ui.router',
     'schemaForm',
@@ -49,19 +71,26 @@ translateProvider(angular);
     'dndLists',
     'xeditable',
     'pascalprecht.translate',
-    'ngStorage', 
+    'ngStorage',
     'ngMaterial',
-    'django.context',
-  );
-  angular.module('workspace').config(['WSBusServiceProvider', 'NotificationServiceProvider', '$interpolateProvider', '$httpProvider', '$urlRouterProvider', '$stateProvider', config]);
+    'django.context'
+);
 
-  angular.module('workspace')
+angular.module('workspace').config([
+    'WSBusServiceProvider',
+    'NotificationServiceProvider',
+    '$interpolateProvider',
+    '$httpProvider',
+    '$urlRouterProvider',
+    '$stateProvider',
+    config,
+]);
+
+angular.module('workspace')
     .run(function(editableOptions) {
-      editableOptions.theme = 'bs3';
+        editableOptions.theme = 'bs3';
     });
-
-
 export default workspaceModule;
-
-
-
+angular.module('designsafe.portal').requires.push(
+    'workspace'
+);

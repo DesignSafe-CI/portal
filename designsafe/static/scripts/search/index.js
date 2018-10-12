@@ -14,6 +14,9 @@ let searchModule = angular.module('ds-search', ['designsafe'])
 searchModule.requires.push(
   'ngSanitize'
 );
+angular.module('designsafe.portal').requires.push(
+    'ds-search'
+);
 searchModule.config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
   $httpProvider.defaults.transformResponse.push(function (responseData) {
     convertDateStringsToDates(responseData);

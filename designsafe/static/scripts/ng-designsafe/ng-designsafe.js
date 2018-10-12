@@ -32,7 +32,9 @@ export const ngDesignsafe = angular.module('designsafe',
                                             'designsafe.directives', 
                                             'designsafe.filters',
                                             'designsafe.models',
-                                            'designsafe.controllers'
+                                            'designsafe.controllers',
+                                            'ds.wsBus',
+                                            'ds.notifications',
                                            ])
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -68,7 +70,6 @@ ngDesignsafe.requires.push('django.context',
                            'ui.bootstrap',
                            'ds.notifications',
                            'toastr',
-                           'ds.wsBus',
                            'logging',
                            'ngMaterial');
 
@@ -80,7 +81,9 @@ ngDesignsafe.run(['NotificationService', 'logger',
   function init(NotificationService, logger) {
     NotificationService.init();
   }]);
-
-
-
-
+const portal = angular.module('designsafe.portal', []).config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+}]);
+portal.requires.push('designsafe');

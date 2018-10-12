@@ -1,5 +1,3 @@
-(function(){
-  'use strict';
   function WSBusService(configURL, $rootScope, logger){
     var ws;
 
@@ -35,7 +33,7 @@
     return service;
   }
 
-  function WSBusServiceProvider($injector){
+  export function WSBusServiceProvider($injector){
     var configURL = '';
     this.$get = ['$rootScope', 'logger', wsBusHelper];
 
@@ -46,7 +44,4 @@
       return new WSBusService(configURL, $rootScope, logger);
     }
   }
-
-  angular.module('ds.wsBus')
-    .provider('WSBusService', WSBusServiceProvider);
-})();
+  //angular.module('ds.wsBus').provider('WSBusService', WSBusServiceProvider);

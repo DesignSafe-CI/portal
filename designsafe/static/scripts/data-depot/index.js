@@ -1,22 +1,8 @@
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
-console.log('index get.')
 
-/*
-import { communityDataCtrl } from './controllers/community';
-import { dataDepotNavCtrl } from './controllers/data-depot-nav';
-import {dataDepotNewCtrl } from './controllers/data-depot-new'
-//import { DataDepotToolbarComponent } from './components/data-depot-toolbar/data-depot-toolbar.component'
-import { externalDataCtrl } from './controllers/external-data';
-import { mainCtrl } from './controllers/main';
-import { myDataCtrl } from '../data-depot/controllers/my-data';
-import { projectsController } from '../data-depot/controllers/projects';
-import { publicationDataCtrl } from '../data-depot/controllers/publications';
-import { publishedDataCtrl } from '../data-depot/controllers/published';
-import { sharedData } from '../data-depot/controllers/shared-data';
-*/
-
+import './../ng-designsafe/providers';
 import './components';
 import './controllers';
 
@@ -32,6 +18,9 @@ ddModule.requires.push(
   'logging',
   'ui.customSelect',
   'ngSanitize'
+);
+angular.module('designsafe.portal').requires.push(
+    'ds-data'
 );
 
 function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, toastrConfig, UserService) {
@@ -533,7 +522,6 @@ ddModule
     $rootScope.$state = $state;
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
-      console.log('statechangestart happened')
       if (toState.name === 'myData' || toState.name === 'sharedData') {
         var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
         if (toState.name === 'myData' && !ownerPath) {
