@@ -7,8 +7,11 @@ const LiveReloadPlugin = require('webpack-livereload-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-module.exports = {
-  devtool: 'source-map',
+module.exports = function(env, arg) {
+  var smap = false;
+  env == 'prod' ? smap = false : smap='cheap-module-eval-source-map';
+  return {
+  devtool: smap,
   entry: {
       "./designsafe/static/build/rapid.bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
       "./designsafe/static/build/geo.bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
@@ -93,4 +96,4 @@ module.exports = {
     window: 'window',
     djng: 'djng'
   }
-};
+}};
