@@ -31,7 +31,7 @@ designsafeServices.factory('notificationFactory', notificationFactory);
 designsafeServices.factory('ProjectEntitiesService', ProjectEntitiesService);
 designsafeServices.factory('ProjectService', ProjectService);
 designsafeServices.factory('SystemsService', SystemsService);
-designsafeServices.factory('TicketsService', TicketsService);
+designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
 
 
