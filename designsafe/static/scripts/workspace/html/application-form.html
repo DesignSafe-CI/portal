@@ -10,6 +10,13 @@
     </div>
 </div>
 <div ng-if="data.bin" class="app-dropdown">
+    <p ng-if="data.bin.value.definition.label=='OpenSees'">
+        The Open System for Earthquake Engineering Simulation (OpenSees) is a software framework for simulating the static and
+        seismic response of structural and geotechnical systems. It has advanced capabilities for modeling and analyzing the
+        nonlinear response of systems using a wide range of material models, elements, and solution algorithms.
+        One sequential (OpenSees EXPRESS) and two parallel interpreters (OpenSeesSP and OpenSeesMP) are available on
+        DesignSafe. Please select the desired interpreter for more details.
+    </p>
     <div>Select a version of <b>{{data.bin.value.definition.label}}</b> from the dropdown:</div>
     <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications | orderBy: 'value.definition.label'">
         <option value=''disabled selected>Please Select</option>
