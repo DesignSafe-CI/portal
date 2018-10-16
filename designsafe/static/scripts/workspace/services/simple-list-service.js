@@ -22,7 +22,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
         $http({
             url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
             method: 'GET',
-            params: {'q': query},
+            params: {q: query},
         }).then(
             function(response) {
                 /**
