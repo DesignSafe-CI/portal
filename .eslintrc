@@ -9,6 +9,8 @@
         "node": true,
         "es6": true,
         "jquery": true,
+        "mocha": true,
+        "jasmine": true,
     },
     "rules": {
         "semi"              : [1, "always"],
@@ -23,6 +25,7 @@
     "globals": {
         "_": false,
         "moment": false,
-        "angular": false
+        "angular": false,
+        "inject": false,
     }
 }
