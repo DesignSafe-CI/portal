@@ -880,6 +880,11 @@ def copy_publication_files_to_corral(self, project_id):
     os.chmod(prefix_dest, 0555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0555)
     save_to_fedora.apply_async(args=[project_id])
+    reindex_agave.apply_async(kwargs = {'username': 'ds_admin',
+                                        'file_id': '{}/{}'.format('designsafe.storage.published', project_id ),
+                                        'levels': 0
+                                        },
+                              queue='indexing')
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
 def save_publication(self, project_id):
