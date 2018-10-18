@@ -53,6 +53,9 @@ class DataDepotToolbarCtrl {
     previewImages() {
         this.DataBrowserService.previewImages(this.browser.listing);
     }
+    showCitation() {
+        this.DataBrowserService.showCitation(this.browser.selected, this.browser.listing);
+    }
     viewMetadata() {
         this.DataBrowserService.viewMetadata(this.browser.selected, this.browser.listing);
     }

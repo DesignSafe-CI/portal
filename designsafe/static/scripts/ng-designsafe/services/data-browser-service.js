@@ -2520,21 +2520,14 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
                 $uibModalInstance.dismiss('Close');
               };
               $ctrl.downloadCitation = function () {
-                var doi = $ctrl.data.prj.doi;
-                doi = doi.slice(4);
-                var doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
-                $window.open(doiurl);
-              };
-              $ctrl.navEzid = function () {
-                var doi = $ctrl.data.prj.doi;
-                var doiurl = "https://ezid.cdlib.org/id/" + doi;
-                $window.open(doiurl);
+                var doicit = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + $ctrl.doicit;
+                $window.open(doicit);
               };
               
               // display everything...
               $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + prj.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + prj.doi);
-              $ctrl.doiurl = "https://ezid.cdlib.org/id/" + $ctrl.data.prj.doi;
-              // $ctrl.getCitation();
+              $ctrl.doiurl = "https://doi.org/" + $ctrl.data.prj.doi.slice(4);
+              $ctrl.doicit = $ctrl.data.prj.doi.slice(4);
             });
           };
 
@@ -2602,21 +2595,14 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
               $uibModalInstance.dismiss('Close');
             };
             $ctrl.downloadCitation = function () {
-              var doi = $ctrl.data.ent.doi;
-              doi = doi.slice(4);
-              var doiurl = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + doi;
-              $window.open(doiurl);
-            };
-            $ctrl.navEzid = function () {
-              var doi = $ctrl.data.ent.doi;
-              var doiurl = "https://ezid.cdlib.org/id/" + doi;
-              $window.open(doiurl);
+              var doicit = "https://data.datacite.org/application/vnd.datacite.datacite+xml/" + $ctrl.doicit;
+              $window.open(doicit);
             };
 
             // display everything...
             $ctrl.ui.ieeeCitation = $sce.trustAsHtml(ieeeAuthors + ', (' + citationDate + '), "' + pub.value.title + '" , DesignSafe-CI [publisher], Dataset, ' + pub.doi);
-            $ctrl.doiurl = "https://ezid.cdlib.org/id/" + pub.doi;
-            // $ctrl.getCitation();
+            $ctrl.doiurl = "https://doi.org/" + pub.doi.slice(4);
+            $ctrl.doicit = pub.doi.slice(4);
           }
 
 
