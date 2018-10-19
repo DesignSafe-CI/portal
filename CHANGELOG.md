@@ -5,6 +5,7 @@
 Improvements:
 
 - Improve missing metadata check (DES-677)
+- Index published files (DES-617)
 
 Fixes:
 
