@@ -1,5 +1,15 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181007
+
+Improvements:
+
+- Improve missing metadata check (DES-677)
+
+Fixes:
+
+- Remove unused metadata on templates and `!` alert icons (DES-677)
+
 ## v3.0.0-20181006
 
 Fixes:
