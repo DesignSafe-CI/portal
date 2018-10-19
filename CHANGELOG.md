@@ -10,6 +10,7 @@ Improvements:
 Fixes:
 
 - Remove unused metadata on templates and `!` alert icons (DES-677)
+- Citation modal fix (DES-693)
 
 ## v3.0.0-20181006
 
