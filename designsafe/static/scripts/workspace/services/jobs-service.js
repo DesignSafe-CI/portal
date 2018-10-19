@@ -1,5 +1,5 @@
 export function jobsService($http, djangoUrl) {
-    var service = {};
+    let service = {};
 
     service.list = function(options) {
         let params = {
@@ -13,7 +13,7 @@ export function jobsService($http, djangoUrl) {
 
     service.get = function(uuid) {
         return $http.get(djangoUrl.reverse('designsafe_workspace:call_api', ['jobs']), {
-            params: { 'job_id': uuid }
+            params: {'job_id': uuid}
         });
     };
 
