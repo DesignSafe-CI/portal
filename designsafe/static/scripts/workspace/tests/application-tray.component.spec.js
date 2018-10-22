@@ -1,11 +1,11 @@
 import {AppTrayComponent} from '../components/application-tray/application-tray.component';
 
 describe('AppTrayComponent', () => {
-    let $rootScope;
-    let $controller;
+    let $rootScope; // eslint-disable-line no-unused-vars
+    let $controller; // eslint-disable-line no-unused-vars
     let $q;
-    let $timeout;
-    let $uibModal;
+    let $timeout; // eslint-disable-line no-unused-vars
+    let $uibModal; // eslint-disable-line no-unused-vars
     let $state;
     let $stateParams;
     let $translate;
@@ -76,7 +76,19 @@ describe('AppTrayComponent', () => {
                 },
             };
         });
-        ctrl = new AppTrayComponent.controller(scope, $location, $rootScope, $q, $state, $stateParams, $translate, Apps, SimpleList, $mdToast);
+        const AppTrayCtrl = AppTrayComponent.controller;
+        ctrl = new AppTrayCtrl(
+            scope,
+            $location,
+            $rootScope,
+            $q,
+            $state,
+            $stateParams,
+            $translate,
+            Apps,
+            SimpleList,
+            $mdToast
+        );
         ctrl.$onInit();
     }));
 
@@ -86,5 +98,30 @@ describe('AppTrayComponent', () => {
 
     it('Should see data as private', () => {
         expect(ctrl.data.publicOnly).toBe(false);
+    });
+
+    it('Should initialize empty apps list', () => {
+        expect(ctrl.tabs).toEqual([]);
+    });
+
+    // todo: These 'should define' tests should eventually check what these methods do.
+    it('Should define addDefaultTabs', () => {
+        expect(ctrl).toBeDefined(ctrl.addDefaultTabs);
+    });
+
+    it('Should define closeApp', () => {
+        expect(ctrl).toBeDefined(ctrl.closeApp);
+    });
+
+    it('Should define refreshApps', () => {
+        expect(ctrl).toBeDefined(ctrl.refreshApps);
+    });
+
+    it('Should define launchApp', () => {
+        expect(ctrl).toBeDefined(ctrl.launchApp);
+    });
+
+    it('Should define launchApp', () => {
+        expect(ctrl).toBeDefined(ctrl.showApps);
     });
 });
