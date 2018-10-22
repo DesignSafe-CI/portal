@@ -4,13 +4,17 @@
 
 Improvements:
 
-- Improve missing metadata check (DES-677)
-- Index published files (DES-617)
+- App dropdown. (DES-618)
+- Opensees app form. (DES-618)
+- Project mount on vnc apps. (DES-618)
+- Improve missing metadata check. (DES-677)
+- Improve missing metadata check. (DES-677)
+- Index published files. (DES-617)
 
 Fixes:
 
-- Remove unused metadata on templates and `!` alert icons (DES-677)
-- Citation modal fix (DES-693)
+- Remove unused metadata on templates and `!` alert icons. (DES-677)
+- Citation modal fix. (DES-693)
 
 ## v3.0.0-20181006
 
