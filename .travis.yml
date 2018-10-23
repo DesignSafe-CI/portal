@@ -15,8 +15,23 @@ os:
 stages:
 - lint
 - test
+- build
 matrix:
   include:
+  - name: webpack build
+    language: python
+    python:
+    - '2.7'
+    stage: build
+    install:
+    - pip install -r requirements.txt
+    - find designsafe/settings/* -name *.sample.* | while read line; do cp $line ${line/sample\./};
+      done;
+    - "./manage.py collectstatic --settings=designsafe.settings.test_settings --no-input
+      --link -i demo > /dev/null"
+    - npm install
+    script:
+    - npm run build
   - name: npm test
     language: python
     python:
