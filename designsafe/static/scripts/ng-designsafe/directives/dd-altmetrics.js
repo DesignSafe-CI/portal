@@ -1,8 +1,10 @@
-export function ddAltmetrics($sce,$filter,$scope) {
+export function ddAltmetrics($sce,$filter) {
+    'ngInject';
     return {
       restrict: 'EA',
       scope: { publication: '='},
       link: function (scope, element) {
+        'ngInject';
         scope.$watch(function stateWatch(){return scope.publication;}, function(newState) {
 
           if (typeof newState === 'undefined'){

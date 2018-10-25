@@ -2,6 +2,7 @@
  *
  */
 export function ddDropboxListing() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

@@ -1,4 +1,5 @@
 export function UserService($http, $q, djangoUrl, Logging) {
+    'ngInject';
 
     var logger = Logging.getLogger('ngDesignSafe.UserService');
 

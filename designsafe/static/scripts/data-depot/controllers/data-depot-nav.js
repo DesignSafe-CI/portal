@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 export function DataDepotNavCtrl($scope, $rootScope, $state, Django) {
-
+    'ngInject';
     $scope.routerItems = [];
     $scope.$state = $state;
 

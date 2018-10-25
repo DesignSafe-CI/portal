@@ -1,5 +1,6 @@
 import _ from 'underscore';
 export function ProjectRootCtrl($scope, $state, DataBrowserService) {
+    'ngInject';
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
@@ -86,6 +87,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
   }
 
   export function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectService) {
+    'ngInject';
     $scope.ui = {};
     $scope.ui.busy = true;
     $scope.browser = DataBrowserService.state();
@@ -164,6 +166,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
   }
 
   export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
+    'ngInject';
 
     $scope.data = {};
     $scope.state = DataBrowserService.state();
@@ -1072,6 +1075,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
   }
 
   export function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
+    'ngInject';
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = 'projects.view.data';

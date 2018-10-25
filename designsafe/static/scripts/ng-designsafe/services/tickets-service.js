@@ -1,5 +1,5 @@
 export function TicketsService($http, $q, djangoUrl) {
-
+    'ngInject';
     /**
      * Get user by username
      * @param {string} username the username of the user to look up

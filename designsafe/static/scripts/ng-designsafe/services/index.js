@@ -1,7 +1,7 @@
 import angular from 'angular';
 
 import _ from 'underscore';
-import {nbv, DataBrowserService } from './data-browser-service'
+import {nbv, DataBrowserService } from './data-browser-service';
 import { DataService } from './data-service';
 import { FileListing } from './file-listing';
 import { LoggingServiceProvider } from './logging-service';
@@ -14,7 +14,7 @@ import { UserService } from './user-service';
 
 let designsafeServices = angular.module('designsafe.services', []);
 
-designsafeServices.factory('nbv', nbv);
+designsafeServices.factory('nbv', ['$window', nbv]);
 designsafeServices.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django', 'FileListing', 'Logging', 'SystemsService', 'nbv', 'ProjectEntitiesService', DataBrowserService]);
 designsafeServices.factory(
     'DataService', [
@@ -30,7 +30,20 @@ designsafeServices.provider('Logging', LoggingServiceProvider);
 designsafeServices.factory('notificationFactory', notificationFactory);
 designsafeServices.factory('ProjectEntitiesService', ProjectEntitiesService);
 designsafeServices.factory('ProjectService', ProjectService);
-designsafeServices.factory('SystemsService', SystemsService);
+designsafeServices.factory(
+    'SystemsService',
+    [
+        '$rootScope',
+        '$http',
+        '$q',
+        '$uibModal',
+        '$state',
+        'Django',
+        'FileListing',
+        'Logging',
+        SystemsService,
+    ]
+);
 designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
 

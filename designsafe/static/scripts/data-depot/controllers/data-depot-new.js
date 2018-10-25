@@ -1,6 +1,6 @@
 import _ from 'underscore';
 export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, DataBrowserService) {
-
+    'ngInject';
     $scope.test = {
       enabled: Django.context.authenticated,
       createFiles: false,

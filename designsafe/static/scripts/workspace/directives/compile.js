@@ -1,4 +1,5 @@
 function compile($compile) {
+    'ngInject';
     return function(scope, element, attrs) {
         scope.$watch(
             function(scope) {

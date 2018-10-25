@@ -1,4 +1,5 @@
 export function appsMultipleListService(window, angular, $, _) {
+  'ngInject';
   "use strict";
   angular.module('designsafe').factory('MultipleList', ['$http', '$q', 'djangoUrl', function($http, $q, djangoUrl) {
 

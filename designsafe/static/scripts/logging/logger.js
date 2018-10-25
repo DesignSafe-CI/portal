@@ -7,7 +7,7 @@
       $httpProvider.defaults.xsrfCookieName = 'csrftoken';
       $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
   }
-
+    'ngInject';
   var app = angular.module('logging', []).config(config);
 
   function noop() {};

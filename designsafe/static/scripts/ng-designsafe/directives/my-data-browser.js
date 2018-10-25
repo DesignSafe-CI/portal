@@ -1,4 +1,5 @@
 export function myDataBrowser(DataBrowserService, UserService, FileListing, ProjectService) {
+    'ngInject';
     return {
       restrict: 'E',
       scope: {

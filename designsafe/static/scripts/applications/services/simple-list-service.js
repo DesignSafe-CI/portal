@@ -1,6 +1,4 @@
-export function appsSimpleListService(window, angular, $, _) {
-  "use strict";
-  angular.module('designsafe').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', 'appIcons', function($http, $q, $translate, djangoUrl, appIcons) {
+export function simpleListFactory($http, $q, $translate, djangoUrl, appIcons) {
 
     var SimpleList = function(){
       this.selected = null,
@@ -184,6 +182,4 @@ export function appsSimpleListService(window, angular, $, _) {
     };
 
     return SimpleList;
-  }]);
-
 }

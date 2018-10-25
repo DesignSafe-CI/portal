@@ -2,6 +2,7 @@
  *
  */
 export function ddBoxListing() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

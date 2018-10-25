@@ -2,6 +2,7 @@
  *
  */
 export function ddGoogleDriveListing() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

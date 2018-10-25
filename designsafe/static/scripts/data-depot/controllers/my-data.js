@@ -14,7 +14,7 @@ export function MyDataCtrl(
     Django,
     DataBrowserService
 ) {
-
+    'ngInject';
     $scope.browser = DataBrowserService.state();
     $scope.searchState = DataBrowserService.apiParams.searchState;
 

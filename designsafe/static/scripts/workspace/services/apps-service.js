@@ -1,6 +1,7 @@
 import _ from 'underscore';
 
 export function appsService($http, $q, $translate, djangoUrl) {
+    'ngInject';
     let service = {};
 
     service.list = function(query) {

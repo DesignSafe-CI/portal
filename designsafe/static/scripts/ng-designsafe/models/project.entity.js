@@ -1,5 +1,7 @@
 import _ from 'underscore';
+
 export function ProjectEntityModel(Logging) {
+    'ngInject';
     var logger = Logging.getLogger('ngDesignSafe.ProjectEntityModel');
 
     function _camelCaseToTitle(str){

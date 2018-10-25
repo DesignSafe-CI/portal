@@ -6,8 +6,22 @@ import {JobsStatusCtrl, JobDetailsModalCtrl, VNCJobDetailsModalCtrl} from './job
 import WorkspacePanelCtrl from './workspace-panel';
 
 
-let workspaceControllers = angular.module('workspace.controllers', []);
-workspaceControllers.controller('ApplicationFormCtrl', ApplicationFormCtrl);
+let workspaceControllers = angular.module('workspace.controllers', ['workspace.services', 'designsafe']);
+workspaceControllers.controller('ApplicationFormCtrl', [
+    '$scope',
+    '$rootScope',
+    '$localStorage',
+    '$location',
+    '$anchorScroll',
+    '$translate',
+    'Apps',
+    'Jobs',
+    'Systems',
+    '$mdToast',
+    'Django',
+    'ProjectService',
+    ApplicationFormCtrl]
+);
 workspaceControllers.controller('DataBrowserCtrl', DataBrowserCtrl);
 workspaceControllers.controller('JobsStatusCtrl', JobsStatusCtrl);
 workspaceControllers.controller('JobDetailsModalCtrl', JobDetailsModalCtrl);

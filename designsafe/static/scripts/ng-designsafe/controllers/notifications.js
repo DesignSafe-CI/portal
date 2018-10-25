@@ -1,9 +1,29 @@
 /**
- * Created by mrhanlon on 4/28/16.
+ * Notification Badge Controller
+ * @function
+ * @param {Object} $rootScope
+ * @param {Object} $scope
+ * @param {Object} $filter
+ * @param {Object} djangoUrl
+ * @param {Object} Logging
+ * @param {Object} Django
+ * @param {Object} NotificationService
+ * @param {Object} $http
+ * @param {Object} logger
  */
-export function NotificationBadgeCtrl($rootScope, $scope, $filter, djangoUrl, Logging, Django, NotificationService, $http, logger) {
-
-      NotificationService.processors.notifs = {
+export function NotificationBadgeCtrl(
+    $rootScope,
+    $scope,
+    $filter,
+    djangoUrl,
+    Logging,
+    Django,
+    NotificationService,
+    $http,
+    logger
+) {
+    'ngInject';
+     NotificationService.processors.notifs = {
         'process': function notifyProcessor(msg){
           if (angular.element('#notification-container').hasClass('open')) {
             $scope.list();

@@ -1,5 +1,6 @@
 import _ from 'underscore';
 export function ExternalDataCtrl($scope, $state, Django, DataBrowserService) {
+    'ngInject';
   $scope.browser = DataBrowserService.state();
 
   if (! $scope.browser.error){

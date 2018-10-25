@@ -1,4 +1,5 @@
 export function applicationAddCtrl(window, angular, $, _) {
+  'ngInject';
   "use strict";
   angular.module('designsafe').controller('ApplicationAddCtrl',
       ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', 'appIcons', function ($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, SimpleList, MultipleList, AppsWizard, Django, appCategories, appIcons) {

@@ -17,7 +17,7 @@ import {appTranslateProvider} from './providers/translations';
 import {appsPemsService} from './services/apps-pems-service';
 import {appsService} from './services/apps-service';
 import {appsMultipleListService} from './services/multiple-list-service';
-import {appsSimpleListService} from './services/simple-list-service';
+import {simpleListFactory} from './services/simple-list-service';
 
 applicationAddCtrl(window, angular, $, _);
 applicationEditCtrl(window, angular, $, _);
@@ -28,9 +28,11 @@ appTranslateProvider(angular);
 appsPemsService(window, angular, $, _);
 appsService(window, angular, $, _);
 appsMultipleListService(window, angular, $, _);
-appsSimpleListService(window, angular, $, _);
+
+angular.module('designsafe').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', 'appIcons', simpleListFactory]);
 
 function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
+    'ngInject';
     angular.extend(toastrConfig, {
         positionClass: 'toast-bottom-left',
         timeOut: 5000,

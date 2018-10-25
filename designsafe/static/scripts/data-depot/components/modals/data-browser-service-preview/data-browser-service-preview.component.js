@@ -3,6 +3,7 @@ import DataBrowserServicePreviewTemplate from './data-browser-service-preview.co
 class DataBrowserServicePreviewCtrl {
 
     constructor($sce, DataBrowserService) {
+        'ngInject';
         this.$sce = $sce
         this.DataBrowserService = DataBrowserService
     }

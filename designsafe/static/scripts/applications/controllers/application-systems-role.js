@@ -1,4 +1,5 @@
 export function applicationSystemsRoleCtrl(window, angular, $, _) {
+  'ngInject';
   "use strict";
   angular.module('designsafe').controller('ApplicationSystemsRoleCtrl',
     ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'Django', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, Django) {

@@ -1,6 +1,7 @@
 
 import _ from 'underscore';
 export const DataService = function($rootScope, $http, $q, djangoUrl, Logging) {
+    'ngInject';
 
     var logger = Logging.getLogger('ngDesignSafe.DataService');
 

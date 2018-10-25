@@ -1,5 +1,6 @@
 
 export function fileModel($parse) {
+    'ngInject';
     return {
       restrict: 'A',
       link: function(scope, element, attrs) {
@@ -36,6 +37,7 @@ export function fileModel($parse) {
   }
 
 export function httpSrc($http) {
+    'ngInject';
    return {
       restrict: 'A',
       link: function (scope, element, attrs) {
@@ -217,6 +219,7 @@ export function dsInfiniteScroll(){
   }
 
   export function dsUser(UserService) {
+    'ngInject';
     return {
       restrict: 'EA',
       scope: {
@@ -255,6 +258,7 @@ export function dsInfiniteScroll(){
   }
 
  export function dsFixTop($window) {
+    'ngInject';
     var $win = angular.element($window); // wrap window object as jQuery object
 
     return {
@@ -278,6 +282,7 @@ export function dsInfiniteScroll(){
   }
 
   export function yamzTerm($http){
+    'ngInject';
     return {
         restrict: 'EA',
         scope: {

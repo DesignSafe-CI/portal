@@ -1,4 +1,5 @@
 export function dsFileUrl() {
+    'ngInject';
     return function(file, baseHref) {
       if (typeof file === 'undefined'){
         return "";

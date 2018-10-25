@@ -1,4 +1,5 @@
 function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
+    'ngInject';
     if ($(window).width() < 992) {
         $scope.panel.collapsed = true;
     }

@@ -2,6 +2,7 @@ import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
     constructor($state, $uibModal, Django, DataBrowserService, UserService) {
+        'ngInject';
         this.DataBrowserService = DataBrowserService
         this.$state = $state;
         this.search = { queryString: '' };

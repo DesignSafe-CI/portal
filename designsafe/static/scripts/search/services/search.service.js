@@ -1,6 +1,7 @@
 
 export class SearchService {
     constructor($http, djangoUrl) {
+    'ngInject';
         this.$http = $http
     };
 

@@ -1,6 +1,7 @@
 import _ from 'underscore';
 
 export function FileListing($http, $q, Logging) {
+    'ngInject';
 
     var logger = Logging.getLogger('ngDesignSafe.FileListing');
     var stopper = $q.defer(); // defer to prevent overlapping requests

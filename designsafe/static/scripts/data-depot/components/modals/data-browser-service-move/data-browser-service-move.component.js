@@ -4,6 +4,7 @@ import DataBrowserServiceMoveTemplate from './data-browser-service-move.componen
 class DataBrowserServiceMoveCtrl {
 
     constructor($scope, $state, FileListing, ProjectService) {
+        'ngInject';
         this.$scope = $scope
         this.$state = $state
         this.FileListing = FileListing

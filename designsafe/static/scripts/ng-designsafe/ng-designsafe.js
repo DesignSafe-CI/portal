@@ -17,8 +17,8 @@ import * as angular_slick_carousel from 'angular-slick-carousel';
 import * as ngstorage from 'ngstorage';
 
 
-import './providers';
 import './services';
+import './providers';
 import './directives';
 import './filters';
 import './models';
@@ -33,8 +33,8 @@ export const ngDesignsafe = angular.module('designsafe',
                                             'designsafe.filters',
                                             'designsafe.models',
                                             'designsafe.controllers',
-                                            'ds.wsBus',
                                             'ds.notifications',
+                                            'ds.wsBus',
                                            ])
 .config(['$httpProvider', function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';

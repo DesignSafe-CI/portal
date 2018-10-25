@@ -1,4 +1,4 @@
-function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
+export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
     'nginject';
     $localStorage.systemChecks = {};
 
@@ -274,5 +274,3 @@ function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anch
         closeApp();
     };
 }
-
-export default ApplicationFormCtrl;

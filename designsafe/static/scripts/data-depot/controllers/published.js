@@ -1,6 +1,7 @@
 import _ from 'underscore';
 export function PublishedDataCtrl($scope, $state, Django, $window, DataBrowserService,
                            FileListing, $uibModal, $http, $stateParams) {
+    'ngInject';
   $scope.filePathComps = _.compact($stateParams.filePath.split('/'));
   $scope.browser = DataBrowserService.state();
   $scope.state = {

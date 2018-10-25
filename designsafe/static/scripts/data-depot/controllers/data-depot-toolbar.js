@@ -107,7 +107,7 @@ export function dataDepotToolbarCtrl(window, angular) {
 
 export class DataDepotToolbarCtrl {
   constructor($scope, $state, $uibModal, Django, DataBrowserService, UserService) {
-    
+    'ngInject';
     $scope.$state = $state;
     $scope.search = {queryString : ''};
     $scope.browser = DataBrowserService.state();

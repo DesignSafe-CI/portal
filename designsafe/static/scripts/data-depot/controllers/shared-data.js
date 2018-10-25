@@ -1,6 +1,6 @@
 import _ from 'underscore';
 export function SharedDataCtrl($scope, $state, Django, DataBrowserService) {
-
+    'ngInject';
     $scope.browser = DataBrowserService.state();
 
   if (! $scope.browser.error){

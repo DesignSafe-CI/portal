@@ -1,4 +1,5 @@
 export function applicationEditCtrl(window, angular, $, _) {
+  'ngInject';
   "use strict";
   angular.module('designsafe').controller('ApplicationEditCtrl',
       ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$stateParams', '$state', 'Apps', 'SimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', 'appIcons', function ($scope, $rootScope, $q, $timeout, $uibModal, $translate, $stateParams, $state, Apps, SimpleList, MultipleList, AppsWizard, Django, appCategories, appIcons) {

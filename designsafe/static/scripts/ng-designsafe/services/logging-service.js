@@ -18,6 +18,7 @@
    */
   export function LoggingServiceProvider() {
     this.$get = function($http, djangoUrl) {
+        'ngInject';
 
       var _logLevels = {
         "DEBUG": 0,

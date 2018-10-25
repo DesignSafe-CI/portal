@@ -1,4 +1,5 @@
 export function agaveFilePicker(window, angular, $, _) {
+    'ngInject';
     'use strict';
 
     angular.module('workspace').directive('agaveFilePicker', function() {

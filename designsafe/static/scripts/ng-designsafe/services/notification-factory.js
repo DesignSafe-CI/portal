@@ -1,4 +1,5 @@
 export function notificationFactory($http, djangoUrl) {
+    'ngInject';
       var service = {};
 
       service.list = function() {

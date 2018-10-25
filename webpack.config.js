@@ -8,88 +8,87 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = function(env, arg) {
-  var smap = false;
-  env == 'prod' ? smap = false : smap='cheap-module-eval-source-map';
-  return {
-  devtool: smap,
-  entry: {
-      "./designsafe/static/build/rapid.bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
-      "./designsafe/static/build/geo.bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
-      "./designsafe/static/build/bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
-      "./designsafe/static/build/dd.bundle.js": "./designsafe/static/scripts/data-depot/index.js",
-      "./designsafe/static/build/workspace.bundle.js": "./designsafe/static/scripts/workspace/app.js",
-      "./designsafe/static/build/search.bundle.js": "./designsafe/static/scripts/search/index.js",
-      "./designsafe/static/build/dashboard.bundle.js": "./designsafe/static/scripts/dashboard/index.js",
-      "./designsafe/static/build/applications.bundle.js": "./designsafe/static/scripts/applications/app.js",
-      "./designsafe/static/build/notifications.bundle.js": "./designsafe/static/scripts/notifications/app.js"
-  },
-  output: {
-    path: __dirname,
-    filename: "[name]"
-  },
-  resolve: {
-    extensions: ['.js'],
-    modules: ['node_modules']
-  },
-
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015'],
-          plugins: ["angularjs-annotate"]
-        }
-      },
-      {
-        test: /\.html$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'html-loader',
-            options: {
-                attrs: false
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(s?)css$/,
-        use: ExtractTextPlugin.extract({
-              fallback: "style-loader",
-              use: [{ loader: 'css-loader',},
-                    { loader: 'sass-loader',
-                      options: { sourceMap: true,
-                                 includePaths: ["./designsafe/static/styles"]
-                               }
+    var smap = false;
+    env == 'prod' ? smap = false : smap='cheap-module-eval-source-map';
+    return {
+        devtool: smap,
+        entry: {
+          "./designsafe/static/build/rapid.bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
+          "./designsafe/static/build/geo.bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
+          "./designsafe/static/build/bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
+          "./designsafe/static/build/dd.bundle.js": "./designsafe/static/scripts/data-depot/index.js",
+          "./designsafe/static/build/workspace.bundle.js": "./designsafe/static/scripts/workspace/app.js",
+          "./designsafe/static/build/search.bundle.js": "./designsafe/static/scripts/search/index.js",
+          "./designsafe/static/build/dashboard.bundle.js": "./designsafe/static/scripts/dashboard/index.js",
+          "./designsafe/static/build/applications.bundle.js": "./designsafe/static/scripts/applications/app.js",
+          "./designsafe/static/build/notifications.bundle.js": "./designsafe/static/scripts/notifications/app.js"
+        },
+        output: {
+            path: __dirname,
+            filename: "[name]"
+        },
+        resolve: {
+            extensions: ['.js'],
+            modules: ['node_modules']
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['es2015'],
+                        plugins: ["angularjs-annotate"]
+                    }
+                },
+                {
+                    test: /\.html$/,
+                    exclude: /node_modules/,
+                    use: [{
+                        loader: 'html-loader'
                     }]
+                },
+                {
+                    test: /\.(s?)css$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: "style-loader",
+                        use: [{
+                            loader: 'css-loader',
+                        },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: true,
+                                includePaths: ["./designsafe/static/styles"]
+                            }
+                        }]
+                    })
+                },
+            ]
+        },
+        plugins: [
+            new ExtractTextPlugin("./designsafe/static/styles/base.css"),
+            new ngAnnotatePlugin({add:true}),
+            new LiveReloadPlugin(),
+            new webpack.ProvidePlugin({
+                jQuery: 'jquery',
+                $: 'jquery',
+                jquery: 'jquery'
             })
-      },
-    ]
-  },
-  plugins: [
-    new ExtractTextPlugin("./designsafe/static/styles/base.css"),
-    new ngAnnotatePlugin({add:true}),
-    new LiveReloadPlugin(),
-    new webpack.ProvidePlugin({
-      jQuery: 'jquery',
-      $: 'jquery',
-      jquery: 'jquery'
-  })
-  ],
-
-  externals: {
-    jQuery: 'jQuery',
-    $: 'jQuery',
-    jquery: 'jQuery',
-    Modernizr: 'Modernizr',
-    angular: 'angular',
-    d3: 'd3',
-    moment: 'moment',
-    _: '_',
-    L: 'L',
-    window: 'window',
-    djng: 'djng'
-  }
-}};
+        ],
+        externals: {
+            jQuery: 'jQuery',
+            $: 'jQuery',
+            jquery: 'jQuery',
+            Modernizr: 'Modernizr',
+            angular: 'angular',
+            d3: 'd3',
+            moment: 'moment',
+            _: '_',
+            L: 'L',
+            window: 'window',
+            djng: 'djng'
+        }
+    };
+};

@@ -2,6 +2,7 @@
  *
  */
 export function ddPublicListing() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

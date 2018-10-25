@@ -3,6 +3,7 @@ import searchTemplate from './search.component.html';
 class SearchCtrl {
 
     constructor($location, $window, searchService, Logging, djangoUrl, Django) {
+        'ngInject';
         this.searchService = searchService
         this.$window = $window
         this.user = Django.user;

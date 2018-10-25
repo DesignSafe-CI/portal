@@ -4,6 +4,7 @@
  * rather than having stubs all over the place.
  */
 export function workspaceSystemsService($q, $http, djangoUrl) {
+    'ngInject';
     let service = {};
 
     const systemsList = [

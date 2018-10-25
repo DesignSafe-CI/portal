@@ -1,4 +1,5 @@
 export function jobsService($http, djangoUrl) {
+    'ngInject';
     let service = {};
 
     service.list = function(options) {

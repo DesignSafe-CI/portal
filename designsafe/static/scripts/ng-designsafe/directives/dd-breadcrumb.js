@@ -2,6 +2,7 @@
  *
  */
 export function ddBreadcrumb() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

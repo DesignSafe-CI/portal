@@ -1,4 +1,5 @@
 export function appTranslateProvider(angular) {
+    'ngInject';
     "use strict";
     angular.module('designsafe').config(['$translateProvider', function($translateProvider) {
         $translateProvider.translations('en', {

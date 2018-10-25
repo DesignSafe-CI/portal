@@ -1,4 +1,5 @@
 function WorkspacePanelCtrl($scope) {
+    'ngInject';
     $scope.panel = {
         collapsed: false,
     };

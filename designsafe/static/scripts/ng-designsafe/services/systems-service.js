@@ -1,4 +1,5 @@
 export function SystemsService($rootScope, $http, $q, $uibModal, $state, Django, FileListing, Logging){
+    'ngInject';
     var logger = Logging.getLogger('ngDesignsafe.SystemsService');
     var _baseUrl = '/api/agave/systems/';
 

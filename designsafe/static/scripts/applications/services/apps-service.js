@@ -1,4 +1,5 @@
 export function appsService(window, angular, $, _) {
+  'ngInject';
   "use strict";
   angular.module('designsafe').factory('Apps', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
 

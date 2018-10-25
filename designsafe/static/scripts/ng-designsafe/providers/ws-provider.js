@@ -1,47 +1,77 @@
-  function WSBusService(configURL, $rootScope, logger){
-    var ws;
+/**
+ * WebSocket Bus service
+ * @function
+ * @param {Object} $rootScope
+ * @param {Object} logger
+ * @param {String} configURL
+ * @return {Object} service
+ */
+function WSBusService($rootScope, logger, configURL) {
+    let ws;
 
-    function init(url){
-      ws = new WebSocket(url);
-      ws.onopen = function(){
-
-      };
-      ws.onmessage = function(e){
-        var res = JSON.parse(e.data);
-        //logger.log('onmessage e', e);
-        processWSMessage(res);
-      };
-      ws.onerror = function(e){
-        logger.log('WS error: ', e);
-      };
-      ws.onclose = function(e){
-        init(url);
-      };
-      service.ws = ws;
+    /**
+     * Init function
+     * @function
+     * @param {string} url
+     */
+    function init(url) {
+        ws = new WebSocket(url);
+        ws.onopen = function() {};
+        ws.onmessage = function(e) {
+            let res = JSON.parse(e.data);
+            processWSMessage(res);
+        };
+        ws.onerror = function(e) {
+            logger.log('WS error: ', e);
+        };
+        ws.onclose = function(e) {
+            init(url);
+        };
+        service.ws = ws;
     }
 
-    function processWSMessage(msg){
-      $rootScope.$broadcast('ds.wsBus:notify', msg);
+    /**
+     * Proces Web socket Message
+     * @function
+     * @param {Object} msg
+     */
+    function processWSMessage(msg) {
+        $rootScope.$broadcast('ds.wsBus:notify', msg);
     }
 
-    var service = {
-      init: init,
-      ws: ws,
-      url: configURL
+    let service = {
+        init: init,
+        ws: ws,
+        url: configURL,
     };
 
     return service;
-  }
+}
 
-  export function WSBusServiceProvider($injector){
-    var configURL = '';
-    this.$get = ['$rootScope', 'logger', wsBusHelper];
-
-    this.setUrl = function setUrl(url){
-      configURL = url;
-    };
-    function wsBusHelper($rootScope, logger){
-      return new WSBusService(configURL, $rootScope, logger);
+/**
+ * Web Socket Bus Service Provider
+ * @class
+ */
+export class WSBusServiceProvider {
+    /**
+     * Constructor
+     */
+    constructor() {
+        this.configURL = '';
+        this.setUrl = url => {
+            this.configURL = url;
+        };
     }
-  }
-  //angular.module('ds.wsBus').provider('WSBusService', WSBusServiceProvider);
+
+    /* @ngInject*/
+    /**
+     * $get
+     * @function
+     * @param {Object} $rootScope
+     * @param {Object}  logger
+     * @return {function} WSBusService
+     */
+    $get($rootScope, logger) {
+        return new WSBusService($rootScope, logger, this.configURL);
+    }
+}

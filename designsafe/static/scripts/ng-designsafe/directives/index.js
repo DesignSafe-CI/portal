@@ -19,7 +19,7 @@ import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
          selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll, 
          dsUser, dsFixTop, yamzTerm, } from './ng-designsafe-directives';
 
-designsafeDirectives.directive('ddAltmetrics', ddAltmetrics);
+designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
 designsafeDirectives.directive('ddBoxListing', ddBoxListing);
 designsafeDirectives.directive('ddBreadcrumb', ddBreadcrumb);
 designsafeDirectives.directive('ddDropboxListing', ddDropboxListing);

@@ -2,6 +2,7 @@
  *
  */
 export function ddProjectSearchListing() {
+    'ngInject';
       return {
         restrict: 'E',
         transclude: true,

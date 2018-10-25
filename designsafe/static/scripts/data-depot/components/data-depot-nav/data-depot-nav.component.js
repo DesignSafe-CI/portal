@@ -1,8 +1,8 @@
 import DataDepotNavTemplate from './data-depot-nav.component.html'
 
 class DataDepotNavCtrl {
-  
     constructor($scope, $rootScope, $state, Django) {
+        'ngInject';
 
         this.$scope = $scope
         this.$rootScope = $rootScope

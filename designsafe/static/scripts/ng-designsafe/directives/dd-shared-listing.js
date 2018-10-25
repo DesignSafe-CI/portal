@@ -2,6 +2,7 @@
  *
  */
 export function ddSharedListing() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

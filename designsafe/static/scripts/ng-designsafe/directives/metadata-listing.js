@@ -2,6 +2,7 @@
  *
  */
 export function metadataListing() {
+    'ngInject';
     return {
       restrict: 'E',
       transclude: true,

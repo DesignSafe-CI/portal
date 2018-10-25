@@ -1,4 +1,5 @@
   export function bytes() {
+    'ngInject';
     return function(bytes, precision) {
       if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
       if (typeof precision === 'undefined') precision = 1;
@@ -35,6 +36,7 @@
   }
 
   export function toTrusted($sce) {
+    'ngInject';
     return function (value) {
         return $sce.trustAsHtml(value);
     };

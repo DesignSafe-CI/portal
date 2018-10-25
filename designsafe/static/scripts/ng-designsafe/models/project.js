@@ -1,5 +1,6 @@
 import _ from 'underscore';
 export function ProjectModel(Logging) {
+    'ngInject';
     var logger = Logging.getLogger('ngDesignSafe.ProjetModel');
     var Project = function(data){
       var self = this;

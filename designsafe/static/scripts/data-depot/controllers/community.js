@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 export function CommunityDataCtrl($scope, $state, Django, DataBrowserService) {
-
+    'ngInject';
   $scope.browser = DataBrowserService.state();
   $scope.state = {
         loadingMore : false,
