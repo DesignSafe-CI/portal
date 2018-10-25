@@ -54,8 +54,8 @@
               <div class="material-card">
                 <i class="fa fa-remove-sign text-right"></i>
                 <div class="card-body">
-                  <i ng-if="appMeta.value.definition.appIcon" class="icon-{{appMeta.value.definition.appIcon}}" ng-class="{'enabled': appMeta.value.definition.available, 'disabled': !appMeta.value.definition.available}"></i>
-                  <span ng-if="!appMeta.value.definition.appIcon" class="icon-letter" ng-class="{'enabled': appMeta.value.definition.available, 'disabled': !appMeta.value.definition.available}">{{appMeta.value.definition.label[0].toUpperCase()}}</span>
+                  <i ng-if="appMeta.value.definition.appIcon" class="icon-{{appMeta.value.definition.appIcon | lowercase}}" ng-class="{'enabled': appMeta.value.definition.available, 'disabled': !appMeta.value.definition.available}"></i>
+                  <span ng-if="!appMeta.value.definition.appIcon" class="icon-letter" ng-class="{'enabled': appMeta.value.definition.available, 'disabled': !appMeta.value.definition.available}">{{appMeta.value.definition.label[0] | uppercase}}</span>
                   <h3>{{appMeta.value.definition.id}}</h3>
                   <p>{{appMeta.value.definition.deploymentSystem}}</p>
                   <p>{{appMeta.value.definition.shortDescription | limitTo: 68}}{{appMeta.value.definition.shortDescription.length > 68 ? '...' : ''}}</p>
