@@ -70,6 +70,7 @@ module.exports = function(config) {
             'karma-sourcemap-loader',
         ],
         preprocessors: {
+            './designsafe/static/scripts/**/*.html': ['webpack', 'sourcemap'],
             './designsafe/static/scripts/test-context.js': ['webpack', 'sourcemap', 'coverage'],
             './designsafe/static/scripts/**/*.spec.js': ['webpack', 'sourcemap', 'coverage'],
         },

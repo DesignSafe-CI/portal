@@ -10,5 +10,4 @@ import './applications/app';
 import './notifications/app';
 
 let context = require.context('.', true, /\.spec\.js/);
-
 context.keys().forEach(context);
