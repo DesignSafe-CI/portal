@@ -20,7 +20,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
     };
 
 
-    $rootScope.$on('updateProjectsBreadcrumbs', function($event, toState, toStateParams) {
+    DataBrowserService.projectBreadcrumbSubject.subscribe( () =>  {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
       // Create a function that checks if 'toStateParams.projectTitle' is empty. Replace it if so...
@@ -103,7 +103,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
     ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
-      $rootScope.$emit('updateProjectsBreadcrumbs', {})
+      DataBrowserService.projectBreadcrumbSubject.next()
     });
 
     $scope.onBrowse = function onBrowse($event, project) {
@@ -1096,7 +1096,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
                               {'query_string': $state.params.query_string})
       .then(function () {
         $scope.browser = DataBrowserService.state();
-        $rootScope.$emit('updateProjectsBreadcrumbs')
+        DataBrowserService.projectBreadcrumbSubject.next()
         $scope.browser.busy = true;
         $scope.browser.busyListing = true;
         $scope.browser.listing.href = $state.href('projects.view.data', {

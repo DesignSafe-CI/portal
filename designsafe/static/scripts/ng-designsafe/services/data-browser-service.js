@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import { Subject } from 'rxjs'
 
 export function nbv($window) { //from http://jameshill.io/articles/angular-third-party-injection-pattern/
   if ($window.nbv) {
@@ -18,7 +19,6 @@ export function nbv($window) { //from http://jameshill.io/articles/angular-third
 export function DataBrowserService($rootScope, $http, $q, $uibModal,
                   $state, Django, FileListing, Logging,
                   SystemsService, nbv, ProjectEntitiesService) {
-    'ngInject';
   var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
   /**
@@ -38,6 +38,8 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
     ui: {},
     tests: null
   };
+
+  var projectBreadcrumbSubject = new Subject();
 
   var efs = {
     'experimental': [
@@ -2738,6 +2740,7 @@ function toggleProjects(projects, reset) {
     state: state,
     apiParameters: apiParameters,
     currentState: currentState,
+    projectBreadcrumbSubject: projectBreadcrumbSubject,
 
     /* data/files functions */
     allowedActions: allowedActions,
