@@ -1,0 +1,54 @@
+<div style="margin: 0 10px 20px">
+    <div class="btn-group btn-block">
+        <button class="btn btn-block btn-primary dropdown-toggle"
+                data-toggle="dropdown" ng-disabled="! test.enabled">
+        <i class="fa fa-plus-circle"></i> Add
+        </button>
+        <ul class="dropdown-menu">
+            <li ng-class="{'disabled': ! test.createFiles}">
+                <a href="#" ng-click="createFolder($event)">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-folder fa-stack-2x"></i>
+                        <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span class="">New Folder</span>
+                </a>
+            </li>
+            <li ng-class="{'disabled': ! test.createProject}">
+                <a href="#" ng-click="createProject($event)">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-briefcase fa-2x"></i>
+                    </span>
+                    <span>New Project</span>
+                </a>
+            </li>
+            <li role="separator" class="divider"></li>
+            <li ng-class="{'disabled': ! test.createFiles}">
+                <a href="#" ng-click="uploadFiles($event)">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-file-o fa-stack-2x"></i>
+                        <i class="fa fa-cloud-upload fa-stack-1x"></i>
+                    </span>
+                    <span>File upload</span>
+                </a>
+            </li>
+            <li ng-class="{'disabled': ! test.createFiles}">
+                <a href="#" ng-click="uploadFolders($event)">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-folder-o fa-stack-2x"></i>
+                        <i class="fa fa-cloud-upload fa-stack-1x"></i>
+                    </span>
+                    <span>Folder upload</span>
+                </a>
+            </li>
+            <li ng-class="{'disabled': ! test.createFiles}" ng-init="popoverOpened=false" ng-mouseover="popoverOpened=true" ng-mouseleave="popoverOpened=false">
+                <a href='https://www.designsafe-ci.org/rw/user-guides/globus-data-transfer-guide/' uib-popover-html="popoverHTML" popover-placement="right" popover-trigger="none" popover-is-open="popoverOpened">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-hdd-o fa-stack-2x"></i>
+                    </span>
+                    <span>Bulk Data Transfer</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

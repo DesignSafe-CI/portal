@@ -1,0 +1,278 @@
+<div class="project">
+    <div ng-if="data.project" class="project-detail" style="background:white;">
+        <h2>{{data.project.value.projectId}}: {{ data.project.value.title }}</h2>
+      <div class="table-responsive">
+      <table class="table" style="margin-bottom:0;">
+        <thead>
+          <tr>
+            <th style="width:50%; border-top:none; padding:0px;"></th>
+            <th style="width:50%; border-top:none; padding:0px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">PI</th>
+                    <td style="border-top:none; width:75%">
+                      <ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
+                      <button class="btn btn-sm btn-default pull-right"
+                              ng-click="manageCollabs($event)">Manage Team Members</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%;">DOI</th>
+                    <td style="border-top:none; width:75%;">(Appears only in published view)
+                    <!--
+                      <button class="btn btn-info btn-sm pull-right"
+                              ng-click="showCitation(project)">Citation
+                      </button>
+                    -->
+                    <td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Date of Publication</th>
+                    <td style="border-top:none; width:75%">(Appears only in published view)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Award</th>
+                    <td style="border-top:none; width:75%">{{data.project.value.awardNumber}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Project Type</th>
+                    <td style="border-top:none; width:75%"><span style="text-transform:capitalize" >{{data.project.value.projectType.replace('_', ' ')}}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style="padding:0px;">
+              <table class="table" style="margin-bottom:0;">
+                <tbody>
+                  <tr>
+                    <th style="border-top:none; width:25%">Keywords</th>
+                    <td style="border-top:none; width:75%">{{data.project.value.keywords}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+    <div style="width:100%;">
+      <p><strong>Description</strong></p>
+      <p>
+        {{data.project.value.description}}
+      </p>
+    </div>
+        <!--
+        <div style="width:49%; display:inline-block; vertical-align:top;">
+          <table class="table" style="margin-bottom:0;">
+            <tbody>
+              <tr>
+                <th>PI</th>
+                <td><ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user></td>
+              </tr>
+            </tbody>
+          </table>
+          -->
+            <!--<div style="width:350px; height:100px; overflow:hidden;">
+                <img width="350" ng-src="{{ previewHref }}"
+                     ng-if="previewHref && state.showPreviewListing"/>
+                <div ng-if="!previewHref && state.showPreviewListing">
+                  <i class="fa fa-spin fa-spinner"></i> Loading ...
+                </div>
+            </div>-->
+        <!--</div>-->
+
+        <div class="btn-group" role="group" aria-label="Listing views"
+             ng-if="!state.publishPipeline">
+          <button class="btn btn-default"
+                  ng-click="showListing()"
+                  ng-class="{'grayed-out': !state.showMainListing}"
+                  style="border-radius:10px;
+              box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
+              margin-right:5px;">Working Directory</button>
+          <button class="btn btn-default"
+                  ng-click="showPreview()"
+                  ng-class="{'grayed-out': !state.showPreviewListing}"
+                  style="border-radius:10px;
+                box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);"
+                  ng-disabled="data.loadingEntities">Publication Preview</button>
+          <div ng-if="state.showPreviewListing"
+               style="margin-left:15px; display:inline-block;">
+              <a class=""
+                 href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                 target="_blank">
+                <i class="fa fa-question-circle"></i> Learn More
+              </a>
+          </div>
+
+        <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;"
+             ng-if="state.showMainListing">
+            <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
+            <!--
+            <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
+            -->
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
+                    ng-click="manageExperiments($event)"
+                    ng-if="data.project.value.projectType === 'experimental'">
+                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
+                Manage Experiments
+            </button>
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
+                    ng-click="manageSimulations($event)"
+                    ng-if="data.project.value.projectType === 'simulation'">
+                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
+                Manage Simulations
+            </button>
+            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
+                    ng-click="manageHybridSimulations($event)"
+                    ng-if="data.project.value.projectType === 'hybrid_simulation'">
+                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
+                Manage Hybrid Simulations
+            </button>
+        </div>
+
+        </div>
+        <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
+          <strong>The following categories do not have associated data:</strong>
+          <div ng-repeat="missing in state.missing">
+            <span ng-if="missing.model">The category "{{missing.model}}" within the {{missing.type}} "{{missing.title}}" has no categorized files.</span>
+            <span ng-if="!missing.model"> A category for {{missing.missingSet}} has not been created.  </span>
+          </div>
+          <a href="https://www.youtube.com/watch?v=AZFwNNRj-MI&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+            <i class="fa fa-question-circle"></i> Learn More
+          </a>
+        </div>
+
+        <div style="text-align:center;"
+             ng-class="{'pull-right': !state.publishPipeline}">
+          <div class="btn-group pull-left" role="group" aria-label="Exit Publish"
+               ng-if="state.publishPipeline">
+            <button class="btn btn-danger"
+                  ng-click="publishPipeline_exit()">
+                  <i class="fa fa-sign-out"></i>Exit Publishing
+            </button>
+          </div>
+          <div style="width:50%; margin:auto; display:inline-block;" ng-if="state.publishPipeline">
+            <button class="btn btn-default"
+                    ng-click="publishPipeline_prev(state.publishPipeline)"
+                    ng-if="state.publishPipeline!='select'">
+             <i class="fa fa-arrow-left"></i> Previous
+            </button>
+            <div class="wizard-steps" style="display:inline-block;">
+              <span class="steps"
+                    ng-class="{'active': state.publishPipeline=='select'}">
+                    Selection</span>
+              <span class="line">
+               --
+              </span>
+              <span class="review"
+                    ng-class="{'active': state.publishPipeline=='review'}">
+                    Review
+              </span>
+              <span class="line">
+               --
+              </span>
+              <span class="edit-info"
+                    ng-class="{'active': state.publishPipeline=='meta'}">
+                    Metadata
+              </span>
+               --
+              <span class="edit-info"
+                    ng-class="{'active': state.publishPipeline=='agreement'}">
+                    Agreement
+              </span>
+            </div>
+            <button class="btn btn-default pull-right"
+                    ng-click="publishPipeline_next(state.publishPipeline)"
+                    ng-if="state.publishPipeline!='agreement'">
+             Next <i class="fa fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
+               ng-if="state.showPreviewListing && !state.publishPipeline">
+            <div>
+                <a href="https://www.youtube.com/watch?v=3uwZX2MB3g8&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                   target="_blank">
+                  <i class="fa fa-question-circle"></i> Learn More
+                </a>
+            </div>
+            <button class="btn btn-danger"
+                    ng-click="publishPipeline_start()">
+                Prepare to Publish <i class="fa fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
+               ng-if="state.publishPipeline == 'agreement'">
+            <button id="requestAndPublish" class="btn btn-danger"
+                    ng-click="publishPipeline_publish()"
+                    ng-disabled="!state.publishAgreement ||
+                                 state.project.publicationStatus === 'publishing' ||
+                                 data.project.publicationStatus == 'published'">
+                Request DOI & Publish <i class="fa fa-check"></i>
+            </button>
+          </div>
+        </div>
+        <div class="alert alert-danger"
+             style="margin-top:20px;"
+             ng-if="data.project.publicationStatus == 'publishing' ||
+                    data.project.publicationStatus == 'published'">
+          <p>This project has been published. The project and all its selected files have been copied to the read-only Published area of the Data Depot.</p>
+        </div>
+        <div class="alert alert-warning"
+             style="margin-top:20px;"
+             ng-if="ui.publicationMessages.length">
+          <ul>
+            <li ng-repeat="message in ui.publicationMessages">
+              Error in {{message.title}}: {{message.message}}
+            </li>
+          </ul>
+          <p>{{ui.publicationMessage}}</p>
+        </div>
+    </div>
+
+    <div ng-if="! data.project">
+        <p class="lead text-center">
+            <i class="fa fa-spinner fa-spin"></i> Loading Project Details...
+        </p>
+    </div>
+    <hr>
+    <ui-view class="project-data"></ui-view>
+</div>

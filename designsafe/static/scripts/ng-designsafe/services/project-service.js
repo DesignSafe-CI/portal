@@ -87,7 +87,18 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
     var dataResource = httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
    //var entitiesResource = httpi.resource('/api/projects/:uuid/meta/:name/').setKeepTrailingSlash(true);
    //var entityResource = httpi.resource('/api/projects/meta/:uuid/').setKeepTrailingSlash(true);
+    
+    service.data = {
+      navItems: [],
+      projects: []
+    };
 
+    service.resolveParams = {
+      projectId: null,
+      filePath: null,
+      projectTitle: null,
+      query_string: null
+    }
 
     /**
      * Get a list of Projects for the current user

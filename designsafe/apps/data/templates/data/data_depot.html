@@ -7,13 +7,13 @@
 {% block content %}
     <div class="container">
         <div>
-            <div ng-controller="MainCtrl" style="position: relative;">
+            <ddmain style="position: relative;">
                 <!-- <div ng-controller="DataDepotToolbarCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-toolbar.html" %}'"></div> -->
                 <ddtoolbar></ddtoolbar>
                 <div class="row">
                     <div class="col-sm-3 col-md-2">
                         
-                        <div ng-controller="DataDepotNewCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-new.html" %}'"></div> 
+                        <ddnew></ddnew> 
                         <ddnav></ddnav>
                         <!-- <div ng-controller="DataDepotNavCtrl" ng-include="'{% static "scripts/data-depot/templates/data-depot-nav.html" %}'"></div> -->
                     </div>
@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </ddmain>
     </div>
 
     {% addtoblock "css" %}
