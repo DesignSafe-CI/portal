@@ -8,11 +8,8 @@ import _ from 'underscore';
 
 import './../ng-designsafe/providers';
 import './components';
-import './controllers';
 
-import { ProjectListingCtrl, ProjectRootCtrl } from './controllers/projects'
-
-let ddModule = angular.module('ds-data', ['designsafe', 'dd.components', 'dd.controllers']);
+let ddModule = angular.module('ds-data', ['designsafe', 'dd.components']);
 ddModule.requires.push(
   'ui.router',
   'djng.urls', //TODO: djng
