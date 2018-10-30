@@ -1,10 +1,7 @@
-const testConfig = require('./webpack.test-config.js');
-
+const webpackConfig = require('./webpack.config.js')('prod');
 module.exports = function(config) {
     config.set({
-
         basePath: './',
-
         files: [
             './designsafe/static/vendor/modernizr/modernizr.js',
             './node_modules/jquery/dist/jquery.min.js',
@@ -53,11 +50,8 @@ module.exports = function(config) {
             './static/cms/**/*.js',
             './static/djangocms_text_ckeditor/**/*.js',
         ],
-
         autoWatch: true,
-
         frameworks: ['jasmine'],
-
         browsers: ['FirefoxHeadless', 'ChromeHeadlessNoSandbox'],
         plugins: [
             'karma-webpack',
@@ -90,7 +84,13 @@ module.exports = function(config) {
                 flags: ['-headless'],
             },
         },
-        webpack: testConfig,
+        webpack: {
+            devtool: webpackConfig.devtool,
+            resolve: webpackConfig.resolve,
+            module: webpackConfig.module,
+            plugins: webpackConfig.plugins,
+            externals: webpackConfig.externals,
+        },
         browserNoActivityTimeout: 100000,
         browserDisconnectTolerance: 2,
     });
