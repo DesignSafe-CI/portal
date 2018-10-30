@@ -87,7 +87,7 @@ def ticketcreate(request):
             header = '\n'.join('[%s] %s' % m for m in meta)
             ticket_body = '%s\n\n%s\n\n---\n%s' % (
                 header,
-                form.cleaned_data['problem_description'].,
+                form.cleaned_data['problem_description'],
                 requestor_meta
             )
 
