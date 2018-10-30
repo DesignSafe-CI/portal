@@ -1,5 +1,17 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181009
+
+Improvements:
+
+- Using only one webpack config.
+
+## v3.0.0-20181008
+
+Fixes:
+
+- Fixing inject issues.
+
 ## v3.0.0-20181007
 
 Improvements:
