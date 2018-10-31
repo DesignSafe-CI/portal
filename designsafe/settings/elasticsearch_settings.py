@@ -89,7 +89,7 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         # 'URL': 'des_elasticsearch:9200/',
-        'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT')]['hosts'][0] + ':9200/',
+        'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev')]['hosts'][0] + ':9200/',
         'INDEX_NAME': 'cms',
     }
 }
