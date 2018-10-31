@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181101
+
+Fixes:
+
+- Help links for workspace (DES-526).
+- Applications templates (DES-526).
+- Appicon not showing in applications (DES-526).
+
 ## v3.0.0-20181009
 
 Improvements:
