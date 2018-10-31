@@ -1,5 +1,6 @@
 import _ from 'underscore';
-export function ProjectRootCtrl($scope, $state, DataBrowserService) {
+
+export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $transitions, DataBrowserService) {
     'ngInject';
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
@@ -19,7 +20,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
     };
 
 
-    $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
+    $rootScope.$on('updateProjectsBreadcrumbs', function($event, toState, toStateParams) {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
       // Create a function that checks if 'toStateParams.projectTitle' is empty. Replace it if so...
@@ -37,19 +38,19 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
       }
 
 
-      if (toStateParams.filePath) {
-        if (toStateParams.filePath === '/') {
+      if ($state.params.filePath) {
+        if ($state.params.filePath.replace('%2F', '/') === '/') {
           $scope.data.navItems.push({
             label: DataBrowserService.state().project.value.title,
             href: $state.href('projects.view.data', {
-              projectId: toStateParams.projectId,
+              projectId: $state.params.projectId,
               filePath: '/',
               projectTitle: DataBrowserService.state().project.value.title,
               query_string: ''
             })
           });
         } else {
-          _.each(toStateParams.filePath.split('/'), function (e, i, l) {
+          _.each($state.params.filePath.replace('%2F', '/').split('/'), function (e, i, l) {
             var filePath = l.slice(0, i + 1).join('/');
             if (filePath === '' || filePath === '$SEARCH') {
               filePath = '/';
@@ -60,7 +61,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
             $scope.data.navItems.push({
               label: e || DataBrowserService.state().project.value.title,
               href: $state.href('projects.view.data', {
-                projectId: toStateParams.projectId,
+                projectId: $state.params.projectId,
                 filePath: filePath,
                 projectTitle: DataBrowserService.state().project.value.title,
                 query_string: ''
@@ -73,11 +74,11 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
         // when the user is in the base project file's directory 
         // display the project title in the breadcrumbs
         $scope.data.navItems.push({
-          label: getTitle(toStateParams, $scope.data.projects),
+          label: getTitle($state.params, $scope.data.projects),
           href: $state.href('projects.view.data', {
-            projectId: toStateParams.projectId,
+            projectId: $state.params.projectId,
             filePath: '/',
-            projectTitle: getTitle(toStateParams, $scope.data.projects),
+            projectTitle: getTitle($state.params, $scope.data.projects),
             query_string: ''
           })
         });
@@ -86,7 +87,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
     //$state.go('projects.list');
   }
 
-  export function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectService) {
+  export function ProjectListingCtrl($scope, $rootScope, $state, DataBrowserService, Django, ProjectService) {
     'ngInject';
     $scope.ui = {};
     $scope.ui.busy = true;
@@ -102,6 +103,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
     ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
+      $rootScope.$emit('updateProjectsBreadcrumbs', {})
     });
 
     $scope.onBrowse = function onBrowse($event, project) {
@@ -1074,7 +1076,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
 
   }
 
-  export function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
+  export function ProjectDataCtrl($scope, $rootScope, $state, Django, ProjectService, DataBrowserService, projectId, filePath, projectTitle, FileListing, UserService, $uibModal, $http, $q) {
     'ngInject';
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
@@ -1094,6 +1096,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
                               {'query_string': $state.params.query_string})
       .then(function () {
         $scope.browser = DataBrowserService.state();
+        $rootScope.$emit('updateProjectsBreadcrumbs')
         $scope.browser.busy = true;
         $scope.browser.busyListing = true;
         $scope.browser.listing.href = $state.href('projects.view.data', {
@@ -1145,7 +1148,6 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService) {
                 $scope.browser.busyListing = false;
             });
         });
-      
     })
     
     var setFilesDetails = function(filePaths){

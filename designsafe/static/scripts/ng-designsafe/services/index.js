@@ -14,8 +14,8 @@ import { UserService } from './user-service';
 
 let designsafeServices = angular.module('designsafe.services', []);
 
-designsafeServices.factory('nbv', ['$window', nbv]);
-designsafeServices.factory('DataBrowserService', ['$rootScope', '$http', '$q', '$uibModal', '$state', 'Django', 'FileListing', 'Logging', 'SystemsService', 'nbv', 'ProjectEntitiesService', DataBrowserService]);
+designsafeServices.factory('nbv', nbv);
+designsafeServices.factory('DataBrowserService', DataBrowserService);
 designsafeServices.factory(
     'DataService', [
         '$rootScope',
