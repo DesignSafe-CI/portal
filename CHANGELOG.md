@@ -2,6 +2,10 @@
 
 ## v3.0.0-20181101
 
+Improvements:
+
+- Better breadcrumbs for Angular 1.6+
+
 Fixes:
 
 - Help links for workspace (DES-526).
