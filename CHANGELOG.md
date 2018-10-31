@@ -4,13 +4,14 @@
 
 Improvements:
 
-- Better breadcrumbs for Angular 1.6+
+- Better breadcrumbs for Angular 1.6+ (DES-706).
 
 Fixes:
 
 - Help links for workspace (DES-526).
 - Applications templates (DES-526).
 - Appicon not showing in applications (DES-526).
+- Haystack Connections (DES-196).
 
 ## v3.0.0-20181009
 
