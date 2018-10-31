@@ -1,12 +1,5 @@
 """Elastic search connection configuration"""
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'des_elasticsearch:9200/',
-        'INDEX_NAME': 'cms',
-    }
-}
+import os 
 
 ES_CONNECTIONS = {
     'default': {
@@ -90,4 +83,13 @@ ES_INDICES = {
     #    'documents': [{'name': 'job',
     #                   'class': 'designsafe.apps.workspace.models.elasticsearch.IndexedJob'}]
     #}
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        # 'URL': 'des_elasticsearch:9200/',
+        'URL': ES_CONNECTIONS[os.environ.get('DESIGNSAFE_ENVIRONMENT')]['hosts'][0] + ':9200/',
+        'INDEX_NAME': 'cms',
+    }
 }
