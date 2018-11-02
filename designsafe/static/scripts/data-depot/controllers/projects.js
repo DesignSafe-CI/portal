@@ -361,9 +361,11 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
       } else if (ptype == 'hybrid_simulation') {
         checkPrjModel(proj.globalmodel_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'global model');
         checkPrjModel(proj.coordinator_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'master simulation coordinator');
+        checkPrjModel(proj.coordinatoroutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation coordinator output', 'coordinator output');
         checkPrjModel(proj.expsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'experimental substructure');
+        checkPrjModel(proj.expoutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation experiment output', 'experimental output');
         checkPrjModel(proj.simsubstructure_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'simulation substructure');
-        checkPrjModel(proj.expoutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation', 'output set');
+        checkPrjModel(proj.simoutput_set, 'hybridSimulations', proj.hybridsimulation_set, 'hybrid simulation simulation output', 'simulation output');
       }
       $scope.browser.missing = missing;
     };
@@ -563,10 +565,9 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
         
         var globalModel = pub.global_models;
         var simCoordinator = pub.coordinators;
-        var simSubstructure = pub.sim_substructures;
         var expSubstructure = pub.exp_substructures;
-        var hybridOutputs = pub.outputs;
-
+        var cordOutput = pub.coordinator_outputs;
+        var expOutput = pub.exp_outputs;
 
         if (hybridSimulation === undefined || hybridSimulation == '') {
           return;
@@ -590,17 +591,23 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
             } else {
               fillChecklist(simCoordinator, 'hybridSimulations', 'coordinator', exp, i);
             }
-            //sim substructure
-            if (simSubstructure === undefined) {
-              checklist['hybridSimulations'+i].simulation_substructure = false;
+            //coordinator output
+            if (cordOutput === undefined) {
+              checklist['hybridSimulations'+i].coordinator_output = false;
             } else {
-              fillChecklist(simSubstructure, 'hybridSimulations', 'simulation_substructure', exp, i);
+              fillChecklist(cordOutput, 'hybridSimulations', 'coordinator_output', exp, i);
             }
             //exp substructure
             if (expSubstructure === undefined) {
               checklist['hybridSimulations'+i].experiment_substructure = false;
             } else {
               fillChecklist(expSubstructure, 'hybridSimulations', 'experiment_substructure', exp, i);
+            }
+            //exp output
+            if (expOutput === undefined) {
+              checklist['hybridSimulations'+i].experiment_output = false;
+            } else {
+              fillChecklist(expOutput, 'hybridSimulations', 'experiment_output', exp, i);
             }
 
             requirements.hybridReq.forEach(function (req) {
@@ -722,7 +729,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
       }
         
       // return messages for missing fields
-      i = 0;
+      var i = 0;
       Object.values(checklist).forEach(function(exp) {
         Object.entries(exp).forEach(function(res) {
           // res[0] == keys
@@ -1625,8 +1632,24 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
             _addToSimLists(set);
           }
         });
-        // show outputs selected
-        _.each($scope.browser.project.output_set, function (set) {
+        // show coordinator outputs selected
+        _.each($scope.browser.project.coordinatoroutput_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+        // show simulation outputs selected
+        _.each($scope.browser.project.simoutput_set, function (set) {
+          if (set.associationIds.includes(ent.uuid)) {
+            listing[set.uuid] = $scope.browser.listings[set.uuid];
+            // add outputs
+            _addToSimLists(set);
+          }
+        });
+        // show experimental outputs selected
+        _.each($scope.browser.project.expoutput_set, function (set) {
           if (set.associationIds.includes(ent.uuid)) {
             listing[set.uuid] = $scope.browser.listings[set.uuid];
             // add outputs
@@ -1791,7 +1814,19 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
               _removeFromSimLists(set);
             }
           });
-          _.each($scope.browser.project.output_set, function (set) {
+          _.each($scope.browser.project.coordinatoroutput_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.simoutput_set, function (set) {
+            if (set.associationIds.includes(ent.uuid)) {
+              delete $scope.browser.publication.filesSelected[set.uuid];
+              _removeFromSimLists(set);
+            }
+          });
+          _.each($scope.browser.project.expoutput_set, function (set) {
             if (set.associationIds.includes(ent.uuid)) {
               delete $scope.browser.publication.filesSelected[set.uuid];
               _removeFromSimLists(set);

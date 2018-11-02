@@ -932,13 +932,15 @@
                     <div class="value pull-right">
                         <span ng-repeat="output in browser.project.getRelated('coordinatoroutput_set', [sim.uuid, coordinator.uuid])"
                               style="display:block; color:#D04348;">
-                            <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.title)">
+                            <span ng-if="browser.publication.coordinator_outputs.includes(output)">
+                                {{output.value.title}}
+                                <div style="color:black;">
+                                    {{output.value.description}}
+                                </div>
+                            </span>
+                            <span class="text-danger" ng-if="!browser.publication.coordinator_outputs.includes(output)">
                                 <i class="fa fa-exclamation-circle"></i>
                             </span>
-                            {{output.value.title}}
-                            <div style="color:black;">
-                                {{output.value.description}}
-                            </div>
                         </span>
                     </div>
                 </div>
@@ -946,10 +948,9 @@
               <br/>
             </div>
           </div>
-          <div class="meta-row">
+          <div class="meta-row" ng-if="browser.publication.sim_substructures.length">
             <div class="attr pull-left">
               <span>Numerical Substructure</span>
-              <span class="text-danger">*</span>
               <a href="#" ng-click="publicationCtrl.openEditCategories([])">
                 <i class="fa fa-pencil-square-o"></i> Edit
               </a>
@@ -957,9 +958,6 @@
             <div class="value pull-right">
               <span ng-repeat="substructure in browser.publication.sim_substructures"
                 style="display:block; color:#B59300;">
-                <span class="text-danger" ng-if="publicationCtrl.isMissing(substructure.value.title)">
-                  <i class="fa fa-exclamation-circle"></i>
-                </span>
                 {{substructure.value.title}}
                 <div style="color: black;">
                   {{substructure.value.description}}
@@ -972,13 +970,15 @@
                     <div class="value pull-right">
                         <span ng-repeat="output in browser.project.getRelated('simoutput_set', [sim.uuid, substructure.uuid])"
                               style="display:block; color:#D04348;">
-                            <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.title)">
+                            <span ng-if="browser.publication.sim_outputs.includes(output)">
+                                {{output.value.title}}
+                                <div style="color:black;">
+                                    {{output.value.description}}
+                                </div>
+                            </span>
+                            <span class="text-danger" ng-if="!browser.publication.sim_outputs.includes(output)">
                                 <i class="fa fa-exclamation-circle"></i>
                             </span>
-                            {{output.value.title}}
-                            <div style="color:black;">
-                                {{output.value.description}}
-                            </div>
                         </span>
                     </div>
                 </div>
@@ -1012,13 +1012,15 @@
                     <div class="value pull-right">
                         <span ng-repeat="output in browser.project.getRelated('expoutput_set', [sim.uuid, substructure.uuid])"
                               style="display:block; color:#D04348;">
-                            <span class="text-danger" ng-if="publicationCtrl.isMissing(output.value.title)">
+                            <span ng-if="browser.publication.exp_outputs.includes(output)">
+                              {{output.value.title}}
+                              <div style="color:black;">
+                                  {{output.value.description}}
+                              </div>
+                            </span>
+                            <span class="text-danger" ng-if="!browser.publication.exp_outputs.includes(output)">
                                 <i class="fa fa-exclamation-circle"></i>
                             </span>
-                            {{output.value.title}}
-                            <div style="color:black;">
-                                {{output.value.description}}
-                            </div>
                         </span>
                     </div>
                 </div>
@@ -1040,12 +1042,6 @@
           <h3 style="font-weight:500" ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimAnalysis(browser.project.analysis_set))">Analysis Information</h3>
           <span ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimReports(browser.project.report_set))">It is recommended to include an Analysis.</span>
         </div>
-        <!-- <div class="content-wrapper" style="border-top: none">
-          <h3 style="font-weight:500" class="text-danger" ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimAnalysis(browser.project.analysis_set))">Analysis Information
-              <i class="fa fa-exclamation-circle"></i>
-          </h3>
-          <span class="text-danger" ng-if="publicationCtrl.isMissing(publicationCtrl.filterSimAnalysis(browser.project.analysis_set))">You must include an Analysis.</span>
-        </div> -->
         <div class="content-wrapper" ng-repeat="analysis in browser.publication.analysiss | orderBy: ['_ui.order', 'value.title']">
           <h3 style="font-weight:500">Analysis Information</h3>
           <div class="meta-row">
