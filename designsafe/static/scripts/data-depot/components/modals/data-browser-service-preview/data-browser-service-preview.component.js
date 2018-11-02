@@ -1,4 +1,5 @@
 import DataBrowserServicePreviewTemplate from './data-browser-service-preview.component.html';
+import _ from 'underscore';
 
 class DataBrowserServicePreviewCtrl {
 

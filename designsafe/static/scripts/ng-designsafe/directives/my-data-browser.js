@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export function myDataBrowser(DataBrowserService, UserService, FileListing, ProjectService) {
     'ngInject';
     return {

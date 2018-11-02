@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 function DataBrowserCtrl($scope, $controller, $rootScope, Systems, logger, DataBrowserService) {
     'ngInject';
     if ($(window).width() < 992) {

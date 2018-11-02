@@ -1,4 +1,5 @@
 import DataBrowserServiceMoveTemplate from './data-browser-service-move.component.html';
+import _ from 'underscore';
 
 
 class DataBrowserServiceMoveCtrl {

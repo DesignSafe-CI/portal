@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
     'nginject';
     $localStorage.systemChecks = {};

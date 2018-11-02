@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export function dsFileUrl() {
     'ngInject';
     return function(file, baseHref) {
