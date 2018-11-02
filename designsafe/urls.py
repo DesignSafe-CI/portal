@@ -67,7 +67,7 @@ urlpatterns = [
     url(r'^api/', include('designsafe.apps.api.urls', namespace='designsafe_api')),
 
     # RAMP verification
-    url(r'^data/browser/public/nees.public/{}.html$'.format(settings.RAMP_VERIFICATION_ID), TemplateView.as_view(template_name='ramp_verification.html')),
+    url(r'{}.html$'.format(settings.RAMP_VERIFICATION_ID), TemplateView.as_view(template_name='ramp_verification.html')),
     
     # api urls, just for the samples.
     url(r'^applications/', include('designsafe.apps.applications.urls',
