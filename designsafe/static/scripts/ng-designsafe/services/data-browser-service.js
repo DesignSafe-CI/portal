@@ -19,6 +19,7 @@ export function nbv($window) { //from http://jameshill.io/articles/angular-third
 export function DataBrowserService($rootScope, $http, $q, $uibModal,
                   $state, Django, FileListing, Logging,
                   SystemsService, nbv, ProjectEntitiesService) {
+    'ngInject';
   var logger = Logging.getLogger('ngDesignSafe.DataBrowserService');
 
   /**
