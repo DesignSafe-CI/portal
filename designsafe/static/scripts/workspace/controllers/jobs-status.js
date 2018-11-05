@@ -98,6 +98,7 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
 }
 
 export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job, djangoUrl, logger) {
+    'ngInject';
     $scope.job = job;
 
     $scope.dismiss = function() {
@@ -132,6 +133,7 @@ export function JobDetailsModalCtrl($scope, $uibModalInstance, $http, Jobs, job,
 }
 
 export function VNCJobDetailsModalCtrl($scope, $uibModalInstance, msg) {
+    'ngInject';
     $scope.msg = msg;
     $scope.dismiss = function() {
         $uibModalInstance.dismiss('cancel');
