@@ -3,8 +3,8 @@ import angular from 'angular';
 import _ from 'underscore';
 
 
-import {agaveFilePicker} from '../workspace/directives/agave-file-picker';
-import {translateProvider} from '../workspace/providers/translations';
+import { agaveFilePicker } from '../workspace/directives/agave-file-picker';
+import { translateProvider } from '../workspace/providers/translations';
 
 import './directives';
 import './services';
