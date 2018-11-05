@@ -1,20 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
-## v3.0.0-20181102
-
-Improvements:
-
-- Add tooltip with event title on hazmapper (DES-521).
-
-Fixes:
-
-- Recon portal's admin link (DES-541).
-
 ## v3.0.0-20181101
 
 Improvements:
 
 - Better breadcrumbs for Angular 1.6+ (DES-706).
+- Add tooltip with event title on hazmapper (DES-521).
 
 Fixes:
 
@@ -22,6 +13,7 @@ Fixes:
 - Applications templates (DES-526).
 - Appicon not showing in applications (DES-526).
 - Haystack Connections (DES-196).
+- Recon portal's admin link (DES-541).
 
 ## v3.0.0-20181009
 
