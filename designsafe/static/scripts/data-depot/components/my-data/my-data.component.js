@@ -2,7 +2,7 @@ import _ from 'underscore';
 import MyDataTemplate from './my-data.component.html';
 
 export function MyDataCtrl($scope, $state, Django, DataBrowserService) {
-
+    'ngInject';
     $scope.browser = DataBrowserService.state();
     $scope.searchState = DataBrowserService.apiParams.searchState;
 

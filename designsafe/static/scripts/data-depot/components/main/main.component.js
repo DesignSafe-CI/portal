@@ -1,4 +1,5 @@
 export function MainCtrl($scope, DataBrowserService) {
+    'ngInject';
     $scope.browser = DataBrowserService.state();
   }
 

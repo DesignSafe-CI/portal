@@ -2,6 +2,7 @@ import _ from 'underscore';
 import projectRootTemplate from './project-root.component.html';
 
 export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectService) {
+    'ngInject';
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';

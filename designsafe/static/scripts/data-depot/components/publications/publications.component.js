@@ -2,7 +2,7 @@ import _ from 'underscore';
 import publicationsTemplate from './publications.component.html';
 
 export function PublicationDataCtrl($scope, $state, Django, DataBrowserService) {
-
+  'ngInject';
   $scope.browser = DataBrowserService.state();
   $scope.state = {
         loadingMore : false,

@@ -2,7 +2,7 @@ import ProjectSearchTemplate from './project-search.component.html';
 import _ from 'underscore';
 
 function ProjectSearchCtrl($scope, $state, Django, DataBrowserService, ProjectService) {
-
+    'ngInject';
     $scope.browser = DataBrowserService.state();
     $scope.searchState = DataBrowserService.apiParams.searchState;
 

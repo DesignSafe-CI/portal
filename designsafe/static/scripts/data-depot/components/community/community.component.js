@@ -2,7 +2,7 @@ import _ from 'underscore';
 import CommunityTemplate from './community.component.html';
 
 export function CommunityDataCtrl($scope, $state, Django, DataBrowserService) {
-
+    'ngInject';
     $scope.browser = DataBrowserService.state();
     $scope.state = {
           loadingMore : false,
