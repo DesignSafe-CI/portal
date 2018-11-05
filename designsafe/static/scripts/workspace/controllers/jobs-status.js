@@ -73,10 +73,10 @@ export function JobsStatusCtrl($scope, $controller, $rootScope, $uibModal, djang
 
     $scope.refresh = function() {
         $scope.data.loading = true;
-        Jobs.list({limit: $scope.data.limit}).then(
+        Jobs.list({ limit: $scope.data.limit }).then(
             function(resp) {
                 $scope.data.loading = false;
-                $scope.data.jobs = resp.data;
+                $scope.data.jobs = resp;
             });
     };
     $scope.refresh();
