@@ -1,7 +1,8 @@
+import template from '../html/event-listing-detailed.html'
 
 export default function eventListingDetailed() {
   return {
-    templateUrl: "/static/designsafe/apps/rapid/html/event-listing-detailed.html",
+    template: template,
     scope: {
       event: '=event',
     }

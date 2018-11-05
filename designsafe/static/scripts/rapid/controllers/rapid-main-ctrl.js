@@ -39,16 +39,8 @@ export default class RapidMainCtrl {
     this.RapidDataService.get_events().then( (resp)=>{
       this.events = resp;
       this.events.forEach((d)=> {
-        // let template = "<div class=''>" +
-        //   "<h3> {{event.title}} </h3>" +
-        //   "<div ng-repeat='dataset in event.datasets'>" +
-        //   "<a href='{{dataset.href}}'> {{dataset.doi}} </a>"+
-        //   "</div>";
-        // let linker = this.$compile(angular.element(template));
         let marker = L.marker([d.location.lat, d.location.lon]);
-        // let newScope = this.$scope.$new();
-        // newScope.event = d;
-        // marker.bindPopup(linker(newScope)[0], {className : 'rapid-popup'});
+        marker.bindTooltip(d.title);
         this.map.addLayer(marker);
         marker.rapid_event = d;
         marker.on('click', (ev) => {

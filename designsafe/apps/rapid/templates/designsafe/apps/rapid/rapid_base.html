@@ -15,22 +15,12 @@
   {% block main %} {% endblock main %}
 
 {% addtoblock "js" %}
-  <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
   <script type="text/javascript" src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-
-
-<script type="text/javascript" src="{% static 'build/rapid.bundle.js' %}"></script>
-
-
-
+  <script type="text/javascript" src="{% static 'build/rapid.bundle.js' %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-    <!-- <link href='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.css' rel='stylesheet' /> -->
-    <link rel="stylesheet" href="{% static 'designsafe/apps/rapid/styles/rapid.css' %}" />
-    {# <link rel="stylesheet" href="{% static 'vendor/leaflet-measure/dist/leaflet-measure.css' %}">#}
-    {# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.css" />#}
 {% endaddtoblock %}
 
 {% endblock content %}

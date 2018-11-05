@@ -365,7 +365,6 @@ def admin_user_permissions(request):
         }
 
     """
-
     metrics_logger.info('Rapid Admin user perms',
                  extra = {
                      'user': request.user.username,

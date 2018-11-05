@@ -10,7 +10,7 @@ export function UserService($http, $q, djangoUrl, Logging) {
      * @returns {Promise}
      */
     this.get = function (username) {
-      return $http.get(djangoUrl.reverse('designsafe_api:user_search'), {params: {username: username}})
+      return $http.get("/api/users", {params: {username: username}})
         .then(function (resp) {
           return resp.data;
         });
@@ -23,7 +23,7 @@ export function UserService($http, $q, djangoUrl, Logging) {
      * @returns {Promise}
      */
     this.search = function (options) {
-      return $http.get(djangoUrl.reverse('designsafe_api:user_search'), {params: {q: options.q, role:options.role}})
+      return $http.get("/api/users", {params: {q: options.q, role:options.role}})
         .then(function (resp) {
           return resp.data;
         });

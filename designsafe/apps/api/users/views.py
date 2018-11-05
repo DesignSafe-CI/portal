@@ -52,7 +52,6 @@ class SearchView(SecureMixin, View):
 
     def get(self, request):
         resp_fields = ['first_name', 'last_name', 'email', 'username']
-
         model = get_user_model()
         q = request.GET.get('username')
         if q:

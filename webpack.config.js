@@ -13,7 +13,7 @@ module.exports = function(env, arg) {
     return {
         devtool: smap,
         entry: {
-          "./designsafe/static/build/rapid.bundle.js" : "./designsafe/apps/rapid/static/designsafe/apps/rapid/scripts/index.js",
+          "./designsafe/static/build/rapid.bundle.js" : "./designsafe/static/scripts/rapid/index.js",
           "./designsafe/static/build/geo.bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
           "./designsafe/static/build/bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
           "./designsafe/static/build/dd.bundle.js": "./designsafe/static/scripts/data-depot/index.js",

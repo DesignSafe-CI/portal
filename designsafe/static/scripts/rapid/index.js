@@ -1,10 +1,14 @@
+import './styles/rapid.css';
+
 import {mod as rapid_controllers} from './controllers';
 import {mod as rapid_services} from './services';
 import {mod as rapid_directives} from './directives';
-import './../../../../../../../static/styles/base.scss';
+
+import indexTemplate from './html/index.html';
+import adminTemplate from './html/rapid-admin-users.html';
 
 let mod = angular.module('designsafe');
-mod.requires.push('ui.router','ds.rapid.controllers', 'ds.rapid.services', 'ds.rapid.directives', 'ngAnimate');
+mod.requires.push('ui.router', 'ds.rapid.controllers', 'ds.rapid.services', 'ds.rapid.directives', 'ngAnimate');
 
 function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locationProvider) {
   'ngInject';
@@ -16,7 +20,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
 
   $stateProvider.state('rapid', {
     url: '/',
-    templateUrl: '/static/designsafe/apps/rapid/html/index.html',
+    template: indexTemplate,
     controller: 'RapidMainCtrl as vm',
     resolve: {
       auth: function () {
@@ -26,7 +30,7 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
   })
   .state('rapid_admin', {
     url: '/admin/users',
-    templateUrl: '/static/designsafe/apps/rapid/html/rapid-admin-users.html',
+    template: adminTemplate,
     controller: 'RapidAdminUsersCtrl as vm',
     resolve: {
       auth: function () {
