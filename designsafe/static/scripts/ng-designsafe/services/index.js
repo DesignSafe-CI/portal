@@ -14,7 +14,7 @@ import { UserService } from './user-service';
 
 let designsafeServices = angular.module('designsafe.services', []);
 
-designsafeServices.factory('nbv', nbv);
+designsafeServices.factory('nbv', ['$window', nbv]);
 designsafeServices.factory('DataBrowserService', DataBrowserService);
 designsafeServices.factory(
     'DataService', [
