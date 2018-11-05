@@ -1,85 +1,103 @@
-import $ from 'jquery';
 import angular from 'angular';
-import _ from 'underscore';
 
-import { dashboardCtrl } from './controllers/dashboardCtrl';
 import { agave2ds } from './filters/filters';
-import { agaveService } from './services/agave-service';
+// import { DSTSBarChart } from './charts/DSTSBarChart';
+import { appsService } from '../workspace/services/apps-service';
+import { jobsService } from '../workspace/services/jobs-service';
+import { UserService } from '../ng-designsafe/services/user-service';
+import { TicketsService } from '../ng-designsafe/services/tickets-service';
+import { NotificationServiceProvider } from '../ng-designsafe/providers/notifications-provider';
 
-dashboardCtrl();
+import './components';
+
 agave2ds();
-agaveService();
 
-var module = angular.module('designsafe');
-module.requires.push(
-  'ui.router',
-  'djng.urls',  //TODO: djng
-  'ui.bootstrap',
-  'django.context'
+let dashboardServices = angular.module('dashboard.services', ['toastr', 'djng.urls']);
+dashboardServices.factory('Apps', appsService);
+dashboardServices.factory('Jobs', jobsService);
+dashboardServices.service('UserService', UserService);
+dashboardServices.service('TicketsService', TicketsService);
+dashboardServices.provider('NotificationService', NotificationServiceProvider);
+
+dashboardServices.config(['$translateProvider', function($translateProvider) {
+    'ngInject';
+    $translateProvider.translations('en', {
+        error_system_monitor: 'The execution system for this app is currently unavailable. Your job submission may fail.',
+        error_app_run: 'Could not find appId provided',
+        error_app_disabled: "The app you're trying to run is currently disabled. Please enable the app and try again",
+        apps_metadata_name: 'ds_apps',
+        apps_metadata_list_name: 'ds_apps_list',
+    });
+    $translateProvider.preferredLanguage('en');
+}]);
+dashboardServices.requires.push(
+    'pascalprecht.translate'
 );
 
-function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django) {
-  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-  $locationProvider.html5Mode(true);
-  $urlMatcherFactoryProvider.strictMode(false);
-
-  $stateProvider
-    /* Private */
-    .state('dashboard', {
-      url: '/',
-      controller: 'DashboardCtrl as vm',
-      template: require('./html/dashboard.html'),
-      resolve: {
-        auth: ['UserService', function (UserService) {
-          return UserService.authenticate();
-        }]
-      }
-      // resolve: {
-      //   'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-      //     var options = {
-      //       system: ($stateParams.systemId || 'designsafe.storage.default'),
-      //       path: ($stateParams.filePath || Django.user)
-      //     };
-      //     if (options.path === '/') {
-      //       options.path = Django.user;
-      //     }
-      //     DataBrowserService.apiParams.fileMgr = 'agave';
-      //     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-      //     DataBrowserService.apiParams.searchState = 'dataSearch';
-      //     return DataBrowserService.browse(options);
-      //   }],
-      //   'auth': function($q) {
-      //     if (Django.context.authenticated) {
-      //       return true;
-      //     } else {
-      //       return $q.reject({
-      //         type: 'authn',
-      //         context: Django.context
-      //       });
-      //     }
-      //   }
-      // }
-    })
+let dashboardModule = angular.module('dashboard', [
+    'dashboard.components',
+    'dashboard.services',
+]);
 
 
-  // $urlRouterProvider.otherwise(function($injector, $location) {
-  //   var $state = $injector.get('$state');
-  //
-  //   /* Default to MyData for authenticated users, PublicData for anonymous */
-  //   if (!(Django.context.authenticated)) {
-  //     $state.go('myData', {
-  //       systemId: 'designsafe.storage.default',
-  //       filePath: Django.user
-  //     });
-  //   } else {
-  //     $state.go('publicData');
-  //   }
-  // });
+dashboardModule.requires.push(
+    'ui.router',
+    'djng.urls', // TODO: djng
+    'ui.bootstrap',
+    'django.context'
+);
+
+angular.module('designsafe.portal').requires.push(
+    'dashboard'
+);
+
+
+function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProvider, $urlMatcherFactoryProvider, Django, $translateProvider) {
+    'ngInject';
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+    $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+    $locationProvider.html5Mode(true);
+    $urlMatcherFactoryProvider.strictMode(false);
+
+    $stateProvider
+        /* Private */
+        .state('dashboard', {
+            url: '/',
+            component: 'db',
+            resolve: {
+                auth: ['UserService', function(UserService) {
+                    return UserService.authenticate();
+                }],
+            },
+            // resolve: {
+            //   'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
+            //     var options = {
+            //       system: ($stateParams.systemId || 'designsafe.storage.default'),
+            //       path: ($stateParams.filePath || Django.user)
+            //     };
+            //     if (options.path === '/') {
+            //       options.path = Django.user;
+            //     }
+            //     DataBrowserService.apiParams.fileMgr = 'agave';
+            //     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
+            //     DataBrowserService.apiParams.searchState = 'dataSearch';
+            //     return DataBrowserService.browse(options);
+            //   }],
+            //   'auth': function($q) {
+            //     if (Django.context.authenticated) {
+            //       return true;
+            //     } else {
+            //       return $q.reject({
+            //         type: 'authn',
+            //         context: Django.context
+            //       });
+            //     }
+            //   }
+            // }
+        });
 }
 
-module.config(config)
+dashboardModule.config(['$httpProvider', '$locationProvider', '$stateProvider', '$urlRouterProvider', '$urlMatcherFactoryProvider', 'Django', config]);
 
-
-
+export default dashboardModule;
