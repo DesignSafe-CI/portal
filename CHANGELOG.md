@@ -1,5 +1,15 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181102
+
+Improvements:
+
+- Add tooltip with event title on hazmapper (DES-521).
+
+Fixes:
+
+- Recon portal's admin link (DES-541).
+
 ## v3.0.0-20181101
 
 Improvements:
