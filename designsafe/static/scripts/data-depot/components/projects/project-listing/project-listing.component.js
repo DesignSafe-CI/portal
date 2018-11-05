@@ -18,6 +18,7 @@ function ProjectListingCtrl($scope, $state, DataBrowserService, Django, ProjectS
     ProjectService.list({offset:offset, limit:limit}).then(function(projects) {
       $scope.ui.busy = false;
       $scope.data.projects = _.map(projects, function(p) { p.href = $state.href('projects.view', {projectId: p.uuid}); return p; });
+      DataBrowserService.projectBreadcrumbSubject.next()
     });
 
     $scope.onBrowse = function onBrowse($event, project) {

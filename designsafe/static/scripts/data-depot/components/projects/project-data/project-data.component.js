@@ -27,6 +27,7 @@ function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserServ
                               {'query_string': $state.params.query_string})
       .then(function () {
         $scope.browser = DataBrowserService.state();
+        DataBrowserService.projectBreadcrumbSubject.next()
         $scope.browser.busy = true;
         $scope.browser.busyListing = true;
         $scope.browser.listing.href = $state.href('projects.view.data', {

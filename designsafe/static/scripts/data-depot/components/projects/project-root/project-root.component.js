@@ -17,7 +17,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
     };
 
 
-    $scope.$on('$stateChangeSuccess', function($event, toState, toStateParams) {
+    DataBrowserService.projectBreadcrumbSubject.subscribe( () =>  {
       $scope.data.navItems = [{href: $state.href('projects.list'), label: 'Projects'}];
 
       // Create a function that checks if 'toStateParams.projectTitle' is empty. Replace it if so...
@@ -35,19 +35,19 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
       }
 
 
-      if (toStateParams.filePath) {
-        if (toStateParams.filePath === '/') {
+      if ($state.params.filePath) {
+        if ($state.params.filePath.replace('%2F', '/') === '/') {
           $scope.data.navItems.push({
             label: DataBrowserService.state().project.value.title,
             href: $state.href('projects.view.data', {
-              projectId: toStateParams.projectId,
+              projectId: $state.params.projectId,
               filePath: '/',
               projectTitle: DataBrowserService.state().project.value.title,
               query_string: ''
             })
           });
         } else {
-          _.each(toStateParams.filePath.split('/'), function (e, i, l) {
+          _.each($state.params.filePath.replace('%2F', '/').split('/'), function (e, i, l) {
             var filePath = l.slice(0, i + 1).join('/');
             if (filePath === '' || filePath === '$SEARCH') {
               filePath = '/';
@@ -58,7 +58,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
             $scope.data.navItems.push({
               label: e || DataBrowserService.state().project.value.title,
               href: $state.href('projects.view.data', {
-                projectId: toStateParams.projectId,
+                projectId: $state.params.projectId,
                 filePath: filePath,
                 projectTitle: DataBrowserService.state().project.value.title,
                 query_string: ''
@@ -71,11 +71,11 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
         // when the user is in the base project file's directory 
         // display the project title in the breadcrumbs
         $scope.data.navItems.push({
-          label: getTitle(toStateParams, $scope.data.projects),
+          label: getTitle($state.params, $scope.data.projects),
           href: $state.href('projects.view.data', {
-            projectId: toStateParams.projectId,
+            projectId: $state.params.projectId,
             filePath: '/',
-            projectTitle: getTitle(toStateParams, $scope.data.projects),
+            projectTitle: getTitle($state.params, $scope.data.projects),
             query_string: ''
           })
         });
