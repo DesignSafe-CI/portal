@@ -16,37 +16,14 @@ let designsafeServices = angular.module('designsafe.services', []);
 
 designsafeServices.factory('nbv', ['$window', nbv]);
 designsafeServices.factory('DataBrowserService', DataBrowserService);
-designsafeServices.factory(
-    'DataService', [
-        '$rootScope',
-        '$http',
-        '$q',
-        'djangoUrl',
-        'Logging',
-        DataService]
-);
+designsafeServices.factory('DataService', DataService);
 designsafeServices.factory('FileListing', ['$http', '$q', 'Logging', FileListing]);
 designsafeServices.provider('Logging', LoggingServiceProvider);
 designsafeServices.factory('notificationFactory', notificationFactory);
 designsafeServices.factory('ProjectEntitiesService', ProjectEntitiesService);
 designsafeServices.factory('ProjectService', ProjectService);
-designsafeServices.factory(
-    'SystemsService',
-    [
-        '$rootScope',
-        '$http',
-        '$q',
-        '$uibModal',
-        '$state',
-        'Django',
-        'FileListing',
-        'Logging',
-        SystemsService,
-    ]
-);
+designsafeServices.factory('SystemsService', SystemsService);
 designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
-
-
 
 export default designsafeServices;
