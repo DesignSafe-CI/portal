@@ -52,6 +52,7 @@ module.exports = function(env, arg) {
                 },
                 {
                   test: /\.(ttf|eot|svg|png|jpg)(\?[\s\S]+)?$/,
+                  exclude: /node_modules/,
                   loader: 'file-loader'
                 },
                 {
