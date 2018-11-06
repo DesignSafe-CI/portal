@@ -3,11 +3,12 @@ import _ from 'underscore';
 
 class DataBrowserServicePreviewCtrl {
 
-    constructor($sce, DataBrowserService, nbv) {
+    constructor($sce, DataBrowserService, nbv, Django) {
         'ngInject';
         this.$sce = $sce
         this.DataBrowserService = DataBrowserService
         this.nbv = nbv;
+        this.Django = Django;
     }
 
     $onInit() {
@@ -140,6 +141,52 @@ class DataBrowserServicePreviewCtrl {
 
     close() {
         this.dismiss();
+    };
+
+    notInJupyterTree() {
+        let designsafePath = this.file.href;
+        if (
+            designsafePath.includes('dropbox') ||
+            designsafePath.includes('googledrive') ||
+            designsafePath.includes('box') ||
+            designsafePath.includes('shared')
+        ) {
+            return true;
+        }
+        return false;
+    };
+
+    isJupyter() {
+        let designsafePath = this.file.href;
+        if (this.notInJupyterTree()) {
+            return false;
+        } else {
+        let fileExtension = this.file.name.split('.').pop();
+            return fileExtension == 'ipynb';
+        }
+    };
+
+    openInJupyter() {
+        const filePath = this.file.path;
+        let pathToFile = '';
+        if (filePath.includes(this.Django.user)) {
+            const lenghtUserName = this.Django.user.length;
+            pathToFile = filePath.substring(lenghtUserName + 2);
+        } else {
+            pathToFile = filePath;
+        }
+        let specificLocation = this.DataBrowserService.state().listing.name;
+        if (specificLocation === 'myData' || specificLocation === 'communityData') {
+            specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1));
+        } else if (specificLocation.includes('projects')) {
+            const prjNumber = this.DataBrowserService.state().project.value.projectId;
+            specificLocation = 'projects/' + prjNumber;
+        } else if (specificLocation === 'publishedData') {
+            specificLocation = 'Published';
+        }
+        const fileLocation = specificLocation + "/" + pathToFile;
+        const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
+        window.open(jupyterPath);
     };
 }
 

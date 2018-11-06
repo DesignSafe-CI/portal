@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.2
+
+Fixes:
+
+- Open in Jupyter for preview.
+
 ## v3.0.1
 
 Fixes:

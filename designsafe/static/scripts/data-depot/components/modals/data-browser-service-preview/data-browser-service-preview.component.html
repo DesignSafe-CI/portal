@@ -50,11 +50,11 @@
             <i class="fa fa-cloud-download"></i> Download
         </button>
 
-            <button class="btn btn-sm btn-default" ng-show="isJupyter()" ng-click="openInJupyter()">
+            <button class="btn btn-sm btn-default" ng-show="$ctrl.isJupyter()" ng-click="$ctrl.openInJupyter()">
                 <i class="fa fa-file-image-o"></i></i> Open In Jupyter
             </button>
 
-        <button class="btn btn-sm btn-danger" ng-if="$ctrl.$ctrl.tests.canDelete" ng-click="$ctrl.rm()">
+        <button class="btn btn-sm btn-danger" ng-if="$ctrl.tests.canDelete" ng-click="$ctrl.rm()">
             <i class="fa fa-trash"></i> Delete
         </button>
     </div>

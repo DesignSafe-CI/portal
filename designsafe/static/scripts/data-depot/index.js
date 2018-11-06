@@ -1,3 +1,7 @@
+import '../../styles/base.scss';
+import '../../styles/main.css';
+import '../rapid/styles/rapid.css';
+
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
