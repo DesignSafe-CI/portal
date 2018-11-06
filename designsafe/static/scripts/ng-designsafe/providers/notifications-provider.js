@@ -140,14 +140,18 @@ function NotificationService(
                 return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
             });
 
-        const toastMessage = '<h4>' + toastTitle + '</h4>' + '<p>' + msg.message + '</p>';
-        // var toastOp = toastr[toastLevel] || toastr.info;
-
-        const toast = $mdToast.simple()
-            .content(toastMessage)
-            .toastClass(toastLevel)
-            .hideDelay(5000)
-            .parent($('#toast-container'));
+        const toast = $mdToast.simple({
+            template:
+                '<md-toast>' +
+                    '<div class="md-toast-content">' +
+                        '<h4>' + toastTitle + '</h4>' +
+                        '<p>' + msg.message + '</p>' +
+                    '</div>' +
+                '</md-toast>',
+            hideDelay: 6000,
+            parent: $('#toast-container'),
+            toastClass: toastLevel,
+        });
 
         const toastViewLink = renderLink(msg);
         if (typeof toastViewLink !== 'undefined') {
