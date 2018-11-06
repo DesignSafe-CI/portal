@@ -3,12 +3,13 @@ import _ from 'underscore';
 
 class DataBrowserServicePreviewCtrl {
 
-    constructor($sce, DataBrowserService, nbv, Django) {
+    constructor($sce, $state, DataBrowserService, nbv, Django) {
         'ngInject';
         this.$sce = $sce
         this.DataBrowserService = DataBrowserService
         this.nbv = nbv;
         this.Django = Django;
+        this.$state = $state;
     }
 
     $onInit() {
@@ -175,7 +176,7 @@ class DataBrowserServicePreviewCtrl {
         } else {
             pathToFile = filePath;
         }
-        let specificLocation = this.DataBrowserService.state().listing.name;
+        let specificLocation = this.$state.current.name;
         if (specificLocation === 'myData' || specificLocation === 'communityData') {
             specificLocation = (specificLocation.charAt(0).toUpperCase() + specificLocation.slice(1));
         } else if (specificLocation.includes('projects')) {
