@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.3
+
+Fixes:
+
+- Fonts.
+- Jupyter notebook path construction.
+
 ## v3.0.2
 
 Fixes:
