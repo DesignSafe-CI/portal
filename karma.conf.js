@@ -13,6 +13,8 @@ module.exports = function(config) {
             './designsafe/static/nbviewer/**/*.js',
             './node_modules/prismjs/prism.js',
             './node_modules/marked/lib/marked.js',
+            './node_modules/d3/dist/d3.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js',
 
             './node_modules/angular/angular.min.js',
             './node_modules/ngstorage/ngStorage.js',
