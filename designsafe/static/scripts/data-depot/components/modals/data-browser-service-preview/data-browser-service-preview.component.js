@@ -3,10 +3,11 @@ import _ from 'underscore';
 
 class DataBrowserServicePreviewCtrl {
 
-    constructor($sce, DataBrowserService) {
+    constructor($sce, DataBrowserService, nbv) {
         'ngInject';
         this.$sce = $sce
         this.DataBrowserService = DataBrowserService
+        this.nbv = nbv;
     }
 
     $onInit() {
@@ -72,6 +73,7 @@ class DataBrowserServicePreviewCtrl {
                     this.busy = false;
                     // if filetype is ipynb
                 } else {
+                    //let nbv = this.nbv; // Quickfix
                     file.download().then(
                         (data) => {
                             var postit = data.href;
@@ -86,7 +88,7 @@ class DataBrowserServicePreviewCtrl {
                                 reader.onload = (e) => {
                                     var content = JSON.parse(e.target.result);
                                     var target = $('.nbv-preview')[0];
-                                    nbv.render(content, target);
+                                    this.nbv.render(content, target);
                                 };
 
                                 reader.readAsText(blob);
@@ -140,8 +142,6 @@ class DataBrowserServicePreviewCtrl {
         this.dismiss();
     };
 }
-
-DataBrowserServicePreviewCtrl.$inject = ['$sce', 'DataBrowserService']
 
 export const DataBrowserServicePreviewComponent = {
     template: DataBrowserServicePreviewTemplate,
