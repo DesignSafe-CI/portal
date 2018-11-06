@@ -12,7 +12,6 @@ Improvements:
 - Opensees app form. (DES-618)
 - Project mount on vnc apps. (DES-618)
 - Improve missing metadata check. (DES-677)
-- Improve missing metadata check. (DES-677)
 - Index published files. (DES-617)
 - Better breadcrumbs for Angular 1.6+ (DES-706).
 - Add tooltip with event title on hazmapper (DES-521).

@@ -704,7 +704,8 @@ export function DataBrowserService($rootScope, $http, $q, $uibModal,
       resolve: {
         file: () => file,
         listing: () => listing
-      }
+      },
+      size: 'lg'
     })
   }
 
