@@ -46,7 +46,7 @@ export default function DSTSBarChart(elementId) {
             .tickSize(-width, 0, 0)
             .tickFormat(function(e) {
                 if (Math.floor(e) != e) {
-                    return false;
+                    return null;
                 }
                 return e;
             });
@@ -107,46 +107,47 @@ export default function DSTSBarChart(elementId) {
             .on('click', barClick);
     }
 
-    exports.data = function(_data, ...args) {
-        if (!(args.length)) return data;
+    exports.data = function(_data) {
+        if (!(_data)) return data;
         data = _data;
         draw();
+        console.log(data);
         return this;
     };
 
-    exports.xSelector = function(f, ...args) {
-        if (!args.length) return xSelector;
+    exports.xSelector = function(f) {
+        if (!f) return xSelector;
         xSelector = f;
         return exports;
     };
 
-    exports.ySelector = function(f, ...args) {
-        if (!args.length) return ySelector;
+    exports.ySelector = function(f) {
+        if (!f) return ySelector;
         ySelector = f;
         return exports;
     };
 
-    exports.elementId = function(d, ...args) {
-        if (!args.length) return elementId;
+    exports.elementId = function(d) {
+        if (!d) return elementId;
         elementId = d;
         return exports;
     };
 
-    exports.width = function(d, ...args) {
-        if (!args.length) return width;
+    exports.width = function(d) {
+        if (!d) return width;
         width = d - margin.left - margin.right;
         exports();
         return exports;
     };
 
-    exports.height = function(d, ...args) {
-        if (!args.length) return height;
+    exports.height = function(d) {
+        if (!d) return height;
         height = d;
         exports();
         return exports;
     };
 
-    exports.margin = function(d, ...args) {
+    exports.margin = function(d) {
         if (!args.length) {
             return margin;
         }
@@ -160,8 +161,8 @@ export default function DSTSBarChart(elementId) {
         return exports;
     };
 
-    exports.startDate = function(d, ...args) {
-        if (!args.length) return startDate;
+    exports.startDate = function(d) {
+        if (!d) return startDate;
         // this just gives a little padding for the first bar, so that
         // it doesn't go outside the chart
         startDate = new Date(new Date(d.getTime() - (24 * 60 * 60 * 1000)).setHours(0, 0, 0, 0));
@@ -170,8 +171,8 @@ export default function DSTSBarChart(elementId) {
         return exports;
     };
 
-    exports.endDate = function(d, ...args) {
-        if (!args.length) return endDate;
+    exports.endDate = function(d) {
+        if (!d) return endDate;
         endDate = new Date(new Date(d.getTime() - (24 * 60 * 60 * 1000)).setHours(0, 0, 0, 0));
         x.domain([startDate, endDate]);
         numDays = (endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000);

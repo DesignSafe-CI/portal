@@ -3,7 +3,6 @@ import DSTSBarChart from '../../charts/DSTSBarChart';
 import moment from 'moment';
 import _ from 'underscore';
 
-
 class DashboardCtrl {
     constructor(
         Jobs,
@@ -43,7 +42,7 @@ class DashboardCtrl {
         this.chart.on('barClick', (ev, toggled) => {
             (toggled) ? this.display_job_details = true : this.display_job_details = false;
             this.jobs_details = ev.values;
-            this.$apply();
+            this.$scope.$apply();
         });
     }
 
@@ -64,6 +63,7 @@ class DashboardCtrl {
             });
             this.chart_data = this.Jobs.jobsByDate(this.jobs);
             this.chart.data(this.chart_data);
+            console.log(this.chart_data);
             let tmp = _.groupBy(this.jobs, d => {
                 return d.appId;
             });

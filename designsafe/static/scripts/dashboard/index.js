@@ -69,32 +69,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
                 auth: ['UserService', function(UserService) {
                     return UserService.authenticate();
                 }],
-            },
-            // resolve: {
-            //   'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService) {
-            //     var options = {
-            //       system: ($stateParams.systemId || 'designsafe.storage.default'),
-            //       path: ($stateParams.filePath || Django.user)
-            //     };
-            //     if (options.path === '/') {
-            //       options.path = Django.user;
-            //     }
-            //     DataBrowserService.apiParams.fileMgr = 'agave';
-            //     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-            //     DataBrowserService.apiParams.searchState = 'dataSearch';
-            //     return DataBrowserService.browse(options);
-            //   }],
-            //   'auth': function($q) {
-            //     if (Django.context.authenticated) {
-            //       return true;
-            //     } else {
-            //       return $q.reject({
-            //         type: 'authn',
-            //         context: Django.context
-            //       });
-            //     }
-            //   }
-            // }
+            }
         });
 }
 
