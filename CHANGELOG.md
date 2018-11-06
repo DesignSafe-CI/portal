@@ -1,5 +1,12 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.1
+
+Fixes:
+
+- Recon Portal css.
+- nbv rendering issue.
+
 ## v3.0.0
 
 Improvements:
