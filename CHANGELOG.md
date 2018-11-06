@@ -1,5 +1,25 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0-20181104
+
+Fixes:
+
+- Componentized Dashboard.
+- Dashboard graphs working with D3.
+- Hybrid Sim wording.
+
+## v3.0.0-20181103
+
+Fixes:
+
+- Fix service injection in data browser service.
+
+## v3.0.0-20181102
+
+Fixes:
+
+- Add missing `'ngInject';`.
+
 ## v3.0.0-20181101
 
 Improvements:
