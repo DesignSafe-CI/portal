@@ -18,10 +18,11 @@
       <link href="{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
+      <!-- <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css"> -->
+      <link href="{% static 'build/base.css' %}"rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
       {% block styles %}{% endblock %}
@@ -56,7 +57,7 @@
     <script src="{% static 'vendor/angular/angular.js' %}"></script>
     <script type="text/javascript" src="{% static 'djng/js/django-angular.js' %}"></script>
     <script src="{% static 'vendor/js-custom-select/js/customSelect.js' %}"></script>
-    
+
     <script type="text/javascript" src="{% static 'scripts/ng-modernizr/ng-modernizr.js' %}"></script>
     <script type="text/javascript" src="{% static 'build/bundle.js' %}"></script>
 
@@ -71,7 +72,7 @@
         <script type="text/javascript" src="{% static 'vendor/marked/lib/marked.js' %}"></script>
         <script src="{% static 'scripts/navbar.js' %}"></script>
 
-    
+
     <script type="text/javascript">
         (function(angular) {
             var django = angular.module('django.context', []);
@@ -80,9 +81,9 @@
                 context: {{ angular_init|default:"{}"|safe }}
             });
         })(angular);
-        
+
         var userAgent = navigator.userAgent
-        
+
         if(!(userAgent.includes("Chrome") || userAgent.includes("Firefox"))) {
             $("#agentMessage").append("\
                 <div class='alert alert-warning'>\
@@ -97,7 +98,7 @@
                     </p>\
                 </div>")
         }
-        
+
     </script>
 
     {% include 'includes/analytics.html' %}

@@ -1,4 +1,6 @@
 import '../../styles/base.scss';
+import '../../styles/main.css';
+import '../rapid/styles/rapid.css';
 
 import $ from 'jquery';
 import angular from 'angular';
@@ -26,12 +28,12 @@ import './filters';
 import './models';
 import './controllers';
 
-export const ngDesignsafe = angular.module('designsafe', 
-                                           ['ng.modernizr', 
-                                            'djng.urls', 
-                                            'slickCarousel', 
-                                            'designsafe.services', 
-                                            'designsafe.directives', 
+export const ngDesignsafe = angular.module('designsafe',
+                                           ['ng.modernizr',
+                                            'djng.urls',
+                                            'slickCarousel',
+                                            'designsafe.services',
+                                            'designsafe.directives',
                                             'designsafe.filters',
                                             'designsafe.models',
                                             'designsafe.controllers',
@@ -65,7 +67,7 @@ export const ngDesignsafe = angular.module('designsafe',
 // Current list of icons for apps
 .constant('appIcons', ['Compress', 'Extract', 'MATLAB', 'Paraview', 'Hazmapper', 'Jupyter', 'ADCIRC', 'QGIS', 'LS-DYNA', 'LS-Pre/Post', 'VisIt', 'OpenFOAM', 'OpenSees'])
 
-ngDesignsafe.requires.push('django.context', 
+ngDesignsafe.requires.push('django.context',
                            'httpi',
                            'ngCookies',
                            'djng.urls',  //TODO: djng
