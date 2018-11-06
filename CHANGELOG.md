@@ -1,5 +1,35 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.0
+
+Improvements:
+
+- Travis CI setup
+- Codecov setup
+- Codeclimate setup
+- ES6 Setup
+- App dropdown. (DES-618)
+- Opensees app form. (DES-618)
+- Project mount on vnc apps. (DES-618)
+- Improve missing metadata check. (DES-677)
+- Improve missing metadata check. (DES-677)
+- Index published files. (DES-617)
+- Better breadcrumbs for Angular 1.6+ (DES-706).
+- Add tooltip with event title on hazmapper (DES-521).
+
+Fixes:
+
+- Remove unnecessary Django `static` usage.
+- Add angular-schema-form-ui-codemirror to repo
+- Fix workspace template URL
+- Remove unused metadata on templates and `!` alert icons. (DES-677)
+- Citation modal fix. (DES-693)
+- Help links for workspace (DES-526).
+- Applications templates (DES-526).
+- Appicon not showing in applications (DES-526).
+- Haystack Connections (DES-196).
+- Recon portal's admin link (DES-541).
+
 ## v3.0.0-20181104
 
 Fixes:
