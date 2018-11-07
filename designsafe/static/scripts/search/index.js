@@ -12,22 +12,35 @@ import { SearchService } from './services/search.service';
 let searchModule = angular.module('ds-search', ['designsafe'])
 
 searchModule.requires.push(
-  'ngSanitize'
+  'ngSanitize',
+  'ui.router'
 );
 angular.module('designsafe.portal').requires.push(
-    'ds-search'
+    'ds-search',
 );
-searchModule.config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
+function config($httpProvider, $locationProvider, $stateProvider, $urlMatcherFactoryProvider, $urlRouterProvider) {
   $httpProvider.defaults.transformResponse.push(function (responseData) {
     convertDateStringsToDates(responseData);
     return responseData;
   });
-  $locationProvider.html5Mode({
-    enabled: true,
-    rewriteLinks: false
-  });
-}]);
 
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+  $locationProvider.html5Mode(true);
+  $urlMatcherFactoryProvider.strictMode(false);
+  
+  $stateProvider
+    .state('ds.search', {
+      'url': '/test',
+      'template': 'hello world',
+      'resolve': {'test': function() {console.log('test')}}
+    });
+
+};
+
+
+    
 //services
 searchModule.service('searchService', SearchService)
 
@@ -73,5 +86,5 @@ function convertDateStringsToDates(input) {
     }
   }
 }
-
+searchModule.config(config)
 export default searchModule
