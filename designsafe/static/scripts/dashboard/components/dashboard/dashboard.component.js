@@ -63,7 +63,6 @@ class DashboardCtrl {
             });
             this.chart_data = this.Jobs.jobsByDate(this.jobs);
             this.chart.data(this.chart_data);
-            console.log(this.chart_data);
             let tmp = _.groupBy(this.jobs, d => {
                 return d.appId;
             });
