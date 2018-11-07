@@ -111,7 +111,6 @@ export default function DSTSBarChart(elementId) {
         if (!(_data)) return data;
         data = _data;
         draw();
-        console.log(data);
         return this;
     };
 
@@ -148,7 +147,7 @@ export default function DSTSBarChart(elementId) {
     };
 
     exports.margin = function(d) {
-        if (!args.length) {
+        if (!arguments.length) {
             return margin;
         }
         d.forEach(function(a) {
