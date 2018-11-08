@@ -5,6 +5,7 @@
 Fixes:
 
 - Notifications html rendering.
+- Hybrid sim, adding report or analysis was failing (DES-721).
 
 ## v3.0.3
 
