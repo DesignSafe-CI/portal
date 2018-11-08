@@ -1,3 +1,4 @@
 from django.contrib import admin
+from designsafe.apps.workspace.models.app_descriptions import AppDescription
 
-# Register your models here.
+admin.site.register(AppDescription)

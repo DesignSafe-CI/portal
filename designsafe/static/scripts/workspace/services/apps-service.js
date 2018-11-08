@@ -8,7 +8,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
         return $http({
             url: djangoUrl.reverse('designsafe_workspace:call_api', ['meta']),
             method: 'GET',
-            params: {q: query},
+            params: { q: query },
             cache: true,
         });
     };
@@ -17,7 +17,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
         return $http({
             url: djangoUrl.reverse('designsafe_workspace:call_api', ['apps']),
             method: 'GET',
-            params: {app_id: appId},
+            params: { app_id: appId },
         });
     };
 
@@ -25,7 +25,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
         return $http({
             url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
             method: 'GET',
-            params: {q: {name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId}},
+            params: { q: { name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
         });
     };
 
@@ -52,6 +52,14 @@ export function appsService($http, $q, $translate, djangoUrl) {
         });
     };
 
+    service.getAppDropdownDescription = function(appId) {
+        return $http({
+            url: djangoUrl.reverse('designsafe_workspace:call_api', ['description']),
+            method: 'GET',
+            params: { app_id: appId },
+        });
+    };
+
     service.formSchema = function(app) {
         /**
          * Generate a JSON.schema for the app ready for angular-schema-form
@@ -60,13 +68,12 @@ export function appsService($http, $q, $translate, djangoUrl) {
         if (typeof app === 'string') {
             app = service.get(app);
         }
-        let params = app.parameters || [];
-        let inputs = app.inputs || [];
-
-        let schema = {
-            type: 'object',
-            properties: {},
-        };
+        let params = app.parameters || [],
+            inputs = app.inputs || [],
+            schema = {
+                type: 'object',
+                properties: {},
+            };
 
         if (params.length > 0) {
             schema.properties.parameters = {
@@ -144,7 +151,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
                     field.items = {
                         type: 'string',
                         format: 'agaveFile',
-                        'x-schema-form': {notitle: true},
+                        'x-schema-form': { notitle: true },
                     };
                     if (input.semantics.maxCardinality > 1) {
                         field.maxItems = input.semantics.maxCardinality;
@@ -161,7 +168,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
             pattern: '^(48:00:00)|([0-4][0-7]:[0-5][0-9]:[0-5][0-9])$',
             validationMessage: 'Must be in format HH:MM:SS and be less than 48 hours (48:00:00).',
             required: true,
-            'x-schema-form': {placeholder: app.defaultMaxRunTime},
+            'x-schema-form': { placeholder: app.defaultMaxRunTime },
         };
 
         schema.properties.name = {
@@ -193,7 +200,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
             description: 'Specify a location where the job output should be archived. By default, job output will be archived at: <code>&lt;username&gt;/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}</code>.',
             type: 'string',
             format: 'agaveFile',
-            'x-schema-form': {placeholder: '<username>/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}'},
+            'x-schema-form': { placeholder: '<username>/archive/jobs/${YYYY-MM-DD}/${JOB_NAME}-${JOB_ID}' },
         };
 
         return schema;
