@@ -5,6 +5,7 @@
    access.
 """
 import logging
+import operator
 from elasticsearch_dsl import Q, Search
 from elasticsearch import TransportError, ConnectionTimeout
 from django.http import (HttpResponseBadRequest,
@@ -22,11 +23,11 @@ class SearchView(BaseApiView):
     """Main view to handle sitewise search requests"""
     def get(self, request):
         """GET handler."""
-        q = request.GET.get('q')
+        q = request.GET.get('query_string')
         system_id = PublicElasticFileManager.DEFAULT_SYSTEM_ID
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
-        if (limit > 500):
+        if limit > 500:
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', 'cms')
 
@@ -66,6 +67,22 @@ class SearchView(BaseApiView):
         out['private_files_total'] = 0
         if request.user.is_authenticated:
             out['private_files_total'] = self.search_my_data(self.request.user.username, q, offset, limit).count()
+
+        filter_totals = {
+            'public_files': out['public_files_total'],
+            'published': out['published_total'],
+            'cms': out['cms_total'],
+            'private_files': out['private_files_total'] 
+        }
+                            
+        out['total_hits_cumulative'] = sum(filter_totals.values())
+        out['filter'] = type_filter
+        # If there are hits not in the current type filter, set the 'filter' output to the filter with the most hits.
+        if out['total_hits'] == 0 and out['total_hits_cumulative'] > 0:
+
+            # get the max value of filter_totals using the number of hits as the key
+            new_filter = max(filter_totals.iteritems(), key=operator.itemgetter(1))[0]
+            out['filter'] = new_filter
 
         return JsonResponse(out, safe=False)
 
