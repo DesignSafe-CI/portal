@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.4
+
+Fixes:
+
+- Notifications html rendering.
+
 ## v3.0.3
 
 Fixes:
