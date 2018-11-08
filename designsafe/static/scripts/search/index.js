@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { SearchComponent } from './components/search/search.component'
 import { SearchListingComponent } from './components/search-listing/search-listing.component'
 import { SearchService } from './services/search.service';
+import { SearchHelpModalComponent } from './components/modals/search-help-modal/search-help-modal.component';
 
 //export var module = angular.module('designsafe');
 
@@ -31,22 +32,26 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlMatcherFac
   $urlMatcherFactoryProvider.strictMode(false);
   
   $stateProvider
-    .state('ds.search', {
-      'url': '/test',
-      'template': 'hello world',
-      'resolve': {'test': function() {console.log('test')}}
-    });
-
+    .state('search', {
+      url: '/?{query_string}&{type_filter}&{switch_filter:bool}',
+      component: 'siteSearch',
+      params: {
+        query_string: null,
+        type_filter: 'cms', 
+        switch_filter: null,
+      }
+    })
+    /* Private */
 };
 
-
-    
 //services
 searchModule.service('searchService', SearchService)
 
 //components
 searchModule.component('siteSearch', SearchComponent)
 searchModule.component('searchListing', SearchListingComponent)
+
+searchModule.component('searchHelpModal', SearchHelpModalComponent)
 
 //filters
 searchModule.filter('removeHTMLTags', function () {
