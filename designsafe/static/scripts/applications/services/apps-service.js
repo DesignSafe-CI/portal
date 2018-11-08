@@ -8,7 +8,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                 method: 'GET',
-                params: {q: query},
+                params: { q: query },
                 cache: true,
             });
         };
@@ -24,7 +24,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
                 method: 'GET',
-                params: {appId: appId},
+                params: { appId: appId },
             });
         };
 
@@ -32,7 +32,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
                 method: 'GET',
-                params: {appId: appId, pems: true},
+                params: { appId: appId, pems: true },
             });
         };
 
@@ -40,7 +40,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                 method: 'GET',
-                params: {q: {name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId}},
+                params: { q: { name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
             });
         };
 
@@ -48,7 +48,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                 method: 'GET',
-                params: {uuid: uuid, pems: true},
+                params: { uuid: uuid, pems: true },
             });
         };
 
@@ -73,7 +73,7 @@ export function appsService(window, angular, $, _) {
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                 method: 'POST',
                 data: body,
-                params: {uuid: uuid},
+                params: { uuid: uuid },
             });
         };
 
@@ -82,7 +82,7 @@ export function appsService(window, angular, $, _) {
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                 method: 'POST',
                 data: permission,
-                params: {uuid: uuid, username: permission.username, pems: true},
+                params: { uuid: uuid, username: permission.username, pems: true },
             });
         };
 
@@ -90,7 +90,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
                 method: 'GET',
-                params: {appId: appId, history: true},
+                params: { appId: appId, history: true },
             });
         };
 
@@ -98,7 +98,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
                 method: 'GET',
-                params: {q: {name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId}},
+                params: { q: { name: $translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
             });
         };
 
@@ -106,7 +106,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
                 method: 'GET',
-                params: {appId: appId, pems: true},
+                params: { appId: appId, pems: true },
             });
         };
 
@@ -115,7 +115,7 @@ export function appsService(window, angular, $, _) {
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
                 method: 'POST',
                 data: permission,
-                params: {uuid: uuid, username: permission.username, pems: true},
+                params: { uuid: uuid, username: permission.username, pems: true },
             });
         };
 
@@ -124,7 +124,7 @@ export function appsService(window, angular, $, _) {
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
                 method: 'POST',
                 data: body,
-                params: {appId: appId},
+                params: { appId: appId },
             });
         };
 
@@ -132,7 +132,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
                 method: 'DELETE',
-                params: {appId: appId},
+                params: { appId: appId },
             });
         };
 
@@ -140,7 +140,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
                 method: 'DELETE',
-                params: {uuid: uuid},
+                params: { uuid: uuid },
             });
         };
 
@@ -148,7 +148,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
                 method: 'GET',
-                params: {systemId: systemId, type: type, isPublic: isPublic},
+                params: { system_id: systemId, type: type, isPublic: isPublic },
             });
         };
 
@@ -156,7 +156,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
                 method: 'GET',
-                params: {systemId: systemId, roles: true},
+                params: { system_id: systemId, roles: true },
             });
         };
 
@@ -164,7 +164,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
                 method: 'GET',
-                params: {systemId: systemId, user_role: true},
+                params: { system_id: systemId, user_role: true },
             });
         };
 
@@ -172,7 +172,7 @@ export function appsService(window, angular, $, _) {
             return $http({
                 url: djangoUrl.reverse('designsafe_applications:call_api', ['files']),
                 method: 'GET',
-                params: {systemId: systemId, path: path},
+                params: { system_id: systemId, path: path },
             });
         };
 
