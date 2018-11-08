@@ -1,3 +1,7 @@
 from django.contrib import admin
+import designsafe.apps.workspace.models as models
 
-# Register your models here.
+
+@admin.register(models.AppDescription)
+class AppDescriptionAdmin(admin.ModelAdmin):
+    pass
