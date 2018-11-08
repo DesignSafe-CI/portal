@@ -482,10 +482,10 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
                  name: 'designsafe.project.hybrid_simulation.output',
                  yamzId: ''},
                 {label: 'Analysis',
-                 name: 'designsafe.project.analysis',
+                 name: 'designsafe.project.hybrid_simulation.analysis',
                  yamzId: 'h1333'},
                 {label: 'Report',
-                 name: 'designsafe.project.report',
+                 name: 'designsafe.project.hybrid_simulation.report',
                  yamzId: ''}
                 ];
           }
