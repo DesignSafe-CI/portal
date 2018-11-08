@@ -34,6 +34,11 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         if (app.applications) {
             $scope.data.bin = app;
+            Apps.getAppDropdownDescription(app.value.definition.label).then(response => {
+                if (response.data.appDescription) {
+                    $scope.data.bin.description = response.data.appDescription;
+                }
+            });
             return;
         } else if (!app.binned) {
             $scope.data.bin = $scope.data.selectedApp = null;
