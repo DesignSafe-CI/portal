@@ -10,6 +10,10 @@
               <td>ID</td>
               <td><strong>{{appMeta.definition.id}}</strong></td>
             </tr>
+            <tr ng-if="appMeta.definition.owner">
+              <td>Owner</td>
+              <td>{{appMeta.definition.owner}}</td>
+            </tr>
             <tr ng-if="appMeta.definition.name">
               <td>Name</td>
               <td>{{appMeta.definition.name}}</td>
