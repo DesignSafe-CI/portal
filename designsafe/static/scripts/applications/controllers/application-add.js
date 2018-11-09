@@ -73,7 +73,7 @@ export function applicationAddCtrl(window, angular, $, _) {
             "appIcon": {
                 "type": "string",
                 "description": "The icon to associate with this app",
-                "enum": [''].concat(appIcons),
+                "enum": [''].concat(appIcons).sort(),
                 "title": "Icon"
             },
             "isPublic": {
@@ -226,7 +226,7 @@ export function applicationAddCtrl(window, angular, $, _) {
                   "type": "string",
                   "description": "The icon to associate with this app",
                   "title": "Icon",
-                  "enum": [''].concat(appIcons)
+                  "enum": [''].concat(appIcons).sort()
                 //   "validator": "(http|https)://[\\w-]+(\\.[\\w-]*)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?"
               },
               "shortDescription": {
@@ -1598,20 +1598,22 @@ export function applicationAddCtrl(window, angular, $, _) {
       $scope.submit = function () {
           $scope.error = '';
           $scope.requesting = true;
+          let simpleList = new SimpleList();
           $scope.$broadcast('schemaFormValidate');
             switch($scope.addModel.select){
               case 'Agave':
                 if ($scope.myForm.$valid){
                     // Add formatted appCategory entry to tags, and replace old appCategory if it exists
+                    
                     if ($scope.model.hasOwnProperty('appCategory')) {
-                        if ($scope.model.tags.filter(s => s.includes('appCategory')) !== undefined && $scope.model.tags.filter(s => s.includes('appCategory')).length != 0) {
+                        if (simpleList.tagIncludesParam($scope.model, 'appCategory')) {
                             $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appCategory'))[0]));
                         }
                         $scope.model.tags.push(`appCategory:${$scope.model.appCategory}`);
                     }
                     // Add formatted appIcon entry to tags, and replace old appIcon if it exists
                     if ($scope.model.hasOwnProperty('appIcon')) {
-                        if ($scope.model.tags.filter(s => s.includes('appIcon')) !== undefined && $scope.model.tags.filter(s => s.includes('appIcon')).length != 0) {
+                        if (simpleList.tagIncludesParam($scope.model, 'appIcon')) {
                             $scope.model.tags.splice($scope.model.tags.indexOf($scope.model.tags.filter(s => s.includes('appIcon'))[0]));
                         }
                         $scope.model.tags.push(`appIcon:${$scope.model.appIcon}`);
@@ -1648,13 +1650,15 @@ export function applicationAddCtrl(window, angular, $, _) {
                                         controller: [
                                          '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
                                             // Define appCategory if it exists in tags
-                                            if (appMeta.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.tags.filter(s => s.includes('appCategory')).length != 0) {
-                                                appMeta.appCategory = appMeta.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
-                                            }
-                                            // Define appIcon if it exists in tags
-                                            if (appMeta.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.tags.filter(s => s.includes('appIcon')).length != 0) {
-                                                appMeta.appIcon = appMeta.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
-                                            }
+                                             if (simpleList.tagIncludesParam(appMeta.definition, 'appCategory')) {
+                                                 appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                             }
+
+                                             // Define appIcon if it exists in tags
+                                             if (simpleList.tagIncludesParam(appMeta.definition, 'appIcon')) {
+                                                 appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                             }
+
                                             $scope.appMeta = appMeta;
 
                                             $scope.close = function() {
@@ -1687,14 +1691,15 @@ export function applicationAddCtrl(window, angular, $, _) {
                                         },
                                         controller: [
                                          '$scope', '$uibModalInstance', '$translate', 'appMeta', function($scope, $uibModalInstance, $translate, appMeta) {
-                                            // Define appCategory if it exists in tags
-                                            if (appMeta.definition.tags.filter(s => s.includes('appCategory')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appCategory')).length != 0) {
+                                             // Define appCategory if it exists in tags
+                                             if (simpleList.tagIncludesParam(appMeta.definition, 'appCategory')) {
                                                  appMeta.definition.appCategory = appMeta.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
-                                            }
-                                            // Define appIcon if it exists in tags
-                                            if (appMeta.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
-                                                appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
-                                            }
+                                             }
+
+                                             // Define appIcon if it exists in tags
+                                             if (simpleList.tagIncludesParam(appMeta.definition, 'appIcon')) {
+                                                 appMeta.definition.appIcon = appMeta.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                             }
                                             $scope.appMeta = appMeta;
                                             $scope.close = function() {
                                               $uibModalInstance.dismiss();
