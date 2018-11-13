@@ -739,6 +739,14 @@ md-toast {
   margin: 8px;
 }
 
+#toast-container md-toast .custom-toast {
+  display: block;
+}
+
+#toast-container md-toast .custom-toast::before {
+  display: none;
+}
+
 md-toast.ng-leave {
   visibility: hidden;
 }
