@@ -21,9 +21,9 @@ function config($stateProvider, $uibTooltipProvider, $urlRouterProvider, $locati
     abstract: true,
     templateUrl: '/static/designsafe/apps/geo/html/index.html',
     resolve: {
-      auth: function () {
-        return true;
-      }
+      auth: ['UserService', function (UserService) {
+        return UserService.authenticate();
+      }]
     }
   }).state('geo.map', {
     url: '/hazmapper',

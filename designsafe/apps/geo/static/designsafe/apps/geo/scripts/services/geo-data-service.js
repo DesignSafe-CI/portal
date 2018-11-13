@@ -24,7 +24,7 @@ export default class GeoDataService {
     });
   }
 
-  
+
 
   current_project(project) {
     if (!(project)) {
@@ -366,7 +366,10 @@ export default class GeoDataService {
     if ((ext === 'kmz') || (ext === 'jpg') || (ext === 'jpeg')) {
       responseType = 'arraybuffer';
     }
-    return this.$http.get(f.agaveUrl(), {'responseType': responseType}).then((resp) => {
+    let headers = {
+      'Authorization': 'Bearer ' + this.UserService.currentUser().oauth.access_token
+    }
+    return this.$http.get(f.agaveUrl(), {'responseType': responseType, 'headers': headers}).then((resp) => {
       let p = null;
       switch (ext) {
         case 'kml':
@@ -414,7 +417,7 @@ export default class GeoDataService {
     document.body.removeChild(a);
   }
 
-  //TODO Fix that hard coded URL?
+  //TODO: Fix that hard coded URL?
   save_to_depot (project, path) {
     let form = new FormData();
     let gjson = project.to_json();
@@ -433,7 +436,11 @@ export default class GeoDataService {
       file = new File([blob], path.name);
       form.append('fileToUpload', file, path.name);
     }
-    return this.$http.post(post_url, form, {headers: {'Content-Type': undefined}});
+    let headers = {
+      'Content-Type': undefined,
+      'Authorization': 'Bearer ' + this.UserService.currentUser().oauth.access_token
+    }
+    return this.$http.post(post_url, form, {headers: headers});
   }
 
 }
