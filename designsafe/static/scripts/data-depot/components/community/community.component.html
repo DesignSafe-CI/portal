@@ -1,8 +1,8 @@
-<dd-breadcrumb listing="browser.listing" skip-root="true" custom-root="data.customRoot" on-browse="onBrowse" item-href="resolveBreadcrumbHref"></dd-breadcrumb>
-<dd-listing browser="browser"
-            on-browse="onBrowse"
-            on-select="onSelect"
-            on-detail="onDetail"
-            scroll-to-top="scrollToTop"
-            scroll-to-bottom="scrollToBottom">
+<dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
+<dd-listing browser="$ctrl.browser"
+            on-browse="$ctrl.onBrowse"
+            on-select="$ctrl.onSelect"
+            on-detail="$ctrl.onDetail"
+            scroll-to-top="$ctrl.scrollToTop"
+            scroll-to-bottom="$ctrl.scrollToBottom">
 </dd-listing>
