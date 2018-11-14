@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.5
+
+Fixes:
+
+- Hazmapper save objects.
+- Hazmapper load.
+- Hazmapper map icons.
+
 ## v3.0.4
 
 Fixes:
