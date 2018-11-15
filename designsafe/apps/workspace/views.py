@@ -171,7 +171,7 @@ def call_api(request, service):
                                     job_post['inputs'][key] = urllib.quote(parsed.path)
 
                     if settings.DEBUG:
-                        wh_base_url = settings.WEBHOOK_POST_URL + '/webhooks/'
+                        wh_base_url = settings.WEBHOOK_POST_URL.strip('/') + '/webhooks/'
                     else:
                         wh_base_url = request.build_absolute_uri('/webhooks/')
 
