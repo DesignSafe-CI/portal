@@ -1446,7 +1446,7 @@ export function applicationEditCtrl(window, angular, $, _) {
                 }
             ];
 
-            $scope.simpleList = new SimpleList();
+            $scope.simpleList = SimpleList;
 
             $scope.model = {};
 

@@ -3,7 +3,7 @@ export function applicationTrayCtrl(window, angular, $, _) {
     angular.module('designsafe').controller('ApplicationTrayCtrl',
         ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'SimpleList', 'MultipleList', 'Django', 'toastr', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, SimpleList, MultipleList, Django, toastr) {
             $scope.tabs = [];
-            $scope.simpleList = new SimpleList();
+            $scope.simpleList = SimpleList;
 
             $scope.addDefaultTabs = function(query) {
                 $scope.error = '';
