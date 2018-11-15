@@ -1,9 +1,9 @@
 export function applicationTrayCtrl(window, angular, $, _) {
     'ngInject';
     angular.module('designsafe').controller('ApplicationTrayCtrl',
-        ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'SimpleList', 'MultipleList', 'Django', 'toastr', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, SimpleList, MultipleList, Django, toastr) {
+        ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'AppsSimpleList', 'MultipleList', 'Django', 'toastr', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, AppsSimpleList, MultipleList, Django, toastr) {
             $scope.tabs = [];
-            $scope.simpleList = SimpleList;
+            $scope.simpleList = AppsSimpleList;
 
             $scope.addDefaultTabs = function(query) {
                 $scope.error = '';
