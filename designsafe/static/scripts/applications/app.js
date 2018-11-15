@@ -7,7 +7,7 @@ import './services/apps-wizard-service';
 
 import { applicationAddCtrl } from './controllers/application-add';
 import { applicationEditCtrl } from './controllers/application-edit';
-import { applicationSystemsRoleCtrl } from './controllers/application-systems-role';
+import { ApplicationSystemsRoleCtrl } from './controllers/application-systems-role';
 import { applicationTrayCtrl } from './controllers/application-tray';
 
 import { toTrusted } from './filters/sanitize';
@@ -21,7 +21,6 @@ import { SimpleList } from './services/simple-list-service';
 
 applicationAddCtrl(window, angular, $, _);
 applicationEditCtrl(window, angular, $, _);
-applicationSystemsRoleCtrl(window, angular, $, _);
 applicationTrayCtrl(window, angular, $, _);
 toTrusted(window, angular, $, _);
 appTranslateProvider(angular);
@@ -30,7 +29,8 @@ appsMultipleListService(window, angular, $, _);
 
 angular.module('designsafe')
     .factory('SimpleList', ['$http', '$q', 'djangoUrl', 'appIcons', ($http, $q, djangoUrl, appIcons) => new SimpleList($http, $q, djangoUrl, appIcons)])
-    .service('Apps', Apps);
+    .service('Apps', Apps)
+    .controller('ApplicationSystemsRoleCtrl', ApplicationSystemsRoleCtrl);
 
 function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
     'ngInject';
@@ -68,6 +68,7 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
             url: '/systems',
             template: require('./html/application-systems-role.html'),
             controller: 'ApplicationSystemsRoleCtrl',
+            controllerAs: '$ctrl',
         });
 }
 
