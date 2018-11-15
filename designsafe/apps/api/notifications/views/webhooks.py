@@ -40,7 +40,7 @@ class JobsWebhookView(JSONResponseMixin, BaseApiView):
         return super(JobsWebhookView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        return HttpResponse(settings.WEBHOOK_POST_URL + '/api/notifications/wh/jobs/')
+        return HttpResponse(settings.WEBHOOK_POST_URL.strip('/') + '/api/notifications/wh/jobs/')
 
     def post(self, request, *args, **kwargs):
         """
