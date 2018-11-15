@@ -1595,7 +1595,7 @@ export function applicationAddCtrl(window, angular, $, _) {
             $scope.submit = function() {
                 $scope.error = '';
                 $scope.requesting = true;
-                let simpleList = new SimpleList();
+                let simpleList = SimpleList;
                 $scope.$broadcast('schemaFormValidate');
                 switch ($scope.addModel.select) {
                     case 'Agave':
