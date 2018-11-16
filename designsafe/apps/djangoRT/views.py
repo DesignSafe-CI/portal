@@ -92,7 +92,7 @@ def ticketcreate(request):
             )
 
             ticket = rtModels.Ticket(subject=form.cleaned_data['subject'],
-                                     problem_description="\n  ".join(ticket_body),
+                                     problem_description="\n  ".join(ticket_body.splitlines()),
                                      requestor=form.cleaned_data['email'],
                                      cc=form.cleaned_data.get('cc', ''))
 
