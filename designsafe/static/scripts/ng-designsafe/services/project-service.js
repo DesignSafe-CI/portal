@@ -1062,14 +1062,17 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
      * @param {string} options.uuid The Project uuid
      * @returns {Promise}
      */
+    // componentize this when done
     service.manageExperiments = function(options) {
       var modal = $uibModal.open({
-        template: require('../html/modals/project-service-manage-experiments.html'),
+        // template: require('../html/modals/project-service-manage-experiments.html'),
+        template: require('../html/modals/project-service-manage-experiments-revision.html'),
         controller: ['$scope', '$uibModalInstance', '$q', 'Django', 'UserService', function ($scope, $uibModalInstance, $q, Django, UserService) {
           $scope.data = {
             busy: false,
             experiments: options.experiments,
             project: options.project,
+            users: [options.project.value.pi].concat(options.project.value.coPis, options.project.value.teamMembers),
             form: {}
           };
           $scope.ui = {
@@ -1084,12 +1087,17 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
             curExperiments: [],
             addExperiments: [{}],
             deleteExperiments: [],
+            addGuest: [{}],
             entitiesToAdd:[]
           };
           $scope.form.curExperiments = $scope.data.project.experiment_set;
 
           $scope.addExperiment = function () {
             $scope.form.addExperiments.push({});
+          };
+
+          $scope.addGuests = function () {
+            $scope.form.addGuest.push({});
           };
 
           $scope.cancel = function () {
@@ -1130,14 +1138,15 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
 
           $scope.editExp = function(exp){
             $scope.editExpForm = {
-                exp: exp,
-                title: exp.value.title,
-                facility: exp.getEF($scope.data.project.value.projectType,
-                                    exp.value.experimentalFacility).label,
-                type: exp.value.experimentType,
-                equipment: exp.getET(exp.value.experimentalFacility,
-                                        exp.value.equipmentType).label,
-                description: exp.value.description
+              exp: exp,
+              authors: exp.value.authors.slice(),
+              start: exp.value.procedureStart,
+              end: exp.value.procedureEnd,
+              title: exp.value.title,
+              facility: exp.getEF($scope.data.project.value.projectType, exp.value.experimentalFacility).label,
+              type: exp.value.experimentType,
+              equipment: exp.getET(exp.value.experimentalFacility, exp.value.equipmentType).label,
+              description: exp.value.description
             };
             $scope.ui.showEditExperimentForm = true;
           };
@@ -1166,22 +1175,55 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
             }
           };
 
-          $scope.saveEditExperiment = function(){
-              var exp = $scope.editExpForm.exp;
-              exp.value.title = $scope.editExpForm.title;
-              exp.value.description = $scope.editExpForm.description;
-              $scope.ui.savingEditExp = true;
-              ProjectEntitiesService.update({data: {
-                  uuid: exp.uuid,
-                  entity: exp
-              }}).then(function(e){
-                  var ent = $scope.data.project.getRelatedByUuid(e.uuid);
-                  ent.update(e);
-                  $scope.ui.savingEditExp = false;
-                  $scope.data.experiments = $scope.data.project.experiment_set;
-                  $scope.ui.showEditExperimentForm = false;
-                  return e;
-              });
+          $scope.editAuthors = function (user) {
+            var index = $scope.editExpForm.authors.indexOf(user);
+            if (index > -1) {
+              $scope.editExpForm.authors.splice(index, 1);
+            } else {
+              $scope.editExpForm.authors.push(user);
+            }
+          };
+
+          /*
+          addAuthors will need to be updated if option to support
+          simultaneous experiment creation is implemented
+          */
+          $scope.addAuthors = function (user) {
+            if ($scope.form.addExperiments[0].authors) {
+              var index = $scope.form.addExperiments[0].authors.indexOf(user);
+              if (index > -1) {
+                $scope.form.addExperiments[0].authors.splice(index, 1);
+              } else {
+                $scope.form.addExperiments[0].authors.push(user);
+              }
+            } else {
+              $scope.form.addExperiments[0].authors = [user];
+            }
+          };
+
+          $scope.saveEditExperiment = function () {
+            var exp = $scope.editExpForm.exp;
+            exp.value.title = $scope.editExpForm.title;
+            exp.value.description = $scope.editExpForm.description;
+            exp.value.procedureStart = $scope.editExpForm.start;
+            exp.value.procedureEnd = $scope.editExpForm.end;
+            exp.value.authors = $scope.editExpForm.authors;
+            exp.value.guests = $scope.editExpForm.guests; // save guests??
+            $scope.ui.savingEditExp = true;
+            ProjectEntitiesService.update({
+              data: {
+                uuid: exp.uuid,
+                entity: exp
+              }
+            }).then(function (e) {
+              var ent = $scope.data.project.getRelatedByUuid(e.uuid);
+              console.log(e);
+              ent.update(e);
+              $scope.ui.savingEditExp = false;
+              $scope.data.experiments = $scope.data.project.experiment_set;
+              $scope.ui.showEditExperimentForm = false;
+              return e;
+            });
           };
 
           $scope.toggleDeleteExperiment = function(uuid){
@@ -1198,6 +1240,8 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
           };
 
           $scope.saveExperiment = function($event){
+            console.log($event);
+            console.log($scope.form.addExperiments);
             $event.preventDefault();
             $scope.data.busy = true;
             var addActions = _.map($scope.form.addExperiments, function(exp){
@@ -1518,7 +1562,7 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
       });
 
       return modal.result;
-    };
+    }; // Revision End
 
     /**
      *
