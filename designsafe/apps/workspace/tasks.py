@@ -170,15 +170,12 @@ def handle_webhook_request(job):
 
                     try:
                         logger.debug('Preparing to Index Job Output job=%s', job_name)
-                        # index_job_outputs(user, job)
+
                         archivePath = '/'.join([job['archiveSystem'], job['archivePath']])
                         reindex_agave.delay(username, archivePath, levels=0)
                         logger.debug('Finished Indexing Job Output job=%s', job_name)
                     except Exception as e:
                         logger.exception('Error indexing job output')
-
-            # elif current_status and current_status == job_status:
-                # DO NOT notify
 
         else:
             # notify
@@ -218,21 +215,3 @@ def handle_webhook_request(job):
 
     except AgaveException as e:
         logger.warning('Agave API error. Retrying...')
-
-def index_job_outputs(user, job):
-    """Calls FileManager.indexer.index to index a job for a user.
-
-    Args:
-        user: Django User model instance.
-        job: Job instance (from Agave API).
-
-    """
-    ag = user.agave_oauth.client
-    system_id = job['archiveSystem']
-    archive_path = job['archivePath']
-
-    from designsafe.apps.api.data.agave.filemanager import FileManager as AgaveFileManager
-    mgr = AgaveFileManager(user)
-    mgr.indexer.index(system_id, archive_path, user.username,
-                      full_indexing = True, pems_indexing = True,
-                      index_full_path = True)
