@@ -274,10 +274,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
         $scope.data.project[experimentsAttr] = [];
         experiments = $scope.data.project[experimentsAttr];
       }
-      ProjectService.manageExperiments({'experiments': experiments,
-                                        'project': $scope.data.project}).then(function (experiments) {
-        $scope.data.experiments = experiments;
-      });
+      ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
     };
 
     $scope.manageSimulations = function($event) {
