@@ -13,16 +13,16 @@ class ManageExperimentsCtrl {
 
     $onInit() {
         this.options = this.resolve.options;
-
         this.efs = this.resolve.efs;
         this.experimentTypes = this.resolve.experimentTypes;
         this.equipmentTypes = this.resolve.equipmentTypes;
+        var members = [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers);
 
         this.data = {
             busy: false,
             experiments: this.options.experiments,
             project: this.options.project,
-            users: [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers),
+            users: [... new Set(members)],
             form: {}
         };
         this.ui = {
@@ -41,223 +41,6 @@ class ManageExperimentsCtrl {
             entitiesToAdd: []
         };
         this.form.curExperiments = this.data.project.experiment_set;
-        this.ui.addingTag = false;
-        this.data.form.projectTagToAdd = { optional: {} };
-        if (this.data.project.value.projectType === 'experimental') {
-            this.ui.tagTypes = [
-                {
-                    label: 'Model Config',
-                    name: 'designsafe.project.model_config',
-                    yamzId: 'h1312'
-                },
-                {
-                    label: 'Sensor Info',
-                    name: 'designsafe.project.sensor_list',
-                    yamzId: 'h1557'
-                },
-                {
-                    label: 'Event',
-                    name: 'designsafe.project.event',
-                    yamzId: 'h1253'
-                },
-                {
-                    label: 'Analysis',
-                    name: 'designsafe.project.analysis',
-                    yamzId: 'h1333'
-                },
-                {
-                    label: 'Report',
-                    name: 'designsafe.project.report',
-                    yamzId: ''
-                }
-            ];
-        } else if (this.data.project.value.projectType === 'simulation') {
-            this.ui.tagTypes = [
-                {
-                    label: 'Simulation Model',
-                    name: 'designsafe.project.simulation.model',
-                    yamzId: ''
-                },
-                {
-                    label: 'Simulation Input',
-                    name: 'designsafe.project.simulation.input',
-                    yamzId: ''
-                },
-                {
-                    label: 'Simulation Output',
-                    name: 'designsafe.project.simulation.output',
-                    yamzId: ''
-                },
-                {
-                    label: 'Integrated Data Analysis',
-                    name: 'designsafe.project.simulation.analysis',
-                    yamzId: ''
-                },
-                {
-                    label: 'Integrated Report',
-                    name: 'designsafe.project.simulation.report',
-                    yamzId: ''
-                },
-                {
-                    label: 'Analysis',
-                    name: 'designsafe.project.analysis',
-                    yamzId: 'h1333'
-                },
-                {
-                    label: 'Report',
-                    name: 'designsafe.project.report',
-                    yamzId: ''
-                },
-            ];
-        } else if (this.data.project.value.projectType === 'hybrid_simulation') {
-            this.ui.tagTypes = [
-                {
-                    label: 'Global Model',
-                    name: 'designsafe.project.hybrid_simulation.global_model',
-                    yamzId: ''
-                },
-                {
-                    label: 'Coordinator',
-                    name: 'designsafe.project.hybrid_simulation.coordinator',
-                    yamzId: ''
-                },
-                {
-                    label: 'Simulation Substructure',
-                    name: 'designsafe.project.hybrid_simulation.sim_substructure',
-                    yamzId: ''
-                },
-                {
-                    label: 'Experimental Substructure',
-                    name: 'designsafe.project.hybrid_simulation.exp_substructure',
-                    yamzId: ''
-                },
-                {
-                    label: 'Outputs',
-                    name: 'designsafe.project.hybrid_simulation.output',
-                    yamzId: ''
-                },
-                {
-                    label: 'Analysis',
-                    name: 'designsafe.project.analysis',
-                    yamzId: 'h1333'
-                },
-                {
-                    label: 'Report',
-                    name: 'designsafe.project.report',
-                    yamzId: ''
-                }
-            ];
-        }
-        this.ui.simModel = {};
-        this.ui.simModel.apps = [
-            {
-                label: 'ADDCIRC',
-                name: 'ADDCIRC',
-                yamzId: ''
-            },
-            {
-                label: 'Abaqus',
-                name: 'Abaqus',
-                yamzId: ''
-            },
-            {
-                label: 'Atena',
-                name: 'Atena',
-                yamzId: ''
-            },
-            {
-                label: 'ClawPack/GeoClaw',
-                name: 'ClawPack/GeoClaw',
-                yamzId: ''
-            },
-            {
-                label: 'Diana',
-                name: 'Diana',
-                yamzId: ''
-            },
-            {
-                label: 'ETABS',
-                name: 'ETABS',
-                yamzId: ''
-            },
-            {
-                label: 'FUNWAVE',
-                name: 'FUNWAVE',
-                yamzId: ''
-            },
-            {
-                label: 'FLUENT/ANSYS',
-                name: 'FLUENT/ANSYS',
-                yamzId: ''
-            },
-            {
-                label: 'LS-Dyna',
-                name: 'LS-Dyna',
-                yamzId: ''
-            },
-            {
-                label: 'OpenFoam',
-                name: 'OpenFoam',
-                yamzId: ''
-            },
-            {
-                label: 'OpenSees',
-                name: 'OpenSees',
-                yamzId: ''
-            },
-            {
-                label: 'PERFORM',
-                name: 'PERFORM',
-                yamzId: ''
-            },
-            {
-                label: 'SAP',
-                name: 'SAP',
-                yamzId: ''
-            },
-            {
-                label: 'SWAN',
-                name: 'SWAN',
-                yamzId: ''
-            },
-            {
-                label: 'Other',
-                name: 'Other',
-                yamzId: ''
-            },
-        ];
-        this.ui.simModel.NHType = [
-            {
-                label: 'Earthquake',
-                name: 'Earthquake',
-                yamzId: ''
-            },
-            {
-                label: 'Flood',
-                name: 'Flood',
-                yamzId: ''
-            },
-            {
-                label: 'Landslide',
-                name: 'Landslide',
-                yamzId: ''
-            },
-            {
-                label: 'Tornado',
-                name: 'Tornado',
-                yamzId: ''
-            },
-            {
-                label: 'Tsunami',
-                name: 'Tsunami',
-                yamzId: ''
-            },
-            {
-                label: 'Other',
-                name: 'Other',
-                yamzId: ''
-            },
-        ];
     }
 
     addExperiment() {
@@ -336,7 +119,7 @@ class ManageExperimentsCtrl {
         exp.value.procedureStart = this.editExpForm.start;
         exp.value.procedureEnd = this.editExpForm.end;
         exp.value.authors = this.editExpForm.authors;
-        exp.value.guests = this.editExpForm.guests; // save guests??
+        exp.value.guests = this.editExpForm.guests;
         this.ui.savingEditExp = true;
         this.ProjectEntitiesService.update({
             data: {
