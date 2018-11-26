@@ -12,7 +12,7 @@ from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.tasks import index_or_update_project
 from designsafe.apps.workspace import utils as WorkspaceUtils
-from designsafe.apps.workspace.models import AppDescription
+from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
