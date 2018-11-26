@@ -1,7 +1,7 @@
-import ManageHybridSimTemplate from './manage-hybrid-simulations.component.html';
+import ManageSimulationTemplate from './manage-simulations.component.html';
 import _ from 'underscore';
 
-class ManageHybridSimCtrl {
+class ManageSimulationCtrl {
 
     constructor($q, Django, UserService, ProjectEntitiesService) {
         'ngInject';
@@ -17,10 +17,10 @@ class ManageHybridSimCtrl {
 
         this.data = {
             busy: false,
-            simulations: this.options.hybridSimulations,
+            simulations: this.options.simulations,
             project: this.options.project,
             users: [... new Set(members)],
-            form: {}
+            form: {},
         };
         this.ui = {
             simulations: {},
@@ -39,8 +39,20 @@ class ManageHybridSimCtrl {
         };
         this.ui.simulationTypes = [
             {
-                name: 'Earthquake',
-                label: 'Earthquake'
+                name: 'Geotechnical',
+                label: 'Geotechnical'
+            },
+            {
+                name: 'Structural',
+                label: 'Structural'
+            },
+            {
+                name: 'Soil Structure System',
+                label: 'Soil Structure System'
+            },
+            {
+                name: 'Storm Surge',
+                label: 'Storm Surge'
             },
             {
                 name: 'Wind',
@@ -59,6 +71,7 @@ class ManageHybridSimCtrl {
         }
         return false;
     }
+    
 
     addGuests() {
         this.form.addGuest.push({});
@@ -82,7 +95,7 @@ class ManageHybridSimCtrl {
         this.ProjectEntitiesService.create({
             data: {
                 uuid: this.data.project.uuid,
-                name: 'designsafe.project.hybrid_simulation',
+                name: 'designsafe.project.simulation',
                 entity: simulation
             }
         }).then((res) => {
@@ -119,7 +132,7 @@ class ManageHybridSimCtrl {
 
     /*
     addAuthors will need to be updated if option to support
-    simultaneous hybrid simulation creation is implemented
+    simultaneous simulation creation is implemented
     */
     addAuthors(user) {
         if (this.form.addSimulation[0].authors) {
@@ -152,7 +165,7 @@ class ManageHybridSimCtrl {
             var ent = this.data.project.getRelatedByUuid(e.uuid);
             ent.update(e);
             this.ui.savingEditSim = false;
-            this.data.simulations = this.data.project.hybridsimulation_set;
+            this.data.simulations = this.data.project.simulation_set;
             this.ui.showEditSimulationForm = false;
             return e;
         });
@@ -204,11 +217,11 @@ class ManageHybridSimCtrl {
     }
 }
 
-ManageHybridSimCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService'];
+ManageSimulationCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService'];
 
-export const ManageHybridSimComponent = {
-    template: ManageHybridSimTemplate,
-    controller: ManageHybridSimCtrl,
+export const ManageSimulationComponent = {
+    template: ManageSimulationTemplate,
+    controller: ManageSimulationCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',

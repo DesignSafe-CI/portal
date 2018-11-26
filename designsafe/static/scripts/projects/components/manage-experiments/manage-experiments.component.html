@@ -377,7 +377,8 @@
           </button>
           <div id="files-{{experiment.uuid}}" class="collapse well">
             <div style="display:inline-block; width:20%;">Experiment Type</div>
-            <strong style="display:inline-block; width:78%;">{{ experiment.value.experimentType }}</strong>
+            <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentType }}</strong>
+            <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentTypeOther }}</strong>
             <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
             <div style="display:inline-block; width:78%; font-weight: bold;">
               <div ng-repeat="author in experiment.value.authors">
@@ -385,9 +386,11 @@
               </div>
             </div>
             <div style="display:inline-block; width:20%;">Experimental Facility</div>
-            <strong style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacility }}</strong>
+            <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacility }}</strong>
+            <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacilityOther }}</strong>
             <div style="display:inline-block; width:20%;">Equipment Type</div>
-            <strong style="display:inline-block; width:78%;">{{ experiment.value.equipmentType }}</strong>
+            <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentType }}</strong>
+            <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentTypeOther }}</strong>
             <div ng-show="experiment.value.procedureStart">
               <div style="display:inline-block; width:20%;">Date of Experiment</div>
               <strong style="display:inline-block; width:78%;">{{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}</strong>

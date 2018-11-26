@@ -43,6 +43,13 @@ class ManageExperimentsCtrl {
         this.form.curExperiments = this.data.project.experiment_set;
     }
 
+    isValid(ent) {
+        if (ent && ent != "" && ent != "None") {
+            return true;
+        }
+        return false;
+    }
+
     addExperiment() {
         this.form.addExperiments.push({});
     }

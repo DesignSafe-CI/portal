@@ -1,6 +1,6 @@
 <div class="modal-header" style="background: #e6e6e6;">
   <h4 class="modal-title" style="border:none;">
-    <span>Manage Hybrid Simulations</span>
+    <span>Manage Simulations</span>
     <span class="pull-right" ng-click="$ctrl.cancel()">
       <i class="fa fa-times"></i>
     </span>
@@ -13,9 +13,9 @@
         <span style="color: #D04348; font-size:14pt;">&#9679; </span>
         <span>Required for Curation & Publication</span>
       </div>
-      <!-- Hybrid Simulation Title -->
+      <!-- Simulation Title -->
       <div class="simTitle form-group">
-        <label>Hybrid Simulation Title
+        <label>Simulation Title
           <span style="color: #D04348;">&#9679; </span>
         </label>
         <div>
@@ -25,9 +25,9 @@
           <input type="text" id="add-sim-title" style="width:100%;" ng-model="$ctrl.form.addSimulation[0].title" ng-required="true"><br>
         </div>
       </div>
-      <!-- Hybrid Simulation Date -->
+      <!-- Simulation Date -->
       <div class="simDate form-group">
-        <label>Dates of Hybrid Simulation</label>
+        <label>Dates of Simulation</label>
         <span style="color: #D04348;">&#9679; </span>
         <div>
           If you only want to enter a single date, fill in the firest field.
@@ -72,9 +72,9 @@
           </span>
         </div>
       </div>
-      <!-- Hybrid Simulation Type -->
+      <!-- Simulation Type -->
       <div class="simType form-group">
-        <label>Hybrid Simulation Type</label>
+        <label>Simulation Type</label>
         <span style="color: #D04348;">&#9679; </span>
         <div>
           <select ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
@@ -86,15 +86,15 @@
           <input  type="text"
                   style="background:white; width:100%"
                   id="add-sim-type-other"
-                  placeholder="Custom Hybrid Simulation Type"
+                  placeholder="Custom Simulation Type"
                   ng-model="$ctrl.form.addSimulation[0].simulationTypeOther"
                   ng-if="$ctrl.form.addSimulation[0].simulationType == 'Other'"
                   ng-required="true" />
         </div>
       </div>
-      <!-- Hybrid Simulation Description -->
+      <!-- imulation Description -->
       <div class="simDescription form-group">
-        <label>Hybrid Simulation Description</label>
+        <label>Simulation Description</label>
         <span style="color: #D04348;">&#9679; </span>
         <div>
           What was under investigation? How was it tested? What was the outcome? How can the data be reused?
@@ -150,9 +150,9 @@
             + Add another Outside Author
           </a>
         </div>
-        <!-- Add HybSim Btn -->
+        <!-- Add Sim Btn -->
         <div class="text-right">
-          <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.saveSimulation($event)" style="width:18%;"><i class="fa fa-plus"></i> Add Hybrid Sim</button>
+          <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.saveSimulation($event)" style="width:18%;"><i class="fa fa-plus"></i> Add Simulation</button>
         </div>
       </div>
     </form>
@@ -161,24 +161,24 @@
           <span style="color: #D04348; font-size:14pt;">&#9679; </span>
           <span>Required for Curation & Publication</span>
         </div>
-        <!-- Edit Hybrid Simulation Title -->
+        <!-- Edit Simulation Title -->
         <div class="simTitle form-group">
-          <label>Hybrid Simulation Title
+          <label>Simulation Title
             <span style="color: #D04348;">&#9679; </span>
           </label>
           <div>
-            Different from the Project Title. Make it focused on the methods used to obtain the data in this Hybrid Simulation.
+            Different from the Project Title. Make it focused on the methods used to obtain the data in this Simulation.
           </div>
           <div>
             <input type="text" name="sim-title" id="edit-sim-title" style="width:100%;" ng-model="$ctrl.editSimForm.title" ng-required="true"><br>
           </div>
         </div>
-        <!-- Edit Hybrid Simulation Date -->
+        <!-- Edit Simulation Date -->
         <div class="simDate form-group">
-          <label>Dates of Hybrid Simulation</label>
+          <label>Dates of Simulation</label>
           <span style="color: #D04348;">&#9679; </span>
           <div>
-            Please confirm your hybrid simulation dates for each update. If you only want to enter a single date, fill in the firest field.
+            Please confirm your simulation dates for each update. If you only want to enter a single date, fill in the firest field.
           </div>
           <div style="display:flex;">
             <span class="input-group" style="width:25%;">
@@ -220,9 +220,9 @@
             </span>
           </div>
         </div>
-        <!-- Edit Hybrid Simulation Type -->
+        <!-- Edit Simulation Type -->
         <div class="simType form-group">
-          <label>Hybrid Simulation Type</label>
+          <label>Simulation Type</label>
           <span style="color: #D04348;">&#9679; </span>
           <div>
             <select style="background:white; width:100%"
@@ -232,9 +232,9 @@
             </select>
           </div>
         </div>
-        <!-- Edit Hybrid Simulation Description -->
+        <!-- Edit Simulation Description -->
         <div class="simDescription form-group">
-          <label>Hybrid Simulation Description</label>
+          <label>Simulation Description</label>
           <span style="color: #D04348;">&#9679; </span>
           <div>
             What was under investigation? How was it tested? What was the outcome? How can the data be reused?
@@ -291,28 +291,28 @@
               + Add another Outside Author
             </a>
           </div>
-          <!-- Update HybSim Btn -->
+          <!-- Update Sim Btn -->
           <div class="text-right">
             <button class="btn btn-add" type="submit" ng-click="editForm.$valid && $ctrl.saveEditSimulation($event)" style="width:18%;">Update</button>
           </div>
         </div>
       </form>
   </div>
-  <!-- HYBRID SIMULATION LIST -->
-  <div class="hybsimlist">
+  <!-- SIMULATION LIST -->
+  <div class="simlist">
     <div>
-      <label>Hybrid Simulation Inventory</label>
-      <button class="btn btn-sm btn-danger pull-right" ng-hide="!$ctrl.form.deleteSimulations.length" ng-click="$ctrl.removeSimulations()">Delete Hybrid Simulations</button>
+      <label>Simulation Inventory</label>
+      <button class="btn btn-sm btn-danger pull-right" ng-hide="!$ctrl.form.deleteSimulations.length" ng-click="$ctrl.removeSimulations()">Delete Simulations</button>
     </div>
     <div class="dropdown">
       <div ng-repeat="simulation in $ctrl.data.simulations">
         <div class="dropdown entity-preview-header">
           <button class="btn btn-default collapsed" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
-            <span class="pull-left">HYBRID SIMULATION | <strong>{{simulation.value.title}}</strong></span>
+            <span class="pull-left">SIMULATION | <strong>{{simulation.value.title}}</strong></span>
             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
           </button>
           <div id="files-{{simulation.uuid}}" class="collapse well">
-            <div style="display:inline-block; width:20%;">Hybrid Simulation Type</div>
+            <div style="display:inline-block; width:20%;">Simulation Type</div>
             <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
             <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
             <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
@@ -322,7 +322,7 @@
               </div>
             </div>
             <div ng-show="simulation.value.procedureStart">
-              <div style="display:inline-block; width:20%;">Date of Hybrid Simulation</div>
+              <div style="display:inline-block; width:20%;">Date of Simulation</div>
               <strong style="display:inline-block; width:78%;">{{ simulation.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ simulation.value.procedureEnd | date:'MM-dd-yyyy' }}</strong>
             </div>
             <div>
