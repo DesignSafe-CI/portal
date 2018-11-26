@@ -13,6 +13,7 @@ import { TicketsService } from './tickets-service';
 import { UserService } from './user-service';
 import { ManageExperimentsComponent } from '../../projects/components/manage-experiments/manage-experiments.component';
 import { ManageHybridSimComponent } from '../../projects/components/manage-hybrid-simulations/manage-hybrid-simulations.component';
+import { ManageSimulationComponent } from '../../projects/components/manage-simulations/manage-simulations.component';
 
 let designsafeServices = angular.module('designsafe.services', []);
 
@@ -29,5 +30,6 @@ designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
 designsafeServices.component('manageExperiments', ManageExperimentsComponent);
 designsafeServices.component('manageHybridSimulations', ManageHybridSimComponent);
+designsafeServices.component('manageSimulations', ManageSimulationComponent);
 
 export default designsafeServices;

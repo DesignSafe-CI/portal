@@ -287,10 +287,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
         $scope.data.project[simulationAttr] = [];
         simulations = $scope.data.project[simulationAttr];
       }
-      ProjectService.manageSimulations({'simulations': simulations,
-                                        'project': $scope.data.project}).then(function (simulations) {
-        $scope.data.simulations = simulations;
-      });
+      ProjectService.manageSimulations({'simulations': simulations, 'project': $scope.data.project});
     };
 
     $scope.manageHybridSimulations = function($event) {

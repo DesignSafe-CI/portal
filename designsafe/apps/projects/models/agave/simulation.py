@@ -37,6 +37,8 @@ class Simulation(RelatedEntity):
     simulation_type = fields.CharField('Simulation Type', max_length=1024)
     simulation_type_other = fields.CharField('Simulation Type Other', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
+    procedure_start = fields.CharField('Procedure Start', max_length=1024, default='')
+    procedure_end = fields.CharField('Procedure End', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(SimulationProject)
 
