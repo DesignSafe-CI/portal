@@ -5,6 +5,7 @@
 Improvements:
 
 - Re-write Data Depot controllers into components.
+- Site search result enhancements.
 
 ## v3.0.6
 
