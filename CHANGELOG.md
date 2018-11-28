@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.1.0-20181107
+
+Fixes:
+
+- Removing references to deleted django templates.
+
 ## v3.1.0-20181106
 
 Improvements:
