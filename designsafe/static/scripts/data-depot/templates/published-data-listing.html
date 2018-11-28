@@ -1199,7 +1199,7 @@
                                         </div>
                                         <table class="table table-bordered table-striped">
                                           <tbody>
-                                            <tr ng-repeat="file in publicationCtrl.filterFiles(false, output, browser.listings[output.uuid]) | orderBy: ['type', 'path']">
+                                            <tr ng-repeat="file in output.files | orderBy: ['type', 'path']">
                                               <td>
                                                 <i class="fa {{file.icon()}}"></i>
                                                 <a ng-href="{{file.href}}" ng-click="onBrowse($event, file)">
