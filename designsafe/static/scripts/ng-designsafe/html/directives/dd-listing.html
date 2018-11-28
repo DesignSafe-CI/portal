@@ -214,13 +214,13 @@
                             ng-if="publicationCtrl.filterFiles(false, model, browser.listings[model.uuid]).length &&
                                    !(browser.publication.filesSelected[model.uuid] &&
                                     browser.publication.filesSelected[model.uuid].length)"
-                            ng-click="publicationCtrl.selectAllHybridSimFiles(simulation); publicationCtrl.selectAllHybridSimFiles(model)">
+                            ng-click="publicationCtrl.selectAllHybridSimFiles(simulation);">
                       <i class="fa fa-check"></i> Select All
                     </button>
                     <button class="btn btn-default"
                             ng-if="browser.publication.filesSelected[model.uuid]
                                    && browser.publication.filesSelected[model.uuid].length"
-                            ng-click="publicationCtrl.deselectAllHybridSimFiles(simulation); publicationCtrl.deselectAllHybridSimFiles(model)">
+                            ng-click="publicationCtrl.deselectAllHybridSimFiles(simulation);">
                       <i class="fa fa-times"></i> Deselect All
                     </button>
                   </th>
@@ -237,14 +237,14 @@
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
-                              ng-if="publicationCtrl.isFileSelectedForSimPublication(model, file)"
-                              ng-click="publicationCtrl.deselectFileForSimPublication(model, file, simulation)"
+                              ng-if="publicationCtrl.isFileSelectedForSimPublication(simulation, file)"
+                              ng-click="publicationCtrl.deselectFileForSimPublication(simulation, file, simulation)"
                               title="Selected">
                         <i class="fa fa-check"></i><span class="sr-only">Selected</span>
                       </button>
                       <button class="btn btn-danger"
-                              ng-if="!publicationCtrl.isFileSelectedForSimPublication(model, file)"
-                              ng-click="publicationCtrl.selectFileForSimPublication(model, file, simulation)"
+                              ng-if="!publicationCtrl.isFileSelectedForSimPublication(simulation, file)"
+                              ng-click="publicationCtrl.selectFileForSimPublication(simulation, file, simulation)"
                               title="Not Selected">
                         <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
                       </button>
@@ -1274,14 +1274,14 @@
                     <td>{{file.lastModified|date:"short"}}</td>
                     <td ng-if="browser.publishPipeline && browser.publishPipeline === 'select' ">
                       <button class="btn btn-success"
-                              ng-if="publicationCtrl.isFileSelectedForSimPublication(model, file)"
-                              ng-click="publicationCtrl.deselectFileForSimPublication(model, file, simulation)"
+                              ng-if="publicationCtrl.isFileSelectedForSimPublication(simulation, file)"
+                              ng-click="publicationCtrl.deselectFileForSimPublication(simulation, file, simulation)"
                               title="Selected">
                         <i class="fa fa-check"></i><span class="sr-only">Selected</span>
                       </button>
                       <button class="btn btn-danger"
-                              ng-if="!publicationCtrl.isFileSelectedForSimPublication(model, file)"
-                              ng-click="publicationCtrl.selectFileForSimPublication(model, file, simulation)"
+                              ng-if="!publicationCtrl.isFileSelectedForSimPublication(simulation, file)"
+                              ng-click="publicationCtrl.selectFileForSimPublication(simulation, file, simulation)"
                               title="Not Selected">
                         <i class="fa fa-times"></i><span class="sr-only">Not Selected</span>
                       </button>
