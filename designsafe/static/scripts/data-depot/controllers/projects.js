@@ -1205,7 +1205,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
 
     var setUserDetails = function(usernames){
       $scope.browser.publication.users = [];
-      filePaths = _.uniq(usernames);
+      usernames = _.uniq(usernames);
       var p = $q(function(resolve, reject){
         var results = [];
         var index = 0;
@@ -1266,7 +1266,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
           })
         .then(function(){setFilesDetails(allFilePaths);})
         .then(function(){
-            users = [$scope.browser.project.value.pi]
+            var users = [$scope.browser.project.value.pi]
                       .concat($scope.browser.project.value.coPis)
                       .concat($scope.browser.project.value.teamMembers);
             return setUserDetails(users);

@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.6
+
+Fixes:
+
+- User data undefined in projects (DES-725).
+
 ## v3.0.5
 
 Fixes:
