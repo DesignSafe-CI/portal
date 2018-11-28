@@ -4,8 +4,13 @@
 
 Improvements:
 
-- Re-write Data Depot controllers into components.
-- Site search result enhancements.
+- Re-write Data Depot controllers into components (DES-731).
+- Site search result enhancements (DES-711).
+- Add app dropdown description model (DES-685).
+
+Fixes:
+
+- Published search not showing (DES-732).
 
 ## v3.0.6
 
