@@ -13,6 +13,7 @@ Fixes:
 
 - Published search not showing (DES-732).
 - Fix interactive web socket message (DES-703).
+- Change Dashboard wording (DES-686).
 
 ## v3.0.6
 
