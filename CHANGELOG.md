@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.1.0-20181106
+
+Improvements:
+
+- Re-write Data Depot controllers into components.
+
 ## v3.0.6
 
 Fixes:
