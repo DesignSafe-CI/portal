@@ -7,10 +7,12 @@ Improvements:
 - Re-write Data Depot controllers into components (DES-731).
 - Site search result enhancements (DES-711).
 - Add app dropdown description model (DES-685).
+- Improve app builder(DES-703).
 
 Fixes:
 
 - Published search not showing (DES-732).
+- Fix interactive web socket message (DES-703).
 
 ## v3.0.6
 
