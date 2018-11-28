@@ -14,6 +14,7 @@ Fixes:
 - Published search not showing (DES-732).
 - Fix interactive web socket message (DES-703).
 - Change Dashboard wording (DES-686).
+- "Connect" button on modal for interactive apps (DES-543).
 
 ## v3.0.6
 
