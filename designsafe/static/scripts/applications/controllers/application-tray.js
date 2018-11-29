@@ -4,6 +4,9 @@ export function applicationTrayCtrl(window, angular, $, _) {
         ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsPems', 'AppsSimpleList', 'MultipleList', 'Django', 'toastr', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsPems, AppsSimpleList, MultipleList, Django, toastr) {
             $scope.tabs = [];
             $scope.simpleList = AppsSimpleList;
+            _.forEach($scope.simpleList.tabs, (tab) => {
+                $scope.tabs.push({ title: tab });
+            });
 
             $scope.addDefaultTabs = function(query) {
                 $scope.error = '';
@@ -23,7 +26,7 @@ export function applicationTrayCtrl(window, angular, $, _) {
 
             $scope.getSelectedItemsIncluding = function(list, item) {
                 item.selected = true;
-                return list.items.filter(item => {
+                return list.items.filter((item) => {
                     return item.selected;
                 });
             };
@@ -211,32 +214,11 @@ export function applicationTrayCtrl(window, angular, $, _) {
             $scope.refreshApps = function() {
                 $scope.error = '';
                 $scope.requesting = true;
-                $scope.tabs = [];
-
 
                 $scope.addDefaultTabs({ name: $translate.instant('apps_metadata_name') })
                     .then(function(response) {
-                        $scope.tabs.push(
-                            {
-                                title: 'Private',
-                                content: $scope.simpleList.lists['Private'],
-                            }
-                        );
-
-                        $scope.tabs.push(
-                            {
-                                title: 'Public',
-                                content: $scope.simpleList.lists['Public'],
-                            }
-                        );
-
-                        angular.forEach($scope.simpleList.lists, function(list, key) {
-                            if (key !== 'Public' && key !== 'Private') {
-                                $scope.tabs.push({
-                                    title: key,
-                                    content: list,
-                                });
-                            }
+                        angular.forEach($scope.tabs, (tab) => {
+                            tab.content = $scope.simpleList.lists[tab.title];
                         });
 
                         $scope.requesting = false;
