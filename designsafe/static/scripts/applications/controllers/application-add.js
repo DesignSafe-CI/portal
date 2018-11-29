@@ -1,7 +1,7 @@
 export function applicationAddCtrl(window, angular, $, _) {
     'ngInject';
     angular.module('designsafe').controller('ApplicationAddCtrl',
-        ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsAppsSimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', 'appIcons', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsSimpleList, MultipleList, AppsWizard, Django, appCategories, appIcons) {
+        ['$scope', '$rootScope', '$q', '$timeout', '$uibModal', '$translate', '$state', 'Apps', 'AppsSimpleList', 'MultipleList', 'AppsWizard', 'Django', 'appCategories', 'appIcons', function($scope, $rootScope, $q, $timeout, $uibModal, $translate, $state, Apps, AppsSimpleList, MultipleList, AppsWizard, Django, appCategories, appIcons) {
             /** addForm form **/
             $scope.addSchema = {
                 type: 'object',
