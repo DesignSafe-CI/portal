@@ -863,11 +863,11 @@ export function applicationTrayCtrl(window, angular, $, _) {
                             $scope.getMeta = function() {
                                 // Find appCategory if it exists in tags
                                 if ($scope.simpleList.tagIncludesParam(app.value.definition, 'appCategory')) {
-                                    app.value.definition.appCategory = app.value.definition.tags.filter(s => s.includes('appCategory'))[0].split(':')[1];
+                                    app.value.definition.appCategory = app.value.definition.tags.filter((s) => s.includes('appCategory'))[0].split(':')[1];
                                 }
                                 // Find appIcon if it exists in tags
                                 if ($scope.simpleList.tagIncludesParam(app.value.definition, 'appIcon')) {
-                                    app.value.definition.appIcon = app.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                                    app.value.definition.appIcon = app.value.definition.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
                                 }
                                 $scope.appMeta = app;
                             };

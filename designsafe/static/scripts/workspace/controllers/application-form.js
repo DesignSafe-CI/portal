@@ -34,7 +34,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         if (app.applications) {
             $scope.data.bin = app;
-            Apps.getAppDropdownDescription(app.value.definition.label).then(response => {
+            Apps.getAppDropdownDescription(app.value.definition.label).then((response) => {
                 if (response.data.appDescription) {
                     $scope.data.bin.description = response.data.appDescription;
                 }
@@ -155,7 +155,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 inputs: {},
                 parameters: {},
                 notifications: ['PENDING', 'QUEUED', 'SUBMITTING', 'PROCESSING_INPUTS', 'STAGED', 'KILLED', 'FAILED', 'STOPPED', 'FINISHED'].map(
-                    e => ({
+                    (e) => ({
                         url: $scope.webhookUrl,
                         event: e,
                     })

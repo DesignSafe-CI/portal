@@ -1,25 +1,25 @@
-import {AppTrayComponent} from '../components/application-tray/application-tray.component';
+import { AppTrayComponent } from '../components/application-tray/application-tray.component';
 
 describe('AppTrayComponent', () => {
-    let $rootScope; // eslint-disable-line no-unused-vars
-    let $controller; // eslint-disable-line no-unused-vars
-    let $q;
-    let $timeout; // eslint-disable-line no-unused-vars
-    let $uibModal; // eslint-disable-line no-unused-vars
-    let $state;
-    let $stateParams;
-    let $translate;
-    let $mdToast;
-    let $location;
-    let Apps;
-    let SimpleList;
-    let scope;
-    let ctrl;
+    let $rootScope, // eslint-disable-line no-unused-vars
+        $controller, // eslint-disable-line no-unused-vars
+        $q,
+        $timeout, // eslint-disable-line no-unused-vars
+        $uibModal, // eslint-disable-line no-unused-vars
+        $state,
+        $stateParams,
+        $translate,
+        $mdToast,
+        $location,
+        Apps,
+        SimpleList,
+        scope,
+        ctrl;
     beforeEach(() => {
         angular.mock.module('workspace');
     });
     beforeEach(() => {
-        angular.module('django.context', []).constant('Django', {user: 'test_user'});
+        angular.module('django.context', []).constant('Django', { user: 'test_user' });
         angular.mock.inject(
             (
                 _$rootScope_,
@@ -57,10 +57,10 @@ describe('AppTrayComponent', () => {
                     schemaId: null,
                     lastUpdated: '2016-06-27T17:07:38.506-05:00',
                     associationIds: [],
-                    _links: {self: {href: 'https://agave.designsafe-ci.org/meta/v2/data/5026667269377355290-242ac1110-0001-012'}},
+                    _links: { self: { href: 'https://agave.designsafe-ci.org/meta/v2/data/5026667269377355290-242ac1110-0001-012' } },
                     value: {
                         type: 'apps-list',
-                        apps: [{type: 'agave', id: 'shell-runner-two-0.1.0'}, {type: 'agave', id: 'shell-runner-four-0.1.0'}, {type: 'agave', id: 'shell-runner-five-0.1.0'}],
+                        apps: [{ type: 'agave', id: 'shell-runner-two-0.1.0' }, { type: 'agave', id: 'shell-runner-four-0.1.0' }, { type: 'agave', id: 'shell-runner-five-0.1.0' }],
                         label: 'test_list',
                     },
                     owner: 'test_user',
