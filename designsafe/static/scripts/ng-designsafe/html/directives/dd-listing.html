@@ -212,14 +212,14 @@
                   <th ng-if="browser.publishPipeline && browser.publishPipeline === 'select'">
                     <button class="btn btn-default"
                             ng-if="publicationCtrl.filterFiles(false, model, browser.listings[model.uuid]).length &&
-                                   !(browser.publication.filesSelected[model.uuid] &&
-                                    browser.publication.filesSelected[model.uuid].length)"
+                                   !(browser.publication.filesSelected[simulation.uuid] &&
+                                    browser.publication.filesSelected[simulation.uuid].length)"
                             ng-click="publicationCtrl.selectAllHybridSimFiles(simulation);">
                       <i class="fa fa-check"></i> Select All
                     </button>
                     <button class="btn btn-default"
-                            ng-if="browser.publication.filesSelected[model.uuid]
-                                   && browser.publication.filesSelected[model.uuid].length"
+                            ng-if="browser.publication.filesSelected[simulation.uuid]
+                                   && browser.publication.filesSelected[simulation.uuid].length"
                             ng-click="publicationCtrl.deselectAllHybridSimFiles(simulation);">
                       <i class="fa fa-times"></i> Deselect All
                     </button>
