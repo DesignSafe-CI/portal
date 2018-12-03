@@ -33,19 +33,21 @@ def generic_webhook_handler(request):
         # like the Potree Viewer Application
         job_owner = request.POST.get('owner', '')
         address = request.POST.get('address', '')
+        job_uuid = request.POST.get('job_uuid', '')
         event_data = {
             Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
             Notification.OPERATION: 'web_link',
             Notification.USER: job_owner,
             Notification.MESSAGE: 'Ready to view.',
+            Notification.ACTION_LINK: address,
             Notification.EXTRA: {
                 'address': address,
+                'target_uri': address,
             }
         }
         n = Notification.objects.create(**event_data)
         n.save()
-        return HttpResponse('OK')
     elif event_type == 'VNC':
         job_owner = request.POST.get('owner', '')
         host = request.POST.get('host', '')
@@ -82,66 +84,23 @@ def generic_webhook_handler(request):
         }
         n = Notification.objects.create(**event_data)
         n.save()
-
-        # create metadata for VNC connection and save to agave metadata?
-        try:
-            agave_job_meta = {
-                'name': 'interactiveJobDetails',
-                'value': event_data,
-                'associationIds': [job_uuid],
-            }
-            user = get_user_model().objects.get(username=job_owner)
-            agave = user.agave_oauth.client
-            agave.meta.addMetadata(body=json.dumps(agave_job_meta))
-
-        except (HTTPError, AgaveException) as e:
-            logger.exception('Could not add interactive connection data to metadata')
-            return HttpResponse(json.dumps(e.message), content_type='application/json',
-                                status=400)
-
-        return HttpResponse('OK')
     else:
         return HttpResponse('Unexpected', status=400)
 
-
-@require_POST
-@csrf_exempt
-def job_notification_handler(request):
-    JOB_EVENT = 'job'
-    logger.debug('request body: {}'.format(request.body))
-
+    # create metadata for Interactive connection and save to agave metadata
     try:
-        notification = json.loads(request.body)
-        logger.info('notification body: {}'.format(notification))
-        logger.info('notification name: {}'.format(notification['name']))
-        job_name = notification['name']
-        status = notification['status']
-        event = request.GET.get('event')
-        job_id = request.GET.get('job_id')
-        job_owner = notification['owner']
-        archive_path = notification['archivePath']
-    except ValueError as e:  # for testing ->used when mocking agave notification
-        job_name = request.POST.get('job_name')
-        status = request.POST.get('status')
-        event = request.POST.get('event')
-        job_id = request.POST.get('job_id')
-        job_owner = request.POST.get('job_owner')
-        archive_path = request.POST.get('archivePath')
+        agave_job_meta = {
+            'name': 'interactiveJobDetails',
+            'value': event_data,
+            'associationIds': [job_uuid],
+        }
+        user = get_user_model().objects.get(username=job_owner)
+        agave = user.agave_oauth.client
+        agave.meta.addMetadata(body=json.dumps(agave_job_meta))
 
-    logger.info('job_name: {}'.format(job_name))
-    logger.info('event: {}'.format(event))
-    logger.info('job_id: {}'.format(job_id))
-
-    body = {
-        'job_name': job_name,
-        'job_id': job_id,
-        'event': event,
-        'status': status,
-        'archive_path': archive_path,
-        'job_owner': job_owner,
-    }
-    generic_event.send_robust(None, event_type='job', event_data=body,
-                             event_users=[job_owner])
+    except (HTTPError, AgaveException) as e:
+        logger.exception('Could not add interactive connection data to metadata')
+        return HttpResponse(json.dumps(e.message), content_type='application/json', status=400)
 
     return HttpResponse('OK')
 

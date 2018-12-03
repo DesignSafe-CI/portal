@@ -1,6 +1,5 @@
 import _ from 'underscore';
-
-export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $transitions, DataBrowserService) {
+export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectService) {
     'ngInject';
     $scope.browser = DataBrowserService.state();
     DataBrowserService.apiParams.fileMgr = 'agave';
@@ -10,10 +9,12 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
     // DataBrowserService.currentListing = 'new listing thing.'
     // release selected files
     DataBrowserService.deselect(DataBrowserService.state().selected);
-    $scope.data = {
-      navItems: [],
-      projects: []
-    };
+    //$scope.data = {
+    //  navItems: [],
+    //  projects: []
+    //};
+
+    $scope.data = ProjectService.data
 
     $scope.stateReload = function() {
       $state.reload();
@@ -93,6 +94,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
     $scope.ui.busy = true;
     $scope.browser = DataBrowserService.state();
     $scope.browser.error = null;  //clears any potential lingering error messages.
+    $scope.data = ProjectService.data
     $scope.data.projects = [];
     var offset = 0;
     var limit = 100;
@@ -170,7 +172,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
   export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, projectId, FileListing, $uibModal, $q, $http, $interval) {
     'ngInject';
 
-    $scope.data = {};
+    $scope.data = ProjectService.data;
     $scope.state = DataBrowserService.state();
     $scope.ui = {};
 
@@ -1088,6 +1090,7 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
     DataBrowserService.apiParams.fileMgr = 'agave';
     DataBrowserService.apiParams.baseUrl = '/api/agave/files';
     DataBrowserService.apiParams.searchState = 'projects.view.data';
+    $scope.data = ProjectService.data;
     $scope.browser = DataBrowserService.state();
     $scope.browser.listings = {};
     $scope.browser.ui = {};
@@ -2106,9 +2109,8 @@ export function ProjectRootCtrl($scope, $rootScope, $state, $stateParams, $trans
       });
     }
 
-    $scope.data = {
-      user: Django.user
-    };
+    $scope.data = ProjectService.data
+    $scope.data.user = Django.user
 
     $scope.projSearch = true
 

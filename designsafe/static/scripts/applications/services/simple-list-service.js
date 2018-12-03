@@ -1,185 +1,83 @@
-export function simpleListFactory($http, $q, $translate, djangoUrl, appIcons) {
+export class SimpleList {
+    constructor($http, $q, djangoUrl, appIcons) {
+        'ngInject';
+        this.$http = $http;
+        this.$q = $q;
+        this.djangoUrl = djangoUrl;
+        this.appIcons = appIcons;
+        this.selected;
+        this.lists = {};
+        this.map = {};
+    }
 
-    var SimpleList = function(){
-      this.selected = null,
-      this.lists = {},
-      this.hello = 'hello2'
-      this.map = {}
-    };
+    /**
+     * Searches for a parameter in an Agave metadata.value.definition.tags field
+     * @function
+     * @param {Object} definition - Agave metadata.value.definition
+     * @param {String} param - Parameter to search for in definition.tags, i.e. 'appIcon'
+     * @return {Boolean}
+     */
+    tagIncludesParam(definition, param) {
+        return definition.tags &&
+            Array.isArray(definition.tags) &&
+            definition.tags.filter(s => s.includes(`${param}:`))[0] &&
+            definition.tags.filter(s => s.includes(`${param}:`))[0].split(':')[1];
+    }
 
-    SimpleList.prototype.deleteList = function(query, tab){
-      var self = this;
-      var deferred = $q.defer();
-      $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'GET',
-        params: {'q': query}
-      }).then(
-        function(response){
-          var metadata = {};
-          if (response.data.length > 0){
-            $http({
-              url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-              method: 'DELETE',
-              params: {'uuid': response.data[0].uuid},
-            }).then(
-              function(response){
+    getDefaultLists(query) {
+        let self = this,
+            deferred = this.$q.defer();
+        this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'GET',
+            params: { q: query },
+        }).then(
+            function(response) {
+                self.lists['Private'] = [];
+                self.lists['Public'] = [];
+
+                angular.forEach(response.data, function(appMeta) {
+                    self.map[appMeta.value.definition.id] = appMeta;
+
+                    // If label is undefined, set as id
+                    if (!appMeta.value.definition.label) {
+                        appMeta.value.definition.label = appMeta.value.definition.id;
+                    }
+
+                    // Parse app icon from tags for agave apps, or from metadata field for html apps
+                    appMeta.value.definition.appIcon = null;
+                    if (self.tagIncludesParam(appMeta.value.definition, 'appIcon')) {
+                        appMeta.value.definition.appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                    } else {
+                        self.appIcons.some(function(icon) {
+                            if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
+                                appMeta.value.definition.appIcon = appMeta.value.definition.orderBy = icon;
+                                return true;
+                            }
+                            return false;
+                        });
+                    }
+                    if (appMeta.value.definition.appIcon == '') {
+                        appMeta.value.definition.appIcon = null;
+                    }
+
+                    if (appMeta.value.definition.isPublic) {
+                        self.lists['Public'].push(
+                            appMeta
+                        );
+                    } else {
+                        self.lists['Private'].push(
+                            appMeta
+                        );
+                    }
+                });
+
                 deferred.resolve(self);
-              },
-              function(error){
-                deferred.reject(response);
-              });
-          } else {
-            deferred.reject();
-          }
-        },
-        function(response){
-          deferred.reject(response);
-        });
-
-      return deferred.promise;
-    };
-
-    SimpleList.prototype.saveList = function(query, tab, list) {
-      var self = this;
-      var deferred = $q.defer();
-      $http({
-        url: djangoUrl.reverse('designsafe_workspace:call_api', ['meta']),
-        method: 'GET',
-        params: {'q': query}
-      }).then(
-        function(response){
-          var metadata = {};
-          if (response.data.length === 0){
-            // create metadata
-            metadata.name = $translate.instant('apps_metadata_list_name');
-            metadata.value = {};
-            metadata.value.label = list.listName;
-            metadata.value.apps = [];
-            angular.forEach(list.items, function(app){
-              metadata.value.apps.push(app);
-            });
-          } else {
-            // update metadata
-            metadata.uuid = response.data[0].uuid;
-            metadata.name = $translate.instant('apps_metadata_list_name');
-            metadata.value = {};
-            metadata.value.label = list.listName;
-            metadata.value.apps = [];
-            angular.forEach(list.items, function(app){
-              metadata.value.apps.push(app);
-            });
-          }
-          $http({
-            url: djangoUrl.reverse('designsafe_workspace:call_api', ['meta']),
-            method: 'POST',
-            data: metadata
-          }).then(
-            function(resp){
-              var simpleList = tab;
-              simpleList.content.selected = null;
-              simpleList.content = [];
-              angular.forEach(tab.multiple.lists[1].items, function(app){
-                simpleList.content.push(app)
-              });
-              simpleList.title = list.listName;
-              simpleList.edit = false;
-              deferred.resolve(self);
             },
-            function(apps){
-              deferred.reject();
+            function(apps) {
+                deferred.reject();
             }
-          )
-        },
-        function(apps){
-          deferred.reject();
-        });
-      return deferred.promise;
-    };
-
-    SimpleList.prototype.getDefaultLists = function(query) {
-      var self = this;
-      var deferred = $q.defer();
-      $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'GET',
-        params: {'q': query}
-      }).then(
-        function(response){
-          self.lists['Private'] = [];
-          self.lists['Public'] = [];
-
-          angular.forEach(response.data, function(appMeta){
-            self.map[appMeta.value.definition.id] = appMeta;
-
-            // If label is undefined, set as id
-            if (!appMeta.value.definition.label) {
-              appMeta.value.definition.label = appMeta.value.definition.id;
-            }
-
-            // Parse app icon from tags for agave apps, or from metadata field for html apps
-            appMeta.value.definition.appIcon = null;
-            if (appMeta.value.definition.hasOwnProperty('tags') && appMeta.value.definition.tags.filter(s => s.includes('appIcon')) !== undefined && appMeta.value.definition.tags.filter(s => s.includes('appIcon')).length != 0) {
-              appMeta.value.definition.appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
-            } else (
-              appIcons.some(function (icon) {
-                if (appMeta.value.definition.label.toLowerCase().includes(icon)) {
-                  appMeta.value.definition.appIcon = appMeta.value.definition.orderBy = icon;
-                  return true;
-                }
-              })
-            );
-            if (appMeta.value.definition.appIcon == '') {
-              appMeta.value.definition.appIcon = null;
-            }
-
-            if (appMeta.value.definition.isPublic){
-              self.lists['Public'].push(
-                appMeta
-              );
-            } else {
-              self.lists['Private'].push(
-                appMeta
-            );
-            }
-          });
-
-          deferred.resolve(self);
-        },
-        function(apps){
-          deferred.reject();
-        }
-      )
-      return deferred.promise;
-    };
-
-
-    SimpleList.prototype.getUserLists = function(query) {
-      var self = this;
-      var deferred = $q.defer();
-
-      $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'GET',
-        params: {'q': query}
-      }).then(
-        function(response){
-          if (response.data.length > 0){
-            _.each(response.data, function(appListMeta){
-              self.lists[appListMeta.value.label] = [];
-              _.each(appListMeta.value.apps, function(app){
-                self.lists[appListMeta.value.label].push(self.map[app.value.definition.id]);
-              });
-            });
-          }
-          deferred.resolve(self);
-        },
-        function(apps){
-          deferred.reject();
-        }
-      )
-      return deferred.promise;
-    };
-
-    return SimpleList;
+        );
+        return deferred.promise;
+    }
 }

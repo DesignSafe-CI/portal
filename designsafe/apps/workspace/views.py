@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.workspace.tasks import JobSubmitError, submit_job
@@ -11,6 +12,7 @@ from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.tasks import index_or_update_project
 from designsafe.apps.workspace import utils as WorkspaceUtils
+from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from requests import HTTPError
 from urlparse import urlparse
 from datetime import datetime
@@ -168,6 +170,13 @@ def call_api(request, service):
                                 else:
                                     job_post['inputs'][key] = urllib.quote(parsed.path)
 
+                    if settings.DEBUG:
+                        wh_base_url = settings.WEBHOOK_POST_URL.strip('/') + '/webhooks/'
+                    else:
+                        wh_base_url = request.build_absolute_uri('/webhooks/')
+
+                    job_post['parameters']['_webhook_base_url'] = wh_base_url
+
                     try:
                         data = submit_job(request, request.user.username, job_post)
                     except JobSubmitError as e:
@@ -217,6 +226,12 @@ def call_api(request, service):
                 system,
                 dir_path
             )
+        elif service == 'description':
+            app_id = request.GET.get('app_id')
+            try:
+                data = AppDescription.objects.get(appId=app_id).desc_to_dict()
+            except ObjectDoesNotExist:
+                return HttpResponse('No description found for {}'.format(app_id), status=200)
         else:
             return HttpResponse('Unexpected service: %s' % service, status=400)
     except HTTPError as e:

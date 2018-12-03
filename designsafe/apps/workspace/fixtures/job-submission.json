@@ -1,0 +1,14 @@
+{
+    "inputs": {
+        "workingDirectory": "agave://designsafe.storage.default/ds_user/test_folder"
+    },
+    "name": "zip_test",
+    "parameters": {
+        "compression_type": "zip"
+    },
+    "maxRunTime": "00:30:00",
+    "archivePath": "ds_user/test/",
+    "archiveSystem": "designsafe.storage.default",
+    "appId": "compress-0.1",
+    "archive": "true"
+}

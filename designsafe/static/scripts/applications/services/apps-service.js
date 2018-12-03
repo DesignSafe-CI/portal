@@ -1,187 +1,180 @@
-export function appsService(window, angular, $, _) {
-  'ngInject';
-  "use strict";
-  angular.module('designsafe').factory('Apps', ['$http', '$q', '$translate', 'djangoUrl', function($http, $q, $translate, djangoUrl) {
+export class Apps {
+    constructor($http, $translate, djangoUrl) {
+        'ngInject';
+        this.$http = $http;
+        this.$translate = $translate;
+        this.djangoUrl = djangoUrl;
+    }
 
-    var service = {};
+    list(query) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'GET',
+            params: { q: query },
+            cache: true,
+        });
+    }
 
-    var default_list_opts = {
-      publicOnly: false
-    };
+    getApps() {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'GET',
+        });
+    }
 
-    service.list = function(query) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'GET',
-        params: {'q': query},
-        cache: true
-      });
-    };
+    get(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'GET',
+            params: { appId: appId },
+        });
+    }
 
-    service.getApps = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'GET'
-      });
-    };
+    getPermissions(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'GET',
+            params: { appId: appId, pems: true },
+        });
+    }
 
-    service.get = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'GET',
-        params: {'appId': app_id}
-      });
-    };
+    getMeta(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'GET',
+            params: { q: { name: this.$translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
+        });
+    }
 
-    service.getPermissions = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'GET',
-        params: {'appId': app_id, 'pems': true}
-      });
-    };
+    getMetaPems(uuid) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'GET',
+            params: { uuid: uuid, pems: true },
+        });
+    }
 
-    service.getMeta = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'GET',
-        params: {q:{'name': $translate.instant('apps_metadata_name'),'value.definition.id': app_id}}
-      });
-    };
+    createApp(body) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'POST',
+            data: body,
+        });
+    }
 
-    service.getMetaPems = function(uuid) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'GET',
-        params: {'uuid': uuid, 'pems': true}
-      });
-    };
+    createMeta(body) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'POST',
+            data: body,
+        });
+    }
 
-    service.createApp = function(body) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'POST',
-        data: body
-      });
-    };
+    updateMeta(body, uuid) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'POST',
+            data: body,
+            params: { uuid: uuid },
+        });
+    }
 
-    service.createMeta = function(body) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'POST',
-        data: body
-      });
-    };
+    updateMetaPermissions(permission, uuid) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'POST',
+            data: permission,
+            params: { uuid: uuid, username: permission.username, pems: true },
+        });
+    }
 
-    service.updateMeta = function(body, uuid) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'POST',
-        data: body,
-        params: {'uuid': uuid},
-      });
-    };
+    getHistory(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'GET',
+            params: { appId: appId, history: true },
+        });
+    }
 
-    service.updateMetaPermissions = function(permission, uuid) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'POST',
-        data: permission,
-        params: {'uuid': uuid, 'username': permission.username, 'pems': true}
-      });
-    };
+    getSyncMeta(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
+            method: 'GET',
+            params: { q: { name: this.$translate.instant('apps_metadata_name'), 'value.definition.id': appId } },
+        });
+    }
 
-    service.getHistory = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'GET',
-        params: {'appId': app_id, 'history': true}
-      });
-    };
+    getSyncPermissions(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
+            method: 'GET',
+            params: { appId: appId, pems: true },
+        });
+    }
 
-    service.getSyncMeta = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
-        method: 'GET',
-        params: {q:{'name': $translate.instant('apps_metadata_name'),'value.definition.id': app_id}}
-      });
-    };
+    syncPermissions(permission, uuid) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
+            method: 'POST',
+            data: permission,
+            params: { uuid: uuid, username: permission.username, pems: true },
+        });
+    }
 
-    service.getSyncPermissions = function(app_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
-        method: 'GET',
-        params: {'appId': app_id, 'pems': true}
-      });
-    };
+    manageApp(appId, body) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'POST',
+            data: body,
+            params: { appId: appId },
+        });
+    }
 
-    service.syncPermissions = function(permission, uuid) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['sync']),
-        method: 'POST',
-        data: permission,
-        params: {'uuid': uuid, 'username': permission.username, 'pems': true}
-      });
-    };
+    deleteApp(appId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
+            method: 'DELETE',
+            params: { appId: appId },
+        });
+    }
 
-    service.manageApp = function(appId, body){
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'POST',
-        data: body,
-        params: {'appId': appId}
-      });
-    };
+    deleteMeta(uuid) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
+            method: 'DELETE',
+            params: { uuid: uuid },
+        });
+    }
 
-    service.deleteApp = function(app_id){
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['apps']),
-        method: 'DELETE',
-        params: {'appId': app_id},
-      });
-    };
+    getSystems(systemId, isPublic, type) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+            method: 'GET',
+            params: { system_id: systemId, type: type, isPublic: isPublic },
+        });
+    }
 
-    service.deleteMeta = function(uuid){
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
-        method: 'DELETE',
-        params: {'uuid': uuid},
-      });
-    };
+    getSystemRoles(systemId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+            method: 'GET',
+            params: { system_id: systemId, roles: true },
+        });
+    }
 
-    service.getSystems = function(system_id, isPublic, type){
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
-        method: 'GET',
-        params: {'system_id': system_id, 'type': type, 'isPublic': isPublic}
-      });
-    };
+    getRoleForUser(systemId) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
+            method: 'GET',
+            params: { system_id: systemId, user_role: true },
+        });
+    }
 
-    service.getSystemRoles = function(system_id){
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
-        method: 'GET',
-        params: {'system_id': system_id, 'roles': true}
-      });
-    };
-    
-    service.getRoleForUser = function(system_id) {
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['systems']),
-        method: 'GET',
-        params: {'system_id': system_id, 'user_role': true}
-      });
-    };
-
-    service.getFile = function(system_id, path){
-      return $http({
-        url: djangoUrl.reverse('designsafe_applications:call_api', ['files']),
-        method: 'GET',
-        params: {'system_id': system_id, 'path': path}
-      });
-    };
-
-    return service;
-  }]);
-
+    getFile(systemId, path) {
+        return this.$http({
+            url: this.djangoUrl.reverse('designsafe_applications:call_api', ['files']),
+            method: 'GET',
+            params: { system_id: systemId, path: path },
+        });
+    }
 }

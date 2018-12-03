@@ -274,7 +274,7 @@ def call_api(request, service):
                                     'query': query
                                 }
                             })
-                            data = agave.meta.listMetadata(q=query)
+                            data = agave.meta.listMetadata(q=query, limit=0)
                         else:
                             metrics.info('agave.meta.listMetadata')
                             data = agave.meta.listMetadata()

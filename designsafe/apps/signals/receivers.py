@@ -23,10 +23,6 @@ def ds_event_callback(sender, **kwargs):
     logger.info('Event Type: {0}'.format(event_type))
     logger.info('Event kwargs: {0}'.format(kwargs))
 
-    # do this directly in workspace.tasks.watch_job_status
-    # if event_type == 'job' and data['status'] == 'INDEXING':
-    #     tasks.index_job_outputs.delay(data)
-
     if users:
         rp = RedisPublisher(facility = WEBSOCKETS_FACILITY, users=users)
     else:

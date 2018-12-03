@@ -69,7 +69,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
                 auth: ['UserService', function(UserService) {
                     return UserService.authenticate();
                 }],
-            }
+            },
         });
 }
 

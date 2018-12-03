@@ -1,5 +1,27 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.1.0-20181107
+
+Fixes:
+
+- Removing references to deleted django templates.
+
+## v3.1.0-20181106
+
+Improvements:
+
+- Re-write Data Depot controllers into components (DES-731).
+- Site search result enhancements (DES-711).
+- Add app dropdown description model (DES-685).
+- Improve app builder(DES-703).
+
+Fixes:
+
+- Published search not showing (DES-732).
+- Fix interactive web socket message (DES-703).
+- Change Dashboard wording (DES-686).
+- "Connect" button on modal for interactive apps (DES-543).
+
 ## v3.0.7
 
 Fixes:

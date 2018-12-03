@@ -1,7 +1,9 @@
-export function agave2ds() {angular.module('designsafe').filter('agave2ds', function () {
-  return function (agave_url) {
-    var base_url = '/data/browser/agave/designsafe.storage.default/'
-    var parts = agave_url.split('designsafe.storage.default')
-    return base_url + parts[1] + '/';
-  }
-})}
+export function agave2ds() {
+    angular.module('designsafe').filter('agave2ds', () => {
+        return agaveUrl => {
+            let baseUrl = '/data/browser/agave/designsafe.storage.default/',
+                parts = agaveUrl.split('designsafe.storage.default');
+            return baseUrl + parts[1] + '/';
+        };
+    });
+}

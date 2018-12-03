@@ -35,9 +35,9 @@ class AppTrayCtrl {
         setTimeout(_ => this.refreshApps(), 0);
 
         $(document).mousedown(event => {
-            let element = $(event.target);
-            let workspaceTab = element.closest('.workspace-tab');
-            let appsTray = element.closest('div .apps-tray');
+            let element = $(event.target),
+                workspaceTab = element.closest('.workspace-tab'),
+                appsTray = element.closest('div .apps-tray');
             if (!(appsTray.length > 0 || workspaceTab.length > 0) && this.activeTab != null) {
                 this.outsideClick = true;
             } else {
@@ -78,37 +78,53 @@ class AppTrayCtrl {
         this.requesting = true;
         this.tabs = [];
 
-        if (this.$stateParams.appId) {
-            this.Apps.getMeta(this.$stateParams.appId)
-                .then(
-                    response => {
-                        if (response.data.length > 0) {
-                            if (response.data[0].value.definition.available) {
-                                this.launchApp(response.data[0]);
+        let appId = this.$stateParams.appId,
+            binned = false,
+            appCategory;
+
+        // Launch app if appId in url
+        if (appId) {
+            appCategory = appId.split('::')[1];
+            if (appCategory && this.simpleList.tabs.includes(appCategory)) {
+                binned = true;
+            } else {
+                this.Apps.getMeta(appId)
+                    .then(
+                        response => {
+                            if (response.data.length > 0) {
+                                if (response.data[0].value.definition.available) {
+                                    this.launchApp(response.data[0]);
+                                } else {
+                                    this.$mdToast.show(this.$mdToast.simple()
+                                        .content(this.$translate.instant('error_app_disabled'))
+                                        .toastClass('warning')
+                                        .parent($('#toast-container')));
+                                }
                             } else {
                                 this.$mdToast.show(this.$mdToast.simple()
-                                    .content(this.$translate.instant('error_app_disabled'))
+                                    .content(this.$translate.instant('error_app_run'))
                                     .toastClass('warning')
                                     .parent($('#toast-container')));
                             }
-                        } else {
+                        },
+                        response => {
                             this.$mdToast.show(this.$mdToast.simple()
                                 .content(this.$translate.instant('error_app_run'))
                                 .toastClass('warning')
                                 .parent($('#toast-container')));
                         }
-                    },
-                    response => {
-                        this.$mdToast.show(this.$mdToast.simple()
-                            .content(this.$translate.instant('error_app_run'))
-                            .toastClass('warning')
-                            .parent($('#toast-container')));
-                    }
-                );
+                    );
+            }
         }
 
-        this.addDefaultTabs({$and: [{name: `${this.$translate.instant('apps_metadata_name')}`}, {'value.definition.available': true}]})
+        this.addDefaultTabs({ $and: [{ name: `${this.$translate.instant('apps_metadata_name')}` }, { 'value.definition.available': true }] })
             .then(response => {
+                if (binned) {
+                    appId = appId.split('::')[0];
+                    const appIndex = this.simpleList.binMap[appCategory][appId];
+                    this.launchApp(this.simpleList.lists[appCategory][appIndex]);
+                }
+
                 this.simpleList.tabs.forEach(element => {
                     this.tabs.push(
                         {
@@ -126,8 +142,8 @@ class AppTrayCtrl {
     launchApp(app, tab) {
         this.$state.go(
             'tray',
-            {appId: app.value.definition.id},
-            {notify: false}
+            { appId: app.value.definition.id },
+            { notify: false }
         );
         this.data.activeApp = app;
         this.$rootScope.$broadcast('launch-app', app);

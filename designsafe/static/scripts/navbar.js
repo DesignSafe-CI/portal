@@ -25,7 +25,7 @@
     ev.preventDefault();
     var searchstring = $('#searchfield').val();
     if (ev.which === 13 || ev.type === 'click') {
-      window.location = '/search?q=' + searchstring;
+      window.location = '/search?type_filter=cms&switch_filter=true&query_string=' + searchstring;
     }
   });
 

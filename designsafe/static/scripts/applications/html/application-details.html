@@ -18,6 +18,10 @@
                     <td>ID</td>
                     <td><strong>{{appMeta.value.definition.id}}</strong></td>
                   </tr>
+                  <tr ng-if="appMeta.value.definition.owner">
+                    <td>Owner</td>
+                    <td>{{appMeta.value.definition.owner}}</td>
+                  </tr>
                   <tr ng-if="appMeta.value.definition.label">
                     <td>Name</td>
                     <td>{{appMeta.value.definition.label}}</td>
@@ -58,6 +62,10 @@
                    <td>ID</td>
                    <td><strong>{{appMeta.value.definition.id}}</strong></td>
                  </tr>
+                  <tr ng-if="appMeta.value.definition.owner">
+                    <td>Owner</td>
+                    <td>{{appMeta.value.definition.owner}}</td>
+                  </tr>
                  <tr ng-if="appMeta.value.definition.name">
                    <td>Name</td>
                    <td>{{appMeta.value.definition.name}}</td>

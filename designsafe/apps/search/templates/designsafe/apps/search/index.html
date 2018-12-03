@@ -2,9 +2,13 @@
 {% load sekizai_tags %}
 {% load static %}
 
+{% block head_extra %}
+    <base href="{% url 'designsafe_search:index' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
-    <site-search></site-search>
+    <ui-view></ui-view>
   {{message}}
   </div>
 </div>

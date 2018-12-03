@@ -28,7 +28,7 @@
             <span class="sr-only">Toggle Dropdown</span>
           </button>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'designsafe_dashboard:index' %}">Dashboard</a></li>
+            <li><a href="{% url 'designsafe_dashboard:index' %}">My Dashboard</a></li>
             <li><a href="{% url 'designsafe_notifications:index' %}">Notifications</a></li>
             {% if user|has_group:'Rapid Admin' %}
               <li><a href="{% url 'designsafe_rapid:admin'%}" target="_self"> Rapid Admin </a></li>
