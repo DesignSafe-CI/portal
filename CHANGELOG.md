@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.7
+
+Fixes:
+
+- Hybrid Sim published output rendering
+
 ## v3.0.6
 
 Fixes:
