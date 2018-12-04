@@ -77,7 +77,7 @@ services:
       - 443:443
     container_name: des_nginx
     hostname: des_nginx
-  
+
   django:
     image: designsafeci/portal:local
     env_file: ../env_files/designsafe.env

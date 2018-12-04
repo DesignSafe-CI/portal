@@ -1,6 +1,7 @@
+// TODO: can only import CSS here, not in each module or
+// they will stomp on eachother
 import '../../styles/base.scss';
 import '../../styles/main.css';
-import '../rapid/styles/rapid.css';
 
 import $ from 'jquery';
 import angular from 'angular';
@@ -27,7 +28,7 @@ import './directives';
 import './filters';
 import './models';
 import './controllers';
-import './components'
+import './components';
 
 export const ngDesignsafe = angular.module('designsafe',
                                            ['ng.modernizr',

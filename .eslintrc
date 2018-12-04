@@ -1,5 +1,5 @@
 {
-    "extends": ["eslint:recommended", "google"],
+    "extends": ["eslint:recommended"],
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
@@ -14,6 +14,7 @@
     },
     "rules": {
         "semi"                  : [1, "always"],
+        "require-jsdoc"         : 0,
         "consistent-return"     : 2,
         "indent"                : [1, 4, { "SwitchCase": 1 }],
         "no-else-return"        : 1,
@@ -22,7 +23,7 @@
         "arrow-parens"          : 1,
         "quote-props"           : [1, "as-needed"],
         "quotes"                : [1, "single", {"avoidEscape": true}],
-        "one-var"               : [1, "consecutive"],
+        "one-var"               : [0, "consecutive"],
         "brace-style"           : [1, "1tbs", { "allowSingleLine": true }],
         "object-curly-spacing"  : [1, "always"],
     },

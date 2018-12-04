@@ -1,4 +1,4 @@
-import L from 'L';
+import L from 'leaflet';
 import * as GeoUtils from '../utils/geo-utils';
 import angular from 'angular';
 
