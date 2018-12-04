@@ -21,6 +21,10 @@ footer {
   font-family: 'Open Sans', sans-serif;
 }
 
+#geo_container .leaflet-draw-draw-circlemarker {
+    display: none;
+}
+
 #geo_container h1, #geo_container h2 {
   color: #fff;
 }

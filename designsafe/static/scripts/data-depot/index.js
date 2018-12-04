@@ -1,7 +1,3 @@
-import '../../styles/base.scss';
-import '../../styles/main.css';
-import '../rapid/styles/rapid.css';
-
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
@@ -199,7 +195,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
             var options = {
               system: ($stateParams.systemId || 'designsafe.storage.default'),
               path: ($stateParams.filePath || Django.user)
-              
+
             };
             if (options.path === '/') {
               options.path = Django.user;
@@ -209,7 +205,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
 
           }]
         }
-    
+
       })
       .state('projects.view', {
         url: '/projects/{projectId}/',
@@ -218,8 +214,8 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
         //template: require('./templates/project-view.html'),
         component: 'projectView',
         resolve: {
-          projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => { 
-            ProjectService.resolveParams.projectId = $stateParams.projectId; 
+          projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+            ProjectService.resolveParams.projectId = $stateParams.projectId;
             return $stateParams.projectId; }]
         }
       })
@@ -264,7 +260,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
             DataBrowserService.apiParams.baseUrl = '/api/agave/files';
             DataBrowserService.apiParams.searchState = 'projects.search';
             var queryString = $stateParams.query_string;
-         
+
             var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, projects: true};
             return DataBrowserService.search(options);
           }],

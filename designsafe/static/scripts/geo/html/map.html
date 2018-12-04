@@ -8,7 +8,7 @@
   </li>
 </ul> -->
 <li class="list-group-item menu logo">
-  <img class="img-responsive" src="/static/designsafe/apps/geo/images/logo.png"></img>
+  <img class="img-responsive" src="/static/scripts/geo/images/logo.png"></img>
 </li>
 <li class="list-group-item menu clearfix title"
     ng-mouseover="vm.title_hover=true"
@@ -112,7 +112,7 @@
       <input type="color"
              class="form-control"
              ng-model="vm.current_layer.options.fillColor"
-             ng-change=vm.update_layer_style('fillColor')>
+             ng-change="vm.update_layer_style('fillColor')">
     </div>
 
   </li>
@@ -125,7 +125,7 @@
       <input type="color"
              class="form-control"
              ng-model="vm.current_layer.options.color"
-             ng-change=vm.update_layer_style('color')>
+             ng-change="vm.update_layer_style('color')">
     </div>
 
   </li>
@@ -135,10 +135,10 @@
              (vm.active_layer_group.get_feature_type(vm.current_layer) === 'Image'))">
     <div class="left"> Opacity: </div>
     <div class="right">
-      <input type="number" min=0 max=1 step=0.01
+      <input type="number" min="0" max="1" step="0.01"
              class="form-control"
              ng-model="vm.current_layer.options.fillOpacity"
-             ng-change=vm.update_layer_style('fillOpacity')>
+             ng-change="vm.update_layer_style('fillOpacity')">
     </div>
 
   </li>

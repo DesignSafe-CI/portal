@@ -13,20 +13,20 @@ module.exports = function(env, arg) {
     return {
         devtool: smap,
         entry: {
-          "rapid.bundle.js" : "./designsafe/static/scripts/rapid/index.js",
-          "geo.bundle.js" : "./designsafe/apps/geo/static/designsafe/apps/geo/scripts/index.js",
-          "bundle.js": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
-          "dd.bundle.js": "./designsafe/static/scripts/data-depot/index.js",
-          "workspace.bundle.js": "./designsafe/static/scripts/workspace/app.js",
-          "search.bundle.js": "./designsafe/static/scripts/search/index.js",
-          "dashboard.bundle.js": "./designsafe/static/scripts/dashboard/index.js",
-          "applications.bundle.js": "./designsafe/static/scripts/applications/app.js",
-          "notifications.bundle.js": "./designsafe/static/scripts/notifications/app.js"
+          "rapid" : "./designsafe/static/scripts/rapid/index.js",
+          "geo" : "./designsafe/static/scripts/geo/index.js",
+          "base": "./designsafe/static/scripts/ng-designsafe/ng-designsafe.js",
+          "dd": "./designsafe/static/scripts/data-depot/index.js",
+          "workspace": "./designsafe/static/scripts/workspace/app.js",
+          "search": "./designsafe/static/scripts/search/index.js",
+          "dashboard": "./designsafe/static/scripts/dashboard/index.js",
+          "applications": "./designsafe/static/scripts/applications/app.js",
+          "notifications": "./designsafe/static/scripts/notifications/app.js"
         },
         output: {
             publicPath: "/static/build/",
             path: __dirname + "/designsafe/static/build/",
-            filename: "[name]"
+            filename: "[name].bundle.js"
         },
         resolve: {
             extensions: ['.js'],
@@ -51,14 +51,12 @@ module.exports = function(env, arg) {
                     }]
                 },
                 {
-                  test: /\.(ttf|eot|svg|png|jpg)(\?[\s\S]+)?$/,
-                  exclude: /node_modules/,
+                  test: /\.(ttf|woff|eot|svg|png|jpg)(\?[\s\S]+)?$/,
                   loader: 'file-loader'
                 },
                 {
                     test: /\.(s?)css$/,
                     use: ExtractTextPlugin.extract({
-                        fallback: "style-loader",
                         use: [{
                             loader: 'css-loader',
                         },
@@ -74,7 +72,7 @@ module.exports = function(env, arg) {
             ]
         },
         plugins: [
-            new ExtractTextPlugin("base.css"),
+            new ExtractTextPlugin("[name].bundle.css"),
             new LiveReloadPlugin(),
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
@@ -91,7 +89,6 @@ module.exports = function(env, arg) {
             d3: 'd3',
             moment: 'moment',
             _: '_',
-            L: 'L',
             window: 'window',
             djng: 'djng'
         }
