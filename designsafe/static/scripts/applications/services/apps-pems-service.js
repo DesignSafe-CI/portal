@@ -1,5 +1,5 @@
 export function appsPemsService(window, angular, $, _) {
-  'ngInejct';
+  'ngInject';
   "use strict";
   angular.module('designsafe').service('AppsPems', ['$http', '$q', '$rootScope', '$uibModal', '$translate', 'djangoUrl', function($http, $q, $rootScope, $uibModal, $translate, djangoUrl) {
 
