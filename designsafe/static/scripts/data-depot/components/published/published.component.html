@@ -96,7 +96,7 @@
                     <th style="border-top:none; width:25%">Associated Projects</th>
                     <td style="border-top:none; width:75%">
                       <div data-ng-repeat="asc in project.value.associatedProjects">
-                          <span>{{asc.title}} - <a ng-href="asc.href">{{asc.href}}</a></span> 
+                          <span>{{asc.title}} - <a ng-href="{{asc.href}}">{{asc.href}}</a></span> 
                       </div>
                     </td>
                   </tr>
