@@ -176,14 +176,16 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.manager().set_client(ag)
         prj.save(ag)
         project_uuid = prj.uuid
-        prj.title = post_data.get('title')
+        prj.title = post_data.get('title')                                  # required
+        prj.project_type = post_data.get('projectType', 'other')            # defaults to 'Other'
+        prj.pi = post_data.get('pi')
+        prj.copi = post_data.get('copi')                                    # optional (this is a list of objects)
+        prj.team = post_data.get('team')                                    # optional (this is a list of objects)
+        prj.project_id = post_data.get('projectId', '')
         prj.award_number = post_data.get('awardNumber', '')
-        prj.project_type = post_data.get('projectType', 'other')
         prj.associated_projects = post_data.get('associatedProjects', {})
         prj.description = post_data.get('description', '')
-        prj.pi = post_data.get('pi')
         prj.keywords = post_data.get('keywords', '')
-        prj.project_id = post_data.get('projectId', '')
         prj.save(ag)
 
         # create Project Directory on Managed system
@@ -231,6 +233,8 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
                             'operation': 'initial_pems_create',
                             'info': {'collab': request.user.username, 'pi': prj.pi} })
         prj.add_team_members([request.user.username])
+        prj.add_co_pis(prj.copi)
+        prj.add_team_members(prj.team)
         tasks.set_facl_project.apply_async(args=[prj.uuid, [request.user.username]], queue='api')
         if prj.pi and prj.pi != request.user.username:
             prj.add_team_members([prj.pi])

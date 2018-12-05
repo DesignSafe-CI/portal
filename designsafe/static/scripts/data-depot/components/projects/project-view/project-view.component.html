@@ -1,183 +1,99 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail" style="background:white;">
-        <h2>{{data.project.value.projectId}}: {{ data.project.value.title }}</h2>
-      <div class="table-responsive">
-      <table class="table" style="margin-bottom:0;">
-        <thead>
-          <tr>
-            <th style="width:50%; border-top:none; padding:0px;"></th>
-            <th style="width:50%; border-top:none; padding:0px;"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:25%">PI</th>
-                    <td style="border-top:none; width:75%">
-                      <ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
-                      <button class="btn btn-sm btn-default pull-right"
-                              ng-click="manageCollabs($event)">Manage Team Members</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:25%;">DOI</th>
-                    <td style="border-top:none; width:75%;">(Appears only in published view)
-                    <!--
-                      <button class="btn btn-info btn-sm pull-right"
-                              ng-click="showCitation(project)">Citation
-                      </button>
-                    -->
-                    <td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:25%">Date of Publication</th>
-                    <td style="border-top:none; width:75%">(Appears only in published view)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:25%">Award</th>
-                    <td style="border-top:none; width:75%">{{data.project.value.awardNumber}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:25%">Project Type</th>
-                    <td style="border-top:none; width:75%"><span style="text-transform:capitalize" >{{data.project.value.projectType.replace('_', ' ')}}</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-            <td style="padding:0px;">
-              <table class="table" style="margin-bottom:0;">
-                <tbody>
-                  <tr>
-                    <th style="border-top:none; width:25%">Keywords</th>
-                    <td style="border-top:none; width:75%">{{data.project.value.keywords}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-
-        </tbody>
-      </table>
-    </div>
-    <div style="width:100%;">
-      <p><strong>Description</strong></p>
-      <p>
-        {{data.project.value.description}}
-      </p>
-    </div>
-        <!--
-        <div style="width:49%; display:inline-block; vertical-align:top;">
-          <table class="table" style="margin-bottom:0;">
-            <tbody>
-              <tr>
-                <th>PI</th>
-                <td><ds-user username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user></td>
-              </tr>
-            </tbody>
-          </table>
-          -->
-            <!--<div style="width:350px; height:100px; overflow:hidden;">
-                <img width="350" ng-src="{{ previewHref }}"
-                     ng-if="previewHref && state.showPreviewListing"/>
-                <div ng-if="!previewHref && state.showPreviewListing">
-                  <i class="fa fa-spin fa-spinner"></i> Loading ...
-                </div>
-            </div>-->
-        <!--</div>-->
-
-        <div class="btn-group" role="group" aria-label="Listing views"
-             ng-if="!state.publishPipeline">
-          <button class="btn btn-default"
-                  ng-click="showListing()"
-                  ng-class="{'grayed-out': !state.showMainListing}"
-                  style="border-radius:10px;
-              box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
-              margin-right:5px;">Working Directory</button>
-          <button class="btn btn-default"
-                  ng-click="showPreview()"
-                  ng-class="{'grayed-out': !state.showPreviewListing}"
-                  style="border-radius:10px;
-                box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);"
-                  ng-disabled="data.loadingEntities">Publication Preview</button>
-          <div ng-if="state.showPreviewListing"
-               style="margin-left:15px; display:inline-block;">
-              <a class=""
-                 href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
-                 target="_blank">
-                <i class="fa fa-question-circle"></i> Learn More
-              </a>
-          </div>
-
-        <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;"
-             ng-if="state.showMainListing">
-            <button class="btn btn-sm btn-default" ng-click="editProject($event)">Edit Project</button>
-            <!--
-            <button class="btn btn-sm btn-default" ng-click="manageCollabs($event)">Manage Team Members</button>
-            -->
-            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
-                    ng-click="manageExperiments($event)"
-                    ng-if="data.project.value.projectType === 'experimental'">
-                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
-                Manage Experiments
-            </button>
-            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
-                    ng-click="manageSimulations($event)"
-                    ng-if="data.project.value.projectType === 'simulation'">
-                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
-                Manage Simulations
-            </button>
-            <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities"
-                    ng-click="manageHybridSimulations($event)"
-                    ng-if="data.project.value.projectType === 'hybrid_simulation'">
-                <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16"/> 
-                Manage Hybrid Simulations
-            </button>
+      <!-- New Header Start -->
+      <div>
+        <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
+        <a ng-click="editProject($event)">Edit Project</a>
+        <div class="prj-row">
+          <span class="prj-label">PI</span>
+          <ds-user class="prj-data" username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
         </div>
-
+        <div class="prj-row">
+          <span class="prj-label" ng-if="data.project.value.coPis">CoPI</span>
+          <span class="prj-data" format="lname" ng-repeat="copi in data.project.value.coPis">
+            <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+          </span>
+          <span ng-repeat="user in publicationCtrl.filterUsers(data.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
         </div>
-        <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
-          <strong>The following categories do not have associated data:</strong>
-          <div ng-repeat="missing in state.missing">
-            <span ng-if="missing.model">The category "{{missing.model}}" within the {{missing.type}} "{{missing.title}}" has no categorized files.</span>
-            <span ng-if="!missing.model"> A category for {{missing.missingSet}} has not been created.  </span>
-          </div>
-          <a href="https://www.youtube.com/watch?v=AZFwNNRj-MI&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+        <div class="prj-row">
+          <span class="prj-label">Project Type</span>
+          <span class="prj-data">{{ data.project.value.projectType }}</span>
+        </div>
+        <div class="prj-row">
+          <span class="prj-label" ng-if="data.project.value.awardNumber">Awards</span>
+          <span class="prj-data">{{ data.project.value.awardNumber }}</span>
+          <!-- <span class="prj-data" ng-repeat="award in data.project.value.awardNumber">{{ award }}</span> -->
+        </div>
+        <table class="tg" style="table-layout: fixed; width: 100%;">
+          <colgroup>
+            <col style="width: 15%">
+            <col style="width: 84%">
+          </colgroup>
+          <tr ng-repeat="work in data.project.value.associatedProjects">
+            <td class="tg-0lax" ng-if="$first">Related Work</td>
+            <td class="tg-0lax" ng-if="!$first"></td>
+            <td class="tg-0lax"><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
+          </tr>
+        </table>
+        <div class="prj-row">
+          <span class="prj-label" ng-if="data.project.value.keywords">Keywords</span>
+          <span class="prj-data">{{ data.project.value.keywords }}</span>
+        </div>
+        <div ng-if="data.project.value.description">
+          <span>{{ data.project.value.description }}</span>
+        </div>
+      </div>
+      <!-- New Header End -->
+      <div role="group" aria-label="Listing views" ng-if="!state.publishPipeline">
+        <button class="btn btn-project-l"
+                ng-click="showListing()"
+                ng-class="{'grayed-out': !state.showMainListing}">
+                Working Directory</button>
+        <button class="btn btn-project-m"
+                ng-click="_()"
+                ng-class="{'grayed-out': !state.showPreviewListing}"
+                ng-disabled="data._">
+                Curation Directory*</button>
+        <button class="btn btn-project-r"
+                ng-click="showPreview()"
+                ng-class="{'grayed-out': !state.showPreviewListing}" 
+                ng-disabled="data.loadingEntities">
+                Publication Preview</button>
+        <div ng-if="state.showPreviewListing" style="margin-left:15px; display:inline-block;">
+          <a class="" href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
             <i class="fa fa-question-circle"></i> Learn More
           </a>
         </div>
+        <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;" ng-if="state.showMainListing">
+          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"
+            ng-if="data.project.value.projectType === 'experimental'">
+            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
+            Manage Experiments
+          </button>
+          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageSimulations($event)"
+            ng-if="data.project.value.projectType === 'simulation'">
+            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
+            Manage Simulations
+          </button>
+          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageHybridSimulations($event)"
+            ng-if="data.project.value.projectType === 'hybrid_simulation'">
+            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
+            Manage Hybrid Simulations
+          </button>
+        </div>
+      </div>
+
+      <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
+        <strong>The following categories do not have associated data:</strong>
+        <div ng-repeat="missing in state.missing">
+          <span ng-if="missing.model">The category "{{missing.model}}" within the {{missing.type}} "{{missing.title}}" has no
+            categorized files.</span>
+          <span ng-if="!missing.model"> A category for {{missing.missingSet}} has not been created. </span>
+        </div>
+        <a href="https://www.youtube.com/watch?v=AZFwNNRj-MI&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+          <i class="fa fa-question-circle"></i> Learn More
+        </a>
+      </div>
 
         <div style="text-align:center;"
              ng-class="{'pull-right': !state.publishPipeline}">

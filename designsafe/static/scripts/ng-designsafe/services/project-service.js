@@ -1746,118 +1746,20 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
       return modal.result;
     };
 
-
+    
     /**
      * @param {Project} [project]
      * @return {Promise}
      */
-    service.editProject = function(project) {
-      var modal = $uibModal.open({
-        size: 'md',
-        template: require('../html/modals/project-service-edit-project.html'),
-        controller: ['$scope', '$uibModalInstance', 'UserService', 'project', function ($scope, $uibModalInstance, UserService, project) {
-          $scope.ui = {busy: false,
-                       error: null};
-          $scope.form = {associatedProjectsAdded : [{}]};
-          $scope.projectTypes = [{
-              id: 'experimental',
-              label: 'Experimental'},{
-              id: 'simulation',
-              label: 'Simulation'},{
-              id: 'hybrid_simulation',
-              label: 'Hybrid Simulation'},{
-              // removing project type options until they are supported
-              // id: 'field_reconnaissance',
-              // label: 'Field Reconnaissance'}, {
-              id: 'other',
-              label: 'Other'}];
-          $scope.efs = efs;
-
-          if (project) {
-            $scope.form.uuid = project.uuid;
-            $scope.form.title = project.value.title;
-            $scope.form.awardNumber = project.value.awardNumber || '';
-            $scope.form.projectId = project.value.projectId || '';
-            $scope.form.description = project.value.description || '';
-            $scope.form.experimentalFacility = project.value.experimentalFacility || '';
-            $scope.form.keywords = project.value.keywords || '';
-            if (typeof project.value.projectType !== 'undefined'){
-               $scope.form.projectType = _.find($scope.projectTypes, function(projectType){ return projectType.id === project.value.projectType; });
-            }
-            if (typeof project.value.associatedProjects !== 'undefined'){
-               $scope.form.associatedProjects = _.filter(project.value.associatedProjects, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
-            }
-            UserService.get(project.value.pi).then(function (user) {
-              $scope.form.pi = user;
-            });
-          }
-
-          $scope.searchUsers = function(q) {
-            return UserService.search({q: q});
-          };
-
-          $scope.formatSelection = function() {
-            if (this.form.pi) {
-              return this.form.pi.first_name +
-                ' ' + this.form.pi.last_name +
-                ' (' + this.form.pi.username + ')';
-            }
-          };
-
-          $scope.addAssociatedProject = function(){
-              $scope.form.associatedProjectsAdded.push({});
-          };
-
-          $scope.cancel = function () {
-            $uibModalInstance.dismiss();
-          };
-
-          $scope.save = function () {
-            var projectData = {
-              title: $scope.form.title,
-              awardNumber: $scope.form.awardNumber,
-              description: $scope.form.description,
-              projectId: $scope.form.projectId
-            };
-
-            if ($scope.form.pi.username === undefined) {
-              $scope.form.pi = '';
-            } else {
-              $scope.ui.busy = true;
-              if ($scope.form.pi && $scope.form.pi.username){
-                projectData.pi = $scope.form.pi.username;
-              }
-              //if (typeof $scope.form.experimentalFacility !== 'undefined'){
-              //  projectData.experimentalFacility = $scope.form.experimentalFacility;
-              //}
-              if (typeof $scope.form.projectType.id !== 'undefined'){
-                projectData.projectType = $scope.form.projectType.id;
-              }
-              if ($scope.form.uuid && $scope.form.uuid) {
-                projectData.uuid = $scope.form.uuid;
-              }
-              if (typeof $scope.form.associatedProjectsAdded !== 'undefined'){
-                $scope.form.associatedProjectsAdded = _.filter($scope.form.associatedProjectsAdded, function(associatedProject){ return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
-                projectData.associatedProjects = $scope.form.associatedProjects || [];
-                projectData.associatedProjects = _.filter(projectData.associatedProjects, function(associatedProject){ return !associatedProject.delete; });
-                projectData.associatedProjects = projectData.associatedProjects.concat($scope.form.associatedProjectsAdded);
-              }
-              if (typeof $scope.form.keywords !== 'undefined'){
-                projectData.keywords = $scope.form.keywords;
-              }
-              service.save(projectData).then(function (project) {
-                $uibModalInstance.close(project);
-                $scope.ui.busy = false;
-              });
-            }
-          };
-        }],
+    service.editProject = (project) => {
+      $uibModal.open({
+        component: 'editProject',
         resolve: {
-          project: function () { return project; }
-        }
+          project: () => project,
+          efs: () => efs,
+        },
+        size: 'lg'
       });
-
-      return modal.result;
     };
 
     return service;
