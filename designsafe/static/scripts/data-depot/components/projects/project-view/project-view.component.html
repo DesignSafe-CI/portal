@@ -9,7 +9,7 @@
           <ds-user class="prj-data" username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
         </div>
         <div class="prj-row">
-          <span class="prj-label" ng-if="data.project.value.coPis">CoPI</span>
+          <span class="prj-label" ng-if="data.project.value.coPis.length">CoPI</span>
           <span class="prj-data" format="lname" ng-repeat="copi in data.project.value.coPis">
             <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
           </span>
@@ -19,16 +19,16 @@
           <span class="prj-label">Project Type</span>
           <span class="prj-data">{{ data.project.value.projectType }}</span>
         </div>
-        <div class="prj-row">
-          <span class="prj-label" ng-if="data.project.value.awardNumber">Awards</span>
-          <span class="prj-data">{{ data.project.value.awardNumber }}</span>
-          <!-- <span class="prj-data" ng-repeat="award in data.project.value.awardNumber">{{ award }}</span> -->
-        </div>
         <table class="tg" style="table-layout: fixed; width: 100%;">
           <colgroup>
             <col style="width: 15%">
             <col style="width: 84%">
           </colgroup>
+          <tr ng-repeat="award in data.project.value.awardNumber">
+            <td class="tg-0lax" ng-if="$first">Awards</td>
+            <td class="tg-0lax" ng-if="!$first"></td>
+            <td class="tg-0lax"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+          </tr>
           <tr ng-repeat="work in data.project.value.associatedProjects">
             <td class="tg-0lax" ng-if="$first">Related Work</td>
             <td class="tg-0lax" ng-if="!$first"></td>

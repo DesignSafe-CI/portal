@@ -14,7 +14,6 @@ class EditProjectCtrl {
         this.efs = this.resolve.efs;
         this.project = this.resolve.project;
         this.form = {
-            associatedProjectsAdded: [],
             copi: new Array (1),
             team: new Array (1),
         };
@@ -36,40 +35,73 @@ class EditProjectCtrl {
             label: 'Other'
         }];
         if (this.project) {
+            // project metadata for edit form
             this.form.uuid = this.project.uuid;
             this.form.title = this.project.value.title;
-            // this.form.awardNumber = this.project.value.awardNumber || '';
-            if (typeof this.project.value.awardNumber != 'object') {
-                this.form.awardNumber = new Array (1);
-                if (this.project.value.awardNumber) {
-                    this.form.awardNumber = [{name: '', number: this.project.value.awardNumber}];
-                }
-            }
             this.form.projectId = this.project.value.projectId || '';
             this.form.description = this.project.value.description || '';
             this.form.experimentalFacility = this.project.value.experimentalFacility || '';
             this.form.keywords = this.project.value.keywords || '';
-            if (typeof this.project.value.projectType !== 'undefined') {
+            // project type
+            if (typeof this.project.value.projectType != 'undefined') {
                 this.form.projectType = _.find(this.projectTypes, (projectType) => { return projectType.id === this.project.value.projectType; });
             }
-            if (typeof this.project.value.associatedProjects !== 'undefined') {
-                this.form.associatedProjects = _.filter(this.project.value.associatedProjects, (associatedProject) => { return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
+            // awards
+            if (this.project.value.awardNumber.length && typeof this.project.value.awardNumber != 'string') {
+                this.form.awardNumber = [];
+                this.project.value.awardNumber.forEach((exp) => {
+                    if (typeof exp != 'object') {                        
+                        if (exp) {
+                            this.form.awardNumber = [{name: '', number: exp}];
+                        }
+                    } else {
+                        this.form.awardNumber.push(exp);
+                    }
+                });
+            } else {
+                this.form.awardNumber = new Array (1);
             }
+            // related work
+            if (this.project.value.associatedProjects.length && typeof this.project.value.associatedProjects != 'string') {
+                this.form.associatedProjects = [];
+                this.project.value.associatedProjects.forEach((exp) => {
+                    if (typeof exp != 'object') {                        
+                        if (exp) {
+                            this.form.associatedProjects = [{name: '', number: exp}];
+                        }
+                    } else {
+                        this.form.associatedProjects.push(exp);
+                    }
+                });
+            } else {
+                this.form.associatedProjects = new Array (1);
+            }
+            // pi
             this.UserService.get(this.project.value.pi).then((user) => {
                 this.form.pi = user;
             });
-            this.form.copi = [];
-            this.project.value.coPis.forEach((u) => {
-                this.UserService.get(u).then((user) => {
-                    this.form.copi.push(user);
+            // copi
+            if (!this.project.value.coPis.length) {
+                this.form.copi = new Array (1);
+            } else {
+                this.form.copi = [];
+                this.project.value.coPis.forEach((u) => {
+                    this.UserService.get(u).then((user) => {
+                        this.form.copi.push(user);
+                    });
                 });
-            });
-            this.form.team = [];
-            this.project.value.teamMembers.forEach((u) => {
-                this.UserService.get(u).then((user) => {
-                    this.form.team.push(user);
+            }
+            // team
+            if (!this.project.value.teamMembers.length) {
+                this.form.team = new Array (1);
+            } else {
+                this.form.team = [];
+                this.project.value.teamMembers.forEach((u) => {
+                    this.UserService.get(u).then((user) => {
+                        this.form.team.push(user);
+                    });
                 });
-            });
+            }
         }
         this.UserService.authenticate().then((u) => {
             this.form.creator = u;
@@ -104,16 +136,12 @@ class EditProjectCtrl {
         return false;
     }
 
-    dropUser(group) {
+    dropEntity(group) {
         group.pop();
     }
 
-    addUser(group) {
+    addEntity(group) {
         group.push(undefined);
-    }
-
-    addAssociatedProject() {
-        this.form.associatedProjectsAdded.push({});
     }
 
     cancel() {
@@ -137,9 +165,11 @@ class EditProjectCtrl {
             description: this.form.description,
             projectId: this.form.projectId,
             copi: [],
-            team: [],
+            teamMembers: [],
         };
 
+        // move this to the back end ------------------------------------------------------->
+        // we're checking for user objects and empty fields...
         var i = this.form.copi.length;
         this.form.copiPrune = [];
         while(i--) {
@@ -158,19 +188,58 @@ class EditProjectCtrl {
                 this.form.teamPrune.push(this.form.team[i]);
             }
         }
-
+        
+        if (this.form.uuid) {
+            i = this.form.awardNumber.length;
+            this.form.awardPrune = [];
+            while(i--) {
+                if (typeof this.form.awardNumber[i] == 'undefined') {
+                    this.form.awardNumber.splice(i, 1);
+                } else if (!this.form.awardNumber[i].name.length && !this.form.awardNumber[i].number.length ) {
+                    this.form.awardNumber.splice(i, 1);
+                } else {
+                    this.form.awardPrune.push(this.form.awardNumber[i]);
+                }
+            }
+            i = this.form.associatedProjects.length;
+            this.form.workPrune = [];
+            while(i--) {
+                if (typeof this.form.associatedProjects[i] == 'undefined') {
+                    this.form.associatedProjects.splice(i, 1);
+                } else if (!this.form.associatedProjects[i].title.length && !this.form.associatedProjects[i].href.length ) {
+                    this.form.associatedProjects.splice(i, 1);
+                } else {
+                    this.form.workPrune.push(this.form.associatedProjects[i]);
+                }
+            }
+        }
+        // move this to the back end ------------------------------------------------------->
+        //temp
+        // this.form.copiPrune = this.form.copi;
+        // this.form.teamPrune = this.form.team;
+        // this.form.awardPrune = this.form.awardNumber;
+        // this.form.workPrune = this.form.associatedProjects;
+        //temp
         if (this.form.pi) {
-            projectData.pi = this.form.pi;
+            projectData.pi = this.form.pi.username;
         }
         if (this.form.copiPrune) {
-            this.form.copiPrune.forEach((c) => {
-                projectData.copi.push(c.username);
+            // projectData.copi = this.form.copiPrune;
+            this.form.copiPrune.forEach((ent) => {
+                projectData.copi.push(ent.username);
             });
         }
         if (this.form.teamPrune) {
-            this.form.teamPrune.forEach((u) => {
-                projectData.team.push(u.username);
+            // this.form.teamPrune = projectData.teamMembers;
+            this.form.teamPrune.forEach((ent) => {
+                projectData.teamMembers.push(ent.username);
             });
+        }
+        if (this.form.awardPrune) {
+            projectData.awardNumber = this.form.awardPrune;
+        }
+        if (this.form.workPrune) {
+            projectData.associatedProjects = this.form.workPrune;
         }
         if (this.form.projectType && this.form.projectType.id) {
             projectData.projectType = this.form.projectType.id;
@@ -178,20 +247,14 @@ class EditProjectCtrl {
         if (this.form.uuid && this.form.uuid) {
             projectData.uuid = this.form.uuid;
         }
-        if (typeof this.form.associatedProjectsAdded !== 'undefined') {
-            this.form.associatedProjectsAdded = _.filter(this.form.associatedProjectsAdded, (associatedProject) => { return typeof associatedProject.title !== 'undefined' && associatedProject.title.length > 0; });
-            projectData.associatedProjects = this.form.associatedProjects || [];
-            projectData.associatedProjects = _.filter(projectData.associatedProjects, (associatedProject) => { return !associatedProject.delete; });
-            projectData.associatedProjects = projectData.associatedProjects.concat(this.form.associatedProjectsAdded);
-        }
         if (typeof this.form.keywords !== 'undefined') {
             projectData.keywords = this.form.keywords;
         }
         console.log(projectData);
-        // this.savePrj(projectData).then((project) => {
-        //     this.close(project);
-        //     this.ui.busy = false;
-        // });
+        this.savePrj(projectData).then((project) => {
+            this.close(project);
+            this.ui.busy = false;
+        });
     }
 }
 

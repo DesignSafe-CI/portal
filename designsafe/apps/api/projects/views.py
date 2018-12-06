@@ -157,6 +157,18 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :return: The newly created project
         :rtype: JsonResponse
         """
+        # remove invalid/null values
+        # def remove_junk(data):
+        #     for val in data:
+        #         if (isinstance(val, str)) or (val == None):
+        #             logger.info('THIS IS A BAD INPUT YALL ----------> %s', str(val))
+        #         else:
+        #             logger.info('GOOD ----------> %s', str(val))
+
+        # remove_junk(post_data.get('awardNumber', {}))
+        # remove_junk(post_data.get('associatedProjects', {}))
+        # remove_junk(post_data.get('copi'))
+        # remove_junk(post_data.get('teamMembers')  )
 
         # portal service account needs to create the objects on behalf of the user
         ag = get_service_account_client()
@@ -176,13 +188,13 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         prj.manager().set_client(ag)
         prj.save(ag)
         project_uuid = prj.uuid
-        prj.title = post_data.get('title')                                  # required
-        prj.project_type = post_data.get('projectType', 'other')            # defaults to 'Other'
+        prj.title = post_data.get('title')
+        prj.project_type = post_data.get('projectType', 'other')
         prj.pi = post_data.get('pi')
-        prj.copi = post_data.get('copi')                                    # optional (this is a list of objects)
-        prj.team = post_data.get('team')                                    # optional (this is a list of objects)
+        prj.copi = post_data.get('copi')
+        prj.team = post_data.get('teamMembers')
         prj.project_id = post_data.get('projectId', '')
-        prj.award_number = post_data.get('awardNumber', '')
+        prj.award_number = post_data.get('awardNumber', {})
         prj.associated_projects = post_data.get('associatedProjects', {})
         prj.description = post_data.get('description', '')
         prj.keywords = post_data.get('keywords', '')
@@ -339,6 +351,7 @@ class ProjectInstanceView(SecureMixin, BaseApiView, ProjectMetaLookupMixin):
         p.project_type = post_data.get('projectType', p.project_type)
         p.associated_projects = post_data.get('associatedProjects', p.associated_projects)
         p.description = post_data.get('description', p.description)
+        p.co_pis = post_data.get('copi')
         p.team_members = post_data.get('teamMembers', p.team_members)
         p.keywords = post_data.get('keywords', p.keywords)
         new_pi = post_data.get('pi')

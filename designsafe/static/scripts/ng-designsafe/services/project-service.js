@@ -1,6 +1,7 @@
 import _ from 'underscore';
+import { $IsStateFilter } from 'angular-ui-router/lib/stateFilters';
 
-export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
+export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
     'ngInject';
 
     var logger = Logging.getLogger('DataDepot.ProjectService');
@@ -1759,6 +1760,8 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
           efs: () => efs,
         },
         size: 'lg'
+      }).closed.then(function(){
+        $state.reload();
       });
     };
 

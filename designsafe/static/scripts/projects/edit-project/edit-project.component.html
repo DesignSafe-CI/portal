@@ -78,10 +78,10 @@
                         style="width:100%;"><br>
             </div>
             <div>
-                <a ng-click="$ctrl.addUser($ctrl.form.copi)">&#x2b; Add another CoPI</a>
+                <a ng-click="$ctrl.addEntity($ctrl.form.copi)">&#x2b; Add another CoPI</a>
             </div>
             <div ng-hide="$ctrl.checkEmpty($ctrl.form.copi)">
-                <a ng-click="$ctrl.dropUser($ctrl.form.copi)">&#x2212; Drop CoPI</a>
+                <a ng-click="$ctrl.dropEntity($ctrl.form.copi)">&#x2212; Drop CoPI</a>
             </div>
         </div>
         <!-- Project Members -->
@@ -112,12 +112,12 @@
                         typeahead-input-formatter="$ctrl.formatSelection(usr)"
                         typeahead-template-url="itemTmpl.html">
             </div>
-            <div style="width:28%; display:inline-block;">
+            <div style="width:100%; display:inline-block;">
                 <div>
-                    <a ng-click="$ctrl.addUser($ctrl.form.team)">&#x2b; Add another Project Member</a>
+                    <a ng-click="$ctrl.addEntity($ctrl.form.team)">&#x2b; Add another Project Member</a>
                 </div>
                 <div ng-hide="$ctrl.checkEmpty($ctrl.form.team)">
-                    <a ng-click="$ctrl.dropUser($ctrl.form.team)">&#x2212; Drop Project Member</a>
+                    <a ng-click="$ctrl.dropEntity($ctrl.form.team)">&#x2212; Drop Project Member</a>
                 </div>
             </div>
         </div>
@@ -140,29 +140,29 @@
                             <div>Recommended for funded projects.</div>
                         </td>
                     </tr>
-                    <tr ng-repeat="award in $ctrl.form.awardNumber">
+                    <tr ng-repeat="(i, award) in $ctrl.form.awardNumber track by $index">
                         <td class="tg-0lax">
                             <input  type="text"
                                     id="id_awardName"
                                     name="awardName"
                                     style="width:94%;"
-                                    ng-model="award.name">
+                                    ng-model="$ctrl.form.awardNumber[i].name">
                         </td>
                         <td class="tg-0lax">
                             <input  type="text"
                                     id="id_awardNumber"
                                     name="awardNumber"
                                     style="width:100%;"
-                                    ng-model="award.number">
+                                    ng-model="$ctrl.form.awardNumber[i].number">
                         </td>
                     </tr>
                 </table>
                 <div style="width:28%; display:inline-block;">
                     <div>
-                        <a ng-click="$ctrl.addUser($ctrl.form.awardNumber)">&#x2b; Add another Award</a>
+                        <a ng-click="$ctrl.addEntity($ctrl.form.awardNumber)">&#x2b; Add another Award</a>
                     </div>
                     <div ng-hide="$ctrl.checkEmpty($ctrl.form.awardNumber)">
-                        <a ng-click="$ctrl.dropUser($ctrl.form.awardNumber)">&#x2212; Drop Award</a>
+                        <a ng-click="$ctrl.dropEntity($ctrl.form.awardNumber)">&#x2212; Drop Award</a>
                     </div>
                 </div>
             </div>
@@ -182,35 +182,35 @@
                             <strong>Related Work DOI or URL</strong><br>
                         </td>
                     </tr>
-                    <tr ng-repeat="work in $ctrl.form.associatedProjects">
+                    <tr ng-repeat="(i, work) in $ctrl.form.associatedProjects track by $index">
                         <td class="tg-0lax">
                             <input  type="text"
                                     id="id_workTitle"
                                     name="workTitle"
                                     style="width:94%;"
-                                    ng-model="work.title">
+                                    ng-model="$ctrl.form.associatedProjects[i].title">
                         </td>
                         <td class="tg-0lax">
                             <input  type="text"
                                     id="id_workHref"
                                     name="workHref"
                                     style="width:100%;"
-                                    ng-model="work.href">
+                                    ng-model="$ctrl.form.associatedProjects[i].href">
                         </td>
                     </tr>
                 </table>
                 <div style="width:28%; display:inline-block;">
                     <div>
-                        <a ng-click="$ctrl.addUser($ctrl.form.awardNumber)">&#x2b; Add another Award</a>
+                        <a ng-click="$ctrl.addEntity($ctrl.form.associatedProjects)">&#x2b; Add another Related Work</a>
                     </div>
-                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.awardNumber)">
-                        <a ng-click="$ctrl.dropUser($ctrl.form.awardNumber)">&#x2212; Drop Award</a>
+                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                        <a ng-click="$ctrl.dropEntity($ctrl.form.associatedProjects)">&#x2212; Drop Related Work</a>
                     </div>
                 </div>
             </div>
             <!-- Project Keywords -->
             <div class="form-group" style="width:100%; display:inline-block;">
-                <label for="id_description">Keywords
+                <label for="id_keywords">Keywords
                     <span style="color: #D04348;">&#9679; </span>
                 </label>
                 <div>
@@ -220,7 +220,8 @@
                     <input  type="text"
                             style="width:100%;"
                             id="id_keywords"
-                            ng-model="$ctrl.form.keywords"><br>
+                            ng-model="$ctrl.form.keywords"
+                            ng-required="$ctrl.form.uuid"><br>
                 </div>
             </div>
             <!-- Project Description -->
@@ -235,7 +236,8 @@
                     <textarea   type="text"
                                 style="width:100%; height:3em; resize: vertical;"
                                 id="id_description"
-                                ng-model="$ctrl.form.description"></textarea>
+                                ng-model="$ctrl.form.description"
+                                ng-required="$ctrl.form.uuid"></textarea>
                 </div>
             </div>
         </div>
