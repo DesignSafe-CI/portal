@@ -1,7 +1,5 @@
-export function UserService($http, $q, djangoUrl, Logging) {
+export function UserService($http, $q) {
     'ngInject';
-
-    var logger = Logging.getLogger('ngDesignSafe.UserService');
 
     var user = null;
     /**

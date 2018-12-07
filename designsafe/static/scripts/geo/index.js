@@ -2,6 +2,7 @@ import './styles/geo.css';
 import './styles/icons/style.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet-measure/dist/leaflet-measure.css';
 
 import { mod as geo_directives } from './directives';
 import { mod as geo_controllers } from './controllers';
@@ -11,10 +12,6 @@ import indexTemplate from './html/index.html';
 import mapTemplate from './html/map.html';
 import helpTemplate from './html/help.html';
 
-
-
-// let mod = angular.module('designsafe');
-// mod.requires.push('ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr');
 
 let mod = angular.module('ds.geo', ['designsafe', 'ui.router', 'ang-drag-drop', 'ds.geo.directives', 'ds.geo.controllers', 'ds.geo.services', 'toastr']);
 angular.module('designsafe.portal').requires.push(

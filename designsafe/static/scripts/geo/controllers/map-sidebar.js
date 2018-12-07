@@ -6,6 +6,12 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-measure';
 
+
+import imagePreviewTempalte from '../html/image-preview-modal.html';
+import settingsModalTmpl from '../html/settings-modal.html';
+import imageOverlayTmpl from '../html/image-overlay-modal.html';
+import confirmNewModalTmpl from '../html/confirm-new-modal.html';
+
 export default class MapSidebarCtrl {
 
     constructor ($rootScope, $scope, $window, $timeout, $interval, $q, $uibModal, toastr, DataService, $http, GeoDataService, GeoSettingsService) {
@@ -240,14 +246,10 @@ export default class MapSidebarCtrl {
 
     create_new_project () {
         let modal = this.$uibModal.open({
-            templateUrl: '/static/designsafe/apps/geo/html/confirm-new-modal.html',
+            template: confirmNewModalTmpl,
             controller: 'ConfirmClearModalCtrl as vm',
         });
-        modal.result.then( (s) => {
-            this.map.eachLayer(function (layer) {
-                console.log(layer);
-                // this.map.removeLayer(layer);
-            });
+        modal.result.then( () => {
             this.project.clear();
             let p = new MapProject('New Map');
             p.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
@@ -347,9 +349,9 @@ export default class MapSidebarCtrl {
 
             if (this.project.layer_groups.length == 0) {
                 this.project.layer_groups = [new LayerGroup('New Group', new L.FeatureGroup())];
-                this.active_layer_group = this.project.layer_groups[0];
                 this.map.addLayer(this.project.layer_groups[0].feature_group);
             }
+            this.active_layer_group = this.project.layer_groups[0];
             //it will be an array of features...
             retval.forEach( (f) => {
                 this.active_layer_group.feature_group.addLayer(f);
@@ -366,23 +368,23 @@ export default class MapSidebarCtrl {
 
     open_existing_from_depot() {
         this.open_existing = true;
-        this.open_db_modal();
+        this.open_db_modal({ single:true });
     }
 
-    open_db_modal () {
+    open_db_modal (opts) {
         let modal = this.$uibModal.open({
-            templateUrl: '/static/scripts/geo/html/db-modal.html',
-            controller: 'DBModalCtrl as vm',
+            component: 'ddfilepicker',
             resolve: {
-                filename: ()=> {return null;}
+                filename: ()=> {return null;},
+                single: opts.single
             }
         });
-        modal.result.then( (f, saveas) => {this.load_from_data_depot(f);});
+        modal.result.then( (files, saveas) => {this.load_from_data_depot(files.selected);});
     }
 
     open_image_preview_modal (href) {
         let modal = this.$uibModal.open({
-            templateUrl: '/static/scripts/geo/html/image-preview-modal.html',
+            template: imagePreviewTempalte,
             controller: 'ImagePreviewModal as vm',
             size: 'lg',
             resolve: {
@@ -394,7 +396,7 @@ export default class MapSidebarCtrl {
 
     open_settings_modal () {
         let modal = this.$uibModal.open({
-            templateUrl: '/static/scripts/geo/html/settings-modal.html',
+            template: settingsModalTmpl,
             controller: 'SettingsModalCtrl as vm',
         });
         modal.result.then( (s) => {
@@ -405,7 +407,7 @@ export default class MapSidebarCtrl {
 
     open_image_overlay_modal () {
         let modal = this.$uibModal.open({
-            templateUrl: '/static/scripts/geo/html/image-overlay-modal.html',
+            template: imageOverlayTmpl,
             controller: 'ImageOverlayModalCtrl as vm',
         });
         modal.result.then( (res) => {
@@ -420,7 +422,6 @@ export default class MapSidebarCtrl {
                 });
             }
             let overlay = L.imageOverlay(res.url, bounds).addTo(this.map);
-            console.log(overlay);
         });
     }
 
@@ -430,19 +431,22 @@ export default class MapSidebarCtrl {
         }, 0);
     }
 
-    load_from_data_depot(f) {
-        this.loading = true;
-        this.GeoDataService.load_from_data_depot(f.selected)
-            .then(
-                (retval) =>{
-                    this._load_data_success(retval);
-                    this.loading = false;
-                },
-                (err)=> {
-                    this.toastr.error('Load failed!');
-                    this.loading = false;
-                    this.open_existing = false;
-                });
+    load_from_data_depot(files) {
+
+        files.forEach( (f) => {
+            this.loading = true;
+            this.GeoDataService.load_from_data_depot(f)
+                .then(
+                    (retval) =>{
+                        this._load_data_success(retval);
+                        this.loading = false;
+                    },
+                    (err)=> {
+                        this.toastr.error('Load failed!');
+                        this.loading = false;
+                        this.open_existing = false;
+                    });
+        });
     }
 
     local_file_selected (ev) {
@@ -474,18 +478,18 @@ export default class MapSidebarCtrl {
 
     save_to_depot () {
         let modal = this.$uibModal.open({
-            templateUrl: '/static/designsafe/apps/geo/html/db-modal.html',
-            controller: 'DBModalCtrl as vm',
+            component: 'ddfilepicker',
             resolve: {
                 filename: ()=> {return this.project.name + '.geojson';}
             }
         });
         modal.result.then( (res) => {
+            console.log(res)
             let newname = res.saveas;
             this.project.name = newname.split('.')[0];
-            res.selected.name = res.saveas;
+            res.location.name = res.saveas;
             this.loading = true;
-            this.GeoDataService.save_to_depot(this.project, res.selected).then( (resp) => {
+            this.GeoDataService.save_to_depot(this.project, res.location).then( (resp) => {
                 this.loading = false;
                 this.toastr.success('Saved to data depot');
             }, (err) => {

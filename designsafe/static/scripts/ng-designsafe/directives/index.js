@@ -14,9 +14,9 @@ import { ddPublicSearchListing } from './dd-public-search-listing';
 import { ddSearchListing } from './dd-search-listing';
 import { ddSharedListing } from './dd-shared-listing';
 import { metadataListing } from './metadata-listing';
-import { myDataBrowser } from './my-data-browser';
-import { fileModel, spinnerOnLoad, httpSrc, accessfiles, 
-         selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll, 
+// import { myDataBrowser } from './my-data-browser';
+import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
+         selectOnFocus, dsDataDraggable, dsDraggable, dsInfiniteScroll,
          dsUser, dsFixTop, yamzTerm, } from './ng-designsafe-directives';
 
 designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
@@ -31,7 +31,7 @@ designsafeDirectives.directive('ddPublicSearchListing', ddPublicSearchListing);
 designsafeDirectives.directive('ddSearchListing', ddSearchListing);
 designsafeDirectives.directive('ddSharedListing', ddSharedListing);
 designsafeDirectives.directive('metadataListing', metadataListing);
-designsafeDirectives.directive('myDataBrowser', myDataBrowser);
+// designsafeDirectives.directive('myDataBrowser', myDataBrowser);
 
 designsafeDirectives.directive('fileModel', fileModel);
 designsafeDirectives.directive('spinnerOnLoad', spinnerOnLoad);

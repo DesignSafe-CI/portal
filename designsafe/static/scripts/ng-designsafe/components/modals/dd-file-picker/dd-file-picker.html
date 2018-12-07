@@ -1,0 +1,64 @@
+<div class="modal-body">
+    <div class="files-listing">
+        <div class="btn-group">
+            <button class="btn btn-default" ng-class="{'btn-primary': $ctrl.data.source === 'mydata'}" ng-disabled="$ctrl.data.loading" ng-click="$ctrl.setSource('mydata')"> My Data </button>
+            <button class="btn btn-default" ng-class="{'btn-primary': $ctrl.data.source === 'myprojects'}" ng-disabled="$ctrl.data.loading" ng-click="$ctrl.setSource('myprojects')"> My Projects </button>
+            <button class="btn btn-default" ng-class="{'btn-primary': $ctrl.data.source === 'public'}" ng-disabled="$ctrl.data.loading" ng-click="$ctrl.setSource('public')"> Public </button>
+            <button class="btn btn-default" ng-class="{'btn-primary': $ctrl.data.source === 'community'}" ng-disabled="$ctrl.data.loading" ng-click="$ctrl.setSource('community')"> Community </button>
+        </div>
+        <div>
+            <div>
+                <label ng-if="!$ctrl.saveas.filename">Browsing:</label>
+                <label ng-if="$ctrl.saveas.filename"> Save to:</label></br>
+                <span ng-if="$ctrl.data.selectedProject" ng-click="$ctrl.selectProject($ctrl.data.selectedProject)">
+                    <a href="#"> {{$ctrl.data.selectedProject.value.title}} </a>
+                </span>
+                <span ng-repeat-start="dirElem in $ctrl.data.dirPath track by $index" class="text text-info">
+                    <a href="#" ng-click="$ctrl.browseTrail($event, $index)">{{dirElem}}</a>
+                </span>
+                <span ng-repeat-end ng-if="!$last">/</span>
+            </div>
+            <div ng-if="$ctrl.saveas.filename">
+                <label> Filename: </label> </br>
+                <input class="form-control" ng-model="$ctrl.saveas.filename" type="text"></input>
+            </div>
+        </div>
+        <div class="table-responsive ds-table-display-wrapper" ds-infinite-scroll data-scroll-bottom="$ctrl.scrollToBottom()" data-scroll-top="scrollToTop()" data-bottom-height="0">
+            <table class="table table-striped">
+                <thead>
+                    <th>File name</th>
+                    <th>Size</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="f in $ctrl.data.filesListing.children | orderBy : ['type', 'name']" ng-click="$ctrl.selectRow(f, $index)" ng-class="{'success': f.selected}">
+                        <td>
+                            <a ng-click="$ctrl.browseFile(f)" class="btn btn-xs btn-link">
+                                <i class="fa {{f.icon()}}"></i>
+                                <span> {{ $ctrl.renderName(f) }} </span>
+                            </a>
+                        </td>
+                        <td>{{f.length|bytes:0}}</td>
+                    </tr>
+                </tbody>
+                <tbody ng-if="$ctrl.data.source === 'myprojects' && $ctrl.data.projectSelected == false">
+                    <tr ng-repeat='project in $ctrl.data.project_list' ng-click='$ctrl.selectProject(project)'>
+                        <td> <a href="#"> <i class="fa fa-folder"> </i> <span> {{project.value.title }} </span> </td>
+                        <td> </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-if="$ctrl.data.loading" class="text-center">
+                <i class="fa fa-spin fa-circle-o-notch fa-2x"></i>
+            </div>
+            <div ng-if="$ctrl.data.error">
+                <div class="alert alert-danger"> {{$ctrl.data.error}} </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary pull-right" ng-if="$ctrl.saveas.filename" ng-click="$ctrl.ok()" ng-disabled="!$ctrl.selected"> Save </button>
+    <button class="btn btn-primary pull-right" ng-if="!$ctrl.saveas.filename" ng-click="$ctrl.ok()" ng-disabled="!$ctrl.selected"> Ok </button>
+    <button class="btn btn-warning pull-left" ng-click="$ctrl.cancel()"> Cancel </button>
+
+</div>
