@@ -114,8 +114,9 @@ export default class GeoDataService {
     }
 
     _from_json (blob) {
+        if (blob.ds_map) return this._from_dsmap(blob);
         return this.$q( (res, rej) => {
-            if (blob.ds_map) return res(this._from_dsmap(blob));
+
             try {
                 let features = [];
                 let options = {
@@ -124,8 +125,6 @@ export default class GeoDataService {
                     }
                 };
                 L.geoJSON(blob, options).getLayers().forEach( (layer) => {
-
-
                     let props = layer.feature.properties;
                     if ((layer instanceof L.Marker) && (layer.feature.properties.image_src)) {
                         let latlng = layer.getLatLng();
@@ -317,48 +316,49 @@ export default class GeoDataService {
   that can be added to a LayerGroup
   */
     load_from_local_file (file) {
-        return this.$q( (res, rej) => {
-            let ext = GeoUtils.get_file_extension(file.name);
-            let reader = new FileReader();
-            //
-            if ((ext === 'kmz') || (ext === 'jpeg') || (ext === 'jpg')){
-                reader.readAsArrayBuffer(file);
-            } else {
-                reader.readAsText(file);
+        let deferred = this.$q.defer();
+        let ext = GeoUtils.get_file_extension(file.name);
+        let reader = new FileReader();
+        //
+        if ((ext === 'kmz') || (ext === 'jpeg') || (ext === 'jpg')){
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsText(file);
+        }
+        reader.onload = () => {
+            let p = null;
+            switch (ext) {
+                case 'kml':
+                    p =  this._from_kml(reader.result);
+                    break;
+                case 'json':
+                    p = this._from_json(JSON.parse(reader.result));
+                    break;
+                case 'geojson':
+                    p = this._from_json(JSON.parse(reader.result));
+                    break;
+                case 'kmz':
+                    p = this._from_kmz(reader.result);
+                    break;
+                case 'gpx':
+                    p = this._from_gpx(reader.result);
+                    break;
+                case 'jpeg':
+                    p = this._from_image(reader, file.name);
+                    break;
+                case 'jpg':
+                    p = this._from_image(reader, file.name);
+                    break;
+                case 'dsmap':
+                    p = this._from_dsmap(JSON.parse(reader.result));
+                    break;
+                default:
+                    p = this._from_json(JSON.parse(reader.result));
             }
-            reader.onload = (e) => {
-                let p = null;
-                switch (ext) {
-                    case 'kml':
-                        p =  this._from_kml(e.target.result);
-                        break;
-                    case 'json':
-                        p = this._from_json(JSON.parse(e.target.result));
-                        break;
-                    case 'geojson':
-                        p = this._from_json(JSON.parse(e.target.result));
-                        break;
-                    case 'kmz':
-                        p = this._from_kmz(e.target.result);
-                        break;
-                    case 'gpx':
-                        p = this._from_gpx(e.target.result);
-                        break;
-                    case 'jpeg':
-                        p = this._from_image(e.target.result, file.name);
-                        break;
-                    case 'jpg':
-                        p = this._from_image(e.target.result, file.name);
-                        break;
-                    case 'dsmap':
-                        p = this._from_dsmap(JSON.parse(e.target.result));
-                        break;
-                    default:
-                        p = this._from_json(JSON.parse(e.target.result));
-                }
-                return res(p);
-            };
-        });
+            p.then( (data)=> { return deferred.resolve(data);});
+            // deffered.resolve(p)
+        };
+        return deferred.promise;
     }
 
     //

@@ -6,7 +6,6 @@ export default class ImagePreviewModal {
         this.$uibModalInstance = $uibModalInstance;
         this.GeoDataService = GeoDataService;
         this.marker = marker;
-        console.log('ImagePreviewModal', this.marker);
     }
 
     cancel () {
