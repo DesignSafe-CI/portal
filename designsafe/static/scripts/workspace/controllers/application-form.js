@@ -93,7 +93,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
     $scope.resetForm = function() {
         $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
         $scope.data.unavailable = ($scope.data.app.executionSystem == 'designsafe.community.exec.stampede' || $scope.data.app.executionSystem == 'designsafe.community.exec.stampede.nores');
-        $scope.form = {model: {}, readonly: ($scope.data.needsLicense || $scope.data.unavailable)};
+        $scope.form = { model: {}, readonly: ($scope.data.needsLicense || $scope.data.unavailable) };
         $scope.form.schema = Apps.formSchema($scope.data.app);
         $scope.form.form = [];
         // reset formValid, var is used for invalid form msg
@@ -134,9 +134,9 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         /* buttons */
         items = [];
         if (!($scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown)) {
-            items.push({type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary'});
+            items.push({ type: 'submit', title: ($scope.data.app.tags.includes('Interactive') ? 'Launch' : 'Run'), style: 'btn-primary' });
         }
-        items.push({type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()'});
+        items.push({ type: 'button', title: 'Close', style: 'btn-link', onClick: 'closeApp()' });
         $scope.form.form.push({
             type: 'actions',
             items: items,
@@ -191,7 +191,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
             $scope.jobReady = true;
             if ($scope.data.app.tags.includes('VNC')) {
                 $scope.jobReady = false;
-                ProjectService.list({offset: 0, limit: 500}).then(function(resp) {
+                ProjectService.list({ offset: 0, limit: 500 }).then(function(resp) {
                     if (resp.length > 0) {
                         angular.forEach(resp, function(project, key) {
                             resp[key] = `${project.uuid},${project.value.projectId ? project.value.projectId : project.uuid}`;
@@ -239,9 +239,9 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
     };
 
     $scope.onLaunchNotebook = function(path, jupyterBaseUrl = 'https://jupyter.designsafe-ci.org', copy = true) {
-        let filePath = path.split(/\/(.+)/)[1];
-        let fileMgrName = 'community'; // path.split('/')[0];
-        let systemId = 'designsafe.storage.community';
+        let filePath = path.split(/\/(.+)/)[1],
+            fileMgrName = 'community', // path.split('/')[0];
+            systemId = 'designsafe.storage.community';
 
         $scope.data.launching = true;
         if (copy) {

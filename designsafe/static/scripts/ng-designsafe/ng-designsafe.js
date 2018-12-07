@@ -27,6 +27,7 @@ import './directives';
 import './filters';
 import './models';
 import './controllers';
+import './components'
 
 export const ngDesignsafe = angular.module('designsafe',
                                            ['ng.modernizr',
@@ -37,6 +38,7 @@ export const ngDesignsafe = angular.module('designsafe',
                                             'designsafe.filters',
                                             'designsafe.models',
                                             'designsafe.controllers',
+                                            'designsafe.components',
                                             'ds.notifications',
                                             'ds.wsBus',
                                            ])

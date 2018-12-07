@@ -6,27 +6,43 @@ import _ from 'underscore';
 import { SearchComponent } from './components/search/search.component'
 import { SearchListingComponent } from './components/search-listing/search-listing.component'
 import { SearchService } from './services/search.service';
+import { SearchHelpModalComponent } from './components/modals/search-help-modal/search-help-modal.component';
 
 //export var module = angular.module('designsafe');
 
 let searchModule = angular.module('ds-search', ['designsafe'])
 
 searchModule.requires.push(
-  'ngSanitize'
+  'ngSanitize',
+  'ui.router'
 );
 angular.module('designsafe.portal').requires.push(
-    'ds-search'
+    'ds-search',
 );
-searchModule.config(["$httpProvider", "$locationProvider", function ($httpProvider, $locationProvider) {
+function config($httpProvider, $locationProvider, $stateProvider, $urlMatcherFactoryProvider, $urlRouterProvider) {
   $httpProvider.defaults.transformResponse.push(function (responseData) {
     convertDateStringsToDates(responseData);
     return responseData;
   });
-  $locationProvider.html5Mode({
-    enabled: true,
-    rewriteLinks: false
-  });
-}]);
+
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+  $locationProvider.html5Mode(true);
+  $urlMatcherFactoryProvider.strictMode(false);
+  
+  $stateProvider
+    .state('search', {
+      url: '/?{query_string}&{type_filter}&{switch_filter:bool}',
+      component: 'siteSearch',
+      params: {
+        query_string: null,
+        type_filter: 'cms', 
+        switch_filter: null,
+      }
+    })
+    /* Private */
+};
 
 //services
 searchModule.service('searchService', SearchService)
@@ -34,6 +50,8 @@ searchModule.service('searchService', SearchService)
 //components
 searchModule.component('siteSearch', SearchComponent)
 searchModule.component('searchListing', SearchListingComponent)
+
+searchModule.component('searchHelpModal', SearchHelpModalComponent)
 
 //filters
 searchModule.filter('removeHTMLTags', function () {
@@ -73,5 +91,5 @@ function convertDateStringsToDates(input) {
     }
   }
 }
-
+searchModule.config(config)
 export default searchModule

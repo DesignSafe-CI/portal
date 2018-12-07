@@ -2,11 +2,12 @@ import searchTemplate from './search.component.html';
 
 class SearchCtrl {
 
-    constructor($location, $window, searchService, Logging, djangoUrl, Django) {
+    constructor($location, $window, $state, searchService) {
         'ngInject';
         this.searchService = searchService
         this.$window = $window
-        this.user = Django.user;
+        this.$state = $state
+        //this.user = Django.user;
         this.data = {};
         this.Math = window.Math;
         this.counter = Array;
@@ -19,6 +20,7 @@ class SearchCtrl {
         this.filetype_filter = 'all';
         this.searching = false;
         this.inital_q = $location.search().q;
+        
         this.prettyFilterName = {
             'cms': 'Web Content', 
             'private_files': 'My Data' ,
@@ -28,11 +30,20 @@ class SearchCtrl {
     }
 
     $onInit() {
-        if (this.inital_q) {
-            this.data.search_text = this.inital_q;
-            this.search();
+          this.data.search_text = this.$state.params.query_string;
+          this.data.type_filter = this.$state.params.type_filter
+          if (this.data.search_text) {
+            this.search()
           }
     }
+
+    help() {
+      this.searchService.help()
+    }
+
+    search_browse(switch_filter) {
+      this.$state.go('search', {'query_string': this.data.search_text, 'type_filter': this.data.type_filter, 'switch_filter': switch_filter, 'redirect': false});
+    };
 
     search(reset){
       arguments.length ? reset = true : reset= false;
@@ -47,6 +58,10 @@ class SearchCtrl {
             this.data.search_results = resp.data;
             this.max_pages = this.Math.ceil(this.data.search_results.total_hits / this.results_per_page);
             this.searching = false;
+            if (this.data.search_results.filter !== this.data.type_filter && this.$state.params.switch_filter === true) {
+              this.data.type_filter = this.data.search_results.filter;
+              this.search_browse(true);
+            }
             this.$window.scrollTo(0, 0);
         }, err => {
           this.searching = false;
@@ -57,7 +72,7 @@ class SearchCtrl {
     filter(ftype) {
       this.data.type_filter = ftype;
       this.page_num = 0;
-      this.search();
+      this.search_browse(false);
     };
 
     next() {
@@ -82,8 +97,6 @@ class SearchCtrl {
     }
 
 }
-
-SearchCtrl.$inject = ['$location', '$window', 'searchService', 'Logging', 'djangoUrl', 'Django'];
 
 export const SearchComponent = {
     template: searchTemplate,

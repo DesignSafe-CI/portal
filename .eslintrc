@@ -19,7 +19,7 @@
         "no-else-return"        : 1,
         "space-unary-ops"       : 2,
         "max-len"               : 0,
-        "arrow-parens"          : [1, "as-needed"],
+        "arrow-parens"          : 1,
         "quote-props"           : [1, "as-needed"],
         "quotes"                : [1, "single", {"avoidEscape": true}],
         "one-var"               : [1, "consecutive"],

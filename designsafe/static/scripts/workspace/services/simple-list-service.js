@@ -14,15 +14,16 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
         this.selected = null;
         this.lists = {};
         this.tabs = appCategories.concat(['My Apps']);
+        this.binMap = {};
     };
 
     SimpleList.prototype.getDefaultLists = function(query) {
-        let self = this;
-        let deferred = $q.defer();
+        let self = this,
+            deferred = $q.defer();
         $http({
             url: djangoUrl.reverse('designsafe_applications:call_api', ['meta']),
             method: 'GET',
-            params: {q: query},
+            params: { q: query },
         }).then(
             function(response) {
                 /**
@@ -109,6 +110,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                 /* Bin applications where multiple apps share the same icon, e.g. OpenSees or ADCIRC */
                 angular.forEach(self.tabs, function(tab) {
                     self.lists[tab] = [];
+                    self.binMap[tab] = {};
                 });
 
                 /* Loop through apps categorized into lists to create sublists of binned apps */
@@ -117,7 +119,7 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                     angular.forEach(contents, function(appMeta) {
                         if (appMeta.value.definition.appIcon) {
                             const appIcon = appMeta.value.definition.appIcon;
-                            let map = Object.assign({binned: true}, appMeta);
+                            let map = Object.assign({ binned: true }, appMeta);
                             bins[appIcon] = bins[appIcon] ? bins[appIcon].concat(map) : bins[appIcon] = [map];
                         }
                     });
@@ -148,6 +150,9 @@ export function simpleListService($http, $q, djangoUrl, appCategories, appIcons)
                             if (!binMeta[appMeta.value.definition.appIcon]) {
                                 self.lists[appCategory].push(meta);
                                 binMeta[appMeta.value.definition.appIcon] = true;
+
+                                // Create list of dictionaries pointing to the index of each bin in the tab
+                                self.binMap[appCategory][appMeta.value.definition.appIcon] = self.lists[appCategory].indexOf(meta);
                             }
                         } else {
                             // If icon is an icon-letter, delete icon

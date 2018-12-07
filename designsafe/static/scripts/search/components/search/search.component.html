@@ -25,23 +25,28 @@
                     <span class="badge" ng-show='$ctrl.data.search_results.cms_total'> {{ $ctrl.data.search_results.cms_total }}</span>
                 </a>
             </div>
+            <div>
+                <a ng-click="$ctrl.help()">
+                    <i class="fa fa-question-circle"></i> Help
+                </a>
+            </div>
         </div>
         <div class="col-sm-9">
-            <div>
+            <form ng-submit='$ctrl.search_browse(true)'>
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">
-                    <i class="fa fa-search" ng-show="!searching"> </i>
-                    <i class="fa fa-spinner fa-spin" ng-show="searching"> </i>
+                    <span ng-show="!$ctrl.searching"><i class="fa fa-search" ng-show="!$ctrl.searching"> </i></span>
+                    <span ng-show="$ctrl.searching"><i class="fa fa-spinner fa-spin" > </i></span>
                     </span>
     
                     <input ng-model="$ctrl.data.search_text"
                            placeholder="Search Designsafe"
                            class="form-control"
                            id="main_search_input"
-                           ng-change = '$ctrl.search(true)'
-                           ng-model-options = '{debounce: 500}'>
+                          >
+                          
                 </div>
-            </div>
+            </form>
             <br>
             <!-- <div class="well well-sm">
                 Sort by:

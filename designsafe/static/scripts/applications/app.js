@@ -5,31 +5,32 @@ import _ from 'underscore';
 
 import './services/apps-wizard-service';
 
-import {applicationAddCtrl} from './controllers/application-add';
-import {applicationEditCtrl} from './controllers/application-edit';
-import {applicationSystemsRoleCtrl} from './controllers/application-systems-role';
-import {applicationTrayCtrl} from './controllers/application-tray';
+import { applicationAddCtrl } from './controllers/application-add';
+import { applicationEditCtrl } from './controllers/application-edit';
+import { ApplicationSystemsRoleCtrl } from './controllers/application-systems-role';
+import { applicationTrayCtrl } from './controllers/application-tray';
 
-import {toTrusted} from './filters/sanitize';
+import { toTrusted } from './filters/sanitize';
 
-import {appTranslateProvider} from './providers/translations';
+import { appTranslateProvider } from './providers/translations';
 
-import {appsPemsService} from './services/apps-pems-service';
-import {appsService} from './services/apps-service';
-import {appsMultipleListService} from './services/multiple-list-service';
-import {simpleListFactory} from './services/simple-list-service';
+import { appsPemsService } from './services/apps-pems-service';
+import { Apps } from './services/apps-service';
+import { appsMultipleListService } from './services/multiple-list-service';
+import { SimpleList } from './services/simple-list-service';
 
 applicationAddCtrl(window, angular, $, _);
 applicationEditCtrl(window, angular, $, _);
-applicationSystemsRoleCtrl(window, angular, $, _);
 applicationTrayCtrl(window, angular, $, _);
 toTrusted(window, angular, $, _);
 appTranslateProvider(angular);
 appsPemsService(window, angular, $, _);
-appsService(window, angular, $, _);
 appsMultipleListService(window, angular, $, _);
 
-angular.module('designsafe').factory('SimpleList', ['$http', '$q', '$translate', 'djangoUrl', 'appIcons', simpleListFactory]);
+angular.module('designsafe')
+    .factory('AppsSimpleList', ['$http', '$q', 'djangoUrl', 'appIcons', ($http, $q, djangoUrl, appIcons) => new SimpleList($http, $q, djangoUrl, appIcons)])
+    .service('Apps', Apps)
+    .controller('ApplicationSystemsRoleCtrl', ApplicationSystemsRoleCtrl);
 
 function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateProvider, $httpProvider, $stateProvider, $urlRouterProvider, toastrConfig) {
     'ngInject';
@@ -59,7 +60,7 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
         })
         .state('applications-edit', {
             url: '/edit/:appId',
-            params: {appMeta: null},
+            params: { appMeta: null },
             template: require('./html/application-edit.html'),
             controller: 'ApplicationEditCtrl',
         })
@@ -67,6 +68,7 @@ function config(WSBusServiceProvider, NotificationServiceProvider, $interpolateP
             url: '/systems',
             template: require('./html/application-systems-role.html'),
             controller: 'ApplicationSystemsRoleCtrl',
+            controllerAs: '$ctrl',
         });
 }
 

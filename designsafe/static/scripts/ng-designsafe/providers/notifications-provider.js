@@ -143,8 +143,8 @@ function NotificationService(
         const toast = $mdToast.simple({
             template:
                 '<md-toast>' +
-                    '<div class="md-toast-content">' +
-                        '<h4>' + toastTitle + '</h4>' +
+                    '<div class="md-toast-content custom-toast">' +
+                        '<h5>' + toastTitle + '</h5>' +
                         '<p>' + msg.message + '</p>' +
                     '</div>' +
                 '</md-toast>',
