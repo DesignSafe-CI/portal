@@ -1,5 +1,9 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.0.8
+
+- Minot release to add app description capability (DES-685)
+
 ## v3.0.7
 
 Fixes:
