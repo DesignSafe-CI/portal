@@ -950,10 +950,10 @@
 
           <div style="width:49%; vertical-align:top; display:inline-block;">
             <div>
-              <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> (Appears when published)
+              <span style="font-weight:bold; display:inline-block; width:150px;"> Date of Publication: </span> {{browser.publication.created| date: 'MMM/d/yyyy'}}
             </div>
             <div>
-              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> (Appears when published)
+              <span style="font-weight:bold; display:inline-block; width:150px;"> DOI: </span> {{simulation.doi}}
             </div>
             <div>
               <span style="font-weight:bold; display:inline-block; width:150px;"> Hybrid Simulation Type: </span>
@@ -991,8 +991,9 @@
                class="bg-info" style="padding:10px; margin-bottom:10px; border-bottom:1px solid black;">
                 This Hybrid Simulation has no Global Models.
           </div>
-          <div ng-repeat="model in browser.publication.global_models | orderBy: ['_ui.order', 'value.title']"
-               style="margin-bottom:10px;">
+          <div  ng-repeat="model in browser.publication.global_models | orderBy: ['_ui.order', 'value.title']"
+                ng-if="model.associationIds.includes(simulation.uuid)"
+                style="margin-bottom:10px;">
             <div style="padding:3px;">
               <span class="ds-text-blue older-tick">Global Model: {{model.value.title}} </span>
             </div>
