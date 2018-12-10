@@ -1,5 +1,13 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.1.0-20181201
+
+Fixes:
+
+- Hybrid sim was not showing correct output files (DES-735).
+- Associated project links broken (DES-737).
+- Hybrid sim missing some DOIs and adjustments on global models (DES-740).
+
 ## v3.1.0-20181107
 
 Fixes:
