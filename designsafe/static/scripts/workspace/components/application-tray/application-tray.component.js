@@ -1,7 +1,7 @@
 import appTrayTemplate from './application-tray.component.html';
 
 class AppTrayCtrl {
-    constructor($scope, $location, $rootScope, $q, $state, $stateParams, $translate, Apps, SimpleList, $mdToast) {
+    constructor($scope, $location, $rootScope, $q, $state, $stateParams, $translate, WorkspaceApps, SimpleList, $mdToast) {
         'ngInject';
         this.$rootScope = $rootScope;
         this.$scope = $scope;
@@ -11,7 +11,7 @@ class AppTrayCtrl {
         this.$stateParams = $stateParams;
         window.$stateParams = $stateParams;
         this.$translate = $translate;
-        this.Apps = Apps;
+        this.WorkspaceApps = WorkspaceApps;
         this.SimpleList = SimpleList;
         this.$mdToast = $mdToast;
     }
@@ -88,7 +88,7 @@ class AppTrayCtrl {
             if (appCategory && this.simpleList.tabs.includes(appCategory)) {
                 binned = true;
             } else {
-                this.Apps.getMeta(appId)
+                this.WorkspaceApps.getMeta(appId)
                     .then(
                         response => {
                             if (response.data.length > 0) {
