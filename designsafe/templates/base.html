@@ -29,6 +29,22 @@
       {% render_block "css" %}
       <base href="/">
       {% recaptcha_init 'en' %}
+
+      <!-- used in general search -->
+      <meta name="keywords" content=""> <!-- related experiements, subject; used in search -->
+      <meta name="author" content=""> <!-- author names -->
+
+      <!-- used in google citation -->
+      <meta name="citation_title" content=""> <!-- project title -->
+      <meta name="citation_author" content=""> <!-- author; can have multiple lines -->
+      <meta name="citation_author_institution" content=""> <!-- example: University of Texas at Austin-->
+      <meta name="citation_publication_date" content=""> <!-- year of publication -->
+      <meta name="citation_doi" content=""> <!-- project doi, example: 10.17603/DS28382 -->
+      <meta name="citation_keywords" content=""> <!-- project keywords -->
+      <meta name="citation_pdf_url" content=""> <!-- pdf url -->
+      <meta name="citation_abstract_html_url" content=""> <!-- project url -->
+      <meta name="citation_publisher" content="DesignSafe-CI">
+      <meta name="citation_language" content="en">
   </head>
   <body ng-app="designsafe.portal">
     {% cms_toolbar %}
