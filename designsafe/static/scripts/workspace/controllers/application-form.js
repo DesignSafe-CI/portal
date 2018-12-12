@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, Apps, Jobs, Systems, $mdToast, Django, ProjectService) {
+export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $location, $anchorScroll, $translate, WorkspaceApps, Jobs, Systems, $mdToast, Django, ProjectService) {
     'nginject';
     $localStorage.systemChecks = {};
 
@@ -34,7 +34,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         }
         if (app.applications) {
             $scope.data.bin = app;
-            Apps.getAppDropdownDescription(app.value.definition.label).then((response) => {
+            WorkspaceApps.getAppDropdownDescription(app.value.definition.label).then((response) => {
                 if (response.data.appDescription) {
                     $scope.data.bin.description = response.data.appDescription;
                 }
@@ -46,7 +46,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
         if (app.value.type === 'agave') {
             $scope.data.type = app.value.type;
-            Apps.get(app.value.definition.id).then(
+            WorkspaceApps.get(app.value.definition.id).then(
                 function(resp) {
                     // check app execution system
                     // Systems.getMonitor(resp.data.executionSystem)
@@ -94,7 +94,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         $scope.data.needsLicense = $scope.data.app.license.type && !$scope.data.app.license.enabled;
         $scope.data.unavailable = ($scope.data.app.executionSystem == 'designsafe.community.exec.stampede' || $scope.data.app.executionSystem == 'designsafe.community.exec.stampede.nores');
         $scope.form = { model: {}, readonly: ($scope.data.needsLicense || $scope.data.unavailable) };
-        $scope.form.schema = Apps.formSchema($scope.data.app);
+        $scope.form.schema = WorkspaceApps.formSchema($scope.data.app);
         $scope.form.form = [];
         // reset formValid, var is used for invalid form msg
         $scope.data.formValid = [];
@@ -245,7 +245,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
         $scope.data.launching = true;
         if (copy) {
-            Apps.copyNotebook(fileMgrName, systemId, filePath)
+            WorkspaceApps.copyNotebook(fileMgrName, systemId, filePath)
                 .then(function(resp) {
                     $scope.data.launching = false;
                     window.open(`${jupyterBaseUrl}/user/${Django.user}/notebooks/mydata/${resp.data.name}`, '').focus();
@@ -254,7 +254,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 });
         } else {
             // create dir of parent folder in user's mydata
-            Apps.setupNotebook(filePath.split('/').slice(-2, -1)[0])
+            WorkspaceApps.setupNotebook(filePath.split('/').slice(-2, -1)[0])
                 .then(function(resp) {
                     $scope.data.launching = false;
                     window.open(`${jupyterBaseUrl}/user/${Django.user}/notebooks/${path}`, '').focus();
