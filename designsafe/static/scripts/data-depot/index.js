@@ -8,8 +8,9 @@ import _ from 'underscore';
 
 import './../ng-designsafe/providers';
 import './components';
+import './services';
 
-let ddModule = angular.module('ds-data', ['designsafe', 'dd.components']);
+let ddModule = angular.module('ds-data', ['designsafe', 'dd.components', 'dd.services']);
 ddModule.requires.push(
   'ui.router',
   'djng.urls', //TODO: djng
@@ -503,6 +504,21 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       params: {
         systemId: 'designsafe.storage.published',
         filePath: '',
+      },
+      onExit: ($window) => {
+        $window.document.getElementsByName('description')[0].content = ""
+        $window.document.getElementsByName('citation_title')[0].content = ""
+        $window.document.getElementsByName('citation_title')[0].content = ""
+        $window.document.getElementsByName('citation_publication_date')[0].content = ""
+        $window.document.getElementsByName('citation_doi')[0].content = ""
+        $window.document.getElementsByName('citation_abstract_html_url')[0].content = ""
+        
+        var elements = $window.document.getElementsByName('citation_author')
+        while (elements[0]) elements[0].parentNode.removeChild(elements[0])
+        var elements = $window.document.getElementsByName('citation_author_institution')
+        while (elements[0]) elements[0].parentNode.removeChild(elements[0])
+        var elements = $window.document.getElementsByName('citation_keywords')
+        while (elements[0]) elements[0].parentNode.removeChild(elements[0])
       },
       resolve: {
         'listing': ['$stateParams', 'DataBrowserService', function($stateParams, DataBrowserService){

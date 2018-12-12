@@ -6,14 +6,14 @@
     <!--
     <ds-user username="$ctrl.data.project.value.pi" format="name-email"></ds-user>
     -->
-    <span>{{getUserDets($ctrl.data.project.value.pi)}}</span>
+    <span>{{$ctrl.getUserDets($ctrl.data.project.value.pi)}}</span>
     <hr>
     <h3>Co PIs</h3>
     <div ng-repeat="coPi in $ctrl.data.project.value.coPis">
       <!--
       <ds-user username="coPi" format="name-email"></ds-user>
       -->
-    <span>{{getUserDets(coPi)}}</span>
+    <span>{{$ctrl.getUserDets(coPi)}}</span>
     </div>
     <hr>
     <h3>Team Members</h3>
@@ -21,7 +21,7 @@
       <!--
       <ds-user username="user" format="name-email"></ds-user>
       -->
-    <span>{{getUserDets(user)}}</span>
+    <span>{{$ctrl.getUserDets(user)}}</span>
     </div>
 </div>
 <div class="modal-footer">
