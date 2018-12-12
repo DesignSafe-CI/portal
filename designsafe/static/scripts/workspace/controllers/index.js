@@ -14,7 +14,7 @@ workspaceControllers.controller('ApplicationFormCtrl', [
     '$location',
     '$anchorScroll',
     '$translate',
-    'Apps',
+    'WorkspaceApps',
     'Jobs',
     'Systems',
     '$mdToast',
