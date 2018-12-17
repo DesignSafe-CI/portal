@@ -2,11 +2,16 @@
 
 ## v3.1.0-20181201
 
+Improvements:
+
+- Move to DataCite API (DES-597)
+
 Fixes:
 
 - Hybrid sim was not showing correct output files (DES-735).
 - Associated project links broken (DES-737).
 - Hybrid sim missing some DOIs and adjustments on global models (DES-740).
+- Fix App forms (DES-753).
 
 ## v3.1.0-20181107
 
