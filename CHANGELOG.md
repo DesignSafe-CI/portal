@@ -12,6 +12,7 @@ Fixes:
 - Associated project links broken (DES-737).
 - Hybrid sim missing some DOIs and adjustments on global models (DES-740).
 - Fix App forms (DES-753).
+- Fix bug in application-add controller (DES-703).
 
 ## v3.1.0-20181107
 
