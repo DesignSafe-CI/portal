@@ -155,7 +155,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 inputs: {},
                 parameters: {},
                 notifications: ['PENDING', 'QUEUED', 'SUBMITTING', 'PROCESSING_INPUTS', 'STAGED', 'KILLED', 'FAILED', 'STOPPED', 'FINISHED'].map(
-                    e => ({
+                    (e) => ({
                         url: $scope.webhookUrl,
                         event: e,
                     })

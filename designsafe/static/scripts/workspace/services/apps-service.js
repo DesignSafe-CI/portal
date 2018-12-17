@@ -81,10 +81,7 @@ export function appsService($http, $q, $translate, djangoUrl) {
                 properties: {},
             };
             _.each(params, function(param) {
-                if (!param.value.visible) {
-                    return;
-                }
-                if (param.id.startsWith('_')) {
+                if (!param.value.visible || param.id.startsWith('_')) {
                     return;
                 }
                 let field = {
@@ -182,11 +179,11 @@ export function appsService($http, $q, $translate, djangoUrl) {
             title: 'Node Count',
             description: `Number of requested process nodes for the job. Default number of nodes is ${app.defaultNodeCount}.`,
             type: 'integer',
-            enum: Array.from(Array(12).keys()).map(i => i + 1),
+            enum: Array.from(Array(12).keys()).map((i) => i + 1),
             default: app.defaultNodeCount,
             'x-schema-form': {
                 type: 'select',
-                titleMap: _.map(Array.from(Array(12).keys()).map(i => i + 1), function(val) {
+                titleMap: _.map(Array.from(Array(12).keys()).map((i) => i + 1), function(val) {
                     return {
                         value: val,
                         name: val,

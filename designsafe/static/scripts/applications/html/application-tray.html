@@ -25,8 +25,8 @@
       <button class="btn btn-default btn-tab ng-scope" ng-click="syncApps()"><i class="fa fa-refresh fa-lg"></i></button>
     </div>
 
-    <uib-tabset ng-show="!requesting" class="top-buffer">
-      <uib-tab ng-repeat="tab in tabs" active="tab.active">
+    <uib-tabset ng-show="!requesting" class="top-buffer" active="activeTab">
+      <uib-tab ng-repeat="tab in tabs" >
         <uib-tab-heading>
           <div ng-switch="tab.title">
             <div ng-switch-when="Public">

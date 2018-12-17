@@ -32,9 +32,9 @@ class AppTrayCtrl {
             }
         });
 
-        setTimeout(_ => this.refreshApps(), 0);
+        setTimeout((_) => this.refreshApps(), 0);
 
-        $(document).mousedown(event => {
+        $(document).mousedown((event) => {
             let element = $(event.target),
                 workspaceTab = element.closest('.workspace-tab'),
                 appsTray = element.closest('div .apps-tray');
@@ -58,10 +58,10 @@ class AppTrayCtrl {
         let deferred = this.$q.defer();
 
         this.simpleList.getDefaultLists(query)
-            .then(response => {
+            .then((response) => {
                 deferred.resolve(response);
             })
-            .catch(response => {
+            .catch((response) => {
                 this.error = this.$translate.instant('error_tab_get') + response.data;
                 deferred.reject(response);
             });
@@ -90,7 +90,7 @@ class AppTrayCtrl {
             } else {
                 this.WorkspaceApps.getMeta(appId)
                     .then(
-                        response => {
+                        (response) => {
                             if (response.data.length > 0) {
                                 if (response.data[0].value.definition.available) {
                                     this.launchApp(response.data[0]);
@@ -107,7 +107,7 @@ class AppTrayCtrl {
                                     .parent($('#toast-container')));
                             }
                         },
-                        response => {
+                        (response) => {
                             this.$mdToast.show(this.$mdToast.simple()
                                 .content(this.$translate.instant('error_app_run'))
                                 .toastClass('warning')
@@ -118,14 +118,14 @@ class AppTrayCtrl {
         }
 
         this.addDefaultTabs({ $and: [{ name: `${this.$translate.instant('apps_metadata_name')}` }, { 'value.definition.available': true }] })
-            .then(response => {
+            .then((response) => {
                 if (binned) {
                     appId = appId.split('::')[0];
                     const appIndex = this.simpleList.binMap[appCategory][appId];
                     this.launchApp(this.simpleList.lists[appCategory][appIndex]);
                 }
 
-                this.simpleList.tabs.forEach(element => {
+                this.simpleList.tabs.forEach((element) => {
                     this.tabs.push(
                         {
                             title: element,

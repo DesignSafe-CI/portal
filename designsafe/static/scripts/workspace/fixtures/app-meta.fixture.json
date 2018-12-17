@@ -1,0 +1,56 @@
+{
+    "uuid": "1234",
+    "name": "ds_apps",
+    "value": {
+        "definition": {
+            "appIcon": "OpenSees",
+            "appCategory": "Simulation",
+            "available": true,
+            "checkpointable": false,
+            "defaultMaxRunTime": "01: 00: 00",
+            "defaultMemoryPerNode": 1,
+            "defaultNodeCount": 1,
+            "defaultProcessorsPerNode": 64,
+            "defaultQueue": "normal",
+            "deploymentPath": "/applications/OpenseesSp-3.0.0.6709u7.zip",
+            "deploymentSystem": "designsafe.storage.default",
+            "executionSystem": "designsafe.community.exec.stampede2.nores",
+            "executionType": "HPC",
+            "helpURI": "https: //www.designsafe-ci.org/rw/user-guide/workspace/opensees/",
+            "icon": null,
+            "id": "OpenseesSp-3.0.0.6709u7",
+            "inputs": [],
+            "isPublic": true,
+            "label": "OpenSeesSP (V 3.0)",
+            "lastModified": "2018-10-23T17: 08: 19-05: 00",
+            "license": {
+                "type": null
+            },
+            "longDescription": "OpenSeesSP is an OpenSees interpreter intended for high performance computers for performing finite element simulations of very large models on parallel machines. OpenSeesSP is easy to use even with limited knowledge about parallel computing. It only requires minimal changes to input scripts to make them consistent with the parallel process logic. OpenSeesSP runs on up to 12 KNL Nodes on Stampede2, with 64 cores per Node.",
+            "modules": [
+                "petsc"
+            ],
+            "name": "OpenseesSp",
+            "ontology": [],
+            "outputs": [],
+            "owner": "hgurram",
+            "parallelism": "PARALLEL",
+            "parameters": [],
+            "revision": 7,
+            "shortDescription": "OpenSees is a software framework for simulating the seismic response of structural and geotechnical systems.",
+            "tags": [
+                "demo",
+                "earthquake",
+                "geo",
+                "engineering",
+                "appCategory:Simulation",
+                "appIcon:opensees"
+            ],
+            "templatePath": "wrapper.sh",
+            "testPath": "test/test.sh",
+            "uuid": "2712792813385290216-242ac11b-0001-005",
+            "version": "3.0.0.6709"
+        },
+        "type": "agave"
+    }
+}

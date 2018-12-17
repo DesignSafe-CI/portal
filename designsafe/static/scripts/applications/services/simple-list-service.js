@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export class SimpleList {
     constructor($http, $q, djangoUrl, appIcons) {
         'ngInject';
@@ -8,6 +10,7 @@ export class SimpleList {
         this.selected;
         this.lists = {};
         this.map = {};
+        this.tabs = ['Private', 'Public'];
     }
 
     /**
@@ -20,8 +23,8 @@ export class SimpleList {
     tagIncludesParam(definition, param) {
         return definition.tags &&
             Array.isArray(definition.tags) &&
-            definition.tags.filter(s => s.includes(`${param}:`))[0] &&
-            definition.tags.filter(s => s.includes(`${param}:`))[0].split(':')[1];
+            definition.tags.filter((s) => s.includes(`${param}:`))[0] &&
+            definition.tags.filter((s) => s.includes(`${param}:`))[0].split(':')[1];
     }
 
     getDefaultLists(query) {
@@ -33,8 +36,9 @@ export class SimpleList {
             params: { q: query },
         }).then(
             function(response) {
-                self.lists['Private'] = [];
-                self.lists['Public'] = [];
+                _.forEach(self.tabs, (tab) => {
+                    self.lists[tab] = [];
+                });
 
                 angular.forEach(response.data, function(appMeta) {
                     self.map[appMeta.value.definition.id] = appMeta;
@@ -47,7 +51,7 @@ export class SimpleList {
                     // Parse app icon from tags for agave apps, or from metadata field for html apps
                     appMeta.value.definition.appIcon = null;
                     if (self.tagIncludesParam(appMeta.value.definition, 'appIcon')) {
-                        appMeta.value.definition.appIcon = appMeta.value.definition.tags.filter(s => s.includes('appIcon'))[0].split(':')[1];
+                        appMeta.value.definition.appIcon = appMeta.value.definition.tags.filter((s) => s.includes('appIcon'))[0].split(':')[1];
                     } else {
                         self.appIcons.some(function(icon) {
                             if (appMeta.value.definition.label.toLowerCase().includes(icon)) {

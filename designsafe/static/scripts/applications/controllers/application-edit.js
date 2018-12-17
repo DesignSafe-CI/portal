@@ -1531,6 +1531,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
                                                                                 $scope.close = function() {
                                                                                     $uibModalInstance.dismiss();
+                                                                                    $state.transitionTo('applications');
                                                                                 };
 
                                                                             }
@@ -1573,6 +1574,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
                                                                                 $scope.close = function() {
                                                                                     $uibModalInstance.dismiss();
+                                                                                    $state.transitionTo('applications');
                                                                                 };
 
                                                                             }
@@ -1638,7 +1640,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
                                                                     $scope.close = function() {
                                                                         $uibModalInstance.dismiss();
-                                                                        // $state.transitionTo('applications');
+                                                                        $state.transitionTo('applications');
                                                                     };
                                                                 }
                                                             ]
@@ -1671,7 +1673,7 @@ export function applicationEditCtrl(window, angular, $, _) {
 
                                                                     $scope.close = function() {
                                                                         $uibModalInstance.dismiss();
-                                                                        // $state.transitionTo('applications');
+                                                                        $state.transitionTo('applications');
                                                                     };
                                                                 }
                                                             ]
