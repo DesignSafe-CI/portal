@@ -9,7 +9,7 @@ ENV TERM xterm
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
+    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - && \
     apt-get install -y build-essential python python-dev gettext nodejs xvfb chromium-browser ruby-sass && \
     curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
 
