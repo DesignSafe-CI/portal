@@ -5,6 +5,7 @@
 Improvements:
 
 - Move to DataCite API (DES-597)
+- Update node to 10.x (DES-753)
 
 Fixes:
 
