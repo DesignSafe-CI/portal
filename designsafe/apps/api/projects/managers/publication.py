@@ -12,11 +12,12 @@ import chardet
 
 logger = logging.getLogger(__name__)
 
-USER = settings.EZID_USER
-PASSWORD = settings.EZID_PASS
+USER = settings.DATACITE_USER
+PASSWORD = settings.DATACITE_PASS
 CREDS = (USER, PASSWORD)
-BASE_URI = 'https://ezid.cdlib.org/'
-SHOULDER = settings.EZID_SHOULDER or 'doi:10.5072/FK2'
+BASE_URI = settings.DATACITE_URI
+FAKE_SHOULDER = 'doi:10.5072/FK2' 
+SHOULDER = settings.DATACITE_SHOULDER or FAKE_SHOULDER
 TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}'
 ENTITY_TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}/#details-{entity_uuid}'
 logger.debug('Using shoulder: %s', SHOULDER)
@@ -69,15 +70,18 @@ def format_req(metadata):
 def _reserve_doi(xml_obj, target):
     xml_str = ET.tostring(xml_obj, encoding="UTF-8", method="xml")
     metadata = {'_status': 'reserved', 'datacite': xml_str, '_target': target}
-    response = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
-                             data=format_req(metadata),
-                             auth=CREDS,
-                             headers={'Content-Type': 'text/plain'})
-    res = parse_response(response.text)
-    if 'success' in res:
-        return res['success']
-    else:
-        raise Exception(res['error'])
+
+    if SHOULDER != FAKE_SHOULDER:
+        response = requests.post('{}/shoulder/{}'.format(BASE_URI, SHOULDER),
+                                 data=format_req(metadata),
+                                 auth=CREDS,
+                                 headers={'Content-Type': 'text/plain'})
+        res = parse_response(response.text)
+        if 'success' in res:
+            return res['success']
+        else:
+            raise Exception(res['error'])
+    return 'fake_doi'
 
 def _update_doi(doi, xml_obj=None, status='reserved'):
     res = requests.get(
@@ -94,15 +98,18 @@ def _update_doi(doi, xml_obj=None, status='reserved'):
     else:
         metadata = {'_status': status}
 
-    response = requests.post('{}/id/{}'.format(BASE_URI, doi),
-                             data=format_req(metadata),
-                             auth=CREDS,
-                             headers={'Content-Type': 'text/plain'})
-    res = parse_response(response.text)
-    if 'success' in res:
-        return res['success']
-    else:
-        raise Exception(res['error'])
+    if SHOULDER != FAKE_SHOULDER:
+        response = requests.post(
+            '{}/id/{}'.format(BASE_URI, doi),
+            data=format_req(metadata),
+            auth=CREDS,
+            headers={'Content-Type': 'text/plain'}
+        )
+        res = parse_response(response.text)
+        if 'success' in res:
+            return res['success']
+        else:
+            raise Exception(res['error'])
 
 def _project_required_xml(publication):
     project_body = publication['project']
@@ -281,7 +288,8 @@ def analysis_reserve_xml(publication, analysis, created):
     now = dateutil.parser.parse(created)
     reserve_res = _reserve_doi(xml_obj, ENTITY_TARGET_BASE.format(
         project_id=publication['project']['value']['projectId'], entity_uuid=analysis['uuid']))
-    doi, ark = reserve_res.split('|')
+    doi = reserve_res
+    ark = doi
     doi = doi.strip()
     ark = ark.strip()
     identifier = xml_obj.find('identifier')
@@ -303,7 +311,8 @@ def experiment_reserve_xml(publication, experiment, created):
                 entity_uuid=experiment['uuid']
             )
         )
-        doi, ark = reserve_res.split('|')
+        doi = reserve_res
+        ark = doi
     else:
         doi = experiment.get('doi')
         ark = experiment.get('doi')
@@ -363,7 +372,8 @@ def simulation_reserve_xml(publication, simulation, created):
                 entity_uuid=simulation['uuid']
             )
         )
-        doi, ark = reserve_res.split('|')
+        doi = reserve_res
+        ark = doi
     else:
         doi = simulation.get('doi')
         ark = simulation.get('doi')
@@ -405,7 +415,8 @@ def hybrid_simulation_reserve_xml(publication, simulation, created):
                 entity_uuid=simulation['uuid']
             )
         )
-        doi, ark = reserve_res.split('|')
+        doi = reserve_res
+        ark = doi
     else:
         doi = simulation.get('doi')
         ark = simulation.get('doi')
@@ -440,7 +451,8 @@ def project_reserve_xml(publication):
     now = dateutil.parser.parse(publication['created'])
     if not project_body.get('doi', ''):
         reserve_resp = _reserve_doi(xml_obj, TARGET_BASE.format(project_id=proj['projectId']))
-        doi, ark = reserve_resp.split('|')
+        doi = reserve_resp
+        ark = doi
     else:
         doi = project_body.get('doi')
         ark = project_body.get('doi')

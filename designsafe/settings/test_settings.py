@@ -583,9 +583,9 @@ NOCAPTCHA = True
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 
-EZID_USER = os.environ.get('EZID_USER')
-EZID_PASS = os.environ.get('EZID_PASS')
-EZID_SHOULDER = os.environ.get('EZID_SHOULDER')
+EZID_USER = os.environ.get('DATACITE_USER')
+EZID_PASS = os.environ.get('DATACITE_PASS')
+EZID_SHOULDER = os.environ.get('DATACITE_SHOULDER')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
