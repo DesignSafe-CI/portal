@@ -340,11 +340,11 @@
                         <div class="well">
                             <div>{{ modelConf.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(modelConf)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(modelConf.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(modelConf)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(modelConf.uuid)" ng-hide="$ctrl.ui.idDel == modelConf.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == modelConf.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(modelConf)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(modelConf)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -363,11 +363,11 @@
                         <div class="well">
                             <div>{{ sensorInfo.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sensorInfo)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(sensorInfo.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sensorInfo)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(sensorInfo.uuid)" ng-hide="$ctrl.ui.idDel == sensorInfo.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == sensorInfo.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(sensorInfo)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(sensorInfo)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -386,11 +386,11 @@
                         <div class="well">
                             <div>{{ event.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(event)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(event.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(event)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(event.uuid)" ng-hide="$ctrl.ui.idDel == event.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == event.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(event)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(event)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -409,11 +409,11 @@
                         <div class="well">
                             <div>{{ model.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(model)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(model.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(model)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(model.uuid)" ng-hide="$ctrl.ui.idDel == model.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == model.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(model)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(model)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -432,11 +432,11 @@
                         <div class="well">
                             <div>{{ input.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(input)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(input.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(input)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(input.uuid)" ng-hide="$ctrl.ui.idDel == input.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == input.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(input)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(input)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -455,11 +455,11 @@
                         <div class="well">
                             <div>{{ output.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(output)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(output.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(output)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(output.uuid)" ng-hide="$ctrl.ui.idDel == output.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == output.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(output)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(output)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -478,11 +478,11 @@
                         <div class="well">
                             <div>{{ gm.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(gm)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(gm.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(gm)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(gm.uuid)" ng-hide="$ctrl.ui.idDel == gm.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == gm.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(gm)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(gm)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -501,11 +501,11 @@
                         <div class="well">
                             <div>{{ coordinator.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(coordinator)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(coordinator.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(coordinator)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(coordinator.uuid)" ng-hide="$ctrl.ui.idDel == coordinator.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == coordinator.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(coordinator)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(coordinator)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -524,11 +524,11 @@
                         <div class="well">
                             <div>{{ simsub.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(simsub)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(simsub.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(simsub)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(simsub.uuid)" ng-hide="$ctrl.ui.idDel == simsub.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == simsub.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(simsub)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(simsub)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -547,11 +547,11 @@
                         <div class="well">
                             <div>{{ expsub.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(expsub)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(expsub.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(expsub)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(expsub.uuid)" ng-hide="$ctrl.ui.idDel == expsub.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == expsub.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(expsub)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(expsub)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -570,11 +570,11 @@
                         <div class="well">
                             <div>{{ cout.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(cout)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(cout.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(cout)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(cout.uuid)" ng-hide="$ctrl.ui.idDel == cout.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == cout.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(cout)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(cout)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -593,11 +593,11 @@
                         <div class="well">
                             <div>{{ eout.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(eout)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(eout.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(eout)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(eout.uuid)" ng-hide="$ctrl.ui.idDel == eout.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == eout.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(eout)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(eout)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -616,11 +616,11 @@
                         <div class="well">
                             <div>{{ sout.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sout)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(sout.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sout)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(sout.uuid)" ng-hide="$ctrl.ui.idDel == sout.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == sout.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(sout)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(sout)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -650,11 +650,11 @@
                             </table>
                             <div>{{ analysis.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(analysis)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(analysis.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(analysis)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(analysis.uuid)" ng-hide="$ctrl.ui.idDel == analysis.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == analysis.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(analysis)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(analysis)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
@@ -673,11 +673,11 @@
                         <div class="well">
                             <div>{{ report.value.description }}</div>
                             <div><br>
-                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(report)">edit</span> | 
-                                <span ng-click="$ctrl.checkDelete(report.uuid)">delete </span>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(report)"><a>Edit</a></span> | 
+                                <span ng-click="$ctrl.checkDelete(report.uuid)" ng-hide="$ctrl.ui.idDel == report.uuid"><a>Delete </a></span>
                                 <span ng-if="$ctrl.ui.idDel == report.uuid">
-                                    Are you sure?
-                                    <a ng-click="$ctrl.deleteCategory(report)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                    Confirm Deletion:
+                                    <a ng-click="$ctrl.deleteCategory(report)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
                                 </span>
                             </div>
                         </div>
