@@ -97,6 +97,13 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       });
     };
 
+    $scope.manageCategories = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      ProjectService.manageCategories({'project': $scope.data.project});
+    };
+
     $scope.manageExperiments = function($event) {
       if ($event){
         $event.preventDefault();

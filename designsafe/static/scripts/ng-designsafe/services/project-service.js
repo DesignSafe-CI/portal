@@ -186,6 +186,16 @@ export function ProjectService(httpi, $interpolate, $q, $uibModal, Logging, Proj
       return dataResource.get({params: options});
     };
 
+    service.manageCategories = (options) => {
+      $uibModal.open({
+        component: 'manageCategories',
+        resolve: {
+          options: () => options,
+        },
+        size: 'lg'
+      });
+    };
+
     service.manageHybridSimulations = function(options) {
       var modal = $uibModal.open({
         templateUrl: '/static/scripts/ng-designsafe/html/modals/project-service-manage-hybrid-simulations.html',

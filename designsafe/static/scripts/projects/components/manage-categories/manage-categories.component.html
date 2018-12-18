@@ -1,0 +1,689 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span>Add Categories</span>
+        <span class="pull-right" ng-click="$ctrl.cancel()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="well">
+        <!-- Create Category Form -->
+        <form name='addForm' ng-hide="$ctrl.ui.showEditCategory">
+            <div class="text-center">
+                <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+                <span>Required for Curation & Publication</span>
+            </div>
+            <!-- Category Type -->
+            <div class="form-group">
+                <label>Category Type
+                    <span style="color: #D04348;">&#9679; </span>
+                </label>
+                <!-- Experimental Categories -->
+                <div ng-if="$ctrl.ui.experimental">
+                    <div>
+                        <span class="category-model-conf">Model Configuration</span> Files describing the design and layout
+                        of what is being tested (some call this a specimen).
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Sensor Information</span> Files about the sensor instrumentation
+                        used in a model configuration to conduct one or more event.
+                    </div>
+                    <div>
+                        <span class="category-event">Event Files</span> from unique occurrences during which data are
+                        generated.
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </div>
+                <!-- Simulation Categories -->
+                <div ng-if="$ctrl.ui.simulation">
+                    <div>
+                        <span class="category-model-conf">Simulation Model</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Simulation Input</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-event">Simulation Output</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </div>
+                <!-- Hybrid Simulation Categories -->
+                <div ng-if="$ctrl.ui.hybridSim">
+                    <div>
+                        <span class="category-model-conf">Global Model</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Master Simulation Coordinator</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-event">Simulation Substructure</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-subst">Experimental Substructure</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-outpt">Outputs</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <select style="background:white; width:20%"
+                                ng-model="$ctrl.form.projectTagToAdd.name"
+                                ng-options="tag.name as tag.label for tag in $ctrl.ui.tagTypes"
+                                ng-change="$ctrl.tagType($ctrl.form.projectTagToAdd.name)"
+                                ng-required="true">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Category Title -->
+            <div class="form-group">
+                <label>Category Title</label>
+                <span style="color: #D04348;">&#9679; </span>
+                <div>
+                    If you only want to enter a single date, fill in the firest field.
+                </div>
+                <input type="text" style="width:100%;" ng-model="$ctrl.form.projectTagToAdd.title"
+                    ng-required="true">
+            </div>
+            <!-- Referenced Data for Analysis -->
+            <div    class="form-group"
+                    style="width:100%; display:inline-block;"
+                    ng-if="$ctrl.ui.isAnalysis">
+                <table class="tg" style="table-layout: fixed; width: 100%;">
+                    <colgroup>
+                        <col style="width: 48%">
+                        <col style="width: 50%">
+                    </colgroup>
+                    <tr>
+                        <td class="tg-0lax">
+                            <strong>Referenced Data Title</strong>
+                            <div>Data from published projects or an external repository.</div>
+                        </td>
+                        <td class="tg-0lax" valign="top">
+                            <strong>Referenced Data DOI or URL</strong><br>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="(i, work) in $ctrl.form.projectTagToAdd.refs track by $index">
+                        <td class="tg-0lax">
+                            <input type="text" style="width:94%;" ng-model="$ctrl.form.projectTagToAdd.refs[i].reference">
+                        </td>
+                        <td class="tg-0lax">
+                            <input type="text" style="width:100%;" ng-model="$ctrl.form.projectTagToAdd.refs[i].referencedoi">
+                        </td>
+                    </tr>
+                </table>
+                <div style="width:28%; display:inline-block;">
+                    <div>
+                        <a ng-click="$ctrl.addEntity($ctrl.form.projectTagToAdd.refs)">&#x2b; Add another Referenced Data</a>
+                    </div>
+                    <div ng-hide="$ctrl.checkEmpty($ctrl.form.projectTagToAdd.refs)">
+                        <a ng-click="$ctrl.dropEntity($ctrl.form.projectTagToAdd.refs)">&#x2212; Drop Referenced Data</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Category Description -->
+            <div class="form-group">
+                <label>Category Description</label>
+                <div>
+                    Summarize the purpose of the category and its files. What is it about? What are its features?
+                </div>
+                <div>
+                    <textarea type="text" style="width:100%; height:3em; resize: vertical;" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description">
+            </textarea>
+                </div>
+            </div>
+            <!-- Add Category Btn -->
+            <div class="text-right">
+                <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.addCategory($event)"
+                    style="width:18%;"><i class="fa fa-plus"></i> Add Category</button>
+            </div>
+        </form>
+        <!-- Edit Category Form -->
+        <form name='editForm' ng-show="$ctrl.ui.showEditCategory">
+            <div class="text-center">
+                <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+                <span>Required for Curation & Publication</span>
+            </div>
+            <!-- Edit Category Type -->
+            <div class="form-group">
+                <label>Category Type
+                    <span style="color: #D04348;">&#9679; </span>
+                </label>
+                <!-- Experimental Categories -->
+                <div ng-if="$ctrl.ui.experimental">
+                    <div>
+                        <span class="category-model-conf">Model Configuration</span> Files describing the design and layout
+                        of what is being tested (some call this a specimen).
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Sensor Information</span> Files about the sensor instrumentation
+                        used in a model configuration to conduct one or more event.
+                    </div>
+                    <div>
+                        <span class="category-event">Event Files</span> from unique occurrences during which data are
+                        generated.
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </div>
+                <!-- Simulation Categories -->
+                <div ng-if="$ctrl.ui.simulation">
+                    <div>
+                        <span class="category-model-conf">Simulation Model</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Simulation Input</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-event">Simulation Output</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </div>
+                <!-- Hybrid Simulation Categories -->
+                <div ng-if="$ctrl.ui.hybridSim">
+                    <div>
+                        <span class="category-model-conf">Global Model</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-sensor-info">Master Simulation Coordinator</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-event">Simulation Substructure</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-subst">Experimental Substructure</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-outpt">Outputs</span> [TBD]
+                    </div>
+                    <div>
+                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        or other representations of the results.
+                    </div>
+                    <div>
+                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        entire project or experiment.
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <select style="background:white; width:20%"
+                                ng-model="$ctrl.editForm.type"
+                                ng-change="$ctrl.tagType($ctrl.form.projectTagToAdd.name)"
+                                ng-disabled
+                                ng-required="true">
+                                <option option="$ctrl.editForm.type" class="category-model-conf">{{ $ctrl.editForm.type }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Edit Category Title -->
+            <div class="form-group">
+                <label>Category Title</label>
+                <span style="color: #D04348;">&#9679; </span>
+                <div>
+                    If you only want to enter a single date, fill in the firest field.
+                </div>
+                <input  type="text"
+                        style="width:100%;"
+                        placeholder="$ctrl.editForm.title"
+                        ng-model="$ctrl.editForm.title"
+                        ng-required="true">
+            </div>
+            <!-- Edit Referenced Data for Analysis -->
+            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.ui.isAnalysis">
+                <table class="tg" style="table-layout: fixed; width: 100%;">
+                    <colgroup>
+                        <col style="width: 48%">
+                        <col style="width: 50%">
+                    </colgroup>
+                    <tr>
+                        <td class="tg-0lax">
+                            <strong>Referenced Data Title</strong>
+                            <div>Data from published projects or an external repository.</div>
+                        </td>
+                        <td class="tg-0lax" valign="top">
+                            <strong>Referenced Data DOI or URL</strong><br>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="(i, work) in $ctrl.editForm.refs track by $index">
+                        <td class="tg-0lax">
+                            <input type="text" style="width:94%;" ng-model="$ctrl.editForm.refs[i].reference">
+                        </td>
+                        <td class="tg-0lax">
+                            <input type="text" style="width:100%;" ng-model="$ctrl.editForm.refs[i].referencedoi">
+                        </td>
+                    </tr>
+                </table>
+                <div style="width:28%; display:inline-block;">
+                    <div>
+                        <a ng-click="$ctrl.addEntity($ctrl.editForm.refs)">&#x2b; Add another Referenced Data</a>
+                    </div>
+                    <div ng-hide="$ctrl.checkEmpty($ctrl.editForm.refs)">
+                        <a ng-click="$ctrl.dropEntity($ctrl.editForm.refs)">&#x2212; Drop Referenced Data</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Edit Category Description -->
+            <div class="form-group">
+                <label>Category Description</label>
+                <div>
+                    Summarize the purpose of the category and its files. What is it about? What are its features?
+                </div>
+                <div>
+                    <textarea   type="text"
+                                style="width:100%; height:3em; resize: vertical;"
+                                placeholder="{{ $ctrl.editForm.description }}"
+                                ng-model="$ctrl.editForm.description">
+            </textarea>
+                </div>
+            </div>
+            <!-- Edit Category Btn -->
+            <div class="text-right">
+                <button class="btn btn-add" type="submit" ng-click="editForm.$valid && $ctrl.updateCategory($event)"
+                    style="width:18%;">Update</button>
+            </div>
+        </form>
+    </div>
+    <!-- CATEGORY LIST -->
+    <div>
+        <div>
+            <label>Category Inventory</label>
+        </div>
+        <div class="dropdown">
+            <!-- Model Config -->
+            <div ng-repeat="modelConf in $ctrl.data.project.modelconfig_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Model Configuration | <strong>{{modelConf.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{modelConf.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ modelConf.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(modelConf)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(modelConf.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == modelConf.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(modelConf)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sensor Info -->
+            <div ng-repeat="sensorInfo in $ctrl.data.project.sensorlist_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Sensor Information | <strong>{{sensorInfo.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{sensorInfo.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ sensorInfo.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sensorInfo)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(sensorInfo.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == sensorInfo.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(sensorInfo)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Events -->
+            <div ng-repeat="event in $ctrl.data.project.event_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Event | <strong>{{event.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{event.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ event.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(event)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(event.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == event.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(event)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Simulation Model -->
+            <div ng-repeat="model in $ctrl.data.project.model_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Simulation Model | <strong>{{model.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{model.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ model.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(model)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(model.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == model.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(model)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Simulation Input -->
+            <div ng-repeat="input in $ctrl.data.project.input_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{input.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Simulation Input | <strong>{{input.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{input.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ input.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(input)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(input.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == input.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(input)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Simulation Output -->
+            <div ng-repeat="output in $ctrl.data.project.output_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{output.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Simulation Output | <strong>{{output.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{output.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ output.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(output)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(output.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == output.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(output)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Global Model -->
+            <div ng-repeat="gm in $ctrl.data.project.globalmodel_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Global Model | <strong>{{gm.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{gm.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ gm.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(gm)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(gm.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == gm.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(gm)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Coordinator -->
+            <div ng-repeat="coordinator in $ctrl.data.project.coordinator_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{coordinator.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ coordinator.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(coordinator)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(coordinator.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == coordinator.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(coordinator)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Simulation Substructure -->
+            <div ng-repeat="simsub in $ctrl.data.project.simsubstructure_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{simsub.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ simsub.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(simsub)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(simsub.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == simsub.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(simsub)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Experimental Substructure -->
+            <div ng-repeat="expsub in $ctrl.data.project.expsubstructure_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-subst" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{expsub.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ expsub.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(expsub)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(expsub.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == expsub.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(expsub)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Coordinator Output -->
+            <div ng-repeat="cout in $ctrl.data.project.coordinatoroutput_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{cout.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ cout.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(cout)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(cout.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == cout.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(cout)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Experiment Output -->
+            <div ng-repeat="eout in $ctrl.data.project.expoutput_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Experiment Output | <strong>{{eout.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{eout.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ eout.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(eout)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(eout.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == eout.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(eout)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Simulation Output -->
+            <div ng-repeat="sout in $ctrl.data.project.simoutput_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Simulation Output | <strong>{{sout.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{sout.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ sout.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(sout)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(sout.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == sout.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(sout)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Analysis -->
+            <div ng-repeat="analysis in $ctrl.data.project.analysis_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{analysis.uuid}}" class="collapse">
+                        <div class="well">
+                            <table class="tg" style="table-layout: fixed; width: 100%;">
+                                <colgroup>
+                                    <col style="width: 15%">
+                                    <col style="width: 84%">
+                                </colgroup>
+                                <tr ng-repeat="ref in analysis.value.refs">
+                                    <td class="tg-0lax" ng-if="$first">Referenced Work</td>
+                                    <td class="tg-0lax" ng-if="!$first"></td>
+                                    <td class="tg-0lax"><strong>{{ ref.reference }} | <a>{{ ref.referencedoi }}</a></strong></td>
+                                </tr>
+                            </table>
+                            <div>{{ analysis.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(analysis)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(analysis.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == analysis.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(analysis)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Reports -->
+            <div ng-repeat="report in $ctrl.data.project.report_set">
+                <div class="dropdown">
+                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                        style="width:100%;">
+                        <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
+                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                    </button>
+                    <div id="files-{{report.uuid}}" class="collapse">
+                        <div class="well">
+                            <div>{{ report.value.description }}</div>
+                            <div><br>
+                                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editCategory(report)">edit</span> | 
+                                <span ng-click="$ctrl.checkDelete(report.uuid)">delete </span>
+                                <span ng-if="$ctrl.ui.idDel == report.uuid">
+                                    Are you sure?
+                                    <a ng-click="$ctrl.deleteCategory(report)">Yes</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

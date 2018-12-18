@@ -4770,6 +4770,69 @@ fieldset[disabled] .navbar-inverse .btn-link:hover,
 fieldset[disabled] .navbar-inverse .btn-link:focus {
   color: #444444;
 }
+.category-model-conf {
+  font-weight: bold;
+  color: #1568C9;
+}
+.tab-model-conf {
+  background-color: #C4D9F2;
+  border-color: #1568C9;
+  margin-bottom: 2px;
+}
+.category-sensor-info {
+  font-weight: bold;
+  color: #43A59D;
+}
+.tab-sensor-info {
+  background-color: #CAE9E6;
+  border-color: #43A59D;
+  margin-bottom: 2px;
+}
+.category-event {
+  font-weight: bold;
+  color: #B59300;
+}
+.tab-event {
+  background-color: #ECE4BF;
+  border-color: #B59300;
+  margin-bottom: 2px;
+}
+.category-subst {
+  font-weight: bold;
+  color: #865AA7;
+}
+.tab-subst {
+  background-color: #c09add;
+  border-color: #865AA7;
+  margin-bottom: 2px;
+}
+.category-outpt {
+  font-weight: bold;
+  color: #D04348;
+}
+.tab-outpt {
+  background-color: #df878a;
+  border-color: #D04348;
+  margin-bottom: 2px;
+}
+.category-analysis {
+  font-weight: bold;
+  color: #56C0E0;
+}
+.tab-analysis {
+  background-color: #CCECF6;
+  border-color: #56C0E0;
+  margin-bottom: 2px;
+}
+.category-report {
+  font-weight: bold;
+  color: #3E3E3E;
+}
+.tab-report {
+  background-color: #C4C4C4;
+  border-color: #3E3E3E;
+  margin-bottom: 2px;
+}
 .breadcrumb {
   padding: 8px 15px;
   margin-bottom: 20px;
