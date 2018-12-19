@@ -1,5 +1,38 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.1.0-20181204
+
+Improvements:
+
+- Update to ezid API (DES-597).
+- Recon portal URL per event (DES-714).
+- Haxmap Bring in multiple pictures at once (DES-107).
+
+Fixes:
+
+- Angular Json Form fix (DES-753).
+
+## v3.1.0-20181203
+
+Improvements:
+
+- Update docker image to node 10.x
+
+## v3.1.0-20181202
+
+Improvements:
+
+- Applications edit UX improvements (DES-703).
+- Redirect to applications page after dismiss edit success modal (DES-703).
+- Add parens around single args, formatting (DES-703).
+
+Fixes:
+
+- Fix import errors on workspace apps (DES-703)
+- Rename workspace 'Apps' service to 'WorkspaceApps' (DES-703).
+- Fix final reference to the WorkspaceApps service (DES-703).
+- Add application-form unit tests for workspace (DES-703).
+
 ## v3.1.0-20181201
 
 Improvements:
