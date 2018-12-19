@@ -1,6 +1,6 @@
 <div class="modal-header" style="background: #e6e6e6;">
   <h4 class="modal-title" style="border:none;">
-    <span>Manage Simulations</span>
+    <span>Add Simulations</span>
     <span class="pull-right" ng-click="$ctrl.cancel()">
       <i class="fa fa-times"></i>
     </span>
@@ -23,53 +23,6 @@
         </div>
         <div>
           <input type="text" id="add-sim-title" style="width:100%;" ng-model="$ctrl.form.addSimulation[0].title" ng-required="true"><br>
-        </div>
-      </div>
-      <!-- Simulation Date -->
-      <div class="simDate form-group">
-        <label>Dates of Simulation</label>
-        <span style="color: #D04348;">&#9679; </span>
-        <div>
-          If you only want to enter a single date, fill in the firest field.
-        </div>
-        <div style="display:flex;">
-          <span class="input-group" style="width:25%;">
-            <input  type="text" 
-                    uib-datepicker-popup="MM-dd-yyyy"
-                    ng-model="$ctrl.form.addSimulation[0].procedureStart"
-                    is-open="isStartOpen"
-                    placeholder="mm-dd-yyyy"
-                    datepicker-options="dateOptions"
-                    date-disabled="disabled(date, mode)"
-                    ng-required="true"
-                    close-text="Close"
-                    class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </span>
-          </span>
-          <span style="padding:6px;">
-            &#8213;
-          </span>
-          <span class="input-group" style="width:25%;">
-            <input  type="text"
-                    uib-datepicker-popup="MM-dd-yyyy"
-                    ng-model="$ctrl.form.addSimulation[0].procedureEnd"
-                    is-open="isEndOpen"
-                    placeholder="mm-dd-yyyy"
-                    datepicker-options="dateOptions"
-                    date-disabled="disabled(date, mode)"
-                    ng-required="true"
-                    close-text="Close"
-                    class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </span>
-          </span>
         </div>
       </div>
       <!-- Simulation Type -->
@@ -173,53 +126,6 @@
             <input type="text" name="sim-title" id="edit-sim-title" style="width:100%;" ng-model="$ctrl.editSimForm.title" ng-required="true"><br>
           </div>
         </div>
-        <!-- Edit Simulation Date -->
-        <div class="simDate form-group">
-          <label>Dates of Simulation</label>
-          <span style="color: #D04348;">&#9679; </span>
-          <div>
-            Please confirm your simulation dates for each update. If you only want to enter a single date, fill in the firest field.
-          </div>
-          <div style="display:flex;">
-            <span class="input-group" style="width:25%;">
-              <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
-                      ng-model="$ctrl.editSimForm.start"
-                      is-open="isStartOpen"
-                      placeholder="{{$ctrl.editSimForm.start | date:'MM-dd-yyyy'}}"
-                      datepicker-options="dateOptions"
-                      date-disabled="disabled(date, mode)"
-                      ng-required="true"
-                      close-text="Close"
-                      class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isStartOpen = !isStartOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
-            </span>
-            <span style="padding:6px;">
-              &#8213;
-            </span>
-            <span class="input-group" style="width:25%;">
-              <input  type="text"
-                      uib-datepicker-popup="MM-dd-yyyy"
-                      ng-model="$ctrl.editSimForm.end"
-                      is-open="isEndOpen"
-                      placeholder="{{$ctrl.editSimForm.end | date:'MM-dd-yyyy'}}"
-                      datepicker-options="dateOptions"
-                      date-disabled="disabled(date, mode)"
-                      ng-required="true"
-                      close-text="Close"
-                      class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="isEndOpen = !isEndOpen">
-                  <i class="glyphicon glyphicon-calendar"></i>
-                </button>
-              </span>
-            </span>
-          </div>
-        </div>
         <!-- Edit Simulation Type -->
         <div class="simType form-group">
           <label>Simulation Type</label>
@@ -302,7 +208,6 @@
   <div class="simlist">
     <div>
       <label>Simulation Inventory</label>
-      <button class="btn btn-sm btn-danger pull-right" ng-hide="!$ctrl.form.deleteSimulations.length" ng-click="$ctrl.removeSimulations()">Delete Simulations</button>
     </div>
     <div class="dropdown">
       <div ng-repeat="simulation in $ctrl.data.simulations">
@@ -311,26 +216,28 @@
             <span class="pull-left">SIMULATION | <strong>{{simulation.value.title}}</strong></span>
             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
           </button>
-          <div id="files-{{simulation.uuid}}" class="collapse well">
-            <div style="display:inline-block; width:20%;">Simulation Type</div>
-            <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
-            <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
-            <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-            <div style="display:inline-block; width:78%; font-weight: bold;">
-              <div ng-repeat="author in simulation.value.authors">
-                <ds-user username="author" format="lname">{{ author }}</ds-user>
+          <div id="files-{{simulation.uuid}}" class="collapse">
+            <div class="well">
+              <div style="display:inline-block; width:20%;">Simulation Type</div>
+              <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
+              <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
+              <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+              <div style="display:inline-block; width:78%; font-weight: bold;">
+                <div ng-repeat="author in simulation.value.authors">
+                  <ds-user username="author" format="lname">{{ author }}</ds-user>
+                </div>
               </div>
-            </div>
-            <div ng-show="simulation.value.procedureStart">
-              <div style="display:inline-block; width:20%;">Date of Simulation</div>
-              <strong style="display:inline-block; width:78%;">{{ simulation.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ simulation.value.procedureEnd | date:'MM-dd-yyyy' }}</strong>
-            </div>
-            <div>
-              <br>{{ simulation.value.description }}
-            </div>
-            <div><br>
-              <span ng-click="$ctrl.editSim(simulation)">edit</span> | <span ng-click="$ctrl.toggleDeleteSimulation(simulation.uuid)">delete</span>
-              </span>
+              <div>
+                <br>{{ simulation.value.description }}
+              </div>
+              <div><br>
+                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editSim(simulation)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.checkDelete(simulation.uuid)" ng-hide="$ctrl.ui.idDel == simulation.uuid"><a>Delete </a></span>
+                <span ng-if="$ctrl.ui.idDel == simulation.uuid">
+                    Confirm Deletion:
+                    <a ng-click="$ctrl.deleteSimulation(simulation)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                </span>
+              </div>
             </div>
           </div>
         </div>

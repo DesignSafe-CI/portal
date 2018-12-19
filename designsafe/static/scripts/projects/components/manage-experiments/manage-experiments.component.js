@@ -5,7 +5,7 @@ class ManageExperimentsCtrl {
 
     constructor($q, Django, UserService, ProjectEntitiesService) {
         'ngInject';
-        this.ProjectEntitiesService = ProjectEntitiesService
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
@@ -31,7 +31,9 @@ class ManageExperimentsCtrl {
             experimentTypes: this.experimentTypes,
             equipmentTypes: this.equipmentTypes,
             updateExperiments: {},
-            showAddReport: {}
+            showAddReport: {},
+            confirmDel: false,
+            idDel: '',
         };
         this.form = {
             curExperiments: [],
@@ -143,17 +145,34 @@ class ManageExperimentsCtrl {
         });
     }
 
-    toggleDeleteExperiment(uuid) {
-        if (uuid in this.ui.experiments &&
-            this.ui.experiments[uuid].deleted) {
-            var index = this.form.deleteExperiments.indexOf(uuid);
-            this.form.deleteExperiments.splice(index, 1);
-            this.ui.experiments[uuid].deleted = false;
-        } else {
-            this.form.deleteExperiments.push(uuid);
-            this.ui.experiments[uuid] = {};
-            this.ui.experiments[uuid].deleted = true;
+    checkDelete(ent) {
+        this.ui.confirmDel = true;
+        this.ui.idDel = ent;
+        if (this.editExpForm) {
+            this.editExpForm = {};
+            this.ui.showEditExperimentForm = false;
         }
+    }
+
+    cancelDelete() {
+        this.ui.confirmDel = false;
+        this.ui.idDel = '';
+    }
+
+    deleteExperiment(ent) {
+        this.ProjectEntitiesService.delete({
+            data: {
+                uuid: ent.uuid,
+            }
+        }).then((entity) => {
+            var entityAttr = this.data.project.getRelatedAttrName(entity.name);
+            var entitiesArray = this.data.project[entityAttr];
+            entitiesArray = _.filter(entitiesArray, (e) => {
+                return e.uuid !== entity.uuid;
+            });
+            this.data.project[entityAttr] = entitiesArray;
+            this.data.experiments = this.data.project[entityAttr];
+        });
     }
 
     saveExperiment($event) {
@@ -183,37 +202,6 @@ class ManageExperimentsCtrl {
                 this.data.error = error;
             }
         );
-    }
-
-    removeExperiments() {
-        this.data.busy = true;
-        var removeActions = _.map(this.form.deleteExperiments, (uuid) => {
-            return this.ProjectEntitiesService.delete({
-                data: {
-                    uuid: uuid,
-                }
-            }).then((entity) => {
-                var entityAttr = this.data.project.getRelatedAttrName(entity.name);
-                var entitiesArray = this.data.project[entityAttr];
-                entitiesArray = _.filter(entitiesArray, (e) => {
-                    return e.uuid !== entity.uuid;
-                });
-                this.data.project[entityAttr] = entitiesArray;
-                this.data.experiments = this.data.project[entityAttr];
-            });
-        });
-
-        this.$q.all(removeActions).then(
-            (results) => {
-                this.data.busy = false;
-                this.form.addExperiments = [{}];
-            },
-            (error) => {
-                this.data.busy = false;
-                this.data.error = error;
-            }
-        );
-
     }
 }
 

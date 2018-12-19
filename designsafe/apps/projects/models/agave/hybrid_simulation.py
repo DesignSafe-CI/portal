@@ -54,8 +54,6 @@ class HybridSimulation(RelatedEntity):
         max_length=1024,
         default=''
     )
-    procedure_start = fields.CharField('Procedure Start', max_length=1024, default='')
-    procedure_end = fields.CharField('Procedure End', max_length=1024, default='')
     authors = fields.ListField('Authors')
     project = fields.RelatedObjectField(HybridSimulationProject)
 
