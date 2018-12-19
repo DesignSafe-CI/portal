@@ -37,7 +37,7 @@ describe('GeoDataService', ()=> {
 
     });
 
-    fit('Should load a map with single marker', (done)=>{
+    it('Should load a map with single marker', (done)=>{
         let blob = new Blob([JSON.stringify(SINGLE_MARKER_MAP)], { type:'application/json' });
         blob.name = 'test.geojson';
         GeoDataService.load_from_local_file(blob).then( (data)=>{
