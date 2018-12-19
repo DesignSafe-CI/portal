@@ -5,7 +5,7 @@ class ManageHybridSimCtrl {
 
     constructor($q, Django, UserService, ProjectEntitiesService) {
         'ngInject';
-        this.ProjectEntitiesService = ProjectEntitiesService
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
@@ -28,7 +28,9 @@ class ManageHybridSimCtrl {
             showAddSimReport: {},
             showAddSimAnalysis: {},
             showAddIntReport: {},
-            showAddIntAnalysis: {}
+            showAddIntAnalysis: {},
+            confirmDel: false,
+            idDel: '',
         };
         this.form = {
             curSimulation: [],
@@ -98,8 +100,6 @@ class ManageHybridSimCtrl {
         this.editSimForm = {
             sim: sim,
             authors: sim.value.authors.slice(),
-            start: sim.value.procedureStart,
-            end: sim.value.procedureEnd,
             description: sim.value.description,
             simulationType: sim.value.simulationType,
             simulationTypeOther: sim.value.simulationTypeOther,
@@ -138,8 +138,6 @@ class ManageHybridSimCtrl {
         var sim = this.editSimForm.sim;
         sim.value.title = this.editSimForm.title;
         sim.value.description = this.editSimForm.description;
-        sim.value.procedureStart = this.editSimForm.start;
-        sim.value.procedureEnd = this.editSimForm.end;
         sim.value.authors = this.editSimForm.authors;
         sim.value.guests = this.editSimForm.guests;
         this.ui.savingEditSim = true;
@@ -158,49 +156,34 @@ class ManageHybridSimCtrl {
         });
     }
 
-    toggleDeleteSimulation(uuid) {
-        if (uuid in this.ui.simulations &&
-            this.ui.simulations[uuid].deleted) {
-            var index = this.form.deleteSimulations.indexOf(uuid);
-            this.form.deleteSimulations.splice(index, 1);
-            this.ui.simulations[uuid].deleted = false;
-        } else {
-            this.form.deleteSimulations.push(uuid);
-            this.ui.simulations[uuid] = {};
-            this.ui.simulations[uuid].deleted = true;
+    checkDelete(ent) {
+        this.ui.confirmDel = true;
+        this.ui.idDel = ent;
+        if (this.editSimForm) {
+            this.editSimForm = {};
+            this.ui.showEditSimulationForm = false;
         }
     }
 
-    removeSimulations($event) {
-        this.data.busy = true;
+    cancelDelete() {
+        this.ui.confirmDel = false;
+        this.ui.idDel = '';
+    }
 
-        var removeActions = _.map(this.form.deleteSimulations, (uuid) => {
-            return this.ProjectEntitiesService.delete({
-                data: {
-                    uuid: uuid,
-                }
-            }).then((entity) => {
-                var entityAttr = this.data.project.getRelatedAttrName(entity.name);
-                var entitiesArray = this.data.project[entityAttr];
-                entitiesArray = _.filter(entitiesArray, (e) => {
-                    return e.uuid !== entity.uuid;
-                });
-                this.data.project[entityAttr] = entitiesArray;
-                this.data.simulations = this.data.project[entityAttr];
-            });
-        });
-
-        this.$q.all(removeActions).then(
-            (results) => {
-                this.data.busy = false;
-                this.form.addExperiments = [{}];
-            },
-            (error) => {
-                this.data.busy = false;
-                this.data.error = error;
+    deleteSimulation(ent) {
+        this.ProjectEntitiesService.delete({
+            data: {
+                uuid: ent.uuid,
             }
-        );
-
+        }).then((entity) => {
+            var entityAttr = this.data.project.getRelatedAttrName(entity.name);
+            var entitiesArray = this.data.project[entityAttr];
+            entitiesArray = _.filter(entitiesArray, (e) => {
+                return e.uuid !== entity.uuid;
+            });
+            this.data.project[entityAttr] = entitiesArray;
+            this.data.simulations = this.data.project[entityAttr];
+        });
     }
 }
 

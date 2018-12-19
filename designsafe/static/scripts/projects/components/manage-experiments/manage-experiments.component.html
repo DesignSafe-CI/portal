@@ -1,6 +1,6 @@
 <div class="modal-header" style="background: #e6e6e6;">
   <h4 class="modal-title" style="border:none;">
-    <span>Manage Experiments</span>
+    <span>Add Experiments</span>
     <span class="pull-right" ng-click="$ctrl.cancel()">
       <i class="fa fa-times"></i>
     </span>
@@ -366,7 +366,6 @@
   <div class="explist">
     <div>
       <label>Experiment Inventory</label>
-      <button class="btn btn-sm btn-danger pull-right" ng-hide="!$ctrl.form.deleteExperiments.length" ng-click="$ctrl.removeExperiments()">Delete Experiments</button>
     </div>
     <div class="dropdown">
       <div ng-repeat="experiment in $ctrl.data.experiments">
@@ -375,32 +374,38 @@
             <span class="pull-left">EXPERIMENT | <strong>{{experiment.value.title}}</strong></span>
             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
           </button>
-          <div id="files-{{experiment.uuid}}" class="collapse well">
-            <div style="display:inline-block; width:20%;">Experiment Type</div>
-            <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentType }}</strong>
-            <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentTypeOther }}</strong>
-            <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
-            <div style="display:inline-block; width:78%; font-weight: bold;">
-              <div ng-repeat="author in experiment.value.authors">
-                <ds-user username="author" format="lname">{{ author }}</ds-user>
+          <div id="files-{{experiment.uuid}}" class="collapse">
+            <div class="well">
+              <div style="display:inline-block; width:20%;">Experiment Type</div>
+              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentType }}</strong>
+              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentTypeOther }}</strong>
+              <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+              <div style="display:inline-block; width:78%; font-weight: bold;">
+                <div ng-repeat="author in experiment.value.authors">
+                  <ds-user username="author" format="lname">{{ author }}</ds-user>
+                </div>
               </div>
-            </div>
-            <div style="display:inline-block; width:20%;">Experimental Facility</div>
-            <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacility }}</strong>
-            <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacilityOther }}</strong>
-            <div style="display:inline-block; width:20%;">Equipment Type</div>
-            <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentType }}</strong>
-            <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentTypeOther }}</strong>
-            <div ng-show="experiment.value.procedureStart">
-              <div style="display:inline-block; width:20%;">Date of Experiment</div>
-              <strong style="display:inline-block; width:78%;">{{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}</strong>
-            </div>
-            <div>
-              <br>{{ experiment.value.description }}
-            </div>
-            <div><br>
-              <span ng-click="$ctrl.editExp(experiment)">edit</span> | <span ng-click="$ctrl.toggleDeleteExperiment(experiment.uuid)">delete</span>
-              </span>
+              <div style="display:inline-block; width:20%;">Experimental Facility</div>
+              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacility }}</strong>
+              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacilityOther }}</strong>
+              <div style="display:inline-block; width:20%;">Equipment Type</div>
+              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentType }}</strong>
+              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentTypeOther }}</strong>
+              <div ng-show="experiment.value.procedureStart">
+                <div style="display:inline-block; width:20%;">Date of Experiment</div>
+                <strong style="display:inline-block; width:78%;">{{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}</strong>
+              </div>
+              <div>
+                <br>{{ experiment.value.description }}
+              </div>
+              <div><br>
+                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editExp(experiment)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.checkDelete(experiment.uuid)" ng-hide="$ctrl.ui.idDel == experiment.uuid"><a>Delete </a></span>
+                <span ng-if="$ctrl.ui.idDel == experiment.uuid">
+                    Confirm Deletion:
+                    <a ng-click="$ctrl.deleteExperiment(experiment)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                </span>
+              </div>
             </div>
           </div>
         </div>
