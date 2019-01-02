@@ -5,19 +5,19 @@ class DataBrowserServicePreviewCtrl {
 
     constructor($sce, $state, DataBrowserService, nbv, Django) {
         'ngInject';
-        this.$sce = $sce
-        this.DataBrowserService = DataBrowserService
+        this.$sce = $sce;
+        this.DataBrowserService = DataBrowserService;
         this.nbv = nbv;
         this.Django = Django;
         this.$state = $state;
     }
 
     $onInit() {
-        this.file = this.resolve.file
-        this.listing = this.resolve.listing
+        this.file = this.resolve.file;
+        this.listing = this.resolve.listing;
 
-        const file = this.file
-        const listing = this.listing
+        const file = this.file;
+        const listing = this.listing;
 
         this.tests = this.DataBrowserService.allowedActions([file]);
 
@@ -109,43 +109,43 @@ class DataBrowserServicePreviewCtrl {
 
     download() {
         this.DataBrowserService.download(this.file);
-    };
+    }
 
     share() {
         this.DataBrowserService.share(this.file);
-    };
+    }
 
     copy() {
         this.DataBrowserService.copy(this.file);
-    };
+    }
 
     move() {
         this.DataBrowserService.move(this.file, this.DataBrowserService.state().listing);
-    };
+    }
 
     rename() {
         this.DataBrowserService.rename(this.file);
-    };
+    }
 
     viewMetadata() {
         this.close();
         this.DataBrowserService.viewMetadata([this.file]);
-    };
+    }
 
     trash() {
         this.DataBrowserService.trash(this.file);
-    };
+    }
 
     rm() {
         this.DataBrowserService.rm(this.file);
-    };
+    }
 
     close() {
         this.dismiss();
-    };
+    }
 
     notInJupyterTree() {
-        let designsafePath = this.file.href;
+        let designsafePath = this.file.href || this.file.path;
         if (
             designsafePath.includes('dropbox') ||
             designsafePath.includes('googledrive') ||
@@ -154,18 +154,19 @@ class DataBrowserServicePreviewCtrl {
         ) {
             return true;
         }
+
         return false;
-    };
+    }
 
     isJupyter() {
         let designsafePath = this.file.href;
         if (this.notInJupyterTree()) {
             return false;
         } else {
-        let fileExtension = this.file.name.split('.').pop();
+            let fileExtension = this.file.name.split('.').pop();
             return fileExtension == 'ipynb';
         }
-    };
+    }
 
     openInJupyter() {
         const filePath = this.file.path;
@@ -188,7 +189,7 @@ class DataBrowserServicePreviewCtrl {
         const fileLocation = specificLocation + "/" + pathToFile;
         const jupyterPath = `http://jupyter.designsafe-ci.org/user/${this.Django.user}/notebooks/${fileLocation}`;
         window.open(jupyterPath);
-    };
+    }
 }
 
 export const DataBrowserServicePreviewComponent = {
@@ -200,4 +201,4 @@ export const DataBrowserServicePreviewComponent = {
         close: '&',
         dismiss: '&'
     },
-}
+};
