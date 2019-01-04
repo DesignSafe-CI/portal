@@ -44,6 +44,7 @@ class Experiment(RelatedEntity):
     procedure_start = fields.CharField('Procedure Start', max_length=1024, default='')
     procedure_end = fields.CharField('Procedure End', max_length=1024, default='')
     authors = fields.ListField('Authors')
+    author_order = fields.ListField('Author Order')
     project = fields.RelatedObjectField(ExperimentalProject)
 
 class AnalysisTagGeneral(MetadataModel):

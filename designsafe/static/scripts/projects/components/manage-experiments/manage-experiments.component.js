@@ -84,6 +84,8 @@ class ManageExperimentsCtrl {
         this.editExpForm = {
             exp: exp,
             authors: exp.value.authors.slice(),
+            authorOrder: [],
+            selectedAuthor: '',
             start: exp.value.procedureStart,
             end: exp.value.procedureEnd,
             title: exp.value.title,
@@ -121,6 +123,24 @@ class ManageExperimentsCtrl {
         }
     }
 
+    // may need to create unique ordering object for users
+    orderAuthors(up) {
+        var oldIndex = this.editExpForm.authors.indexOf(this.editExpForm.selectedAuthor);
+        var newIndex;
+        if (up === true) {
+            newIndex = oldIndex - 1;
+        } else {
+            newIndex = oldIndex + 1;
+        }
+
+        if (newIndex < 0) {
+            return;
+        } else if (newIndex > this.editExpForm.authors.length) {
+            return;
+        }
+        this.editExpForm.authors.splice(newIndex, 0, this.editExpForm.authors.splice(oldIndex, 1)[0]);
+    }
+
     saveEditExperiment() {
         var exp = this.editExpForm.exp;
         exp.value.title = this.editExpForm.title;
@@ -129,6 +149,14 @@ class ManageExperimentsCtrl {
         exp.value.procedureEnd = this.editExpForm.end;
         exp.value.authors = this.editExpForm.authors;
         exp.value.guests = this.editExpForm.guests;
+        exp.value.authorOrder = this.editExpForm.authorOrder;
+        this.editExpForm.authors.forEach((a) => {
+            var author = {};
+            author.name = a;
+            author.order = this.editExpForm.authors.indexOf(a);
+            exp.value.authorOrder.push(author);
+        });
+
         this.ui.savingEditExp = true;
         this.ProjectEntitiesService.update({
             data: {
