@@ -557,7 +557,7 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       }
         
       // return messages for missing fields
-      i = 0;
+      var i = 0;
       Object.values(checklist).forEach(function(exp) {
         Object.entries(exp).forEach(function(res) {
           // res[0] == keys
