@@ -157,18 +157,6 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :return: The newly created project
         :rtype: JsonResponse
         """
-        # remove invalid/null values
-        # def remove_junk(data):
-        #     for val in data:
-        #         if (isinstance(val, str)) or (val == None):
-        #             logger.info('THIS IS A BAD INPUT YALL ----------> %s', str(val))
-        #         else:
-        #             logger.info('GOOD ----------> %s', str(val))
-
-        # remove_junk(post_data.get('awardNumber', {}))
-        # remove_junk(post_data.get('associatedProjects', {}))
-        # remove_junk(post_data.get('copi'))
-        # remove_junk(post_data.get('teamMembers')  )
 
         # portal service account needs to create the objects on behalf of the user
         ag = get_service_account_client()
