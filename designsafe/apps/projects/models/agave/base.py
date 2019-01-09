@@ -24,7 +24,7 @@ class Project(MetadataModel):
     description = fields.CharField('Description', max_length=1024, default='')
     title = fields.CharField('Title', max_length=255, default='')
     pi = fields.CharField('PI', max_length=255)
-    award_number = fields.CharField('Award Number', max_length=255)
+    award_number = fields.ListField('Award Number')
     associated_projects = fields.ListField('Associated Project')
     ef = fields.CharField('Experimental Facility', max_length=512)
     keywords = fields.CharField('Keywords')
