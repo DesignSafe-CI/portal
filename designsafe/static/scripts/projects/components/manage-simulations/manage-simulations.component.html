@@ -1,0 +1,247 @@
+<div class="modal-header" style="background: #e6e6e6;">
+  <h4 class="modal-title" style="border:none;">
+    <span>Add Simulations</span>
+    <span class="pull-right" ng-click="$ctrl.cancel()">
+      <i class="fa fa-times"></i>
+    </span>
+  </h4>
+</div>
+<div class="modal-body">
+  <div class="well">
+    <form name='addForm' ng-hide="$ctrl.ui.showEditSimulationForm">
+      <div class="text-center">
+        <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+        <span>Required for Curation & Publication</span>
+      </div>
+      <!-- Simulation Title -->
+      <div class="simTitle form-group">
+        <label>Simulation Title
+          <span style="color: #D04348;">&#9679; </span>
+        </label>
+        <div>
+          Different from the Project Title. Make it focused on the methods used to obtain the data in this Hyrbid Simulation.
+        </div>
+        <div>
+          <input type="text" id="add-sim-title" style="width:100%;" ng-model="$ctrl.form.addSimulation[0].title" ng-required="true"><br>
+        </div>
+      </div>
+      <!-- Simulation Type -->
+      <div class="simType form-group">
+        <label>Simulation Type</label>
+        <span style="color: #D04348;">&#9679; </span>
+        <div>
+          <select ng-options="type.name as type.label for type in $ctrl.ui.simulationTypes"
+                  style="background:white; width:100%"
+                  ng-model="$ctrl.form.addSimulation[0].simulationType"
+                  id="add-sim-type"
+                  ng-required="true">
+          </select>
+          <input  type="text"
+                  style="background:white; width:100%"
+                  id="add-sim-type-other"
+                  placeholder="Custom Simulation Type"
+                  ng-model="$ctrl.form.addSimulation[0].simulationTypeOther"
+                  ng-if="$ctrl.form.addSimulation[0].simulationType == 'Other'"
+                  ng-required="true" />
+        </div>
+      </div>
+      <!-- imulation Description -->
+      <div class="simDescription form-group">
+        <label>Simulation Description</label>
+        <span style="color: #D04348;">&#9679; </span>
+        <div>
+          What was under investigation? How was it tested? What was the outcome? How can the data be reused?
+        </div>
+        <div>
+          <textarea type="text"
+                    style="width:100%; height:3em; resize: vertical;"
+                    id="add-sim-desc"
+                    ng-model="$ctrl.form.addSimulation[0].description"
+                    ng-required="true">
+          </textarea>
+        </div>
+      </div>
+      <!-- Authors -->
+      <div class="simAuthors form-group">
+        <label>Assign Authorship</label>
+        <div>
+          You can order the authors later when you publish
+        </div>
+        <div class="form-group">
+          <div ng-repeat="usr in $ctrl.data.users" style="width:46%; display:inline-block;">
+            <input  type="checkbox"
+                    name="usr"
+                    format="lname"
+                    ng-model="manageAuthorsAdd"
+                    ng-click="$ctrl.addAuthors(usr)">
+            <ds-user username="usr" format="lname">{{ usr }}</ds-user><br>
+          </div>
+        </div>
+        <div class="simAuthorsAssign form-group">
+          <label>Add Authors not Registered on DesignSafe</label>
+          <div ng-repeat="guest in $ctrl.form.addGuest">
+            <span style="width:26%; display:inline-block;">
+              <div>
+                Last Name, First Name
+              </div>
+              <input style="width:100%" type="text" name="simAuthorName">
+            </span>
+            <span style="width:26%; display:inline-block;">
+              <div>
+                Email
+              </div>
+              <input style="width:100%" type="text" name="simAuthorMail">
+            </span>
+            <span style="width:46%; display:inline-block;">
+              <div>
+                Institution
+              </div>
+              <input style="width:100%" type="text" name="simAuthorInst">
+            </span>
+          </div>
+          <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
+            + Add another Outside Author
+          </a>
+        </div>
+        <!-- Add Sim Btn -->
+        <div class="text-right">
+          <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.saveSimulation($event)" style="width:18%;"><i class="fa fa-plus"></i> Add Simulation</button>
+        </div>
+      </div>
+    </form>
+    <form name='editForm' ng-if="$ctrl.ui.showEditSimulationForm">
+        <div class="text-center">
+          <span style="color: #D04348; font-size:14pt;">&#9679; </span>
+          <span>Required for Curation & Publication</span>
+        </div>
+        <!-- Edit Simulation Title -->
+        <div class="simTitle form-group">
+          <label>Simulation Title
+            <span style="color: #D04348;">&#9679; </span>
+          </label>
+          <div>
+            Different from the Project Title. Make it focused on the methods used to obtain the data in this Simulation.
+          </div>
+          <div>
+            <input type="text" name="sim-title" id="edit-sim-title" style="width:100%;" ng-model="$ctrl.editSimForm.title" ng-required="true"><br>
+          </div>
+        </div>
+        <!-- Edit Simulation Type -->
+        <div class="simType form-group">
+          <label>Simulation Type</label>
+          <span style="color: #D04348;">&#9679; </span>
+          <div>
+            <select style="background:white; width:100%"
+                    id="edit-sim-type"
+                    readonly>
+              <option value="$ctrl.editSimForm.simulationType">{{ $ctrl.editSimForm.simulationType }}</option>
+            </select>
+          </div>
+        </div>
+        <!-- Edit Simulation Description -->
+        <div class="simDescription form-group">
+          <label>Simulation Description</label>
+          <span style="color: #D04348;">&#9679; </span>
+          <div>
+            What was under investigation? How was it tested? What was the outcome? How can the data be reused?
+          </div>
+          <div>
+            <textarea type="text"
+                      style="width:100%; height:3em; resize: vertical;"
+                      id="edit-sim-desc"
+                      ng-model="$ctrl.editSimForm.description"
+                      ng-required="true">
+            </textarea>
+          </div>
+        </div>
+        <!-- Edit Authors -->
+        <div class="simAuthors form-group">
+          <label>Assign Authorship</label>
+          <div>
+            You can order the authors later when you publish
+          </div>
+          <div class="form-group">
+              <div ng-repeat="usr in $ctrl.data.users" style="width:46%; display:inline-block;">
+                <input  type="checkbox"
+                        name="usr"
+                        format="lname"
+                        ng-model="manageAuthorsEdit"
+                        ng-checked="$ctrl.editSimForm.authors.includes(usr)"
+                        ng-click="$ctrl.editAuthors(usr)">
+                <ds-user username="usr" format="lname">{{ usr }}</ds-user><br>
+              </div>
+            </div>
+          <div class="simAuthorsAssign form-group">
+            <label>Add Authors not Registered on DesignSafe</label>
+            <div ng-repeat="guestUsr in $ctrl.form.addGuest">
+              <span style="width:26%; display:inline-block;">
+                <div>
+                  Last Name, First Name
+                </div>
+                <input style="width:100%" type="text" name="SimAuthorName" ng-model="$ctrl.editSimForm.addGuest.name">
+              </span>
+              <span style="width:26%; display:inline-block;">
+                <div>
+                  Email
+                </div>
+                <input style="width:100%" type="text" name="SimAuthorMail" ng-model="$ctrl.editSimform.addGuest.email">
+              </span>
+              <span style="width:46%; display:inline-block;">
+                <div>
+                  Institution
+                </div>
+                <input style="width:100%" type="text" name="SimAuthorInst" ng-model="$ctrl.editSimform.addGuest.institution">
+              </span>
+            </div>
+            <a class="addAnotherAuthor form-group" ng-click="$ctrl.addGuests()">
+              + Add another Outside Author
+            </a>
+          </div>
+          <!-- Update Sim Btn -->
+          <div class="text-right">
+            <button class="btn btn-add" type="submit" ng-click="editForm.$valid && $ctrl.saveEditSimulation($event)" style="width:18%;">Update</button>
+          </div>
+        </div>
+      </form>
+  </div>
+  <!-- SIMULATION LIST -->
+  <div class="simlist">
+    <div>
+      <label>Simulation Inventory</label>
+    </div>
+    <div class="dropdown">
+      <div ng-repeat="simulation in $ctrl.data.simulations">
+        <div class="dropdown entity-preview-header">
+          <button class="btn btn-default collapsed" data-toggle="collapse" data-target="#files-{{simulation.uuid}}" style="width:100%;">
+            <span class="pull-left">SIMULATION | <strong>{{simulation.value.title}}</strong></span>
+            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+          </button>
+          <div id="files-{{simulation.uuid}}" class="collapse">
+            <div class="well">
+              <div style="display:inline-block; width:20%;">Simulation Type</div>
+              <strong ng-if="!$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationType }}</strong>
+              <strong ng-if="$ctrl.isValid(simulation.value.simulationTypeOther)" style="display:inline-block; width:78%;">{{ simulation.value.simulationTypeOther }}</strong>
+              <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+              <div style="display:inline-block; width:78%; font-weight: bold;">
+                <div ng-repeat="author in simulation.value.authors">
+                  <ds-user username="author" format="lname">{{ author }}</ds-user>
+                </div>
+              </div>
+              <div>
+                <br>{{ simulation.value.description }}
+              </div>
+              <div><br>
+                <span ng-click="!$ctrl.ui.confirmDel && $ctrl.editSim(simulation)"><a>Edit</a></span> | 
+                <span ng-click="$ctrl.checkDelete(simulation.uuid)" ng-hide="$ctrl.ui.idDel == simulation.uuid"><a>Delete </a></span>
+                <span ng-if="$ctrl.ui.idDel == simulation.uuid">
+                    Confirm Deletion:
+                    <a ng-click="$ctrl.deleteSimulation(simulation)">Delete</a> | <a ng-click="$ctrl.cancelDelete()">Cancel</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
