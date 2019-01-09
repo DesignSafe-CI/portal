@@ -92,6 +92,7 @@
                 <input  type="text"
                         id="id_creator"
                         name="creator"
+                        style="width:100%;"
                         placeholder="{{$ctrl.formatSelection($ctrl.form.creator)}}"
                         ng-disabled="true">
             </div>
@@ -104,6 +105,7 @@
                 <input  type="text"
                         id="id_user"
                         name="user"
+                        style="width:100%;"
                         ng-model="$ctrl.form.team[i]"
                         placeholder="Lookup user by name or email address"
                         autocomplete="off"
@@ -140,7 +142,7 @@
                             <div>Recommended for funded projects.</div>
                         </td>
                     </tr>
-                    <tr ng-repeat="(i, award) in $ctrl.form.awardNumber track by $index">
+                    <tr ng-repeat="(i, award) in $ctrl.form.awardNumber | orderBy: award track by $index">
                         <td class="tg-0lax">
                             <input  type="text"
                                     id="id_awardName"
