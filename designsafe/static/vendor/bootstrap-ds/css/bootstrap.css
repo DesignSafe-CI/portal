@@ -2751,31 +2751,6 @@ fieldset[disabled] .checkbox label {
   padding-left: 0;
   padding-right: 0;
 }
-.perms-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 48%;
-}
-input {
-  float: left;
-  padding-right: 80px;
-  width: 98%;
-}
-select {
-  top: 0;
-  right: 0;
-  height: 26px;
-  margin-left: -50px;
-}
-.perms-wrapper.disabled,
-.perms-wrapper[disabled],
-fieldset[disabled] .perms-wrapper {
-  cursor: not-allowed;
-  opacity: 0.65;
-  filter: alpha(opacity=65);
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
 .input-sm {
   height: 30px;
   padding: 5px 10px;
