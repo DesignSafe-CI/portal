@@ -245,11 +245,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
       if ($event){
         $event.preventDefault();
       }
-      ProjectService.editProject($scope.data.project)
-        .then(function (project) {
-          $scope.data.project = project;
-          $state.reload();
-        });
+      ProjectService.editProject($scope.data.project);
     };
 
     $scope.manageCollabs = function($event) {
@@ -1388,10 +1384,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
     }
 
     $scope.editProject = function() {
-      ProjectService.editProject($scope.browser.project)
-        .then(function (project) {
-          $scope.browser.project = project;
-        });
+      ProjectService.editProject($scope.browser.project);
     };
 
     $scope.manageCollabs = function() {
