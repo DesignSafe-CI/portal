@@ -1316,6 +1316,23 @@ mark,
   background-color: #fcf8e3;
   padding: .2em;
 }
+.prj-head {
+  font-size: 20px;
+  text-transform:uppercase;
+}
+.prj-row {
+  padding-bottom: 2px;
+}
+.prj-label {
+  width:15%;
+  display:inline-block;
+}
+.prj-data {
+  width: 84%;
+  font-weight: bold;
+  /* display:inline-block; */
+  text-transform:capitalize;
+}
 .text-left {
   text-align: left;
 }
@@ -2734,6 +2751,31 @@ fieldset[disabled] .checkbox label {
   padding-left: 0;
   padding-right: 0;
 }
+.perms-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 48%;
+}
+input {
+  float: left;
+  padding-right: 80px;
+  width: 98%;
+}
+select {
+  top: 0;
+  right: 0;
+  height: 26px;
+  margin-left: -50px;
+}
+.perms-wrapper.disabled,
+.perms-wrapper[disabled],
+fieldset[disabled] .perms-wrapper {
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
 .input-sm {
   height: 30px;
   padding: 5px 10px;
@@ -3526,6 +3568,22 @@ fieldset[disabled] .btn-danger.active {
 .btn-danger .badge {
   color: #d9534f;
   background-color: #ffffff;
+}
+.btn-project-l {
+  border-top-left-radius:10px;
+  border-bottom-left-radius: 10px;
+  color: #ffffff;
+  background-color: #337ab7;
+}
+.btn-project-m {
+  color: #ffffff;
+  background-color: #337ab7;
+}
+.btn-project-r {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  color: #ffffff;
+  background-color: #337ab7;
 }
 .btn-link {
   color: #337ab7;
