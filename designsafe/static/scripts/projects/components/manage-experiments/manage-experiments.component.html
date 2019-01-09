@@ -155,12 +155,8 @@
           You can order the authors later when you publish
         </div>
         <div class="form-group">
-          <div ng-repeat="usr in $ctrl.data.users" style="width:46%; display:inline-block;">
-            <input  type="checkbox"
-                    name="usr"
-                    format="lname"
-                    ng-model="manageAuthorsAdd"
-                    ng-click="$ctrl.addAuthors(usr)">
+          <div ng-repeat="usr in $ctrl.data.users" style="width:46%; display:inline-block; white-space: nowrap;">
+            <input type="checkbox" name="usr" format="lname" ng-model="manageAuthorsAdd" ng-click="$ctrl.addAuthors(usr)">
             <ds-user username="usr" format="lname">{{ usr }}</ds-user><br>
           </div>
         </div>
