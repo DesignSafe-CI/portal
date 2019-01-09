@@ -77,8 +77,9 @@ class Analysis(RelatedEntity):
     model_name = 'designsafe.project.simulation.analysis'
     title = fields.CharField('Title', max_length=1024)
     description = fields.CharField('Description', max_length=1024, default='')
-    reference = fields.CharField('Reference Data', max_length=1024)
-    referencedoi = fields.CharField('Reference DOI', max_length=1024)
+    # reference = fields.CharField('Reference Data', max_length=1024)
+    # referencedoi = fields.CharField('Reference DOI', max_length=1024)
+    refs = fields.ListField('References') # new
     project = fields.RelatedObjectField(SimulationProject)
     simulations = fields.RelatedObjectField(Simulation)
     sim_outputs = fields.RelatedObjectField(Output)
