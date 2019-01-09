@@ -11,6 +11,9 @@ import { ProjectService } from './project-service';
 import { SystemsService } from './systems-service';
 import { TicketsService } from './tickets-service';
 import { UserService } from './user-service';
+import { ManageExperimentsComponent } from '../../projects/components/manage-experiments/manage-experiments.component';
+import { ManageHybridSimComponent } from '../../projects/components/manage-hybrid-simulations/manage-hybrid-simulations.component';
+import { ManageSimulationComponent } from '../../projects/components/manage-simulations/manage-simulations.component';
 import { EditProjectComponent } from '../../projects/edit-project/edit-project.component';
 
 let designsafeServices = angular.module('designsafe.services', []);
@@ -26,6 +29,9 @@ designsafeServices.factory('ProjectService', ProjectService);
 designsafeServices.factory('SystemsService', SystemsService);
 designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
+designsafeServices.component('manageExperiments', ManageExperimentsComponent);
+designsafeServices.component('manageHybridSimulations', ManageHybridSimComponent);
+designsafeServices.component('manageSimulations', ManageSimulationComponent);
 designsafeServices.component('editProject', EditProjectComponent);
 
 export default designsafeServices;
