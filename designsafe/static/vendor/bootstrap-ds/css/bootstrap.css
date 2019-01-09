@@ -3261,6 +3261,50 @@ fieldset[disabled] .btn-primary.active {
   color: #337ab7;
   background-color: #ffffff;
 }
+.btn-add {
+  color: #ffffff;
+  background-color: #1CB500;
+  border-color: #158600;
+}
+.btn-add:focus,
+.btn-add.focus {
+  color: #ffffff;
+  background-color: #158600;
+  border-color: #158600;
+}
+.btn-add:hover {
+  color: #ffffff;
+  background-color: #158600;
+  border-color: #158600;
+}
+.btn-add:active,
+.btn-add.active,
+.open > .dropdown-toggle.btn-add {
+  color: #ffffff;
+  background-color: #1CB500;
+  border-color: #158600;
+}
+.btn-add.disabled,
+.btn-add[disabled],
+fieldset[disabled] .btn-add,
+.btn-add.disabled:hover,
+.btn-add[disabled]:hover,
+fieldset[disabled] .btn-add:hover,
+.btn-add.disabled:focus,
+.btn-add[disabled]:focus,
+fieldset[disabled] .btn-add:focus,
+.btn-add.disabled.focus,
+.btn-add[disabled].focus,
+fieldset[disabled] .btn-add.focus,
+.btn-add.disabled:active,
+.btn-add[disabled]:active,
+fieldset[disabled] .btn-add:active,
+.btn-add.disabled.active,
+.btn-add[disabled].active,
+fieldset[disabled] .btn-add.active {
+  background-color: rgb(140, 187, 132);
+  border-color: #558c4a;
+}
 .btn-success {
   color: #ffffff;
   background-color: #5cb85c;
@@ -6047,6 +6091,8 @@ button.close {
   border: 1px solid #999999;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   -webkit-background-clip: padding-box;
@@ -6072,6 +6118,8 @@ button.close {
 }
 .modal-header {
   padding: 15px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   border-bottom: 1px solid #e5e5e5;
   min-height: 16.42857143px;
 }
