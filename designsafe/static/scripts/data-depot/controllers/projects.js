@@ -245,11 +245,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
       if ($event){
         $event.preventDefault();
       }
-      ProjectService.editProject($scope.data.project)
-        .then(function (project) {
-          $scope.data.project = project;
-          $state.reload();
-        });
+      ProjectService.editProject($scope.data.project);
     };
 
     $scope.manageCollabs = function($event) {
@@ -274,10 +270,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
         $scope.data.project[experimentsAttr] = [];
         experiments = $scope.data.project[experimentsAttr];
       }
-      ProjectService.manageExperiments({'experiments': experiments,
-                                        'project': $scope.data.project}).then(function (experiments) {
-        $scope.data.experiments = experiments;
-      });
+      ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
     };
 
     $scope.manageSimulations = function($event) {
@@ -290,10 +283,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
         $scope.data.project[simulationAttr] = [];
         simulations = $scope.data.project[simulationAttr];
       }
-      ProjectService.manageSimulations({'simulations': simulations,
-                                        'project': $scope.data.project}).then(function (simulations) {
-        $scope.data.simulations = simulations;
-      });
+      ProjectService.manageSimulations({'simulations': simulations, 'project': $scope.data.project});
     };
 
     $scope.manageHybridSimulations = function($event) {
@@ -308,10 +298,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
         $scope.data.project[hybridSimulationAttr] = [];
         hybridSimulations = $scope.data.project[hybridSimulationAttr];
       }
-      ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations,
-                                        'project': $scope.data.project}).then(function (simulations) {
-        $scope.data.hybridSimulations = hybridSimulations;
-      });
+      ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations, 'project': $scope.data.project});
     };
 
     $scope.checkEmptyCategories = function(){
@@ -1388,10 +1375,7 @@ export function ProjectRootCtrl($scope, $state, DataBrowserService, ProjectServi
     }
 
     $scope.editProject = function() {
-      ProjectService.editProject($scope.browser.project)
-        .then(function (project) {
-          $scope.browser.project = project;
-        });
+      ProjectService.editProject($scope.browser.project);
     };
 
     $scope.manageCollabs = function() {
