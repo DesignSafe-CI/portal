@@ -59,7 +59,7 @@ class EditProjectCtrl {
                     }
                 });
             } else {
-                this.form.awardNumber = new Array (1);
+                this.form.awardNumber = [{name: this.project.value.awardNumber, number: ''}];
             }
             // related work
             if (this.project.value.associatedProjects.length && typeof this.project.value.associatedProjects != 'string') {
@@ -134,6 +134,10 @@ class EditProjectCtrl {
             return true;
         }
         return false;
+    }
+
+    checkAward(award) {
+        return typeof award === 'string';
     }
 
     dropEntity(group) {

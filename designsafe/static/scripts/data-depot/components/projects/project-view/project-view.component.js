@@ -78,11 +78,12 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       if ($event){
         $event.preventDefault();
       }
-      ProjectService.editProject($scope.data.project)
-        .then(function (project) {
-          $scope.data.project = project;
-          $state.reload();
-        });
+      ProjectService.editProject($scope.data.project);
+    };
+
+    $scope.isSingle = function(val) {
+      // we will have older projects with a single award number as a string
+      return typeof val === 'string';
     };
 
     $scope.manageCollabs = function($event) {
@@ -90,10 +91,6 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
         $event.preventDefault();
       }
       ProjectService.manageCollaborators($scope.data.project).then(function (res) {
-
-        // $scope.data.project.pi = res.data.pi;
-        // $scope.data.project.coPis = res.data.coPis;
-        // $scope.data.project.teamMembers = res.data.teamMembers;
       });
     };
 
