@@ -17,6 +17,11 @@ class ManageExperimentsCtrl {
         this.experimentTypes = this.resolve.experimentTypes;
         this.equipmentTypes = this.resolve.equipmentTypes;
         var members = [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers);
+        members.forEach((m, i) => {
+            if (typeof m == 'string') {
+                members[i] = { name: m, order: i, authorship: false };
+            }
+        });
 
         this.data = {
             busy: false,
@@ -81,9 +86,29 @@ class ManageExperimentsCtrl {
     }
 
     editExp(exp) {
+        /* convert string usernames to author objects and remove duplicates */
+        var usersToClean = [...new Set([...this.data.users, ...exp.value.authors.slice()])];
+        var modAuths = false;
+        usersToClean.forEach((a) => {
+            if (typeof a == 'string') {
+                modAuths = true;
+            }
+        });
+        if (modAuths) {
+            usersToClean.forEach((auth, i) => {
+                if (typeof auth == 'string') {
+                    usersToClean[i] = {name: auth, order: i, authorship: false};
+                } else {
+                    auth.order = i;
+                }
+            });
+            usersToClean = _.uniq(usersToClean, 'name');
+        }
+
         this.editExpForm = {
             exp: exp,
-            authors: exp.value.authors.slice(),
+            authors: usersToClean,
+            selectedAuthor: '',
             start: exp.value.procedureStart,
             end: exp.value.procedureEnd,
             title: exp.value.title,
@@ -95,29 +120,45 @@ class ManageExperimentsCtrl {
         this.ui.showEditExperimentForm = true;
     }
 
-    editAuthors(user) {
-        var index = this.editExpForm.authors.indexOf(user);
-        if (index > -1) {
-            this.editExpForm.authors.splice(index, 1);
+    editAuthors(user, i) {
+        if (document.getElementById('editAuthor' + i).checked) {
+            user.authorship = true;
         } else {
-            this.editExpForm.authors.push(user);
+            user.authorship = false;
         }
     }
 
-    /*
-    addAuthors will need to be updated if option to support
-    simultaneous experiment creation is implemented
-    */
-    addAuthors(user) {
-        if (this.form.addExperiments[0].authors) {
-            var index = this.form.addExperiments[0].authors.indexOf(user);
-            if (index > -1) {
-                this.form.addExperiments[0].authors.splice(index, 1);
-            } else {
-                this.form.addExperiments[0].authors.push(user);
-            }
+    addAuthors(user, i) {
+        if (document.getElementById('newAuthor' + i).checked) {
+            user.authorship = true;
         } else {
-            this.form.addExperiments[0].authors = [user];
+            user.authorship = false;
+        }
+    }
+
+    orderAuthors(up) {
+        var a;
+        var b;
+        if (up) {
+            if (this.editExpForm.selectedAuthor.order <= 0) {
+                return;
+            }
+            // move up
+            a = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order - 1);
+            b = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
+        } else {
+            if (this.editExpForm.selectedAuthor.order >= this.editExpForm.authors.length - 1) {
+                return;
+            }
+            // move down
+            a = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order + 1);
+            b = this.editExpForm.authors.find(x => x.order === this.editExpForm.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
         }
     }
 
@@ -178,6 +219,7 @@ class ManageExperimentsCtrl {
     saveExperiment($event) {
         $event.preventDefault();
         this.data.busy = true;
+        this.form.addExperiments[0].authors = this.data.users;
         var addActions = _.map(this.form.addExperiments, (exp) => {
             exp.description = exp.description || '';
             if (exp.title && exp.experimentalFacility && exp.experimentType) {
