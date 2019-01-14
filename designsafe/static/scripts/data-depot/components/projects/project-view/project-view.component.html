@@ -1,6 +1,6 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail" style="background:white;">
-      <!-- New Header Start -->
+      <!-- Project Header Start -->
       <div>
         <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
         <a ng-click="editProject($event)">Edit Project</a>
@@ -48,47 +48,49 @@
           <p>{{ data.project.value.description }}</p>
         </div>
       </div>
-      <!-- New Header End -->
-      <div role="group" aria-label="Listing views" ng-if="!state.publishPipeline">
-        <button class="btn btn-project-l"
-                ng-click="showListing()"
-                ng-class="{'grayed-out': !state.showMainListing}">
+      <!-- Project Header End -->
+      <div style="width:100%; max-width: 100%;" role="group" aria-label="Listing views" ng-if="!state.publishPipeline">
+        <table class="tg" style="table-layout: fixed; width: 100%;">
+          <colgroup>
+            <col style="width: 49%">
+            <col style="width: 50%">
+          </colgroup>
+          <tr>
+            <td class="tg-0lax">
+              <button class="btn btn-project-l" ng-click="showListing()" ng-class="{'grayed-out': !state.showMainListing}">
                 Working Directory</button>
-        <button class="btn btn-project-m"
-                ng-click="_()"
-                ng-class="{'grayed-out': !state.showPreviewListing}"
-                ng-disabled="data._">
+              <button class="btn btn-project-m" ng-click="_()" ng-class="{'grayed-out': !state.showPreviewListing}" ng-disabled="data._">
                 Curation Directory*</button>
-        <button class="btn btn-project-r"
-                ng-click="showPreview()"
-                ng-class="{'grayed-out': !state.showPreviewListing}" 
+              <button class="btn btn-project-r" ng-click="showPreview()" ng-class="{'grayed-out': !state.showPreviewListing}"
                 ng-disabled="data.loadingEntities">
                 Publication Preview</button>
-        <div ng-if="state.showPreviewListing" style="margin-left:15px; display:inline-block;">
-          <a class="" href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
-            <i class="fa fa-question-circle"></i> Learn More
-          </a>
-        </div>
-        <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;" ng-if="state.showMainListing">
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"
-            ng-if="data.project.value.projectType === 'experimental'">
-            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
-            Manage Experiments
-          </button>
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageSimulations($event)"
-            ng-if="data.project.value.projectType === 'simulation'">
-            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
-            Manage Simulations
-          </button>
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageHybridSimulations($event)"
-            ng-if="data.project.value.projectType === 'hybrid_simulation'">
-            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
-            Manage Hybrid Simulations
-          </button>
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageCategories($event)">
-            Manage Categories
-          </button>
-        </div>
+              <div ng-if="state.showPreviewListing" style="margin-left:15px; display:inline-block; width:50%;">
+                <a class="" href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
+                  <i class="fa fa-question-circle"></i> Learn More
+                </a>
+              </div>
+            </td>
+            <td class="tg-0lax">
+              <span style="padding:10px; font-weight:bold;">1
+                <a  ng-disabled="data.loadingEntities"
+                    ng-click="manageExperiments($event)"
+                    ng-if="data.project.value.projectType === 'experimental'"> Add Experiments</a>
+                <a  ng-disabled="data.loadingEntities"
+                    ng-click="manageSimulations($event)"
+                    ng-if="data.project.value.projectType === 'simulation'"> Add Simulations</a>
+                <a  ng-disabled="data.loadingEntities"
+                    ng-click="manageHybridSimulations($event)"
+                    ng-if="data.project.value.projectType === 'hybrid_simulation'"> Add Hybrid Simulations</a>
+              </span>
+              <span style="padding:10px; font-weight:bold;">|</span>
+              <span style="padding:10px; font-weight:bold;">2
+                <a ng-disabled="data.loadingEntities" ng-click="manageCategories($event)"> Add Categories</a>
+              </span>
+              <span style="padding:10px; font-weight:bold;">|</span>
+              <span style="padding:10px; font-weight:bold;">3 <a>Construct Tree</a></span>
+            </td>
+          </tr>
+        </table>
       </div>
 
       <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
