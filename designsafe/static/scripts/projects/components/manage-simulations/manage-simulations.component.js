@@ -85,7 +85,7 @@ class ManageSimulationCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     saveSimulation($event) {
@@ -132,6 +132,8 @@ class ManageSimulationCtrl {
                     auth.order = i;
                 }
             });
+            usersToClean = _.uniq(usersToClean, 'name');
+        } else {
             usersToClean = _.uniq(usersToClean, 'name');
         }
 

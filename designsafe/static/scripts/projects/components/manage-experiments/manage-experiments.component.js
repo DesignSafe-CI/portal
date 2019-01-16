@@ -66,7 +66,7 @@ class ManageExperimentsCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     getEF(str) {
@@ -102,6 +102,8 @@ class ManageExperimentsCtrl {
                     auth.order = i;
                 }
             });
+            usersToClean = _.uniq(usersToClean, 'name');
+        } else {
             usersToClean = _.uniq(usersToClean, 'name');
         }
 

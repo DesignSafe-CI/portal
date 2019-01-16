@@ -114,6 +114,18 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
     };
 
+    $scope.workingDirectory = function() {
+      $state.go('projects.view.data', {projectId: projectId});
+    };
+
+    $scope.curationDirectory = function() {
+      // $state.go('projects.view.preview');
+    };
+
+    $scope.publicationPreview = function() {
+      $state.go('projects.view.preview', {projectId: projectId});
+    };
+
     $scope.manageSimulations = function($event) {
       if ($event){
         $event.preventDefault();

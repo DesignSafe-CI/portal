@@ -149,7 +149,7 @@ class EditProjectCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     savePrj(options) {
