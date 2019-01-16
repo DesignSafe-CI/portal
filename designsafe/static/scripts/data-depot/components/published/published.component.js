@@ -5,6 +5,7 @@ export class PublishedDataCtrl {
 
     constructor($state, $filter, Django, $window, DataBrowserService, PublishedService, FileListing, $uibModal, $http, $stateParams) {
         'ngInject';
+
         this.$state = $state;
         this.$filter = $filter;
         this.Django = Django;
@@ -15,7 +16,6 @@ export class PublishedDataCtrl {
         this.$uibModal = $uibModal;
         this.$http = $http;
         this.$stateParams = $stateParams;
-
         this.resolveBreadcrumbHref = this.resolveBreadcrumbHref.bind(this);
         this.viewCollabs = this.viewCollabs.bind(this);
         this.getUserDets = this.getUserDets.bind(this);
@@ -31,7 +31,16 @@ export class PublishedDataCtrl {
             page: 0
         };
         this.ui = { loadingProjectMeta: false };
+        this.getFileObjs = (evt) => {
+            evt.files = _.map(evt.fileObjs, (f) => {
+                f.system = 'designsafe.storage.published';
+                f.path = this.browser.publication.projectId + f.path;
+                f.permissions = 'READ';
+                return this.FileListing.init(f, {fileMgr: 'published', baseUrl: '/api/public/files'});
+            });
+        };
         var projId = this.browser.listing.path.split('/')[1];
+
         if (projId) {
             this.ui.loadingProjectMeta = true;
             this.PublishedService.getPublished(projId)
@@ -42,19 +51,6 @@ export class PublishedDataCtrl {
                         return usr.username === this.project.value.pi;
                     });
                     this.project.piLabel = pi.last_name + ', ' + pi.first_name;
-                    var _apiParams = {
-                        fileMgr: 'published',
-                        baseUrl: '/api/public/files'
-                    };
-
-                    this.getFileObjs = (evt) => {
-                        evt.files = _.map(evt.fileObjs, (f) => {
-                            f.system = 'designsafe.storage.published';
-                            f.path = this.browser.publication.projectId + f.path;
-                            f.permissions = 'READ';
-                            return this.FileListing.init(f, _apiParams);
-                        });
-                    };
 
                     if (this.browser.publication.project.value.projectType === 'experimental') {
                         _.each(this.browser.publication.eventsList, this.getFileObjs);
@@ -113,9 +109,6 @@ export class PublishedDataCtrl {
         };
     }
 
-    getTitle() {
-        this.$window.document.getElementsByName('citation_author_institution')[0].content = 'dingus';
-    }
 
     makeRequest() {
         return this.$http.get('/api/projects/publication');
@@ -294,6 +287,7 @@ export class PublishedDataCtrl {
                 browser: this.browser,
                 getUserDets: () => this.getUserDets
             },
+            //scope: this
         });
     }
 
@@ -471,8 +465,6 @@ export class PublishedDataCtrl {
     }
 
 }
-
-PublishedDataCtrl.$inject = ['$state', '$filter', 'Django', '$window', 'DataBrowserService', 'PublishedService', 'FileListing', '$uibModal', '$http', '$stateParams'];
 
 export const PublishedComponent = {
     controller: PublishedDataCtrl,
