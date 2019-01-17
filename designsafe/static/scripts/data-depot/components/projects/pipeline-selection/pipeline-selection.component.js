@@ -1,7 +1,7 @@
-import PublicationPreviewTemplate from './publication-preview.component.html';
+import PipelineSelectionTemplate from './pipeline-selection.component.html';
 import _ from 'underscore';
 
-class PublicationPreviewCtrl {
+class PipelineSelectionCtrl {
 
     constructor(ProjectEntitiesService, ProjectService, $uibModal) {
         'ngInject';
@@ -27,11 +27,11 @@ class PublicationPreviewCtrl {
     }
 }
 
-PublicationPreviewCtrl.$inject = ['ProjectService', 'ProjectEntitiesService', '$uibModal'];
+PipelineSelectionCtrl.$inject = ['ProjectService', 'ProjectEntitiesService', '$uibModal'];
 
-export const PublicationPreviewComponent = {
-    template: PublicationPreviewTemplate,
-    controller: PublicationPreviewCtrl,
+export const PipelineSelectionComponent = {
+    template: PipelineSelectionTemplate,
+    controller: PipelineSelectionCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',

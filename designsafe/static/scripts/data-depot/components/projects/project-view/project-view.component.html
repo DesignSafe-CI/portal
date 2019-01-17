@@ -1,7 +1,7 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail" style="background:white;">
       <!-- Project Header Start -->
-      <div>
+      <div ng-if="!curationStart">
         <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
         <a ng-click="editProject($event)">Edit Project</a>
         <div class="prj-row">
@@ -50,23 +50,24 @@
       </div>
       <!-- Project Header End -->
       <div style="width:100%; max-width: 100%;" role="group" aria-label="Listing views" ng-if="!state.publishPipeline">
-        <table class="tg" style="table-layout: fixed; width: 100%;">
+        <table class="tg" style="table-layout: fixed; width: 100%;" ng-if="!curationStart">
           <colgroup>
-            <col style="width: 49%">
+            <col style="width: 46%">
             <col style="width: 50%">
           </colgroup>
           <tr>
-            <td class="tg-0lax">
-              <button class="btn btn-project-l" ng-click="showListing()" ng-class="{'grayed-out': !state.showMainListing}">
+            <td class="tg-0lax" ng-hide="curationStart">
+              <button class="btn btn-project-l" ng-click="workingDirectory()" ng-class="{'grayed-out': publicationDir}">
                 Working Directory</button>
-              <button class="btn btn-project-m" ng-click="_()" ng-class="{'grayed-out': !state.showCurationListing}" ng-disabled="data._">
-                Curation Directory*</button>
-              <button class="btn btn-project-r" ng-click="showPreview()" ng-class="{'grayed-out': !state.showPreviewListing}"
+              <button class="btn btn-project-m" ng-click="curationDirectory()" ng-class="{'grayed-out': !state.showCurationListing}" ng-disabled="data._">
+                Curation Directory</button>
+                <!-- curation directory is not set -->
+              <button class="btn btn-project-r" ng-click="publicationPreview()" ng-class="{'grayed-out': !publicationDir}"
                 ng-disabled="data.loadingEntities">
                 Publication Preview</button>
             </td>
             <td class="tg-0lax">
-              <div ng-hide="state.showPreviewListing && !state.publishPipeline">
+              <div ng-hide="publicationDir">
                 <span style="padding:10px; font-weight:bold;">1
                   <a  ng-disabled="data.loadingEntities"
                       ng-click="manageExperiments($event)"
@@ -78,35 +79,31 @@
                       ng-click="manageHybridSimulations($event)"
                       ng-if="data.project.value.projectType === 'hybrid_simulation'"> Add Hybrid Simulations</a>
                 </span>
-                <span style="padding:10px; font-weight:bold;">|</span>
+                <span style="padding:5px; font-weight:bold;">|</span>
                 <span style="padding:10px; font-weight:bold;">2
                   <a ng-disabled="data.loadingEntities" ng-click="manageCategories($event)"> Add Categories</a>
                 </span>
-                <span style="padding:10px; font-weight:bold;">|</span>
+                <span style="padding:5px; font-weight:bold;">|</span>
                 <span style="padding:10px; font-weight:bold;">3 <a>Construct Tree</a></span>
               </div>
               <div  class="btn-group pull-right"
                     role="group"
                     aria-label="Publish buttons"
-                    ng-if="state.showPreviewListing && !state.publishPipeline">
-                <button class="btn btn-add" ng-click="publishPipeline_start()">
+                    ng-if="publicationDir">
+                <button class="btn btn-add" ng-click="launchModal()">
                   Prepare to Publish <i class="fa fa-arrow-right"></i>
                 </button>
               </div>
             </td>
           </tr>
         </table>
+        <div class="pull-right" ng-if="curationStart">
+            <a ng-click="publicationPreview()">
+                <i class="fa fa-times"></i> Exit Prepare to Publish
+            </a>
+        </div>
       </div>
       <br>
-      <button ng-click="workingDirectory()">
-        TEST | Working Directory
-      </button>
-      <button ng-click="curationDirectory()">
-        TEST | Curation Directory
-      </button>
-      <button ng-click="publicationPreview()">
-        TEST | Publication Preview
-      </button>
       <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
         <strong>The following categories do not have associated data:</strong>
         <div ng-repeat="missing in state.missing">

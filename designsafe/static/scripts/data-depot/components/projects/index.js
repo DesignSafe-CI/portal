@@ -6,6 +6,7 @@ import { ProjectDataComponent } from './project-data/project-data.component';
 import { ProjectViewComponent } from './project-view/project-view.component';
 import { ProjectSearchComponent } from './project-search/project-search.component';
 import { PublicationPreviewComponent } from './publication-preview/publication-preview.component';
+import { PipelineSelectionComponent } from './pipeline-selection/pipeline-selection.component';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -15,5 +16,6 @@ ddProjectsComponents.component('projectData', ProjectDataComponent);
 ddProjectsComponents.component('projectView', ProjectViewComponent);
 ddProjectsComponents.component('projectSearch', ProjectSearchComponent);
 ddProjectsComponents.component('publicationPreview', PublicationPreviewComponent);
+ddProjectsComponents.component('pipelineSelect', PipelineSelectionComponent);
 
 export default ddProjectsComponents;
