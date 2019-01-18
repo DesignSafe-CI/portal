@@ -1,5 +1,10 @@
 <div style="background:white; padding-top: 20px">
     <!-- progression map -->
+    <div class="pull-right" style="padding-bottom: 20px;">
+        <a ng-click="$ctrl.goWork()">
+            <i class="fa fa-times"></i> Exit Prepare to Publish
+        </a>
+    </div>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
         <colgroup>
             <col style="width: 16.5%">
@@ -49,25 +54,27 @@
         </tr>
     </table>
     <br>
-    <!-- progression map -->
     <div>
-        <a class="pull-left"><i class="fa fa-arrow-left"></i> Back to Publication Preview</a>
-        <a class="pull-right"><i class="fa fa-arrow-right"></i> Continue</a>
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+            Preview</a>
+        <a class="pull-right" ng-click="$ctrl.goProject()"><i class="fa fa-arrow-right"></i> Continue</a>
     </div>
-    <div>
+    <!-- progression map -->
+    <div style="padding-top: 40px; padding-bottom: 40px;">
         <p>
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>You can only publish one experiment at a time.</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
             <li>If you need help, attend <a>Curation office hours</a> for help with publishing.</li>
         </p>
-        <!-- <a ng-click="$ctrl._()">Select this Experiment and all of its files</a> -->
     </div>
+    <div>
+        <button ng-click="$ctrl.retrieveExperiment()">Get Dat!</button>
     <div>
         <!-- Experiments -->
         <div ng-repeat="experiment in $ctrl.browser.project.experiment_set">
             <div class="dropdown" id="details-{{experiment.uuid}}">
-                <a ng-click="$ctrl._()">Select this Experiment and all of its files</a>
+                <a ng-click="$ctrl.selectExperiment(experiment)">Select this Experiment and all of its files</a>
                 <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
                     style="width:100%;">
                     <span class="pull-left">EXPERIMENT | <strong>{{experiment.value.title}}</strong></span>

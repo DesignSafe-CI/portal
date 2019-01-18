@@ -254,7 +254,6 @@ class EditProjectCtrl {
         if (typeof this.form.keywords !== 'undefined') {
             projectData.keywords = this.form.keywords;
         }
-        console.log(projectData);
         this.savePrj(projectData).then((project) => {
             this.close(project);
             this.ui.busy = false;

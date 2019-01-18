@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import ProjectViewTemplate from './project-view.component.html';
-import PublicationPopupTemplate from './publication-popup.html';
 
 export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectEntitiesService, DataBrowserService, FileListing, $uibModal, $q, $http, $interval) {
     'ngInject';
@@ -13,6 +12,18 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
     function setEntitiesRel(resp){
       $scope.data.project.appendEntitiesRel(resp);
       return resp;
+    }
+
+    console.log('started project view component');
+    function checkState () {
+      $scope.workingDir = false;
+      var broken = $state.current.name.split('.');
+      var last = broken.pop();
+      if (last == 'data') {
+        $scope.workingDir = true;
+      }
+      // Object.keys($scope.curState).forEach(s => $scope.curState[s] = false);
+      // $scope.curState[last] = true;
     }
 
     $scope.browser.projectServicePromise = ProjectService.get({uuid: projectId}).then(function (project) {
@@ -47,6 +58,8 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
             $scope.data.publication.analysisList = $scope.data.publication.analysisList || []; 
             $scope.data.publication.reportsList = $scope.data.publication.reportsList || [];
         });
+    }).then(function(){
+      checkState();
     });
 
 
@@ -116,51 +129,54 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
     };
 
     // -----------------> New Publication Pipeline Process
-    $scope.publicationDir = false;
-    $scope.curationStart = false;
-
     $scope.workingDirectory = function() {
-      $scope.publicationDir = false;
-      $state.go('projects.view.data', {projectId: projectId});
+      $state.go('projects.view.data', {projectId: projectId}).then(function() {
+        // checkState();
+      });
     };
 
     $scope.curationDirectory = function() {
-      $scope.publicationDir = false;
-      // $state.go('projects.view.preview');
+      // set curation state
     };
 
     $scope.publicationPreview = function() {
-      $scope.publicationDir = true;
-      $scope.curationStart = false;
-      $state.go('projects.view.preview', {projectId: projectId});
+      $state.go('projects.preview', {projectId: projectId}).then(function() {
+        checkState();
+      });
     };
 
     $scope.pipelineSelect = function() {
-      $scope.publicationDir = false;
-      $scope.curationStart = true;
-      $state.go('projects.view.pipelineSelect', {projectId: projectId});
-    };
-
-    $scope.launchModal = function () {
-      $uibModal.open({
-        template: PublicationPopupTemplate,
-        controllerAs: '$ctrl',
-        controller: function ($uibModalInstance) {
-          this.cancel = function () {
-            $uibModalInstance.close();
-          };
-          this.proceed = function () {
-            $scope.pipelineSelect();
-            $uibModalInstance.close('Continue to publication pipeline...');
-          };
-        },
-        bindings: {
-          dismiss: '&',
-          close: '&'
-        },
-        size: 'lg',
+      $state.go('projects.pipelineSelect', {projectId: projectId}).then(function() {
+        // checkState();
       });
     };
+
+    $scope.pipelineProject = function() {
+      $state.go('projects.pipelineProject', {projectId: projectId}).then(function() {
+        // checkState();
+      });
+    };
+
+    // $scope.launchModal = function () {
+    //   $uibModal.open({
+    //     template: PublicationPopupTemplate,
+    //     controllerAs: '$ctrl',
+    //     controller: function ($uibModalInstance) {
+    //       this.cancel = function () {
+    //         $uibModalInstance.close();
+    //       };
+    //       this.proceed = function () {
+    //         $scope.pipelineSelect();
+    //         $uibModalInstance.close('Continue to publication pipeline...');
+    //       };
+    //     },
+    //     bindings: {
+    //       dismiss: '&',
+    //       close: '&'
+    //     },
+    //     size: 'lg',
+    //   });
+    // };
 
     $scope.manageSimulations = function($event) {
       if ($event){
