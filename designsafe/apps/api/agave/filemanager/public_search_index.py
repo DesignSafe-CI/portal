@@ -178,10 +178,25 @@ class LegacyPublicationIndexed(DocType):
         doc_type = settings.ES_INDICES['publications_legacy']['documents'][0]['name'] 
 
 class LegacyPublication(object):
-    def __init__(self, wrap=None, project_id=None, *args, **kwargs):
+
+    def __init__(self, wrap=None, nees_id=None, *args, **kwargs):
         if wrap is not None:
             if isinstance(wrap, LegacyPublicationIndexed):
                 self._wrap = wrap
+        else:
+            s = LegacyPublicationIndexed.search()
+            s.query = Q({"term": {"name._exact": nees_id}})
+            try:
+                res = s.execute()
+            except (TransportError, ConnectionTimeout) as e:
+                if getattr(e, 'status_code', 500) == 404:
+                    raise
+                res = s.execute()
+            if res.hits.total:
+                self._wrap = res[0]
+
+    def to_dict(self):
+        return self._wrap.to_dict()
 
     @classmethod
     def listing(cls, offset, limit):
@@ -234,7 +249,7 @@ class LegacyPublication(object):
         else:
             return 'N/A'
             # raise AttributeError('\'LegacyPublication\' has no attribute \'{}\''.format(name))
-
+    
 class CMSIndexed(DocType):
     class Meta:
         index = 'cms'

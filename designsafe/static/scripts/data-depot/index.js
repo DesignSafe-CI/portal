@@ -462,8 +462,15 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
         }
       }
     })
+    .state('neesPublishedData', {
+      url: '/public/nees.public{filePath:any}',
+      component: 'neesPublicationComponent',
+      params: {
+        filePath: undefined
+      }
+    })
     .state('publicData', {
-      url: '/public/nees.public/{filePath:any}',
+      url: '/public/nees.public',
       //controller: 'PublicationDataCtrl',
       //template: require('./templates/agave-public-data-listing.html'),
       component: 'publications',

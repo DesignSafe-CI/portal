@@ -12,6 +12,10 @@ export class PublishedService {
         return this.$http.get('/api/projects/publication/' + projId)
     }
 
+    getNeesPublished(neesId) {
+        return this.$http.get('/api/projects/nees-publication/' + neesId)
+    }
+
     updateHeaderMetadata(projId, resp) {
         this.$window.document.title = resp.data.project.value.title + " | DesignSafe-CI"
         this.$window.document.getElementsByName('keywords')[0].content = resp.data.project.value.keywords

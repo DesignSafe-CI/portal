@@ -21,6 +21,7 @@ export class PublishedDataCtrl {
         this.viewCollabs = this.viewCollabs.bind(this);
         this.getUserDets = this.getUserDets.bind(this);
         this.onCitation = this.onCitation.bind(this);
+        this.onBrowse = this.onBrowse.bind(this);
     }
 
     $onInit() {
