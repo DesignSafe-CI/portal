@@ -17,7 +17,7 @@ export function PublicationDataCtrl($scope, $state, Django, DataBrowserService) 
     });
     _.each($scope.browser.listing.children, function (child) {
       if(child.system === 'nees.public'){
-        child.href = $state.href('publicData', {system: child.system, filePath: child.path});
+        child.href = $state.href('neesPublishedData', {filePath: child.path});
       }
       if(child.system === 'designsafe.storage.published'){
         child.href = $state.href('publishedData', {system: child.system, filePath: child.path});
@@ -60,7 +60,7 @@ export function PublicationDataCtrl($scope, $state, Django, DataBrowserService) 
         DataBrowserService.preview(file, $scope.browser.listing);
       } else {
         if (file.system === 'nees.public'){
-          $state.go('publicData', {systemId: file.system, filePath: file.path});
+          $state.go('neesPublishedData', {filePath: file.path});
         } else {
           $state.go('publishedData', {systemId: file.system, filePath: file.path});
         }

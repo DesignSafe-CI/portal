@@ -1,0 +1,285 @@
+<dd-breadcrumb listing="$ctrl.browser.listing" skip-root="true" custom-root="$ctrl.data.customRoot" on-browse="$ctrl.onBrowse" item-href="$ctrl.resolveBreadcrumbHref"></dd-breadcrumb>
+<div class="project">
+    <div ng-if="$ctrl.project" class="project-detail" style="background:white;">
+        <h2>{{$ctrl.project.name}}: {{$ctrl.project.metadata.project.title}}</h2>
+        <div class="table-responsive">
+            <table class="table" style="margin-bottom:0;">
+                <thead>
+                    <tr>
+                        <th style="width:50%; border-top:none; padding:0px;"></th>
+                        <th style="width:50%; border-top:none; padding:0px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%">PIs</th>
+                                        <td style="border-top:none; width:75%">
+                                            <div ng-repeat="pi in $ctrl.project.metadata.project.pis | orderBy: 'firstName'">
+                                                {{pi.firstName}} {{pi.lastName}}
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%;">Organizations</th>
+                                        <td style="border-top:none; width:75%;">
+                                            <div ng-repeat="org in $ctrl.project.metadata.project.organization | orderBy: 'firstName'">
+                                                {{org.name}} {{org.state}}, {{org.country}}
+                                            </div>
+                                            <!--
+                      <button class="btn btn-info btn-sm pull-right"
+                              ng-click="showCitation(project)">Citation
+                      </button>
+                    -->
+                                        <td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%">NEES ID</th>
+                                        <td style="border-top:none; width:75%">{{$ctrl.project.metadata.project.name}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%">Sponsor</th>
+                                        <td style="border-top:none; width:75%">
+                                            <div ng-repeat="sponsor in $ctrl.project.metadata.project.sponsor">
+                                                <a ng-href="{{sponsor.url}}" target="_blank">{{sponsor.name}}</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                    <tr>
+                                        <th style="border-top:none; width:25%">Project Type</th>
+                                        <td style="border-top:none; width:75%"><span style="text-transform:capitalize">NEES</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style="padding:0px;">
+                            <table class="table" style="margin-bottom:0;">
+                                <tbody>
+                                        <tr>
+                                                <th style="border-top:none; width:25%">Start Date</th>
+                                        <td style="border-top:none; width:75%">{{$ctrl.project.metadata.project.startDate}}</td>
+                                            </tr>
+
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div style="width:100%; padding-top:1px">
+            <p><strong>Description</strong></p>
+            <p>
+                {{$ctrl.project.metadata.project.description}}
+            </p>
+        </div>
+    </div>
+</div>
+
+<uib-tabset active="active">
+    <uib-tab index="0" heading="Files">
+            <dd-listing
+            browser="$ctrl.browser"
+            on-browse="$ctrl.onBrowse"
+            on-select="$ctrl.onSelect"
+            on-detail="$ctrl.onDetail"
+            scroll-to-top="$ctrl.scrollToTop"
+            scroll-to-bottom="$ctrl.scrollToBottom">
+            </dd-listing>
+    </uib-tab>
+    <uib-tab index="1" heading="Experiments">
+            <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="col-lg-2"></th>
+                                    <th class="col-lg-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody ng-repeat="experiment in $ctrl.project.metadata.experiments | orderBy: nameOrder">
+                                <tr>
+                                    <td class="col-lg-2">{{experiment.name}}</td>
+                                    <td class="col-lg-10">
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-if="experiment.title">
+                                                    <td>
+                                                        Title
+                                                    </td>
+                                                    <td>
+                                                        {{experiment.title}}
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.creators">
+                                                    <td>
+                                                        Creators
+                                                    </td>
+                                                    <td>
+                                                        <div ng-repeat="creator in experiment.creators | orderBy: 'firstName'">
+                                                            {{creator.firstName}} {{creator.lastName}}
+                                                            <br>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.doi">
+                                                    <td>
+                                                        DOI
+                                                    </td>
+                                                    <td>
+                                                        {{experiment.doi}}
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.type">
+                                                    <td>
+                                                        Type
+                                                    </td>
+                                                    <td>
+                                                        {{experiment.type}}
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.description">
+                                                    <td>
+                                                        Description
+                                                    </td>
+                                                    <td>
+                                                        {{experiment.description}}
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.startDate">
+                                                    <td>
+                                                        Start Date
+                                                    </td>
+                                                    <td>
+                                                        {{experiment.startDate}}
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.endDate">
+                                                    <td>
+                                                        End Date
+                                                    </td>
+                                                    <td>
+                                                        {{experiment.endDate}}
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.equipment">
+                                                    <td>
+                                                        Equipment
+                                                    </td>
+                                                    <td>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-borderless">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Equipment</th>
+                                                                        <th>Component</th>
+                                                                        <th>Equipment Class</th>
+                                                                        <th>Facility</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr ng-repeat="equipment in experiment.equipment">
+                                                                        <td>
+                                                                            {{equipment.equipment}}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{equipment.component}}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{equipment.equipmentClass}}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{equipment.facility}}
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.material">
+                                                    <td>
+                                                        Material
+                                                    </td>
+                                                    <td>
+            
+                                                        <div ng-repeat="materials in experiment.material">
+                                                            <div>
+                                                                {{materials.component}}:
+                                                            </div>
+                                                            <div ng-repeat="material in materials.materials">
+                                                                {{material}}
+                                                                <br>
+                                                            </div>
+                                                            <br>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="experiment.path">
+                                                    <td>
+                                                        Files
+                                                    </td>
+                                                    <td>
+                                                      <a 
+                                                
+                                                         ui-sref="neesPublishedData({filePath: '/'+experiment.path})"
+                                                         title="some title" class="file-folder">
+                                                         <i class="glyphicon glyphicon-folder-close"></i>
+                                                          /{{experiment.path}}
+                                                       </a>
+                                                    </td>
+                                                </tr>
+            
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+            
+            
+    </uib-tab>
+</uib-tabset>
