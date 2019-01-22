@@ -26,7 +26,8 @@ class DataDepotToolbarCtrl {
             'publicData': 'Public Data',
             'communityData': 'Community Data',
             'projects.view': 'Project View',
-            'projects.view.data': 'Project Data View'
+            'projects.view.data': 'Project Data View',
+            'neesPublishedData': 'NEES Published'
         };
 
         if (stateNames[this.$state.current.name]) {

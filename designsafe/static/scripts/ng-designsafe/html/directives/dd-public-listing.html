@@ -10,7 +10,6 @@
         <th style="width: 100px;">Date of Publication</th>
         <th style="width: 100px;">Project Type</th>
         <th style="width: 100px;">Project Number</th>
-        <th style="width: 100px;">NEES Project Metadata</th>
         </thead>
 
         <tbody>
@@ -41,21 +40,13 @@
               <span style="text-transform:capitalize;">{{ item.meta.type }}</span>
             </td>
             <td ng-if="!item.meta.type">
-              N/A
+              NEES
             </td>
             <td ng-if="item.meta.projectId">
               {{ item.meta.projectId }}
             </td>
             <td ng-if="!item.meta.projectId">
-              N/A
-            </td>
-            <td ng-if="item.system === 'nees.public'" ng-click="onMetadata()($event, item)">
-              <button class="btn btn-sm btn-default" ng-click="onMetadata()($event, item)">
-                <i class="fa fa-tags"></i>View Metadata
-              </button>
-            </td>
-            <td ng-if="item.system !== 'nees.public'">
-                N/A
+             {{item.name}}
             </td>
         </tr>
         <tr ng-if="browser.busyListingPage">
