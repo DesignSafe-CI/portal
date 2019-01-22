@@ -41,8 +41,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     /* Private */
     .state('myData', {
       url: '/agave/{systemId}/{filePath:any}/',
-      //controller: 'MyDataCtrl',
-      //template: require('./templates/agave-data-listing.html'),
       component: 'myData',
       params: {
         systemId: 'designsafe.storage.default',
@@ -76,8 +74,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     })
     .state('dataSearch',{
       url: '/agave-search/?query_string&offset&limit',
-      //controller: 'MyDataCtrl',
-      //template: require('./templates/agave-search-data-listing.html'),
       component: 'my-data',
       params: {
         systemId: 'designsafe.storage.default',
@@ -91,9 +87,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           DataBrowserService.apiParams.baseUrl = '/api/agave/files';
           DataBrowserService.apiParams.searchState = 'dataSearch';
           var queryString = $stateParams.query_string;
-          //if (/[^A-Za-z0-9]/.test(queryString)){
-          //  queryString = '"' + queryString + '"';
-          //}
           var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
           return DataBrowserService.search(options);
         }],
@@ -111,8 +104,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     })
     .state('sharedData', {
       url: '/shared/{systemId}/{filePath:any}/',
-      //controller: 'SharedDataCtrl',
-      //template: require('./templates/agave-shared-data-listing.html'),
       component: 'shared',
       params: {
         systemId: 'designsafe.storage.default',
@@ -142,8 +133,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     })
     .state('sharedDataSearch',{
       url: '/shared-search/?query_string&offset&limit&shared',
-      //controller: 'MyDataCtrl',
-      //template: require('./templates/agave-search-data-listing.html'),
       component: 'my-data',
       params: {
         systemId: 'designsafe.storage.default',
@@ -158,9 +147,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           DataBrowserService.apiParams.baseUrl = '/api/agave/files';
           DataBrowserService.apiParams.searchState = 'sharedDataSearch';
           var queryString = $stateParams.query_string;
-          //if (/[^A-Za-z0-9]/.test(queryString)){
-          //  queryString = '"' + queryString + '"';
-          //}
           var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit, shared: $stateParams.shared};
           return DataBrowserService.search(options);
         }],
@@ -178,14 +164,10 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       })
       .state('projects', {
         abstract:true,
-        //controller: 'ProjectRootCtrl',
-        //template: require('./templates/project-root.html')
         component: 'projectRoot',
       })
       .state('projects.list', {
         url: '/projects/',
-        //controller: 'ProjectListingCtrl',
-        //template: require('./templates/project-list.html'),
         component: 'projectListing',
         params: {
           systemId: 'designsafe.storage.default'
@@ -211,8 +193,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       .state('projects.view', {
         url: '/projects/{projectId}/',
         abstract: true,
-        //controller: 'ProjectViewCtrl',
-        //template: require('./templates/project-view.html'),
         component: 'projectView',
         resolve: {
           projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
@@ -222,8 +202,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       })
       .state('projects.view.data', {
         url: '{filePath:any}?query_string&offset&limit',
-        //controller: 'ProjectDataCtrl',
-        //template: require('./templates/project-data.html'),
         component: 'projectData',
         params: {
           projectTitle: '',
@@ -237,17 +215,9 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           ProjectService.resolveParams.query_string = $stateParams.query_string || '';
 
         }]}
-        //{
-        //  'projectId': function($stateParams) { return $stateParams.projectId; },
-        //  'filePath': function($stateParams) { return $stateParams.filePath || '/'; },
-        //  'projectTitle': function($stateParams) { return $stateParams.projectTitle; },
-        //  'query_string': function($stateParams) { return $stateParams.query_string || ''; }
-        //}
       })
       .state('projects.search', {
         url: '/project-search/?query_string&offset&limit&projects',
-        //controller: 'ProjectSearchCtrl',
-        //template: require('./templates/project-search.html'),
         component: 'projectSearch',
         params: {
           systemId: 'designsafe.storage.default',
@@ -283,8 +253,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       })
       .state('boxData', {
         url: '/box/{filePath:any}',
-        //controller: 'ExternalDataCtrl',
-        //template: require('./templates/box-data-listing.html'),
         component: 'box',
         params: {
           filePath: '',
@@ -313,8 +281,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     })
     .state('dropboxData', {
       url: '/dropbox/{filePath:any}',
-      //controller: 'ExternalDataCtrl',
-      //template: require('./templates/dropbox-data-listing.html'),
       component: 'dropbox',
       params: {
         filePath: '',
@@ -343,8 +309,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     })
     .state('googledriveData', {
       url: '/googledrive/{filePath:any}',
-      //controller: 'ExternalDataCtrl',
-      //template: require('./templates/googledrive-data-listing.html'),
       component: 'googleDrive',
       params: {
         filePath: '',
@@ -375,8 +339,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     /* Public */
     .state('publicDataSearch',{
       url: '/public-search/?query_string&offset&limit',
-      //controller: 'PublicationDataCtrl',
-      //template: require('./templates/search-public-data-listing.html'),
       component: 'publications',
       params: {
         systemId: 'nees.public',
@@ -390,9 +352,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           DataBrowserService.apiParams.baseUrl = '/api/public/files';
           DataBrowserService.apiParams.searchState = 'publicDataSearch';
           var queryString = $stateParams.query_string;
-          //if (/[^A-Za-z0-9]/.test(queryString)){
-          //  queryString = '"' + queryString + '"';
-          //}
           var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
           return DataBrowserService.search(options);
         }],
@@ -404,8 +363,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
 
     .state('communityDataSearch',{
       url: '/community-search/?query_string&offset&limit',
-      //controller: 'CommunityDataCtrl',
-      //template: require('./templates/agave-search-data-listing.html'),
       component: 'community',
       params: {
         systemId: 'nees.public',
@@ -419,9 +376,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
           DataBrowserService.apiParams.baseUrl = '/api/public/files';
           DataBrowserService.apiParams.searchState = 'communityDataSearch';
           var queryString = $stateParams.query_string;
-          //if (/[^A-Za-z0-9]/.test(queryString)){
-          //  queryString = '"' + queryString + '"';
-          //}
           var options = {system: $stateParams.systemId, query_string: queryString, offset: $stateParams.offset, limit: $stateParams.limit};
           return DataBrowserService.search(options);
         }],
@@ -433,11 +387,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
 
 
     .state('communityData', {
-      // url: '/community/',
-      // template: '<pre>local/communityData.html</pre>'
       url: '/public/designsafe.storage.community/{filePath:any}',
-      //controller: 'CommunityDataCtrl',
-      //template: require('./templates/agave-data-listing.html'),
       component: 'community',
       params: {
         systemId: 'designsafe.storage.community',
@@ -449,9 +399,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
             system: ($stateParams.systemId || 'designsafe.storage.community'),
             path: ($stateParams.filePath || '/')
           };
-          // if (options.path === '/') {
-            // options.path = Django.user;
-          // }
           DataBrowserService.apiParams.fileMgr = 'community';
           DataBrowserService.apiParams.baseUrl = '/api/public/files';
           DataBrowserService.apiParams.searchState = 'communityDataSearch';
@@ -470,9 +417,7 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
       }
     })
     .state('publicData', {
-      url: '/public/nees.public',
-      //controller: 'PublicationDataCtrl',
-      //template: require('./templates/agave-public-data-listing.html'),
+      url: '/public/nees.public/{filePath:any}',
       component: 'publications',
       params: {
         systemId: 'nees.public',
@@ -501,8 +446,6 @@ function config($httpProvider, $locationProvider, $stateProvider, $urlRouterProv
     })
     .state('publishedData', {
       url: '/public/designsafe.storage.published/{filePath:any}',
-      //controller: 'PublishedDataCtrl',
-      //template: require('./templates/published-data-listing.html'),
       component: 'published',
       params: {
         systemId: 'designsafe.storage.published',
@@ -603,24 +546,4 @@ ddModule
           '/ws/websockets?subscribe-broadcast&subscribe-user'
       );
 }]);
-// 	.run(['WSBusService', 'Logging', function init(WSBusService, logger){
-// 	  WSBusService.init(WSBusService.url);
-//     }]);
-
-//   module
-// 	.run(['NotificationService', 'Logging', function init(NotificationService, logger){
-// 	  NotificationService.init();
-// }]);
-
-/*
-communityDataCtrl(window, angular);
-dataDepotNewCtrl(window, angular);
-externalDataCtrl(window, angular);
-mainCtrl(window, angular);
-myDataCtrl(window, angular, _);
-projectsController(window, angular);
-publicationDataCtrl(window, angular);
-publishedDataCtrl(window, angular);
-sharedData(window, angular);
-*/
 export default ddModule
