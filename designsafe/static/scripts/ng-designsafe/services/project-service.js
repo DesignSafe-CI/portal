@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { $IsStateFilter } from 'angular-ui-router/lib/stateFilters';
+import { $IsStateFilter, $IncludedByStateFilter } from 'angular-ui-router/lib/stateFilters';
 
 export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Logging, ProjectModel, ProjectEntitiesService) {
     'ngInject';
@@ -229,7 +229,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
     * @return {Promise}
     */
     service.manageExperiments = (options) => {
-      $uibModal.open({
+      var modalInstance = $uibModal.open({
         component: 'manageExperiments',
         resolve: {
           options: () => options,
@@ -238,6 +238,13 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
           equipmentTypes: () => equipmentTypes,
         },
         size: 'lg'
+      });
+
+      modalInstance.result.then((experiment) => {
+        if (window.sessionStorage.experimentData) {
+          window.sessionStorage.setItem('experimentData', JSON.stringify(experiment));
+          $state.reload();
+        }
       });
     };
 
@@ -473,18 +480,24 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
      * @return {Promise}
      */
     service.editProject = (project) => {
-      $uibModal.open({
+      var modalInstance = $uibModal.open({
         component: 'editProject',
         resolve: {
           project: () => project,
           efs: () => efs,
         },
         size: 'lg'
-      }).closed.then(function(){
+      });
+      
+      modalInstance.result.then((project) => {
+        if (window.sessionStorage.projectData) {
+          window.sessionStorage.setItem('projectData', JSON.stringify(project));
+        }
         $state.reload();
       });
     };
 
+    
     return service;
 
   }

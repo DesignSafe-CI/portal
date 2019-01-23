@@ -71,6 +71,37 @@
                 <li>If you need help, attend <a>Curation office hours</a> for help with publishing.</li>
             </p>
         </div>
-        <!-- Experiment Header Start -->
-        <!-- Experiment Header End -->
+        <!-- Order Authors -->
+        <div class="well">
+            <div class="prj-head" style="padding-bottom:20px">
+                <!-- EXPERIMENT | <strong>{{ $ctrl.experiment.value.title }}</strong> -->
+                EXPERIMENT | <strong>{{ $ctrl.expModel.value.title }}</strong>
+            </div>
+            <table class="tg" style="table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col style="width: 35%">
+                    <col style="width: 30%">
+                    <col style="width: 34%">
+                </colgroup>
+                <tr>
+                    <td class="tg-0lax">
+                        <div ng-repeat="author in $ctrl.expModel.value.authors | orderBy: 'order'">
+                            <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
+                                ng-if="author.authorship">
+                            <ds-user username="author.name" format="lname" ng-style="!author.authorship && {'text-decoration':'line-through'}">{{
+                                author.name }}</ds-user><br>
+                        </div>
+                    </td>
+                    <td class="tg-0lax">
+                        <i class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderAuthors(true)"></i>
+                        <i class="fa fa-arrow-circle-down fa-2x" ng-click="$ctrl.orderAuthors(false)"></i>
+                    </td>
+                    <td>
+                        <button class="btn btn-small btn-add" ng-if="!$ctrl.saved" ng-click="$ctrl.saveAuthors()">Save</button>
+                        <button class="btn btn-small btn-add" ng-if="$ctrl.saved" disabled>Authors Saved</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Order Authors -->
     </div>

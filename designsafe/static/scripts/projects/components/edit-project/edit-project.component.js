@@ -255,7 +255,7 @@ class EditProjectCtrl {
             projectData.keywords = this.form.keywords;
         }
         this.savePrj(projectData).then((project) => {
-            this.close(project);
+            this.close({$value: project});
             this.ui.busy = false;
         });
     }

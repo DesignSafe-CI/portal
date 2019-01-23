@@ -73,7 +73,7 @@
         </div>
         <!-- Experiment Header Start -->
         <div class="well">
-            <div style="font-size:18px; padding-bottom:20px">
+            <div class="prj-head" style="padding-bottom:20px">
                 EXPERIMENT | <strong>{{ $ctrl.experiment.value.title }}</strong>
             </div>
             <div style="display:inline-block; width:20%;">Experiment Type</div>
@@ -112,7 +112,7 @@
                 <br>{{ $ctrl.experiment.value.description }}
             </div>
             <div><br>
-                <span ng-click="$ctrl.editExp(experiment)"><a>Edit</a></span>
+                <span class="prj-head" ng-click="$ctrl.editExp()"><a>Edit</a></span>
             </div>
         </div>
         <!-- Experiment Header End -->

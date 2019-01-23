@@ -74,23 +74,23 @@
     </div>
     <!-- Project Header Start -->
     <div style="padding-bottom: 40px">
-        <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-        <a ng-click="$ctrl.editProject($event)">Edit Project</a>
+        <span class="prj-head">{{$ctrl.project.value.projectId}} | <strong>{{ $ctrl.project.value.title }}</strong></span>
+        <!-- <a ng-click="$ctrl.editProject($event)">Edit Project</a> -->
         <div class="prj-row">
             <span class="prj-label">PI</span>
-            <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{
-                $ctrl.browser.project.value.pi }}</ds-user>
+            <ds-user class="prj-data" username="$ctrl.project.value.pi" format="lname">{{
+                $ctrl.project.value.pi }}</ds-user>
         </div>
         <div class="prj-row">
-            <span class="prj-label" ng-if="$ctrl.browser.project.value.coPis.length">CoPI</span>
-            <span class="prj-data" format="lname" ng-repeat="copi in $ctrl.browser.project.value.coPis">
+            <span class="prj-label" ng-if="$ctrl.project.value.coPis.length">CoPI</span>
+            <span class="prj-data" format="lname" ng-repeat="copi in $ctrl.project.value.coPis">
                 <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
             </span>
-            <span ng-repeat="user in publicationCtrl.filterUsers($ctrl.browser.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
+            <span ng-repeat="user in publicationCtrl.filterUsers($ctrl.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
         </div>
         <div class="prj-row">
             <span class="prj-label">Project Type</span>
-            <span class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</span>
+            <span class="prj-data">{{ $ctrl.project.value.projectType.replace('_', ' ') }}</span>
         </div>
         <table class="tg" style="table-layout: fixed; width: 100%;">
             <colgroup>
@@ -98,27 +98,30 @@
                 <col style="width: 84%">
             </colgroup>
             <!-- older projects will have awards listed as strings -->
-            <tr ng-if="isSingle($ctrl.browser.project.value.awardNumber)">
+            <tr ng-if="isSingle($ctrl.project.value.awardNumber)">
                 <td class="tg-0lax">Awards</td>
-                <td class="tg-0lax"><strong>{{ $ctrl.browser.project.value.awardNumber }}</strong></td>
+                <td class="tg-0lax"><strong>{{ $ctrl.project.value.awardNumber }}</strong></td>
             </tr>
-            <tr ng-if="!isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index">
+            <tr ng-if="!isSingle($ctrl.project.value.awardNumber)" ng-repeat="award in $ctrl.project.value.awardNumber track by $index">
                 <td class="tg-0lax" ng-if="$first">Awards</td>
                 <td class="tg-0lax" ng-if="!$first"></td>
                 <td class="tg-0lax"><strong>{{ award.name }} - {{ award.number }}</strong></td>
             </tr>
-            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
+            <tr ng-repeat="work in $ctrl.project.value.associatedProjects">
                 <td class="tg-0lax" ng-if="$first">Related Work</td>
                 <td class="tg-0lax" ng-if="!$first"></td>
                 <td class="tg-0lax"><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
             </tr>
         </table>
         <div class="prj-row">
-            <span class="prj-label" ng-if="$ctrl.browser.project.value.keywords">Keywords</span>
-            <span class="prj-data">{{ $ctrl.browser.project.value.keywords }}</span>
+            <span class="prj-label" ng-if="$ctrl.project.value.keywords">Keywords</span>
+            <span class="prj-data">{{ $ctrl.project.value.keywords }}</span>
         </div>
-        <div ng-if="$ctrl.browser.project.value.description">
-            <p>{{ $ctrl.browser.project.value.description }}</p>
+        <div ng-if="$ctrl.project.value.description">
+            <p>{{ $ctrl.project.value.description }}</p>
+        </div>
+        <div>
+            <span class="prj-head" ng-click="$ctrl.editProject()"><a>Edit</a></span>
         </div>
     </div>
         <!-- Project Header End -->

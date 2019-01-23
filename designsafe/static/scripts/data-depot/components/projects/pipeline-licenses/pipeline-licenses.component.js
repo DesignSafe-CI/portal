@@ -17,6 +17,7 @@ class PipelineLicensesCtrl {
     }
 
     goWork() {
+        window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
     }
 

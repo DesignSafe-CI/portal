@@ -68,9 +68,6 @@
             <li>If you need help, attend <a>Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
-    <div>
-        <button ng-click="$ctrl.retrieveExperiment()">Get Dat!</button>
-    <div>
         <!-- Experiments -->
         <div ng-repeat="experiment in $ctrl.browser.project.experiment_set">
             <div class="dropdown" id="details-{{experiment.uuid}}">

@@ -13,19 +13,40 @@ class PipelineCategoriesCtrl {
     }
 
     $onInit() {
-        this.browser = this.ProjectService.data;
+        this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
+        this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
+
+        /*
+        Currently having issues with storing data in sessionStorage.
+        The object methods are lost when parsing the data, but we can
+        use the data to restore the project info.
+        */
+        this.setEntitiesRel = (resp) => {
+            this.prjModel.appendEntitiesRel(resp);
+            return resp;
+        };
+
+        this.ProjectService.get({uuid: this.project.uuid}).then((project) => {
+            this.prjModel = project;
+            this.ProjectEntitiesService.listEntities({uuid: this.project.uuid, name: 'all'}).then(this.setEntitiesRel);
+        });
     }
 
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        window.sessionStorage.clear();
+        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
     }
     
     goExperiment() {
-        this.$state.go('projects.pipelineExperiment', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineExperiment', {projectId: this.project.uuid}, {reload: true});
     }
     
     goAuthors() {
-        this.$state.go('projects.pipelineAuthors', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineAuthors', {projectId: this.project.uuid}, {reload: true});
+    }
+
+    editCategory() {
+        this.ProjectService.manageCategories({'project': this.prjModel});
     }
 
     matchingGroup(exp, model) {

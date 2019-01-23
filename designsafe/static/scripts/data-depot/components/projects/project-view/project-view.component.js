@@ -14,7 +14,6 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       return resp;
     }
 
-    console.log('started project view component');
     function checkState () {
       $scope.workingDir = false;
       var broken = $state.current.name.split('.');

@@ -13,24 +13,25 @@ class PipelineProjectCtrl {
     }
 
     $onInit() {
-        this.browser = this.ProjectService.data;
+        this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
+        this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
     }
 
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        window.sessionStorage.clear();
+        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
     }
 
     goSelection() {
-        this.$state.go('projects.pipelineSelect', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineSelect', {projectId: this.project.uuid}, {reload: true});
     }
 
     goExperiment() {
-        this.$state.go('projects.pipelineExperiment', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineExperiment', {projectId: this.project.uuid}, {reload: true});
     }
 
     editProject() {
-        // need to refresh project data when this is closed (not working atm)
-        this.ProjectService.editProject(this.browser.project);
+        this.ProjectService.editProject(this.project);
     }
 
     matchingGroup(exp, model) {

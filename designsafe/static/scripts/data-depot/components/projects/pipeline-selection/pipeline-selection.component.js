@@ -21,12 +21,17 @@ class PipelineSelectionCtrl {
             return resp;
         };
 
+        window.sessionStorage.clear();
         // get project data if necessary (if a user refreshes or visits path directly)
         if (!this.browser.project) {
             this.ProjectService.get({uuid: this.projectId}).then((project) => {
                 this.browser.project = project;
                 this.ProjectEntitiesService.listEntities({uuid: this.projectId, name: 'all'}).then(this.setEntitiesRel);
+            }).then(() => {
+                window.sessionStorage.setItem('projectData', JSON.stringify(this.browser.project));
             });
+        } else {
+            window.sessionStorage.setItem('projectData', JSON.stringify(this.browser.project));
         }
     }
 
@@ -42,6 +47,7 @@ class PipelineSelectionCtrl {
     }
 
     goWork() {
+        window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
     }
 
@@ -54,14 +60,11 @@ class PipelineSelectionCtrl {
     }
 
     selectExperiment(exp) {
-        console.log(exp);
-        console.log(this.browser);
-        window.localStorage.setItem('selectedExp', JSON.stringify(exp));
+        window.sessionStorage.setItem('experimentData', JSON.stringify(exp));
     }
 
     retrieveExperiment() {
-        this.experiment = JSON.parse(window.localStorage.getItem('selectedExp'));
-        console.log(this.experiment);
+        this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
     }
 }
 

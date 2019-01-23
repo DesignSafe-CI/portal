@@ -16,6 +16,7 @@ class ManageExperimentsCtrl {
         this.efs = this.resolve.efs;
         this.experimentTypes = this.resolve.experimentTypes;
         this.equipmentTypes = this.resolve.equipmentTypes;
+        
         var members = [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers);
         members.forEach((m, i) => {
             if (typeof m == 'string') {
@@ -184,6 +185,9 @@ class ManageExperimentsCtrl {
             this.ui.savingEditExp = false;
             this.data.experiments = this.data.project.experiment_set;
             this.ui.showEditExperimentForm = false;
+            if (window.sessionStorage.experimentData) {
+                this.close({$value: e});
+            }
             return e;
         });
     }
