@@ -304,10 +304,6 @@ function config(
                 },
             },
         })
-        .state('myPublications', {
-            url: '/my-publications/{publicationId}}/{fileId:any}/',
-            templateUrl: './data-depot/templates/enhanced-data-listing.html',
-        })
         .state('boxData', {
             url: '/box/{filePath:any}',
             component: 'box',
