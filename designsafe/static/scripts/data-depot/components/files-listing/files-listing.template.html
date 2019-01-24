@@ -10,7 +10,8 @@
                          $ctrl.browser.publishPipeline == 'select' ||
                          $ctrl.browser.publishPipeline == 'review'))"
     >
-        <table class="table table-bordered table-striped" style="background-color: #fff;">
+        <table class="files-listing-table table table-bordered table-striped"
+               style="background-color: #fff;">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -20,11 +21,17 @@
             </thead>
             <tbody>
                 <tr data-ng-if="!$ctrl.browser.busyListing"
-                    data-ng-repeat="item in $ctrl.browser.listing.children"
+                    data-ng-repeat="item in $ctrl.listing().children"
                     data-ng-click="$ctrl.onSelect($event, item)"
-                    data-ng-class="{'ds-data-selected': item._ui.selected}"
                 >
                     <td>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       data-ng-checked="item._ui.selected">
+                                <span class="sr-only">Selected</span>
+                            </label>
+                        </div>
                         <i class="fa {{ item.icon() }}">&nbsp;</i>
                         <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
                             {{ item.name }}
@@ -84,7 +91,7 @@
                 </div>
                 <div data-ng-if="! $ctrl.browser.busy &&
                                  ! $ctrl.browser.error &&
-                                 ($ctrl.browser.listing.children|length) === 0"
+                                 ($ctrl.listing().children|length) === 0"
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
@@ -92,7 +99,7 @@
                         This folder is empty! <br />
                         <i class="fa fa-folder-open-o">&nbsp;</i><br />
                         <a class=""
-                           data-ng-if="$ctrl.browser.listing.system.indexOf('project-') == 0"
+                           data-ng-if="$ctrl.listing().system.indexOf('project-') == 0"
                            href="https://www.youtube.com/watch?v=ISrPManDVCYi&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
                             target="_blank"
                         >

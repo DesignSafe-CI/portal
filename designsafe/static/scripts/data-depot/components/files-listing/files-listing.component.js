@@ -13,6 +13,13 @@ class FilesListingCtrl {
         this._ui = { loading: false, error: false };
     }
 
+    listing() {
+        if (typeof this.listing === 'undefined' || _.isEmpty(this.listing)){
+            return this.browser.listing;
+        }
+        return this.listing;
+    }
+
     onBrowse($event, file) {
         if ($event) {
             $event.preventDefault();
@@ -114,6 +121,6 @@ export const FilesListingPublicComponent = {
     template: FilesListingPublicTemplate,
     bindings: {
         browser: '=',
-        stateName: '<',
+        listing: '=',
     },
 };
