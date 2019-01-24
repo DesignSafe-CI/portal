@@ -241,6 +241,61 @@ function config(
                 ],
             },
         })
+        .state('projects.preview', {
+            url: '/projects/{projectId}/preview',
+            component: 'publicationPreview',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    return $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineSelect', {
+            url: '/projects/{projectId}/curation/selection',
+            component: 'pipelineSelect',
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    return $stateParams.projectId;
+                }]
+            }
+        })
+        .state('projects.pipelineProject', {
+            url: '/projects/{projectId}/curation/project',
+            component: 'pipelineProject',
+            params: {
+                params: null
+            }
+        })
+        .state('projects.pipelineExperiment', {
+            url: '/projects/{projectId}/curation/experiment',
+            component: 'pipelineExperiment',
+            params: {
+                params: null
+            }
+        })
+        .state('projects.pipelineCategories', {
+            url: '/projects/{projectId}/curation/categories',
+            component: 'pipelineCategories',
+            params: {
+                params: null
+            }
+        })
+        .state('projects.pipelineAuthors', {
+            url: '/projects/{projectId}/curation/authors',
+            component: 'pipelineAuthors',
+            params: {
+                params: null
+            }
+        })
+        .state('projects.pipelineLicenses', {
+            url: '/projects/{projectId}/curation/licenses',
+            component: 'pipelineLicenses',
+            params: {
+                params: null
+            }
+        })
         .state('projects.search', {
             url: '/project-search/?query_string&offset&limit&projects',
             component: 'projectSearch',
@@ -394,7 +449,6 @@ function config(
                 },
             },
         })
-
         .state('communityDataSearch', {
             url: '/community-search/?query_string&offset&limit',
             component: 'dataDepotBrowser',
