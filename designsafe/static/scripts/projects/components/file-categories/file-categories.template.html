@@ -1,0 +1,13 @@
+<div class="file-categories-content">
+    <span class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
+        {{entityTag}}
+    </span>
+    <div style="width:100%;">
+        <span class="label selected"
+              data-ng-repeat="entity in $ctrl.file._entities"
+              data-ng-class="entity.cssClasses()['tag']"
+        >
+            {{ entity.value.title }}
+        </span>
+    </div>
+</div>
