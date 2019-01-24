@@ -1,8 +1,11 @@
+import _ from 'underscore';
 import FilesListingTemplate from './files-listing.template.html';
+import FilesListingPublicTemplate from './files-listing.public.template.html';
 
 class FilesListingCtrl {
-    constructor(DataBrowserService){
+    constructor($state, DataBrowserService){
         'ngInject';
+        this.$state = $state;
         this.DataBrowserService = DataBrowserService;
     }
 
@@ -64,12 +67,51 @@ class FilesListingCtrl {
     scrollToBottom() {
         return this.DataBrowserService.scrollToBottom();
     }
+
+    renderName(file) {
+        if (typeof file.metadata === 'undefined' ||
+            file.metadata === null ||
+            _.isEmpty(file.metadata)){
+            if(file.meta && file.meta.title){
+                return file.meta.title;
+            }
+            return file.name;
+        }
+        const pathComps = file.path.split('/');
+        const experiment_re = /^experiment/;
+        if (file.path[0] === '/' && pathComps.length === 2) {
+            return file.metadata.project.title;
+        } else if (file.path[0] !== '/' &&
+                 pathComps.length === 2 &&
+                 experiment_re.test(file.name.toLowerCase())){
+            return file.metadata.experiments[0].title;
+        }
+        return file.name;
+    }
+
+    onMetadata($event, file) {
+        $event.stopPropagation();
+        this.DataBrowserService.viewMetadata(
+            [file],
+            this.browser.listing
+        );
+    }
 }
 
 export const FilesListingComponent = {
     controller: FilesListingCtrl,
     controllerAs: '$ctrl',
     template: FilesListingTemplate,
+    bindings: {
+        browser: '=',
+        stateName: '<',
+    },
+};
+
+export const FilesListingPublicComponent = {
+    controller: FilesListingCtrl,
+    controllerAs: '$ctrl',
+    template: FilesListingPublicTemplate,
     bindings: {
         browser: '=',
         stateName: '<',

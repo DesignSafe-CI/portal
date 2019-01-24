@@ -32,6 +32,7 @@ export class PublishedDataCtrl {
         this.viewCollabs = this.viewCollabs.bind(this);
         this.getUserDets = this.getUserDets.bind(this);
         this.onCitation = this.onCitation.bind(this);
+        this.getFileObjs = this.getFileObjs.bind(this);
     }
 
     $onInit() {
@@ -54,10 +55,6 @@ export class PublishedDataCtrl {
                         return usr.username === this.project.value.pi;
                     });
                     this.project.piLabel = pi.last_name + ', ' + pi.first_name;
-                    var _apiParams = {
-                        fileMgr: 'published',
-                        baseUrl: '/api/public/files'
-                    };
 
                     if (this.browser.publication.project.value.projectType === 'experimental') {
                         _.each(this.browser.publication.eventsList, this.getFileObjs);
@@ -129,6 +126,10 @@ export class PublishedDataCtrl {
     }
 
     getFileObjs(evt) {
+        const _apiParams = {
+            fileMgr: 'published',
+            baseUrl: '/api/public/files'
+        };
         evt.files = _.map(evt.fileObjs, (f) => {
             f.system = 'designsafe.storage.published';
             f.path = this.browser.publication.projectId + f.path;
