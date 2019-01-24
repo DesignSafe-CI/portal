@@ -241,32 +241,6 @@ function config(
                 ],
             },
         })
-        .state('projects.view', {
-        url: '/projects/{projectId}/',
-        abstract: true,
-        component: 'projectView',
-        resolve: {
-            projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
-            ProjectService.resolveParams.projectId = $stateParams.projectId;
-            return $stateParams.projectId; }]
-        }
-        })
-        .state('projects.view.data', {
-        url: '{filePath:any}?query_string&offset&limit',
-        component: 'projectData',
-        params: {
-            projectTitle: '',
-            query_string: '',
-            filePath: '/'
-        },
-        resolve: {'params': ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
-            ProjectService.resolveParams.projectId = $stateParams.projectId;
-            ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
-            ProjectService.resolveParams.projectTitle = $stateParams.projectTitle;
-            ProjectService.resolveParams.query_string = $stateParams.query_string || '';
-
-        }]}
-        })
         .state('projects.preview', {
             url: '/projects/{projectId}/preview',
             component: 'publicationPreview',
