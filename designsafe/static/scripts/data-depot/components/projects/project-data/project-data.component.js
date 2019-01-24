@@ -97,6 +97,7 @@ function ProjectDataCtrl(
                 );
             });
     });
+    window.sessionStorage.clear();
 
     var setFilesDetails = function(filePaths) {
         filePaths = _.uniq(filePaths);

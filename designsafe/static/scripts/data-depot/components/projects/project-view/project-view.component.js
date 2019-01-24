@@ -14,6 +14,17 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       return resp;
     }
 
+    function checkState () {
+      $scope.workingDir = false;
+      var broken = $state.current.name.split('.');
+      var last = broken.pop();
+      if (last == 'data') {
+        $scope.workingDir = true;
+      }
+      // Object.keys($scope.curState).forEach(s => $scope.curState[s] = false);
+      // $scope.curState[last] = true;
+    }
+
     $scope.browser.projectServicePromise = ProjectService.get({uuid: projectId}).then(function (project) {
       $scope.data.project = project;
       DataBrowserService.state().project = project;
@@ -46,6 +57,8 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
             $scope.data.publication.analysisList = $scope.data.publication.analysisList || []; 
             $scope.data.publication.reportsList = $scope.data.publication.reportsList || [];
         });
+    }).then(function(){
+      checkState();
     });
 
 
@@ -113,6 +126,56 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       }
       ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
     };
+
+    // -----------------> New Publication Pipeline Process
+    $scope.workingDirectory = function() {
+      $state.go('projects.view.data', {projectId: projectId}).then(function() {
+        // checkState();
+      });
+    };
+
+    $scope.curationDirectory = function() {
+      // set curation state
+    };
+
+    $scope.publicationPreview = function() {
+      $state.go('projects.preview', {projectId: projectId}).then(function() {
+        checkState();
+      });
+    };
+
+    $scope.pipelineSelect = function() {
+      $state.go('projects.pipelineSelect', {projectId: projectId}).then(function() {
+        // checkState();
+      });
+    };
+
+    $scope.pipelineProject = function() {
+      $state.go('projects.pipelineProject', {projectId: projectId}).then(function() {
+        // checkState();
+      });
+    };
+
+    // $scope.launchModal = function () {
+    //   $uibModal.open({
+    //     template: PublicationPopupTemplate,
+    //     controllerAs: '$ctrl',
+    //     controller: function ($uibModalInstance) {
+    //       this.cancel = function () {
+    //         $uibModalInstance.close();
+    //       };
+    //       this.proceed = function () {
+    //         $scope.pipelineSelect();
+    //         $uibModalInstance.close('Continue to publication pipeline...');
+    //       };
+    //     },
+    //     bindings: {
+    //       dismiss: '&',
+    //       close: '&'
+    //     },
+    //     size: 'lg',
+    //   });
+    // };
 
     $scope.manageSimulations = function($event) {
       if ($event){
