@@ -1,6 +1,6 @@
-import FileCategorySelectorTemplate from './file-category-selector.template.html';
+import FileCategoriesTemplate from './file-categories.template.html';
 
-class FileCategorySelectorCtrl {
+class FileCategoriesCtrl {
     constructor(Django, ProjectService, ProjectEntitiesService){
         'ngInject';
         this.Django = Django;
@@ -11,12 +11,11 @@ class FileCategorySelectorCtrl {
     $onInit() {
         this._ui = { busy: false, error: false };
     }
-
 }
 
-export const FileCategorySelectorComponent = {
-    template: FileCategorySelectorTemplate,
-    controller: FileCategorySelectorCtrl,
+export const FileCategoriesComponent = {
+    template: FileCategoriesTemplate,
+    controller: FileCategoriesCtrl,
     controllerAs: '$ctrl',
     bindings: {
         project: '=',
