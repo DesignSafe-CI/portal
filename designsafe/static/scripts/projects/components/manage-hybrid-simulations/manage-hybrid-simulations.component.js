@@ -72,7 +72,7 @@ class ManageHybridSimCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     saveSimulation($event) {
@@ -119,6 +119,8 @@ class ManageHybridSimCtrl {
                     auth.order = i;
                 }
             });
+            usersToClean = _.uniq(usersToClean, 'name');
+        } else {
             usersToClean = _.uniq(usersToClean, 'name');
         }
 

@@ -169,7 +169,7 @@ class ManageCategoriesCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     addCategory() {
