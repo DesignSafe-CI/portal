@@ -1,13 +1,20 @@
 <div class="file-categories-content">
-    <span class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
+    <div class="tag-item" data-ng-repeat="entityTag in $ctrl.file._entityTags">
         {{entityTag}}
-    </span>
-    <div style="width:100%;">
-        <span class="label selected"
-              data-ng-repeat="entity in $ctrl.file._entities"
-              data-ng-class="entity.cssClasses()['tag']"
-        >
-            {{ entity.value.title }}
-        </span>
+    </div>
+    <div style="width:100%;" class="file-tag-list">
+        <div class="file-tag-item"
+             data-ng-repeat="entity in $ctrl.file._entities"
+         >
+            <span class="label selected"
+                  data-ng-class="entity.cssClasses()['tag']"
+            >
+                {{ entity.value.title }}
+            </span>
+            <button class="btn btn-link"
+                    data-ng-click="$ctrl.removeCategory(entity)">
+                Remove <i class="fa fa-times">&nbsp;</i>
+            </button>
+        </div>
     </div>
 </div>
