@@ -15,6 +15,7 @@ class PipelineCategoriesCtrl {
     $onInit() {
         this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
         this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
+        this.loading = true;
 
         /*
         Currently having issues with storing data in sessionStorage.
@@ -28,7 +29,11 @@ class PipelineCategoriesCtrl {
 
         this.ProjectService.get({uuid: this.project.uuid}).then((project) => {
             this.prjModel = project;
-            this.ProjectEntitiesService.listEntities({uuid: this.project.uuid, name: 'all'}).then(this.setEntitiesRel);
+            this.ProjectEntitiesService.listEntities({uuid: this.project.uuid, name: 'all'})
+            .then(this.setEntitiesRel)
+            .then(() => {
+                this.loading = false;
+            });
         });
     }
 

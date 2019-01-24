@@ -58,8 +58,8 @@
             <a class="pull-left" ng-click="$ctrl.goAuthors()">
                 <i class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
-            <button class="btn btn-small btn-add pull-right">
-                Request DOI and Publish
+            <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.license">
+                <i class="fa fa-globe"></i> Request DOI & Publish
             </button>
         </div>
         <!-- progression map -->
@@ -89,7 +89,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <input type="checkbox">
+                                    <input type="radio" name="license" ng-model="$ctrl.license" value="odca">
                                     <img src="/static/images/licenses/odc_public.png" width="40px" height="40px" style="margin-right:10px; margin-left:10px;">
                                 </td>
                                 <td>
@@ -113,7 +113,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <input type="checkbox">
+                                    <input type="radio" name="license" ng-model="$ctrl.license" value="odcpdd">
                                     <img src="/static/images/licenses/odc_public.png" width="40px" height="40px" style="margin-right:10px; margin-left:10px;">
                                 </td>
                                 <td>
@@ -150,7 +150,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <input type="checkbox">
+                                    <input type="radio" name="license" ng-model="$ctrl.license" value="cca">
                                     <img src="/static/images/licenses/odc_public.png" width="40px" height="40px" style="margin-right:10px; margin-left:10px;">
                                 </td>
                                 <td>
@@ -173,7 +173,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <input type="checkbox">
+                                    <input type="radio" name="license" ng-model="$ctrl.license" value="ccpdd">
                                     <img src="/static/images/licenses/odc_public.png" width="40px" height="40px" style="margin-right:10px; margin-left:10px;">
                                 </td>
                                 <td>
@@ -203,7 +203,7 @@
             <table>
                 <tr>
                     <td>
-                        <input type="checkbox">
+                        <input type="radio" name="license" ng-model="$ctrl.license" value="gnu">
                         <img src="/static/images/licenses/gnu.png" width="40px" height="40px" style="margin-right:10px; margin-left:10px;">
                     </td>
                     <td>

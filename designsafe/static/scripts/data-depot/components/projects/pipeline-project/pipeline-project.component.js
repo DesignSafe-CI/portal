@@ -34,16 +34,6 @@ class PipelineProjectCtrl {
         this.ProjectService.editProject(this.project);
     }
 
-    matchingGroup(exp, model) {
-        // match appropriate data to corresponding experiment
-        var result = false;
-        model.associationIds.forEach((id) => {
-            if (id == exp.uuid) {
-                result = true;
-            }
-        });
-        return result;
-    }
 }
 
 PipelineProjectCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];

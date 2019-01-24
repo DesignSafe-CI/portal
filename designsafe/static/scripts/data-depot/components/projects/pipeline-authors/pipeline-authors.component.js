@@ -17,6 +17,8 @@ class PipelineAuthorsCtrl {
         this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
         this.selectedAuthor = '';
         this.saved = false;
+        this.validAuths = true;
+        this.loading = true;
 
         /*
         Currently having issues with storing data in sessionStorage.
@@ -36,12 +38,22 @@ class PipelineAuthorsCtrl {
             });
         };
 
+        this.verifyAuthors = (expAuthors) => {
+            if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
+                this.validAuths = true;
+            } else {
+                this.validAuths = false;
+            }
+        };
+
         this.ProjectService.get({ uuid: this.project.uuid }).then((project) => {
             this.prjModel = project;
             this.ProjectEntitiesService.listEntities({ uuid: this.project.uuid, name: 'all' })
             .then(this.setEntitiesRel)
             .then(() => {
                 this.selectedExp();
+                this.verifyAuthors(this.expModel.value.authors);
+                this.loading = false;
             });
         });       
     }

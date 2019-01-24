@@ -310,15 +310,15 @@
         <div class="expAuthors form-group">
           <label>Assign Authorship</label>
           <div class="form-group">
-              <div ng-repeat="author in $ctrl.editExpForm.authors track by $index" style="width:46%; display:inline-block;">
-                <input  type="checkbox"
-                        format="lname"
-                        id="{{ 'editAuthor' + $index }}"
-                        ng-checked="author.authorship"
-                        ng-click="$ctrl.editAuthors(author, $index)">
-                <ds-user username="author.name" format="lname">{{ author.name }}</ds-user><br>
-              </div>
+            <div ng-repeat="author in $ctrl.editExpForm.authors track by $index" style="width:46%; display:inline-block;">
+              <input  type="checkbox"
+                      format="lname"
+                      id="{{ 'editAuthor' + $index }}"
+                      ng-checked="author.authorship"
+                      ng-click="$ctrl.editAuthors(author, $index)">
+              <ds-user username="author.name" format="lname">{{ author.name }}</ds-user><br>
             </div>
+          </div>
           <div class="expAuthorsAssign form-group">
             <label>Add Authors not Registered on DesignSafe</label>
             <div ng-repeat="guestUsr in $ctrl.form.addGuest">

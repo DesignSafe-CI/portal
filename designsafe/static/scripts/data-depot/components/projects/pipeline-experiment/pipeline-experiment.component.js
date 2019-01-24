@@ -49,16 +49,6 @@ class PipelineExperimentCtrl {
         this.ProjectService.manageExperiments({'experiments': this.prjModel.experiment_set, 'project': this.prjModel});
     }
 
-    matchingGroup(exp, model) {
-        // match appropriate data to corresponding experiment
-        var result = false;
-        model.associationIds.forEach((id) => {
-            if (id == exp.uuid) {
-                result = true;
-            }
-        });
-        return result;
-    }
 }
 
 PipelineExperimentCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];

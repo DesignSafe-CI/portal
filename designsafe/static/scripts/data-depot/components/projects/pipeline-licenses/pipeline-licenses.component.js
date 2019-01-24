@@ -1,4 +1,5 @@
 import PipelineLicensesTemplate from './pipeline-licenses.component.html';
+import AgreementTemplate from './pipeline-agreement.html';
 import _ from 'underscore';
 
 class PipelineLicensesCtrl {
@@ -13,29 +14,52 @@ class PipelineLicensesCtrl {
     }
 
     $onInit() {
-        this.browser = this.ProjectService.data;
+        this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
+        this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
+        this.license = '';
     }
 
     goWork() {
         window.sessionStorage.clear();
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
     }
 
     goAuthors() {
-        this.$state.go('projects.pipelineAuthors', {projectId: this.browser.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineAuthors', {projectId: this.project.uuid}, {reload: true});
     }
 
     // Modal for accept and publish...
-
-    matchingGroup(exp, model) {
-        // match appropriate data to corresponding experiment
-        var result = false;
-        model.associationIds.forEach((id) => {
-            if (id == exp.uuid) {
-                result = true;
-            }
+    prepareModal() {
+        this.$uibModal.open({
+            template: AgreementTemplate,
+            controllerAs: '$ctrl',
+            controller: ['$uibModalInstance', 'project', function($uibModalInstance, project) {
+                this.cancel = function () {
+                    $uibModalInstance.close();
+                };
+                this.agree = function () {
+                    var agreement = document.getElementById("agreement");
+                    if (agreement.checked == true) {
+                        this.valid = true;
+                    } else {
+                        this.valid = false;
+                    }
+                };
+                this.publish = function () {
+                    console.log('publishing project...');
+                    console.log(project);
+                    $uibModalInstance.close('Continue to publication pipeline...');
+                };
+            }],
+            resolve: {
+                project: this.project,
+            },
+            bindings: {
+                dismiss: '&',
+                close: '&'
+            },
+            size: 'lg',
         });
-        return result;
     }
 }
 

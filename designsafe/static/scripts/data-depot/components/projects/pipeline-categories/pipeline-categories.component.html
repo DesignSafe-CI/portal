@@ -72,6 +72,9 @@
             </p>
         </div>
         <!-- Categories Start -->
+        <div ng-show="$ctrl.loading">
+            Loading Categories...
+        </div>
         <!-- Model Configs -->
         <div ng-repeat="modelConfig in $ctrl.prjModel.modelconfig_set | orderBy: 'value.title'">
             <div class="dropdown" id="details-{{modelConfig.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, modelConfig)">
