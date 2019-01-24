@@ -1,0 +1,283 @@
+<div style="background:white; padding-top: 20px">
+    <!-- progression map -->
+    <div class="pull-right" style="padding-bottom: 20px;">
+        <a ng-click="$ctrl.goWork()">
+            <i class="fa fa-times"></i> Exit Prepare to Publish
+        </a>
+    </div>
+    <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+        <colgroup>
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+        </colgroup>
+        <tr style="text-align: center">
+            <td class="tg-0lax">
+                <strong>Selection</strong>
+                <div>
+                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Project</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Experiment</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Proofread Categories</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Order Authors</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+            <td class="tg-0lax">
+                <strong>Licenses</strong>
+                <div>
+                    <i class="fa fa-circle-thin"></i>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div>
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+            Preview</a>
+        <a class="pull-right" ng-click="$ctrl.goProject()"><i class="fa fa-arrow-right"></i> Continue</a>
+    </div>
+    <!-- progression map -->
+    <div style="padding-top: 40px; padding-bottom: 40px;">
+        <p>
+            <h3 style="text-align: center">Select what you want to publish</h3>
+            <li>You can only publish one experiment at a time.</li>
+            <li>If you want to deselect individual files, deselect the checkboxes.</li>
+            <li>If you need help, attend <a>Curation office hours</a> for help with publishing.</li>
+        </p>
+    </div>
+        <!-- Experiments -->
+        <div ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+            <div class="dropdown" id="details-{{experiment.uuid}}">
+                <a ng-click="$ctrl.selectExperiment(experiment)">Select this Experiment and all of its files</a>
+                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
+                    style="width:100%;">
+                    <span class="pull-left">EXPERIMENT | <strong>{{experiment.value.title}}</strong></span>
+                    <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                </button>
+                <div id="data-{{experiment.uuid}}" class="collapse" ng-class="{'in': $index==0}">
+                    <div class="well">
+                        <div style="display:inline-block; width:20%;">Experiment Type</div>
+                        <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ experiment.value.experimentType.replace('_', ' ') }}
+                        </strong>
+                        <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ experiment.value.experimentTypeOther }}
+                        </strong>
+                        <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
+                        <div style="display:inline-block; width:78%; font-weight: bold;">
+                            <span ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length">
+                                <ds-user username="author.name" format="lname" ng-if="author.authorship">{{ author.name
+                                    }}
+                                </ds-user>
+                            </span>
+                            <!-- support older author list -->
+                            <div ng-repeat="author in experiment.value.authors" ng-if="author.length">
+                                <ds-user username="author" format="lname">{{ author }}</ds-user>
+                            </div>
+                        </div>
+                        <div style="display:inline-block; width:20%;">Experimental Facility</div>
+                        <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ experiment.value.experimentalFacility.replace('_', ' ') }}
+                        </strong>
+                        <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ experiment.value.experimentalFacilityOther }}
+                        </strong>
+                        <div style="display:inline-block; width:20%;">Equipment Type</div>
+                        <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ experiment.value.equipmentType.replace('_', ' ') }}
+                        </strong>
+                        <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="text-transform:capitalize; display:inline-block; width:78%;">
+                            {{ experiment.value.equipmentTypeOther }}
+                        </strong>
+                        <div ng-show="experiment.value.procedureStart">
+                            <div style="display:inline-block; width:20%;">Date of Experiment</div>
+                            <strong style="display:inline-block; width:78%;">
+                                {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{
+                                experiment.value.procedureEnd
+                                | date:'MM-dd-yyyy' }}
+                            </strong>
+                        </div>
+                        <div style="display:inline-block; width:20%;">Date of Publication</div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <div style="display:inline-block; width:20%;">DOI <button class="btn btn-info btn-sm">Citation</button></div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <div style="display:inline-block; width:20%;">License</div>
+                        <strong style="display:inline-block; width:78%;">
+                            (Appears when published)
+                        </strong>
+                        <p>
+                            <br>{{ experiment.value.description }}
+                        </p>
+                    </div>
+                </div>
+                <!-- Model Configs -->
+                <div ng-repeat="modelConfig in $ctrl.browser.project.modelconfig_set | orderBy: 'value.title'">
+                    <div class="dropdown" id="details-{{modelConfig.uuid}}" ng-if="$ctrl.matchingGroup(experiment, modelConfig)">
+                        <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
+                            style="width:100%;">
+                            <span class="pull-left">Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
+                            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        </button>
+                        <div id="files-{{modelConfig.uuid}}" class="collapse">
+                            <p>{{ modelConfig.value.description }}</p>
+                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
+                                <tbody>
+                                    <tr ng-repeat="file in $ctrl.browser.listings[modelConfig.uuid] | orderBy: ['type', 'path']">
+                                        <td>
+                                            <i class="fa {{file.icon()}}"></i>
+                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                                {{file.name}}
+                                            </a>
+                                        </td>
+                                        <td ng-if="file.format == 'folder'"> -- </td>
+                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
+                                        <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sensors -->
+                <div ng-repeat="sensorList in $ctrl.browser.project.sensorlist_set | orderBy: 'value.title'">
+                    <div class="dropdown" id="details-{{sensorList.uuid}}" ng-if="$ctrl.matchingGroup(experiment, sensorList)">
+                        <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
+                            style="width:100%;">
+                            <span class="pull-left">Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
+                            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        </button>
+                        <div id="files-{{sensorList.uuid}}" class="collapse">
+                            <p>{{ sensorList.value.description }}</p>
+                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
+                                <tbody>
+                                    <tr ng-repeat="file in $ctrl.browser.listings[sensorList.uuid] | orderBy: ['type', 'path']">
+                                        <td>
+                                            <i class="fa {{file.icon()}}"></i>
+                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                                {{file.name}}
+                                            </a>
+                                        </td>
+                                        <td ng-if="file.format == 'folder'"> -- </td>
+                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
+                                        <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Events -->
+                <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: 'value.title'">
+                    <div class="dropdown" id="details-{{event.uuid}}" ng-if="$ctrl.matchingGroup(experiment, event)">
+                        <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
+                            style="width:100%;">
+                            <span class="pull-left">Event | <strong>{{event.value.title}}</strong></span>
+                            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        </button>
+                        <div id="files-{{event.uuid}}" class="collapse">
+                            <p>{{ event.value.description }}</p>
+                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
+                                <tbody>
+                                    <tr ng-repeat="file in $ctrl.browser.listings[event.uuid] | orderBy: ['type', 'path']">
+                                        <td>
+                                            <i class="fa {{file.icon()}}"></i>
+                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                                {{file.name}}
+                                            </a>
+                                        </td>
+                                        <td ng-if="file.format == 'folder'"> -- </td>
+                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
+                                        <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Analysis -->
+                <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'">
+                    <div class="dropdown" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup(experiment, analysis)">
+                        <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                            style="width:100%;">
+                            <span class="pull-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        </button>
+                        <div id="files-{{analysis.uuid}}" class="collapse">
+                            <p>{{ analysis.value.description }}</p>
+                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
+                                <tbody>
+                                    <tr ng-repeat="file in $ctrl.browser.listings[analysis.uuid] | orderBy: ['type', 'path']">
+                                        <td>
+                                            <i class="fa {{file.icon()}}"></i>
+                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                                {{file.name}}
+                                            </a>
+                                        </td>
+                                        <td ng-if="file.format == 'folder'"> -- </td>
+                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
+                                        <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Reports -->
+                <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
+                    <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup(experiment, report)">
+                        <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                            style="width:100%;">
+                            <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
+                            <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                        </button>
+                        <div id="files-{{report.uuid}}" class="collapse">
+                            <p>{{ report.value.description }}</p>
+                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
+                                <tbody>
+                                    <tr ng-repeat="file in $ctrl.browser.listings[report.uuid] | orderBy: ['type', 'path']">
+                                        <td>
+                                            <i class="fa {{file.icon()}}"></i>
+                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
+                                                {{file.name}}
+                                            </a>
+                                        </td>
+                                        <td ng-if="file.format == 'folder'"> -- </td>
+                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
+                                        <td>{{file.lastModified|date:"short"}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

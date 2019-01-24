@@ -310,15 +310,15 @@
         <div class="expAuthors form-group">
           <label>Assign Authorship</label>
           <div class="form-group">
-              <div ng-repeat="author in $ctrl.editExpForm.authors track by $index" style="width:46%; display:inline-block;">
-                <input  type="checkbox"
-                        format="lname"
-                        id="{{ 'editAuthor' + $index }}"
-                        ng-checked="author.authorship"
-                        ng-click="$ctrl.editAuthors(author, $index)">
-                <ds-user username="author.name" format="lname">{{ author.name }}</ds-user><br>
-              </div>
+            <div ng-repeat="author in $ctrl.editExpForm.authors track by $index" style="width:46%; display:inline-block;">
+              <input  type="checkbox"
+                      format="lname"
+                      id="{{ 'editAuthor' + $index }}"
+                      ng-checked="author.authorship"
+                      ng-click="$ctrl.editAuthors(author, $index)">
+              <ds-user username="author.name" format="lname">{{ author.name }}</ds-user><br>
             </div>
+          </div>
           <div class="expAuthorsAssign form-group">
             <label>Add Authors not Registered on DesignSafe</label>
             <div ng-repeat="guestUsr in $ctrl.form.addGuest">
@@ -387,16 +387,18 @@
     </div>
     <div class="dropdown">
       <div ng-repeat="experiment in $ctrl.data.experiments">
-        <div class="dropdown entity-preview-header">
-          <button class="btn btn-default collapsed" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
+        <div class="dropdown">
+          <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{experiment.uuid}}" style="width:100%;">
             <span class="pull-left">EXPERIMENT | <strong>{{experiment.value.title}}</strong></span>
             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
           </button>
           <div id="files-{{experiment.uuid}}" class="collapse">
             <div class="well">
               <div style="display:inline-block; width:20%;">Experiment Type</div>
-              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentType }}</strong>
-              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentTypeOther }}</strong>
+              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                      style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.experimentType.replace('_', ' ') }}</strong>
+              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                      style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.experimentTypeOther }}</strong>
               <div style="display:inline-block; width:20%; vertical-align: top;">Authors</div>
               <div style="display:inline-block; width:78%; font-weight: bold;">
                 <div ng-repeat="author in experiment.value.authors | orderBy: 'order'" ng-if="!author.length">
@@ -408,14 +410,20 @@
                 </div>
               </div>
               <div style="display:inline-block; width:20%;">Experimental Facility</div>
-              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacility }}</strong>
-              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.experimentalFacilityOther }}</strong>
+              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                      style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.experimentalFacility.replace('_', ' ') }}</strong>
+              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                      style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.experimentalFacilityOther }}</strong>
               <div style="display:inline-block; width:20%;">Equipment Type</div>
-              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentType }}</strong>
-              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" style="display:inline-block; width:78%;">{{ experiment.value.equipmentTypeOther }}</strong>
+              <strong ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                      style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.equipmentType.replace('_', ' ') }}</strong>
+              <strong ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)"
+                      style="display:inline-block; width:78%; text-transform:capitalize;">{{ experiment.value.equipmentTypeOther }}</strong>
               <div ng-show="experiment.value.procedureStart">
                 <div style="display:inline-block; width:20%;">Date of Experiment</div>
-                <strong style="display:inline-block; width:78%;">{{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}</strong>
+                <strong style="display:inline-block; width:78%;">
+                  {{ experiment.value.procedureStart | date:'MM-dd-yyyy' }} &#8213; {{ experiment.value.procedureEnd | date:'MM-dd-yyyy' }}
+                </strong>
               </div>
               <div>
                 <br>{{ experiment.value.description }}
