@@ -31,7 +31,7 @@ export class PublishedDataCtrl {
         this.viewCollabs = this.viewCollabs.bind(this);
         this.getUserDets = this.getUserDets.bind(this);
         this.onCitation = this.onCitation.bind(this);
-        this.onBrowse = this.onBrowse.bind(this);
+        this.getFileObjs = this.getFileObjs.bind(this);
     }
 
     $onInit() {
@@ -120,6 +120,22 @@ export class PublishedDataCtrl {
         };
     }
 
+    getFileObjs(evt) {
+        const _apiParams = {
+            fileMgr: 'published',
+            baseUrl: '/api/public/files'
+        };
+        evt.files = _.map(evt.fileObjs, (f) => {
+            f.system = 'designsafe.storage.published';
+            f.path = this.browser.publication.projectId + f.path;
+            f.permissions = 'READ';
+            return this.FileListing.init(f, _apiParams);
+        });
+    }
+
+    getTitle() {
+        this.$window.document.getElementsByName('citation_author_institution')[0].content = 'dingus'
+    }
 
     makeRequest() {
         return this.$http.get('/api/projects/publication');

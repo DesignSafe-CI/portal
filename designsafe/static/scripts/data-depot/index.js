@@ -54,30 +54,28 @@ function config(
         /* Private */
         .state('myData', {
             url: '/agave/{systemId}/{filePath:any}/',
-            component: 'myData',
+            component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
                 filePath: Django.user,
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var options = {
-                            system: $stateParams.systemId || 'designsafe.storage.default',
-                            path: $stateParams.filePath || Django.user,
-                        };
-                        if (options.path === '/') {
-                            options.path = Django.user;
-                        }
-                        DataBrowserService.apiParams.fileMgr = 'agave';
-                        DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-                        DataBrowserService.apiParams.searchState = 'dataSearch';
-                        return DataBrowserService.browse(options);
-                    },
-                ],
-                auth: function($q) {
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'agave',
+                        baseUrl: '/api/agave/files',
+                        searchState: 'dataSearch',
+                    };
+                },
+                path: ($stateParams, Django) => {
+                    'ngInject';
+                    if ($stateParams.filePath === '/') {
+                        return Django.user;
+                    }
+                    return $stateParams.filePath;
+                },
+                auth: ($q) => {
+                    'ngInject';
                     if (Django.context.authenticated) {
                         return true;
                     }
@@ -92,29 +90,19 @@ function config(
         })
         .state('dataSearch', {
             url: '/agave-search/?query_string&offset&limit',
-            component: 'my-data',
+            component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
                 filePath: '$SEARCH',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.fileMgr = 'agave';
-                        DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-                        DataBrowserService.apiParams.searchState = 'dataSearch';
-                        var queryString = $stateParams.query_string;
-                        var options = {
-                            system: $stateParams.systemId,
-                            query_string: queryString,
-                            offset: $stateParams.offset,
-                            limit: $stateParams.limit,
-                        };
-                        return DataBrowserService.search(options);
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'agave',
+                        baseUrl: '/api/agave/files',
+                        searchState: 'dataSearch',
+                    };
+                },
                 auth: function($q) {
                     if (Django.context.authenticated) {
                         return true;
@@ -129,25 +117,22 @@ function config(
         })
         .state('sharedData', {
             url: '/shared/{systemId}/{filePath:any}/',
-            component: 'shared',
+            component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
                 filePath: '$SHARE',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var systemId = $stateParams.systemId || 'designsafe.storage.default';
-                        var filePath = $stateParams.filePath || '$SHARE/';
-
-                        DataBrowserService.apiParams.fileMgr = 'agave';
-                        DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-                        DataBrowserService.apiParams.searchState = 'sharedDataSearch';
-                        return DataBrowserService.browse({ system: systemId, path: filePath });
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'agave',
+                        baseUrl: '/api/agave/files',
+                    };
+                },
+                path: ($stateParams)=> {
+                    'ngInject';
+                    return $stateParams.filePath || '$SHARE/';
+                },
                 auth: function($q) {
                     if (Django.context.authenticated) {
                         return true;
@@ -162,31 +147,20 @@ function config(
         })
         .state('sharedDataSearch', {
             url: '/shared-search/?query_string&offset&limit&shared',
-            component: 'my-data',
+            component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.default',
                 filePath: '$SEARCHSHARED',
                 shared: 'true',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.fileMgr = 'agave';
-                        DataBrowserService.apiParams.baseUrl = '/api/agave/files';
-                        DataBrowserService.apiParams.searchState = 'sharedDataSearch';
-                        var queryString = $stateParams.query_string;
-                        var options = {
-                            system: $stateParams.systemId,
-                            query_string: queryString,
-                            offset: $stateParams.offset,
-                            limit: $stateParams.limit,
-                            shared: $stateParams.shared,
-                        };
-                        return DataBrowserService.search(options);
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'agave',
+                        baseUrl: '/api/agave/files',
+                        searchState: 'sharedDataSearch',
+                    };
+                },
                 auth: function($q) {
                     if (Django.context.authenticated) {
                         return true;
@@ -306,24 +280,24 @@ function config(
         })
         .state('boxData', {
             url: '/box/{filePath:any}',
-            component: 'box',
+            component: 'dataDepotBrowser',
             params: {
                 filePath: '',
                 name: 'Box',
                 customRootFilePath: 'box/',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var filePath = $stateParams.filePath || '/';
-                        DataBrowserService.apiParams.fileMgr = 'box';
-                        DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
-                        DataBrowserService.apiParams.searchState = undefined;
-                        return DataBrowserService.browse({ path: filePath });
-                    },
-                ],
+                apiParams: ()=>{
+                    return {
+                        fileMgr: 'box',
+                        baseUrl: '/api/external-resources/files',
+                        searchState: undefined,
+                    };
+                },
+                path: ($stateParams)=> {
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
                 auth: function($q) {
                     if (Django.context.authenticated) {
                         return true;
@@ -337,24 +311,24 @@ function config(
         })
         .state('dropboxData', {
             url: '/dropbox/{filePath:any}',
-            component: 'dropbox',
+            component: 'dataDepotBrowser',
             params: {
                 filePath: '',
                 name: 'Dropbox',
                 customRootFilePath: 'dropbox/',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var filePath = $stateParams.filePath || '/';
-                        DataBrowserService.apiParams.fileMgr = 'dropbox';
-                        DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
-                        DataBrowserService.apiParams.searchState = undefined;
-                        return DataBrowserService.browse({ path: filePath });
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'dropbox',
+                        baseUrl: '/api/external-resources/files',
+                        searchState: undefined,
+                    };
+                },
+                path: ($stateParams) => {
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
                 auth: function($q) {
                     if (Django.context.authenticated) {
                         return true;
@@ -368,24 +342,24 @@ function config(
         })
         .state('googledriveData', {
             url: '/googledrive/{filePath:any}',
-            component: 'googleDrive',
+            component: 'dataDepotBrowser',
             params: {
                 filePath: '',
                 name: 'Google Drive',
                 customRootFilePath: 'googledrive/',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var filePath = $stateParams.filePath || '/';
-                        DataBrowserService.apiParams.fileMgr = 'googledrive';
-                        DataBrowserService.apiParams.baseUrl = '/api/external-resources/files';
-                        DataBrowserService.apiParams.searchState = undefined;
-                        return DataBrowserService.browse({ path: filePath });
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'googledrive',
+                        baseUrl: '/api/external-resources/files',
+                        searchState: undefined,
+                    };
+                },
+                path: ($stateParams) => {
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
                 auth: function($q) {
                     if (Django.context.authenticated) {
                         return true;
@@ -401,29 +375,19 @@ function config(
         /* Public */
         .state('publicDataSearch', {
             url: '/public-search/?query_string&offset&limit',
-            component: 'publications',
+            component: 'dataDepotPublicationsBrowser',
             params: {
                 systemId: 'nees.public',
                 filePath: '$SEARCH',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.fileMgr = 'public';
-                        DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                        DataBrowserService.apiParams.searchState = 'publicDataSearch';
-                        var queryString = $stateParams.query_string;
-                        var options = {
-                            system: $stateParams.systemId,
-                            query_string: queryString,
-                            offset: $stateParams.offset,
-                            limit: $stateParams.limit,
-                        };
-                        return DataBrowserService.search(options);
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'public',
+                        baseUrl: '/api/public/files',
+                        searchState: 'publicDataSearch',
+                    };
+                },
                 auth: function() {
                     return true;
                 },
@@ -432,29 +396,19 @@ function config(
 
         .state('communityDataSearch', {
             url: '/community-search/?query_string&offset&limit',
-            component: 'community',
+            component: 'dataDepotBrowser',
             params: {
                 systemId: 'nees.public',
                 filePath: '$SEARCH',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        DataBrowserService.apiParams.fileMgr = 'public';
-                        DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                        DataBrowserService.apiParams.searchState = 'communityDataSearch';
-                        var queryString = $stateParams.query_string;
-                        var options = {
-                            system: $stateParams.systemId,
-                            query_string: queryString,
-                            offset: $stateParams.offset,
-                            limit: $stateParams.limit,
-                        };
-                        return DataBrowserService.search(options);
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'public',
+                        baseUrl: '/api/public/files',
+                        searchState: 'communityDataSearch',
+                    };
+                },
                 auth: function() {
                     return true;
                 },
@@ -462,67 +416,50 @@ function config(
         })
         .state('communityData', {
             url: '/public/designsafe.storage.community/{filePath:any}',
-            component: 'community',
+            component: 'dataDepotBrowser',
             params: {
                 systemId: 'designsafe.storage.community',
                 filePath: '/',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var options = {
-                            system: $stateParams.systemId || 'designsafe.storage.community',
-                            path: $stateParams.filePath || '/',
-                        };
-                        DataBrowserService.apiParams.fileMgr = 'community';
-                        DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                        DataBrowserService.apiParams.searchState = 'communityDataSearch';
-                        return DataBrowserService.browse(options);
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'community',
+                        baseUrl: '/api/public/files',
+                        searchState: 'communityDataSearch',
+                    };
+                },
+                path: ($stateParams)=>{
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
                 auth: function() {
                     return true;
                 },
             },
         })
         .state('publicData', {
-            url: '/public/nees.public/{filePath:any}',
-            component: 'publications',
+            url: '/public/{filePath:any}',
+            component: 'dataDepotPublicationsBrowser',
             params: {
                 systemId: 'nees.public',
                 filePath: '',
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var systemId = $stateParams.systemId || 'nees.public';
-                        var filePath = $stateParams.filePath || '/';
-                        DataBrowserService.apiParams.fileMgr = 'public';
-                        DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                        DataBrowserService.apiParams.searchState = 'publicDataSearch';
-                        return DataBrowserService.browse({ system: systemId, path: filePath });
-                    },
-                ],
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'public',
+                        baseUrl: '/api/public/files',
+                        searchState: 'publicDataSearch',
+                    };
+                },
+                path: ($stateParams)=>{
+                    'ngInject';
+                    return $stateParams.filePath || '/';
+                },
                 auth: function() {
                     return true;
                 },
-                userAuth: [
-                    'UserService',
-                    function(UserService) {
-                        return UserService.authenticate().then(
-                            function() {
-                                return true;
-                            },
-                            function() {
-                                return false;
-                            }
-                        );
-                    },
-                ],
             },
         })
         .state('publishedData', {
@@ -533,50 +470,39 @@ function config(
                 filePath: '',
             },
             onExit: ($window) => {
-                $window.document.getElementsByName('description')[0].content = '';
-                $window.document.getElementsByName('citation_title')[0].content = '';
-                $window.document.getElementsByName('citation_title')[0].content = '';
-                $window.document.getElementsByName('citation_publication_date')[0].content = '';
-                $window.document.getElementsByName('citation_doi')[0].content = '';
-                $window.document.getElementsByName('citation_abstract_html_url')[0].content = '';
+                'ngInject';
 
-                var elements = $window.document.getElementsByName('citation_author');
-                while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
-                elements = $window.document.getElementsByName('citation_author_institution');
-                while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
-                elements = $window.document.getElementsByName('citation_keywords');
-                while (elements[0]) elements[0].parentNode.removeChild(elements[0]);
+                ['description', 'citation_title', 'citation_publication_date',
+                    'citation_doi', 'citation_abstract_html_url'].forEach(
+                    (name) => {
+                        let el = $window.document.getElementsByName(name);
+                        el[0].content = '';
+                    }
+                );
+                ['citation_author', 'citation_author_institution',
+                    'citation_keywords'].forEach(
+                    (name) => {
+                        let els = $window.document.getElementsByName(name);
+                        while(els[0]){
+                            els[0].parentNode.removeChild(els[0]);
+                        }
+                    }
+                );
             },
             resolve: {
-                listing: [
-                    '$stateParams',
-                    'DataBrowserService',
-                    function($stateParams, DataBrowserService) {
-                        var systemId = $stateParams.systemId || 'designsafe.storage.published';
-                        var filePath = $stateParams.filePath;
-                        DataBrowserService.apiParams.fileMgr = 'published';
-                        DataBrowserService.apiParams.baseUrl = '/api/public/files';
-                        DataBrowserService.apiParams.searchState = 'publicDataSearch';
-                        return DataBrowserService.browse({ system: systemId, path: filePath });
-                    },
-                ],
-                auth: function() {
+                listing: ($stateParams, DataBrowserService)=>{
+                    'ngInject';
+                    let systemId = $stateParams.systemId || 'designsafe.storage.published';
+                    let filePath = $stateParams.filePath;
+                    DataBrowserService.apiParams.fileMgr = 'published';
+                    DataBrowserService.apiParams.baseUrl = '/api/public/files';
+                    DataBrowserService.apiParams.searchState = 'publicDataSearch';
+                    return DataBrowserService.browse({ system: systemId, path: filePath });
+                },
+                auth: function(){
                     return true;
                 },
-                userAuth: [
-                    'UserService',
-                    function(UserService) {
-                        return UserService.authenticate().then(
-                            function() {
-                                return true;
-                            },
-                            function() {
-                                return false;
-                            }
-                        );
-                    },
-                ],
-            },
+            }
         })
         .state('trainingMaterials', {
             url: '/training/',
