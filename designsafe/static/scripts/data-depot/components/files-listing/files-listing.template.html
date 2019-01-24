@@ -36,23 +36,22 @@
                         <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
                             {{ item.name }}
                         </a>
-                        <span class="tag-item" data-ng-repeat="entityTag in item._entityTags">
-                            {{entityTag}}
-                        </span>
-                        <div style="width:100%;">
-                            <span data-ng-if="$ctrl.browser.loadingEntities">
-                                Loading
-                                <i class="fa fa-spinner fa-spin">&nbsp;</i>
-                            </span>
-                            <span class="label selected"
-                                  data-ng-repeat-start="entity in item._entities"
-                                  data-ng-class="entity.cssClasses()['tag']"
-                            >
-                                {{ entity._displayName }}
-                            </span>
-                            <span data-ng-repeat-end class="tag-title">
-                                {{entity.value.title}}
-                            </span>
+                        <div class="project-categories">
+                            <div class="file-categories"
+                                 data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
+                                <file-categories data-project="$ctrl.browser.project"
+                                                 data-file="item">
+                                </file-categories>
+                            </div>
+                            <div class="file-categories-selector"
+                                 data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
+                                <file-category-selector data-project="$ctrl.browser.project"
+                                                          data-file="item">
+                                </file-category-selector>
+                            </div>
+                            <div data-ng-if="$ctrl.browser.loadingEntities">
+                                <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
+                            </div>
                         </div>
                     </td>
                     <td data-ng-if="item.format== 'folder'">--</td>
