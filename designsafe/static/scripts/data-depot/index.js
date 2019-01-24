@@ -213,6 +213,7 @@ function config(
                     '$stateParams',
                     'ProjectService',
                     ($stateParams, ProjectService) => {
+                        'ngInject';
                         ProjectService.resolveParams.projectId = $stateParams.projectId;
                         return $stateParams.projectId;
                     },
