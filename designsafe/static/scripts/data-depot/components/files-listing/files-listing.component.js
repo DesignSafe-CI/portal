@@ -111,7 +111,7 @@ export const FilesListingComponent = {
     template: FilesListingTemplate,
     bindings: {
         browser: '=',
-        stateName: '<',
+        listing: '=',
     },
 };
 
