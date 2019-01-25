@@ -195,7 +195,6 @@ function config(
                         if (options.path === '/') {
                             options.path = Django.user;
                         }
-
                         DataBrowserService.currentState.listing = {
                             system: 'designsafe.storage.default',
                             permissions: [],
@@ -427,7 +426,6 @@ function config(
                 },
             },
         })
-
         /* Public */
         .state('publicDataSearch', {
             url: '/public-search/?query_string&offset&limit',
@@ -526,7 +524,6 @@ function config(
             },
             onExit: ($window) => {
                 'ngInject';
-
                 ['description', 'citation_title', 'citation_publication_date',
                     'citation_doi', 'citation_abstract_html_url'].forEach(
                     (name) => {
@@ -597,7 +594,6 @@ ddModule
         'Django',
         function($rootScope, $location, $state, Django) {
             $rootScope.$state = $state;
-
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
                 if (toState.name === 'myData' || toState.name === 'sharedData') {
                     var ownerPath = new RegExp('^/?' + Django.user).test(toParams.filePath);
