@@ -624,6 +624,7 @@ span.tag-title {
 
 .grayed-out {
     background-color:lightgray;
+    color:#3e3e3e;
 }
 
 .wizard-steps .active {
