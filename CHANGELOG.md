@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.2.1
+
+Fixes:
+
+- Fix users details in publication pipeline.
+
 ## v3.2.0
 
 v3.2.0 Release
