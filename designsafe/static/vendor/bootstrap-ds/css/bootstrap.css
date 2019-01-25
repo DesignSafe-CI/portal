@@ -4847,6 +4847,11 @@ fieldset[disabled] .navbar-inverse .btn-link:hover,
 fieldset[disabled] .navbar-inverse .btn-link:focus {
   color: #444444;
 }
+.tab-experiment {
+  background-color: #e6e6e6;
+  border-color: #cccccc;
+  margin-bottom: 2px;
+}
 .category-model-conf {
   font-weight: bold;
   color: #1568C9;

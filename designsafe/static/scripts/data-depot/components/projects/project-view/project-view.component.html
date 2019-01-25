@@ -1,6 +1,6 @@
 <div class="project">
     <div ng-if="data.project" class="project-detail" style="background:white;">
-      <!-- New Header Start -->
+      <!-- Project Header Start -->
       <div>
         <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
         <a ng-click="editProject($event)">Edit Project</a>
@@ -17,7 +17,7 @@
         </div>
         <div class="prj-row">
           <span class="prj-label">Project Type</span>
-          <span class="prj-data">{{ data.project.value.projectType }}</span>
+          <span class="prj-data">{{ data.project.value.projectType.replace('_', ' ') }}</span>
         </div>
         <table class="tg" style="table-layout: fixed; width: 100%;">
           <colgroup>
@@ -48,49 +48,56 @@
           <p>{{ data.project.value.description }}</p>
         </div>
       </div>
-      <!-- New Header End -->
-      <div role="group" aria-label="Listing views" ng-if="!state.publishPipeline">
-        <button class="btn btn-project-l"
-                ng-click="showListing()"
-                ng-class="{'grayed-out': !state.showMainListing}">
+      <!-- Project Header End -->
+      <div style="width:100%; max-width: 100%;" role="group" aria-label="Listing views">
+        <table class="tg" style="table-layout: fixed; width: 100%;">
+          <colgroup>
+            <col style="width: 46%">
+            <col style="width: 50%">
+          </colgroup>
+          <tr>
+            <td class="tg-0lax">
+              <button class="btn btn-project-l" ng-click="workingDirectory()">
                 Working Directory</button>
-        <button class="btn btn-project-m"
-                ng-click="_()"
-                ng-class="{'grayed-out': !state.showPreviewListing}"
-                ng-disabled="data._">
-                Curation Directory*</button>
-        <button class="btn btn-project-r"
-                ng-click="showPreview()"
-                ng-class="{'grayed-out': !state.showPreviewListing}" 
-                ng-disabled="data.loadingEntities">
+              <!-- curation directory is not set -->
+              <button class="btn btn-project-m grayed-out" ng-click="curationDirectory()">
+                Curation Directory</button>
+              <button class="btn btn-project-r grayed-out" ng-click="publicationPreview()">
                 Publication Preview</button>
-        <div ng-if="state.showPreviewListing" style="margin-left:15px; display:inline-block;">
-          <a class="" href="https://www.youtube.com/watch?v=NgeDRSdatsc&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
-            <i class="fa fa-question-circle"></i> Learn More
-          </a>
-        </div>
-        <div class="btn-group" role="group" aria-label="Project Actions" style="margin-left:15px;" ng-if="state.showMainListing">
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageExperiments($event)"
-            ng-if="data.project.value.projectType === 'experimental'">
-            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
-            Manage Experiments
-          </button>
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageSimulations($event)"
-            ng-if="data.project.value.projectType === 'simulation'">
-            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
-            Manage Simulations
-          </button>
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageHybridSimulations($event)"
-            ng-if="data.project.value.projectType === 'hybrid_simulation'">
-            <img src="/static/images/ds-icons/icon-greek.png" width="32" height="16" />
-            Manage Hybrid Simulations
-          </button>
-          <button class="btn btn-sm btn-default" ng-disabled="data.loadingEntities" ng-click="manageCategories($event)">
-            Manage Categories
-          </button>
-        </div>
+            </td>
+            <td class="tg-0lax">
+              <div>
+                <span style="padding:10px; font-weight:bold;">1
+                  <a  ng-disabled="data.loadingEntities"
+                      ng-click="manageExperiments($event)"
+                      ng-if="data.project.value.projectType === 'experimental'"> Add Experiments</a>
+                  <a  ng-disabled="data.loadingEntities"
+                      ng-click="manageSimulations($event)"
+                      ng-if="data.project.value.projectType === 'simulation'"> Add Simulations</a>
+                  <a  ng-disabled="data.loadingEntities"
+                      ng-click="manageHybridSimulations($event)"
+                      ng-if="data.project.value.projectType === 'hybrid_simulation'"> Add Hybrid Simulations</a>
+                </span>
+                <span style="padding:5px; font-weight:bold;">|</span>
+                <span style="padding:10px; font-weight:bold;">2
+                  <a ng-disabled="data.loadingEntities" ng-click="manageCategories($event)"> Add Categories</a>
+                </span>
+                <span style="padding:5px; font-weight:bold;">|</span>
+                <span style="padding:10px; font-weight:bold;">3 <a>Construct Tree</a></span>
+              </div>
+              <!-- <div  class="btn-group pull-right"
+                    role="group"
+                    aria-label="Publish buttons"
+                    ng-if="curState.preview">
+                <button class="btn btn-add" ng-click="launchModal()">
+                  Prepare to Publish <i class="fa fa-arrow-right"></i>
+                </button>
+              </div> -->
+            </td>
+          </tr>
+        </table>
       </div>
-
+      <br>
       <div class="alert alert-danger" ng-if="(state.publishPipeline == 'select' || state.publishPipeline == 'review') && state.missing.length > 0">
         <strong>The following categories do not have associated data:</strong>
         <div ng-repeat="missing in state.missing">
@@ -148,21 +155,6 @@
              Next <i class="fa fa-arrow-right"></i>
             </button>
           </div>
-
-          <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
-               ng-if="state.showPreviewListing && !state.publishPipeline">
-            <div>
-                <a href="https://www.youtube.com/watch?v=3uwZX2MB3g8&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
-                   target="_blank">
-                  <i class="fa fa-question-circle"></i> Learn More
-                </a>
-            </div>
-            <button class="btn btn-danger"
-                    ng-click="publishPipeline_start()">
-                Prepare to Publish <i class="fa fa-arrow-right"></i>
-            </button>
-          </div>
-
           <div class="btn-group pull-right" role="group" aria-label="Publish buttons"
                ng-if="state.publishPipeline == 'agreement'">
             <button id="requestAndPublish" class="btn btn-danger"
@@ -197,6 +189,5 @@
             <i class="fa fa-spinner fa-spin"></i> Loading Project Details...
         </p>
     </div>
-    <hr>
     <ui-view class="project-data"></ui-view>
 </div>

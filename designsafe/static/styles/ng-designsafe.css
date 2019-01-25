@@ -167,8 +167,14 @@
     width: 100%;
 }
 
-.ds-data-selected {
+.files-listing-table tbody tr:hover,
+.files-listing-table tbody tr:focus {
     background-color: #a1d2eb !important;
+}
+
+.files-listing-table tbody tr td div.checkbox {
+    display: inline-block;
+    margin: 0;
 }
 
 /**

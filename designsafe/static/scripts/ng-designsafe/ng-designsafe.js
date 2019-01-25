@@ -2,6 +2,7 @@
 // they will stomp on eachother
 import '../../styles/base.scss';
 import '../../styles/main.css';
+import '../projects/components/file-categories/file-categories.scss';
 
 import $ from 'jquery';
 import angular from 'angular';

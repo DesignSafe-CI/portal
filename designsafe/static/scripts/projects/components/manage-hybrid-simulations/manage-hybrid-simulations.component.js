@@ -14,6 +14,11 @@ class ManageHybridSimCtrl {
     $onInit() {
         this.options = this.resolve.options;
         var members = [this.options.project.value.pi].concat(this.options.project.value.coPis, this.options.project.value.teamMembers);
+        members.forEach((m, i) => {
+            if (typeof m == 'string') {
+                members[i] = { name: m, order: i, authorship: false };
+            }
+        });
 
         this.data = {
             busy: false,
@@ -67,12 +72,13 @@ class ManageHybridSimCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     saveSimulation($event) {
         $event.preventDefault();
         this.data.busy = true;
+        this.form.addSimulation[0].authors = this.data.users;
         var simulation = this.form.addSimulation[0];
         if (_.isEmpty(simulation.title) || typeof simulation.title === 'undefined' ||
             _.isEmpty(simulation.simulationType) || typeof simulation.simulationType === 'undefined') {
@@ -97,9 +103,30 @@ class ManageHybridSimCtrl {
     }
 
     editSim(sim) {
+        /* convert string usernames to author objects and remove duplicates */
+        var usersToClean = [...new Set([...this.data.users, ...sim.value.authors.slice()])];
+        var modAuths = false;
+        usersToClean.forEach((a) => {
+            if (typeof a == 'string') {
+                modAuths = true;
+            }
+        });
+        if (modAuths) {
+            usersToClean.forEach((auth, i) => {
+                if (typeof auth == 'string') {
+                    usersToClean[i] = {name: auth, order: i, authorship: false};
+                } else {
+                    auth.order = i;
+                }
+            });
+            usersToClean = _.uniq(usersToClean, 'name');
+        } else {
+            usersToClean = _.uniq(usersToClean, 'name');
+        }
+
         this.editSimForm = {
             sim: sim,
-            authors: sim.value.authors.slice(),
+            authors: usersToClean,
             description: sim.value.description,
             simulationType: sim.value.simulationType,
             simulationTypeOther: sim.value.simulationTypeOther,
@@ -108,29 +135,45 @@ class ManageHybridSimCtrl {
         this.ui.showEditSimulationForm = true;
     }
 
-    editAuthors(user) {
-        var index = this.editSimForm.authors.indexOf(user);
-        if (index > -1) {
-            this.editSimForm.authors.splice(index, 1);
+    editAuthors(user, i) {
+        if (document.getElementById('editAuthor' + i).checked) {
+            user.authorship = true;
         } else {
-            this.editSimForm.authors.push(user);
+            user.authorship = false;
         }
     }
 
-    /*
-    addAuthors will need to be updated if option to support
-    simultaneous hybrid simulation creation is implemented
-    */
-    addAuthors(user) {
-        if (this.form.addSimulation[0].authors) {
-            var index = this.form.addSimulation[0].authors.indexOf(user);
-            if (index > -1) {
-                this.form.addSimulation[0].authors.splice(index, 1);
-            } else {
-                this.form.addSimulation[0].authors.push(user);
-            }
+    addAuthors(user, i) {
+        if (document.getElementById('newAuthor' + i).checked) {
+            user.authorship = true;
         } else {
-            this.form.addSimulation[0].authors = [user];
+            user.authorship = false;
+        }
+    }
+
+    orderAuthors(up) {
+        var a;
+        var b;
+        if (up) {
+            if (this.editSimForm.selectedAuthor.order <= 0) {
+                return;
+            }
+            // move up
+            a = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order - 1);
+            b = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
+        } else {
+            if (this.editSimForm.selectedAuthor.order >= this.editSimForm.authors.length - 1) {
+                return;
+            }
+            // move down
+            a = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order + 1);
+            b = this.editSimForm.authors.find(x => x.order === this.editSimForm.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
         }
     }
 

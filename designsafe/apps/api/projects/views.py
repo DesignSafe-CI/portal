@@ -31,7 +31,8 @@ from designsafe.apps.projects.models.agave.experimental import (
     Event, Analysis, SensorList, Report)
 from designsafe.apps.projects.models.agave import simulation, hybrid_simulation
 from designsafe.apps.api.agave.filemanager.public_search_index import (PublicationManager,
-                                                                       Publication)
+                                                                       Publication,
+                                                                       LegacyPublication)
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
@@ -90,6 +91,18 @@ class PublicationView(BaseApiView):
                                             'schedule for publication',
                                  'status': status}},
                             status=200)
+
+class NeesPublicationView(BaseApiView):
+    """
+    View for retrieving NEES legacy projects.
+    """
+    @profile_fn
+    def get(self, request, nees_id):
+        """
+        Retrieve a NEES project using its ID and return its JSON representation.
+        """
+        pub = LegacyPublication(nees_id=nees_id)
+        return JsonResponse(pub.to_file())
 
 class ProjectListingView(SecureMixin, BaseApiView):
     @profile_fn

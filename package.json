@@ -98,6 +98,7 @@
     "ngstorage": "^0.3.11",
     "null-loader": "^0.1.1",
     "objectpath": "^1.2.1",
+    "prettier": "^1.16.1",
     "prismjs": "^1.6.0",
     "raw-loader": "^0.5.1",
     "rxjs": "^6.3.3",

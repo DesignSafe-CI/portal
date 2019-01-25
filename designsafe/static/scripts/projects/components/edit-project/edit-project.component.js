@@ -149,7 +149,7 @@ class EditProjectCtrl {
     }
 
     cancel() {
-        this.dismiss();
+        this.close();
     }
 
     savePrj(options) {
@@ -254,9 +254,8 @@ class EditProjectCtrl {
         if (typeof this.form.keywords !== 'undefined') {
             projectData.keywords = this.form.keywords;
         }
-        console.log(projectData);
         this.savePrj(projectData).then((project) => {
-            this.close(project);
+            this.close({$value: project});
             this.ui.busy = false;
         });
     }

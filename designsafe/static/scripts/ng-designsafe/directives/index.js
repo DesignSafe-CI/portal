@@ -4,12 +4,9 @@ let designsafeDirectives = angular.module('designsafe.directives', []);
 
 import { ddAltmetrics } from './dd-altmetrics';
 import { ddBoxListing } from './dd-box-listing';
-import { ddBreadcrumb } from './dd-breadcrumb';
 import { ddDropboxListing } from './dd-dropbox-listing';
-import { ddListing } from './dd-listing';
 import { ddGoogleDriveListing } from './dd-googledrive-listing';
 import { ddProjectSearchListing } from './dd-project-search-listing';
-import { ddPublicListing } from './dd-public-listing';
 import { ddPublicSearchListing } from './dd-public-search-listing';
 import { ddSearchListing } from './dd-search-listing';
 import { ddSharedListing } from './dd-shared-listing';
@@ -21,12 +18,9 @@ import { fileModel, spinnerOnLoad, httpSrc, accessfiles,
 
 designsafeDirectives.directive('ddAltmetrics', ['$sce', '$filter', ddAltmetrics]);
 designsafeDirectives.directive('ddBoxListing', ddBoxListing);
-designsafeDirectives.directive('ddBreadcrumb', ddBreadcrumb);
 designsafeDirectives.directive('ddDropboxListing', ddDropboxListing);
-designsafeDirectives.directive('ddListing', ddListing);
 designsafeDirectives.directive('ddGoogleDriveListing', ddGoogleDriveListing);
 designsafeDirectives.directive('ddProjectSearchListing', ddProjectSearchListing);
-designsafeDirectives.directive('ddPublicListing', ddPublicListing);
 designsafeDirectives.directive('ddPublicSearchListing', ddPublicSearchListing);
 designsafeDirectives.directive('ddSearchListing', ddSearchListing);
 designsafeDirectives.directive('ddSharedListing', ddSharedListing);

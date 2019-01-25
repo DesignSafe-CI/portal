@@ -104,7 +104,7 @@
                 <label>Category Title</label>
                 <span style="color: #D04348;">&#9679; </span>
                 <div>
-                    If you only want to enter a single date, fill in the first field.
+                    If you only want to enter a single date, fill in the firest field.
                 </div>
                 <input type="text" style="width:100%;" ng-model="$ctrl.form.projectTagToAdd.title"
                     ng-required="true">
@@ -259,7 +259,7 @@
                 <label>Category Title</label>
                 <span style="color: #D04348;">&#9679; </span>
                 <div>
-                    If you only want to enter a single date, fill in the first field.
+                    If you only want to enter a single date, fill in the firest field.
                 </div>
                 <input  type="text"
                         style="width:100%;"
@@ -329,7 +329,7 @@
         </div>
         <div class="dropdown">
             <!-- Model Config -->
-            <div ng-repeat="modelConf in $ctrl.data.project.modelconfig_set">
+            <div ng-repeat="modelConf in $ctrl.data.project.modelconfig_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
                         style="width:100%;">
@@ -352,7 +352,7 @@
                 </div>
             </div>
             <!-- Sensor Info -->
-            <div ng-repeat="sensorInfo in $ctrl.data.project.sensorlist_set">
+            <div ng-repeat="sensorInfo in $ctrl.data.project.sensorlist_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
                         style="width:100%;">
@@ -375,7 +375,7 @@
                 </div>
             </div>
             <!-- Events -->
-            <div ng-repeat="event in $ctrl.data.project.event_set">
+            <div ng-repeat="event in $ctrl.data.project.event_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
@@ -398,7 +398,7 @@
                 </div>
             </div>
             <!-- Simulation Model -->
-            <div ng-repeat="model in $ctrl.data.project.model_set">
+            <div ng-repeat="model in $ctrl.data.project.model_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                         style="width:100%;">
@@ -421,7 +421,7 @@
                 </div>
             </div>
             <!-- Simulation Input -->
-            <div ng-repeat="input in $ctrl.data.project.input_set">
+            <div ng-repeat="input in $ctrl.data.project.input_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{input.uuid}}"
                         style="width:100%;">
@@ -444,7 +444,7 @@
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="output in $ctrl.data.project.output_set">
+            <div ng-repeat="output in $ctrl.data.project.output_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{output.uuid}}"
                         style="width:100%;">
@@ -467,7 +467,7 @@
                 </div>
             </div>
             <!-- Global Model -->
-            <div ng-repeat="gm in $ctrl.data.project.globalmodel_set">
+            <div ng-repeat="gm in $ctrl.data.project.globalmodel_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
                         style="width:100%;">
@@ -490,7 +490,7 @@
                 </div>
             </div>
             <!-- Coordinator -->
-            <div ng-repeat="coordinator in $ctrl.data.project.coordinator_set">
+            <div ng-repeat="coordinator in $ctrl.data.project.coordinator_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
                         style="width:100%;">
@@ -513,7 +513,7 @@
                 </div>
             </div>
             <!-- Simulation Substructure -->
-            <div ng-repeat="simsub in $ctrl.data.project.simsubstructure_set">
+            <div ng-repeat="simsub in $ctrl.data.project.simsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
                         style="width:100%;">
@@ -536,7 +536,7 @@
                 </div>
             </div>
             <!-- Experimental Substructure -->
-            <div ng-repeat="expsub in $ctrl.data.project.expsubstructure_set">
+            <div ng-repeat="expsub in $ctrl.data.project.expsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-subst" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
                         style="width:100%;">
@@ -559,7 +559,7 @@
                 </div>
             </div>
             <!-- Coordinator Output -->
-            <div ng-repeat="cout in $ctrl.data.project.coordinatoroutput_set">
+            <div ng-repeat="cout in $ctrl.data.project.coordinatoroutput_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
                         style="width:100%;">
@@ -582,7 +582,7 @@
                 </div>
             </div>
             <!-- Experiment Output -->
-            <div ng-repeat="eout in $ctrl.data.project.expoutput_set">
+            <div ng-repeat="eout in $ctrl.data.project.expoutput_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
                         style="width:100%;">
@@ -605,7 +605,7 @@
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="sout in $ctrl.data.project.simoutput_set">
+            <div ng-repeat="sout in $ctrl.data.project.simoutput_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-outpt" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
                         style="width:100%;">
@@ -628,7 +628,7 @@
                 </div>
             </div>
             <!-- Analysis -->
-            <div ng-repeat="analysis in $ctrl.data.project.analysis_set">
+            <div ng-repeat="analysis in $ctrl.data.project.analysis_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
@@ -662,7 +662,7 @@
                 </div>
             </div>
             <!-- Reports -->
-            <div ng-repeat="report in $ctrl.data.project.report_set">
+            <div ng-repeat="report in $ctrl.data.project.report_set | orderBy: ['value.title']">
                 <div class="dropdown">
                     <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                         style="width:100%;">

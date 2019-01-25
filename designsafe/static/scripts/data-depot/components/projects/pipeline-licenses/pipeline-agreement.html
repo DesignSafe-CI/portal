@@ -1,0 +1,26 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span>Agreement</span>
+        <span class="pull-right" ng-click="$ctrl.cancel()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body" style="padding: 30px;">
+    <p style="padding-bottom: 10px;">
+        This submission represents my original work. The submission meets the requirements established
+        by DesignSafe-CI available at the <a>Curation and Publication Guidelines</a>. I understand the type
+        of license I choose to distribute my data and guarantee that I am entitled to grant the rights
+        contained in them. I agree that when this submission is made public with a unique
+        digital object identifier (DOI), this will result in a publication that cannot be changed.
+        If I have revisions this will result in a new version of the publication including a new DOI.
+    </p>
+    <div>
+        <span style="display:inline-block; width:75%;">
+            <input type="checkbox" id="agreement" ng-click="$ctrl.agree()"> I agree
+        </span>
+        <button class="btn btn-add" style="display:inline-block; width:24%;" ng-click="$ctrl.publish()" ng-disabled="!$ctrl.valid">
+            <i class="fa fa-globe"></i> Request DOI & Publish
+        </button>
+    </div>
+</div>

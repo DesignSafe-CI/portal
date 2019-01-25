@@ -1,0 +1,113 @@
+<form>
+    <select name="project-category"
+            data-ng-model="$ctrl.selectedUuid"
+            data-ng-change="$ctrl.selectCategory()"
+            class="form-control">
+        <option value="">-- Select a Category --</option>
+        <optgroup label="Model Configuration"
+                  data-ng-if="$ctrl.project.modelconfig_set.length">
+            <option data-ng-repeat="modelConfig in $ctrl.project.modelconfig_set | orderBy: ['value.title']"
+                    value="{{modelConfig.uuid}}">
+            {{modelConfig.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Sensor Info"
+                  data-ng-if="$ctrl.project.sensorlist_set.length">
+            <option data-ng-repeat="sensorInfo in $ctrl.project.sensorlist_set | orderBy: ['value.title']"
+                    value="{{sensorInfo.uuid}}">
+                {{sensorInfo.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Event"
+                  data-ng-if="$ctrl.project.event_set.length">
+            <option data-ng-repeat="event in $ctrl.project.event_set | orderBy: ['value.title']"
+                    value="{{event.uuid}}">
+                {{event.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Simulation Model"
+                  data-ng-if="$ctrl.project.model_set.length">
+            <option data-ng-repeat="event in $ctrl.project.model_set | orderBy: ['value.title']"
+                    value="{{model.uuid}}">
+                {{model.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Simulation Input"
+                  data-ng-if="$ctrl.project.input_set.length">
+            <option data-ng-repeat="input in $ctrl.project.input_set | orderBy: ['value.title']"
+                    value="{{input.uuid}}">
+                {{input.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Simulation Output"
+                  data-ng-if="$ctrl.project.output_set.length">
+            <option data-ng-repeat="output in $ctrl.project.output_set | orderBy: ['value.title']"
+                    value="{{output.uuid}}">
+                {{output.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Global Model"
+                  data-ng-if="$ctrl.project.globalmodel_set.length">
+            <option data-ng-repeat="globalModel in $ctrl.project.globalmodel_set | orderBy: ['value.title']"
+                    value="{{globalModel.uuid}}">
+                {{globalModel.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Coordinator"
+                  data-ng-if="$ctrl.project.coordinator_set.length">
+            <option data-ng-repeat="coordinator in $ctrl.project.coordinator_set | orderBy: ['value.title']"
+                    value="{{coordinator.uuid}}">
+                {{coordinator.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Simulation Substructure"
+                  data-ng-if="$ctrl.project.simsubstructure_set.length">
+            <option data-ng-repeat="simSubstructure in $ctrl.project.simsubstructure_set | orderBy: ['value.title']"
+                    value="{{simSubstructure.uuid}}">
+                {{simSubstructure.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Experimental Substructure"
+                  data-ng-if="$ctrl.project.expsubstructure_set.length">
+            <option data-ng-repeat="expSubstructure in $ctrl.project.expsubstructure_set | orderBy: ['value.title']"
+                    value="{{expSubstructure.uuid}}">
+                {{expSubstructure.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Coordinator Output"
+                  data-ng-if="$ctrl.project.coordinatoroutput_set.length">
+            <option data-ng-repeat="coordinatorOutput in $ctrl.project.coordinatoroutput_set | orderBy: ['value.title']"
+                    value="{{coordinatorOutput.uuid}}">
+                {{coordinatorOutput.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Experiment Output"
+                  data-ng-if="$ctrl.project.experimentoutput_set.length">
+            <option data-ng-repeat="experimentOutput in $ctrl.project.experimentoutput_set | orderBy: ['value.title']"
+                    value="{{coordinatorOutput.uuid}}">
+                {{coordinatorOutput.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Simulation Output"
+                  data-ng-if="$ctrl.project.simoutput_set.length">
+            <option data-ng-repeat="simOutput in $ctrl.project.simoutput_set | orderBy: ['value.title']"
+                    value="{{simOutput.uuid}}">
+                {{simOutput.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Analysis"
+                  data-ng-if="$ctrl.project.analysis_set.length">
+            <option data-ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: ['value.title']"
+                    value="{{analysis.uuid}}">
+                {{analysis.value.title}}
+            </option>
+        </optgroup>
+        <optgroup label="Report"
+                  data-ng-if="$ctrl.project.report_set.length">
+            <option data-ng-repeat="report in $ctrl.project.report_set | orderBy: ['value.title']"
+                    value="{{report.uuid}}">
+                {{report.value.title}}
+            </option>
+        </optgroup>
+    </select>
+</form>

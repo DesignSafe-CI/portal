@@ -1,0 +1,113 @@
+<div class="table-responsive" data-ng-class="{'preview-wrapper': $ctrl.browser.showPreviewListing}">
+    <div class="ds-table-display-wrapper"
+         data-ds-infinite-scroll
+         data-scroll-bottom="$ctrl.scrollToBottom()"
+         data-bottom-height="0"
+         data-ng-if="$ctrl.browser.showMainListing ||
+                     ($ctrl.browser.showPreviewListing &&
+                       $ctrl.browser.project.value.projectType == 'other' &&
+                       (!$ctrl.browser.publishPipeline ||
+                         $ctrl.browser.publishPipeline == 'select' ||
+                         $ctrl.browser.publishPipeline == 'review'))"
+    >
+        <table class="files-listing-table table table-bordered table-striped"
+               style="background-color: #fff;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Last modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-ng-if="!$ctrl.browser.busyListing"
+                    data-ng-repeat="item in $ctrl.listing().children"
+                    data-ng-click="$ctrl.onSelect($event, item)"
+                >
+                    <td>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       data-ng-checked="item._ui.selected">
+                                <span class="sr-only">Selected</span>
+                            </label>
+                        </div>
+                        <i class="fa {{ item.icon() }}">&nbsp;</i>
+                        <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
+                            {{ item.name }}
+                        </a>
+                        <div class="project-categories">
+                            <div class="file-categories"
+                                 data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
+                                <file-categories data-project="$ctrl.browser.project"
+                                                 data-file="item">
+                                </file-categories>
+                            </div>
+                            <div class="file-categories-selector"
+                                 data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
+                                <file-category-selector data-project="$ctrl.browser.project"
+                                                          data-file="item">
+                                </file-category-selector>
+                            </div>
+                            <div data-ng-if="$ctrl.browser.loadingEntities">
+                                <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
+                            </div>
+                        </div>
+                    </td>
+                    <td data-ng-if="item.format== 'folder'">--</td>
+                    <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
+                    <td>{{ item.lastModified|date:"short" }}</td>
+                </tr>
+                <tr data-ng-if="$ctrl.browser.busyListingPage">
+                    <td>
+                        <span class="bg-info text-info">
+                            <i class="fa fa-spinner fa-spin">&nbsp;</i>
+                            Loading...
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+            <caption style="padding:0px;">
+                <div data-ng-if="$ctrl.browser.busy"
+                     style="padding:10px; font-size:large; width:100%;"
+                     class="bg-info"
+                 >
+                    <span>
+                        <i class="fa fa-spinner fa-spin">&nbsp;</i>
+                        Loading...
+                    </span>
+                </div>
+                <div data-ng-if="! $ctrl.browser.busy && $ctrl.browser.error" class="text-center">
+                    <div class="alert alert-danger">
+                        <div data-ng-if="$ctrl.browser.error.message"
+                             data-ng-bind-html="$ctrl.browser.error.message">
+                            {{$ctrl.browser.error}}
+                        </div>
+                        <div data-ng-if="!$ctrl.browser.error.message">
+                            Something went wrong.
+                        </div>
+                    </div>
+                </div>
+                <div data-ng-if="! $ctrl.browser.busy &&
+                                 ! $ctrl.browser.error &&
+                                 ($ctrl.listing().children|length) === 0"
+                     style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
+                     class="text-center"
+                >
+                    <p class="lead">
+                        This folder is empty! <br />
+                        <i class="fa fa-folder-open-o">&nbsp;</i><br />
+                        <a class=""
+                           data-ng-if="$ctrl.listing().system.indexOf('project-') == 0"
+                           href="https://www.youtube.com/watch?v=ISrPManDVCYi&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                            target="_blank"
+                        >
+                            <i class="fa fa-question-circle">&nbsp;</i>
+                            Learn how to move files to a project
+                        </a>
+                    </p>
+                </div>
+            </caption>
+        </table>
+    </div>
+</div>
