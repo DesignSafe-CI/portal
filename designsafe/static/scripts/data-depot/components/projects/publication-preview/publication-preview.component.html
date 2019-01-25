@@ -2,7 +2,7 @@
     <!-- Project Header Start -->
     <div>
         <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
-        <a ng-click="$ctrl.editProject($event)">Edit Project</a>
+        <a class="edit-link"ng-click="$ctrl.editProject($event)">Edit Project</a>
         <div class="prj-row">
             <span class="prj-label">PI</span>
             <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}</ds-user>
