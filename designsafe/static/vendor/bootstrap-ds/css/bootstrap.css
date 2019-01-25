@@ -1322,7 +1322,7 @@ mark,
 }
 
 .edit-link {
-  font-family: "Helvetica Neue Medium", sans-serif;
+  font-weight: bold;
 }
 .prj-row {
   padding-bottom: 2px;
@@ -3553,19 +3553,19 @@ fieldset[disabled] .btn-danger.active {
   border-bottom-left-radius: 10px;
   color: #ffffff;
   background-color: #337ab7;
-  font-family: "Helvetica Neue Medium", sans-serif;
+  font-weight: bold;
 }
 .btn-project-m {
   color: #ffffff;
   background-color: #337ab7;
-  font-family: "Helvetica Neue Medium", sans-serif;
+  font-weight: bold;
 }
 .btn-project-r {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   color: #ffffff;
   background-color: #337ab7;
-  font-family: "Helvetica Neue Medium", sans-serif;
+  font-weight: bold;
 }
 .btn-link {
   color: #337ab7;
