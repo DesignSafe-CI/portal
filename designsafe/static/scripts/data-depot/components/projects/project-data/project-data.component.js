@@ -127,7 +127,7 @@ function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserServ
 
     var setUserDetails = function(usernames){
       $scope.browser.publication.users = [];
-      filePaths = _.uniq(usernames);
+      usernames = _.uniq(usernames);
       var p = $q(function(resolve, reject){
         var results = [];
         var index = 0;
@@ -188,7 +188,7 @@ function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserServ
           })
         .then(function(){setFilesDetails(allFilePaths);})
         .then(function(){
-            users = [$scope.browser.project.value.pi]
+            var users = [$scope.browser.project.value.pi]
                       .concat($scope.browser.project.value.coPis)
                       .concat($scope.browser.project.value.teamMembers);
             return setUserDetails(users);
@@ -974,7 +974,7 @@ function ProjectDataCtrl($scope, $state, Django, ProjectService, DataBrowserServ
       },
 
       togglePubAgreement : function() {
-        $scope.state.publishAgreement = !$scope.state.publishAgreement;
+        $scope.browser.publishAgreement = !$scope.browser.publishAgreement;
       }
     };
 
