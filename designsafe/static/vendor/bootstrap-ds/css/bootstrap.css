@@ -3553,11 +3553,13 @@ fieldset[disabled] .btn-danger.active {
   border-bottom-left-radius: 10px;
   color: #ffffff;
   background-color: #337ab7;
+  font-size: 13px;
   font-weight: bold;
 }
 .btn-project-m {
   color: #ffffff;
   background-color: #337ab7;
+  font-size: 13px;
   font-weight: bold;
 }
 .btn-project-r {
@@ -3565,6 +3567,7 @@ fieldset[disabled] .btn-danger.active {
   border-bottom-right-radius: 10px;
   color: #ffffff;
   background-color: #337ab7;
+  font-size: 13px;
   font-weight: bold;
 }
 .btn-link {
