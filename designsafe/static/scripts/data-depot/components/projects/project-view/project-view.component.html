@@ -3,7 +3,7 @@
       <!-- Project Header Start -->
       <div>
         <span class="prj-head">{{data.project.value.projectId}} | <strong>{{ data.project.value.title }}</strong></span>
-        <a ng-click="editProject($event)">Edit Project</a>
+        <a class="edit-link" ng-click="editProject($event)">Edit Project</a>
         <div class="prj-row">
           <span class="prj-label">PI</span>
           <ds-user class="prj-data" username="data.project.value.pi" format="lname">{{ data.project.value.pi }}</ds-user>
