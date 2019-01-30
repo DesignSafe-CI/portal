@@ -1,5 +1,11 @@
 # DesignSafe-CI Portal Release Notes
 
+## v3.2.2
+
+Fixes:
+
+- Datacite settings.
+
 ## v3.2.1
 
 Fixes:
