@@ -609,7 +609,7 @@ NOCAPTCHA = True
 
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
-
+DATACITE_URI = os.environ.get('DATACITE_URI', 'https://ez.test.datacite.org')
 DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
 DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
