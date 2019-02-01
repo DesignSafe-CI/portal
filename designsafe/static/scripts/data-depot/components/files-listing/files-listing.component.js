@@ -11,13 +11,14 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
-    }
-
-    listing() {
-        if (typeof this.listing === 'undefined' || _.isEmpty(this.listing)){
-            return this.browser.listing;
-        }
-        return this.listing;
+        this.repeated = false;
+        this.listing = () => {
+            if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
+                return this.browser.listing;
+            }
+            this.repeated = true;
+            return this.filesList;
+        };
     }
 
     onBrowse($event, file) {
@@ -111,7 +112,7 @@ export const FilesListingComponent = {
     template: FilesListingTemplate,
     bindings: {
         browser: '=',
-        listing: '=',
+        filesList: '=',
     },
 };
 
@@ -121,6 +122,6 @@ export const FilesListingPublicComponent = {
     template: FilesListingPublicTemplate,
     bindings: {
         browser: '=',
-        listing: '=',
+        filesList: '=',
     },
 };

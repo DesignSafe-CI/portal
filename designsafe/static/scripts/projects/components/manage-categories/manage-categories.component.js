@@ -3,9 +3,11 @@ import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
-    constructor($q, Django, UserService, ProjectEntitiesService) {
+    constructor($q, Django, UserService, ProjectEntitiesService, DataBrowserService, FileListing) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
+        this.FileListing = FileListing;
+        this.browser = DataBrowserService.state();
         this.UserService = UserService;
         this.Django = Django;
         this.$q = $q;
@@ -28,6 +30,7 @@ class ManageCategoriesCtrl {
         };
         this.editForm = {};
         this.ui = {
+            loading: true,
             tagTypes: [],
             isAnalysis: false,
             experimental: false,
@@ -37,6 +40,84 @@ class ManageCategoriesCtrl {
             confirmDel: false,
             idDel: ''
         };
+
+        /*
+        update uniqe file listing
+        we might want to consider a adding this to the
+        FilesListing service if we start using it in
+        multiple places...
+        */
+        var entities = this.browser.project.getAllRelatedObjects();
+        var allFilePaths = [];
+        var apiParams = {
+            fileMgr: 'agave',
+            baseUrl: '/api/agave/files',
+            searchState: 'projects.view.data',
+        };
+        _.each(entities, (entity) => {
+            this.browser.listings[entity.uuid] = {
+                name: this.browser.listing.name,
+                path: this.browser.listing.path,
+                system: this.browser.listing.system,
+                trail: this.browser.listing.trail,
+                children: [],
+            };
+            allFilePaths = allFilePaths.concat(entity._filePaths);
+        });
+
+        this.setFilesDetails = (filePaths) => {
+            this.ui.loading = true;
+            filePaths = _.uniq(filePaths);
+            var p = this.$q((resolve, reject) => {
+                var results = [];
+                var index = 0;
+                var size = 5;
+                var fileCalls = _.map(filePaths, (filePath) => {
+                    return this.FileListing.get(
+                        { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
+                    ).then((resp) => {
+                        if (!resp) {
+                            return;
+                        }
+                        var allEntities = this.browser.project.getAllRelatedObjects();
+                        var entities = _.filter(allEntities, (entity) => {
+                            return _.contains(entity._filePaths, resp.path);
+                        });
+                        _.each(entities, (entity) => {
+                            this.browser.listings[entity.uuid].children.push(resp);
+                        });
+                        return resp;
+                    }).then(() => {
+                        this.ui.loading = false;
+                    });
+                });
+
+                var step = () => {
+                    var calls = fileCalls.slice(index, (index += size));
+                    if (calls.length) {
+                        this.$q.all(calls)
+                            .then((res) => {
+                                results.concat(res);
+                                step();
+                                return res;
+                            })
+                            .catch(reject);
+                    } else {
+                        resolve(results);
+                    }
+                };
+                step();
+            });
+            return p.then(
+                (results) => {
+                    return results;
+                },
+                (err) => {
+                    this.browser.ui.error = err;
+                });
+        };
+        this.setFilesDetails(allFilePaths);
+
         if (this.options.project.value.projectType === 'experimental') {
             this.ui.experimental = true;
             this.ui.tagTypes = [
@@ -274,7 +355,7 @@ class ManageCategoriesCtrl {
     }
 }
 
-ManageCategoriesCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService'];
+ManageCategoriesCtrl.$inject = ['$q', 'Django', 'UserService', 'ProjectEntitiesService', 'DataBrowserService', 'FileListing'];
 
 export const ManageCategoriesComponent = {
     template: ManageCategoriesTemplate,

@@ -192,6 +192,8 @@ function ProjectDataCtrl(
         );
     };
 
+
+    //TODO remove watches for old publication pipeline stuff...
     $scope.$watch('browser.showPreviewListing', function(newVal, oldVal) {
         if (newVal) {
             $scope.browser.ui.loadingListings = true;
