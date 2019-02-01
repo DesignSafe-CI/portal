@@ -6,7 +6,12 @@
         </span>
     </h4>
 </div>
-<div class="modal-body">
+<div class="modal-body" ng-show="$ctrl.ui.loading">
+    <h3 class="text-center">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+    </h3>
+</div>
+<div class="modal-body" ng-hide="$ctrl.ui.loading">
     <div class="well">
         <!-- Create Category Form -->
         <form name='addForm' ng-hide="$ctrl.ui.showEditCategory">
@@ -348,6 +353,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConf.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -371,6 +377,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorInfo.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -394,6 +401,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -417,6 +425,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[model.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -440,6 +449,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[input.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -463,6 +473,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[output.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -486,6 +497,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[gm.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -509,6 +521,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[coordinator.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -532,6 +545,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[simsub.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -555,6 +569,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[expsub.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -578,6 +593,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[cout.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -601,6 +617,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[eout.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -624,6 +641,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sout.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -658,6 +676,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
@@ -681,6 +700,7 @@
                                 </span>
                             </div>
                         </div>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
                     </div>
                 </div>
             </div>
