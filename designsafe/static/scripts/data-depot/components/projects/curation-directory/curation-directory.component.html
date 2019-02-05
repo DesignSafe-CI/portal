@@ -1,0 +1,103 @@
+<div style="background:white;">
+    <!-- Project Header Start -->
+    <div>
+        <span class="prj-head">{{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong></span>
+        <a ng-click="$ctrl.editProject($event)">Edit Project</a>
+        <div class="prj-row">
+            <span class="prj-label">PI</span>
+            <ds-user class="prj-data" username="$ctrl.browser.project.value.pi" format="lname">{{ $ctrl.browser.project.value.pi }}</ds-user>
+        </div>
+        <div class="prj-row">
+            <span class="prj-label" ng-if="$ctrl.browser.project.value.coPis.length">CoPI</span>
+            <span class="prj-data" format="lname" ng-repeat="copi in $ctrl.browser.project.value.coPis">
+                <ds-user class="prj-data" username="copi" format="lname">{{ copi }}</ds-user>
+            </span>
+            <span ng-repeat="user in publicationCtrl.filterUsers($ctrl.browser.project.value.coPis) | orderBy: ['_ui.order', 'last_name']"></span>
+        </div>
+        <div class="prj-row">
+            <span class="prj-label">Project Type</span>
+            <span class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</span>
+        </div>
+        <table class="tg" style="table-layout: fixed; width: 100%;">
+            <colgroup>
+                <col style="width: 15%">
+                <col style="width: 84%">
+            </colgroup>
+            <!-- older projects will have awards listed as strings -->
+            <tr ng-if="isSingle($ctrl.browser.project.value.awardNumber)">
+                <td class="tg-0lax">Awards</td>
+                <td class="tg-0lax"><strong>{{ $ctrl.browser.project.value.awardNumber }}</strong></td>
+            </tr>
+            <tr ng-if="!isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber track by $index">
+                <td class="tg-0lax" ng-if="$first">Awards</td>
+                <td class="tg-0lax" ng-if="!$first"></td>
+                <td class="tg-0lax"><strong>{{ award.name }} - {{ award.number }}</strong></td>
+            </tr>
+            <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects">
+                <td class="tg-0lax" ng-if="$first">Related Work</td>
+                <td class="tg-0lax" ng-if="!$first"></td>
+                <td class="tg-0lax"><strong>{{ work.title }} | <a>{{ work.href }}</a></strong></td>
+            </tr>
+        </table>
+        <div class="prj-row">
+            <span class="prj-label" ng-if="$ctrl.browser.project.value.keywords">Keywords</span>
+            <span class="prj-data">{{ $ctrl.browser.project.value.keywords }}</span>
+        </div>
+        <div ng-if="$ctrl.browser.project.value.description">
+            <p>{{ $ctrl.browser.project.value.description }}</p>
+        </div>
+    </div>
+    <!-- Project Header End -->
+    <table class="tg" style="table-layout: fixed; width: 100%;">
+        <colgroup>
+            <col style="width: 46%">
+            <col style="width: 50%">
+        </colgroup>
+        <tr>
+            <td class="tg-0lax">
+                <button class="btn btn-project-l grayed-out" ng-click="$ctrl.goWork()">
+                    Working Directory</button>
+                <button class="btn btn-project-m" ng-click="$ctrl.goCuration()">
+                    Curation Directory</button>
+                <button class="btn btn-project-r grayed-out" ng-click="$ctrl.goPreview()">
+                    Publication Preview</button>
+            </td>
+            <td class="tg-0lax">
+                <div>
+                    <!-- These will need functionality -->
+                    <span style="padding:10px; font-weight:bold;">1
+                        <a  ng-disabled="$ctrl.browser.loadingEntities"
+                            ng-click="$ctrl.manageExperiments()"
+                            ng-if="$ctrl.browser.project.value.projectType === 'experimental'"
+                            > Add Experiments
+                        </a>
+                        <a  ng-disabled="$ctrl.browser.loadingEntities"
+                            ng-click="$ctrl.manageSimulations()"
+                            ng-if="$ctrl.browser.project.value.projectType === 'simulation'"
+                            > Add Simulations
+                        </a>
+                        <a  ng-disabled="$ctrl.browser.loadingEntities"  
+                            ng-click="$ctrl.manageHybridSimulations()"
+                            ng-if="$ctrl.browser.project.value.projectType === 'hybrid_simulation'"
+                            > Add Hybrid Simulations
+                        </a>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">2
+                        <a  ng-disabled="$ctrl.browser.loadingEntities"
+                            ng-click="$ctrl.manageCategories()"
+                            > Add Categories
+                        </a>
+                    </span>
+                    <span style="padding:5px; font-weight:bold;">|</span>
+                    <span style="padding:10px; font-weight:bold;">3
+                        <a>Construct Tree</a>
+                    </span>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <a>breadcrumbs</a> / <a>go</a> / <a>here</a>
+    <files-listing browser="$ctrl.browser"></files-listing>
+</div>
