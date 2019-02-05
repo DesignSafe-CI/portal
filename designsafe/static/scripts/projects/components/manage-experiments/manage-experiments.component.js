@@ -151,7 +151,6 @@ class ManageExperimentsCtrl {
 
     editExp(exp) {
         var auths = this.configureAuthors(exp);
-        console.log(auths);
         this.editExpForm = {
             exp: exp,
             authors: auths,
