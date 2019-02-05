@@ -127,7 +127,6 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       ProjectService.manageExperiments({'experiments': experiments, 'project': $scope.data.project});
     };
 
-    // -----------------> New Publication Pipeline Process
     $scope.workingDirectory = function() {
       $state.go('projects.view.data', {projectId: projectId}).then(function() {
         // checkState();
@@ -135,7 +134,7 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
     };
 
     $scope.curationDirectory = function() {
-      // set curation state
+      $state.go('projects.curation', {projectId: projectId}, {reload: true});
     };
 
     $scope.publicationPreview = function() {

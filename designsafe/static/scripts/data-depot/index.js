@@ -240,13 +240,28 @@ function config(
                 ],
             },
         })
+        .state('projects.curation', {
+            url: '/projects/{projectId}/curation',
+            component: 'curationDirectory',
+            params: {
+                projectTitle: '',
+                query_string: '',
+                filePath: '/',
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }]
+            }
+        })
         .state('projects.preview', {
             url: '/projects/{projectId}/preview',
             component: 'publicationPreview',
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
-                    return $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                 }]
             }
         })

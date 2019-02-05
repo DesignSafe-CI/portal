@@ -11,12 +11,18 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
-        this.repeated = false;
+        this.entityList = false;
+        this.curationMode = () => {
+            if (this.$state.current.name === 'projects.curation') {
+                return true;
+            }
+            return false;
+        };
         this.listing = () => {
             if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
                 return this.browser.listing;
             }
-            this.repeated = true;
+            this.entityList = true;
             return this.filesList;
         };
     }

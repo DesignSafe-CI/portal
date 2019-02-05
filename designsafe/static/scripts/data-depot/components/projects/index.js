@@ -5,6 +5,7 @@ import { ProjectListingComponent } from './project-listing/project-listing.compo
 import { ProjectDataComponent } from './project-data/project-data.component';
 import { ProjectViewComponent } from './project-view/project-view.component';
 import { ProjectSearchComponent } from './project-search/project-search.component';
+import { CurationDirectoryComponent } from './curation-directory/curation-directory.component';
 import { PublicationPreviewComponent } from './publication-preview/publication-preview.component';
 import { PipelineSelectionComponent } from './pipeline-selection/pipeline-selection.component';
 import { PipelineProjectComponent } from './pipeline-project/pipeline-project.component';
@@ -20,6 +21,7 @@ ddProjectsComponents.component('projectListing', ProjectListingComponent);
 ddProjectsComponents.component('projectData', ProjectDataComponent);
 ddProjectsComponents.component('projectView', ProjectViewComponent);
 ddProjectsComponents.component('projectSearch', ProjectSearchComponent);
+ddProjectsComponents.component('curationDirectory', CurationDirectoryComponent);
 ddProjectsComponents.component('publicationPreview', PublicationPreviewComponent);
 ddProjectsComponents.component('pipelineSelect', PipelineSelectionComponent);
 ddProjectsComponents.component('pipelineProject', PipelineProjectComponent);
