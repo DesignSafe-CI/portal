@@ -271,7 +271,7 @@ function config(
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
-                    return $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                 }]
             }
         })
@@ -292,8 +292,11 @@ function config(
         .state('projects.pipelineCategories', {
             url: '/projects/{projectId}/curation/categories',
             component: 'pipelineCategories',
-            params: {
-                params: null
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
+                }]
             }
         })
         .state('projects.pipelineAuthors', {
