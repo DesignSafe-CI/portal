@@ -57,7 +57,7 @@
     <div>
         <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
-        <a class="pull-right" ng-click="$ctrl.goProject()"><i class="fa fa-arrow-right"></i> Continue</a>
+        <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedExp">Continue</button>
     </div>
     <!-- progression map -->
     <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -69,7 +69,12 @@
         </p>
     </div>
         <!-- Experiments -->
-        <div ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+        <div ng-show="$ctrl.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+        <div ng-hide="$ctrl.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
             <div class="dropdown" id="details-{{experiment.uuid}}">
                 <a ng-click="$ctrl.selectExperiment(experiment)">Select this Experiment and all of its files</a>
                 <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
@@ -146,22 +151,10 @@
                             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
                         </button>
                         <div id="files-{{modelConfig.uuid}}" class="collapse">
-                            <p>{{ modelConfig.value.description }}</p>
-                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
-                                <tbody>
-                                    <tr ng-repeat="file in $ctrl.browser.listings[modelConfig.uuid] | orderBy: ['type', 'path']">
-                                        <td>
-                                            <i class="fa {{file.icon()}}"></i>
-                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
-                                                {{file.name}}
-                                            </a>
-                                        </td>
-                                        <td ng-if="file.format == 'folder'"> -- </td>
-                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
-                                        <td>{{file.lastModified|date:"short"}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="well">
+                                <p>{{ modelConfig.value.description }}</p>
+                            </div>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConfig.uuid]"></files-listing>
                         </div>
                     </div>
                 </div>
@@ -174,22 +167,10 @@
                             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
                         </button>
                         <div id="files-{{sensorList.uuid}}" class="collapse">
-                            <p>{{ sensorList.value.description }}</p>
-                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
-                                <tbody>
-                                    <tr ng-repeat="file in $ctrl.browser.listings[sensorList.uuid] | orderBy: ['type', 'path']">
-                                        <td>
-                                            <i class="fa {{file.icon()}}"></i>
-                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
-                                                {{file.name}}
-                                            </a>
-                                        </td>
-                                        <td ng-if="file.format == 'folder'"> -- </td>
-                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
-                                        <td>{{file.lastModified|date:"short"}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="well">
+                                <p>{{ sensorList.value.description }}</p>
+                            </div>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorList.uuid]"></files-listing>
                         </div>
                     </div>
                 </div>
@@ -202,22 +183,10 @@
                             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
                         </button>
                         <div id="files-{{event.uuid}}" class="collapse">
-                            <p>{{ event.value.description }}</p>
-                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
-                                <tbody>
-                                    <tr ng-repeat="file in $ctrl.browser.listings[event.uuid] | orderBy: ['type', 'path']">
-                                        <td>
-                                            <i class="fa {{file.icon()}}"></i>
-                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
-                                                {{file.name}}
-                                            </a>
-                                        </td>
-                                        <td ng-if="file.format == 'folder'"> -- </td>
-                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
-                                        <td>{{file.lastModified|date:"short"}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="well">
+                                <p>{{ event.value.description }}</p>
+                            </div>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]"></files-listing>
                         </div>
                     </div>
                 </div>
@@ -230,22 +199,10 @@
                             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
                         </button>
                         <div id="files-{{analysis.uuid}}" class="collapse">
-                            <p>{{ analysis.value.description }}</p>
-                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
-                                <tbody>
-                                    <tr ng-repeat="file in $ctrl.browser.listings[analysis.uuid] | orderBy: ['type', 'path']">
-                                        <td>
-                                            <i class="fa {{file.icon()}}"></i>
-                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
-                                                {{file.name}}
-                                            </a>
-                                        </td>
-                                        <td ng-if="file.format == 'folder'"> -- </td>
-                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
-                                        <td>{{file.lastModified|date:"short"}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="well">
+                                <p>{{ analysis.value.description }}</p>
+                            </div>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
                         </div>
                     </div>
                 </div>
@@ -258,22 +215,10 @@
                             <span class="pull-right"><i class="fa dropdown-caret"></i></span>
                         </button>
                         <div id="files-{{report.uuid}}" class="collapse">
-                            <p>{{ report.value.description }}</p>
-                            <table class="table table-bordered table-striped table-meta" style="background-color: #fff;">
-                                <tbody>
-                                    <tr ng-repeat="file in $ctrl.browser.listings[report.uuid] | orderBy: ['type', 'path']">
-                                        <td>
-                                            <i class="fa {{file.icon()}}"></i>
-                                            <a ng-href="{{file.href}}" ng-click="onBrowse()($event, file)">
-                                                {{file.name}}
-                                            </a>
-                                        </td>
-                                        <td ng-if="file.format == 'folder'"> -- </td>
-                                        <td ng-if="file.format == 'raw'">{{file.length|bytes}}</td>
-                                        <td>{{file.lastModified|date:"short"}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="well">
+                                <p>{{ report.value.description }}</p>
+                            </div>
+                            <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
                         </div>
                     </div>
                 </div>
