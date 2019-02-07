@@ -21,13 +21,13 @@
             <tbody>
                 <tr data-ng-if="!$ctrl.browser.busyListing"
                     data-ng-repeat="item in $ctrl.listing().children"
-                    data-ng-click="$ctrl.onSelect($event, item)"
                 >
                     <td>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox"
-                                       data-ng-checked="item._ui.selected">
+                                       data-ng-checked="item._ui.selected"
+                                       data-ng-click="$ctrl.onSelect(item)">
                                 <span class="sr-only">Selected</span>
                             </label>
                         </div>
