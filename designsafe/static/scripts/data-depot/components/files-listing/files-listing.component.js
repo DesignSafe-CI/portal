@@ -56,27 +56,40 @@ class FilesListingCtrl {
         );
     }
 
-    onSelect($event, file) {
-        if ($event.ctrlKey || $event.metaKey) {
-            const selectedIndex = this.browser.selected.indexOf(file);
-            if (selectedIndex > -1) {
-                this.DataBrowserService.deselect([file]);
-            } else {
-                this.DataBrowserService.select([file]);
-            }
-        } else if ($event.shiftKey && this.browser.selected.length > 0) {
-            const lastFile = this.browser.selected[this.browser.selected.length - 1];
-            const lastIndex = this.browser.listing.children.indexOf(lastFile);
-            const fileIndex = this.browser.listing.children.indexOf(file);
-            const min = Math.min(lastIndex, fileIndex);
-            const max = Math.max(lastIndex, fileIndex);
-            this.DataBrowserService.select(this.browser.listing.children.slice(min, max + 1));
-        } else if (typeof file._ui !== 'undefined' && file._ui.selected) {
+    onSelect(file) {
+        const selectedIndex = this.browser.selected.indexOf(file);
+        if (selectedIndex > -1) {
             this.DataBrowserService.deselect([file]);
         } else {
-            this.DataBrowserService.select([file], true);
+            this.DataBrowserService.select([file]);
         }
     }
+    
+    /*
+    They might change their mind with the way files 
+    are selected, so keeping this here for now.
+    */
+    // onSelect($event, file) {
+    //     if ($event.ctrlKey || $event.metaKey) {
+    //         const selectedIndex = this.browser.selected.indexOf(file);
+    //         if (selectedIndex > -1) {
+    //             this.DataBrowserService.deselect([file]);
+    //         } else {
+    //             this.DataBrowserService.select([file]);
+    //         }
+    //     } else if ($event.shiftKey && this.browser.selected.length > 0) {
+    //         const lastFile = this.browser.selected[this.browser.selected.length - 1];
+    //         const lastIndex = this.browser.listing.children.indexOf(lastFile);
+    //         const fileIndex = this.browser.listing.children.indexOf(file);
+    //         const min = Math.min(lastIndex, fileIndex);
+    //         const max = Math.max(lastIndex, fileIndex);
+    //         this.DataBrowserService.select(this.browser.listing.children.slice(min, max + 1));
+    //     } else if (typeof file._ui !== 'undefined' && file._ui.selected) {
+    //         this.DataBrowserService.deselect([file]);
+    //     } else {
+    //         this.DataBrowserService.select([file], true);
+    //     }
+    // }
 
     scrollToBottom() {
         return this.DataBrowserService.scrollToBottom();
