@@ -114,6 +114,16 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       ProjectService.manageCategories({'project': $scope.data.project});
     };
 
+    $scope.relateData = function($event) {
+      $uibModal.open({
+        component: 'projectTree',
+        resolve: {
+            project: () => {return $scope.browser.project; },
+        },
+        size: 'lg'
+      });
+    };
+
     $scope.manageExperiments = function($event) {
       if ($event){
         $event.preventDefault();
