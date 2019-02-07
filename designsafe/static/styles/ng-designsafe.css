@@ -792,3 +792,59 @@ i[class^="icon-ls-pre/post"]:before,
 .icon-opensees:before {
     content: "\e901";
 }
+
+@font-face {
+    font-family: 'Curation-Icons';
+        src: url('/static/fonts/Curation_Icons.ttf') format('truetype');        
+        font-weight: normal;
+        font-style: normal;
+    }
+        
+    [class^="curation-"]:before,
+    [class*=" curation-"]:before {
+        font-family: 'Curation-Icons';
+        font-style: normal;
+        font-size: 32px;
+        speak: none;
+        font-weight: normal;
+        -webkit-font-smoothing: antialiased;
+                font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+    
+    .curation-hybrid-icon:before {
+        content: "\e907";
+    }
+    .curation-cc-zero:before {
+        content: "\e900";
+    }
+    .curation-chevron-dn:before {
+        content: "\e901";
+    }
+    .curation-chevron-up:before {
+        content: "\e902";
+    }
+    .curation-close-window:before {
+        content: "\e903";
+    }
+    .curation-cc-share:before {
+        content: "\e904";
+    }
+    .curation-experiment:before {
+        content: "\e905";
+    }
+    .curation-simulation:before {
+        content: "\e90f";
+    }
+    .curation-gpl:before {
+        content: "\e906";
+    }
+    .curation-odc:before {
+        content: "\e90e";
+    }
+    .curation-other:before {
+        content: "\e90f";
+    }
+    .curation-req-doi:before {
+        content: "\e910";
+    }
