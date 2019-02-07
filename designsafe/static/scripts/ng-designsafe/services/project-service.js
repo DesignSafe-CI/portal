@@ -196,7 +196,7 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
         size: 'lg'
       });
     };
-        
+
     service.manageHybridSimulations = (options) => {
       $uibModal.open({
         component: 'manageHybridSimulations',

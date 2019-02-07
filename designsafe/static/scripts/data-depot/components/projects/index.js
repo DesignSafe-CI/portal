@@ -12,6 +12,7 @@ import { PipelineExperimentComponent } from './pipeline-experiment/pipeline-expe
 import { PipelineCategoriesComponent } from './pipeline-categories/pipeline-categories.component';
 import { PipelineAuthorsComponent } from './pipeline-authors/pipeline-authors.component';
 import { PipelineLicensesComponent } from './pipeline-licenses/pipeline-licenses.component';
+import { ProjectTreeComponent } from '../../../projects/components/project-tree/project-tree.component';
 
 let ddProjectsComponents = angular.module('dd.components.projects', []);
 
@@ -27,5 +28,6 @@ ddProjectsComponents.component('pipelineExperiment', PipelineExperimentComponent
 ddProjectsComponents.component('pipelineCategories', PipelineCategoriesComponent);
 ddProjectsComponents.component('pipelineAuthors', PipelineAuthorsComponent);
 ddProjectsComponents.component('pipelineLicenses', PipelineLicensesComponent);
+ddProjectsComponents.component('projectTree', ProjectTreeComponent);
 
 export default ddProjectsComponents;

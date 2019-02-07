@@ -83,7 +83,10 @@
                   <a ng-disabled="data.loadingEntities" ng-click="manageCategories($event)"> Add Categories</a>
                 </span>
                 <span style="padding:5px; font-weight:bold;">|</span>
-                <span style="padding:10px; font-weight:bold;">3 <a>Construct Tree</a></span>
+                <span style="padding:10px; font-weight:bold;">3 
+                    <a data-ng-disabled="data.loadingEntities"
+                       data-ng-click="relateData($event)">Relate Data</a>
+                </span>
               </div>
               <!-- <div  class="btn-group pull-right"
                     role="group"
