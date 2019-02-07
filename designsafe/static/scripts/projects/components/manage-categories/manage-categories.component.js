@@ -87,8 +87,6 @@ class ManageCategoriesCtrl {
                             this.browser.listings[entity.uuid].children.push(resp);
                         });
                         return resp;
-                    }).then(() => {
-                        this.ui.loading = false;
                     });
                 });
 
@@ -110,6 +108,7 @@ class ManageCategoriesCtrl {
             });
             return p.then(
                 (results) => {
+                    this.ui.loading = false;
                     return results;
                 },
                 (err) => {

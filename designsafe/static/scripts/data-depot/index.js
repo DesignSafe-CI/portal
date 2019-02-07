@@ -243,11 +243,6 @@ function config(
         .state('projects.curation', {
             url: '/projects/{projectId}/curation',
             component: 'curationDirectory',
-            params: {
-                projectTitle: '',
-                query_string: '',
-                filePath: '/',
-            },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
