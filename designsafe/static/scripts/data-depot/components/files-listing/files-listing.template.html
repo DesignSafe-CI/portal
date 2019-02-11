@@ -11,7 +11,7 @@
     >
         <table class="files-listing-table table table-bordered table-striped"
                style="background-color: #fff;">
-            <thead ng-hide="$ctrl.entityList">
+            <thead ng-hide="$ctrl.categoryMode()">
                 <tr>
                     <th>Name</th>
                     <th>Size</th>
@@ -23,7 +23,7 @@
                     data-ng-repeat="item in $ctrl.listing().children"
                 >
                     <td>
-                        <div class="checkbox">
+                        <div class="checkbox" ng-if="!$ctrl.categoryMode()">
                             <label>
                                 <input type="checkbox"
                                        data-ng-checked="item._ui.selected"
@@ -35,7 +35,7 @@
                         <a data-ng-href="{{ item.href }}" data-ng-click="$ctrl.onBrowse($event, item)">
                             {{ item.name }}
                         </a>
-                        <div class="project-categories" ng-if="$ctrl.curationMode() && !$ctrl.entityList">
+                        <div class="project-categories" ng-if="$ctrl.curationMode() && !$ctrl.categoryMode()">
                             <div class="file-categories"
                                  data-ng-if="$ctrl.browser.project && !$ctrl.browser.loadingEntities">
                                 <file-categories data-project="$ctrl.browser.project"
@@ -55,7 +55,7 @@
                     </td>
                     <td data-ng-if="item.format== 'folder'">--</td>
                     <td data-ng-if="item.format== 'raw'">{{ item.length|bytes }}</td>
-                    <td ng-hide="$ctrl.entityList">{{ item.lastModified|date:"short" }}</td>
+                    <td ng-hide="$ctrl.categoryMode()">{{ item.lastModified|date:"short" }}</td>
                 </tr>
                 <tr data-ng-if="$ctrl.browser.busyListingPage">
                     <td>

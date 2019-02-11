@@ -74,7 +74,7 @@
     <!-- Order Authors -->
     <div class="well">
         <div class="prj-head" style="padding-bottom:20px">
-            EXPERIMENT | <strong>{{ $ctrl.expModel.value.title }}</strong>
+            EXPERIMENT | <strong>{{ $ctrl.experiment.value.title }}</strong>
         </div>
         <div ng-hide="$ctrl.validAuths">
             Your authors need to be updated. Edit your experiment and select which users are authors for the Experiment.
@@ -92,7 +92,7 @@
             </colgroup>
             <tr>
                 <td class="tg-0lax">
-                    <div ng-repeat="author in $ctrl.expModel.value.authors | orderBy: 'order'">
+                    <div ng-repeat="author in $ctrl.experiment.value.authors | orderBy: 'order'">
                         <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
                             ng-if="author.authorship">
                         <ds-user username="author.name" format="lname" ng-style="!author.authorship && {'text-decoration':'line-through'}">{{

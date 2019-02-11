@@ -58,7 +58,7 @@
             <a class="pull-left" ng-click="$ctrl.goExperiment()">
                 <i class="fa fa-arrow-left"></i> Back to Proofread Experiment
             </a>
-            <button class="btn btn-add pull-right" ng-click="$ctrl.goAuthors()" ng-disabled="$ctrl.loading">Continue</button>
+            <button class="btn btn-add pull-right" ng-click="$ctrl.goAuthors()">Continue</button>
         </div>
         <!-- progression map -->
         <div style="padding-top: 40px; padding-bottom: 40px;">
@@ -72,15 +72,29 @@
             </p>
         </div>
         <!-- Categories Start -->
-        <div ng-show="$ctrl.loading">
-            <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-            </h3>
+        <!-- Reports -->
+        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
+            <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, report) && $ctrl.browser.listings[report.uuid]">
+                <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                    style="width:100%;">
+                    <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
+                    <span class="pull-right"><i class="fa dropdown-caret"></i></span>
+                </button>
+                <div id="files-{{report.uuid}}" class="collapse in">
+                    <div class="well">
+                        <p>{{ report.value.description }}</p>
+                        <div>
+                            <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
+                        </div>
+                    </div>
+                    <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]" category-listing="true"></files-listing>
+                </div>
+            </div>
         </div>
         <!-- Model Configs -->
-        <div ng-hide="$ctrl.loading">
+        <div>
             <div ng-repeat="modelConfig in $ctrl.browser.project.modelconfig_set | orderBy: 'value.title'">
-                <div class="dropdown" id="details-{{modelConfig.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, modelConfig)">
+                <div class="dropdown" id="details-{{modelConfig.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, modelConfig) && $ctrl.browser.listings[modelConfig.uuid]">
                     <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                         style="width:100%;">
                         <span class="pull-left">Model Configuration | <strong>{{modelConfig.value.title}}</strong></span>
@@ -93,13 +107,13 @@
                                 <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConfig.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[modelConfig.uuid]" category-listing="true"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Sensors -->
             <div ng-repeat="sensorList in $ctrl.browser.project.sensorlist_set | orderBy: 'value.title'">
-                <div class="dropdown" id="details-{{sensorList.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, sensorList)">
+                <div class="dropdown" id="details-{{sensorList.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, sensorList) && $ctrl.browser.listings[sensorList.uuid]">
                     <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                         style="width:100%;">
                         <span class="pull-left">Sensor Information | <strong>{{sensorList.value.title}}</strong></span>
@@ -112,13 +126,13 @@
                                 <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorList.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[sensorList.uuid]" category-listing="true"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Events -->
             <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: 'value.title'">
-                <div class="dropdown" id="details-{{event.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, event)">
+                <div class="dropdown" id="details-{{event.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, event) && $ctrl.browser.listings[event.uuid]">
                     <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
                         <span class="pull-left">Event | <strong>{{event.value.title}}</strong></span>
@@ -131,13 +145,13 @@
                                 <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[event.uuid]" category-listing="true"></files-listing>
                     </div>
                 </div>
             </div>
             <!-- Analysis -->
             <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'">
-                <div class="dropdown" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, analysis)">
+                <div class="dropdown" id="details-{{analysis.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, analysis) && $ctrl.browser.listings[analysis.uuid]">
                     <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
                         <span class="pull-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
@@ -150,29 +164,10 @@
                                 <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
                             </div>
                         </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]"></files-listing>
+                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[analysis.uuid]" category-listing="true"></files-listing>
                     </div>
                 </div>
             </div>
-            <!-- Reports -->
-            <!-- <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
-                <div class="dropdown" id="details-{{report.uuid}}" ng-if="$ctrl.matchingGroup($ctrl.experiment, report)">
-                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
-                        style="width:100%;">
-                        <span class="pull-left">Report | <strong>{{report.value.title}}</strong></span>
-                        <span class="pull-right"><i class="fa dropdown-caret"></i></span>
-                    </button>
-                    <div id="files-{{report.uuid}}" class="collapse in">
-                        <div class="well">
-                            <p>{{ report.value.description }}</p>
-                            <div>
-                                <span ng-click="$ctrl.editCategory()"><a>Edit</a></span>
-                            </div>
-                        </div>
-                        <files-listing browser="$ctrl.browser" files-list="$ctrl.browser.listings[report.uuid]"></files-listing>
-                    </div>
-                </div>
-            </div> -->
             <!-- Categories End -->
         </div>
     </div>
