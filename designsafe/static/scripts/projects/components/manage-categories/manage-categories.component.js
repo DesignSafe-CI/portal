@@ -41,81 +41,87 @@ class ManageCategoriesCtrl {
             idDel: ''
         };
 
-        /*
-        update uniqe file listing
-        we might want to consider a adding this to the
-        FilesListing service if we start using it in
-        multiple places...
-        */
-        var entities = this.browser.project.getAllRelatedObjects();
-        var allFilePaths = [];
-        var apiParams = {
-            fileMgr: 'agave',
-            baseUrl: '/api/agave/files',
-            searchState: 'projects.view.data',
-        };
-        _.each(entities, (entity) => {
-            this.browser.listings[entity.uuid] = {
-                name: this.browser.listing.name,
-                path: this.browser.listing.path,
-                system: this.browser.listing.system,
-                trail: this.browser.listing.trail,
-                children: [],
+        console.log(this.options.selectedListings)
+        if (typeof this.options.selectedListings === 'undefined' || Object.keys(this.options.selectedListings).length === 0) {
+            /*
+            update uniqe file listing
+            we might want to consider a adding this to the
+            FilesListing service if we start using it in
+            multiple places...
+            */
+            var entities = this.browser.project.getAllRelatedObjects();
+            var allFilePaths = [];
+            var apiParams = {
+                fileMgr: 'agave',
+                baseUrl: '/api/agave/files',
+                searchState: 'projects.view.data',
             };
-            allFilePaths = allFilePaths.concat(entity._filePaths);
-        });
-
-        this.setFilesDetails = (filePaths) => {
-            this.ui.loading = true;
-            filePaths = _.uniq(filePaths);
-            var p = this.$q((resolve, reject) => {
-                var results = [];
-                var index = 0;
-                var size = 5;
-                var fileCalls = _.map(filePaths, (filePath) => {
-                    return this.FileListing.get(
-                        { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
-                    ).then((resp) => {
-                        if (!resp) {
-                            return;
-                        }
-                        var allEntities = this.browser.project.getAllRelatedObjects();
-                        var entities = _.filter(allEntities, (entity) => {
-                            return _.contains(entity._filePaths, resp.path);
-                        });
-                        _.each(entities, (entity) => {
-                            this.browser.listings[entity.uuid].children.push(resp);
-                        });
-                        return resp;
-                    });
-                });
-
-                var step = () => {
-                    var calls = fileCalls.slice(index, (index += size));
-                    if (calls.length) {
-                        this.$q.all(calls)
-                            .then((res) => {
-                                results.concat(res);
-                                step();
-                                return res;
-                            })
-                            .catch(reject);
-                    } else {
-                        resolve(results);
-                    }
+            _.each(entities, (entity) => {
+                this.browser.listings[entity.uuid] = {
+                    name: this.browser.listing.name,
+                    path: this.browser.listing.path,
+                    system: this.browser.listing.system,
+                    trail: this.browser.listing.trail,
+                    children: [],
                 };
-                step();
+                allFilePaths = allFilePaths.concat(entity._filePaths);
             });
-            return p.then(
-                (results) => {
-                    this.ui.loading = false;
-                    return results;
-                },
-                (err) => {
-                    this.browser.ui.error = err;
+    
+            this.setFilesDetails = (filePaths) => {
+                this.ui.loading = true;
+                filePaths = _.uniq(filePaths);
+                var p = this.$q((resolve, reject) => {
+                    var results = [];
+                    var index = 0;
+                    var size = 5;
+                    var fileCalls = _.map(filePaths, (filePath) => {
+                        return this.FileListing.get(
+                            { system: 'project-' + this.browser.project.uuid, path: filePath }, apiParams
+                        ).then((resp) => {
+                            if (!resp) {
+                                return;
+                            }
+                            var allEntities = this.browser.project.getAllRelatedObjects();
+                            var entities = _.filter(allEntities, (entity) => {
+                                return _.contains(entity._filePaths, resp.path);
+                            });
+                            _.each(entities, (entity) => {
+                                this.browser.listings[entity.uuid].children.push(resp);
+                            });
+                            return resp;
+                        });
+                    });
+    
+                    var step = () => {
+                        var calls = fileCalls.slice(index, (index += size));
+                        if (calls.length) {
+                            this.$q.all(calls)
+                                .then((res) => {
+                                    results.concat(res);
+                                    step();
+                                    return res;
+                                })
+                                .catch(reject);
+                        } else {
+                            resolve(results);
+                        }
+                    };
+                    step();
                 });
-        };
-        this.setFilesDetails(allFilePaths);
+                return p.then(
+                    (results) => {
+                        this.ui.loading = false;
+                        return results;
+                    },
+                    (err) => {
+                        this.browser.ui.error = err;
+                    });
+            };
+            this.setFilesDetails(allFilePaths);
+        } else {
+            this.browser.listings = this.options.selectedListings;
+            this.ui.loading = false;
+        }
 
         if (this.options.project.value.projectType === 'experimental') {
             this.ui.experimental = true;
