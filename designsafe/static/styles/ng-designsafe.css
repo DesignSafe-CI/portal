@@ -724,7 +724,7 @@ a[ng-click]:hover {
 
 @font-face {
 font-family: 'DesignSafe-Apps';
-    src: url('/static/fonts/DesignSafe-App-Icons.ttf') format('truetype');        
+    src: url('../fonts/DesignSafe-App-Icons.ttf') format('truetype');        
     font-weight: normal;
     font-style: normal;
 }
@@ -772,7 +772,7 @@ font-family: 'DesignSafe-Apps';
 .icon-qgis:before {
     content: "\e907";
 }
-i[class^="icon-ls"][class$="dyna"]:before, 
+i[class^="icon-ls"][class$="dyna"]:before,
 i[class^="icon-ls-pre/post"]:before,
 .icon-ls-dyna:before {
     content: "\e908";

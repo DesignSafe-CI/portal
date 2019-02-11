@@ -1,3 +1,6 @@
+@import 'nested-list-group';
+@import 'typekit.css';
+
 .row-flex {
     display: flex;
     flex-direction: row;
@@ -35,5 +38,3 @@
     border: 1px solid #ddd;
     border-radius: 4px;
 }
-
-@import 'nested-list-group';

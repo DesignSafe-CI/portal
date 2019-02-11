@@ -2,6 +2,7 @@
 // they will stomp on eachother
 import '../../styles/base.scss';
 import '../../styles/main.css';
+import '../../styles/ng-designsafe.css';
 
 import $ from 'jquery';
 import angular from 'angular';
