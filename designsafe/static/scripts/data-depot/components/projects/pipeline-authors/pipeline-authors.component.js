@@ -13,31 +13,27 @@ class PipelineAuthorsCtrl {
     }
 
     $onInit() {
-        this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
-        this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
+        this.projectId = this.ProjectService.resolveParams.projectId;
+        this.project = this.ProjectService.resolveParams.project;
+        this.experiment = this.ProjectService.resolveParams.experiment;
+        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+
         this.selectedAuthor = '';
         this.saved = false;
         this.validAuths = true;
-        this.loading = true;
 
-        /*
-        Currently having issues with storing data in sessionStorage.
-        The object methods are lost when parsing the data, but we can
-        use the data to restore the project info.
-        */
-        this.setEntitiesRel = (resp) => {
-            this.prjModel.appendEntitiesRel(resp);
-            return resp;
-        };
 
-        this.selectedExp = () => {
-            this.prjModel.experiment_set.forEach((exp) => {
-                if (exp.uuid == this.experiment.uuid) {
-                    this.expModel = exp;
-                }
-            });
-        };
+        if (!this.project) {
+            /*
+            Try to pass selected listings into a simple object so that we can
+            rebuild the project and selected files if a refresh occurs...
+            for now we can send them back to the selection area
+            */
+            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
+            this.$state.go('projects.pipelineSelect', {projectId: this.projectId}, {reload: true});
+        }
 
+        // this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
         this.verifyAuthors = (expAuthors) => {
             if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
                 this.validAuths = true;
@@ -45,17 +41,7 @@ class PipelineAuthorsCtrl {
                 this.validAuths = false;
             }
         };
-
-        this.ProjectService.get({ uuid: this.project.uuid }).then((project) => {
-            this.prjModel = project;
-            this.ProjectEntitiesService.listEntities({ uuid: this.project.uuid, name: 'all' })
-            .then(this.setEntitiesRel)
-            .then(() => {
-                this.selectedExp();
-                this.verifyAuthors(this.expModel.value.authors);
-                this.loading = false;
-            });
-        });       
+        this.verifyAuthors(this.experiment.value.authors);    
     }
 
     goWork() {
@@ -64,11 +50,21 @@ class PipelineAuthorsCtrl {
     }
 
     goCategories() {
-        this.$state.go('projects.pipelineCategories', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineCategories', {
+            projectId: this.projectId,
+            project: this.project,
+            experiment: this.experiment,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
     }
 
     goLicenses() {
-        this.$state.go('projects.pipelineLicenses', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineLicenses', {
+            projectId: this.projectId,
+            project: this.project,
+            experiment: this.experiment,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
     }
 
     orderAuthors(up) {
@@ -79,18 +75,18 @@ class PipelineAuthorsCtrl {
                 return;
             }
             // move up
-            a = this.expModel.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
-            b = this.expModel.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order - 1);
+            b = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
         } else {
-            if (this.selectedAuthor.order >= this.expModel.value.authors.length - 1) {
+            if (this.selectedAuthor.order >= this.experiment.value.authors.length - 1) {
                 return;
             }
             // move down
-            a = this.expModel.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
-            b = this.expModel.value.authors.find(x => x.order === this.selectedAuthor.order);
+            a = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order + 1);
+            b = this.experiment.value.authors.find(x => x.order === this.selectedAuthor.order);
             a.order = a.order + b.order;
             b.order = a.order - b.order;
             a.order = a.order - b.order;
@@ -98,16 +94,16 @@ class PipelineAuthorsCtrl {
     }
 
     saveAuthors() {
-        var exp = this.expModel;
-        exp.value.authors = this.expModel.value.authors;
-        exp.value.guests = this.expModel.value.guests;
+        var exp = this.experiment;
+        exp.value.authors = this.experiment.value.authors;
+        exp.value.guests = this.experiment.value.guests;
         this.ProjectEntitiesService.update({
             data: {
                 uuid: exp.uuid,
                 entity: exp
             }
         }).then((e) => {
-            var ent = this.prjModel.getRelatedByUuid(e.uuid);
+            var ent = this.project.getRelatedByUuid(e.uuid);
             ent.update(e);
             this.saved = true;
         });

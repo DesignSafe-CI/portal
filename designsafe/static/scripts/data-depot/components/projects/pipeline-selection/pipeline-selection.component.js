@@ -1,5 +1,6 @@
 import PipelineSelectionTemplate from './pipeline-selection.component.html';
 import _ from 'underscore';
+import { deprecate } from 'util';
 
 class PipelineSelectionCtrl {
 
@@ -17,10 +18,14 @@ class PipelineSelectionCtrl {
     }
 
     $onInit() {
-        window.sessionStorage.clear();
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
+        // this.selectedFiles = {};
         this.loading = true;
+        
+        if (!this.projectId) {
+            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
+        }
 
         /*
         update uniqe file listing
@@ -130,14 +135,20 @@ class PipelineSelectionCtrl {
     }
 
     matchingGroup(exp, model) {
-        // match appropriate data to corresponding experiment
-        var result = false;
-        model.associationIds.forEach((id) => {
-            if (id == exp.uuid) {
-                result = true;
+        if (!exp) {
+            // if the category is related to the project level
+            if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.experiments.length) {
+                return true;
             }
-        });
-        return result;
+            return false;
+        } else {
+            // if the category is related to the experiment level
+            // match appropriate data to corresponding experiment
+            if(model.associationIds.indexOf(exp.uuid) > -1) {
+                return true;
+            }
+            return false;
+        }
     }
 
     goWork() {
@@ -150,13 +161,51 @@ class PipelineSelectionCtrl {
     }
 
     goProject() {
-        window.sessionStorage.setItem('projectData', JSON.stringify(this.browser.project));
-        this.$state.go('projects.pipelineProject', {projectId: this.projectId}, {reload: true});
+        this.reviewSelections();
+        window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
+        this.$state.go('projects.pipelineProject', {
+            projectId: this.projectId,
+            project: this.browser.project,
+            experiment: this.selectedExp,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
     }
 
     selectExperiment(exp) {
         this.selectedExp = exp;
-        window.sessionStorage.setItem('experimentData', JSON.stringify(exp));
+        var sets = ['modelconfig_set', 'sensorlist_set', 'event_set', 'report_set', 'analysis_set'];
+        sets.forEach((set) => {
+            this.browser.project[set].forEach((s) => {
+                if (s.associationIds.indexOf(exp.uuid) > -1) {
+                    this.DataBrowserService.select(this.browser.listings[s.uuid].children);
+                } else {
+                    this.DataBrowserService.deselect(this.browser.listings[s.uuid].children);
+                }
+            });
+        });
+    }
+
+    reviewSelections() {
+        this.selectedListings = {};
+        Object.keys(this.browser.listings).forEach((key) => {
+            this.selectedListings[key] = {
+                name: this.browser.listing.name,
+                path: this.browser.listing.path,
+                system: this.browser.listing.system,
+                trail: this.browser.listing.trail,
+                children: [],
+            };
+
+            this.browser.listings[key].children.forEach((child) => {
+                if (typeof child._ui.selected != 'undefined' && child._ui.selected === true) {
+                    this.selectedListings[key].children.push(child);
+                }
+            });
+            if (!this.selectedListings[key].children.length) {
+                delete this.selectedListings[key];
+            }
+
+        });
     }
 
 }

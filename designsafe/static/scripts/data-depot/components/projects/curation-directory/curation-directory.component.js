@@ -143,7 +143,7 @@ class CurationDirectoryCtrl {
     }
 
     goPreview() {
-        this.$state.go('projects.preview', {projectId: this.browser.project.uuid});
+        this.$state.go('projects.preview', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
     }
 
     editProject() {
@@ -187,8 +187,7 @@ class CurationDirectoryCtrl {
     }
 
     manageCategories() {
-        // need to data when this is closed (not working atm)
-        this.ProjectService.manageCategories({'project': this.browser.project});
+        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.browser.listings});
     }
 }
 

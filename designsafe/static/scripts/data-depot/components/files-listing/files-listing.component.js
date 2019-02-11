@@ -11,18 +11,25 @@ class FilesListingCtrl {
 
     $onInit() {
         this._ui = { loading: false, error: false };
-        this.entityList = false;
         this.curationMode = () => {
             if (this.$state.current.name === 'projects.curation') {
                 return true;
             }
             return false;
         };
+        this.categoryMode = () => {
+            if (typeof this.categoryListing != 'undefined' && this.categoryListing === true) {
+                return true;
+            }
+            return false;
+        };
         this.listing = () => {
+            if (this.categoryMode() && (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList))) {
+                return;
+            }
             if (typeof this.filesList === 'undefined' || _.isEmpty(this.filesList)){
                 return this.browser.listing;
             }
-            this.entityList = true;
             return this.filesList;
         };
     }
@@ -132,6 +139,7 @@ export const FilesListingComponent = {
     bindings: {
         browser: '=',
         filesList: '=',
+        categoryListing: '=',
     },
 };
 
