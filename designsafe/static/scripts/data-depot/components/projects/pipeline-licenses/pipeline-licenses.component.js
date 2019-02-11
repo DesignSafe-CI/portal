@@ -14,9 +14,21 @@ class PipelineLicensesCtrl {
     }
 
     $onInit() {
-        this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
-        this.experiment = JSON.parse(window.sessionStorage.getItem('experimentData'));
+        this.projectId = this.ProjectService.resolveParams.projectId;
+        this.project = this.ProjectService.resolveParams.project;
+        this.experiment = this.ProjectService.resolveParams.experiment;
+        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
         this.license = '';
+
+        if (!this.project) {
+            /*
+            Try to pass selected listings into a simple object so that we can
+            rebuild the project and selected files if a refresh occurs...
+            for now we can send them back to the selection area
+            */
+            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
+            this.$state.go('projects.pipelineSelect', {projectId: this.projectId}, {reload: true});
+        }
     }
 
     goWork() {
@@ -25,7 +37,12 @@ class PipelineLicensesCtrl {
     }
 
     goAuthors() {
-        this.$state.go('projects.pipelineAuthors', {projectId: this.project.uuid}, {reload: true});
+        this.$state.go('projects.pipelineAuthors', {
+            projectId: this.projectId,
+            project: this.project,
+            experiment: this.experiment,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
     }
 
     // Modal for accept and publish...
