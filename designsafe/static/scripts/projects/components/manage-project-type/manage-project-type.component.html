@@ -1,0 +1,105 @@
+<div class="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span>Select a Project Type</span>
+        <span class="pull-right" ng-click="$ctrl.cancel()">
+            <i class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+
+<div class="modal-body" style="padding: 30px;">
+    <p>To begin curation, select a Project Type:</p><br>
+    <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
+        <colgroup>
+            <col style="width: 16.5%">
+            <col style="width: 16.5%">
+        </colgroup>
+        <tr>
+            <table>
+                <tr>
+                    <td>
+                        <input type="radio"
+                                name="type"
+                                ng-model="$ctrl.type"
+                                value="experimental"
+                                style="margin-top: -18px; vertical-align: middle;"
+                        >
+                        <span class="curation-experiment" style="margin-right:10px; margin-left:10px;"></span>
+                    </td>
+                    <td>
+                        <strong>Experimental Project</strong>
+                        <div>
+                            For physical work, typically done at an experimental facility or in the field.
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tr>
+                    <td>
+                        <input type="radio"
+                                name="type"
+                                ng-model="$ctrl.type"
+                                value="simulation"
+                                style="margin-top: -18px; vertical-align: middle;"
+                        >
+                        <span class="curation-simulation" style="margin-right:10px; margin-left:10px;"></span>
+                    </td>
+                    <td>
+                        <strong>Simulation Project</strong>
+                        <div>
+                            For numerical and/or analytical work, done with software.
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tr>
+                    <td>
+                        <input type="radio"
+                                name="type"
+                                ng-model="$ctrl.type"
+                                value="hybrid_simulation"
+                                style="margin-top: -18px; vertical-align: middle;"
+                        >
+                        <span class="curation-hybrid-icon" style="margin-right:10px; margin-left:10px;"></span>
+                    </td>
+                    <td>
+                        <strong>Hybrid Simulation Project</strong>
+                        <div>
+                            For work using both physical and numerical components.
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <table>
+                <tr>
+                    <td>
+                        <input type="radio"
+                                name="type"
+                                ng-model="$ctrl.type"
+                                value="other"
+                                style="margin-top: -18px; vertical-align: middle;"
+                        >
+                        <span class="curation-other" style="margin-right:10px; margin-left:10px;"></span>
+                    </td>
+                    <td>
+                        <strong>Other Project</strong>
+                        <div>
+                            For work other than the project types above.
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </tr>
+    </table>
+    <div>
+        <span style="display:inline-block; width:79%;"></span>
+        <button class="btn btn-add" style="display:inline-block; width:20%;" ng-click="$ctrl.continue()">
+            Continue
+        </button>
+    </div>
+</div>
