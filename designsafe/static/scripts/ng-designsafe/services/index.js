@@ -10,6 +10,7 @@ import { ProjectService } from './project-service';
 import { SystemsService } from './systems-service';
 import { TicketsService } from './tickets-service';
 import { UserService } from './user-service';
+import { ManageProjectTypeComponent } from '../../projects/components/manage-project-type/manage-project-type.component';
 import { ManageCategoriesComponent } from '../../projects/components/manage-categories/manage-categories.component';
 import { ManageExperimentsComponent } from '../../projects/components/manage-experiments/manage-experiments.component';
 import { ManageHybridSimComponent } from '../../projects/components/manage-hybrid-simulations/manage-hybrid-simulations.component';
@@ -33,6 +34,7 @@ designsafeServices.factory('SystemsService', SystemsService);
 designsafeServices.service('TicketsService', TicketsService);
 designsafeServices.service('UserService', UserService);
 // TODO: Move these components to /static/scripts/projects/components/index.js
+designsafeServices.component('manageProjectType', ManageProjectTypeComponent);
 designsafeServices.component('manageCategories', ManageCategoriesComponent);
 designsafeServices.component('manageExperiments', ManageExperimentsComponent);
 designsafeServices.component('manageHybridSimulations', ManageHybridSimComponent);
