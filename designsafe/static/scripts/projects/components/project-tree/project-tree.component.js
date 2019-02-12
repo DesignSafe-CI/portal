@@ -150,22 +150,27 @@ class ProjectTreeCtrl {
      * The hierarchy is build like so:
      * + Experiment 1
      * |
+     * -- + Report
+     * |
      * -- + Model Config
-     *   |
-     *   -- + Sensor Info
-     *      |
-     *      -- + Events
-     * 
+     * | |
+     * | -- + Sensor Info
+     * |    |
+     * |    -- + Events
+     * |
+     * -- + Analysis
+     *
      * + Experiment 2
      * [...]
      */
     buildExperimentalTree() {
-        let experiments = this.project.experiment_set;
-        let modelConfigs = this.project.modelconfig_set;
-        let sensors = this.project.sensorlist_set;
-        let events = this.project.event_set;
+        let experiments = _.sortBy(this.project.experiment_set, (exp) => { return exp.value.title; });
+        let modelConfigs = _.sortBy(this.project.modelconfig_set, (mod) => { return mod.value.title; });
+        let sensors = _.sortBy(this.project.sensorlist_set, (sen) => { return sen.value.title; });
+        let events = _.sortBy(this.project.event_set, (evt) => { return evt.value.title; });
+        let reports = _.sortBy(this.project.report_set, (rep) => { return rep.value.title; });
+        let analysis = _.sortBy(this.project.analysis_set, (ana) => { return ana.value.title; });
         let roots = [];
-        experiments = _.sortBy(experiments, (exp) => { return exp.value.title; } );
         _.each(experiments, (exp) => {
             let node = {
                 name: exp.value.title,
@@ -174,6 +179,25 @@ class ProjectTreeCtrl {
                 children: [],
                 rectStyle: 'stroke: none;',
             };
+            _.each(reports, (rep) => {
+                if (!_.contains(rep.associationIds, node.uuid)){
+                    return;
+                }
+                let repNode = {
+                    name: rep.value.title,
+                    uuid: rep.uuid,
+                    parent: node.name,
+                    rectStyle: 'stroke: #3E3E3E; fill: #C4C4C4;'
+                };
+                node.children.push(repNode);
+            });
+            node.children.push(
+                {
+                    name: '-- Choose a Report --',
+                    attr: 'report_set',
+                    entityType: 'report',
+                }
+            );
             _.each(modelConfigs, (mcfg) => {
                 if (!_.contains(mcfg.associationIds, node.uuid)){
                     return;
@@ -232,6 +256,25 @@ class ProjectTreeCtrl {
                     name: '-- Choose a Model Config --',
                     attr: 'modelconfig_set',
                     entityType: 'modelConfig',
+                }
+            );
+            _.each(analysis, (ana) => {
+                if (!_.contains(ana.associationIds, node.uuid)){
+                    return;
+                }
+                let anaNode = {
+                    name: ana.value.title,
+                    uuid: ana.uuid,
+                    parent: node.name,
+                    rectStyle: 'stroke: #56C0E0; fill: #CCECF6;'
+                };
+                node.children.push(anaNode);
+            });
+            node.children.push(
+                {
+                    name: '-- Choose an Analysis --',
+                    attr: 'analysis_set',
+                    entityType: 'analysis',
                 }
             );
             roots.push(node);
