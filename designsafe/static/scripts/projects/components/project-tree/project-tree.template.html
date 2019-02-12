@@ -4,7 +4,42 @@
     </h4>
 </div>
 <div class="modal-body project-tree">
+    <div class="loading" data-ng-if="$ctrl._ui.loading">
+        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+    </div>
     <div id="relation-tree">
+        <div class="button-list" style="position:relative;">
+            <div class="button-item"
+                 data-ng-repeat="node in $ctrl.buttonsData"
+                 data-ng-style="node.data.btnStyle">
+                <button type="button"
+                        class="btn btn-link"
+                        data-ng-click="$ctrl.removeRelation(node)"
+                        data-ng-disabled="$ctrl._ui.loading"
+                        data-ng-if="node.parent">
+                    Remove
+                </button>
+            </div>
+        </div>
+        <div class="dropdowns" style="position:relative;">
+            <div class="dropdown"
+                 data-ng-repeat="leaf in $ctrl.dropdownsData"
+                 data-ng-style="leaf.data.style">
+                <select data-ng-model="$ctrl.treeRelation[$index]">
+                    <option value="">{{leaf.data.name}}</option>
+                    <option data-ng-repeat="option in $ctrl.entitiesList(leaf.data.attr)"
+                            value="{{option.uuid}}">{{option.value.title}}
+                    </option>
+                </select>
+                <button type="button"
+                        class="btn btn-link"
+                        data-ng-if="$ctrl.treeRelation[$index]"
+                        data-ng-click="$ctrl.addRelation(leaf, $ctrl.treeRelation[$index])"
+                        data-ng-disabled="$ctrl._ui.loading">
+                    Save
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <div class="modal-footer project-tree">
