@@ -13,7 +13,7 @@ export function DataDepotNewCtrl($scope, $state, $sce, Django, ProjectService, D
 
     $scope.$watch('browser.listing', function() {
       $scope.test.createFiles = false;
-      if ($scope.browser.listing) {
+      if ( ($scope.browser.listing || {}).permissions ) {
         $scope.test.createFiles = $scope.browser.listing.permissions === 'ALL' ||
                                   $scope.browser.listing.permissions.indexOf('WRITE') > -1;
       }
