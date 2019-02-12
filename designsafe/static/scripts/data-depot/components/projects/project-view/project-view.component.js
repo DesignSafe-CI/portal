@@ -144,7 +144,16 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
     };
 
     $scope.curationDirectory = function() {
-      $state.go('projects.curation', {projectId: projectId}, {reload: true});
+      /*
+      need to set project type as undefined when creating
+      a new project. At that point we can check if the project
+      type is undefined before showing this popup.
+      */
+      if ($scope.browser.project.value.projectType === 'other') {
+        $scope.manageProjectType();
+      } else {
+        $state.go('projects.curation', {projectId: projectId}, {reload: true});
+      }
     };
 
     $scope.publicationPreview = function() {
@@ -165,26 +174,12 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
       });
     };
 
-    // $scope.launchModal = function () {
-    //   $uibModal.open({
-    //     template: PublicationPopupTemplate,
-    //     controllerAs: '$ctrl',
-    //     controller: function ($uibModalInstance) {
-    //       this.cancel = function () {
-    //         $uibModalInstance.close();
-    //       };
-    //       this.proceed = function () {
-    //         $scope.pipelineSelect();
-    //         $uibModalInstance.close('Continue to publication pipeline...');
-    //       };
-    //     },
-    //     bindings: {
-    //       dismiss: '&',
-    //       close: '&'
-    //     },
-    //     size: 'lg',
-    //   });
-    // };
+    $scope.manageProjectType = function($event) {
+      if ($event){
+        $event.preventDefault();
+      }
+      ProjectService.manageProjectType({'project': $scope.data.project});
+    };
 
     $scope.manageSimulations = function($event) {
       if ($event){

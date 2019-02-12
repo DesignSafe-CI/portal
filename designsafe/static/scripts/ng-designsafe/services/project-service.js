@@ -197,6 +197,16 @@ export function ProjectService(httpi, $interpolate, $q, $state, $uibModal, Loggi
       });
     };
 
+    service.manageProjectType = (options) => {
+      $uibModal.open({
+        component: 'manageProjectType',
+        resolve: {
+          options: () => options,
+        },
+        size: 'lg'
+      });
+    };
+        
     service.manageHybridSimulations = (options) => {
       $uibModal.open({
         component: 'manageHybridSimulations',
