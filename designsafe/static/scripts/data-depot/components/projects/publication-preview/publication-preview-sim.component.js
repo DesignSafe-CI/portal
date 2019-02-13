@@ -1,8 +1,8 @@
-import PublicationPreviewTemplate from './publication-preview.component.html';
+import PublicationPreviewSimTemplate from './publication-preview-sim.component.html';
 import PublicationPopupTemplate from './publication-popup.html';
 import _ from 'underscore';
 
-class PublicationPreviewCtrl {
+class PublicationPreviewSimCtrl {
 
     constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
         'ngInject';
@@ -139,17 +139,17 @@ class PublicationPreviewCtrl {
         
     }
 
-    matchingGroup(exp, model) {
-        if (!exp) {
+    matchingGroup(sim, model) {
+        if (!sim) {
             // if the category is related to the project level
-            if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.experiments.length) {
+            if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.simulations.length) {
                 return true;
             }
             return false;
         } else {
-            // if the category is related to the experiment level
-            // match appropriate data to corresponding experiment
-            if(model.associationIds.indexOf(exp.uuid) > -1) {
+            // if the category is related to the simulation level
+            // match appropriate data to corresponding simulation
+            if(model.associationIds.indexOf(sim.uuid) > -1) {
                 return true;
             }
             return false;
@@ -180,7 +180,7 @@ class PublicationPreviewCtrl {
                 };
                 this.proceed = function () {
                     $uibModalInstance.close('Continue to publication pipeline...');
-                    state.go('projects.pipelineSelect', {projectId: browser.project.uuid}, {reload: true});
+                    state.go('projects.pipelineSelectSim', {projectId: browser.project.uuid}, {reload: true});
                 };
             }],
             resolve: {
@@ -196,11 +196,11 @@ class PublicationPreviewCtrl {
     }
 }
 
-PublicationPreviewCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
+PublicationPreviewSimCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$uibModal', '$state', '$q'];
 
-export const PublicationPreviewComponent = {
-    template: PublicationPreviewTemplate,
-    controller: PublicationPreviewCtrl,
+export const PublicationPreviewSimComponent = {
+    template: PublicationPreviewSimTemplate,
+    controller: PublicationPreviewSimCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',
