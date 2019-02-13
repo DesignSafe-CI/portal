@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 class CurationDirectoryCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q, $uibModal) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
@@ -13,6 +13,7 @@ class CurationDirectoryCtrl {
         this.browser = this.DataBrowserService.state();
         this.$state = $state;
         this.$q = $q;
+        this.$uibModal = $uibModal;
     }
     
     $onInit() {
@@ -195,9 +196,17 @@ class CurationDirectoryCtrl {
     manageCategories() {
         this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.browser.listings});
     }
-}
 
-CurationDirectoryCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$state', '$q'];
+    relateData() {
+      this.$uibModal.open({
+        component: 'projectTree',
+        resolve: {
+            project: () => {return this.browser.project; },
+        },
+        size: 'lg'
+      });
+    }
+}
 
 export const CurationDirectoryComponent = {
     template: CurationDirectoryTemplate,
