@@ -1,22 +1,28 @@
-import PipelineSimulationTemplate from './pipeline-simulation.component.html';
+import PipelineCategoriesHybSimTemplate from './pipeline-categories-hyb-sim.component.html';
 import _ from 'underscore';
 
-class PipelineSimulationCtrl {
+class PipelineCategoriesHybSimCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, $uibModal, $state) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
-        this.$uibModal = $uibModal;
+        this.DataBrowserService = DataBrowserService;
+        this.browser = this.DataBrowserService.state();
+        this.FileListing = FileListing;
         this.$state = $state;
+        this.$q = $q;
     }
-
+    
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.project = this.ProjectService.resolveParams.project;
         this.simulation = this.ProjectService.resolveParams.experiment;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+
+        this.browser.project = this.project;
+        this.browser.listings = this.selectedListings;
 
         if (!this.project) {
             /*
@@ -33,9 +39,18 @@ class PipelineSimulationCtrl {
         window.sessionStorage.clear();
         this.$state.go('projects.view.data', {projectId: this.project.uuid}, {reload: true});
     }
-
-    goProject() {
-        this.$state.go('projects.pipelineProject', {
+    
+    goSimulation() {
+        this.$state.go('projects.pipelineHybrid', {
+            projectId: this.projectId,
+            project: this.project,
+            experiment: this.simulation,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
+    }
+    
+    goAuthors() {
+        this.$state.go('projects.pipelineAuthors', {
             projectId: this.projectId,
             project: this.project,
             experiment: this.simulation,
@@ -43,26 +58,30 @@ class PipelineSimulationCtrl {
         }, {reload: true});
     }
 
-    goCategories() {
-        this.$state.go('projects.pipelineCategoriesHybSim', {
-            projectId: this.projectId,
-            project: this.project,
-            experiment: this.simulation,
-            selectedListings: this.selectedListings,
-        }, {reload: true});
+    editCategory() {
+        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.selectedListings});
     }
 
-    editExp() {
-        this.ProjectService.manageSimulations({'simulations': this.project.simulation_set, 'project': this.project});
+    matchingGroup(sim, model) {
+        // if the category is related to the project level
+        if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.hybridSimulations.length) {
+            return true;
+        } else {
+            // if the category is related to the simulation level
+            // match appropriate data to corresponding simulation
+            if(model.associationIds.indexOf(sim.uuid) > -1) {
+                return true;
+            }
+            return false;
+        }
     }
-
 }
 
-PipelineSimulationCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
+PipelineCategoriesHybSimCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$state', '$q'];
 
-export const PipelineSimulationComponent = {
-    template: PipelineSimulationTemplate,
-    controller: PipelineSimulationCtrl,
+export const PipelineCategoriesHybSimComponent = {
+    template: PipelineCategoriesHybSimTemplate,
+    controller: PipelineCategoriesHybSimCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',

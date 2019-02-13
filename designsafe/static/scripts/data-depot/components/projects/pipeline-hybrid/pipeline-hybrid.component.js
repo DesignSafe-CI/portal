@@ -1,7 +1,7 @@
-import PipelineSimulationTemplate from './pipeline-simulation.component.html';
+import PipelineHybridTemplate from './pipeline-hybrid.component.html';
 import _ from 'underscore';
 
-class PipelineSimulationCtrl {
+class PipelineHybridCtrl {
 
     constructor(ProjectEntitiesService, ProjectService, $uibModal, $state) {
         'ngInject';
@@ -58,11 +58,11 @@ class PipelineSimulationCtrl {
 
 }
 
-PipelineSimulationCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
+PipelineHybridCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', '$uibModal', '$state'];
 
-export const PipelineSimulationComponent = {
-    template: PipelineSimulationTemplate,
-    controller: PipelineSimulationCtrl,
+export const PipelineHybridComponent = {
+    template: PipelineHybridTemplate,
+    controller: PipelineHybridCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',
