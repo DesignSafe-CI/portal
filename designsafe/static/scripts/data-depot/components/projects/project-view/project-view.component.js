@@ -157,9 +157,19 @@ export function ProjectViewCtrl($scope, $state, Django, ProjectService, ProjectE
     };
 
     $scope.publicationPreview = function() {
-      $state.go('projects.preview', {projectId: projectId}).then(function() {
-        checkState();
-      });
+      if ($scope.browser.project.value.projectType === 'experimental') {
+        $state.go('projects.preview', {projectId: $scope.browser.project.uuid}).then(function() {
+          checkState();
+        });
+      } else if ($scope.browser.project.value.projectType === 'simulation') {
+        $state.go('projects.previewSim', {projectId: $scope.browser.project.uuid}).then(function() {
+          checkState();
+        });
+      } else if ($scope.browser.project.value.projectType === 'hybrid_simulation') {
+        $state.go('projects.previewHybSim', {projectId: $scope.browser.project.uuid}).then(function() {
+          checkState();
+        });
+      }
     };
 
     $scope.pipelineSelect = function() {

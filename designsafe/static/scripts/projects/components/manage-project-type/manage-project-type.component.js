@@ -42,7 +42,6 @@ class ManageProjectTypeCtrl {
     }
 
     savePrj(options) {
-        console.log(options);
         return this.projectResource.post({ data: options }).then((resp) => {
             return new this.ProjectModel(resp.data);
         });
