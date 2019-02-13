@@ -1,24 +1,31 @@
-import CurationDirectoryTemplate from './curation-directory.component.html';
+import PipelineSelectionSimTemplate from './pipeline-selection-sim.component.html';
 import _ from 'underscore';
+import { deprecate } from 'util';
 
-class CurationDirectoryCtrl {
+class PipelineSelectionSimCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $state, $q) {
+    constructor(ProjectEntitiesService, ProjectService, DataBrowserService, FileListing, $uibModal, $state, $q) {
         'ngInject';
 
         this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.DataBrowserService = DataBrowserService;
-        this.FileListing = FileListing;
         this.browser = this.DataBrowserService.state();
+        this.FileListing = FileListing;
+        this.$uibModal = $uibModal;
         this.$state = $state;
         this.$q = $q;
     }
-    
+
     $onInit() {
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
+        // this.selectedFiles = {};
         this.loading = true;
+        
+        if (!this.projectId) {
+            this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
+        }
 
         /*
         update uniqe file listing
@@ -127,79 +134,85 @@ class CurationDirectoryCtrl {
 
     }
 
-    matchingGroup(exp, model) {
-        // match appropriate data to corresponding experiment
-        var result = false;
-        model.associationIds.forEach((id) => {
-            if (id == exp.uuid) {
-                result = true;
+    matchingGroup(sim, model) {
+        if (!sim) {
+            // if the category is related to the project level
+            if (model.associationIds.indexOf(this.projectId) > -1 && !model.value.simulations.length) {
+                return true;
             }
-        });
-        return result;
+            return false;
+        } else {
+            // if the category is related to the simulation level
+            // match appropriate data to corresponding simulation
+            if(model.associationIds.indexOf(sim.uuid) > -1) {
+                return true;
+            }
+            return false;
+        }
     }
-    
+
     goWork() {
-        this.$state.go('projects.view.data', {projectId: this.browser.project.uuid});
+        window.sessionStorage.clear();
+        this.$state.go('projects.view.data', {projectId: this.projectId}, {reload: true});
     }
 
     goPreview() {
-        if (this.browser.project.value.projectType === 'experimental') {
-            this.$state.go('projects.preview', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
-        } else if (this.browser.project.value.projectType === 'simulation') {
-            this.$state.go('projects.previewSim', {projectId: this.browser.project.uuid, selectedListings: this.browser.listings, project: this.browser.project});
-        }
+        this.$state.go('projects.previewSim', {projectId: this.projectId}, {reload: true});
     }
 
-    editProject() {
-        // need to refresh project data when this is closed (not working atm)
-        this.ProjectService.editProject(this.browser.project);
+    goProject() {
+        this.reviewSelections();
+        window.sessionStorage.setItem('projectId', JSON.stringify(this.browser.project.uuid));
+        this.$state.go('projects.pipelineProject', {
+            projectId: this.projectId,
+            project: this.browser.project,
+            experiment: this.selectedExp,
+            selectedListings: this.selectedListings,
+        }, {reload: true});
     }
 
-    manageExperiments() {
-        // need to data when this is closed (not working atm)
-        var experimentsAttr = this.browser.project.getRelatedAttrName('designsafe.project.experiment');
-        var experiments = this.browser.project[experimentsAttr];
-        if (typeof experiments === 'undefined') {
-            this.browser.project[experimentsAttr] = [];
-            experiments = this.browser.project[experimentsAttr];
-        }
-        this.ProjectService.manageExperiments({'experiments': experiments, 'project': this.browser.project});
+    selectExperiment(exp) {
+        this.selectedExp = exp;
+        var sets = ['model_set', 'input_set', 'output_set', 'report_set', 'analysis_set'];
+        sets.forEach((set) => {
+            this.browser.project[set].forEach((s) => {
+                if (s.associationIds.indexOf(exp.uuid) > -1) {
+                    this.DataBrowserService.select(this.browser.listings[s.uuid].children);
+                } else {
+                    this.DataBrowserService.deselect(this.browser.listings[s.uuid].children);
+                }
+            });
+        });
     }
 
-    manageSimulations() {
-        // need to data when this is closed (not working atm)
-        var simulationAttr = this.browser.project.getRelatedAttrName('designsafe.project.simulation');
-        var simulations = this.browser.project[simulationAttr];
-        if (typeof simulations === 'undefined'){
-          this.browser.project[simulationAttr] = [];
-          simulations = this.browser.project[simulationAttr];
-        }
-        this.ProjectService.manageSimulations({'simulations': simulations, 'project': this.browser.project});
+    reviewSelections() {
+        this.selectedListings = {};
+        Object.keys(this.browser.listings).forEach((key) => {
+            this.selectedListings[key] = {
+                name: this.browser.listing.name,
+                path: this.browser.listing.path,
+                system: this.browser.listing.system,
+                trail: this.browser.listing.trail,
+                children: [],
+            };
+
+            this.browser.listings[key].children.forEach((child) => {
+                if (typeof child._ui.selected != 'undefined' && child._ui.selected === true) {
+                    this.selectedListings[key].children.push(child);
+                }
+            });
+            if (!this.selectedListings[key].children.length) {
+                delete this.selectedListings[key];
+            }
+
+        });
     }
 
-    manageHybridSimulations() {
-        // need to data when this is closed (not working atm)
-        var hybridSimulationAttr = this.browser.project.getRelatedAttrName(
-            'designsafe.project.hybrid_simulation'
-        );
-        var hybridSimulations = this.browser.project[hybridSimulationAttr];
-        if (typeof hybridSimulations === 'undefined'){
-          this.browser.project[hybridSimulationAttr] = [];
-          hybridSimulations = this.browser.project[hybridSimulationAttr];
-        }
-        this.ProjectService.manageHybridSimulations({'hybridSimulations': hybridSimulations, 'project': this.browser.project});
-    }
-
-    manageCategories() {
-        this.ProjectService.manageCategories({'project': this.browser.project, 'selectedListings': this.browser.listings});
-    }
 }
 
-CurationDirectoryCtrl.$inject = ['ProjectEntitiesService', 'ProjectService', 'DataBrowserService', 'FileListing', '$state', '$q'];
-
-export const CurationDirectoryComponent = {
-    template: CurationDirectoryTemplate,
-    controller: CurationDirectoryCtrl,
+export const PipelineSelectionSimComponent = {
+    template: PipelineSelectionSimTemplate,
+    controller: PipelineSelectionSimCtrl,
     controllerAs: '$ctrl',
     bindings: {
         resolve: '<',

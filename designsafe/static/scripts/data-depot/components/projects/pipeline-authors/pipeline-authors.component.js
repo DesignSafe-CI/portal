@@ -30,18 +30,28 @@ class PipelineAuthorsCtrl {
             for now we can send them back to the selection area
             */
             this.projectId = JSON.parse(window.sessionStorage.getItem('projectId'));
-            this.$state.go('projects.pipelineSelect', {projectId: this.projectId}, {reload: true});
+            this.ProjectService.get({ uuid: this.projectId }).then((project) => {
+                this.projType = project.value.projectType;
+                this.uuid = project.uuid;
+                if (this.projType === 'experimental') {
+                    this.$state.go('projects.pipelineSelect', {projectId: this.uuid}, {reload: true});
+                } else if (this.projType === 'simulation') {
+                    this.$state.go('projects.pipelineSelectSim', {projectId: this.uuid}, {reload: true});
+                }
+            });
+        } else {
+            this.projType = this.project.value.projectType;
+            // this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
+            this.verifyAuthors = (expAuthors) => {
+                if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
+                    this.validAuths = true;
+                } else {
+                    this.validAuths = false;
+                }
+            };
+            this.verifyAuthors(this.experiment.value.authors);    
         }
 
-        // this.project = JSON.parse(window.sessionStorage.getItem('projectData'));
-        this.verifyAuthors = (expAuthors) => {
-            if (typeof expAuthors != 'undefined' && typeof expAuthors[0] != 'string') {
-                this.validAuths = true;
-            } else {
-                this.validAuths = false;
-            }
-        };
-        this.verifyAuthors(this.experiment.value.authors);    
     }
 
     goWork() {
@@ -50,12 +60,21 @@ class PipelineAuthorsCtrl {
     }
 
     goCategories() {
-        this.$state.go('projects.pipelineCategories', {
-            projectId: this.projectId,
-            project: this.project,
-            experiment: this.experiment,
-            selectedListings: this.selectedListings,
-        }, {reload: true});
+        if (this.projType === 'experimental') {
+            this.$state.go('projects.pipelineCategories', {
+                projectId: this.projectId,
+                project: this.project,
+                experiment: this.experiment,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        } else if (this.projType === 'simulation') {
+            this.$state.go('projects.pipelineCategoriesSim', {
+                projectId: this.projectId,
+                project: this.project,
+                experiment: this.experiment,
+                selectedListings: this.selectedListings,
+            }, {reload: true});
+        }
     }
 
     goLicenses() {
