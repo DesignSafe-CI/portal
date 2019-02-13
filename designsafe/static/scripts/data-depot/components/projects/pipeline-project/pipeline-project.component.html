@@ -28,7 +28,8 @@
                 </div>
             </td>
             <td class="tg-0lax">
-                <strong>Proofread Experiment</strong>
+                <strong ng-if="$ctrl.projType === 'experimental'">Proofread Experiment</strong>
+                <strong ng-if="$ctrl.projType === 'simulation'">Proofread Simulation</strong>
                 <div>
                     <i class="fa fa-circle-thin"></i>
                 </div>
