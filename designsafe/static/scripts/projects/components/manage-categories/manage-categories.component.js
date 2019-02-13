@@ -41,7 +41,7 @@ class ManageCategoriesCtrl {
             idDel: ''
         };
 
-        console.log(this.options.selectedListings)
+
         if (typeof this.options.selectedListings === 'undefined' || Object.keys(this.options.selectedListings).length === 0) {
             /*
             update uniqe file listing
@@ -172,12 +172,12 @@ class ManageCategoriesCtrl {
                 },
                 {
                     label: 'Analysis',
-                    name: 'designsafe.project.analysis',
+                    name: 'designsafe.project.simulation.analysis',
                     yamzId: 'h1333'
                 },
                 {
                     label: 'Report',
-                    name: 'designsafe.project.report',
+                    name: 'designsafe.project.simulation.report',
                     yamzId: ''
                 },
             ];
@@ -263,6 +263,8 @@ class ManageCategoriesCtrl {
         var nameComps = entity.name.split('.');
         var name = nameComps[nameComps.length - 1];
         entity.description = entity.description || '';
+        console.log(entity);
+        console.log(nameComps);
         if (typeof this.data.files !== 'undefined') {
             entity.filePaths = _.map(this.data.files,
                 (file) => {

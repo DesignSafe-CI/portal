@@ -28,7 +28,8 @@
                 </div>
             </td>
             <td class="tg-0lax">
-                <strong>Proofread Experiment</strong>
+                <strong ng-if="$ctrl.projType === 'experimental'">Proofread Experiment</strong>
+                <strong ng-if="$ctrl.projType === 'simulation'">Proofread Simulation</strong>
                 <div>
                     <i class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
@@ -73,8 +74,11 @@
     </div>
     <!-- Order Authors -->
     <div class="well">
-        <div class="prj-head" style="padding-bottom:20px">
+        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'experimental'">
             EXPERIMENT | <strong>{{ $ctrl.experiment.value.title }}</strong>
+        </div>
+        <div class="prj-head" style="padding-bottom:20px" ng-if="$ctrl.projType === 'simulation'">
+            SIMULATION | <strong>{{ $ctrl.experiment.value.title }}</strong>
         </div>
         <div ng-hide="$ctrl.validAuths">
             Your authors need to be updated. Edit your experiment and select which users are authors for the Experiment.
