@@ -38,6 +38,8 @@ class PipelineLicensesCtrl {
                    this.$state.go('projects.pipelineSelectHybSim', {projectId: this.uuid}, {reload: true});
                }
            });
+        } else {
+            this.projType = this.project.value.projectType;
         }
     }
 
