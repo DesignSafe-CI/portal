@@ -409,7 +409,7 @@ class ProjectTreeCtrl {
                             uuid: output.uuid,
                             parent: coordNode.name,
                             children: [],
-                            rectStyle: 'stroke: #D04348; fill: #D04348;',
+                            rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
                             display: 'Coordinator Output',
                         };
                         coordNode.children.push(outNode);
@@ -431,7 +431,7 @@ class ProjectTreeCtrl {
                             uuid: num.uuid,
                             parent: coordNode.name,
                             children: [],
-                            rectStyle: 'stroke: #B59300; fill: #B59300;',
+                            rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Numerical Substructure',
                         };
                         _.each(simOutputs, (out) => {
@@ -443,7 +443,7 @@ class ProjectTreeCtrl {
                                 uuid: out.uuid,
                                 parent: num.name,
                                 children: [],
-                                rectStyle: 'stroke: #D04348; fill: #D04348;',
+                                rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
                                 display: 'Simulation Output',
                             };
                             numNode.children.push(outNode);
@@ -473,7 +473,7 @@ class ProjectTreeCtrl {
                             uuid: exp.uuid,
                             parent: coordNode.name,
                             children: [],
-                            rectStyle: 'stroke: #865AA7; fill: #865AA7;',
+                            rectStyle: 'stroke: #865AA7; fill: #DABFEF;',
                             display: 'Experimental Substructure',
                         };
                         _.each(expOutputs, (out) => {
@@ -485,7 +485,7 @@ class ProjectTreeCtrl {
                                 uuid: out.uuid,
                                 parent: exp.name,
                                 children: [],
-                                rectStyle: 'stroke: #D04348; fill: #D04348;',
+                                rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
                                 display: 'Experiental Output',
                             };
                             expNode.children.push(outNode);
@@ -639,7 +639,7 @@ class ProjectTreeCtrl {
                             uuid: output.uuid,
                             parent: inpNode.name,
                             children: [],
-                            rectStyle: 'stroke: #B59300; fill: #B59300;',
+                            rectStyle: 'stroke: #D04348; fill: #EFBFC1;',
                             display: 'Simulation Output',
                         };
                         inpNode.children.push(outNode);
@@ -783,7 +783,7 @@ class ProjectTreeCtrl {
                             uuid: evt.uuid,
                             parent: sensorNode.name,
                             children: [],
-                            rectStyle: 'stroke: #B59300; fill: #B59300;',
+                            rectStyle: 'stroke: #B59300; fill: #ECE4BF;',
                             display: 'Event',
                         };
                         sensorNode.children.push(eventNode);
