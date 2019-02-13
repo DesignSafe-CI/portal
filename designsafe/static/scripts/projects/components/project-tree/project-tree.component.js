@@ -984,32 +984,36 @@ class ProjectTreeCtrl {
     }
 
     drawProjectTrees(){
-        d3.select('.project-tree #relation-tree')
-            .selectAll('svg')
-            .remove();
-        this.dropdownsData = [];
-        this.buttonsData = [];
-        let type = this.project.value.projectType;
-        if (type === 'experimental' ){
-            this.buildExperimentalTree();
-        } else if (type === 'simulation') {
-            this.buildSimulationTree();
-        } else if (type === 'hybrid_simulation') {
-            this.buildHybridSimulationTree();
-        }
-        _.each(this.trees, (tree, index) => {
-            let XOffset = 0;
-            let YOffset = 0;
-            if (index) {
-                _.each(this.trees, (subTree, treeIndex) => {
-                    if (treeIndex < index){
-                        YOffset += subTree.maxY;
-                    }
-                });
-                YOffset += index * 50 + 5 * index;
+        try {
+            d3.select('.project-tree #relation-tree')
+                .selectAll('svg')
+                .remove();
+            this.dropdownsData = [];
+            this.buttonsData = [];
+            let type = this.project.value.projectType;
+            if (type === 'experimental' ){
+                this.buildExperimentalTree();
+            } else if (type === 'simulation') {
+                this.buildSimulationTree();
+            } else if (type === 'hybrid_simulation') {
+                this.buildHybridSimulationTree();
             }
-            this.drawTree(tree, index, XOffset, YOffset);
-        });
+            _.each(this.trees, (tree, index) => {
+                let XOffset = 0;
+                let YOffset = 0;
+                if (index) {
+                    _.each(this.trees, (subTree, treeIndex) => {
+                        if (treeIndex < index){
+                            YOffset += subTree.maxY;
+                        }
+                    });
+                    YOffset += index * 50 + 5 * index;
+                }
+                this.drawTree(tree, index, XOffset, YOffset);
+            });
+        } catch(err) {
+            this._ui.error = err.message;
+        }
     }
 
     entitiesList(attr){
