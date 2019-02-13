@@ -929,14 +929,22 @@ class ProjectTreeCtrl {
             .attr('y', 5)
             .attr('x', 5)
             .attr('class', 'entity-label');
-        nodes.append('text.entity-label')
-            .each( (d, i, nds) => {
-                let bbox = nds[i].getBBox();
-                bboxes[d.data.uuid] = bbox;
+
+        svg.selectAll('text.entity-label')
+            .each((d, i, nds) => {
+                if (d.data.uuid) {
+                    let t = nds[i].getBBox();
+                    bboxes[d.data.uuid] = t;
+                    d.data.btnStyle = {
+                        position: 'absolute',
+                        left: d.x + 25 + XOffset + t.width,
+                        top: d.y + 10 + YOffset,
+                    };
+                    this.buttonsData.push(d);
+                }
             });
 
         nodes.append('text')
-            .append('text')
             .text( (d) => {
                 return d.data.name;
             })
@@ -946,31 +954,25 @@ class ProjectTreeCtrl {
                 }
                 return '';
             })
-            .attr('class', 'entity-name')
-            .attr('x', (d, i, nds) => {
-                let n = nds[i];
-                let bbox = n.getBBox();
-                d.data.btnStyle = {
-                    position: 'absolute',
-                    left: d.x + 25 + XOffset + bbox.width,
-                    top: d.y + 10 + YOffset,
-                };
-                this.buttonsData.push(d);
-                return d.x + 25 + XOffset + bbox.width + 5 + 5;
-            });
+            .attr('y', (d) => { if (d.depth) { return 5; } return 0; })
+            .attr('x', (d) => {
+                if (d.data.uuid && d.depth) {
+                    let left = bboxes[d.data.uuid].width;
+                    return left + 15;
+                }
+                return 0;
+            })
+            .attr('class', 'entity-name');
 
         svg.selectAll('text.entity-name')
-            .each((d, i, nds) => {
-                if (d.data.uuid) {
-                    let bbox = nds[i].getBBox();
-                    bboxes[d.data.uuid] = bbox;
-                    let btn = _.filter(this.buttonsData, (b) => { b.uuid === d.data.uuid; } );
-                    if (btn.length) {
-                        btn = btn[0];
-                        btn.data.btnStyle.left += bbox.width;
-                    }
+            .each( (d, i, nds) => {
+                let bbox = nds[i].getBBox();
+                let btn = _.filter(this.buttonsData, (b) => { return b.data.uuid == d.data.uuid; });
+                if (btn.length) {
+                    btn[0].data.btnStyle.left += bbox.width + 5;
                 }
             });
+
         svg.selectAll('rect')
             .attr('width', (d) => {
                 if (d.data.uuid){
